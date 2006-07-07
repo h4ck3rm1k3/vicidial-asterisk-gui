@@ -1,0 +1,191 @@
+#!/usr/bin/perl
+#
+# agi-VDADlisten_DTMF.agi version 0.1
+# 
+# To be initiated by an agent so during a call. Agent will click a PIN NUMBER
+# link on a web form webpage that will Originate a new call to this script
+#
+# This script plays a beep and waits for entry of 4 digits then inserts record
+#
+# ***** THIS SCRIPT ONLY WORKS WITH A CROSSOVER T1 CABLE FROM ONE T1 PORT *****
+# ***** TO ANOTHER T1 PORT WHETHER ON THE SAME SERVER OR DIFFERENT ONE    *****
+#
+# ON THE SERVER ORIGINATING THE CALL:
+#;outbound DTMF VICIDIAL calls:
+#exten => _983009.,1,AGI(call_log.agi,${EXTEN})
+#exten => _983009.,2,Dial(${TRUNKY}/${EXTEN:1},60)
+#exten => _983009.,3,Hangup
+#
+# ON THE SERVER THAT HAS THIS SCRIPT:
+#;inbound DTMF VICIDIAL calls:
+#exten => _83009.,1,AGI(agi-VDADlisten_DTMF.agi,${EXTEN})
+#exten => _83009.,2,Hangup
+#
+# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+
+$V = 1;		# set to 1 for verbose mode
+$M = 1;		# set to 1 for 2 line messages mode
+
+### set defaults for testing
+$referring_extension =	'83009';
+$phone_number =		'9999999999';
+$lead_id =		'999999999';
+$campaign_id =		'TESTCAMP';
+$product_code =		'ABC';
+$user =			'1234';
+$pin =			'0';
+
+### Make sure this file is in a path or put the absolute path to it
+require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+
+use Net::MySQL;
+use Asterisk::AGI;
+$AGI = new Asterisk::AGI;
+
+
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
+
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+if ($V) {print STDERR "Perl Environment Dump:\n";}
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	$i++;
+	}
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	}
+	else
+	{
+		if ($args =~ /-V/i)
+		{
+		$V=1;
+		}
+		if ($args =~ /-debug/i)
+		{
+		$DG=1;
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;
+		$Q=1;
+		}
+		if ($args =~ /-t/i)
+		{
+		$TEST=1;
+		$T=1;
+		}
+	}
+}
+else
+{
+if ($V) {print "no command line options set\n";}
+}
+
+$|=1;
+while(<STDIN>) {
+	chomp;
+	last unless length($_);
+	if ($V)
+	{
+		if (/^agi_(\w+)\:\s+(.*)$/)
+		{
+			$AGI{$1} = $2;
+		}
+	}
+
+	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
+	### allow for internal transfer data string "83009*3125551212*10000123*TESTCAMP*ABC*1234*"
+	if ($extension =~ /^8300\d\*/)
+		{
+		@EXT_vars = split(/\*/, $extension);
+		
+		$referring_extension =	$EXT_vars[0];	# initial extension sent
+		$phone_number =		$EXT_vars[1];	# phone number
+		$lead_id =		$EXT_vars[2];	# lead_id in vicidial_list
+		$campaign_id =		$EXT_vars[3];	# campaign id
+		$product_code =		$EXT_vars[4];	# product code
+		$user =			$EXT_vars[5];	# vicidial_user that sent the call here
+		}
+}
+
+	if ($V) {print STDERR "\nINBOUND DTMF CALL VDCL STARTED\n";}
+
+&enter_pin_number;
+
+if (!$DB_port) {$DB_port='3306';}
+
+  my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+
+if (length($pin) < 4) {$AGI->stream_file('buzz');}
+else {$AGI->stream_file('ding');}
+
+### insert a record into the vicidial_list_pins table 
+$stmtA = "INSERT INTO vicidial_list_pins (entry_time,phone_number,lead_id,campaign_id,product_code,user,digits) values('$SQLdate','$phone_number','$lead_id','$campaign_id','$product_code','$user','$pin');";
+$dbhA->query($stmtA);
+   $dbhA->query("select LAST_INSERT_ID() LIMIT 1;");
+   if ($dbhA->has_selected_record)
+	{
+         $iterA=$dbhA->create_record_iterator;
+	  while ($recordA = $iterA->each)
+		{$insert_pin_id = "$recordA->[0]";} 
+	}
+if($M){print STDERR "\n|$stmtA|$insert_pin_id|\n";}
+
+  $dbhA->close;
+
+exit;
+
+
+
+
+
+
+
+
+sub enter_pin_number
+{
+
+$AGI->stream_file('beep');
+
+while ( ($digit_loop_counter < 4) )
+	{
+	$digit = chr($AGI->wait_for_digit('30000'));  # wait 30 seconds for input or until the pound key is pressed
+	if ($digit =~ /\d/)
+		{
+		$totalDTMF = "$totalDTMF$digit";
+		print STDERR "digit |$digit|     TotalDTMF |$totalDTMF|\n";
+	#	$AGI->say_digits("$digit");
+		undef $digit;
+		}
+	else
+		{
+		$digit_loop_counter=4;
+		}
+	
+	$digit_loop_counter++;
+	}
+
+$totalDTMF =~ s/\D//gi;
+$pin = $totalDTMF;
+if ($totalDTMF) {print STDERR "digit |$digit|     TotalDTMF |$totalDTMF|\n";}
+#	$AGI->say_digits("$pin");
+}
+

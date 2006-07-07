@@ -1,0 +1,385 @@
+#!/usr/bin/perl
+#
+# VD_hangup.agi version 0.2
+#
+# NOTE: This script is only needed on Asterisk 1.2.X and higher systems
+# 
+# runs when a call hangs up in the second priority behind call_log. This script
+# will lookup the uniqueid of the call and/or the callerIDname and update tables
+# if it is a VICIDIAL inbound or outbound call that hungup before sent to agent
+#
+# You need to put lines similar to those below in your extensions.conf file:
+# 
+# ;VICIDIAL_auto_dialer transfer script:
+# exten => h,1,DeadAGI(call_log.agi,${EXTEN})
+# exten => h,2,DeadAGI(VD_hangup.agi,PRI-----DEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+# 
+# NOTES: 
+# - To disable Busy and Disconnect detection change the first field from PRI to NONPRI
+# - To disable Debug output to file change the second field from DEBUG to NODEBUG
+#
+# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+# changes:
+# 60203-1218 - fixed calleridname issue with 1.2 tree for custom CID
+# 60314-1250 - Altered to allow for ignoring of AGI-defined status
+# 60612-1500 - Added option for text log of hangup codes
+#            - Added option for PRI hangup code dispositions: BUSY, DISCONNECT
+# 60615-1101 - Fixed log updates for CLOSER transfer from fronter calls
+#
+
+$V = 1;		# set to 1 for verbose mode
+$M = 1;		# set to 1 for 2 line messages mode
+
+### Make sure this file is in a path or put the absolute path to it
+require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+
+use Net::MySQL;
+use Asterisk::AGI;
+$AGI = new Asterisk::AGI;
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+$start_time=$now_date;
+	$CIDdate = "$mon$mday$hour$min$sec";
+	$tsSQLdate = "$year$mon$mday$hour$min$sec";
+	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
+	$SQLdateBEGIN = $SQLdate;
+
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+if ($V) {print STDERR "Perl Environment Dump:\n";}
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	$i++;
+	}
+
+	### list of command-line array arguments:
+	@ARGV_vars = split(/-----/, $ARGV[0]);
+
+	$PRI = $ARGV_vars[0];
+	$DEBUG = $ARGV_vars[1];
+	$hangup_cause = $ARGV_vars[2];
+	$dialstatus = $ARGV_vars[3];
+	$dial_time = $ARGV_vars[4];
+	$ring_time = $ARGV_vars[5];
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	}
+	else
+	{
+		if ($args =~ /-V/i)
+		{
+		$V=1;
+		}
+		if ($args =~ /-debug/i)
+		{
+		$DG=1;
+		}
+		if ($args =~ /-dbAVS/i)
+		{
+		$DGA=1;
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;
+		$Q=1;
+		}
+		if ($args =~ /-t/i)
+		{
+		$TEST=1;
+		$T=1;
+		}
+	}
+}
+else
+{
+if ($V) {print "no command line options set\n";}
+}
+
+$|=1;
+while(<STDIN>) 
+{
+	chomp;
+	last unless length($_);
+	if ($V)
+	{
+		if (/^agi_(\w+)\:\s+(.*)$/)
+		{
+			$AGI{$1} = $2;
+		}
+	}
+
+	if (/^agi_uniqueid\:\s+(.*)$/)		{$unique_id = $1; $uniqueid = $unique_id;}
+	if (/^agi_priority\:\s+(.*)$/)		{$priority = $1;}
+	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
+	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
+	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
+	if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
+	if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
+}
+
+if ( (length($callerid)>20) && ($callerid =~ /\"\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S\S/) )
+  {
+   $callerid =~ s/^\"//gi;
+   $callerid =~ s/\".*$//gi;
+#	### set the callerid to the ACQS value(calleridname)
+#	print "SET CALLERID $callerid\n";
+#	checkresult($result);
+#	print STDERR "callerID changed: $callerid\n";
+
+  }
+if ( (
+(length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) )
+) or ( (length($calleridname)>17) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ) )
+  {
+   $callerid = $calleridname;
+#	### set the callerid to the ACQS value(calleridname)
+#	print "SET CALLERID $callerid\n";
+#	checkresult($result);
+#	print STDERR "callerID changed: $callerid\n";
+  }
+
+
+if ($V)
+{
+
+	if ($V) {print STDERR "AGI Environment Dump:\n";}
+	foreach $i (sort keys %AGI) {
+		if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
+	}
+}
+
+$VDADcampaign='';
+$VDADphone='';
+$VDADphone_code='';
+
+if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";}
+
+if ($DEBUG =~ /^DEBUG$/)
+{
+	### open the error out file for writing ###
+	open(out, ">>/home/cron/HANGUP_test-output.txt")
+			|| die "Can't open /home/cron/HANGUP_test-output.txt: $!\n";
+
+	print out "$now_date|$hangup_cause|$dialstatus|$dial_time|$ring_time|$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";
+
+	close(out);
+}
+else {print STDERR "\nDEBUG: $DEBUG\n";}
+
+
+$callerid =~ s/\"//gi;
+$CIDlead_id = $callerid;
+$CIDlead_id = substr($CIDlead_id, 11, 9);
+$CIDlead_id = ($CIDlead_id + 0);
+
+if ($V) {print STDERR "\nVD_hangup : $callerid  $channel $priority\n";}
+if ($M) {print STDERR "+++++ VD hangup START : |$unique_id|$channel|$extension|$type|$callerid|$CIDlead_id|$now_date|$AST_ver|$priority|$calleridname|\n";}
+
+
+if ($channel =~ /^Local/)
+{
+	if ( ($PRI =~ /^PRI$/) && ($callerid =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) && ( ($dialstatus =~ /BUSY/) || ( ($dialstatus =~ /CHANUNAVAIL/) && ($hangup_cause =~ /^1$|^28$/) ) ) )
+	{
+		my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+		
+		if ($dialstatus =~ /BUSY/) {$VDL_status = 'B'; $VDAC_status = 'BUSY';}
+		if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'DC'; $VDAC_status = 'DISCONNECT';}
+
+		$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
+			if($M){print STDERR "\n\n|$stmtA|\n";}
+		$dbhA->query("$stmtA");
+		my $affected_rows = $dbhA->get_affected_rows_length;
+		if ($M) {print STDERR "--    VDAC update: |$affected_rows|$CIDlead_id\n";}
+
+		$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
+			if($M){print STDERR "\n\n|$stmtA|\n";}
+		$dbhA->query("$stmtA");
+		my $affected_rows = $dbhA->get_affected_rows_length;
+		if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id\n";}
+
+		$stmtA = "UPDATE vicidial_log set status='$VDL_status' where uniqueid = '$uniqueid';";
+			if($M){print STDERR "\n\n|$stmtA|\n";}
+		$dbhA->query("$stmtA");
+		my $affected_rows = $dbhA->get_affected_rows_length;
+		if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|\n";}
+
+		$dbhA->close;
+	}
+	else
+	{
+		if ($M) {print STDERR "--    VDhangup Local DEBUG: |$PRI|$callerid|$dialstatus|$hangup_cause|\n";}
+	}
+
+	if ($M) {print STDERR "+++++ VDAD START LOCAL CHANNEL: EXITING- $priority\n";}
+	if ($priority > 2) {sleep(1);}
+	exit;
+}
+
+if (!$DB_port) {$DB_port='3306';}
+
+  my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+
+
+########## FIND AND DELETE vicidial_auto_calls ##########
+$stmtA = "SELECT lead_id,callerid FROM vicidial_auto_calls where uniqueid = '$uniqueid' limit 1;";
+if($M){print STDERR "\n\n|$stmtA|\n";}
+$dbhA->query("$stmtA");
+ $rec_countCUSTDATA=0;
+if ($dbhA->has_selected_record)
+	{
+	$iter=$dbhA->create_record_iterator;
+	   while ( $record = $iter->each)
+		{
+		$VD_lead_id	= "$record->[0]";
+		$VD_callerid	= "$record->[1]";
+		 $rec_countCUSTDATA++;
+		} 
+	}
+
+if (!$rec_countCUSTDATA)
+	{
+	if($M){print STDERR "\nVD hangup: no VDAC record found: $uniqueid $calleridname\n";}
+	exit;
+	}
+
+$stmtA = "DELETE FROM vicidial_auto_calls where uniqueid='$uniqueid' order by call_time desc limit 1;";
+$dbhA->query("$stmtA");
+my $affected_rows = $dbhA->get_affected_rows_length;
+if ($M) {print STDERR "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_callerid|$server_ip\n";}
+
+
+########## FIND AND UPDATE vicidial_log ##########
+$stmtA = "SELECT start_epoch,status FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$VD_lead_id' limit 1;";
+if($M){print STDERR "\n\n|$stmtA|\n";}
+$dbhA->query("$stmtA");
+ $epc_countCUSTDATA=0;
+ $VD_closecallid='';
+if ($dbhA->has_selected_record)
+	{
+	$iter=$dbhA->create_record_iterator;
+	   while ( $record = $iter->each)
+		{
+		$VD_start_epoch	= "$record->[0]";
+		$VD_status	= "$record->[1]";
+		 $epc_countCUSTDATA++;
+		} 
+	}
+if (!$epc_countCUSTDATA)
+	{
+	if($M){print STDERR "\nVD hangup: no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid\n";}
+
+	$secX = time();
+	$Rtarget = ($secX - 21600);	# look for VDCL entry within last 6 hours
+	($Rsec,$Rmin,$Rhour,$Rmday,$Rmon,$Ryear,$Rwday,$Ryday,$Risdst) = localtime($Rtarget);
+	$Ryear = ($Ryear + 1900);
+	$Rmon++;
+	if ($Rmon < 10) {$Rmon = "0$Rmon";}
+	if ($Rmday < 10) {$Rmday = "0$Rmday";}
+	if ($Rhour < 10) {$Rhour = "0$Rhour";}
+	if ($Rmin < 10) {$Rmin = "0$Rmin";}
+	if ($Rsec < 10) {$Rsec = "0$Rsec";}
+		$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
+
+	$stmtA = "SELECT start_epoch,status,closecallid FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+		if($M){print STDERR "\n\n|$stmtA|\n";}
+	$dbhA->query("$stmtA");
+	 $epc_countCUSTDATA=0;
+	if ($dbhA->has_selected_record)
+		{
+		$iter=$dbhA->create_record_iterator;
+		   while ( $record = $iter->each)
+			{
+			$VD_start_epoch	= "$record->[0]";
+			$VD_status	= "$record->[1]";
+			$VD_closecallid	= "$record->[2]";
+			 $epc_countCUSTDATA++;
+			} 
+		}
+	}
+if (!$epc_countCUSTDATA)
+	{
+	if($M){print STDERR "\nVD hangup: no VDL or VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid\n";}
+	exit;
+	}
+$VD_seconds = ($now_date_epoch - $VD_start_epoch);
+
+$SQL_status='';
+if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) 
+	{
+	$SQL_status = "status='DROP',";
+
+	########## FIND AND UPDATE vicidial_list ##########
+	$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$VD_lead_id';";
+		if($M){print STDERR "\n\n|$stmtA|\n";}
+	$dbhA->query("$stmtA");
+	my $affected_rows = $dbhA->get_affected_rows_length;
+	if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id\n";}
+	}
+
+$stmtA = "UPDATE vicidial_log set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid = '$uniqueid';";
+	if($M){print STDERR "\n\n|$stmtA|\n";}
+$dbhA->query("$stmtA");
+my $affected_rows = $dbhA->get_affected_rows_length;
+if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|\n";}
+
+
+
+
+########## UPDATE vicidial_closer_log ##########
+if (length($VD_closecallid) < 1)
+	{
+	if($M){print STDERR "\nVD hangup: no VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid\n";}
+	exit;
+	}
+$VD_seconds = ($now_date_epoch - $VD_start_epoch);
+$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
+	if($M){print STDERR "\n\n|$stmtA|\n";}
+$dbhA->query("$stmtA");
+my $affected_rows = $dbhA->get_affected_rows_length;
+if ($M) {print STDERR "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|\n";}
+
+
+
+  $dbhA->close;
+
+
+
+exit;
+
+sub checkresult {
+	my ($res) = @_;
+	my $retval;
+	$tests++;
+	chomp $res;
+	if ($res =~ /^200/) {
+		$res =~ /result=(-?\d+)/;
+		if (!length($1)) {
+		#	print STDERR "FAIL ($res)\n";
+			$fail++;
+		} else {
+		#	print STDERR "PASS ($1)\n";
+			$pass++;
+		}
+	} else {
+	#	print STDERR "FAIL (unexpected result '$res')\n";
+		$fail++;
+	}
+}

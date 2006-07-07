@@ -1,0 +1,164 @@
+#!/usr/bin/perl
+#
+# park_CID.agi version 0.1
+# 
+# runs before the park extension to populate the parked_channels entry with the channel's callerid
+# 
+# You need to put lines similar to those below in your extensions.conf file:
+# 
+# ;outbound dialing:
+# exten => 8301,1,Answer
+# exten => 8301,2,AGI(park_CID.agi)
+# exten => 8301,3,Playback(park)
+# exten => 8301,4,Hangup 
+#
+# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+
+$V = 0;		# set to 1 for verbose mode
+$M = 1;		# set to 1 for 2 line messages mode
+
+### Make sure this file is in a path or put the absolute path to it
+require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+
+
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+if ($V) {print STDERR "Perl Environment Dump:\n";}
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	$i++;
+	}
+	if ($args =~ />| |\"/i)
+		{
+		@CID = split(/-----/, $args);
+		$fullCID=1;
+		$callerid =	$CID[2];
+		$calleridname =	$CID[3];
+		}
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	}
+	else
+	{
+		if ($args =~ /-V/i)
+		{
+		$V=1;
+		}
+		if ($args =~ /-debug/i)
+		{
+		$DG=1;
+		}
+		if ($args =~ /-dbAVS/i)
+		{
+		$DGA=1;
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;
+		$Q=1;
+		}
+		if ($args =~ /-t/i)
+		{
+		$TEST=1;
+		$T=1;
+		}
+	}
+}
+else
+{
+if ($V) {print "no command line options set\n";}
+}
+
+$|=1;
+while(<STDIN>) {
+	chomp;
+	last unless length($_);
+	if ($V)
+	{
+		if (/^agi_(\w+)\:\s+(.*)$/)
+		{
+			$AGI{$1} = $2;
+		}
+	}
+
+	if (/^agi_uniqueid\:\s+(.*)$/)		{$unique_id = $1;}
+	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
+	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
+	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
+	if (!$fullCID)	# if no fullCID sent
+		{
+		if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
+		if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
+		if ( $calleridname =~ /\"/)  {$calleridname =~ s/\"//gi;}
+		if ( (!$callerid) or ($callerid =~ /unknown/) )
+			{$callerid = $calleridname;}
+
+		### allow for ANI being sent with the DNIS "*3125551212*9999*"
+		if ($extension =~ /^\*\d\d\d\d\d\d\d\d\d\d\*/)
+			{
+			$callerid = $extension;
+			$callerid =~ s/\*\d\d\d\d\*$//gi;
+			$callerid =~ s/^\*//gi;
+			$extension =~ s/^\*\d\d\d\d\d\d\d\d\d\d\*//gi;
+			$extension =~ s/\*$//gi;
+			}
+		$calleridname = $callerid;
+		}
+}
+
+	if ($V)
+	{
+
+		if ($V) {print STDERR "AGI Environment Dump:\n";}
+		foreach $i (sort keys %AGI) {
+			if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
+		}
+	}
+
+if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|\n";}
+
+
+if ($V) {print STDERR "\nCALL BEING PARKED\n";}
+if ($M) {print STDERR "+++++ CALL PARK START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
+
+use Net::MySQL;
+  
+if (!$DB_port) {$DB_port='3306';}
+
+  my $mysql = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+
+
+
+$stmtA = "UPDATE parked_channels set channel_group='$callerid' where server_ip='$server_ip' and channel='$channel';";
+if ($V) {print STDERR "\n|$stmtA|\n";}
+$mysql->query($stmtA)  or die  "Couldn't execute query:\n";
+
+  $mysql->close;
+
+
+
+
+if ($V) {print STDERR "\nAll Done Exiting:\n";}
+
+exit;

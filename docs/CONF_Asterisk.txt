@@ -1,0 +1,9 @@
+Here is what you need to add to your Asterisk configuration by configuration filename:
+
+Notes:
+- You do NOT have to have MusicOnHold enabled or mpg123 installed to use this
+- it is assumed in the client app code that you need to dial a "9" to get an outside line
+- Parking is really just sending a call to a a Playback file then doing a redirect to an extension
+
+***************************** DEPRICATED ***************************************
+Look at the SCRATCH_INSTALL document for instructions on how to modify Asterisk conf files for astGUIclient operation

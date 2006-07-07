@@ -1,0 +1,309 @@
+#!/usr/bin/perl
+#
+# call_log.agi version 0.6
+# 
+# runs at the beginning and ending of every external call made and received
+# 
+# You need to put lines similar to those below in your extensions.conf file:
+# 
+# ;outbound dialing:
+# exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+# 
+# ;inbound calls:
+# exten => 101,1,AGI(call_log.agi,${EXTEN})
+# 
+# ;all hangups:
+# exten => h,1,DeadAGI(call_log.agi,${EXTEN})
+# 
+#
+# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+# changes
+#
+# 60622-0957 - Altered log for Zap client phones for consistent output
+#
+
+$V = 0;		# set to 1 for verbose mode
+$M = 1;		# set to 1 for 2 line messages mode
+
+### Make sure this file is in a path or put the absolute path to it
+require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+
+
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+if ($V) {print STDERR "Perl Environment Dump:\n";}
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	$i++;
+	}
+	if ($args =~ />| |\"/i)
+		{
+		@CID = split(/-----/, $args);
+		$fullCID=1;
+		$callerid =	$CID[2];
+		$calleridname =	$CID[3];
+		}
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	}
+	else
+	{
+		if ($args =~ /-V/i)
+		{
+		$V=1;
+		}
+		if ($args =~ /-debug/i)
+		{
+		$DG=1;
+		}
+		if ($args =~ /-dbAVS/i)
+		{
+		$DGA=1;
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;
+		$Q=1;
+		}
+		if ($args =~ /-t/i)
+		{
+		$TEST=1;
+		$T=1;
+		}
+	}
+}
+else
+{
+if ($V) {print "no command line options set\n";}
+}
+
+$|=1;
+while(<STDIN>) {
+	chomp;
+	last unless length($_);
+	if ($V)
+	{
+		if (/^agi_(\w+)\:\s+(.*)$/)
+		{
+			$AGI{$1} = $2;
+		}
+	}
+
+	if (/^agi_uniqueid\:\s+(.*)$/)		{$unique_id = $1;}
+	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
+	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
+	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
+	if (!$fullCID)	# if no fullCID sent
+		{
+		if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
+		if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
+		if ( $calleridname =~ /\"/)  {$calleridname =~ s/\"//gi;}
+#	if ( (length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) ) )
+	if ( ( 
+	(length($calleridname)>5) && ( (!$callerid) or ($callerid =~ /unknown|private|00000000/i) or ($callerid =~ /5551212/) )
+	) or ( (length($calleridname)>17) && ($calleridname =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) ) )
+		{$callerid = $calleridname;}
+
+		### allow for ANI being sent with the DNIS "*3125551212*9999*"
+		if ($extension =~ /^\*\d\d\d\d\d\d\d\d\d\d\*/)
+			{
+			$callerid = $extension;
+			$callerid =~ s/\*\d\d\d\d\*$//gi;
+			$callerid =~ s/^\*//gi;
+			$extension =~ s/^\*\d\d\d\d\d\d\d\d\d\d\*//gi;
+			$extension =~ s/\*$//gi;
+			}
+		$calleridname = $callerid;
+		}
+}
+
+	if ($V)
+	{
+
+		if ($V) {print STDERR "AGI Environment Dump:\n";}
+		foreach $i (sort keys %AGI) {
+			if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
+		}
+	}
+
+if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|\n";}
+
+if ( ($extension =~ /h/i) && (length($extension) < 3))  {$stage = 'END';}
+else {$stage = 'START';}
+
+### call start stage
+if ($stage =~ /START/)
+	{
+	use Net::MySQL;
+	  
+	if (!$DB_port) {$DB_port='3306';}
+
+	  my $dbh = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+
+
+	if ($V) {print STDERR "\nCALL STARTED\n";}
+	if ($M) {print STDERR "+++++ CALL LOG START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
+
+	$is_client_phone = 0;
+	if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
+	if ($channel =~ /^IAX2/) {$channel =~ s/\/\d+$//gi;}
+	if ($channel =~ /^Zap\//)
+		{
+		$channel_line = $channel;
+		$channel_line =~ s/^Zap\///gi;
+
+		$dbh->query("SELECT count(*) FROM phones where server_ip='$server_ip' and extension='$channel_line' and protocol='Zap';");
+		if ($dbh->has_selected_record) {
+		$iter=$dbh->create_record_iterator;
+		   while ( $record = $iter->each) {
+		   $is_client_phone = "$record->[0]";
+		   if ($V) {print STDERR "$is_client_phone|$channel_line|\n";}
+		   } 
+		}
+		if ($is_client_phone < 1)
+			{
+			$channel_group = 'Zap Trunk Line';
+			$number_dialed = $callerid;
+			}
+		}
+	### This section breaks the outbound dialed number down(or builds it up) to a 10 digit number and gives it a description
+	if ( ($channel =~ /^SIP|^IAX2/) or ($is_client_phone > 0) )
+		{
+		if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400 
+			{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl UK';}
+		if ( ($extension =~ /^901161/) && (length($extension)==15) )  #test  39 417 2011
+			{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl AUS';}
+		if ( ($extension =~ /^91800|^91888|^91877|^91866/) && (length($extension)==12) )
+			{$extension =~ s/^91//gi;	$channel_group = 'Outbound Local 800';}
+		if ( ($extension =~ /^9/) && (length($extension)==8) )
+			{$extension =~ s/^9/727/gi;	$channel_group = 'Outbound Local';}
+		if ( ($extension =~ /^9/) && (length($extension)==11) )
+			{$extension =~ s/^9//gi;	$channel_group = 'Outbound Local';}
+		if ( ($extension =~ /^91/) && (length($extension)==12) )
+			{$extension =~ s/^91//gi;	$channel_group = 'Outbound Long Distance';}
+		if ($is_client_phone > 0)
+			{$channel_group = 'Zap Client Phone';}
+		
+		$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\///gi;
+
+		$number_dialed = $extension;
+		$extension = $SIP_ext;
+		}
+
+	$stmtA = "INSERT INTO call_log (uniqueid,channel,channel_group,type,server_ip,extension,number_dialed,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,caller_code) values('$unique_id','$channel','$channel_group','$type','$server_ip','$extension','$number_dialed','$now_date','$now_date_epoch','','','','','$calleridname')";
+
+	if ($V) {print STDERR "\n|$stmtA|\n";}
+	$dbh->query($stmtA)  or die  "Couldn't execute query:\n";
+
+	  $dbh->close;
+	}
+
+
+### call end stage
+else		 
+	{
+
+	if ($V) {print STDERR "\nCALL HUNG UP\n";}
+
+	use Net::MySQL;
+	  
+	if (!$DB_port) {$DB_port='3306';}
+
+	  my $dbh = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+
+
+	if ($V) {print STDERR "\nCONNECTED\n";}
+
+
+
+	   $dbh->query("SELECT uniqueid,start_epoch FROM call_log where uniqueid='$unique_id'");
+	   if ($dbh->has_selected_record) {
+	   $iter=$dbh->create_record_iterator;
+	     $rec_count=0;
+		   while ( $record = $iter->each) {
+		   if ($V) {print STDERR $record->[0],"|", $record->[1],"\n";}
+		   $start_time = "$record->[1]";
+		   $rec_count++;
+		   } 
+	   }
+
+	if ($rec_count)
+		{
+		$length_in_sec = ($now_date_epoch - $start_time);
+		$length_in_min = ($length_in_sec / 60);
+		$length_in_min = sprintf("%8.2f", $length_in_min);
+
+		if ($V) {print STDERR "\nQUERY done: start time = $start_time | sec: $length_in_sec | min: $length_in_min |\n";}
+
+		$stmtA = "UPDATE call_log set end_time='$now_date',end_epoch='$now_date_epoch',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where uniqueid='$unique_id'";
+
+		if ($V) {print STDERR "\n|$stmtA|\n";}
+		$dbh->query($stmtA)  or die  "Couldn't execute query:\n";
+		}
+
+	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$server_ip'";
+	$dbh->query($stmtA);
+#	$dbh->query($stmtA)  or die  "NO LIVE_INBOUND_ENTRY:\n";
+
+##### BEGIN Park Log entry check and update #####
+	   $dbh->query("SELECT UNIX_TIMESTAMP(parked_time),UNIX_TIMESTAMP(grab_time) FROM park_log where uniqueid='$unique_id' and server_ip='$server_ip' LIMIT 1");
+	     $rec_count=0;
+	   if ($dbh->has_selected_record) {
+	   $iter=$dbh->create_record_iterator;
+	     $rec_count=0;
+		   while ( $record = $iter->each) {
+		   if ($V) {print STDERR $record->[0],"|", $record->[1],"\n";}
+		   $parked_time = "$record->[0]";
+		   $grab_time = "$record->[1]";
+		   $rec_count++;
+		   } 
+	   }
+
+	  if ($rec_count)
+	  {
+	  print STDERR "*****Entry found for $unique_id-$server_ip in park_log: $parked_time|$grab_time\n";
+	     if ($parked_time > $grab_time)
+	     {
+		$parked_sec=($now_date_epoch - $parked_time);
+		$talked_sec=0;
+	     }
+	     else
+	     {
+		$talked_sec=($now_date_epoch - $parked_time);
+		$parked_sec=($grab_time - $parked_time);
+	     }
+
+		$stmtA = "UPDATE park_log set status='HUNGUP',hangup_time='$now_date',parked_sec='$parked_sec',talked_sec='$talked_sec' where uniqueid='$unique_id' and server_ip='$server_ip'";
+		$dbh->query($stmtA)  or die  "NO PARK_LOG_ENTRY:\n";
+	   }
+#	   else {print STDERR "*****No entry found for $unique_id-$server_ip in park_log\n";}
+##### END Park Log entry check and update #####
+
+	  $dbh->close;
+
+	if ($M) {print STDERR "+++++ CALL LOG HUNGUP: |$unique_id|$channel|$extension|$now_date|min: $length_in_min|\n";}
+	}
+if ($V) {print STDERR "\nAll Done Exiting:\n";}
+
+exit;

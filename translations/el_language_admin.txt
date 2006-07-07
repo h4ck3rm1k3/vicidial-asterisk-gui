@@ -1,0 +1,1066 @@
+﻿# el_language_admin.txt - this file is for the internationalization of the astGUIclient 
+# admin web pages. The associated install.pl file will take the language as an 
+# argument and alter the php scripts to the language typed in the command line:
+# example: ./install.pl --language=el
+# current languages in the file:
+# - English - (en) no alterations
+# - Greek - (el) second column
+***LANGUAGES***
+en-English|el-Ελληνικά|
+***FILES***
+astguiclient|admin.php|0
+astguiclient|remote_inbound.php|0
+astguiclient|phone_stats.php|0
+astguiclient|inbound_popup.php|0
+astguiclient|AST_inboundEXTstats.php|0
+astguiclient|dbconnect.php|1
+vicidial|admin.php|0
+vicidial|dbconnect.php|1
+vicidial|AST_VICIDIAL_hopperlist.php|0
+vicidial|AST_agent_time_sheet.php|0
+vicidial|user_status.php|0
+vicidial|server_stats.php|0
+vicidial|AST_VDADstats.php|0
+vicidial|AST_timeonVDAD.php|0
+vicidial|AST_timeonVDAD_closer.php|0
+vicidial|AST_timeonVDADall.php|0
+vicidial|listloader.php|0
+vicidial|listloaderMAIN.php|0
+vicidial|new_listloader_superL.php|0
+vicidial|count.htm|1
+vicidial|help.gif|1
+astguiclient|help.gif|1
+vicidial|user_stats.php|0
+vicidial|remote_dispo.php|0
+vicidial|group_hourly_stats.php|0
+vicidial|admin_search_lead.php|0
+vicidial|admin_modify_lead.php|0
+vicidial|AST_CLOSERstats.php|0
+vicidial|vdremote.php|0
+vicidial|AST_agent_performance_detail.php|0
+vicidial|AST_agent_performance.php|0
+vicidial|AST_server_performance.php|0
+vicidial|AST_admin_log_display.php|0
+***TRANSLATIONS***||||
+### special translations that should stay at the top of the file ###
+BORDER|Border|
+VALUE=SUBMIT|VALUE=SUBMIT|
+TYPE=SUBMIT|TYPE=Submit|
+\.\/images\/|../agc/images/|
+help.gif|help.gif|
+### BEGIN translation phrases through 1.1.11 release ###
+English|Αγγλικά|
+Spanish|Ισπανικά|
+French|Γαλλικά|
+German|Γερμανικά|
+Italian|Ιταλικά|
+You have now logged out. Thank you|Έχετε αποσυνδεθεί. Σας ευχαριστούμε|
+Invalid Username\/Password|Ακυρο Ονομα Χρήστη/Κωδικός Πρόσβασης|
+ASTERISK ADMIN: Administration|ΣΥΣΤΗΜΑ ΚΛΗΣΕΩΝ: Διαχείριση|
+PHONES TABLE|ΠΙΝΑΚΑΣ ΤΗΛΕΦΩΝΩΝ|
+Phone extension -<\/B> This field is where you put the phones name as it appears to Asterisk not including the protocol or slash at the beginning. For Example: for the SIP phone SIP\/test101 the Phone extension would be test101. Also, for IAX2 phones make sure you use the full phones name: IAX2\/IAXphone1@IAXphone1 would be IAXphone1@IAXphone1. For Zap phones make sure you put the full channel: Zap\/25-1 would be 25-1.  Another note, make sure you set the Protocol below correctly for your type of phone.|Εσωτ.Σύνδεση Τηλεφώνου -</B> Αυτό το πεδίο είναι για την καταχώρηση του ονόματος του τηλεφώνου, όπως αυτό εμφανίζεται στο Asterisk, χωρίς να συμπεριλαμβάνει το πρωτόκολλο ή slash στην αρχή. Για παράδειγμα: για SIP τηλέφωνο SIPVtest101 η Εσω.Γραμμή Τηλεφώνου θα είναι test101. Επίσης, για IAX2 τηλέφωνα χρησιμοποιείστε τα πλήρης ονόματα: IAX2/IAXphone1@IAXphone1 θα είναι IAXphone1@IAXphone1. Για Zap τηλέφωνα καταχωρήστε το πλήρες κανάλι: Zap/25-1 θα είναι 25-1. Αλλη σημείωση, ορίστε το πρωτόκολλο παρακάτω σωστά για τον τύπο του τηλεφώνου.|
+Dialplan number -<\/B> This field is for the number you dial to have the phone ring. This number is defined in the extensions.conf file of your Asterisk server|Αριθμός Σχεδίου Κλήσεων -</B> Αυτό το πεδίο είναι για τον αριθμό που καλείται για να κουδουνίζει το τηλέφωνο. Αυτός ο αριθμός ορίζεται στο αρχείο extensions.conf του διακομιστή Asterisk|
+Voicemail Box -<\/B> This field is for the voicemail box that the messages go to for the user of this phone. We use this to check for voicemail messages and for the user to be able to use the VOICEMAIL button on astGUIclient app|Περιεχόμενο Φωνητικού Ταχυδρομείου -</B> Αυτό το πεδίο είναι για το περιεχόμενο του φωνητικού ταχυδρομείου, όπου πηγαίνουν τα μηνύματα του τηλεφώνου του χρήστη. Το χρησιμοποιούμαι για να  ελέγξουμε τα φωνητικά μηνύματα και για να μπορεί ο χρήστης να χρησιμοποιήσει το πλήκτρο VOICEMAIL|
+Outbound CallerID -<\/B> This field is where you would enter the callerID number that you would like to appear on outbound calls placed form the astguiclient web-client. This does not work on RBS, non-PRI, T1\/E1s|CallerID Εξερχομένων -</B> Αυτό το πεδίο είναι για την καταχώριση του αριθμού  callerID που θα θέλατε να εμφανίζεται στις εξερχόμενες κλήσεις|
+Phone IP address -<\/B> This field is for the phone's IP address if it is a VOIP phone. This is an optional field|Δνση IP Τηλεφώνου -</B> Αυτό το πεδίο είναι για την δνση IP του τηλέφωνου εάν είναι ένα VOIP τηλέφωνο. Αυτό είναι ένα προαιρετικό πεδίο|
+Computer IP address -<\/B> This field is for the user's computer IP address. This is an optional field|Δνση IP Υπολογιστού -</B> Αυτό το πεδίο είναι για την δνση IP του υπολογιστή του χρήστη. Αυτό είναι ένα προαιρετικό πεδίο|
+Server IP -<\/B> This menu is where you select which server the phone is active on|IP Διακομιστή -</B> Αυτός ο κατάλογος επιλογών είναι που επιλέγετε σε ποιον διακομιστή το τηλέφωνο είναι ενεργό|
+Login -<\/B> The login used for the phone user to get to admin functions|Σύνδεση -</B> Η σύνδεση χρησιμοποιείται για τον χρήστη τηλεφώνου για την πρόσβαση στις λειτουργίες διαχείρισης|
+Password -<\/B> The password used for the phone user to get to admin functions|Κωδκός -</B> Ο κωδικός χρησιμοποιείται για τον χρήστη τηλεφώνου για την πρόσβαση στις λειτουργίες διαχείρισης|
+Status -<\/B> The status of the phone in the system, ACTIVE and ADMIN allow for GUI clients to work. ADMIN allows access to this administrative web site. All other statuses do not allow GUI or Admin web access|Κατάσταση -</B> Η κατάσταση του τηλεφώνου στο σύστημα, ΕΝΕΡΓΗ και ΔΙΑΧ επιτρέπουν στους GUI πελάτες να δουλέψουν. Η ΔΙΑΧ επιτρέπει την πρόσβαση στην ιστοσελίδα διαχείρισης|
+Active Account -<\/B> Whether the phone is active to put it in the list in the GUI client|Ενεργός Λογαριασμός -</B> Κατά πόσο το τηλέφωνο είναι ενεργό για να τοποθετηθεί στην λίστα στο GUI|
+Phone Type -<\/B> Purely for administrative notes|Τύπος Τηλεφώνου -</B> Απλά για σημειώσεις διαχείρισης|
+Full Name -<\/B> Used by the GUIclient in the list of active phones|Πλήρες Ονομα -</B> Χρησιμοποιείται από τον χρήστη GUI στην λίστα ενεργών τηλεφώνων|
+Company -<\/B> Purely for administrative notes|Εταιρία -</B> Απλά για σημειώσεις διαχείρισης|
+Picture -<\/B> Not yet Implemented|Εικόνα -</B> Δεν έχει υλοποιηθεί ακόμα|
+New Messages -<\/B> Number of new voicemail messages for this phone on the Asterisk server|Νέα Μηνύματα -</B> Αριθμός νέων φωνητικών μηνυμάτων για αυτό το τηλέφωνο στον διακομιστή Asterisk|
+Old Messages -<\/B> Number of old voicemail messages for this phone on the Asterisk server|Παλαιά Μηνύματα -</B> Αριθμός παλαιών φωνητικών μηνυμάτων για αυτό το τηλέφωνο στον διακομιστή Asterisk|
+Client Protocol -<\/B> The protocol that the phone uses to connect to the Asterisk server: SIP, IAX2, Zap . Also, there is EXTERNAL for remote dial numbers or speed dial numbers that you want to list as phones|Πρωτόκολλο Πελάτη -</B> Το πρωτόκολλο που χρησιμοποιεί το τηλέφωνο για συνδεθεί στον διακομιστή Asterisk: SIP, IAX2, Zap|
+Local GMT -<\/B> The difference from Greenwich Mean time, or ZULU time where the phone is located. DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. This is used by the VICIDIAL campaign to accurately display the time and customer time|οπική GMT -</B> Η διαφορά από την GMT όπου το τηλέφωνο βρίσκεται. Μην το ρυθμίσετε για DAYLIGHT SAVINGS ΩΡΑ. Αυτή χρησιμοποιείται από την VICIDIAL εκστρατεία για την επακριβή εμφάνιση της ώρας|
+Manager Login -<\/B> This is the login that the GUI clients for this phone will use to access the Database where the server data resides|Σύνδεση Διαχειριστή -</B> Αυτή είναι η σύνδεση που χρησιμοποιούν οι GUI χρήστες του τηλεφώνου, για πρόσβαση στην Βάση Δεδομένων όπου ο διακομιστής δεδομένων βρίσκεται|
+Manager Secret -<\/B> This is the password that the GUI clients for this phone will use to access the Database where the server data resides|Μυστικό Διαχειριστή -</B> Αυτός είναι ο κωδικός που χρησιμοποιούν οι GUI χρήστες του τηλεφώνου, για πρόσβαση στην Βάση Δεδομένων όπου ο διακομιστής δεδομένων βρίσκεται|
+VICIDIAL Default User -<\/B> This is to place a default value in the VICIDIAL user field whenever this phone user opens the astVICIDIAL client app. Leave blank for no user|Προκαθορισμένος VICIDIAL Χρήστης -</B> Εδώ ορίζεται μία προκαθορισμένη τιμή χρήστη, οπουδήποτε αυτός ο χρήστης τηλεφώνου ανοίξει την εφαρμογή VICIDIAL. Αφήστε κενό για κανένα χρήστη|
+VICIDIAL Default Pass -<\/B> This is to place a default value in the VICIDIAL password field whenever this phone user opens the astVICIDIAL client app. Leave blank for no pass|Προκαθορισμένος VICIDIAL Κωδικός -</B> Εδώ ορίζεται μία προκαθορισμένη τιμή κωδικού, οπουδήποτε αυτός ο χρήστης τηλεφώνου ανοίξει την εφαρμογή VICIDIAL. Αφήστε κενό για κανένα κωδικό|
+VICIDIAL Default Campaign -<\/B> This is to place a default value in the VICIDIAL campaign field whenever this phone user opens the astVICIDIAL client app. Leave blank for no campaign|VICIDIAL Προκαθορισμένη Εκστρατεία -</B> Εδώ ορίζεται μα προκαθορισμένη τιμή εκστρατείας, οπουδήποτε αυτός ο χρήστης τηλεφώνου ανοίξει την εφαρμογή VICIDIAL. Αφήστε κενό για καμία εκστρατεία|
+Park Exten -<\/B> This is the default Parking extension for the client apps. Verify that a different one works before you change this|Εσ.Σύνδ. Στάθμευσης -</B> Αυτή είναι η προκαθορισμένη εσωτ.σύνδεση Στάθμευσης για τις εφαρμογές του χρήστη|
+Conf Exten -<\/B> This is the default Conference park extension for the client apps. Verify that a different one works before you change this|Εσ.Σύνδ. Συνδιάλεξης -</B> Αυτή είναι η προκαθορισμένη εσωτ.σύνδεση Συνδιάλεξης για τις εφαρμογές του χρήστη|
+VICIDIAL Park Exten -<\/B> This is the default Parking extension for VICIDIAL client app. Verify that a different one works before you change this|Εσωτ.Σύνδεση Στάθμευσης VICIDIAL -</B> Η προκαθορισμένη εσωτ.σύνδεση στάθμευσης. Εξακριβώστε ότι κάποια διαφορετική δουλεύει πριν την αλλάξετε|
+VICIDIAL Park File -<\/B> This is the default VICIDIAL park extension file name for the client apps. Verify that a different one works before you change this. limited to 10 characters| Αρχείο Στάθμευσης VICIDIAL -</B> Το προκαθορισμένο αρχείο στάθμευσης. Μέχρι 10 χαρακτήρες|
+Monitor Prefix -<\/B> This is the dialplan prefix for monitoring of Zap channels automatically within the astGUIclient app. Only change according to the extensions.conf ZapBarge extensions records|Πρόθεμα παρακολούθησης -</B> Αυτό είναι το πρόθεμα παρακολούθησης των καναλιών ZAP|
+Recording Exten -<\/B> This is the dialplan extension for the recording extension that is used to drop into meetme conferences to record them. It usually lasts upto one hour if not stopped. verify with extensions.conf file before changing|Εσωτ.Σύνδεση Ηχογράφησης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων για την εσωτ.σύνδεση ηχογράφησης που χρησιμοποιείται για μεταφορά στις συνδιαλέξεις, ώστε να ηχογραφηθούν.Extensions.conf |
+VMAIL Main Exten -<\/B> This is the dialplan extension going to check your voicemail. verify with extensions.conf file before changing|Βασική Εσωτ.Σύνδεση VMAIL -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων που ελέγχει την θυρίδα ηχητικών μηνυμάτων|
+VMAIL Dump Exten -<\/B> This is the dialplan prefix used to send calls directly to a user's voicemail from a live call in the astGUIclient app. verify with extensions.conf file before changing|Εσωτ.Σύνδεση απόρριψης VMAIL -</B> Αυτο είναι το πρόθεμα του πλάνου κλήσεων που χρησιμοποιείται στο να στέλνει κλήσεις κατευθείαν στη θυρίδα του χρήστη από μία κλήση|
+Exten Context -<\/B> This is the dialplan context that this phone primarily uses. It is assumed that all numbers dialed by the client apps are using this context so it is a good idea to make sure this is the most wide context possible. verify with extensions.conf file before changing|Περιεχόμενο Εσωτ.Σύνδεσης -</B> Αυτό είναι το περιεχόμενο του πλάνου κλήσεων όπου το τηλέφωνο χρησιμοποιεί|
+DTMF send Channel -<\/B> This is the channel string used to send DTMF sounds into meetme conferences from the client apps. Verify the exten and context with the extensions.conf file|Κανάλι αποστολής DTMF -</B> Αυτό είναι το κανάλι του χρησιμοποιείται για την αποστολή DTMF ήχων στις συνδιαλέξεις|
+Outbound Call Group -<\/B> This is the channel group that outbound calls from this phone are placed out of. There are a couple routines in the client apps that use this. For Zap channels you want to use something like Zap\/g2 , for IAX2 trunks you would want to use the full IAX prefix like IAX2\/VICItest1:secret@10.10.10.15:4569. Verify the trunks with the extensions.conf file, it is usually what you have defined as the TRUNK global variable at the top of the file|Εξερχόμεη ομάδα κλήσης -</B> αυτή είναι η ομάδα καναλιού όπου οι εξερχόμενες κλήσεις από αυτό το τηλέφωνο τοποθετούνται. Υπάρχουν ρουτίνες που την χρησιμοποιούν. Για τα κανάλια Zap θέλετε να χρησιμοποιήσετε κάτι σαν Zap/g2, για IAX2 trunks θα θέλετε να χρησιμοποιήσετε το πλήρες πρόθεμα IAX όπως IAX2/VICItest1:secret@10.10.10.15:4569. Ελέγξτε τα trunks με το αρχείο extensions.conf|
+Browser Location -<\/B> This is applicable to only UNIX\/LINUX clients, the absolute path to Mozilla or Firefox browser on the machine. verify this by launching it manually|Περιοχή Ιστο-Πλοηγού -</B> Αυτό χρειάζεται μόνο σε Linux συστήματα|
+Install Directory -<\/B> This is the place where the astGUIclient and astVICIDIAL scripts are located on your machine. For Win32 it should be something like C:\\AST_VICI and for UNIX it should be something like \/usr\/local\/perl_TK. verify this manually|Κατάλογος Εγκατάστασης -</B> |Αυτό είναι το μέρος που πρέπει υπάρχουν τα προγράμματα astGUIclient και astVICIDIAL
+CallerID URL -<\/B> This is the web address of the page used to do custom callerID lookups. default testing address is: http:\/\/astguiclient.sf.net\/test_callerid_output.php|CallerID URL -</B> Αυτή είναι η Δνση της ιστοσελίδας που χρησιμοποιείται για αναζήτηση με callerID|
+VICIDIAL Default URL -<\/B> This is the web address of the page used to do custom VICIDIAL Web Form queries. default testing address is: http:\/\/astguiclient.sf.net\/test_VICIDIAL_output.php|Προκαθορισμένο VICIDIAL URL -</B>  Αυτή είναι η δνση ιστοσελίδας που χρησιμοποιείται για προσαρμοσμένα VICIDIAL ερωτήματα ιστοσελίδας|
+Call Logging -<\/B> This is set to true if the call_log.agi file is in place in the extensions.conf file for all outbound and hangup 'h' extensions to log all calls. This should always be 1 because it is manditory for many astGUIclient and VICIDIAL features to work properly|Καταγραφή Γεγονότων Κλήσης -</B> Αυτό τοποθετείται σε αληθές εάν  το αρχείο call_log.agi βρίσκεται στο αρχείο extensions.conf για τις εξερχόμενες κλήσεις και για τις εσωτ.συνδέσεις  'h'  που κλείνουν. Αυτό πρέπει πάντα να είναι 1 για να δουλεύουν σωστά πολλά χαρακτηριστικά των εφαρμογών|
+User Switching -<\/B> Set to true to allow user to switch to another user account. NOTE: If user switches they can initiate recording on the new user's phone conversation|Μεταγωγή Χρήστη -</B> Εάν το θέσετε σε αληθές θα επιτρέπετε στους χρήστες να μεταβούν σε άλλον λογαριασμό χρήστη|
+Conferencing -<\/B> Set to true to allow user to start conference calls with upto six external lines|Σε συνδιάλεξη -</B> Εάν το θέσετε σε αληθές θα επιτρέπετε στους χρήστες να ξεκινούν συνδιαλέξεις μέχρι 6 εξωτερικές γραμμές|
+Admin Hangup -<\/B> Set to true to allow user to be able to hangup any line at will through astGUIclient. Good idea only to enable this for Admin users|Διαχειριστού Κλείσιμο-</B> Εάν το θέσετε σε αληθές θα επιτρέπετε στους χρήστες να κλείνουν κάθε γραμμή|
+Admin Hijack -<\/B> Set to true to allow user to be able to grab and redirect to their extension any line at will through astGUIclient. Good idea only to enable this for Admin users. But is very useful for Managers|Διαχειριστού Κλέψιμο -</B> Εάν το θέσετε σε αληθές θα επιτρέπετε στους χρήστες να λαμβάνουν και να ανακατευθύνουν στην εσωτ.σύνδεσή τους οποιαδήποτε γραμμή|
+Admin Monitor -<\/B> Set to true to allow user to be able to grab and redirect to their extension any line at will through astGUIclient. Good idea only to enable this for Admin users. But is very useful for Managers and as a training tool|Διαχειριστού Παρακολούθηση -</B> Εάν το θέσετε σε αληθές θα επιτρέπετε στους χρήστες να λαμβάνουν και να ανακατευθύνουν στην εσωτ.σύνδεσή τους οποιαδήποτε γραμμή|
+Call Park -<\/B> Set to true to allow user to be able to park calls on astGUIclient hold to be picked up by any other astGUIclient user on the system. Calls stay on hold for upto a half hour then hangup. Usually enabled for all|Στάθμευση Κλήσης -</B> Εάν το θέσετε σε αληθές θα επιτρέπετε σε χρήστες να σταθμεύουν κλήσεις και κλήσεις σε αναμονή να διαχειρίζονται από οποιοδήποτε άλλο χρήστη. Οι κλήσεις μένουν σε αναμονή για 30 δευτερόλεπτα και μετά κλείνουν.  Συνήθως ενεργοποιημένη για όλους|
+Updater Check -<\/B> Set to true to display a popup warning that the updater time has not changed in 20 seconds. Useful for Admin users|Ενεργοποιημένη Ουρά -</B> Εάν το θέσετε σε αληθές θα εμφανίζεται ένα παράθυρο ειδοποίησης, ότι η ώρα ενημέρωσης δεν έχει αλλάξει σε 20 δευτερόλεπτα|
+AF Logging -<\/B> Set to true to log many actions of astGUIclient usage to a text file on the user's computer|AF Καταγραφή Γεγονότος -</B> Εάν το θέσετε σε αληθές θα καταγράφονται οι ενέργειες χρήσης του astGUIclient σε ένα αρχείο στον υπολογιστή του χρήστη|
+Queue Enabled -<\/B> Set to true to have client apps use the Asterisk Central Queue system. Required for VICIDIAL and recommended for all users|Ενεργοποιημένη Ουρά -</B> Εάν το θέσετε σε αληθές οι εφαρμογές θα χρησιμοποιούν το ACQS|
+CallerID Popup -<\/B> Set to true to allow for numbers defined in the extensions.conf file to send CallerID popup screens to astGUIclient users|Υπερεμφανιζόμενο παραθύρο CallerID -</B> Εάν το θέσετε σε αληθές θα επιτρέψετε σε αριθμούς ορισμένους στο αρχείο extensions.conf, να στέλνουν οθόνες με CallerID στους astGUIclient χρήστες|
+VMail Button -<\/B> Set to true to display the VOICEMAIL button and the messages count display on astGUIclient|VMail Πλήκτρο -</B> Εάν το θέσετε σε αληθές θα εμφανιστεί το πλήκτρο VOICEMAIL και τα μηνύματα μπορούν να εμφανίζονται στο astGUIclient|
+Fast Refresh -<\/B> Set to true to enable a new rate of refresh of call information for the astGUIclient. Default disabled rate is 1000 ms ,1 second. Can increase system load if you lower this number|Ταχύτητα Ανανέωσης -</B> Εάν το θέσετε σε αληθές ενεργοποιείται ένα νέο ρυθμό ανανέωσης πληροφοριών κλήσης για το astGUIclient. Προκαθορισμένος απενεργοποιημένος ρυθμός είναι 1000 ms (1 δευτερόλεπτο)|
+Fast Refresh Rate -<\/B> in milliseconds. Only used if Fast Refresh is enabled. Default disabled rate is 1000 ms ,1 second. Can increase system load if you lower this number|Ρυθμός Ανανέωσης Ταχύτητας -</B> σε χιλιοστά δευτερολέπτου. Χρημοποιείται μόνο εάν η Ταχύτητα Ανανέωσης είναι ενεργοποιημένη. Προκαθορισμένος απενεργοποιημένος ρυθμός είναι 1000 ms (1 δευτερόλεπτο)|
+Persistant MySQL -<\/B> If enabled the astGUIclient connection will remain connected instead of connecting every second. Useful if you have a fast refresh rate set. It will increase the number of connections on your MySQL machine|Συνεχής MySQL -</B> Εάν είναι ενεργοποιημένο, το astGUIclient θα παραμένει συνδεμένο αντί να συνδέεται κάθε δευτερόλεπτο|
+Auto Dial Next Number -<\/B> If enabled the VICIDIAL client will dial the next number on the list automatically upon disposition of a call unless they selected to "Stop Dialing" on the disposition screen|Αυτόματη Κλήση Επόμενου Αριθμού -</B> Εάν είναι ενεργοποιημένο, μετά από τον τερματισμό θα γίνει κλήση του επόμενου αριθμού, εκτός εάν επιλέξουμε "Μη κάνεις κλήσεις"|
+Stop Rec after each call -<\/B> If enabled the VICIDIAL client will stop whatever recording is going on after each call has been dispositioned. Useful if you are doing a lot of recording or you are using a web form to trigger recording|Σταμάτα την ηχογράφηση μετά από κάθε κλήση -</B> Εάν είναι ενεργοποιημένο η ηχογράφηση θα σταματήσει μετά τον τερματισμό|
+DBX Server -<\/B> The MySQL database server that this user should be connecting to|DBΧ Διακομιστής -</B> Ο διακομιστής της Βάσης Δεδομένων MySQL που ο χρήστης θα συνδεθεί|
+DBX Database -<\/B> The MySQL database that this user should be connecting to. Default is asterisk|DBΧ Βάση Δεδομένων -</B> Η βάση δεδομένων MySQL στην οποία ο χρήστης θα συνδεθεί. Η προκαθορισμένη είναι asterisk|
+DBX User -<\/B> The MySQL user login that this user should be using when connecting. Default is cron|DBΧ Χρήστης -</B> Ο χρήστης MySQL για την σύνδεση. Ο προκαθορισμένος είναι cron|
+DBX Pass -<\/B> The MySQL user password that this user should be using when connecting. Default is 1234|DBΧ Κωδικός -</B> Ο κωδικός χρήστη MySQL που ο χρήστης χρησιμοποιεί όταν συνδέεται. Ο προκαθορισμένος είναι 1234|
+DBX Port -<\/B> The MySQL TCP port that this user should be using when connecting. Default is 3306|DBΧ Πόρτα -</B> Η MySQL TCP πόρτα που ο χρήστης χρησιμοποιεί όταν συνδέεται. Η προκαθορισμένη είναι 3306|
+DBY Server -<\/B> The MySQL database server that this user should be connecting to|DBY Διακομιστής -</B> Ο διακομιστής της Βάσης Δεδομένων MySQL που ο χρήστης θα συνδεθεί|
+DBY Database -<\/B> The MySQL database that this user should be connecting to. Default is asterisk|DBY Βάση Δεδομένων -</B> Η βάση δεδομένων MySQL στην οποία ο χρήστης θα συνδεθεί. Η προκαθορισμένη είναι asterisk|
+DBY User -<\/B> The MySQL user login that this user should be using when connecting. Default is cron|DBY Χρήστης -</B> Ο χρήστης MySQL για την σύνδεση. Ο προκαθορισμένος είναι cron|
+DBY Pass -<\/B> The MySQL user password that this user should be using when connecting. Default is 1234|DBY Κωδικός -</B> Ο κωδικός χρήστη MySQL που ο χρήστης χρησιμοποιεί όταν συνδέεται. Ο προκαθορισμένος είναι 1234|
+DBY Port -<\/B> The MySQL TCP port that this user should be using when connecting. Default is 3306|DBY Πόρτα -</B> Η MySQL TCP πόρτα που ο χρήστης χρησιμοποιεί όταν συνδέεται. Η προκαθορισμένη είναι 3306|
+Redirect command sent for channel|Η εντολή ανακατεύθυνσης στάλθηκε για το κανάλι|
+Look up this customer in Customer Service System|Αναζήτηση του Πελάτη στο Σύστημα Εξυπηρέτησης Πελατών|
+Redirect command FAILED for channel|Η εντολή ανακατεύθυνσης ΑΠΕΤΥΧΕ για το κανάλι|
+PLEASE SELECT A NUMBER AND DATE ABOVE AND CLICK SUBMIT|ΠΑΡΑΚΑΛΩ ΕΠΙΛΕΞΤΕ ΕΝΑΝ ΑΡΙΘΜΟ ΚΑΙ ΗΜΕΡΟΜΗΝΙΑ ΑΝΩΤΕΡΩ, ΚΑΙ ΠΑΤΗΣΤΕ ΕΠΙΒΕΒΑΙΩΣΗ|
+Total Calls That came into this number|Συνολικές κλήσεις που ήρθαν σε αυτό τον αριθμό|
+Average Call Length(seconds) for all Calls|μέσος όρος κλήσεων(σε δευτερόλεπτα) για όλες τις κλήσεις|
+Total DROP Calls:   (less than 10 seconds)|Συνολικά ΕΓΚΑΤΑΛΕΙΜΕΝΕΣ Κλήσεις: (μικρότερες από 10 δευτερόλεπτα)|
+Average Call Length(seconds) for DROP Calls|Μέσος όρος κλήσεων(σε δευτερόλεπτα) για ΕΓΚΑΤΑΛΕΙΜΕΝΕΣ κλήσεις|
+GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS|ΓΡΑΦΙΚΗ ΠΑΡΑΣΤΑΣΗ ΜΕ 15ΛΕΠΤΕΣ ΑΥΞΗΣΕΙΣ ΤΩΝ ΣΥΝΟΛΙΚΩΝ ΚΛΗΣΕΩΝ|
+Click on the channel below that you would like to have directed to your phone|Πατήστε στο κανάλι παρακάτω, που θα επιθυμούσατε να έχετε κατευθύνει στο τηλέφωνό σας|
+LAST 1000 CALLS FOR DATE RANGE|ΤΕΛΕΥΤΑΙΕΣ 1000 ΚΛΗΣΕΙΣ ΓΙΑ ΤΟ ΔΙΑΣΤΗΜΑ ΗΜΕΡΟΜΗΝΙΑΣ|
+Click here to see what leads are in the hopper right now|Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα|
+CUSTOM STATUSES WITHIN THIS CAMPAIGN|ΠΡΟΣΑΡΜΟΣΜΕΝΕΣ ΚΑΤΑΣΤΑΣΕΙΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+PLEASE SELECT A CAMPAIGN ABOVE AND CLICK SUBMIT|ΠΑΡΑΚΑΛΩ ΕΠΙΛΕΞΤΕ ΜΙΑ ΕΚΣΤΡΑΤΕΙΑ ΑΝΩΤΕΡΩ ΚΑΙ ΠΑΤΗΣΤΕ ΕΠΙΒΕΒΑΙΩΣΗ|
+PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT|ΠΑΡΑΚΑΛΩ ΕΠΙΛΕΞΤΕ ΜΙΑ ΕΚΣΤΡΑΤΕΙΑ ΚΑΙ ΜΙΑ ΗΜΕΡΟΜΗΝΙΑ ΑΝΩΤΕΡΩ, ΚΑΙ ΠΑΤΗΣΤΕ ΕΠΙΒΕΒΑΙΩΣΗ|
+GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS PLACED FROM THIS CAMPAIGN|ΓΡΑΦΙΚΗ ΠΑΡΑΣΤΑΣΗ ΜΕ 15ΛΕΠΤΕΣ ΑΥΞΗΣΕΙΣ ΤΩΝ ΣΥΝΟΛΙΚΩΝ ΚΛΗΣΕΩΝ ΠΟΥ ΤΟΠΟΘΕΤΟΥΝΤΑΙ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+ERROR: The file does not have the required number of fields to process it|Λάθος: Το αρχείο δεν έχει τον απαιτούμενο αριθμό πεδίων|
+ERROR: File exceeds the 8MB limit|Λάθος: Το αρχείο ξεπέρασε το όριο των 8ΜΒ|
+Please enter the group you want to get hourly stats for|Παρακαλώ, καταχωρήστε την ομάδα για την οποία θέλετε στατιστικά ανά ώρα|
+The search variables you entered are not active in the system|Οι μεταβλητές αναζήτησης που καταχωρήσατε δεν είναι ενεργές στο σύστημα|
+Please go back and double check the information you entered and submit again|Παρακαλώ, επιστρέψτε πίσω και ελέγξτε τις πληροφορίες που καταχωρήσατε και προσπαθήστε πάλι|
+Click here to see the Lead Details|Πατήστε εδώ για να δείτε τις λεπτομέρειες του οδηγού|
+SERVERS TABLE|ΠΙΝΑΚΑΣ ΔΙΑΚΟΜΙΣΤΩΝ|
+Server ID -<\/B> This field is where you put the Asterisk servers name, doesnt have to be an official domain sub, just a nickname to identify the server to Admin users|ID Διακομιστή -</B> Σε αυτό το πεδίο ορίζεται το όνομα του διακομιστή Asterisk, είναι μόνο μία επωνυμία ώστε να αναγνωρίζεται από τους διαχειριστές|
+Server Description -<\/B> The field where you use a small phrase to describe the Asterisk server|Περιγραφή Διακομιστή -</B> Το πεδίο στο οποίο περιγράφεται με μία φράση τον διακομιστή Asterisk|
+Server IP Address -<\/B> The field where you put the Network IP address of the Asterisk server|Δνση IP Διακομιστή -</B> Το πεδίο που ορίζεται η δνση IP του δικτύου του διακομιστή Asterisk|
+Active -<\/B> Set whether the Asterisk server is active or inactive|Ενεργός -</B> Ορίζει κατά πόσον ο διακομιστής Asterisk είναι ενεργός ή μη ενεργός|
+Asterisk Version -<\/B> Set the version of Asterisk that you have installed on this server. Examples: '1.2', '1.0.8', '1.0.7', 'CVS_HEAD', 'REALLY OLD', etc... This is used because versions 1.0.8 and 1.0.9 have a different method of dealing with Local\/ channels, a bug that has been fixed in CVS v1.0, and need to be treated differently when handling their Local\/ channels. Also, current CVS_HEAD and the 1.2 release tree uses different manager and command output so it must be treated differently as well|Εκδοση Asterisk|
+Max VICIDIAL Trunks -<\/B> This field will determine the maximum number of lines that the VICIDIAL auto-dialer will attempt to call on this server. If you want to dedicate two full PRI T1s to VICIDIALing on a server then you would set this to 46. Default is 96|Μέγιστος Αριθμός Trunk του VICIDIAL -</B> Αυτό το πεδίο θα προσδιορίσει τον μέγιστο αριθμό γραμμών, τις οποίες θα χρησιμοποιήσει η διεργασία αυτόματης κλήσης. Εάν θέλετε να αφιερώσετε δύο PRI σε ένα διακομιστή τότε θα πρέπει να το ορίσετε σε 46. Το προκαθορισμένο είναι 96|
+Telnet Host -<\/B> This is the address or name of the Asterisk server and is how the manager applications connect to it from where they are running. If they are running on the Asterisk server, then the default of 'localhost' is fine|Telnet Πελάτης -</B> Αυτή είναι η δνση ή το όνομα του διακομιστή Asterisk και το πώς οι εφαρμογές διαχείρισης συνδέονται σε αυτόν, όπου τρέχουν. Το προκαθορισμένο είναι 'localhost'|
+Telnet Port -<\/B> This is the port of the Asterisk server Manager connection and is how the manager applications connect to it from where they are running. The default of '5038' is fine for a standard install|Πόρτα Telnet -</B> Αυτή είναι η πόρτα της σύνδεσης με τον διαχειριστή του διακομιστή Asterisk και το πώς οι εφαρμογές διαχείρισης συνδέονται σε αυτόν, όπου τρέχουν. Το προκαθορισμένο είναι '5038'|
+Manager User -<\/B> The username or login used to connect genericly to the Asterisk server manager. Default is 'cron'| Διαχειριστής Χρήστης -</B> Το όνομα χρήστη που χρησιμοποιείτε γενικά για τον διαχειριστή του διακομιστή Asterisk. Το προκαθορισμένο είναι 'cron'|
+Manager Secret -<\/B> The secret or password used to connect genericly to the Asterisk server manager. Default is '1234'|Μυστικό Διαχειριστή -</B> Το μυστικό ή κωδικός που χρησιμοποιείτε γενικά για τον διαχειριστή του διακομιστή Asterisk. Το προκαθορισμένο είναι '1111'|
+Manager Update User -<\/B> The username or login used to connect to the Asterisk server manager optimized for the Update scripts. Default is 'updatecron' and assumes the same secret as the generic user|Ενημέρωση Χρήστη Διαχειριστή -</B> Το όνομα χρήστη που χρησιμοποιείτε για σύνδεση στον διακομιστή Asterisk, βελτιστοποιημένο για διεργασίες ενημέρωσης. Το προκαθορισμένο είναι 'updatecron'|
+Manager Listen User -<\/B> The username or login used to connect to the Asterisk server manager optimized for scripts that only listen for output. Default is 'listencron' and assumes the same secret as the generic user|Ακουσμα Χρήστη Διαχειριστή-</B> Το όνομα χρήστη που χρησιμοποιείτε για σύνδεση στον διακομιστή Asterisk, βελτιστοποιημένο για διεργασίες που μόνο ακούν για έξοδο. Το προκαθορισμένο είναι 'listencron'|
+Manager Send User -<\/B> The username or login used to connect to the Asterisk server manager optimized for scripts that only send Actions to the manager. Default is 'sendcron' and assumes the same secret as the generic user|Αποστολή Διακομιστή Διαχειριστή-</B> Το όνομα χρήστη που χρησιμοποιείτε για σύνδεση στον διακομιστή Asterisk, βελτιστοποιημένο για διεργασίες που μόνο στέλνουν Ενέργειες στον διαχειριστή.Το προκαθορισμένο είναι 'sendcron'|
+Server GMT offset -<\/B> The difference in hours from GMT time not adjusted for Daylight-Savings-Time of the server. Default is '-5'|GMT offset Διακομιστής -</B> Η διαφορά σε ώρες από την GMT ώρα που δεν έχει ρυθμιστεί με Daylight-Savings-Time. Το προκαθορισμένο είναι '-5'|
+VMail Dump Exten -<\/B> The extension prefix used on this server to send calls directly through agc to a specific voicemail box. Default is '85026666666666'|Εσωτ.σύνδεση απόρριψης VMail -</B> Το πρόθεμα εσωτ.σύνδεσης που χρησιμοποιείται στον διακομιστή για να στείλει τις κλήσεις κατευθείαν μέσω agc σε ένα συγκεκριμένο φωνητικό ταχυδρομείο. Το προκαθορισμένο είναι '85026666666666'|
+VICIDIAL AD extension -<\/B> The default extension if none is present in the campaign to send calls to for VICIDIAL auto dialing. Default is '8365'|VICIDIAL AD εσωτ.σύνδεση -</B> Η προκαθορισμένη εσωτ.σύνδεση εάν δεν έχει οριστεί στην εκστρατεία για να στείλει τις κλήσεις στην διεργασία αυτόματης κλήσης. Η προκαθορισμένη είναι '8365'|
+Default Context -<\/B> The default dialplan context used for scripts that operate for this server. Default is 'default'|Προκαθορισμένο Περιεχόμενο -</B> Το προκαθορισμένο περιεχόμενο του πλάνου κλήσεων για διεργασίες του διακομιστή. Το προκαθορισμένο είναι 'προκαθορισμένο'|
+User ID -<\/B> This field is where you put the VICIDIAL users ID number, can be up to 8 digits in length, Must be at least 2 characters in length|ID Χρήστη -</B> Σε αυτό το πεδίο τοποθετείται ο αριθμός ID του χρήστη, μπορεί να είναι μεταξύ 2 και 8 ψηφία|
+Password -<\/B> This field is where you put the VICIDIAL users password. Must be at least 2 characters in length|Κωδικός -</B> Σε αυτό το πεδίο τοποθετείται ο κωδικός του χρήστη στο VICIDIAL. Πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+Full Name -<\/B> This field is where you put the VICIDIAL users full name. Must be at least 2 characters in length|Πλήρες Ονομα -</B> Αυτό το πεδίο είναι που μπορείτε να ορίσετε το πλήρες όνομα των χρηστών VICIDIAL. Πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+User Level -<\/B> This menu is where you select the VICIDIAL users user level. Must be a level of 1 to log into VICIDIAL, Must be level greater than 2 to log in as a closer, Must be user level 8 or greater to get into admin web section|Επίπεδο Χρήστη -</B> Αυτός ο κατάλογος επιλογών είναι που μπορείτε να επιλέξετε το επίπεδο χρήστη των VICIDIAL χρηστών. Πρέπει να έχει επίπεδο 1 για να συνδεθεί στο σύστημα. Πρέπει να έχει επίπεδο μεγαλύτερο από 2 για να συνδεθεί ως closer. Πρέπει να έχει επίπεδο 8 ή μεγαλύερο για ενέργειες διαχειριστή|
+User Group -<\/B> This menu is where you select the VICIDIAL users group that this user will belong to. This does not have any restrictions at this time, this is just to subdivide users and allow for future features based upon it|Ομάδα Χρήστη -</B> Αυτός ο κατάλογος επιλογών είναι που μπορείτε να επιλέξετε την ομάδα χρηστών που ανήκει ο χρήστης|
+Phone Login -<\/B> Here is where you can set a default phone login value for when the user logs into vicidial.php. This value will populate the phone_login automatically when the user logs in with their user-pass-campaign in the vicidial.php login screen|Σύνδεση Τηλεφώνου -</B> εδώ μπορείτε να θέσετε μία προκαθορισμένη σύνδεση τηλεφώνου κατά την είσοδο του χειριστή στο vicidial.php|
+Phone Pass -<\/B> Here is where you can set a default phone pass value for when the user logs into vicidial.php. This value will populate the phone_pass automatically when the user logs in with their user-pass-campaign in the vicidial.php login screen|Κωδικός Τηλεφώνου -</B> εδώ μπορείτε να θέσετε ένα προκαθορισμένο κωδικό τηλεφώνου κατά την είσοδο του χειριστή στο vicidial.php|
+Delete Users -<\/B> This option if set to 1 allows the user to delete other users of equal or lesser user level from the system|Διαγραφή Χρηστών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει άλλους χρήστες ίσου ή μικρότερου επιπέδου από το σύστημα|
+Delete User Groups -<\/B> This option if set to 1 allows the user to delete user groups from the system|Διαγραφή Ομάδων Χρηστών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τις ομάδες χρηστών από το σύστημα|
+Delete Lists -<\/B> This option if set to 1 allows the user to delete vicidial lists from the system|Διαγραφή Λιστών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τις λίστες από το σύστημα|
+Delete Campaigns -<\/B> This option if set to 1 allows the user to delete vicidial campaigns from the system|Διαγραφή Εκστρατειών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τις εκστρατείες από το σύστημα|
+Delete In-Groups -<\/B> This option if set to 1 allows the user to delete vicidial In-Groups from the system|Διαγραφή Εισ-Ομάδων -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τις Εισ-Ομάδες από το σύστημα|
+Delete Remote Agents -<\/B> This option if set to 1 allows the user to delete vicidial remote agents from the system|Διαγράψτε τους Απομακρυσμένους Χειριστές -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τους απομακρυσμένους χειριστές από το σύστημα|
+Load Leads -<\/B> This option if set to 1 allows the user to load vicidial leads into the vicidial_list table by way of the web based lead loader|Εισαγωγή Οδηγών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να εισάγει τους οδηγούς στον πίνακα vicidial_list μέσω του βασισμένου σε Ιστοσελίδα Εισαγωγέα οδηγών|
+Campaign Detail -<\/B> This option if set to 1 allows the user to view and modify the campaign detail screen elements|Λεπτομέρειες Εκστρατείας -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να δει και να τροποποιήσει τα λεπτομερή στοιχεία της εκστρατείας|
+AGC Admin Access -<\/B> This option if set to 1 allows the user to login to the astGUIclient admin pages|AGC Πρόσβαση Διαχειριστή -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να συνδεθεί στις σελίδες του astGUIclient ως διαχειριστής|
+AGC Delete Phones -<\/B> This option if set to 1 allows the user to delete phone entries in the astGUIclient admin pages|AGC διαγραφή τηλεφώνων -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τα τηλέφωνα στις σελίδες του διαχειριστή του astGUIclient|
+Delete Scripts -<\/B> This option if set to 1 allows the user to delete Campaign scripts in the script modification screen|Διαγραφή Βοηθού -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τους οδηγούς της εκστρατείας |
+Script ID -<\/B> This is the short name of a Vicidial Script. This needs to be a unique identifier. Try not to use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|Ταυτότητα Βοηθού -</B> αυτό είναι το σύντομο όνομα ενός Βοπηθού. Πρέπει να είναι ένα μοναδικό προσδιοριστικό. Προσπαθήστε να μην χρησιμοποιήσετε οποιαδήποτε διαστήμα ή στίξη για τους 10 χαρακτήρες αυτού του πεδίου, ελάχιστο 2 χαρακτήρων|
+Script Name -<\/B> This is the title of a Vicidial Script. This is a short summary of the script. max 50 characters, minimum of 2 characters. There should be no spaces or punctuation of any kind in theis field|Όνομα Βοηθού -</B> αυτός είναι ο τίτλος ενός Βοηθού. Αυτή είναι μια σύντομη περίληψη. 2-50 χαρακτήρες. Δεν πρέπει να υπάρξουν διάστηματα ή στίξεις σε αυτό το πεδίο|
+Script Comments -<\/B> This is where you can place comments for a Vicidial Script such as -changed to free upgrade on Sept 23-.  max 255 characters, minimum of 2 characters|Σχόλια Βοηθού -</B> εδώ μπορείτε να τοποθετήσετε τα σχόλια για έναν Βοηθό. 2-255 χαρακτήρες |
+Script Text -<\/B> This is where you place the content of a Vicidial Script. Minimum of 2 characters. You can have customer information be auto-populated in this script using --A--field--B-- where field is one of the following fieldnames: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments. For example, this sentence would print the persons name in it----<BR><BR>  Hello, can I speak with --A--first_name--B-- --A--last_name--B-- please? Well hello --A--title--B-- --A--last_name--B-- how are you today?<BR><BR> This would read----<BR><BR>Hello, can I speak with John Doe please? Well hello Mr. Doe how are you today?|Κείμενο Βοηθού -</B> εδώ μπορείτε να ορίσετε το περιεχόμενο ενός Οδηγού. Ελάχιστος αριθμός χαρακτήρων είναι 2. |
+Active -<\/B> This determines whether this script can be selected to be used by a campaign|Ενεργός - αυτό καθορίζει εάν αυτός ο οδηγός μπορεί να επιλεχτεί για να χρησιμοποιηθεί από μια εκστρατεία|
+Campaign ID -<\/B> This is the short name of the campaign, it is not editable after initial submission, cannot contain spaces and must be between 2 and 8 characters in lengt|ID Εκστρατείας -</B> Αυτό είναι το σύντομο όνομα της εκστρατείας, δεν μπορεί να διορθωθεί μετά από την αρχική παράδοση, δεν μπορεί να περιέχει κενά και πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες|
+Campaign Name -<\/B> This is the description of the campaign, it must be between 6 and 40 characters in length|Ονομα Εκστρατείας -</B> Αυτό είναι η περιγραφή της εκστρατείας, πρέπει να είναι μεταξύ 6 και 40 χαρακτήρες|
+Active -<\/B> This is where you set the campaign to Active or Inactive. If Inactive, noone can log into it|Ενεργοποίηση -</B> Εδώ μπορείτε να θέσετε την εκστρατεία ενεργή ή μη ενεργή. Εάν είναι μη ενεργή, κανένας δεν μπορεί να συνδεθεί σε αυτήν|
+Park Extension -<\/B> This is where you can customize the on-hold music for VICIDIAL. Make sure the extension is in place in the extensions.conf and that it points to the filename below|Τηλ.Σύνδεση Στάθμευσης -</B> Εδώ μπορείτε να ορίσετε την μουσική αναμονής για το VICIDIAL. Επιβεβαιώστε, ότι η εσωτ.σύνδεση βρίσκεται στο extensions.conf και ότι δείχνει το αρχείο παρακάτω|
+Park File Name -<\/B> This is where you can customize the on-hold music for VICIDIAL. Make sure the filename is 10 characters in length or less and that the file is in place in the /var/lib/asterisk/sounds directory|ν Αρχείου Στάθμευσης -</B> Εδώ μπορείτε να προσαρμόσετε την μουσική αναμονής για το VICIDIAL. Επιβεβαιώστε ότι το αρχείο έχει 10 χαρακτήρες ή λιγότερους και ότι το αρχείο βρίσκεται στον κατάλογο /var/lib/asterisk/sounds|
+Web Form -<\/B> This is where you can set the custom web page that will be opened when the user clicks on the WEB FORM button|Ιστοσελίδα -</B> Αυτή είναι η προσαρμοσμένη διεύθυνση που θα σας κατευθύνει για κλήσεις που έρχονται σε αυτήν την ομάδα|
+Allow Closers -<\/B> This is where you can set whether the users of this campaign will have the option to send the call to a closer|Επιτρέπει τους Closers -</B> Εδώ ορίζετε εάν οι χρήστες της εκστρατείας θα έχουν την επιλογή να στείλουν την κλήση σε έναν closer|
+Dial Status -<\/B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below|Κατάσταση Κλήσης -</B> Εδώ ορίζετε τις καταστάσεις που θέλετε να κληθούν μέσα στις λίστες, οι οποίες είναι ενεργές για   την εκστρατεία παρακάτω|
+List Order -<\/B> This menu is where you select how the leads that match the statuses selected above will be put in the lead hopper|Ταξινόμηση Λίστας -</B> Σε αυτόν τον κατάλογο επιλογών μπορείτε να επιλέξετε πώς οι οδηγοί, που ταιριάζουν με τις καταστάσεις που επιλέξατε παραπάνω, θα τοποθετηθούν στον hopper|
+select the first leads loaded into the vicidial_list table|επιλογή των πρώτων οδηγών που εισήχθησαν στον πίνακα vicidial_list|
+select the last leads loaded into the vicidial_list table|επιλογή των τελευταίων οδηγών που εισήχθησαν στον πίνακα vicidial_list|
+select the highest phone number and works its way down|επιλογή του υψηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα κάτω|
+select the lowest phone number and works its way up|επιλογή του χαμηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα πάνω|
+starts with last names starting with Z and works its way down|έναρξη με τα επίθετα να ξεκινάνε με Ζ και συνεχίζει προς τα κάτω|
+starts with last names starting with A and works its way up|έναρξη με τα επίθετα να ξεκινάνε με Α και συνεχίζει προς τα πάνω|
+starts with most called leads and works its way down|έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα κάτω|
+starts with least called leads and works its way up inserting a NEW lead in every other lead - Must NOT have NEW selected in the dial statuses|έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε άλλο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων|
+starts with least called leads and works its way up inserting a NEW lead in every third lead - Must NOT have NEW selected in the dial statuses|έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τρίτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων|
+starts with least called leads and works its way up inserting a NEW lead in every forth lead - Must NOT have NEW selected in the dial statuses|έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τέταρτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων|
+starts with least called leads and works its way up|έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει|
+Hopper Level -<\/B> This is how many leads the VDhopper script tries to keep in the vicidial_hopper table for this campaign. If running VDhopper script every minute, make this slightly greater than the number of leads you go through in a minute|Επίπεδο Hopper -</B> Αυτό είναι το πόσους οδηγούς η διαδικασία VDhopper, προσπαθεί να διατηρήσει στον πίνακα vicidial_hopper για αυτήν την εκστρατεία. Εάν η διαδικασία VDhopper τρέχει κάθε λεπτό, ρυθμίστε αυτό λίγο περισσότερο από τον αριθμό των οδηγών που περνούν σε ένα λεπτό|
+Force Reset of Hopper -<\/B> This allows you to wipe out the hopper contents upon form submission. It should be filled again when the VDhopper script runs|Υποχρεωτική Επαναφορά του Hopper -</B> Αυτό σας επιτρέπει καθαρίσετε τα περιεχόμενα κατά την επιβεβαίωση της φόρμας. Αυτό θα συμβεί πάλι όταν η διαδικασία VDhopper θα τρέξει|
+Auto Dial Level -<\/B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow|Επίπεδο Αυτόματης Κλήσης -</B> Εδώ είναι που καθορίζεται πόσες γραμμές θα χρησιμοποιούνται ανά ενεργό χρήστη. Μηδέν (0) σημαίνει ότι η αυτόματη κλήση είναι μη ενεργή και οι χρήστες πατούν το πλήκτρο για την κλήση κάθε αριθμού. Διαφορετικά, το σύστημα καλεί γραμμές ίσες με τους ενεργούς χρήστες, πολλαπλασιασμένους με το επίπεδο κλήσης και σύμφωνα με το πόσες γραμμές η εκστρατεία σε κάθε διακομιστή επιτρέπει|
+Next Agent Call -<\/B> This determines which agent receives the next call that is available|Επόμενη Κλήση Χρήστη -</B> Αυτό προσδιορίζει ποιος χρήστης λαμβάνει την επόμενη κλήση που είναι διαθέσιμη|
+orders by the random update value in the vicidial_live_agents table|ταξινομημένο με τυχαία τιμή ενημέρωσης στον πίνακα vicidial_live_agents|
+orders by the last time an agent was sent a call. Results in agents receiving about the same number of calls overall|ταξινομημένο με την τελευταία φορά που σε ένα χρήστη στάλθηκε  μία κλήση. Με αποτέλεσμα, ο χρήστης να λαμβάνει συνολικά το ίδιο αριθό κλήσεων|
+orders by the last time an agent finished a call. AKA agent waiting longest receives first call|ταξινομημένο με την τελευταία φορά που ένας χρήστης τελείωσε μία κλήση. Ο χρήστης που περιμένει περισσότερο λαμβάνει την πρώτη κλήση|
+Local Call Time -<\/B> This is where you set during which hours you would like to dial, as determined by the local time in the are in which you are calling. This is controlled by area code and is adjusted for Daylight Savings time if applicable. General Guidelines in the USA for Business to Business is 9am to 5pm and Business to Consumer calls is 9am to 9pm|Τοπική Ωρα Κλήσης -</B> Εδώ, μπορείτε να ορίσετε τις ώρες που θα θέλατε να γίνουν οι κλήσεις. Αυτό ελέγχετε από τον κωδικό περις και ρυθμίζεται για Daylight Savings εάν είναι εφαρμόσιμο|
+Voicemail -<\/B> If defined, calls that would normally DROP would instead be directed to this voicemail box to hear and leave a message|Φωνητικό Ταχυδρομείο -</B> Εάν έχει οριστεί, οι κλήσεις που φυσιολογικά θα ΕΓΚΑΤΑΛΕΙΠΟΝΤΑΝ, θα κατευθυνθούν σε αυό το φωνητικό ταχυδρομείο, ώστε να ακούσετε και να αφήσετε ένα μήνυμα|
+Dial Timeout -<\/B> If defined, calls that would normally hangup after the timeout defined in extensions.conf would instead timeout at this amount of seconds if it is less than the extensions.conf timeout. This allows for quickly changing dial timeouts from server to server and limiting the effects to a single campaign. If you are having a lot of Answering Machine or Voicemail calls you may want to try changing this value to between 21-26 and see if results improve|Κλήση Εκτός Χρόνου -</B> Εάν έχει οριστεί, οι κλήσεις που φυσιολογικά θα έκλειναν μετά το χρόνο που έχει οριστεί στο extensions.conf, θα κλείσουν σε αυτόν τον χρόνο εάν είναι μικρότερος του extensions.conf. Αυτό επιτρέπει στην γρήγορη αλλαγή των χρόνων από διακομιστή σε διακομιστή και περιορίζοντας τα αοτελέσματα σε μία εκστρατεία. Εάν έχετε πολλές κλήσεις με Αυτόματους Τηλεφωνητές ή Φωνητικών Ταχυδρομείων, μπορείτε να αλλάξετε αυτή την τιμή μεταξύ 21-26 και να δείτε αν τα αποτελέσματα είναι καλύτερα|
+Dial Prefix -<\/B> This field allows for more easily changing a path of dialing to go out through a different method without doing a reload in Asterisk. Default is 9 based upon a 91NXXNXXXXXX in the dialplan - extensions.conf|Πρόθεμα Κλήσης -</B> Αυτό το ο επιτρέπει την πιο εύκολη αλλαγή της διαδρομής της κλήσης να βγει έξω μέσω διαφορετικής μεθόδου, χωρίς να γίνει επαναφόρτωση στο Asterisk. Προκαθορισμένο είναι το 9 βασισμένο σύμφωνα με το 91NXXNXXXXXX στο σχέδιο κλήσεων - extensions.conf|
+Campaign CallerID -<\/B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. This option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on. This feature may also work with IAX2 trunks depending on what your provider allows. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID|CallerID Εκστρατείας -</B> Αυτό το πεδίο επιτρέπει την αποστολεί ενός προσαρμοσμένου callerid αριθμού στις εξερχόμενες κλήσεις. Αυτός ίναι ο αριθμός που θα εμφανιστεί στο callerid του προσώπου που καλείται. Το προκαθορισμένο είναι ΑΓΝΩΣΤΟ. Αυτή η επιλογή είναι διαθέσιμη μόνο εάν χρησιμοποιείται PRIs - ISDN T1s ή E1s - που έχουν προσαρμοσμένο callerid χαρακτηριστικό ενεργοποιημένο. Αυτό το χαρακτηριστικό μπορεί να δουλεύει κα με IAX2 trunks εξαρτώμενο με το τι επιτρέπει ο παροχέας. Το προσαρμοσμένο callerID εφαρμόζεται μόνο σε κλήσεις που τοποθετήθηκαν απευθείας για την εκστρατεία VICIDIAL, οποιαδήποτε κλήση με 3 μέρη ή μεταφορές δεν θα το στείλουν|
+Campaign VDAD extension -<\/B> This field allows for a custom VDAD transfer extension. This allows you to use different VDADtransfer...agi scripts depending upon your campaign. The default transfer AGI - exten 8365 agi-VDADtransfer.agi - just immediately sends the calls on to agents as soon as they are picked up. An additional sample political survey AGI is also now included - 8366 agi-VDADtransferSURVEY.agi - that plays a message to the called person and allows them to make a choice by pressing buttons - effectively pre-screening the lead - . Please note that except for surveys, political calls and charities this form of calling is illegal in the United States|Τηλ.Σύνδεση Εκστρατείας VDAD -</B> Αυτό το πεδίο επιτρέπει γαι μία προσαρμόσιμη VDAD  εσωτ.σύνδεση μεταφοράς. Αυτό σας επιτρέπει να χρησιμοποιήσετε διαφορετικές διαδικασίες VDADtransfer.agi, σύμφωνα με την εκστρατεία. Η προκαθορισμένη AGI μεταφορά - εσωτ.σύνδ. 8365 agi VDADtransfer.agi - στέλνει αμέσως τις κλήσεις στον χρήστη, μόλις το σηκώσουν. Ενα πρόσθετο AGI παράεα πολιτικής έρευνας συμπεριλαμβάνεται - 8366 agi - VDADtransferSURVEY.agi - όπου παίζει ένα μήνυμα στο κληθέν πρόσωπο και επιτρέπει να κάνουν επιλογές με τα πλήκτρα|
+Campaign Rec extension -<\/B> This field allows for a custom recording extension to be used with VICIDIAL. This allows you to use different extensions depending upon how long you want to allow a maximum recording and what type of codec you want to record in. The default exten is 8309 which if you follow the SCRATCH_INSTALL examples will record in the WAV format for upto one hour. Another option included in the examples is 8310 which will record in GSM format for upto one hour|Τηλ.Επέκταση εκστρατείας Ηχογρ -</B> αυτό το πεδίο επιτρέπει να ορίσετε μία επέκταση ηχογράφησης που χρησιμοποιείται με το VICIDIAL. Αυτό επιτρέπει να χρησιμοποιήσετε διαφορετικές επεκτάσεις ανάλογα με πόσο χρόνο θέλετε να επιτρέψετε μία ηχογράφηση και ποιο τύπος κωδικοποιητή-αποκωδικοποιητή θα χρησιμοποιηθεί. Η προεπιλογή είναι 8309 και θα καταγράψει με το σχήμα WAV μέχρι μια ώρα. Μια άλλη επιλογή που περιλαμβάνεται στα παραδείγματα είναι 8310 που θα καταγράψουν με το σχήμα GSM για μέχρι μια ώρα|
+Campaign Recording -<\/B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent|Ηχογράφηση εκστρατείας -</B> αυτή η επιλογή επιτρέπει να επιλέξετε το επίπεδο ηχογράφησης σε αυτήν την εκστρατεία. NEVER θα θέσει εκτός λειτουργίας την ηχογράφηση στον πελάτη. ONDEMAND είναι η προεπιλογή και επιτρέπει στον χειριστή να αρχίσει και να σταματήσει όπως απαιτείται. ALLCALLS θα αρχίσει την καταγραφή στον πελάτη όποτε μια κλήση στέλνεται σε έναν χειριστή|
+Campaign Rec Filename -<\/B> This field allows you to customize the name of the recording when Campaign recording is ONDEMAND or ALLCALLS. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212|Όνομα αρχείου ηχογρ εκστρατείας -</B> αυτό το πεδίο επιτρέπει να προσαρμόσετε το όνομα της ηχογράφησης, όταν η ηχογράφηση της εκστρατείας είναι ONDEMAND ή ALLCALLS. Οι μεταβλητές είναι CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. Η προεπιλογή είναι FULLDATE_AGENT και θα μοιάζει με  το 20051020-103108_6666. Ένα άλλο παράδειγμα είναι CAMPAIGN_TINYDATE_CUSTPHONE που θα μοιάζει με το TESTCAMP_51020103108_3125551212|
+Campaign Script -<\/B> This menu allows you to choose the script that will appear on the agents screen for this campaign. Select NONE to show no script for this campaign|Βοηθός εκστρατείας -</B> αυτές οι επιλογές επιτρέπουν να επιλέξετε τον Βοηθό που θα εμφανιστεί στην οθόνη των χειριστών για αυτήν την εκστρατεία. Επιλέξτε NONE για να μην παρουσιάσετε κανένα χειρόγραφο για αυτήν την εκστρατεία|
+Get Call Launch -<\/B> This menu allows you to choose whether you want to auto-launch the web-form page in a separate window, auto-switch to the SCRIPT tab or do nothing when a call is sent to the agent for this campaign|Κατά την έναρξη κλήσης -</B> αυτές οι επιλογές επιτρέπουν να επιλέξετε εάν θέλετε την αυτόματη έναρξη μίας ιστο σελίδας σε ένα διαφορετικό παράθυρο, αυτόματη μετάβαση στον Βοηθό ή τίποτα|
+Answering Machine Message -<\/B> This field is for entering in an extension to blind transfer calls to when the agent gets an answering machine and clicks on the Answering Machine Message button in the transfer conference frame. You must set this exten up in the dialplan - extensions.conf - and make sure it plays an audio file then hangs up|Μήνυμα αυτόματου τηλεφωνητού -</B> αυτός το πεδίο χρησιμοποιείτε για τις τυφλές κλήσεις μεταφοράς όταν παίρνει ο χειριστής έναν αυτόματο τηλεφωνητή και χτυπά στο πλήκτρο μηνυμάτων αυτόματων τηλεφωνητών στο πλαίσιο διασκέψεων μεταφοράς. Πρέπει το θέσετε αυτό στο dialplan - extensions.conf - και σιγουρευτείτε ότι παίζει ένα αρχείο μουσικής κατόπιν κλείνει το τηλέφωνο|
+List ID -<\/B> This is the numerical name of the list, it is not editable after initial submission, must contain only numbers and must be between 2 and 8 characters in length|ID Λίστας -</B> Αυτό είναι το αριθμητικό όνομα της λίστας, δεν μπορεί να διορθωθεί μετά από την αρχική εισαγωγή, πρέπει να περιέχει μόνο αριθμούς και πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες|
+List Name -<\/B> This is the description of the list, it must be between 2 and 20 characters in length|Ονομα Λίστας -</B> Αυτή είναι η περιγραφή της λίστας, πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες|
+Campaign -<\/B> This is the campaign that this list belongs to. A list can only be dialed on a single campaign at one time|Εκστρατεία -</B> Αυτή είναι η εκστρατεία όπου ανήκει η λίστα. Μία λίστα μπορεί μόνο να κληθεί από μία εκστρατεία κάθε φορά|
+Active -<\/B> This defines whether the list is to be dialed on or not|Ενεργή -</B> Αυτό ορίζει κατά πόσον η λίστα πρόκειται να κληθεί ή όχι|
+Reset Lead-Called-Status for this list -<\/B> This resets all leads in this list to N for \"not called since last reset\" and means that any lead can now be called if it is the right status as defined in the campaign screen|Επαναφορά Κατάστασης-Κλήσης-Καθοδήγησης για την λίστα -</B> Αυτό επαναφέρει τους οδηγούς σε αυτή την λίστα στο Ν σε  \"μη κληθέντα  από την τελευταία επαναφορά\" και σημαίνει ότι για οποιαδήποτε καθοδήγηση μπορεί να γίνει κλήση εάν είναι η σωστή κατάσταση, όπως ορίσθηκε στην οθόνη τις εκστρατείας|
+Group ID -<\/B> This is the short name of the inbound group, it is not editable after initial submission, must not contain any spaces and must be between 2 and 20 characters in length|ID Ομάδας -</B> Αυτό είναι το σύντομο όνομα της εισερχόμενης ομάδας, δεν μπορεί να διορθωθεί μετά από την αρχική παράδοση, δεν μπορεί να περιέχει κενά και πρέπει να είναι μεταξύ 2 και 20χαρακτήρες|
+Group Name -<\/B> This is the description of the group, it must be between 2 and 30 characters in length. Cannot include dashes, plusses or spaces|Ονομα Ομάδας -</B> Αυτή είναι η περιγραφή της ομάδας, πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες. Δεν μπορεί να συμπεριαμβάνει παύλες, συν ή κενά|
+Group Color -<\/B> This is the color that displays in the VICIDIAL client app when a call comes in on this group. It must be between 2 and 7 characters long. If this is a hex color definition you must remember to put a # at the beginning of the string or VICIDIAL will not work properly|Χρώμα Ομάδας -</B> Αυτό είναι το χρώμα που εμφανίζεται στην VICIDIAL  εφαρμογή όταν η κλήση έρχεται σε αυτή την ομάδα. Πρέπει να είναι μεταξύ 2 και 7 χαρακτήρες. Εάν αυτό είναι ορισμένο ως hex , θα πρέπει να τοποθετήσετε ένα # στην αρχή του κειμένου ή το VICIDIAL δεν θα δουλεύει σωστά|
+Active -<\/B> This determines whether this group show up in the selection box when a VICIDIAL agent logs in|Ενεργοποίηση -</B> Αυτό καθορίζει κατά πόσον αυτή η ομάδα εμφανίζεται στο κουτί επιλογής όταν ένας χρήστης συνδέεται|
+Web Form -<\/B> This is the custom address that clicking on the WEB FORM button in VICIDIAL will take you to for calls that come in on this group|Ιστοσελίδα -</B> Αυτή είναι η προσαρμοσμένη διεύθυνση που θα σας κατευθύνει για κλήσεις που έρχονται σε αυ την ομάδα|
+Voicemail -<\/B> If defined, this is the Voicemail box that calls will go to instead of being dropped if no agents are available after the hold time is up|Φωνητικό Ταχυδρομείο -</B> Εάν ορίζεται, αυτό είναι το περιεχόμενο φωνητικού ταχυδρομείου όπου οι κλήσεις θα πηγαίνουν, αντί να εγκαταλείπονται εάν δεν υπάρχουν διαθέσιμοι χρήστες μετά τον χρόνο αναμονής|
+Fronter Display -<\/B> This field determines whether the inbound VICIDIAL agent would have the fronter name - if there is one - displayed in the Status field when the call comes to the agent|Οθόνη Μπροστινού -</B> Αυτό το πεδίο καθορίζει κατά πόσον στον VICIDIAL  χόμενος χρήστης θα εμφανίζεται το όνομα του μπροστινού - εάν υπάρχει κάποιο - στο πεδίο κατάστασης όταν η κλήση έρχεται στον χρήστη|
+User ID Start -<\/B> This is the starting User ID that is used when the remote agent entries are inserted into the system. If the Number of Lines is set higher than 1, this number is incremented by one until each line has an entry. Make sure you create a new VICIDIAL user account with a user level of 4 or great if you want them to be able to use the vdremote.php page for remote web access of this account|Αρχή ID Χρήστη -</B> Αυτό είναι η αρχή του ID Χρήστη που χρησιμοποιείται όταν οι καταχωρήσεις των απομακρυσμένων χρηστών παρεμβάλλονται στο σύστημα. Εάν ο αριθμός των γραμμών είναι μεγαλύτερος από 1, αυτός ο αριθμός αυξάνει κατά ένα μέχρι κάθε γραμμή να έχει μία καταχώρηση. Επιβεβαιώστε, ότι δημιουργήσατε ένα νέο VICIDIAL λογαριασμό η με επίπεδο χρήσης 4 ή μεγαλύτερο, εάν θέλετε να μπορεί να χρησιμοποιήσει την σελίδα vdremote για απομακρυσμένη πρόσβαση του λογαριασμού του|
+Number of Lines -<\/B> This defines how many remote agent entries the system creates, and determines how many lines it thinks it can safely send to the number below|Αριθμός Γραμμών -</B> Αυτό ορίζει πόσες καταχωρήσεις απομακρυσμένων χρηστών το σύστημα δημιουρ, και καθορίζει πόσες γραμμές μπορεί με ασφάλεια να στείλει στον αριθμό παρακάτω|
+Server IP -<\/B> A remote agent entry is only good for one specific server, here is where you select which server you want|IP Διακομιστή -</B> Μία καταχώρηση απομακρυσμένου χρήστη είναι μόνο καλό για ένα συγκεκριμένο διακομιστή, εδώ επιλέγετε τον διακομιστή που ανήκει|
+External Extension -<\/B> This is the number that you want the calls forwarded to. Make sure that it is a full dialplan number and that if you need a 9 at the beginning you put it in here. Test by dialing this number from a phone on the system|Εξωτερική Τηλ.Σύνδεση -</B> Αυτός είναι ο αριθμός που θέλετε οι κλήσεις να προωθούνται. Επιβεβαιώστε ότι είναι ένας πλήρης αριθμός από το σχέδιο κλήσεων και εάν θέλετε ένα 9 στην αρχή το βάζετε εδώ. Κάντε μία δοκιμή καλώντας αυτόν τον αριθμό από ένα τηλέφωνο του συστήματος|
+Status -<\/B> Here is where you turn the remote agent on and off. As soon as the agent is Active the system assumes that it can send calls to it. It may take up to 30 seconds once you change the status to Inactive to stop receiving calls|Κτάσταση -</B> Εδώ μπορείτε να θέσετε τον απομακρυσμένο χρήστη σε ενεργό και μη ενεργό. Μόλις ο χρήστης γίνει ενεργός το σύστημα μπορεί να στείλει κλήσεις σε αυτόν. Μπορεί να διαρκέσει μέχρι 30 δευτερόλεπτα μετά την αλλαγή της κατάστασης σε μη ενεργός, ώστε να σταματήσει να δέχεται κ|
+Campaign -<\/B> Here is where you select the campaign that these remote agents will be logged into. Inbound needs to use the CLOSER campaign and select the inbound campaigns below that you want to receive calls from|Εκστρατεία -</B> Εδώ μπορείτε να επιλέξετε την εκστρατεία όπου οι απομακρυσμένοι χρήστες θα συνδεθούν. Για εισερχόμενες πρέπει να χρησιμοποιηθεί η εκστρατεία CLOSER και επιλέξτε τις εισερχόμενες εκστρατείες παρακάτω, από που θέλετε να λαμβάνεται τις κλήσεις|
+Inbound Groups -<\/B> Here is where you select the inbound groups you want to receive calls from if you have selected the CLOSER campaign|Εισερχόμενες Ομάδες -</B> Εδώ μπορείτε να επιλέξετε τις εισερχόμενες ομάδες που θέλετε να λαμβάνουν τις κλήσεις , εάν έχετε επιλέξει την εκστρατεία CLOSER|
+The lists within this campaign are listed here, whether they are active is denoted by the Y or N and you can go to the list screen by clicking on the list ID in the first column|Οι λίστες της εκστρατείας παρουσιάζονται εδώ,  και εάν είναι ενεργές (Υ ή Ν) μπορείτε να πάτε στην οθόνη λίστας με το να πατήσετε στο ID λίστας, στην πρώτη στήλη|
+Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition|Με την χρήση προσαρμοσμένων καταστάσεων εκστρατείας, μπορείτε να έχετε καταστάσεις μόνο για συγκεκριμένες εκστρατείες. Η κατάσταση πρέπει να είναι 1-8 χαρακτήρες, η περιγραφή 2-30 χαρακτήρες και Επιλέξιμα καθορίζεται αν εμφανίζεται στο VICIDIAL ως τερματισμός|
+Through the use of custom campaign hotkeys, agents that use the vicidial web-client can hangup and disposition calls just by pressing a single key on their keyboard|Με την χρήση προσαρμοσμένων κλειδιών εκστρατείας, οι χρήστες που χρησιμοποιούν την εφαρμογή vicidial μπορούν να κλείσουν και να τερματίσουν την κλήση, με ένα μόνο πάτημα πλήκτρου|
+User Group -<\/B> This is the short name of a Vicidial User group, try not to use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters|Ομάδα Χρήστη  -</B> Αυτό είναι το σύντομο όνομα της Vicidial ομάδας χρήστη, πρσπαθήστε να μην χρησιμοποιήσετε κενά ή στίξεις για αυτό το πεδίο. Από 2 μέχρι 20 χαρακτήρες|
+Group Name -<\/B> This is the description of the vicidial user group max of 40 characters|Ονομα Ομάδας-</B> Αυτή είναι η περιγραφή της vicidial ομάδας χρήστη μέχρι 40 χαρακτήρες|
+Xfer-Conf DTMF -<\/B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed|Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί|
+AMD send to vm exten -<\/B> This menu allows you to define whether a message is left on an answering machine when it is detected. the call will be immediately forwarded to the Answering-Machine-Message extension if AMD is active and it is determined that the call is an answering machine|AMD στέλνει στο VM -</B> αυτές οι επιλογές επιτρέπουν να καθορίσετε εάν ένα μήνυμα αφήνεται σε έναν αυτόματο τηλεφωνητή όταν ανιχνεύεται ότι η κλήση είναι ένας αυτόματος τηλεφωνητής και εάν το AMD είναι ενεργό|
+Modify Leads -<\/B> This option if set to 1 allows the user to modify leads in the admin section lead search results page|Τροποποιήστε τους οδηγούς -</B> αυτή η επιλογή εάν τη θέσετε σε 1, επιτρέπει στο χρήστη να τροποποιήσει τους οδηγούς στη σελίδα αποτελεσμάτων αναζήτησης οδηγών|
+HotKeys Active -<\/B> This option if set to 1 allows the user to use the HotKeys quick-dispositioning function in|HotKeys ενεργός -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να χρησιμοποιήσει τα πλήκτρα γρήγορου τερματισμού|
+Change Agent Campaign -<\/B> This option if set to 1 allows the user to alter the campaign that an agent is logged into while they are logged into it|Αλλαγή Εκστρατείας Χειριστού -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να αλλάξει την εκτρατεία όπου ένας πράκτορας έχει συνδεθεί |
+Agent Choose Ingroups -<\/B> This option if set to 1 allows the user to choose the ingroups that they will receive calls from when they login to a CLOSER or INBOUND campaign. Otherwise the Manager will need to set this in their user detail screen of the admin page|Ο πράκτορας επιλέγει Ingroups -</B> εάν θέσετε σε 1 αυτή την επιλογή επιτρέπει στο χρήστη να επιλέξει τις εισ-ομάδες που θα λάβουν τις κλήσεις. Διαφορετικά ο Manager θα πρέπει να το θέσει αυτό στην σελίδα διαχείρισης|
+Lead Filter -<\/B> This is a method of filtering your leads using a fragment of a SQL query. Use this feature with caution, it is easy to stop dialing accidentally with the slightest alteration to the SQL statement. Default is NONE|Φίλτρο Οδηγοιύ -</B> αυτή είναι μία μέθοδος για να δημιουργήτε φίλτρα για την SQL ερώτηση. Χρησιμοποιήστε αυτό το χαρακτηριστικό με προσοχή, είναι εύκολο να σταματήσει το σύστημα με μία μικρή αλλαγή στη δήλωση SQL. Η προεπιλογή είναι ΚΑΜΙΑ|
+Filter ID -<\/B> This is the short name of a Vicidial Lead Filter. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|ID Φίλτρου -</B> Αυτό είναι το σύντομο όνομα ενός Φίλτρου Οδηγού. Πρέπει να είναι ένας μοναδικός κωδικός. Μην χρησιμοποιήσετε κενά ή στίξη για αυτό το πεδίο. Χαρακτήρες 2 με 10|
+Filter Name -<\/B> This is a more descriptive name of the Filter. This is a short summary of the filter. max 30 characters, minimum of 2 characters|Ονομα Φίλτρου -</B> Αυτό είναι ένα πιο περιγραφικό όνομα για το Φίλτρο. Είναι μία σύντομη περιγρφή του φίλτρου. Χαρακτήρες 2 με 30|
+Filter Comments -<\/B> This is where you can place comments for a Vicidial Filter such as -calls all California leads-.  max 255 characters, minimum of 2 characters|Σχόλια Φίλτρου -</B> Εδώ μπορείτε σχολιάσετε το φίλτρο. Χαρακτήρες 2 με 255|
+Filter SQL -<\/B> This is where you place the SQL query fragment that you want to filter by. do not begin or end with an AND, that will be added by the hopper cron script automatically. an example SQL query that would work here is- called_count \> 4 and called_count \< 8 -|SQL Φίλτρου -</B>  Εδώ μπορείτε να ορίσετε SQL ερώτημα για το φίλτρο. Μην ξεκινήσετε ή τελειώσετε με ένα AND, αυτό θα γίνει αυτόματα από τον hopper. Ένα παράδειγμα είναι- called_count > 4 and called_count < 8 -|
+Agent Alt Num Dialing -<\/B> This option allows an agent to manually dial the alternate phone number or address3 field after the main number has been called|Κλήση Εναλ Αρ Χρήστη -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να κάνει χειροκίνητη κλήση του εναλλακτικού αριθμού τηλεφώνου ή το πεδίο address3 μετά την κλήση του κυρίου αριθμού|
+Scheduled Callbacks -<\/B> This option allows an agent to disposition a call as CALLBK and choose the data and time at which the lead will be re-activated|Προγραμματισμένες Επανακλήσεις -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να τερματίσει μία κλήση ως CALLBK και να επιλέξει τα δεδομένα και την ώρα κατά την οποία ο οδηγός θα ξανα-ενεργοποιηθεί|
+Agent-Only Callbacks -<\/B> This option allows an agent to set a callback so that they are the only Agent that can call the customer back. This also allows the agent to see their callback listings and call them back any time they want to|Μόνο του Χρήστη Επανακλήσεις-</B> Αυτή η επιλογή επιτρέπει στον χρήστη να θέσει μία επανάκληση με τέτοιο τρόπο, ώστε μόνο αυτός να μπορεί να καλέσει τον πελάτη. Επίσης, επιτρέπει στον χρήστη να δει τις λίστες των επανακλήσεων και να τις καλέσει οποιαδήποτε στιγμή|
+Agent Call Manual -<\/B> This option allows an agent to manually enter a new lead into the system and call them. This also allows the calling of any phone number from their vicidial screen and puts that call into their session. Use this option with caution|Χειροκίνητη Κλήση Χρήστη -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να καταχωρήσει χειροκίνητα ένα νέο οδηγό στο σύστημα και να τον καλέσει|
+Vicidial Recording -<\/B> This option can prevent an agent from doing any recordings after they log in to vicidial. This option must be on for vicidial to follow the campaign recording session|Ηχογράφηση -</B> Αυτή η επιλογή μπορεί να απαγορεύσει σε έναν χειριστή να κάνει ηχογραφήσεις και θα πρέπει να ακολουθεί την διαδικασία ηχογράφησης της εκστρατείας|
+Vicidial Transfers -<\/B> This option can prevent an agent from opening the transfer - conference session of vicidial. If this is disabled, the agent cannot third party call or blind transfer any calls|Μεταφορές-</B> Αυτή η επιλογή μπορεί να απαγορεύσει σε έναν χειριστή να ανοίξει την διαδικασία μεταφορά-συνδιάσκεψη. Αν είναι απενεργοποιημένη, ο χρήστης δεν μπορεί να μεταφέρει κλήσεις ή να κάνει κλήση σε τρίτο|
+Delete Filters -<\/B> This option allows the user to be able to delete vicidial lead filters from the system|Διαγραφή Φίλτρων -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να διαγράφει φίλτρα από το σύστημα|
+Alter Agent Interface Options -<\/B> This option if set to 1 allows the administrative user to modify the Agents interface options in admin.php|Αλλάξτε τις επιλογές διεπαφών Χειριστών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο διαχειριστή να τροποποιήσει τις επιλογές διεπαφών χειριστών στην admin.php|
+Closer Default Blended -<\/B> This option simply defaults the Blended checkbox on a CLOSER login screen|Πιό στενή προεπιλογή που συνδυάζεται -</B> αυτή η επιλογή προκαθορίζει απλά το συνδυασμένο τετραγωνίδιο σε μια ΠΙΟ ΣΤΕΝΉ οθόνη σύνδεσης|
+FILTER NOT ADDED - there is already a filter entry with this ID|ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη ένα φίλτρο με αυτό το ID|
+Filter ID, name and SQL must be at least 2 characters in length|ID φίλτρου, όνομα και SQL πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+Filter ID must be at least 2 characters in length|To ID φίλτρου πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+Please go back and look at the data you entered|Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε|
+CLICK HERE TO GO TO THE SUPER LEAD LOADER|ΕΠΙΛΕΞΤΕ ΕΔΩ ΓΙΑ ΝΑ ΠΑΤΕ ΣΤΟΝ ΠΡΟΗΓΜΕΝΟ ΕΙΣΑΓΩΓΕΑ ΟΔΗΓΩΝ|
+BACK TO ADMIN|ΠΙΣΩ ΣΤΗ ΔΙΑΧΕΙΡΙΣΗ|
+File layout to use|Μορφή αρχείων για χρήση|
+Standard VICIDIAL|Τυποποιημένο VICIDIAL|
+Custom layout|Εμφάνιση συνήθειας|
+CLICK HERE TO GO TO THE BASIC LEAD LOADER|ΕΠΙΛΕΞΤΕ ΕΔΩ ΓΙΑ ΝΑ ΠΑΤΕ ΣΤΟ ΒΑΣΙΚΟ ΕΙΣΑΓΩΓΕΑ ΟΔΗΓΩΝ|
+SUPER LIST LOADER|ΠΡΟΗΓΜΕΝΟΣ ΕΙΣΑΓΩΓΕΑΣ ΛΙΣΤΩΝ|
+OK TO PROCESS|ΟΚ ΓΙΑ ΕΠΕΞΕΡΓΑΣΙΑ|
+File data|Αρχεία δεδομένων|
+short description of the filter|σύντομη περιγραφή του φίλτρου|
+Alter Agent Interface Options: |Αλλάξτε τις επιλογές επιφάνειας εργασίας των χειριστών: |
+Click here to delete filter |Πατήστε εδώ για διαγραφή του φίλτρου|
+FILTER DELETION COMPLETED:|Η ΔΙΑΓΡΑΦΗ ΤΟΥ ΦΙΛΤΡΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ: |
+ADMIN INTERFACE OPTIONS:|ΕΠΙΛΟΓΈΣ ΕΠΙΦΑΝΕΙΑΣ ΕΡΓΑΣΙΑΣ ΔΙΑΧ:|
+AGENT INTERFACE OPTIONS:|ΕΠΙΛΟΓΕΣ ΕΠΙΦΑΝΕΙΑΣ ΕΡΓΑΣΙΑΣ ΧΕΙΡΙΣΤΩΝ:|
+Closer Default Blended:|Η πιό στενή προεπιλογή συνδύασε:|
+Agent Alt Num Dialing:|Εναλ. Αρ. Χειριστή που καλείτε:|
+Scheduled Callbacks:|Προγραμματισμένες Επανακλήσεις:|
+Agent-Only Callbacks:|Μόνο του Χειριστή Επανακλήσεις:|
+New Filter Addition|Προσθήκη Νέου Φίλτρου|
+LEAD FILTER LISTINGS:|ΛΙΣΤΕΣ ΟΔΗΓΟΥ ΦΙΛΤΡΟΥ:|
+FILTER NOT MODIFIED|ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+FILTER NOT DELETED|ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+DELETE THIS FILTER|ΔΙΑΓΡΑΦΗ ΤΟΥ ΦΙΛΤΡΟΥ|
+FILTER NOT ADDED|ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ|
+Filter Comments: |Σχόλια Φίλτρου: |
+FILTER MODIFIED|ΤΟ ΦΙΛΤΡΟ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+MODIFY A FILTER|ΤΡΟΠΟΠΟΙΗΣΗ ΕΝΟΣ ΦΙΛΤΡΟΥ|
+ADD NEW FILTER|ΠΡΟΣΘΕΣΕ ΦΙΛΤΡΟ|
+Add New Filter|Πρόσθεσε Φίλτρο|
+Modify Filter|Τροποποίηση Φίλτρου|
+Delete Filter|Διαγραφή Φίλτρου|
+Filter Name: |Όνομα Φίλτρου:|
+FILTER ADDED:|ΤΟ ΦΙΛΤΡΟ ΠΡΟΣΤΕΘΗΚΕ:|
+VIEW FILTERS|ΕΜΦΑΝΙΣΗ ΦΙΛΤΡΩΝ|
+Lead Filter:|Φίλτρο Οδηγού:|
+Filter SQL:|SQL Φίλτρου: |
+Users List|Λίστα Χρηστών|
+Filter ID: |ID Φίλτρου: |
+Filters|Φίλτρα|
+Agent Call Manual|Εγχειρίδιο κλήσεων Χειριστή|
+Vicidial Recording|Καταγραφή|
+Vicidial Transfers|Μεταφορές|
+Click here for user time sheet|Επιλέξτε εδώ για την σελίδα με τους χρόνους χρήσης|
+Click here for user status|Επιλέξτε εδώ για τη κατάσταση του χρήστη|
+Click here for user CallBack Holds|Επιλέξτε εδώ για τις Επανακλήσεις του χρήστη που κρατήθηκαν|
+Lead Filter|Φίλτρο Οδηγού|
+Click here to see all CallBack Holds in this campaign|Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία|
+STATUS NAME|ΟΝΟΜΑ ΚΑΤΑΣΤΑΣΗΣ|
+Script ID|Ταυτότητα χειρογράφων:|
+Script Name|Όνομα χειρογράφων|
+Script Comments|Σχόλια χειρόγραφου|
+Script Text|Κείμενο χειρόγραφου|
+ADD FILTER|ΠΡΟΣΘΕΣΕ ΦΙΛΤΡΟ|
+overall_user_level: orders by the user_level of the agent as defined in the vicidial_users table a higher user_level will receive more calls|overall_user_level: οι διαταγές από το user_level του χειριστή όπως καθορίζεται στα vicidial_users παρουσιάζουν ένα υψηλότερο user_level θα άβουν περισσότερες κλήσεις|
+VICIDIAL LIST LOADER FUNCTIONALITY|ΛΕΙΤΟΥΡΓΙΑ ΕΙΣΑΓΩΓΗΣ ΛΙΣΤΑΣ|
+The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. There is also a new beta version super lead loader that allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation or check for duplicates in itself or other lists, so that is something you need to do before you load the leads. Also, make sure that you have created the list that these leads are to be under so that you can use them. There is also the matter of time-zone-coding these leads. You may want to increase the frequency that the ADMIN_adjust_GMTnow_on_leads.pl is being run in the cron on your Asterisk server so that any loaded leads can be coded faster. Here is a list of the fields in their proper order for the lead files|Ο VICIDIAL εισαγωγέας οδηγών είναι απλά σχεδιασμένος, ώστε να παίρνει ένα αρχείο - μέχρι 8ΜΒ - που είναι  διαχωρισμένο με tab ή pipe και να το φορτώνει στον πίνακα vicidial_list. Υπάρχει επίσης ένας νέος βήτα φορτωτής οδηγών έκδοσης έξοχος που επιτρέπει τον τομέα επιλέγοντας και TXT - σαφές κείμενο, CSV - κόμμα χώρισε τις τιμέ και XLS - σχήματα αρχείων Excel. Ο φορτωτής δεν κάνει εξακρίβωση δεδομένων ή έλεγχο σε διπλές καταχωρήσεις, το οποί είναι κάτι που πρέπει να κάνετε πριν την φόρτωση. Επίσης, διευκρινίστε ότι έχετε δημιουργήσει την λίστα όπου οι οδηγοί θα είναι από κάτω, ώστε να τους χρησιμοποιήστε.Υπάρχει επίσης το θέμα με τις ζώνες κωδικοποίησης χρόνου των οδηγών. Μπορεί να θέλετε να αυξήσετε την συχνότητα όπου το ADMIN_adjust_GMTnow_on_leads.pl τρέχει στον cron, ώστε οποιαδήποτε φόρτωση οδηγών να κωδικοποιείται πιο γρήγορα. Εδώ είναι μία λίστα από πεδία στην πρέπουσα ταξινόμηση για τα αρχεία καθοδήγησης.|
+NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /home/cron/AST_SERVER_conf.pl file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file|ΣΗΜΕΙΩΣΕΙΣ: Η λειτουργία εισαγωγής οδηγών Excel επιτρέπεται από μια σειρά προγραμμάτων και πρέπει να έχει κατάλληλα διαμορφωμένο ένα αρχείο home/cron/AST_SERVER_conf.pl στον κεντρικό υπολογιστή δικτύου. Επίσης, κάποια υπο-προγράμματα πρέπει να φορτωθούν για να εργαστούν επίσης - OLE- τα Storage_Lite και Spreadsheet-ParseExcel. Μπορείτε να ελέγξετε για λάθη χρόνου εκτέλεσης στο αρχείο error_log του apache σας |
+Vendor Lead Code - shows up in the Vendor ID field of the GUI|Κωδικός Οδηγού Προμηθευτού|
+Source Code - internal use only for admins and DBAs|Πηγαίος Κώδικας - εσωτερική χρήση μόνο από διαχειριστές και DBAs|
+List ID - the list number that these leads will show up under|ID λίστας - ο αριθμός λίστας που οι οδηγοί θα παρουσιαστούν κάτω από|
+Phone Code - the prefix for the phone number - 1 for US, 01144 for UK, 01161 for AUS, etc|Κωδικός τηλεφώνου - το πρόθεμα του τηλεφωνικού αριθμού (1 για ΗΠΑ, 01144 για Βρετανία κλπ)|
+Phone Number - must be at least 8 digits long|Ο αριθμός τηλεφώνου - πρέπει να είναι τουλάχιστον 8 ψηφία|
+Title - title of the customer - Mr. Ms. Mrs, etc...|Τίτλος - ο τίτλος του πελάτη (κος. κα. κλπ)|
+NOTE: It can take up to 30 seconds for changes submitted on this screen to go live|ΣΗΜΕΙΩΣΗ: Μπορεί να διαρκέσει και 30 δευτερόλεπτα για να καταχωρηθούν οι αλλαγές της οθόνης|
+USER NOT ADDED - there is already a user in the system with this user number|Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - υπάρχει ήδη ένας χρήστης με αυτό τον αριθμό|
+USER NOT ADDED - Please go back and look at the data you entered|Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+user id must be between 2 and 8 characters long|το id χρήστη πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες|
+full name and password must be at least 2 characters long|το πλήρες όνομα και κωδικός πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+CAMPAIGN NOT ADDED - there is already a campaign in the system with this ID|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία εκστρατεία με αυτό το ID|
+CAMPAIGN NOT ADDED - Please go back and look at the data you entered|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+campaign ID must be between 2 and 8 characters in length|το ID της εκστρατείας πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες|
+campaign name must be between 6 and 40 characters in length|το όνομα της εκστρατείας πρέπει να είναι μεταξύ 6 και 40 χαρακτήρες|
+CAMPAIGN STATUS NOT ADDED - there is already a campaign-status in the system with this name|Η ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη κατάσταση-εκστρατείας με αυτό το όνομα|
+CAMPAIGN STATUS NOT ADDED - there is already a global-status in the system with this name|Η ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία καθολική-κατάσταση με αυτό το όνομα|
+CAMPAIGN STATUS NOT ADDED - Please go back and look at the data you entered|Η ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+status must be between 1 and 8 characters in length|η κατάσταση πρέπει να είναι μεταξύ 1 και 8 χαρακτήρρες|
+status name must be between 2 and 30 characters in length|το όνομα της κατάστασης πρέπει να είναι μεταξύ 2 και 30 χαρακτήρρες|
+CAMPAIGN HOTKEY NOT ADDED - there is already a campaign-hotkey in the system with this hotkey|ΤΟ ΚΛΕΙΔΙ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη ένα κλειδί-εκστρατείας με αυτό το κλειδί|
+CAMPAIGN HOTKEY NOT ADDED - Please go back and look at the data you entered|ΤΟ ΚΛΕΙΔΙ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+hotkey must be a single character between 1 and 9|το κλειδί πρέπει να είναι ένας χαρακτηράς μεταξύ 1 και 9|
+LIST NOT ADDED - there is already a list in the system with this ID|Η ΛΙΣΤΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία λίστα με αυτό το ID|
+LIST NOT ADDED - Please go back and look at the data you entered|Η ΛΙΣΤΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+List ID must be between 2 and 8 characters in length|Το ID λίστας πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες|
+List name must be at least 2 characters in length|Το όνομα λίστας πρέπει να είναι 2 χαρακτήρες|
+GROUP NOT ADDED - there is already a group in the system with this ID|Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία ομάδα με αυτό το ID|
+GROUP NOT ADDED - Please go back and look at the data you entered|Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+Group ID must be between 2 and 20 characters in length and contain no|Το ID ομάδας πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες|
+Group name and group color must be at least 2 characters in length|Το όνομα και χρώμα ομάδας πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+REMOTE AGENTS NOT ADDED - there is already a remote agents entry starting with this userID|ΟΙ ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΑΝ - υπάρχει ήδη καταχώρηση απομακρυσμένων χειριστών που ξεκινάει με αυτό το ID χρήστη|
+REMOTE AGENTS NOT ADDED - Please go back and look at the data you entered|ΟΙ ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΑΝ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+User ID start and external extension must be at least 2 characters in length|Το ID χρήστη και η εξωτερική εσωτ.σύνδεση πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+USER GROUP NOT ADDED - there is already a user group entry with this name|ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ Η ΟΜΑΔΑ ΧΡΗΣΤΗ - υπάρχει ήδη μία καταχώρηση ομάδας χρήστη με αυτό το όνομα|
+USER GROUP NOT ADDED - Please go back and look at the data you entered|ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ Η ΟΜΑΔΑ ΧΡΗΣΤΗ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+Group name and description must be at least 2 characters in length|Η ομάδα και η περιγραφή πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+USER NOT MODIFIED - Please go back and look at the data you entered|Ο ΧΡΗΣΤΗΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+Password and Full Name each need ot be at least 2 characters in length|Ο κωδικός και το πλήρες όνομα πρέπει να είναι τουλάχιστον 2 χαρακτήρες το κάθε ένα|
+CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+the campaign name needs to be at least 6 characters in length|το όνομα της εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες|
+RESETTING CAMPAIGN LEAD HOPPER|ΕΠΑΝΑΦΟΡΑ ΚΑΘΟΘΗΓΗΤΗ ΕΚΣΤΡΑΤΕΙΑΣ HOPPER|
+Wait 1 minute before dialing next number|Αναμονή 1 λεπτού πριν την κλήση του επόμενου αριθμού|
+CAMPAIGN STATUS NOT MODIFIED - Please go back and look at the data you entered|Η ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+the campaign id needs to be at least 2 characters in length|το ID της εκστρατείας πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+the campaign status needs to be at least 1 characters in length|η κατάσταση της εκστρατείας πρέπει να είναι τουλάχιστον 1 χαρακτήρας|
+CUSTOM CAMPAIGN STATUS DELETED|ΔΙΑΓΡΑΦΗΚΕ Η ΠΡΟΣΑΡΜΟΣΜΕΝΗ ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ|
+CAMPAIGN HOTKEY NOT MODIFIED - Please go back and look at the data you entered|ΤΟ ΚΛΕΙΔΙ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+the campaign hotkey needs to be at least 1 characters in length|το κλειδί της εκστρατείας πρέπει να είναι τουλάχιστον 1 χαρακτήρας|
+CUSTOM CAMPAIGN HOTKEY DELETED|ΔΙΑΦΡΑΦΗΚΕ ΤΟ ΠΡΟΣΑΡΜΟΣΜΕΝΟ ΚΛΕΙΔΙ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ|
+CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+the campaign name needs to be at least 6 characters in length|το όνομα εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες|
+LIST NOT MODIFIED - Please go back and look at the data you entered|Η ΛΙΣΤΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+list name must be at least 2 characters in length|η λίστα πρέπει να είναι τουλαχιστον 2 χαρακτήρες|
+REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER|ΑΠΟΜΑΚΡΥΝΣΗ ΚΑΘΟΔΗΓΗΤΩΝ ΛΙΣΤΑΣ HOPPER ΑΠΟ ΠΑΛΑΙΑ HOPPER ΕΚΣΤΡΑΤΕΙΑ|
+GROUP NOT MODIFIED - Please go back and look at the data you entered|Η ΟΜΑΔΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+group name and group color must be at least 2 characters in length|το όνομα και χρώμα ομάδας πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+REMOTE AGENTS NOT MODIFIED - Please go back and look at the data you entered|ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΑΝ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+User ID Start and External Extension must be at least 2 characters in length|Το ID του χρήστη και η εξωτερική εσωτ.σύνδεση πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+REMOTE AGENTS MODIFIED|ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΤΡΟΠΟΠΟΙΗΘΗΚΑΝ|
+USER GROUP NOT MODIFIED - Please go back and look at the data you entered|Η ΟΜΑΔΑ ΧΡΗΣΤΗ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+Group name and description must be at least 2 characters in length|Ονομα ομάδας και περιγραφή πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+MODIFY A USERS RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΧΡΗΣΤΩΝ|
+Click here for user stats|Πατήστε εδώ για στατιστικά χρήστη|
+MODIFY A CAMPAIGNS RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΕΚΣΤΡΑΤΕΙΩΝ|
+CONFERENCES TABLE|ΠΙΝΑΚΑΣ ΣΥΝΔΙΑΛΕΞΕΩΝ|
+Conference Number -<\/B> This field is where you put the meetme conference dialpna number. It is also recommended that the meetme number in meetme.conf matches this number for each entry. This is for the conferences in astGUIclient and is used for leave-3way-call functionality in VICIDIAL|Αριθμός Συνδιάλεξης -</B> Αυτό το πεδίο είναι για τον αριθμό συνδιάλεξης meetme στο σχέδιο κλήσεων. Επίσης, συνιστούμε ο αριθμός meetme στο meetme.conf να ταιριάζει με αυτό τον αριθμό για κάθε καταχώρηση. Αυτό είναι για τις συνδιαλέξε στο astGUIclient και χρησιμοποιείται για την λειτουργία αποχώρησης από κλήση με 3 γραμμές στο VICIDIAL|
+Server IP -<\/B> The menu where you select the Asterisk server that this conference will be on|IP Διακομιστή-</B> Ο κατάλογος που επιλέξατε τον διακομιστή ASTERISK όπου η συνδιάλεξη θα είναι|
+PHONE NOT ADDED - there is already a Phone in the system with this extension\/server|ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη ένα τηλέφωνο με αυτή την εσωτ.σύνδεση/διακομιστή|
+PHONE NOT ADDED - Please go back and look at the data you entered|ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+PHONE ADDED|ΤΟ ΤΗΛΕΦΩΝΟ ΠΡΟΣΤΕΘΗΚΕ|
+SERVER NOT ADDED - there is already a server in the system with this ID|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη ένας διακομιστής με αυτό το ID|
+SERVER NOT ADDED - Please go back and look at the data you entered|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+SERVER ADDED|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΠΡΟΣΤΕΘΗΚΕ|
+CONFERENCE NOT ADDED - there is already a conference in the system with this ID and server|Η ΣΥΝΔΙΑΛΕΞΗ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία συνδιάλεξη με αυτό το ID και διακομιστή|
+CONFERENCE NOT ADDED - Please go back and look at the data you entered|Η ΣΥΝΔΙΑΛΕΞΗ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+CONFERENCE ADDED|Η ΣΥΝΔΙΑΛΕΞΗ ΠΡΟΣΤΕΘΗΚΕ|
+PHONE NOT MODIFIED - there is already a Phone in the system with this extension\/server|ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - υπάρχει ήδη ένα τηλέφωνο με αυτή την εσωτ.σύνδεση/διακομιστή|
+PHONE NOT MODIFIED - Please go back and look at the data you entered|ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+PHONE MODIFIED|ΤΟ ΤΗΛΕΦΩΝΟ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+SERVER NOT MODIFIED - there is already a server in the system with this server_ip|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - υπάρχει ήδη ένας διακομιστής με αυτό το IP|
+SERVER NOT MODIFIED - Please go back and look at the data you entered|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+SERVER MODIFIED|Ο ΔΙΑΚΟΜΙΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+CONFERENCE NOT MODIFIED - there is already a Conference in the system with this extension-server|Η ΣΥΝΔΙΑΛΕΞΗ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - υπάρχει ήδη μία συνδιάλεξη με αυτή την εσωτ.σύνδεση-διακομιστή|
+CONFERENCE NOT MODIFIED - Please go back and look at the data you entered|Η ΣΥΝΔΙΑΛΕΞΗ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε|
+You do not have permissions to modify this user|Δεν έχετε τις άδειες να τροποποιήσετε αυτόν τον χρήστη|
+Click here to delete user|Χτυπήστε εδώ για να διαγράψετε το χρήστη|
+Please go back and look at the data you entered|Παρακαλώ επιστρέψτε και εξετάστε τα στοιχεία που εισαγάγατε|
+Click here to delete campaign|Χτυπήστε εδώ για να διαγράψετε την εκστρατεία|
+Click here to delete list and all of its leads|Χτυπήστε εδώ για να διαγράψετε τον κατάλογο και όλους τους οδηγούς του|
+REMOVING LIST LEADS FROM VICIDIAL_LIST TABLE|ΑΦΑΙΡΕΣΗ ΤΩΝ ΜΟΛΥΒΔΩΝ ΚΑΤΑΛΟΓΩΝ ΑΠΟ ΤΟΝ ΠΊΝΑΚΑ VICIDIAL_LIST|
+Click here to delete in-group|Χτυπήστε εδώ για να διαγράψετε την-ΟΜΑΔΑ|
+Click here to delete remote agent|Επιλέξτε εδώ για να διαγράψετε τον απομακρυσμένο χειριστή|
+Click here to delete user group|Χτυπήστε εδώ για να διαγράψετε την ομάδα χρηστών|
+Click here to delete phone|Χτυπήστε εδώ για να διαγράψετε το τηλέφωνο|
+there is already a script entry with this name|υπάρχει ήδη μια είσοδος χειρογράφων με αυτό το όνομα|
+Script name, description and text must be at least 2 characters in length|Το όνομα, η περιγραφή και το κείμενο χειρογράφων πρέπει να είναι τουλάχιστον 2 χαρακτήρες στο μήκος|
+Click here to delete script|επιλέξτε εδώ για να διαγράψετε τον βοηθό|
+Phone Login|Τηλέφωνο Σύνδεσης|
+Phone Pass|Κωδικός Πρόσβασης Τηλεφώνου|
+Delete Users|Διάγραψε  τους χρήστες|
+Delete User Groups|Διάγραψε τις ομάδες χρηστών|
+Delete Lists|Διάγραψε τις Λίστες|
+Delete Campaigns|Διάγραψε τις εκστρατείες|
+Delete In-Groups|Διάγραψε τις Εισ-ΟΜΑΔΕΣ|
+Delete Remote Agents|Διάγραψε τους Απομακρυσμένους Χειριστές|
+Delete Script|Διάγραψε τον Βοηθό|
+Load Leads|Εισαγωγή Οδηγών|
+Campaign Detail|Λεπτομέρειες εκστρατείας|
+AGC Admin Access|Πρόσβαση AGC Admin|
+AGC Delete Phones|Το AGC διαγράφει τα τηλέφωνα|
+SCRIPT NOT ADDED|Ο ΒΟΗΘΟΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ|
+SCRIPT ADDED|Ο ΒΟΗΘΟΣ ΠΡΟΣΤΕΘΗΚΕ|
+SCRIPT NOT MODIFIED|Ο ΒΟΗΘΟΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+SCRIPT MODIFIED|Ο ΒΟΗΘΟΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+DELETE THIS USER|ΔΙΑΓΡΑΨΕ ΑΥΤΟΝ ΤΟΝ ΧΡΗΣΤΗ|
+DELETE THIS CAMPAIGN|ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+DELETE THIS LIST|ΔΙΑΓΡΑΨΕ ΑΥΤΗ ΤΗΝ ΛΙΣΤΑ|
+DELETE THIS IN-GROUP|ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΙΣ-ΟΜΑΔΑ|
+DELETE THIS REMOTE AGENT|ΔΙΑΓΡΑΨΕ ΑΥΤΟΝ ΤΟΝ ΑΠΟΜΑΚΡΥΣΜΕΝΟ ΧΕΙΡΙΣΤΗ|
+DELETE THIS USER GROUP|ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΟΜΑΔΑ ΧΡΗΣΤΩΝ|
+DELETE THIS PHONE|ΔΙΑΓΡΑΨΕ ΑΥΤΟ ΤΟ ΤΗΛΕΦΩΝΟ|
+DELETE THIS SCRIPT|ΔΙΑΓΡΑΨΕ ΑΥΤΟΝ ΤΟΝ ΒΟΗΘΟ|
+USER NOT DELETED|ΧΡΗΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+CAMPAIGN NOT DELETED|ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+LIST NOT DELETED|ΛΙΣΤΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+IN-GROUP NOT DELETED|ΕΙΣ-ΟΜΑΔΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+REMOTE AGENT NOT DELETED|ΑΠΟΜΑΚΡΥΣΜΕΝΟΣ ΧΕΙΡΙΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+USER GROUP NOT DELETED|ΟΜΑΔΑ ΧΡΗΣΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+PHONE NOT DELETED|ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+SCRIPT NOT DELETED|ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ Ο ΒΟΗΘΟΣ|
+USER DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΗΣΤΗ|
+USER DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΧΡΗΣΤΗ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+CAMPAIGN DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΕΚΣΤΡΑΤΕΙΑΣ|
+CAMPAIGN DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΕΚΣΤΡΑΤΕΙΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+Logout Agents|Αποσυνδεμένοι Χειριστές|
+AGENTS NOT LOGGED OUT OF CAMPAIGN|ΧΕΙΡΙΣΤΕΣ ΠΟΥ ΔΕΝ ΕΙΝΑΙ ΑΠΟΣΥΝΔΕΜΕΝΟΙ ΑΠΟ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+AGENT LOGOUT CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΑΠΟΣΥΝΔΕΣΗΣ ΧΕΙΡΙΣΤΩΝ|
+Click here to log all agents out of|Επιλέξτε εδώ για να αποσυνδέσετε όλους τους χειριστές από|
+AGENT LOGOUT COMPLETED|ΑΠΟΣΥΝΔΕΣΗ ΧΕΙΡΙΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+LOG ALL AGENTS OUT OF THIS CAMPAIGN|ΑΠΟΣΥΝΔΕΣΗ ΟΛΩΝ ΤΩΝ ΧΕΙΡΙΣΤΩΝ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+LIST DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΛΙΣΤΑΣ|
+LIST DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΛΙΣΤΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+IN-GROUP DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΕΙΣ-ΟΜΑΔΑΣ|
+IN-GROUP DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΕΙΣ-ΟΜΑΔΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+REMOTE AGENT DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ |
+REMOTE AGENT DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+USER GROUP DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ|
+USER GROUP DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+PHONE DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΤΗΛΕΦΩΝΟΥ|
+PHONE DELETION COMPLETED|Η ΔΙΑΓΡΑΦΗ ΤΟΥ ΤΗΛΕΦΩΝΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+SCRIPT DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΒΟΗΘΟΥ|
+SCRIPT DELETION COMPLETED|ΔΙΑΓΡΑΦΗ ΒΟΗΘΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ|
+Preview Script|Προεπισκόπιση Βοηθού|
+MODIFY A SCRIPT|ΤΡΟΠΟΠΟΙΗΣΤΕ ΕΝΑΝ ΒΟΗΘΟ|
+title of the script|τίτλος του βοηθού|
+CONFERENCE MODIFIED|Η ΣΥΝΔΙΑΛΕΞΗ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+MODIFY A PHONE RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΤΗΛΕΦΩΝΟΥ|
+THE END|ΤΕΛΟΣ|
+LIST ALL PHONES|ΛΙΣΤΑ ΤΗΛΕΦΩΝΩΝ|
+ADD A NEW PHONE|ΠΡΟΣΘΗΚΗ ΤΗΛΕΦΩΝΟΥ|
+SEARCH FOR A PHONE|ΑΝΑΖΗΤΗΣΗ ΤΗΛΕΦΩΝΟΥ|
+ADD A SERVER|ΠΡΟΣΘΗΚΗ ΔΙΑΚΟΜΙΣΤΗ|
+LIST ALL SERVERS|ΛΙΣΤΑ ΔΙΑΚΟΜΙΣΤΩΝ|
+SHOW ALL CONFERENCES|ΕΜΦΑΝΙΣΗ ΣΥΝΔΙΑΛΕΞΕΩΝ|
+ADD A NEW CONFERENCE|ΠΡΟΣΘΗΚΗ ΣΥΝΔΙΑΛΕΞΗΣ|
+AMD Send to VM exten|AMD στέλνει στο VM|
+Transfer-Conf DTMF|DTMF Μεταφοράς-Συνδ|
+Transfer-Conf Number|Αριθμός Μεταφοράς-Συνδ|
+HotKeys Active|Ενεργά Κλειδιά|
+Modify Leads|Τροποποίηση Οδηγών|
+Change Agent Campaign|Αλλαγή Εκστρατείας Χειριστή|
+Agent Choose Ingroups|Ο χειριστής επιλέγει Εισ.Ομάδες|
+CallBacks Within Campaign|Επανακλήσεις μέσα στην εκστρατεία|
+CallBacks Within List|Επανακλήσεις μέσα στην λίστα|
+CallBacks Within Agent|Επανακλήσεις μέσα στον χειριστή|
+Phone extension|Τηλ.σύνδεσης τηλεφώνου|
+Dialplan Number|Αριθμός Σχεδίου Κλήσεων|
+digits only|μόνο αριθμοί|
+Voicemail Box|Περιεχόμενο Φωνητικού Ταχυδρομείου|
+Outbound CallerID|Εξερχόμενο CallerID|
+Phone IP address|Δνση IP Τηλεφώνου|
+Computer IP address|Δνση IP Υπολογιστή|
+Server IP Address|Δνση IP Διακομιστή|
+Server IP|IP Διακομιστή|
+Login: |Σύνδεση:|
+Password: |Κωδικός:|
+Status: |Κατάσταση:|
+Active Account|Ενεργός Λογαριασμός|
+Phone Type|Τύπος τηλεφώνου|
+Full Name|Πλήρες Ονομα|
+Company: |Εταιρία:|
+Picture: |Εικόνα:|
+Client Protocol|Προτόκολο Πελάτη|
+Local GMT|Τοπικό GMT|
+Do NOT Adjust for DST|Μην ρυθμίσεις για DST|
+VALUE=SUBMIT|VALUE=ΥΠΟΒΑΛΛΩ|
+ADD A NEW SERVER|ΠΡΟΣΘΗΚΗ ΔΙΑΚΟΜΙΣΤΗ|
+Server ID|ID Διακομιστή|
+Server Description|Περιγραφή Διακομιστή|
+Active: |Ενεργή:|
+Asterisk Version|Εκδοση Asterisk|
+Conference Number|Αριθμός Συνδιάλεξης|
+New Messages|Νέα Μηνύματα|
+Old Messages|Παλαιά Μηνύματα|
+Manager Login|Διαχειριστή Σύνδεση|
+Manager Secret|Κωδικός Διαχειριστή|
+VICIDIAL Default User|VICIDIAL Προκαθορισμένος Χρήστης|
+VICIDIAL Default Pass|VICIDIAL Προκαθορισμένος Κωδικός|
+VICIDIAL Default Campaign|VICIDIAL Προκαθορισμένη εκστρατεία|
+Park Extension|Τηλ.σύνδ. Στάθμευσης|
+Park Exten|Τηλ.σύνδ. Στάθμευσης|
+Conf Extension|Τηλ.σύνδ. Συνδ.|
+Conf Exten|Τηλ.σύνδ. Συνδ.|
+VICIDIAL Park Exten|VICIDIAL Τηλ.σύνδ. Στάθμευσης|
+VICIDIAL Park File|VICIDIAL Αρχείο Στάθμευσης|
+Monitor Prefix|Πρόθεμα Παρακολούθησης|
+Recording Exten|Ηχογράφηση εσωτ.σύνδ.|
+VMailMain Exten|VMailMain Τηλ.σύνδ.|
+VMailDump Exten|VMailDump Τηλ.σύνδ.|
+Exten Context|Περιεχόμενο Τηλ.σύνδ|
+DTMFSend Channel|DTMFSend Κανάλι|
+Outbound Call Group|Ομάδα Εξερχομένων Κλήσεων|
+Browser Location|Θέση Φυλλομετρητή|
+Install Directory|Κατάλογος εγκατάστασης|
+CallerID URL|CallerID URL|
+VICIDIAL Default URL|VICIDIAL Προκαθορισμένο URL|
+Call Logging|Καταγραφή Γεγονότος Κλήσης|
+User Switching|Μεταγωγή Χρήστη|
+Conferencing|Σε συνδιαλέξη|
+Admin Hangup|Διαχειριστού Κλείσιμο|
+Admin Hijack|Διαχειριστού Κλέψιμο|
+Admin Monitor|Διαχειριστού Παρακολούθηση|
+Call Park|Στάθμευση Κλήσης|
+Updater Check|Ελεγχος ενημερωτή|
+AF Logging|AF Καταγραφή Γεγονότος|
+Queue Enabled|Ενεργή Ουρά|
+CallerID Popup|Υπερεμφανιζόμενο παραθύρο CallerID|
+VMail Button|Πλήκτρο VMail|
+Fast Refresh|Ταχύτητα Ανανέωσης|
+Fast Refresh Rate|Ρυθμός Ανανέωσης Ταχύτητας|
+Persistant MySQL|Συνεχής MySQL|
+Auto Dial Next Number|Αυτόματη Κλήση Επόμενου Αριθμού|
+Stop Rec after each call|Σταμάτα την ηχογράφηση μετά από κάθε κλήση|
+Primary |Πρωταρχικό |
+Secondary |Δευτερεύον|
+DBX Server|DBX Διακομιστής|
+DBX Database|DBX Βάση Δεδομένων|
+DBX User|DBX Χρήστης|
+DBX Pass|DBX Κωδικός|
+DBX Port|DBX Πόρτα|
+DBY Server|DBY Διακομιστής|
+DBY Database|DBY Βάση Δεδομένων|
+DBY User|DBY Χρήστης|
+DBY Pass|DBY Κωδικός|
+DBY Port|DBY Πόρτα|
+MODIFY A SERVER RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΔΙΑΚΟΜΙΣΤΗ|
+Max VICIDIAL Trunks|Μέγιστος Αριθμός Trunk|
+Telnet Host|Λήπτης Telnet|
+Telnet Port|Πόρτα Telnet|
+Manager User|Χρήστη Διαχειριστή|
+Manager Update User|Ενημέρωση Χρήστη Διαχειριστή|
+Manager Listen User|Παρακολούθηση Χρήστη Διαχειριστή|
+Manager Send User|Αποστολή Χρήστη Διαχειριστή|
+VMail Dump Exten|VMail εσωτ.σύνδεση απόρριψης|
+VICIDIAL AD extension|AD εσωτ.σύνδεση|
+Default Context|Προκαθορισμένο Περιεχόμενο|
+PHONES WITHIN THIS SERVER|ΤΗΛΕΦΩΝΑ ΣΤΟΝ ΔΙΑΚΟΜΙΣΤΗ|
+>EXTENSION<|>ΤΗΛ.ΣΥΝΔΕΣΗ<|
+>NAME<|>ΟΝΟΜΑ<|
+>ACTIVE<|>ΕΝΕΡΓΑ<|
+>MODIFY<|>ΤΡΟΠΟΠΟΙΗΣΗ<|
+This server has|Αυτός ο διακομιστής έχει|
+active phones and|ενεργά τηλέφωνα και|
+inactive phones|μη ενεργά τηλέφωνα|
+MODIFY A CONFERENCE RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΣΥΝΔΙΑΛΕΞΗΣ|
+Conference: |Συνδιαλέξη:|
+Current Extension|Ισχύουσα εσωτ.σύνδεση|
+extension: |Εσωτ.σύνδεση:|
+SEARCH RESULTS|ΑΝΑΖΗΤΗΣΗ ΑΠΟΤΕΛΕΣΜΑΤΩΝ|
+PHONE LISTINGS|ΕΝΤΑΓΜΕΝΑ ΤΗΛΕΦΩΝΑ|
+SERVER LISTINGS|ΕΝΤΑΓΜΕΝΟΙ ΔΙΑΚΟΜΙΣΤΕΣ|
+CONFERENCE LISTINGS|ΕΝΤΑΓΜΕΝΕΣ ΣΥΝΔΙΑΛΕΞΕΙΣ|
+script runtime|χρόνος εκτέλεσης διαδικασίας|
+ADD NEW PHONE|ΠΡΟΣΘΕΣΕ ΝΕΟ ΤΗΛΕΦΩΝΟ|
+ADD NEW SERVER|ΠΡΟΣΘΕΣΕ ΝΕΟ ΔΙΑΚΟΜΙΣΤΗ|
+ADD NEW CONFERENCE|ΠΡΟΣΘΕΣΕ ΝΕΑ ΣΥΝΔΙΑΛΕΞΗ|
+ADD SCRIPT|ΠΡΟΣΘΕΣΕ ΒΟΗΘΟ|
+VIEW SCRIPTS|ΕΜΦΑΝΙΣΗ ΒΟΗΘΩΝ|
+SCRIPTS LISTINGS|ΛΙΣΤΕΣ ΒΟΗΘΩΝ|
+ADDING NEW PHONE|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΤΗΛΕΦΩΝΟΥ|
+ADDING NEW SERVER|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΔΙΑΚΟΜΙΣΤΗ|
+ADDING NEW CONFERENCE|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΣΥΝΔΙΑΛΕΞΗΣ|
+MODIFY PHONE|ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ|
+MODIFY SERVER|ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ|
+MODIFY CONFERENCE|ΤΡΟΠΟΠΟΙΗΣΕ ΣΥΝΔΙΑΛΕΞΗ|
+MODIFYING PHONE|ΤΡΟΠΟΠΟΙΗΣΗ ΤΗΛΕΦΩΝΟΥ|
+MODIFYING SERVER|ΤΡΟΠΟΠΟΙΗΣΗ ΔΙΑΚΟΜΙΣΤΗ|
+MODIFYING CONFERENCE|ΤΡΟΠΟΠΟΙΗΣΗ ΣΥΝΔΙΑΛΕΞΗΣ|
+SEARCH PHONES|ΑΝΑΖΗΤΗΣΗ ΤΗΛΕΦΩΝΩΝ|
+SEARCH PHONES RESULTS|ΑΝΑΖΗΤΗΣΗ ΑΠΟΤΕΛΕΣΜΑΤΩΝ ΤΗΛΕΦΩΝΩΝ|
+PHONE LIST|ΛΙΣΤΑ ΤΗΛΕΦΩΝΟΥ|
+SERVER LIST|ΛΙΣΤΑ ΔΙΑΚΟΜΙΣΤΗ|
+CONFERENCE LIST|ΛΙΣΤΑ ΣΥΝΔΙΑΛΕΞΕΩΝ|
+HELP|ΒΟΗΘΕΙΑ|
+Click here for phone stats|Επιλέξτε εδώ για στατιστικά τηλεφώνου|
+REMOTE INBOUND: Main|ΑΠΟΜΑΚΡΥΣΜΕΝΟ ΕΙΣΕΡΧΟΜΕΝΟ: Κύριο|
+REMOTE INBOUND: Popup|ΑΠΟΜΑΚΡΥΣΜΕΝΟ ΕΙΣΕΡΧΟΜΕΝΟ: Υπερεμφανιζόμενο Παραθύρο|
+CALLS SENT TO|ΚΛΗΣΕΙΣ ΣΤΑΛΘΗΚΑΝ ΠΡΟΣ|
+Phone Stats|Στατιστικά Τηλεφώνου|
+CALL TIME AND CHANNELS|ΧΡΟΝΟΣ ΟΜΙΛΙΑΣ ΚΑΙ ΚΑΝΑΛΙΑ|
+CHANNEL GROUP|ΚΑΝΑΛΙ ΟΜΑΔΑΣ|
+HOURS:MINUTES|ΩΡΕΣ:ΛΕΠΤΑ|
+TOTAL CALLS|ΣΥΝΟΛΙΚΕΣ ΚΛΗΣΕΙΣ|
+>NUMBER|>ΑΡΙΘΜΟΣ|
+ DATE<| ΗΜΕΡΑ<|
+Close this window|Κλείσε αυτό το παράθυρο|
+Inbound Calls Stats|Στατιστικά Εισερχομένων Κλησεων|
+Add New User|Πρόσθεσε Νέο Χρήστη|
+Add New Campaign|Πρόσθεσε Νέα Εκστρατεία|
+Add New List|Πρόσθεσε Νέα Λίστα|
+Add New In-Group|Πρόσθεσε Νέα Εισ-Ομάδα|
+Add New Remote Agents|Πρόσθεσε Νέους Απομακρυσμένους Χειριστές|
+Add New Users Group|Πρόσθεσε Νέα Ομάδα Χρηστών|
+Add New Script|Πρόσθεσε Νέο Βοηθό|
+New User Addition|Προσθήκη Νέου Χρήστη|
+New Campaign Addition|Προσθήκη Νέας Εκστρατείας|
+New Campaign Status Addition|Προσθήκη Νέας Κατάστασης Εκστρατείας|
+New Campaign HotKey Addition|Προσθήκη Νέου Κλειδιού Εκστρατείας|
+New List Addition|Προσθήκη Νέας Λίστας|
+New In-Group Addition|Προσθήκη Νέας Εισ-Ομάδας|
+New Remote Agents Addition|Προσθήκη Νέων Απομακρυσμένων Χειριστών|
+New Users Group Addition|Προσθήκη Νέας Ομάδας Χρηστών|
+New Script Addition|Νέα προσθήκη Βοηθού|
+Modify User|Τροποποίηση Χρήστη|
+Modify Campaign - Basic View|Τροποποίηση Εκστρατείας - Βασική Επισκόπηση|
+Modify Campaign|Τροποποίηση Εκστρατείας|
+Modify List|Τροποποίηση Λίστας|
+Modify In-Group|Τροποποίηση Εισ-Ομάδων|
+Modify Remote Agents|Τροποποίηση Απομακρυσμένων Χειριστών|
+Modify Users Groups|Τροποποίηση Ομάδων Χρηστών|
+Modify Script|Τροποποιήστε τον Βοηθό|
+Welcome|Καλωσήρθες|
+Campaigns|Εκστρατείες|
+Lists|Λίστες|
+In-Groups|Εισ-Ομάδες|
+Remote Agents|Απομακρυσμένοι Χειριστές|
+User Groups|Ομάδες Χρήστη|
+Search Form|Φόρμα Αναζήτησης|
+Search Results|Αποτελέσματα Αναζήτησης|
+VICIDIAL ADMIN|ΔΙΑΧΕΙΡΙΣΗ|
+ TABLE| ΠΙΝΑΚΑΣ|
+First Name|Ονομα|
+Middle Initial|Μεσαίο Αρχικό|
+Last Name|Επίθετο|
+Address Line 1|1 Γραμμή Διεύθυνσης|
+Address Line 2|2 Γραμμή Διεύθυνσης|
+Address Line 3|3 Γραμμή Διεύθυνσης|
+City|Πόλη|
+State - limited to 2 characters|Κράτος - περιορισμός σε 2 χαρακτήρες|
+Province|Επαρχία|
+Postal Code|Ταχ.Κωδ.|
+Country|Χώρα|
+Gender|Φύλο|
+Date of Birth|Ημερ. Γέννησης|
+Alternate Phone Number|Εναλ. Αριθμός Τηλ.|
+Email Address|Διεύθυνση Ηλεκτρ.Ταχυδρομείου|
+Security Phrase|Φράση Ασφαλείας|
+Comments|Σχόλια|
+THE END|ΤΕΛΟΣ|
+Logout|Αποσύνδεση|
+LIST USERS|ΛΙΣΤΑ ΧΡΗΣΤΩΝ|
+ADD A NEW USER|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΗΣΤΗ|
+SEARCH FOR A USER|ΑΝΑΖΗΤΗΣΗ ΧΡΗΣΤΗ|
+ADD USER GROUP|ΠΡΟΣΘΗΚΗ ΟΜΑΔΑΣ ΧΡΗΣΤΗ|
+LIST USER GROUPS|ΛΙΣΤΑ ΟΜΑΔΩΝ ΧΡΗΣΤΗ|
+ADD CAMPAIGN|ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ|
+LIST CAMPAIGNS|ΛΙΣΤΑ ΕΚΣΤΡΑΤΕΙΩΝ|
+SHOW LISTS|ΕΜΦΑΝΙΣΗ ΛΙΣΤΩΝ|
+ADD NEW LIST|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΛΙΣΤΑΣ|
+LOAD NEW LEADS|ΕΙΣΑΓΩΓΗ ΝΕΩΝ ΟΔΗΓΩΝ|
+SHOW IN-GROUPS|ΕΜΦΑΝΙΣΗ ΕΙΣΕΡΧΟΜΕΝΩΝ ΟΜΑΔΩΝ|
+ADD NEW IN-GROUP|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΙΣΕΡΜΟΜΕΝΗΣ ΟΜΑΔΑΣ|
+SHOW REMOTE AGENTS|ΕΜΦΑΝΙΣΗ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ|
+ADD NEW REMOTE AGENTS|ΠΡΟΣΘΗΚΗ ΝΕΩΝ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ|
+SERVER STATS|ΣΤΑΤΙΣΤΙΚΑ ΔΙΑΚΟΜΙΣΤΗ|
+PARK REPORT|ΑΝΑΦΟΡΑ ΣΤΑΘΜΕΥΣΗΣ|
+VDAD REPORT|ΑΝΑΦΟΡΑ VDAD|
+CLOSER REPORT|ΑΝΑΦΟΡΑ CLOSER|
+SEARCH FOR A LEAD|ΑΝΑΖΗΤΗΣΗ ΟΔΗΓΟΥ|
+GROUP HOURLY|ΩΡΙΑΙΑ ΟΜΔΟΠΟΙΗΣΗ|
+User Number|Αριθμός Χρήστη|
+Full Name|Πλήρες Ονομα|
+User Level|Επίπεδο Χρήστη|
+User Group|Ομάδα Χρήστη|
+ADD A NEW CAMPAIGN|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ|
+ADD A NEW INBOUND GROUP|ΠΡΟΣΘΗΚΗ ΕΙΣΕΡΧΟΜΕΝΗΣ ΟΜΑΔΑΣ|
+ADD NEW USERS GROUP|ΠΡΟΣΘΗΚΗ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ|
+Campaign ID|ID Εκστρατείας|
+Campaign Name|Ονομα Εκστρατείας|
+Park Extension|Τηλ. σύνδεση Στάθμευσης|
+Park Filename|Ονομα Αρχείου Στάθμευσης|
+Web Form|Ιστο-σελίδα|
+Allow Closers|Επιτρέπω τους Closers|
+Hopper Level|Επίπεδο Hopper|
+Auto Dial Level|ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ|
+Next Agent Call|Επόμενη Κλήση Χειριστή|
+Local Call Time|Χρόνος Τοπικής Κλήσης|
+Voicemail|ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ|
+SUBMIT|ΕΠΙΒΕΒΑΙΩΣΗ|
+List ID|ID Λίστας|
+List Name|Ονομα Λίστας|
+Campaign|Εκστρατεία|
+Group ID|ID Ομάδας|
+Group Name|Ονομα Ομάδας|
+Group Color|Χρώμα Ομάδας|
+Fronter Display|Μπροστινή Οθόνη|
+User ID Start|ID Χρήστη Ξεκινά|
+Number of Lines|Αριθμός Γραμμών|
+External Extension|Εξωτερική Τηλ. Σύνδεση|
+Inbound Groups|Εισερχόμενες Ομάδες|
+Group: |Ομάδα:|
+Description: |Περιγραφή:|
+USER ADDED|ΧΡΗΣΤΗΣ ΠΡΟΣΤΕΘΗΚΕ|
+CAMPAIGN ADDED|ΕΚΣΤΡΑΤΕΙΑ ΠΡΟΣΤΕΘΗΚΕ|
+CAMPAIGN STATUS ADDED|ΚΑΤΑΣΤΑΣΗ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΕΘΗΚΕ|
+CAMPAIGN HOTKEY ADDED|ΚΛΕΙΔΙ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΕΘΗΚΕ|
+LIST ADDED|ΛΙΣΤΑ ΠΡΟΣΤΕΘΗΚΕ|
+GROUP ADDED|ΟΜΑΔΑ ΠΡΟΣΤΕΘΗΚΕ|
+REMOTE AGENTS ADDED|ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΠΡΟΣΤΕΘΗΚΑΝ|
+USER GROUP ADDED|ΟΜΑΔΑ ΧΡΗΣΤΗ ΠΡΟΣΤΕΘΗΚΕ|
+USER MODIFIED|ΧΡΗΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+CAMPAIGN MODIFIED|ΕΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+GROUP MODIFIED|ΟΜΑΔΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+CAMPAIGN MODIFIED|ΕΚΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+LIST MODIFIED|ΛΙΣΤΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+USER GROUP MODIFIED|ΟΜΑΔΑ ΧΡΗΣΤΗ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+RESETTING LIST-CALLED-STATUS|ΕΠΑΝΑΦΟΡΑ ΚΑΤΑΣΤΑΣΗΣ ΚΛΗΣΗΣ ΛΙΣΤΑΣ|
+Dial status |Κατάσταση κλήσης|
+List Order|Σειρά Λίστας|
+Hopper Level|Επίπεδο Hopper|
+Force Reset of Hopper|Αναγκαστική Επαναφορά του Hopper|
+Dial Timeout|Κλήση εκτός χρόνου|
+Dial Prefix|Πρόθεμα Κλήσης|
+Campaign CallerID|CallerID Εκστρατείας|
+Campaign VDAD exten|Εκστρατείας VDAD εσωτ.σύνδεση|
+Campaign Rec exten|Επέκταση εκστρατείας Ηχογρ|
+Campaign Recording|Ηχογράφηση εκστρατείας|
+Campaign Rec Filename|Όνομα αρχείου εκστρατείας Ηχογρ|
+LISTS WITHIN THIS CAMPAIGN|ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+LIST ID|ID ΛΙΣΤΑΣ|
+LIST NAME|ΟΝΟΜΑ ΛΙΣΤΑΣ|
+>ACTIVE<|>ΕΝΕΡΓΗ<|
+This campaign has |Αυτή η εκστρατεία έχει|
+active lists and |ενεργές λίστες και|
+inactive lists|Μη ενεργές λίστες|
+leads to be dialed in those lists|οδηγοί που καλούντε στις λίστες|
+leads in the dial hopper|>οδηγοί στον hopper κλήσεων<|
+>STATUS<|>ΚΑΤΑΣΤΑΣΗ<|
+>DESCRIPTION<|>ΠΕΡΙΓΡΑΦΗ<|
+>SELECTABLE<|>ΕΠΙΛΕΞΙΜΟ<|
+>DELETE<|>ΔΙΑΓΡΑΦΗ<|
+ADD NEW CUSTOM CAMPAIGN STATUS|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΠΡΟΣΑΡΜΟΣΜΕΝΗΣ ΚΑΤΑΣΤΑΣΗΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+Selectable: |Επιλέξιμο:|
+value=ADD|value=ΠΡΟΣΘΗΚΗ|
+CUSTOM HOTKEYS WITHIN THIS CAMPAIGN|ΠΡΟΣΑΡΜΟΣΜΕΝΑ ΚΛΕΙΔΙΑ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+>HOTKEY<|>ΚΛΕΙΔΙ<|
+ADD NEW CUSTOM CAMPAIGN HOTKEY|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΠΡΟΣΑΡΜΟΣΜΕΝΟΥ ΚΛΕΙΔΙΟΥ ΕΚΣΤΡΑΤΕΙΑΣ|
+Hotkey: |Κλειδί:|
+Basic View|Βασική Επισκόπηση|
+Detail View|Αναλυτική Επισκόπηση|
+MODIFY A LISTS RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΛΙΣΤΑΣ|
+Reset Lead-Called-Status for this list|ΕΠΑΝΑΦΟΡΑ ΚΑΤΑΣΤΑΣΗΣ ΚΛΗΣΗΣ ΟΔΗΓΟΥ ΓΙΑ ΤΗΝ ΛΙΣΤΑ|
+STATUSES WITHIN THIS LIST|ΚΑΤΑΣΤΑΣΕΙΣ ΣΤΗΝ ΛΙΣΤΑ|
+>CALLED<|>ΚΛΗΘΕΝΤΑ<|
+>NOT CALLED<|>ΜΗ ΚΛΗΘΕΝΤΑ<|
+>SUBTOTALS<|>ΥΠΟΣΥΝΟΛΑ<|
+>SUBTOTAL<|>ΥΠΟΣΥΝΟΛΟ<|
+TIME ZONES WITHIN THIS LIST|ΖΩΝΕΣ ΩΡΑΣ ΣΤΗΝ ΛΙΣΤΑ|
+GMT OFFSET NOW|GMT OFFSET|
+local time|τοπικός χρόνος|
+>TOTAL<|>ΣΥΝΟΛΙΚΑ<|
+CALLED COUNTS WITHIN THIS LIST|ΜΕΤΡΗΣΗ ΚΛΗΣΕΩΝ ΣΤΗΝ ΛΙΣΤΑ|
+MODIFY A GROUPS RECORD|ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΟΜΑΔΩΝ|
+MODIFY A REMOTE AGENTS ENTRY|ΤΡΟΠΟΠΟΙΗΣΗ ΚΑΤΑΧΩΡΗΣΗΣ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ|
+numbers only|μόνο αριθμοί|
+dialplan number dialed to reach agents|ο αριθμός που κλήθηκε από το πλάνο κλήσεων για να καλέσει τους χειριστές|
+MODIFY A USERS GROUP ENTRY|ΤΡΟΠΟΠΟΙΗΣΗ ΚΑΤΑΧΩΡΗΣΗΣ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ|
+no spaces or punctuation|όχι κενά ή στίξη|
+description of group|περιγραφή ομάδας|
+SEARCH FOR A USER|ΑΝΑΖΗΤΗΣΗ ΧΡΗΣΤΗ|
+SEARCH RESULTS|ΑΠΟΤΕΛΕΣΜΑΤΑ ΑΝΑΖΗΤΗΣΗΣ|
+>STATS<|>ΣΤΑΤΙΣΤΙΚΑ<|
+USER LISTINGS|ΛΙΣΤΕΣ ΧΡΗΣΤΗ|
+CAMPAIGN LISTINGS|ΕΝΤΑΓΜΕΝΕΣ ΕΚΣΤΡΑΤΕΙΕΣ|
+LIST LISTINGS|ΕΝΤΑΓΜΕΝΕΣ ΛΙΣΤΕΣ|
+INBOUND GROUP LISTINGS|ΕΝΤΑΓΜΕΝΕΣ ΕΙΣΕΡΧΟΜΕΝΕΣ ΟΜΑΔΕΣ|
+REMOTE AGENTS LISTINGS|ΕΝΤΑΓΜΕΝΟΙ ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ|
+USER GROUPS LISTINGS|ΕΝΤΑΓΜΕΝΕΣ ΟΜΑΔΕΣ ΧΡΗΣΤΗ|
+script runtime|χρόνος εκτέλεσης διαδικασίας|
+Hopper List|Λίστα Hopper|
+Live Current Hopper List|Ενεργή Λίστα στον Hopper|
+Total leads in hopper right now|Αριθμός οδηγών στον hopper τώρα:|
+Server Stats|Στατιστικά Διακομιστή|
+Total Calls placed from this Campaign:       |Συνολικά κλήσεις που τοποθετήθηκαν από την Εκστρατεία:|
+Average Call Length for all Calls in seconds:|Μέσος όρος σε δευτερόλεπτα για όλες τις κλήσεις:|
+Total DROP Calls:                            |Συνολικά ΕΓΚΑΤΑΛΕΙΜΕΝΕΣ κλήσεις:|
+Average Length for DROP Calls in seconds:    |Μέσος όρος σε δευτερόλεπτα για ΕΓΚΑΤΑΕΙΜΕΝΕΣ κλήσεις:|
+Total NA calls -Busy,Disconnect,BTvoicemail: |Συνολικά ΝΑ κλήσεις -Busy,Disconnect,BTvoicemail:|
+Average Call Length for NA Calls in seconds: |Μέσος όρος σε δευτερόλεπτα για ΝΑ κλήσεις:|
+---------- DROPS|---------- ΕΓΚΑΤΑΛ|
+ AUTO-DIAL NO ANSWERS| ΜΗ ΑΠΑΝΤΗΜΕΝΕΣ ΑΥΤΟΜΑΤΕΣ ΚΛΗΣΕΙΣ|
+---------- USER STATS|---------- ΣΤΑΤΙΣΤΙΚΑ ΧΡΗΣΤΗ|
+---------- TIME STATS|---------- ΣΤΑΤΙΣΤΙΚΑ ΧΡΟΝΟΥ|
+USER                    |ΧΡΗΣΤΗΣ                 |
+Agents Time On Calls                 |Χρόνος Χειριστών σε κλήσεις|
+agents logged in on server|Χειριστές συνδεμένοι στον διακομιστή|
+Paused agents|Χειριστές σε παύση|
+5 minutes or more on call|5 λεπτά ή παραπάνω σε κλήση|
+Over 10 minutes on call|Πάνω από 10 λεπτά σε κλήση|
+ NO AGENTS ON CALLS | ΚΑΝΕΝΑΣ ΧΕΙΡΙΣΤΗΣ ΣΕ ΚΛΗΣΕΙΣ|
+calls being placed on server|κλήσεις που τοποθετήθηκαν στον διακομιστή|
+LIVE CALL WAITING|ΑΝΑΜΟΝΗ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ|
+ NO LIVE CALLS WAITING |ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΝΑΜΟΝΗ|
+START OVER|ΞΕΚΙΝΑ|
+Lead Loader Module|Υπομονάδα εισαγωγής οδηγών|
+Current file status|Κατάσταση αρχείου|
+Load leads from this file|Εισαγωγή οδηγών από αυτό το αρχείο|
+Answering Machine Message|Μήνυμα Αυτόματου Τηλεφωνητή|
+Processing |Επεξεργασία|
+TALK TIME AND STATUS|ΧΡΟΝΟΣ ΟΜΙΛΙΑΣ ΚΑΙ ΚΑΤΑΣΤΑΣΗ|
+>COUNT<|>ΚΑΤΑΜΕΤΡΗΣΗ<|
+>HOURS:MINUTES<|>ΩΡΕΣ:ΛΕΠΤΑ<|
+TOTAL CALLS |ΣΥΝΟΛΙΚΕΣ ΚΛΗΣΕΙΣ|
+LOGIN/LOGOUT TIME| ΧΡΟΝΟΣ ΣYΝΔΕΣΗΣ/ΑΠΟΣΥΝΔΕΣΗΣ|
+>EVENT <| >ΣΥΜΒΑΝ<|
+> CAMPAIGN<|>ΕΚΣΤΡΑΤΕΙΑ<|
+LAST 50 CALLS|Τελευταίες 50 Κλήσεις|
+VICIDIAL REMOTE: Call Disposition|Απομακρυσμένο: Τερματισμός Κλήσης|
+Call has been dispositioned|Η κλήση έχει τερματίσει|
+Close This Window|Κλείστε αυτό το Παράθυρο|
+Call information|Πληροφορίες Κλήσης|
+lead lookup FAILED for lead_id|ΑΠΟΤΥΧΙΑ ψαξίματος καθοδήγησης για lead_id|
+DISPO CALL|Τερματισμό Κλήσης|
+>Address |>Διεύθυνση |
+>City |>Πόλη |
+>State:|>Κράτος:|
+ Postal Code:|Ταχ.Κωδ.|
+>Province |Επαρχία|
+>Country |>Χώρα    |
+>Alt Phone |>Εναλ Τηλέφωνο |
+>Email |Ηλεκτρονικό ταχυδρομείο|
+>Security |>Ασφάλεια |
+>Comments |>Σχόλια |
+>Disposition:|>Τερματισμός:|
+Group Hourly Stats|Ομαδοποιημένα Ωριαία Στατιστικά|
+TSR HOUR COUNTS|ΜΕΤΡΗΣΗ ΩΡΩΝ TSR|
+Lead Search|Αναζήτηση Οδηγού|
+Lead Lookup|Ψάξιμο Καθοδήγησης|
+Please enter a:|Παρακαλώ καταχωρήστε:|
+a Home Phone Number:|ένας αριθμός τηλεφώνου σπιτιού|
+vendor lead code|αυτόματος κωδικός καθοδήγησης|
+a lead ID:|ID οδηγού|
+>NEW SEARCH<|>ΝΕΑ ΑΝΑΖΗΤΗΣΗ<|
+Lead record modification|Τροποποίηση οδηγού|
+information modified|οι πληροφορίες τροποποιήθηκαν|
+CALLS TO THIS LEAD|Κλήσεις για αυτόν τον οδηγό|
+VDAD Closer Stats|Στατιστικά VDAD Closer|
+Auto-dial Closer Stats|Στατιστικά αυτόματης κλήσης Closer|
+VICIDIAL REMOTE AGENTS|ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ|
+INBOUND STATS|ΣΤΑΤΙΣΤΙΚΑ ΕΙΣΕΡΧΟΜΕΝΩΝ|
+REMOTE AGENTS ERROR - Please go back and look at the data you entered|ΛΑΘΟΣ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ|
+ - WAITING - |- ΑΝΑΜΟΝΗ -|
+Remote Agent inbound stats         |Στατιστικά εισερχομένων απομακρυσμένου χειριστή|
+Total calls taken |Συνολικές κλήσεις που διακομίστηκαν|
+Total talk time on |Συνολικός χρόνος ομιλίας σε|
+Call list for |Λίστα Κλήσεων για|
+ NO CALLS ON THIS DAY |ΔΕΝ ΥΠΑΡΧΟΥΝ ΚΛΗΣΕΙΣ ΓΙΑ ΑΥΤΗ ΤΗΝ ΗΜΕΡΑ|
+Scripts|Βοηθοί|
+Script:|Βοηθός:|
+Get Call Launch|Κατά την έναρξη κλήσης|
+not used currently|μην χρησιμοποιημένος αυτήν την περίοδο|
+VERSION|ΕΚΔΟΣΗ|
+BUILD|ΔΗΜΙΟΥΡΓΙΑ|
+REPORTS|ΑΝΑΦΟΡΕΣ|
+USERS|ΧΡΗΣΤΕΣ|
+CAMPAIGNS|ΕΚΣΤΡΑΤΕΙΕΣ|
+LISTS|ΛΙΣΤΕΣ|
+SCRIPTS|ΒΟΗΘΟΙ|
+FILTERS|ΦΙΛΤΡΑ|
+IN-GROUPS|ΕΙΣΕΡΧΟΜΕΝΕΣ ΟΜΑΔΕΣ|
+USER GROUPS|ΟΜΑΔΕΣ ΧΡΗΣΤΗ|
+REMOTE AGENTS|ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ|
+Column|Στήλη|
+ PERFORMANCE| ΑΠΟΔΟΣΗ|
+AGENT |ΧΕΙΡΙΣΤΗΣ|
+SERVER |ΔΙΑΚΟΜΙΣΤΗΣ |
+### END translation phrases through 1.1.11 release ###
+### BEGIN translation 1.1.12 release ###
+Drop Call Seconds -<\/B> The number of seconds from the time the customer line is picked up until the call is considered a DROP, only applies to outbound calls|Δευτερ. Εγκαταλ. Κλήσης -</B> Ο αριθμός των δευτερολέπτων από την στιγμή που ο πελάτης σηκώνει το τηλ μέχρι η κλήση να θεωρηθεί εγκαταλειμένη. Μόνο για εξερχόμενες κλήσεις  |
+Safe Harbor Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Μήνυμα Ασφαλούς Φύλαξης -</B> Εάν είναι Υ θα παίξει ένα μήνυμα στον πελάτη μετά το πέρας των δευτερολέπτων ασφαλούς εγκατάλειψης, χωρίς να μεταφερθεί σε έναν χειριστή. Αυτή η επιλογή υπερβαίνει την αποστολή σε θυρίδα ηχητικού μηνύματος εάν είναι Υ|
+Safe Harbor Exten -<\/B> This is the dialplan extension that the desired Safe Harbor audio file is located at on your server|Εσωτ.σύνδεση Ασφαλούς Φύλαξης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Ασφαλής Φύλαξης στον διακομιστή|
+Drop Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Μήνυμα Εγκατάλειψης -</B> Εάν είναι Υ θα παίξει ένα μήνυμα στον πελάτη μετά το πέρας των δευτερολέπτων Εγκατάλειψης, χωρίς να μεταφερθεί σε έναν χειριστή. Αυτή η επιλογή υπερβαίνει την αποστολή σε θυρίδα ηχητικού μηνύματος εάν είναι Υ|
+Drop Exten -<\/B> This is the dialplan extension that the desired Dropped call audio file is located at on your server|Εσωτ.Σύνδεση Εγκατάλειψης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Εγκατάλειψης στον διακομιστή|
+Call Time ID -<\/B> This is the short name of a Vicidial Call Time Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|ID Χρόνου Κλήσης -</Β> Αυτό είναι το σύντομο όνομα του Ορισμού Χρόνου Κλήσης. Πρέπει να είναι ένα μοναδικό στοιχείο. Μην χρησιμοποιηθούν διαστήματα ή στίξεις. 2-10 χαρακτήρες|
+Call Time Name -<\/B> This is a more descriptive name of the Call Time Definition. This is a short summary of the Call Time definition. max 30 characters, minimum of 2 characters|Ονομα Χρόνου Κλήσης -</B> Αυτό είναι ένα πιο περιγραφικό όνομα του Ορισμού Χρόνου Κλήσης. Είναι μία σύντομη περιγραφή. 2-30 χαρακτήρεςCall Time Comments -</B> This is where you can place comments for a Vicidial Call Time Definition such as -10am to 4pm with extra call state restrictions-.  max 255 characters|Σχόλια Χρόνου Κλήσης -</B> Μέχρι 255 χαρακτήρες|
+Default Start and Stop Times -<\/B> This is the default time that calling will be allowed to be started or stopped within this call time definition if the day-of-the-week start time is not defined. 0 is midnight. To prevent calling completely set this field to 2400 and set the Default Stop time to 2400. To allow calling 24 hours a day set the start time to 0 and the stop time to 2400|Προκαθορισμένοι Χρόνοι Εκκίνησης και Παύσης -</B> Αυτός είναι ο προκαθορισμένος χρόνος όπου θα επιτρέπετε οι κλήσεις εάν δεν έχει οριστεί ο χρόνος εκκίνησης της ημέρας-της-εβδομάδας. 0 είναι μεσάνυχτα. Εάν δεν θέλετε καμία κλήση θέστε αυτό το πεδίο σε 2400 και το προκαθορισμένο χρόνο Παύσης σε 2400. Για να επιτρέψετε την 24ωρη κλήση την ημέρα θέστε σε 0 τον χρόνο εκκίνησης και σε 2400 τον χρόνο παύσηςWeekday Start and Stop Times -</B> These are the custom times per day that can be set for the call time definition. same rules apply as with the Default start and stop times|Εβδομαδιαίοι Χρόνοι Εκκίνησης και Παύσης -</B> Αυτοί είναι προσαρμόσιμοι χρόνοι ανά ημέρα για τον ορισμό χρόνων κλήσεων|
+State Call Time Definitions -<\/B> This is the list of State specific call time definitions that are followed in this Call Time Definition|Ορισμοί Χρόνων Κλήσεων Καταστάσεων -</B> Είναι η λίστα συγκεκριμένων Ορισμών Χρόνων Κλήσεων Καταστάσεων|
+State Call Time State -<\/B> This is the two letter code for the state that this calling time definition is for. For this to be in effect the local call time that is set in the campaign must have this state call time record in it as well as all of the leads having two letter state codes in them|Κατάσταση Χρόνου Κλήσης Κατάστασης -</B> Αυτό είναι ο δύο γραμμάτων κωδικός για την κατάσταση όπου ο ορισμός χρόνου κλήσης είναι για. Θα πρέπει και οι Οδηγοί της εκστρατείας να έχουν δύο γράμματα κωδικούς κατάστασης για τον χρόνο κλήσης κατάστασης|
+Delete Call Times -<\/B> This option allows the user to be able to delete vicidial call times records and vicidial state call times records from the system|Διαγραφή Χρόνων Κλήσεων -</B> Αυτή η επιλογή επιτρέπει στον χρήστη να διαγράφει εγγραφές χρόνων κλήσεων και καταστάσεων από το σύστημα|
+Modify Call Times -<\/B> This option allows the user to view and modify the call times and state call times records. A user doesn't need this option enabled if they only need to change the call times option on the campaigns screen|Τροποποίηση Χρόνων Κλήσεων -</B> Αυτή η επιλογή επιτρέπει στον χρήστη εμφανίσει και να τροποποιήσει τους χρόνους κλήσεων και τις εγγραφές χρόνων κλήσεων κατάστασης. Δεν χρειάζεται να είναι ενεργή αυτή η επιλογή εάν μόνο χρειάζεται η αλλαγή της επιλογής των χρόνων κλήσεων στην οθόνη των εκστρατειών|
+Wrapup Seconds -<\/B> The number of seconds to force an agent to wait before allowing them to receive or dial another call. The timer begins as soon as an agent hangs up on their customer - or in the case of alternate number dialing when the agent finishes the lead - Default is 0 seconds. If the timer runs out before the agent has dispositioned the call, the agent still will NOT move on to the next call until they select a disposition|Δευτερ. Τυλίγματος -</B> Ο αριθμός των δευτερολέπτων που αναγκάζει έναν χειριστή να περιμένει πριν του επιτραπεί να λάβει ή να κάνει άλλη κλήση. Ο χρόνος ξεκινάει μόλις τερματίσει μία κλήση. Προκαθορισμένα είναι 0 δευτερ. Αν ο χρόνος περάσει πριν ο χειριστής τερματίσει την κλήση, δεν θα μετακινηθεί στην άλλη κλήση πριν συμβεί αυτό|
+Wrapup Message -<\/B> This is a campaign-specific message to be displayed on the wrapup screen if wrapup seconds is set|Μήνυμα Τυλίγματος -</B> Αυτό είναι ένα συγκεκριμένο μήνυμα εκστρατείας που εμφανίζεται στην οθόνη τυλίγματος όταν έχει οριστεί ο χρόνος τυλίγματος|
+You are not authorized to view this page. Please go back|Δεν έχετε το δικαίωμα για να δείτε την σελίδα. Παρακαλώ επιστρέψτε|
+Day and time options will appear once you have created the Call Time Definition|Οι επιλογές Ημέρας και ώρας θα εμφανιστούν όταν θα δημιουργήσετε τον Ορισμό Χρόνου Κλήσης|
+State Call Time ID, name and state must be at least 2 characters in length|Το ID Χρόνου Κλήσης Κατάστασης, το όνομα και η κατάσταση πρέπει να είναι τουλάχιστον 2 χαρακτήρες |
+Call Time ID and name must be at least 2 characters in length|Το ID Χρόνου Κλήσης και το όνομα πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+Active State Call Time Definitions for this Record|Ενεργοί Ορισμοί Χρόνου Κλήσης Κατάστασης για αυτή την Εγγραφή|
+there is already a call time entry with this ID|υπάρχει ήδη μία εγγραφή χρόνου κλήσης με αυτό το ID|
+CALL TIMES USING THIS STATE CALL TIME|ΧΡΟΝΟΙ ΚΛΗΣΕΩΝ ΠΟΥ ΧΡΗΣΙΜΟΠΟΙΟΥΝ ΑΥΤΟ ΤΟΝ ΧΡΟΝΟ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+STATE CALL TIME DEFINITION NOT ADDED|Ο ΟΡΙΣΜΟΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ|
+DELETE THIS STATE CALL TIME DEFINITION|ΔΙΑΓΡΑΦΗ ΟΡΙΣΜΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+Modify Call Time State Definitions List|Τροποποίηση Λίστας Ορισμών Χρόνου Κλήσης Κατάστασης |
+CALL TIME DEFINITION NOT ADDED|Ο ΟΡΙΣΜΟΣ ΧΡΟΝΟΥ ΚΛΗΣΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+DELETE THIS CALL TIME DEFINITION|ΔΙΑΓΡΑΦΗ ΟΡΙΣΜΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+short description of the call time|σύντομη περιγραφή του χρόνου κλήσης|
+CAMPAIGNS USING THIS CALL TIME|ΕΚΣΤΑΤΕΙΕΣ ΠΟΥ ΧΡΗΣΙΜΟΠΟΙΟΥΝ ΑΥΤΟ ΤΟΝ ΧΡΟΝΟ ΚΛΗΣΗΣ|
+STATE CALL TIME NOT MODIFIED|ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+CALL TIME NOT MODIFIED|ΧΟΝΟΣ ΚΛΗΣΗΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ|
+STATE CALL TIME MODIFIED|ΤΡΟΠΟΠΟΙΗΘΗΚΕ ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+CALL TIME MODIFIED|ΤΡΟΠΟΠΟΙΗΘΗΚΕ ΧΡΟΝΟΣ ΚΛΗΣΗΣ|
+Default Start:|Προκαθορσμένη Εκκίνηση|
+Default Stop:|Προκαθορσμένη Παύση:|
+Sunday Start:|Κυριακή Εκκίνηση:|
+Sunday Stop:|Κυριακή Παύση:|
+Monday Start:|Δευτέρα Εκκίνηση:|
+Monday Stop:|Δευτέρα Παύση:|
+Tuesday Start:|Τρίτη Εκκίνηση:|
+Tuesday Stop:|Τρίτη Παύση:|
+Wednesday Start:Τετάρτη Εκκίνηση:|
+Wednesday Stop:|Τετάρτη Παύση:|
+Thursday Start:|Πέμπτη Εκκίνηση:|
+Thursday Stop:|Πέμπτη Παύση:|
+Friday Start:|Παρασκευή Εκκίνηση:|
+Friday Stop:|Παρασκευή Παύση:|
+Saturday Start:|Σάββατο Εκκίνηση:|
+Saturday Stop:|Σάββατο Παύση:|
+State Rule Added|Προσθήκη Κανόνα Κατάστασης|
+State Rule Removed|Απομάκρυνση Κανόνα Κατάστασης|
+STATE CALL TIME LISTINGS|ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+CALL TIME LISTINGS|ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+STATE CALL TIME ADDED|ΠΡΟΣΘΗΚΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+CALL TIME ADDED|ΠΡΟΣΘΗΚΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+Drop Call Seconds|Δευτερ. Εγκαταλ. Κλήσης|
+Use Safe Harbor Message|Χρήση μηνύματος Ασφαλούς Φιλοξενίας|
+Safe Harbor Exten|Εσωτ.Σύνδεση Ασφαλούς Φιλοξενίας|
+Use Drop Message|Χρήση μηνύματος Εγκατάλειψης|
+Drop Exten|Εσωτ. Σύνδεση Εγκατάλειψης|
+SIP Listen Version|SIP Εκδοση Παρακολούθησης|
+Add New Call Time|Πρόσθεσε Νέο Χρόνο Κλήσης|
+Add New State Call Time|Πρόσθεσε Νέο Χρόνο Κλήσης Κατάστασης|
+New Call Time Addition|Προσθήκη Νέου Χρόνου Κλήσης|
+New State Call Time Addition|Προσθήκη Νέου Χρόνου Κλήσης Κατάστασης|
+Modify Call Time|Τροποποίηση Χρόνου Κλήσης|
+MODIFY A CALL TIME|ΤΡΟΠΟΠΟΙΗΣΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+Modify State Call Time|Τροποπίηση Χρόνου Κλήσης Κατάστασης|
+MODIFY A STATE CALL TIME|ΤΡΟΠΟΠΟΙΗΣΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+Delete Call Time|Διαγραφή Χρόνου Κλήσης|
+Delete State Call Time|Διαγραφή Χρόνου Κλήσης Κατάστασης|
+State Call Times||Χρόνοι Κλήσεων Κατάστασης|
+State Call Time ID|ID Χρόνου Κλήσης Κατάστασης|
+State Call Time Name|Ονομα Χρόνου Κλήσης Κατάτασης|
+State Call Time Comments|Σχόλια Χρόνου Κλήσης Κατάστασης|
+STATE CALL TIME NOT DELETED|Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+CALL TIME DELETION COMPLETED|ΟΛΟΚΛΗΡΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+STATE CALL TIME DELETION COMPLETED|ΟΛΟΚΛΗΡΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+CALL TIME NOT DELETED|Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ|
+Call Time ID must be at least 2 characters in length|Το ID χρόνου κλήσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+STATE CALL TIME DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+CALL TIME DELETION CONFIRMATION|ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+Call Times|Χρόνοι Κλήσεων|
+CALL TIMES|ΧΡΟΝΟΙ ΚΛΗΣΕΩΝ|
+SHOW CALL TIMES|ΕΜΦΑΝΙΣΗ ΧΡΟΝΩΝ ΚΛΗΣΕΩΝ|
+ADD NEW CALL TIME|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ|
+SHOW STATE CALL TIMES|ΕΜΦΑΝΙΣΗ ΧΡΟΝΩΝ ΚΛΗΣΕΩΝ ΚΑΤΑΣΤΑΣΕΩΝ|
+ADD NEW STATE CALL TIME|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ|
+Call Time ID|ID Χρόνου Κλήσης|
+Call Time Name|Ονομα Χρόνου Κλήσης|
+Call Time Comments|Σχόλια Χρόνου Κλήσης|
+short description of the call time|σύντομη περιγραφή του χρόνου κλήσης|
+HIDE|ΑΠΟΚΡΥΨΗ|
+SHOW|ΕΜΦΑΝΙΣΗ|
+Show Dialable Leads Count|Εμφάνιση Μετρητή Κληθέντων Οδηγών|
+Dialable Lead Count|Μετρητής Κληθέντων Οδηγών|
+TEST ON CAMPAIGN|ΕΛΕΓΧΟΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+Wrapup Seconds:|Δευτερ Τυλίγματος:|
+Wrapup Message:|Μήνυμα Τυλίγματος:|
+Alt Number Dialing|Κλήση Εναλ Αριθμού|
+no active lists selected for this campaign|δεν έχουν επιλεχθεί ενεργές λίστες για την εκστρατεία|
+Realtime Screen|Πραγματικού Χρόνου Οθόνη|
+Allowable Inbound Groups -<\/B> Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound/outbound campaigns only to select the inbound groups that are used for agents in this campaign|Επιτρεπόμενες εισερχόμενες ομάδες -</B> εδώ είναι όπου εσείςεπιλέγει τις εισερχόμενες ομάδες που θέλετε τους πράκτορες σεαυτήν την ΠΙΟ ΣΤΕΝΉ εκστρατεία για να είστε σε θέση για ναπάρετε τις κλήσεις από. Είναι σημαντικό για ΣΥΝΔΥΑΣΜΕΝΟΣπλησίον/εξερχόμενες εκστρατείες για να επιλέξει μόνο τιςεισερχόμενες ομάδες που χρησιμοποιούνται για τους πράκτορες σεαυτήν την εκστρατεία|
+Allowed Inbound Groups|Εισερχόμενες ομάδες|
+ADD NUMBER TO DNC|ΠΡΟΣΘΕΣΤΕ ΤΟΝ ΑΡΙΘΜΟ ΣΕ DNC|
+ADD A NUMBER TO THE DNC LIST|ΠΡΟΣΘΕΣΤΕ έναν ΑΡΙΘΜΟ στον ΚΑΤΑΛΟΓΟ DNC|
+Add New DNC|Προσθέστε νέο DNC|
+Phone Number|Τηλεφωνικός αριθμός|
+VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add a number to this list so that it will not be called by campaigns that use the internal DNC list|Κατάλογος VICIDIAL DNC -</B> αυτό δεν καλεί τον κατάλογοπεριέχει κάθε μόλυβδο που έχει τεθεί μια θέση DNC στοσύστημα. Μέσω των ΚΑΤΑΛΟΓΩΝ - ΠΡΟΣΘΕΣΤΕ τον ΑΡΙΘΜΟ στη σελίδαDNC που είστε σε θέση να προσθέσετε με το χέρι έναν αριθμό σεαυτόν τον κατάλογο έτσι ώστε δεν θα κληθεί από τις εκστρατείεςπου χρησιμοποιούν τον εσωτερικό κατάλογο DNC|
+DNC NOT ADDED - This phone number is already in the Do Not Call List|DNC ΠΡΟΣΤΙΘΈΜΕΝΟ - αυτός ο τηλεφωνικός αριθμός είναι ήδη δενκαλεί τον κατάλογο|
+DNC ADDED|DNC ΠΡΟΣΤΙΘΈΜΕΝΟ|
+Use Internal DNC List -<\/B> This defines whether this campaign is to filter leads against the Internal DNC list. If it is set to Y, the hopper will look for each phone number in the DNC list before placing it in the hopper. If it is in the DNC list then it will change that lead status to DNCL so it cannot be dialed. Default is N|Εσωτερικός κατάλογος DNC χρήσης -</B> αυτό καθορίζει εάν αυτή ηεκστρατεία είναι στους μολύβδους φίλτρων ενάντια στον εσωτερικόκατάλογο DNC. Εάν τίθεται το Υ, η χοάνη θα ψάξει κάθετηλεφωνικό αριθμό στον κατάλογο DNC πρίν τοποθετεί τον στηχοάνη. Εάν είναι στον κατάλογο DNC έπειτα θα αλλάξει ότιθέση μολύβδου σε DNCL έτσι που δεν μπορεί να σχηματιστεί. Ηπροεπιλογή είναι ν|
+Use Internal DNC List|Εσωτερικός κατάλογος DNC χρήσης|
+Campaign CallerID -<\/B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service(RBS) circuits. This will also work through most VOIP(SIP or IAX trunks) providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID|Εκστρατεία CallerID -</B> αυτός ο τομέας επιτρέπει την αποστολήενός αριθμού συνήθειας callerid στις εξερχόμενες κλήσεις.Αυτό είναι ο αριθμός που θα παρουσίαζε στο callerid τουπροσώπου που καλείτε. Η προεπιλογή είναι ΑΓΝΩΣΤΗ. Εάνχρησιμοποιείτε το T1 ή Eί να σχηματίσει έξω αυτήν τηνεπιλογή είναι μόνο διαθέσιμος εάν χρησιμοποιείτε PRIs -ISDN Tί ή Eί - που ανοίγουν το χαρακτηριστικό γνώρισμασυνήθειας callerid, αυτό δεν θα λειτουργήσει με τα κυκλώματαυπηρεσιών ληστεύω-κομματιών (RBS). Αυτό θα λειτουργήσειεπίσης μέσω των προμηθευτών των περισσότερων κορμών VOIP(SIPή IAX) που επιτρέπουν δυναμικό εξερχόμενο callerID. Ησυνήθεια callerID ισχύει μόνο για τις κλήσεις πουτοποθετούνται για την εκστρατεία VICIDIAL άμεσα, οποιεσδήποτεκλήσεις ή μεταφορές 3$ων συμβαλλόμενων μερών δεν θα στείλουν τησυνήθεια callerID. ΣΗΜΕΙΩΣΗ: Μερικές φορές να βάλει ΑΓΝΩΣΤΗ ήΙΔΙΩΤΙΚΗ στον τομέα θα παραγάγει την αποστολή του αριθμούπροεπιλογής σας callerID από το μεταφορέα σας με τις κλήσεις.Μπορείτε να θελήσετε να εξετάσετε αυτό και να υποβάλετε0000000000 ο τομέας callerid αντ' αυτού εάν δεν θέλετε νασας στείλετε CallerID|
+Login -<\/B> The login used for the phone user to login to the client applications|Σύνδεση -</B> η σύνδεση που χρησιμοποιείται για τον τηλεφωνικό χρήστηστη σύνδεση στις εφαρμογές πελατών|
+Password -<\/B>  The password used for the phone user to login to the client applications|Κωδικός πρόσβασης -</B> ο κωδικός πρόσβασης που χρησιμοποιείται γιατον τηλεφωνικό χρήστη στη σύνδεση στις εφαρμογές πελατών|
+New Campaign Lead Recycle Addition|Νέα ανακύκλωσης προσθήκη μολύβδου εκστρατείας|
+Modify Campaign Lead Recycle|Τροποποιήστε το μόλυβδο εκστρατείας ανακύκλωσης|
+Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links. This feature only works in auto-dial mode, where dial level is greater than 0|Μέσω της χρήσης της ανακύκλωσης μολύβδου, μπορείτε να καλέσετετις συγκεκριμένες θέσεις των μολύβδων πάλι σε ένα διευκρινισμένοδιάστημα χωρίς επαναρύθμιση του ολόκληρου καταλόγου. Ηανακύκλωση μολύβδου είναι εκστρατεία-συγκεκριμένη και δεν ειναιαπαραίτητο να είναι μια επιλεγμένη dialable θέση στηνεκστρατεία σας. Ο τομέας καθυστέρησης προσπάθειας είναι οαριθμός δευτερολέπτων έως ότου μπορεί ο μόλυβδος να τοποθετηθείπίσω στη χοάνη, αυτός ο αριθμός πρέπει να είναι τουλάχιστον120 δευτερόλεπτα. Ο μέγιστος τομέας προσπάθειας είναι ομέγιστος αριθμός χρόνων ότι ένας μόλυβδος αυτής της θέσηςμπορεί να προσπαθηθεί προτού να πρέπει να επαναρυθμιστεί οκατάλογος, αυτός ο αριθμός μπορεί να είναι από 1 έως 10.Μπορείτε να ενεργοποιήσετε και να απενεργοποιήσετε μια ανακύκλωσηςείσοδο μολύβδου με τις παρεχόμενες συνδέσεις. Αυτό τοχαρακτηριστικό γνώρισμα λειτουργεί μόνο στον τρόποαυτόματος-πινάκων, όπου το επίπεδο πινάκων είναι μεγαλύτεροαπό 0|
+CAMPAIGN LEAD RECYCLE NOT ADDED - there is already a lead-recycle for this campaign with this status|ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΙΘΕΜΕΝΟΣ - υπάρχει ήδη έναςμόλυβδος-ανακύκλωσης για αυτήν την εκστρατεία με αυτήν την θέση|
+CAMPAIGN LEAD RECYCLE NOT ADDED - Please go back and look at the data you entered|ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΙΘΕΜΕΝΟΣ - παρακαλώ επιστρέψτεκαι εξετάστε τα στοιχεία που εισαγάγατε|
+status must be between 1 and 6 characters in length|η θέση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος|
+attempt delay must be at least 120 seconds|η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα|
+maximum attempts must be from 1 to 10|οι μέγιστες προσπάθειες πρέπει να είναι από 1 έως 10|
+CAMPAIGN LEAD RECYCLE ADDED|ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΙΘΕΜΕΝΟΣ|
+CAMPAIGN LEAD RECYCLE NOT DELETED|ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ|
+CAMPAIGN LEAD RECYCLE DELETED|ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ|
+Delete Lead Recycle|Διαγράψτε το μόλυβδο ανακύκλωσης|
+LEAD RECYCLING WITHIN THIS CAMPAIGN|ΑΝΑΚΥΚΛΩΣΗ ΜΟΛΥΒΔΟΥ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ|
+ATTEMPT DELAY|ΚΑΘΥΣΤΕΡΗΣΗ ΠΡΟΣΠΑΘΕΙΑΣ|
+ATTEMPT MAXIMUM|ΜΕΓΙΣΤΟ ΠΡΟΣΠΑΘΕΙΑΣ|
+ADD NEW CAMPAIGN LEAD RECYCLE|ΠΡΟΣΘΕΣΤΕ ΤΟ ΝΕΟ ΜΟΛΥΒΔΟ ΕΚΣΤΡΑΤΕΙΑΣ ΑΝΑΚΥΚΛΩΣΗΣ|
+Attempt Delay|Καθυστέρηση προσπάθειας|
+Attempt Maximum|Μέγιστο προσπάθειας|

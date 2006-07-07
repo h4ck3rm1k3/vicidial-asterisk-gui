@@ -1,0 +1,17 @@
+### Create the following tables in your "asterisk" MySQL database
+
+
+################################################################################
+################################################################################
+####                                                                        ####
+####   THIS FILE IS DEPRICATED, LOOK AT THE MySQL_AST_CREATE_tables.sql     ####
+####     FILE FOR MORE INFO ON MYSQL DATABASE SETUP                         ####
+####                                                                        ####
+################################################################################
+################################################################################
+
+### remember to prepopulate the conferencing table with meetme conferences defined
+### remember to prepopulate the phones table with proper values
+### remember to prepopulate the servers table with the asterisk servers' IP addresses
+### remember to prepopulate the server_updater table with the asterisk servers' IP addresses
+
