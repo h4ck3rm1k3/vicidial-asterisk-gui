@@ -1,0 +1,170 @@
+VICIDIAL|GOOD|Thu, 22 Sep 2005 17:42:04 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Thu, 22 Sep 2005 17:42:10 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Thu, 22 Sep 2005 18:35:53 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 11:28:16 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 11:32:26 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 11:32:28 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 12:39:09 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 12:52:43 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 12:52:45 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 14:33:18 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 14:33:20 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:02 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:09 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:11 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:13 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:15 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Fri, 23 Sep 2005 16:31:16 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:05:06 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:05:10 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:05:12 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:05:16 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:06 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:10 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:15 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:19 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:22 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:32 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:34 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:38 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:41 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:47 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:06:55 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:07:22 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:07:23 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:07:26 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:07:36 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:20:02 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:20:13 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:20:21 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:20:24 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 12:20:26 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 13:04:03 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+LIST_LOAD|GOOD|Mon, 26 Sep 2005 13:04:19 -0400|lead|load|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6||
+VICIDIAL|GOOD|Mon, 26 Sep 2005 13:14:49 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 13:14:53 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+LIST_LOAD|GOOD|Mon, 26 Sep 2005 13:15:08 -0400|lead|load|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6||
+VICIDIAL|GOOD|Mon, 26 Sep 2005 13:56:12 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 13:56:15 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VD_CLOSER|GOOD|Mon, 26 Sep 2005 13:56:28 -0400|over|ride|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6||
+VICIDIAL|GOOD|Mon, 26 Sep 2005 16:17:15 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:01 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:04 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:05 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:07 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:13 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:20 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:29 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:34 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:37 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:39 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:41 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:47 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Mon, 26 Sep 2005 17:31:53 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.10) Gecko/20050716 Firefox/1.0.6|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:44 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:46 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:48 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:50 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:53 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Wed, 28 Sep 2005 17:47:54 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 30 Sep 2005 15:48:44 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 30 Sep 2005 15:48:46 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 30 Sep 2005 15:48:48 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 30 Sep 2005 15:48:52 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 30 Sep 2005 15:59:10 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:09:19 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:09:36 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:09:36 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:09:53 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:11:06 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:13 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:40 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:41 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:41 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:42 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:42 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:44 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:46 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:47 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:47 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:50 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:52 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:54 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:54 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+LIST_LOAD|GOOD|Thu, 06 Oct 2005 10:12:55 -0400|lead|load|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7||
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:58 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:12:59 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:00 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:00 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:02 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:04 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:04 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:06 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:06 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:09 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:52 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:13:59 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:26:16 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:26:17 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 06 Oct 2005 10:26:19 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:09:58 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:10:01 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:10:05 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:10:07 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:10:12 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:10:39 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Fri, 07 Oct 2005 10:36:07 -0400|444|444|10.10.10.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:02:07 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:02:19 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:02:23 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:02:29 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:02:34 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Thu, 10 Nov 2005 15:03:08 -0500|444|444|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|Manager|
+VICIDIAL|GOOD|Tue, 22 Nov 2005 15:02:45 -0500|6666|sales|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|test user|
+VICIDIAL|GOOD|Tue, 22 Nov 2005 15:29:13 -0500|6666|sales|10.10.6.1|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|test user|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:05:59 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:06:07 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:06:10 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:06:33 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:06:38 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 22 Dec 2005 17:09:05 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 23 Dec 2005 14:39:34 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.8) Gecko/20051111 Firefox/1.5|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 19 Jan 2006 15:38:10 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 19 Jan 2006 15:38:13 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 19 Jan 2006 15:38:14 -0500|123456|bob5|10.10.6.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 03 Mar 2006 16:14:23 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 03 Mar 2006 16:14:38 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 03 Mar 2006 16:14:55 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 17 Mar 2006 14:22:24 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 17 Mar 2006 14:22:27 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 17 Mar 2006 14:22:29 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 17 Mar 2006 14:59:52 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 17 Mar 2006 14:59:53 -0500|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 17:03:08 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 17:34:00 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 17:34:03 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 18:00:32 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:09:43 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:12:38 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:31 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:43 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:50 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:53 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:55 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:13:57 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:14:01 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:18:08 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 22:18:12 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Thu, 27 Apr 2006 23:40:33 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:33:41 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:33:43 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:33:47 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:33:49 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:07 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:20 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:24 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:26 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:38 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:46 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:34:50 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
+VICIDIAL|GOOD|Fri, 28 Apr 2006 11:35:52 -0400|123456|bob5|10.10.8.19|Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.12) Gecko/20050915 Firefox/1.0.7|1 - MATT admin|
