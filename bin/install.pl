@@ -8,7 +8,7 @@
 ############################################
 # install.pl - puts server files in the right places and creates conf file
 #
-# modify the variables below to customize for your system.
+# default paths.
 #
 # default path to home directory:
 $home =		'/usr/share/astguiclient';
@@ -50,7 +50,11 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options:\n  [-t] = test\n  [-debug] = verbose debug messages\n[--admin-only] = only translate admin pages\n[--client-only] = only translate client pages\n[--without-en] = only translate non-english\n[--language=] = which language to build, 2 letter code, defaults to es-spanish\n\n";
+	print "install.pl - installs astGUIclient server files in the proper places, this\n";
+	print "script will look for an /etc/astguiclient.conf file for existing settings, and\n";
+	print "if not present will prompt for proper information.\n";
+	print "\n";
+	print "allowed run time options:\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
 
 	exit;
 	}
@@ -60,11 +64,6 @@ if (length($ARGV[0])>1)
 		{
 		$DB=1; # Debug flag
 		}
-		if ($args =~ /--language/i)
-		{
-		$LANG=1;
-		print "\n----- LANGUAGE WEB SCRIPT ONLY BUILD -----\n\n";
-		}
 		if ($args =~ /--language=/i)
 		{
 		@data_in = split(/--language=/,$args);
@@ -72,21 +71,6 @@ if (length($ARGV[0])>1)
 		}
 		else
 			{$CLIlanguage = 'es';}	# default to build all languages
-		if ($args =~ /-admin-only/i)
-		{
-		$admin_only=1; # Admin flag
-		print "\n----- ADMIN PAGES ONLY BUILD -----\n\n";
-		}
-		if ($args =~ /-client-only/i)
-		{
-		$client_only=1; # Client flag
-		print "\n----- CLIENT PAGES ONLY BUILD -----\n\n";
-		}
-		if ($args =~ /-without-en/i)
-		{
-		print "\n----- NON-ENGLISH ONLY BUILD -----\n\n";
-		$without_en=1;
-		}
 		if ($args =~ /-t/i)
 		{
 		$TEST=1;
@@ -101,36 +85,12 @@ else
 ### end parsing run-time options ###
 
 
-if ($LANG)
-{
-if ( (!$admin_only) && (!$client_only) )
-	{$admin_only=1; $client_only=1;}
+print "\n----- INSTALL BUILD: $CLIlanguage -----\n\n";
+$LANG_FILE_ADMIN = "./translations/$CLIlanguage$US$language_admin_file";
+open(lang, "$LANG_FILE_ADMIN") || die "can't open $LANG_FILE_ADMIN: $!\n";
+@lang = <lang>;
+close(lang);
 
-if ($admin_only==1) 
-	{
-	print "\n----- LANGUAGE BUILD: $CLIlanguage -----\n\n";
-	$LANG_FILE_ADMIN = "./translations/$CLIlanguage$US$language_admin_file";
-	open(lang, "$LANG_FILE_ADMIN") || die "can't open $LANG_FILE_ADMIN: $!\n";
-	@lang = <lang>;
-	close(lang);
-		&translate_pages;
-	}
-
-@lang=@MT;
-@LANGUAGES=@MT;
-@FILES=@MT;
-@TRANSLATIONS=@MT;
-@TRANSLATIONS_RAW=@MT;
-
-if ($client_only==1) 
-	{
-	$LANG_FILE = "./translations/$CLIlanguage$US$language_file";
-	open(lang, "$LANG_FILE") || die "can't open $LANG_FILE: $!\n";
-	@lang = <lang>;
-	close(lang);
-		&translate_pages;
-	}
-}
 
 else
 {
