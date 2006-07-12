@@ -82,7 +82,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -117,7 +117,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
-echo "<title>Controllo Di Estensione Di Conf";
+echo "<title>Controllo interni della conferenza";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -131,7 +131,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if (strlen($conf_exten)<1)
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten è non valido\n";
+		echo "Conf Exten $conf_exten non è valido\n";
 		exit;
 		}
 		else
@@ -177,7 +177,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				$RingCalls='N';
 				}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Condizione: ' . $Astatus . '|CampCalls: ' . $RingCalls . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Status: ' . $Astatus . '|CampCalls: ' . $RingCalls . "|\n";
 
 			}
 		$total_conf=0;
@@ -191,7 +191,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$ManicaA[$total_conf] = "$row[0]";
+			$CanaleA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
@@ -204,7 +204,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$ManicaA[$total_conf] = "$row[0]";
+			$CanaleA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		}
@@ -216,8 +216,8 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		while($total_conf > $counter)
 		{
 			$counter++;
-			$countecho = "$countecho$ManicaA[$counter] ~";
-		#	echo "$ManicaA[$counter] ~";
+			$countecho = "$countecho$CanaleA[$counter] ~";
+		#	echo "$CanaleA[$counter] ~";
 		}
 
 	echo "$countecho\n";
@@ -231,7 +231,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if ( (strlen($conf_exten)<1) || (strlen($exten)<1) )
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten è non valido or Exten $exten è non valido\n";
+		echo "Conf Exten $conf_exten non è valido or Exten $exten non è valido\n";
 		exit;
 		}
 		else
@@ -240,7 +240,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
-		echo "Congresso $conf_exten è stato registrato a $exten\n";
+		echo "Conferenza $conf_exten è stato registrato  $exten\n";
 	}
 
 
@@ -249,7 +249,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";
+	echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

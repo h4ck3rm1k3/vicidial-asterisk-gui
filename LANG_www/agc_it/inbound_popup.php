@@ -82,7 +82,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -247,11 +247,11 @@ echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    UNIQUEID: $uniqueid 
 	</script>
 
 <?
-echo "<title>CHIAMATA INBOUND IN TENSIONE";
+echo "<title>CHIAMATA INBOUND ATTIVA";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=\"#CCC2E0\" marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onload=\"link_timeout();\">\n";
-echo "<CENTER><H2>CHIAMATA INBOUND IN TENSIONE</H2>\n";
+echo "<CENTER><H2>CHIAMATA INBOUND ATTIVA</H2>\n";
 echo "<B>$NOW_TIME</B><BR><BR>\n";
 }
 
@@ -262,7 +262,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 	if (strlen($uniqueid)<9)
 	{
 	$channel_live=0;
-	echo "Uniqueid $uniqueid è non valido\n";
+	echo "Uniqueid $uniqueid non è valido\n";
 	exit;
 	}
 	else
@@ -278,7 +278,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 #		Zap/73|"V.I.C.I. MARKET" <7275338730>|2005-04-28 14:01:21|7274514936|Inbound direct to Matt|||||
 		if ($format=='debug') {echo "\n<!-- $row[0]|$row[1]|$row[2]|$row[3]|$row[4]|$row[5]|$row[6]|$row[7]|$row[8]|$row[9]|$row[10]|$row[11]|$row[12]|$row[13]| -->";}
 		echo "<table width=95% cellpadding=1 cellspacing=3>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Manica: </td><td align=left>$row[1]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Canale: </td><td align=left>$row[1]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>CallerID: </td><td align=left>$row[3]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n";
 
@@ -301,7 +301,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 			$local_web_callerID_QUERY_STRING.="&callerID_prefix=$NXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_last4=$XXXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_Time=$row[6]";
-			$local_web_callerID_QUERY_STRING.="&callerID_Manica=$row[1]";
+			$local_web_callerID_QUERY_STRING.="&callerID_Canale=$row[1]";
 			$local_web_callerID_QUERY_STRING.="&callerID_uniqueID=$row[0]";
 			$local_web_callerID_QUERY_STRING.="&callerID_phone_ext=$row[5]";
 			$local_web_callerID_QUERY_STRING.="&callerID_server_ip=$row[2]";
@@ -312,14 +312,14 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_c=$row[11]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_d=$row[12]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_e=$row[13]";
-		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">ABITUDINE</a> - \n";
+		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">CLIENTE</a> - \n";
 
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Il Numero Ha composto: </td><td align=left>$row[8]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Numero chiamato: </td><td align=left>$row[8]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Note: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
-		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">HANGUP</a> - \n";
-		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">TRASMETTA AL MIO VOICEMAIL</a>\n";
+		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">ATTACCA</a> - \n";
+		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">INVIA AL MIO VOICEMAIL</a>\n";
 		echo "</span></td></tr>\n";
 		echo "</table>\n";
 
@@ -339,7 +339,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";
+	echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

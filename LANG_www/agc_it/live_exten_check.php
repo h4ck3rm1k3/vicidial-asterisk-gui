@@ -69,7 +69,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -104,7 +104,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Controllo In tensione Di Estensione";
+echo "<title>Controllo Interni Attivi ";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -126,7 +126,7 @@ echo "$row[0]|";
 	if ( (strlen($exten)<1) or (strlen($protocol)<3) )
 	{
 	$channel_live=0;
-	echo "Exten $exten è non valido o protocollo $protocol è non valido\n";
+	echo "Exten $exten non è valido o protocollo $protocol non è valido\n";
 	exit;
 	}
 	else
@@ -141,8 +141,8 @@ echo "$row[0]|";
 		{
 		$loop_count++;
 		$row=mysql_fetch_row($rslt);
-		$ManicaA[$loop_count] = "$row[0]";
-		$ManicaB[$loop_count] = "$row[1]";
+		$CanaleA[$loop_count] = "$row[0]";
+		$CanaleB[$loop_count] = "$row[1]";
 		if ($format=='debug') {echo "\n<!-- $row[0]     $row[1] -->";}
 		}
 	}
@@ -159,9 +159,9 @@ echo "$row[0]|";
 		{
 		$row=mysql_fetch_row($rslt);
 		echo "Conversation: $counter ~";
-		echo "ManicaA: $ManicaA[$counter] ~";
-		echo "ManicaB: $ManicaB[$counter] ~";
-		echo "ManicaBtrunk: $row[0]|";
+		echo "CanaleA: $CanaleA[$counter] ~";
+		echo "CanaleB: $CanaleB[$counter] ~";
+		echo "CanaleBtrunk: $row[0]|";
 		}
 		else
 		{
@@ -173,9 +173,9 @@ echo "$row[0]|";
 			{
 			$row=mysql_fetch_row($rslt);
 			echo "Conversation: $counter ~";
-			echo "ManicaA: $ManicaA[$counter] ~";
-			echo "ManicaB: $ManicaB[$counter] ~";
-			echo "ManicaBtrunk: $row[0]|";
+			echo "CanaleA: $CanaleA[$counter] ~";
+			echo "CanaleB: $CanaleB[$counter] ~";
+			echo "CanaleBtrunk: $row[0]|";
 			}
 			else
 			{
@@ -187,9 +187,9 @@ echo "$row[0]|";
 				{
 				$row=mysql_fetch_row($rslt);
 				echo "Conversation: $counter ~";
-				echo "ManicaA: $ManicaA[$counter] ~";
-				echo "ManicaB: $ManicaB[$counter] ~";
-				echo "ManicaBtrunk: $row[0]|";
+				echo "CanaleA: $CanaleA[$counter] ~";
+				echo "CanaleB: $CanaleB[$counter] ~";
+				echo "CanaleBtrunk: $row[0]|";
 				}
 				else
 				{
@@ -201,16 +201,16 @@ echo "$row[0]|";
 					{
 					$row=mysql_fetch_row($rslt);
 					echo "Conversation: $counter ~";
-					echo "ManicaA: $ManicaA[$counter] ~";
-					echo "ManicaB: $ManicaB[$counter] ~";
-					echo "ManicaBtrunk: $row[0]|";
+					echo "CanaleA: $CanaleA[$counter] ~";
+					echo "CanaleB: $CanaleB[$counter] ~";
+					echo "CanaleBtrunk: $row[0]|";
 					}
 					else
 					{
 					echo "Conversation: $counter ~";
-					echo "ManicaA: $ManicaA[$counter] ~";
-					echo "ManicaB: $ManicaB[$counter] ~";
-					echo "ManicaBtrunk: $ManicaA[$counter]|";
+					echo "CanaleA: $CanaleA[$counter] ~";
+					echo "CanaleB: $CanaleB[$counter] ~";
+					echo "CanaleBtrunk: $CanaleA[$counter]|";
 					}
 				}
 			}
@@ -264,7 +264,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";
+	echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

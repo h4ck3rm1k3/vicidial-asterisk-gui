@@ -161,7 +161,7 @@ $build = '60619-1047';
 
 if ($force_logout)
 {
-    echo "Ora avete annotato fuori. Grazie\n";
+    echo "Ora siete non Loggati . Grazie\n";
     exit;
 }
 
@@ -177,7 +177,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 $conf_silent_prefix		= '7';	# vicidial_conferences prefix to enter silently
 $HKuser_level			= '5';	# minimum vicidial user_level for HotKeys
-#$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
+$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
 $manual_dial_preview	= '1';	# allow preview lead option when manual dial
 $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
@@ -252,7 +252,7 @@ $camp_form_code = "<INPUT TYPE=TEXT NAME=VD_campaign SIZE=10 maxlength=20 VALUE=
 
 if ($relogin == 'YES')
 {
-echo "<title>Web client di VICIMANOPOLA: Re-Inizio attività</title>\n";
+echo "<title>Web client di VICICHIAMA: Re-login attività</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -262,20 +262,20 @@ echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Re-Inizio attività </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Re-login attività </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Inizio attività Del Telefono: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Inizio attività Telefono: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Del Telefono:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Parola d`accesso del Telefono:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Inizio attività Dell'Utente:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Inizio attività dell`Utente:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Dell'Utente:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Parola d`accesso Dell`Utente:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
 echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
@@ -288,7 +288,7 @@ if ($user_login_first == 1)
 {
 	if ( (strlen($VD_login)<1) or (strlen($VD_pass)<1) or (strlen($VD_campaign)<1) )
 	{
-	echo "<title>Web client di VICIMANOPOLA: Inizio attività Di Campagna</title>\n";
+	echo "<title>Web client di VICICHIAMA: Inizio attività della Campagna</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -298,19 +298,19 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
-	echo "<CENTER><BR><B>Inizio attività Dell'Utente</B><BR><BR>";
+	echo "<CENTER><BR><B>Inizio attività dell`Utente</B><BR><BR>";
 	echo "<TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività Di Campagna </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività della Campagna </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Inizio attività Dell'Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Inizio attività dell`Utente:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Dell'Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Parola d`accesso Dell`Utente:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 	echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
 	echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -329,7 +329,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		$phone_login=$row[0];
 		$phone_pass=$row[1];
 
-		echo "<title>Web client di VICIMANOPOLA: Inizio attività</title>\n";
+		echo "<title>Web client di VICICHIAMA: Inizio attività</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -342,17 +342,17 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività </TD>";
 		echo "</TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Inizio attività Del Telefono: </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Inizio attività Telefono: </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Del Telefono:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Parola d`accesso del Telefono:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Inizio attività Dell'Utente:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Inizio attività dell`Utente:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Dell'Utente:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Parola d`accesso Dell`Utente:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 		echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
 		echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 		echo "</TABLE>\n";
 		echo "</FORM>\n\n";
@@ -366,7 +366,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>Web client di VICIMANOPOLA:  Inizio attività Del Telefono</title>\n";
+echo "<title>Web client di VICICHIAMA:  Inizio attività Telefono</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -376,14 +376,14 @@ echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività Del Telefono </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività Telefono </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Inizio attività Del Telefono: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Inizio attività Telefono: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Del Telefono:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Parola d`accesso del Telefono:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"\"></TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
@@ -585,13 +585,13 @@ $VDloginDISPLAY=0;
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
 			   $campaign_leads_to_call = $row[0];
-			   print "<!-- $campaign_leads_to_call - conduce a sinistra per denominare in tramoggia -->\n";
+			   print "<!-- $campaign_leads_to_call - Contatti che rimangono nella Lista  -->\n";
 
 			}
 		else
 			{
 			$VDloginDISPLAY=1;
-			$VDdisplayMESSAGE = "La campagna non attiva, prova prego ancora<BR>";
+			$VDdisplayMESSAGE = "La campagna non attiva, prova di nuovo<BR>";
 			}
 		}
 	else
@@ -599,12 +599,12 @@ $VDloginDISPLAY=0;
 		fwrite ($fp, "vdweb|FAIL|$date|$VD_login|$VD_pass|$ip|$browser|\n");
 		fclose($fp);
 		$VDloginDISPLAY=1;
-		$VDdisplayMESSAGE = "L'inizio attività errato, prova prego ancora<BR>";
+		$VDdisplayMESSAGE = "Inizio attività errato, prova di nuovo<BR>";
 		}
 	}
 	if ($VDloginDISPLAY)
 	{
-	echo "<title>Web client di VICIMANOPOLA: Inizio attività Di Campagna</title>\n";
+	echo "<title>Web client di VICICHIAMA: Inizio attività della Campagna</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -617,16 +617,16 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
 	echo "<TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività Di Campagna </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività della Campagna </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Inizio attività Dell'Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Inizio attività dell`Utente:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Dell'Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Parola d`accesso Dell`Utente:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 	echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
 	echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -643,7 +643,7 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>Web client di VICIMANOPOLA: Inizio attività Del Telefono Error</title>\n";
+	echo "<title>Web client di VICICHIAMA: Inizio attività Telefono Error</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -658,12 +658,12 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Inizio attività Error</TD>";
 	echo "</TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Spiacente, il vostri inizio attività del telefono e parola d'accesso: <BR> &nbsp;</TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Inizio attività Del Telefono: </TD>";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Spiacente, la vostra password e login non sono attivi in questo sistema, riprova di nuovo: <BR> &nbsp;</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>Inizio attività Telefono: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Parola d'accesso Del Telefono:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Parola d`accesso del Telefono:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; CONFIGURAZIONE: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -673,7 +673,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	}
 else
 	{
-	echo "<title>Web client di VICIMANOPOLA</title>\n";
+	echo "<title>Web client di VICICHIAMA</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -757,20 +757,20 @@ else
 		{
 		$VICIDiaL_park_on_extension = "$park_ext";
 		$VICIDiaL_park_on_filename = "$park_file_name";
-		print "<!-- PARCHEGGIO SU ORDINAZIONE DI CAMPAGNA:  |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
+		print "<!-- PARCHEGGIO CLIENTE DELLA CAMPAGNA:  |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
 		}
-		print "<!-- PARCHEGGIO DI DIFETTO DI CAMPAGNA: |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
+		print "<!-- PARCHEGGIO PREDEFINITO DELLA CAMPAGNA: |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
 
 	# If a web form address is not set, use the default one
 	if (strlen($web_form_address)>0)
 		{
 		$VICIDiaL_web_form_address = "$web_form_address";
-		print "<!-- FORMA SU ORDINAZIONE DI FOTORICETTORE DI CAMPAGNA:   |$VICIDiaL_web_form_address| -->\n";
+		print "<!-- INTERFACCIA WEB DEI CLIENTI PER LA CAMPAGNA :   |$VICIDiaL_web_form_address| -->\n";
 		}
 	else
 		{
 		$VICIDiaL_web_form_address = "$VICIDiaL_web_URL";
-		print "<!-- FORMA DI FOTORICETTORE DI DIFETTO DI CAMPAGNA:  |$VICIDiaL_web_form_address| -->\n";
+		print "<!-- INTERFACCIA WEB DELLA CAMPAGNA:  |$VICIDiaL_web_form_address| -->\n";
 		$VICIDiaL_web_form_address_enc = rawurlencode($VICIDiaL_web_form_address);
 
 		}
@@ -780,12 +780,12 @@ else
 	if ($allow_closers=="Y")
 		{
 		$VICIDiaL_allow_closers = 1;
-		print "<!-- LA CAMPAGNA PERMETTE CLOSERS:    |$VICIDiaL_allow_closers| -->\n";
+		print "<!-- LA CAMPAGNA PERMETTE FUORI LISTA:    |$VICIDiaL_allow_closers| -->\n";
 		}
 	else
 		{
 		$VICIDiaL_allow_closers = 0;
-		print "<!-- LA CAMPAGNA NON PERMETTE CLOSERS: |$VICIDiaL_allow_closers| -->\n";
+		print "<!-- LA CAMPAGNA NON PERMETTE FUORI LISTA: |$VICIDiaL_allow_closers| -->\n";
 		}
 
 
@@ -822,7 +822,7 @@ else
 			$i++;
 			}
 		if ($prev_login_ct > 0)
-			{print "<!-- USANDO LA STANZA PRECEDENTE DI MEETME - $session_id - $NOW_TIME - $SIP_user -->\n";}
+			{print "<!-- USA LA STANZA PER LA CONFERENZA PRECEDENTE - $session_id - $NOW_TIME - $SIP_user -->\n";}
 		else
 			{
 			##### grab the next available vicidial_conference room and reserve it
@@ -839,7 +839,7 @@ else
 				}
 			$stmt="UPDATE vicidial_conferences set extension='$SIP_user' where server_ip='$server_ip' and conf_exten='$session_id';";
 			$rslt=mysql_query($stmt, $link);
-			print "<!-- USANDO LA NUOVA STANZA DI MEETME - $session_id - $NOW_TIME - $SIP_user -->\n";
+			print "<!-- USA UNA NUOVA STANZA PER LA CONFERENZA - $session_id - $NOW_TIME - $SIP_user -->\n";
 
 			}
 
@@ -847,13 +847,13 @@ else
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- vecchia CODA e lista ritornata INCHIAMATA:   |$affected_rows| -->\n";
+		print "<!-- vecchia CODA e lista ritornata DA RICHIAMARE:   |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_hopper where status IN('QUEUE','INCALL','DONE') and user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- vecchia CODA e tramoggia ritornata INCHIAMATA: |$affected_rows| -->\n";
+		print "<!-- vecchia CODA e Lista ATTIVA da richiamare: |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_live_agents where user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
@@ -861,7 +861,7 @@ else
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- vecchie annotazioni dei vicidial_live_agents eliminate: |$affected_rows| -->\n";
 
-	#	print "<B>You have logged in as user: $VD_login su phone: $SIP_user alla campagna: $VD_campaign</B><BR>\n";
+	#	print "<B>You have logged in as user: $VD_login su phone: $SIP_user vai alla campagna: $VD_campaign</B><BR>\n";
 		$VICIDiaL_is_logged_in=1;
 
 		### use manager middleware-app to connect the phone to the user
@@ -875,14 +875,14 @@ else
 
 		if ($auto_dial_level > 0)
 			{
-			print "<!-- la campagna è regolata a auto_dial_level: $auto_dial_level -->\n";
+			print "<!-- la campagna è regola per l`auto chiamata: $auto_dial_level -->\n";
 
 			$closer_chooser_string='';
 			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$closer_chooser_string','$user_level');";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
-			print "<!-- la nuova annotazione dei vicidial_live_agents ha inserito: |$affected_rows| -->\n";
+			print "<!-- nuovo record operatore attivo inserito: |$affected_rows| -->\n";
 
 			if (eregi("CLOSER", $VD_campaign))
 				{
@@ -891,7 +891,7 @@ else
 			}
 		else
 			{
-			print "<!-- la campagna è regolata alla manopola manuale: $auto_dial_level -->\n";
+			print "<!-- la campagna è regolata per la chiamata manuale: $auto_dial_level -->\n";
 
 
 
@@ -899,21 +899,21 @@ else
 		}
 	else
 		{
-		echo "<title>Web client di VICIMANOPOLA: VICIMANOPOLA Inizio attività Di Campagna</title>\n";
+		echo "<title>Web client di VICICHIAMA: VICICHIAMA Inizio attività della Campagna</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 		echo "<!-- ILPV -->\n";
 echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
-		echo "<B>Spiacenti, non ci sono cavi nella tramoggia per questa campagna</B>\n";
+		echo "<B>Spiacenti, non contatti da richiamare per questa campagna</B>\n";
 		echo "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 		echo "Inizio attività: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
-		echo "Parola d'accesso: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
+		echo "Parola d`accesso: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
 		echo "Campagna: $camp_form_code<br>\n";
-		echo "<INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI>\n";
+		echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
 		echo "</html>\n\n";
@@ -921,7 +921,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		}
 	if (strlen($session_id) < 1)
 		{
-		echo "<title>Web client di VICIMANOPOLA: VICIMANOPOLA Inizio attività Di Campagna</title>\n";
+		echo "<title>Web client di VICICHIAMA: VICICHIAMA Inizio attività della Campagna</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -933,9 +933,9 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 		echo "Inizio attività: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
-		echo "Parola d'accesso: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
+		echo "Parola d`accesso: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
 		echo "Campagna: $camp_form_code<br>\n";
-		echo "<INPUT TYPE=Submit NAME=PRESENTI VALUE=PRESENTI>\n";
+		echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
 		echo "</html>\n\n";
@@ -1339,10 +1339,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>'
-	var DiaLControl_auto_HTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_it.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume_it.gif\" border=0 alt=\"Resume\"></a>";
-	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause_it.gif\" border=0 alt=\"Pausa\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_it.gif\" border=0 alt=\"Resume\">";
-	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_it.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_it.gif\" border=0 alt=\"Resume\">";
-	var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\"></a>";
+	var DiaLControl_auto_HTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_it.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume_it.gif\" border=0 alt=\"Riprendi\"></a>";
+	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause_it.gif\" border=0 alt=\"Pausa\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_it.gif\" border=0 alt=\"Riprendi\">";
+	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_it.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_it.gif\" border=0 alt=\"Riprendi\">";
+	var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Chiama il numero seguente\"></a>";
 	var image_blank = new Image();
 		image_blank.src="../agc/images/blank.gif";
 	var image_livecall_OFF = new Image();
@@ -1571,7 +1571,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						MD_channel_look=1;
 						XDcheck = 'YES';
 
-				//		document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline_it.gif\" border=0 alt=\"Linea Di Xfer Di Hangup\"></a>";
+				//		document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline_it.gif\" border=0 alt=\"Attacca la linea trasferita\"></a>";
 						}
 					}
 				}
@@ -1690,17 +1690,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					t.setTime(UnixTimeMS);
 					if (agentcallsstatus == '1')
 						{
-						var Astatus_array = check_time_array[2].split("Condizione: ");
+						var Astatus_array = check_time_array[2].split("Status: ");
 						var AGStatuS = Astatus_array[1];
 						var CamPCalLs_array = check_time_array[3].split("CampCalls: ");
 						var CamPCalLs = CamPCalLs_array[1];
 						if (AGStatuS != 'N')
 							{
-							document.getElementById("AgentCondizioneCondizione").innerHTML = AGStatuS;
+							document.getElementById("AgentStatusStatus").innerHTML = AGStatuS;
 							}
 						if (CamPCalLs != 'N')
 							{
-							document.getElementById("AgentCondizioneCalls").innerHTML = CamPCalLs;
+							document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
 							}
 						}
 					var check_conf_array=check_ALL_array[1].split("|");
@@ -1716,8 +1716,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var LMAcontent_change=0;
 							var LMAcontent_match=0;
 							var conv_start=-1;
-				//			var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>VIVONO LE CHIAMATE IN QUESTO CONGRESSO:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">MANICA A DISTANZA</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">XFER</TD></TR>";
-							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>VIVONO LE CHIAMATE NELLA VOSTRA SESSIONE:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">MANICA A DISTANZA</TD><TD><font class=\"log_title\">HANGUP</TD></TR>";
+				//			var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>CHIAMATE ATTIVE IN QUESTA CONFERENZA:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">CANALE REMOTO</TD><TD><font class=\"log_title\">ATTACCA</TD><TD><font class=\"log_title\">TRASF</TD></TR>";
+							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>CHIAMATE ATTIVE NELLA VOSTRA SESSIONE:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">CANALE REMOTO</TD><TD><font class=\"log_title\">ATTACCA</TD></TR>";
 							if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 								{
 								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -1733,8 +1733,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 									{var row_color = '#CCCCFF';}
 								var conv_ct = (loop_ct + conv_start);
 								var channelfieldA = conf_chan_array[conv_ct];
-					//			live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">Hangup</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">XFER</td></tr>";
-								live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</td></tr>";
+					//			live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">Hangup</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">TRASF</td></tr>";
+								live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">ATTACCA</td></tr>";
 
 			//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
 
@@ -1847,7 +1847,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			//	filename = filedate + "_" + user_abb;
 				var query_recording_exten = recording_exten;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_stoprecording_it.gif\" border=0 alt=\"Smetta Di registrare\"></a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_stoprecording_it.gif\" border=0 alt=\"Stop Registrazione\"></a>";
 				document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 			}
 			if (taskconfrectype == 'StopMonitorConf')
@@ -1855,7 +1855,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				filename = taskconffile;
 				var query_recording_exten = session_id;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording_it.gif\" border=0 alt=\"Inizi A registrare\"></a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording_it.gif\" border=0 alt=\"Inizia la Registrazione\"></a>";
 				document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 				}
 			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
@@ -1894,7 +1894,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Redirect command for live call to Manager sends phone name where call is going to
-// Covers the following types: XFER, VMAIL, ENTRY, CONF, PARCO, FROMPARCO, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
+// Covers the following types: TRASF, VMAIL, ENTRY, CONF, PARK, FROMPARK, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip) 
 		{
 		var xmlhttp=false;
@@ -1947,7 +1947,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					xferredirect_query='';
 					taskvar = 'NOTHING';
-					alert("Il numero di trasferimento deve avere più di 1 cifra:" + blindxferdialstring);
+					alert("Il numero per il trasferimento deve avere più di 1 carattere:" + blindxferdialstring);
 					}
 				else
 					{
@@ -2005,7 +2005,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var parkedby = protocol + "/" + extension;
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectToPark&format=text&channel=" + redirectdestination + "&call_server_ip=" + redirectdestserverip + "&queryCID=" + queryCID + "&exten=" + park_on_extension + "&ext_context=" + ext_context + "&ext_priority=1&extenName=park&parkedby=" + parkedby;
 
-				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_grabparkedcall_it.gif\" border=0 alt=\"Chiamata Parcheggiata Gru a benna\"></a>";
+				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_grabparkedcall_it.gif\" border=0 alt=\"Riprendi la chiamata parcheggiata\"></a>";
 				customerparked=1;
 				}
 			if (taskvar == 'FROMParK')
@@ -2026,7 +2026,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectFromPark&format=text&channel=" + redirectdestination + "&call_server_ip=" + redirectdestserverip + "&queryCID=" + queryCID + "&exten=" + dest_dialstring + "&ext_context=" + ext_context + "&ext_priority=1";
 
-				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Chiamata Del Parco\"></a>";
+				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Parcheggia la chiamata\"></a>";
 				customerparked=0;
 				}
 
@@ -2063,7 +2063,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		alt_phone_dialing=starting_alt_phone_dialing;
 		alt_dial_active = 0;
 		open_dispo_screen=1;
-		document.getElementById("MainStatuSSpan").innerHTML = "Numero Seguente Della Manopola";
+		document.getElementById("MainStatuSSpan").innerHTML = "Chiama il numero seguente";
 		}
 // ################################################################################
 // Insert or update the vicidial_log entry for a customer call
@@ -2078,7 +2078,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					reselect_alt_dial = 1;
 					alt_dial_active = 1;
-					var man_status = "Numero Alt Della Manopola: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">TELEFONO PRINCIPALE</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTTelefonoE')\"><font class=\"preview_text\">WECH TELEFON</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">INDIRIZZO3</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">RIVESTIMENTO</font></a>"; 
+					var man_status = "Chiama Alt Numero: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">TELEFONO PRINCIPALE</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTTelefonoE')\"><font class=\"preview_text\">ALT TELEFONO</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">INDIRIZZO3</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">CONTATTO FINITO</font></a>"; 
 					document.getElementById("MainStatuSSpan").innerHTML = man_status;
 					}
 				}
@@ -2124,20 +2124,20 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					MDlogResponse = xmlhttp.responseText;
 					var MDlogResponse_array=MDlogResponse.split("\n");
 					MDlogLINE = MDlogResponse_array[0];
-					if ( (MDlogLINE == "CEPPO NON INSERITO") && (VDstop_rec_after_each_call != 1) )
+					if ( (MDlogLINE == "LOG NON INSERITO") && (VDstop_rec_after_each_call != 1) )
 						{
 				//		alert("error: log not entered\n");
 						}
 					else
 						{
 						MDlogEPOCH = MDlogResponse_array[1];
-				//		alert("VICIMANOPOLA Call log entered:\n" + document.vicidial_form.uniqueid.value);
+				//		alert("VICICHIAMA Call log entered:\n" + document.vicidial_form.uniqueid.value);
 						if ( (taskMDstage != "start") && (VDstop_rec_after_each_call == 1) )
 							{
-							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording_it.gif\" border=0 alt=\"Inizi A registrare\"></a>";
+							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording_it.gif\" border=0 alt=\"Inizia la Registrazione\"></a>";
 							if (campaign_recording == 'NEVER')
 								{
-								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Inizi A registrare\">";
+								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Inizia la Registrazione\">";
 								}
 							else
 								{document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;}
@@ -2201,7 +2201,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					var CBcounT = xmlhttp.responseText;
 					if (CBcounT == 0) {var CBprint = "NO";}
 					else {var CBprint = CBcounT;}
-						document.getElementById("CBstatusSpan").innerHTML ="<a href=\"#\" onclick=\"CalLBacKsLisTCheck();return false;\">" + CBprint + " CHIAMATE RIPETUTE ATTIVE</a>";
+						document.getElementById("CBstatusSpan").innerHTML ="<a href=\"#\" onclick=\"CalLBacKsLisTCheck();return false;\">" + CBprint + " RICHIAMATE ATTIVE</a>";
 						
 					}
 				}
@@ -2216,7 +2216,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DOVETE ESSERE FATTI UNA PAUSA PER CONTROLLARE LE CHIAMATE RIPETUTE NEL MODO DI AUTO-MANOPOLA");
+			alert("DOVETE ESSERE IN PAUSA PER CONTROLLARE LE RICHIAMATE IN MODALITA AUTOMATICA");
 			}
 		else
 			{
@@ -2258,7 +2258,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var CB_calls = all_CBs_array[0];
 						var loop_ct=0;
 						var conv_start=0;
-						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHIAMATABACK DATE/TIME</td><td><font class=\"log_title\">NUMERO</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">CONDIZIONE</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST DATE/TIME DI CHIAMATA</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
+						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHIAMATABACK DATE/TIME</td><td><font class=\"log_title\">NUMERO</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">STATUS</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST DATE/TIME DI CHIAMATA</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
 						while (loop_ct < CB_calls)
 							{
 							loop_ct++;
@@ -2326,7 +2326,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DOVETE ESSERE FATTI UNA PAUSA Alla MANOPOLA MANUALE Un NUOVO CAVO Nel MODO Di AUTO-MANOPOLA");
+			alert("DEVI METTERE IN PAUSA LA CHIAMATA MANUALE PER ESEGUIRE UNA CHIAMATA DEL CONTATTO IN AUTOMATICO");
 			}
 		else
 			{
@@ -2418,7 +2418,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					if (MDlookCID == "NO")
 						{
 						MD_ring_secondS++;
-						document.getElementById("MainStatuSSpan").innerHTML = " Chiamata: " + lead_dial_number + " UID: " + CIDcheck + " &nbsp; Anello attendente... " + MD_ring_secondS + " secondi";
+						document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + lead_dial_number + " UID: " + CIDcheck + " &nbsp; Attendi lo squillo... " + MD_ring_secondS + " secondi";
 				//		alert("channel not found yet:\n" + campaign);
 						}
 					else
@@ -2444,17 +2444,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								XD_live_call_secondS = 0;
 								MD_channel_look=0;
 
-								document.getElementById("MainStatuSSpan").innerHTML = " Terzi denominati: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
+								document.getElementById("MainStatuSSpan").innerHTML = " Chiamata l`altro chiamante: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
 
-								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall_it.gif\" border=0 alt=\"CHIAMATA DI PERMESSO 3-WAY\"></a>";
+								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall_it.gif\" border=0 alt=\"LASCIA LA CONFERENZA\"></a>";
 
-								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF_it.gif\" border=0 alt=\"Manopola Con Il Cliente\">";
+								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF_it.gif\" border=0 alt=\"Chiama il Cliente\">";
 
-								document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF_it.gif\" border=0 alt=\"Manopola Del Cliente Del Parco\">";
+								document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF_it.gif\" border=0 alt=\"Parcheggia il cliente in chiamata\">";
 
-								document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline_it.gif\" border=0 alt=\"Linea Di Xfer Di Hangup\"></a>";
+								document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline_it.gif\" border=0 alt=\"Attacca la linea trasferita\"></a>";
 
-								document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines_it.gif\" border=0 alt=\"Hangup Entrambe le Linee\"></a>";
+								document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines_it.gif\" border=0 alt=\"Attacca ciascun linea\"></a>";
 
 								xferchannellive=1;
 								XDcheck = '';
@@ -2483,24 +2483,24 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								VD_live_call_secondS = 0;
 
 								MD_channel_look=0;
-								document.getElementById("MainStatuSSpan").innerHTML = " Denominato: " + lead_dial_number + " UID: " + CIDcheck + " &nbsp;"; 
+								document.getElementById("MainStatuSSpan").innerHTML = " Chiamato: " + lead_dial_number + " UID: " + CIDcheck + " &nbsp;"; 
 
-								document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Chiamata Del Parco\"></a>";
+								document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Parcheggia la chiamata\"></a>";
 
-								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Cliente Di Hangup\"></a>";
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Disconnetti il cliente\"></a>";
 
-								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Congresso\"></a>";
+								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
 
-								document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser_it.gif\" border=0 alt=\"LOCAL PIÙ VICINO\"></a>";
+								document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser_it.gif\" border=0 alt=\"LOCALE PIÙ VICINO\"></a>";
 
-								document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_internalcloser_it.gif\" border=0 alt=\"PIÙ VICINO INTERNO\"></a>";
+								document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_internalcloser_it.gif\" border=0 alt=\"INTERNO PIU` VICINO\"></a>";
 
-								document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer_it.gif\" border=0 alt=\"Trasferimento Dei Ciechi Della Manopola\"></a>";
+								document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer_it.gif\" border=0 alt=\"Effettua il trasferimento cieco \"></a>";
 
 								document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 
 
-								// INSERT VICIMANOPOLA_LOG ENTRY FOR THIS CHIAMATA PROCESS
+								// INSERT VICICHIAMA_LOG ENTRY FOR THIS CHIAMATA PROCESS
 								DialLog("start");
 
 								custchannellive=1;
@@ -2516,28 +2516,28 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			MD_channel_look=0;
 			MD_ring_secondS=0;
-			alert("La manopola cronometrata fuori, si mette in contatto con il vostro\n");
+			alert("Tempo di chiamata scaduto, contatta l`amministratore del sistema\n");
 			}
 
 		}
 
 // ################################################################################
-// Send the Manual Numero Seguente Della Manopola request
+// Send the Manual Chiama il numero seguente request
 	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE)
 		{
 		all_record = 'NO';
-		document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\">";
+		document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF_it.gif\" border=0 alt=\"Chiama il numero seguente\">";
 		if (document.vicidial_form.LeadPreview.checked==true)
 			{
 			reselect_preview_dial = 1;
 			var man_preview = 'YES';
-			var man_status = "Allora veda in anteprima il cavo <a href=\"#\" onclick=\"ManualDialOnly()\"><font class=\"preview_text\">CAVO DELLA MANOPOLA</font></a> or <a href=\"#\" onclick=\"ManualDialSkip()\"><font class=\"preview_text\">CAVO DI SALTO</font></a>"; 
+			var man_status = "Anteprima del contatto <a href=\"#\" onclick=\"ManualDialOnly()\"><font class=\"preview_text\">CHIAMA CONTATTO</font></a> or <a href=\"#\" onclick=\"ManualDialSkip()\"><font class=\"preview_text\">SALTA CONTATTO</font></a>"; 
 			}
 		else
 			{
 			reselect_preview_dial = 0;
 			var man_preview = 'NO';
-			var man_status = "Anello attendente..."; 
+			var man_status = "Attendi lo squillo..."; 
 			}
 
 		var xmlhttp=false;
@@ -2575,10 +2575,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 					var MDnextResponse_array=MDnextResponse.split("\n");
 					MDnextCID = MDnextResponse_array[0];
-					if ( (MDnextCID == "TRAMOGGIA VUOTA") || (MDnextCID == "DNC NUMERO") )
+					if ( (MDnextCID == "LISTA DI CHIAMATA VUOTA") || (MDnextCID == "DNC NUMERO") )
 						{
-						if (MDnextCID == "TRAMOGGIA VUOTA")
-							{alert("Nient'altro conduce nella tramoggia per la campagna:\n" + campaign);}
+						if (MDnextCID == "LISTA DI CHIAMATA VUOTA")
+							{alert("Non ci sono contatti nella lista per la campagna:\n" + campaign);}
 						else
 							{alert("This phone number is in the DNC list:\n" + mdnPhonENumbeR);}
 						}
@@ -2617,7 +2617,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						previous_dispo									= MDnextResponse_array[2];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
-						document.getElementById("MainStatuSSpan").innerHTML = " Chiamata: " + document.vicidial_form.phone_number.value + " UID: " + MDnextCID + " &nbsp; " + man_status;
+						document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + document.vicidial_form.phone_number.value + " UID: " + MDnextCID + " &nbsp; " + man_status;
 
 						web_form_vars = 
 						"lead_id=" + document.vicidial_form.lead_id.value + 
@@ -2664,8 +2664,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&parked_by=" + document.vicidial_form.lead_id.value +
 						"&dispo=" + LeaDDispO;
 						
-// $VICIMANOPOLA_web_QUERY_STRING =~ s/ /+/gi;
-// $VICIMANOPOLA_web_QUERY_STRING =~ s/\`|\~|\:|\;|\#|\'|\"|\{|\}|\(|\)|\*|\^|\%|\$|\!|\%|\r|\t|\n//gi;
+// $VICICHIAMA_web_QUERY_STRING =~ s/ /+/gi;
+// $VICICHIAMA_web_QUERY_STRING =~ s/\`|\~|\:|\;|\#|\'|\"|\{|\}|\(|\)|\*|\^|\%|\$|\!|\%|\r|\t|\n//gi;
 
 						var regWFspace = new RegExp(" ","ig");
 						web_form_vars = web_form_vars.replace(regWF, '');
@@ -2687,7 +2687,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						else
 							{web_form_vars = '?' + web_form_vars}
 
-						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Forma Di Fotoricettore\"></a>\n";
+						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Interfacccia Web\"></a>\n";
 
 						if (document.vicidial_form.LeadPreview.checked==false)
 							{
@@ -2695,7 +2695,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							MD_channel_look=1;
 							custchannellive=1;
 
-							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Cliente Di Hangup\"></a>";
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Disconnetti il cliente\"></a>";
 
 							if (campaign_recording == 'ALLCHIAMATAS')
 								{all_record = 'YES';}
@@ -2740,11 +2740,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (manual_dial_in_progress==1)
 			{
-			alert('NON POTETE SALTARE Una CHIAMATA RIPETUTA O MANOPOLA MANUALE, DOVETE COMPORRE IL CAVO');
+			alert('NON PUOI SALTARE UNA RICHIAMATA O FARE UNA CHIAMATA. DEVI CHIAMARE IL CONTATTO');
 			}
 		else
 			{
-			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\">";
+			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF_it.gif\" border=0 alt=\"Chiama il numero seguente\">";
 
 			var xmlhttp=false;
 			/*@cc_on @*/
@@ -2784,7 +2784,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						MDSnextCID = MDSnextResponse_array[0];
 						if (MDSnextCID == "LEAD NOT REVERTED")
 							{
-							alert("Il cavo non è stato ritornato, ci non era un errore:\n" + MDSnextResponse);
+							alert("Il contatto non è ritornato, c`è un errore  :\n" + MDSnextResponse);
 							}
 						else
 							{
@@ -2821,7 +2821,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("MainStatuSSpan").innerHTML = " Lead skipped, go su to next lead";
 
-							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\"></a>";
+							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Chiama il numero seguente\"></a>";
 							}
 						}
 					}
@@ -2891,16 +2891,16 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					MDnextCID = MDOnextResponse_array[0];
 					if (MDnextCID == "CHIAMATA NOT PLACED")
 						{
-						alert("la chiamata non è stata disposta, ci non era un errore:\n" + MDOnextResponse);
+						alert("chiamata non effettuata, c`è un errore:\n" + MDOnextResponse);
 						}
 					else
 						{
 						MD_channel_look=1;
 						custchannellive=1;
 
-						document.getElementById("MainStatuSSpan").innerHTML = " Chiamata: " + manDiaLonly_num + " UID: " + MDnextCID + " &nbsp; Anello attendente...";
+						document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + manDiaLonly_num + " UID: " + MDnextCID + " &nbsp; Attendi lo squillo...";
 
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Cliente Di Hangup\"></a>";
+						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Disconnetti il cliente\"></a>";
 
 						if (campaign_recording == 'ALLCHIAMATAS')
 							{all_record = 'YES';}
@@ -3079,7 +3079,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						VD_live_customer_call = 1;
 						VD_live_call_secondS = 0;
 
-						// INSERT VICIMANOPOLA_LOG ENTRY FOR THIS CHIAMATA PROCESS
+						// INSERT VICICHIAMA_LOG ENTRY FOR THIS CHIAMATA PROCESS
 					//	DialLog("start");
 
 						custchannellive=1;
@@ -3114,7 +3114,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						document.vicidial_form.called_count.value		= check_VDIC_array[31];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
-						document.getElementById("MainStatuSSpan").innerHTML = " Ricevuto: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
+						document.getElementById("MainStatuSSpan").innerHTML = " In entrata: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
 
 						if (LeaDPreVDispO == 'CHIAMATABK')
 							{
@@ -3128,20 +3128,20 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								{
 								document.getElementById("MainStatuSSpan").style.background = VDIC_data_VDIG[2];
 								}
-							document.getElementById("MainStatuSSpan").innerHTML = " Ricevuto: " + document.vicidial_form.phone_number.value + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
+							document.getElementById("MainStatuSSpan").innerHTML = " In entrata: " + document.vicidial_form.phone_number.value + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
 							}
 
-						document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Chiamata Del Parco\"></a>";
+						document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_it.gif\" border=0 alt=\"Parcheggia la chiamata\"></a>";
 
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Cliente Di Hangup\"></a>";
+						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_it.gif\" border=0 alt=\"Disconnetti il cliente\"></a>";
 
-						document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Congresso\"></a>";
+						document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
 
-						document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser_it.gif\" border=0 alt=\"LOCAL PIÙ VICINO\"></a>";
+						document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser_it.gif\" border=0 alt=\"LOCALE PIÙ VICINO\"></a>";
 
-						document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_internalcloser_it.gif\" border=0 alt=\"PIÙ VICINO INTERNO\"></a>";
+						document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_internalcloser_it.gif\" border=0 alt=\"INTERNO PIU` VICINO\"></a>";
 
-						document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer_it.gif\" border=0 alt=\"Trasferimento Dei Ciechi Della Manopola\"></a>";
+						document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer_it.gif\" border=0 alt=\"Effettua il trasferimento cieco \"></a>";
 
 						document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 	
@@ -3210,7 +3210,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						else
 							{web_form_vars = '?' + web_form_vars}
 
-						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Forma Di Fotoricettore\"></a>\n";
+						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Interfacccia Web\"></a>\n";
 
 						if (campaign_recording == 'ALLCHIAMATAS')
 							{all_record = 'YES';}
@@ -3319,11 +3319,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if (taskrefresh == 'OUT')
 			{
-			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH('IN');\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Forma Di Fotoricettore\"></a>\n";
+			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH('IN');\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Interfacccia Web\"></a>\n";
 			}
 		else 
 			{
-			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOut=\"WebFormRefresH('OUT');\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Forma Di Fotoricettore\"></a>\n";
+			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOut=\"WebFormRefresH('OUT');\"><IMG SRC=\"../agc/images/vdc_LB_webform_it.gif\" border=0 alt=\"Interfacccia Web\"></a>\n";
 			}
 		}
 
@@ -3432,7 +3432,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			MD_ring_secondS = 0;
 			CalLCID = '';
 
-		//	UPDATE VICIMANOPOLA_LOG ENTRY FOR THIS CHIAMATA PROCESS
+		//	UPDATE VICICHIAMA_LOG ENTRY FOR THIS CHIAMATA PROCESS
 			DialLog("end");
 			if (dispowindow == 'NO')
 				{
@@ -3478,13 +3478,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			lastcustserverip='';
 
 			if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
-			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_webform_OFF_it.gif\" border=0 alt=\"Forma Di Fotoricettore\">";
-			document.getElementById("ParkControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_parkcall_OFF_it.gif\" border=0 alt=\"Chiamata Del Parco\">";
-			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF_it.gif\" border=0 alt=\"Cliente Di Hangup\">";
-			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_transferconf_OFF_it.gif\" border=0 alt=\"Trasferimento - Congresso\">";
-			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_localcloser_OFF_it.gif\" border=0 alt=\"LOCAL PIÙ VICINO\">";
-			document.getElementById("InternalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_internalcloser_OFF_it.gif\" border=0 alt=\"PIÙ VICINO INTERNO\">";
-			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_blindtransfer_OFF_it.gif\" border=0 alt=\"Trasferimento Dei Ciechi Della Manopola\">";
+			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_webform_OFF_it.gif\" border=0 alt=\"Interfacccia Web\">";
+			document.getElementById("ParkControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_parkcall_OFF_it.gif\" border=0 alt=\"Parcheggia la chiamata\">";
+			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF_it.gif\" border=0 alt=\"Disconnetti il cliente\">";
+			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_transferconf_OFF_it.gif\" border=0 alt=\"Trasferimento - Conferenza\">";
+			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_localcloser_OFF_it.gif\" border=0 alt=\"LOCALE PIÙ VICINO\">";
+			document.getElementById("InternalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_internalcloser_OFF_it.gif\" border=0 alt=\"INTERNO PIU` VICINO\">";
+			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_blindtransfer_OFF_it.gif\" border=0 alt=\"Effettua il trasferimento cieco \">";
 			document.getElementById("DialBlindVMail").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_ammessage_OFF.gif\" border=0 alt=\"Blind Transfer VMail Message\">";
 			
 			document.vicidial_form.custdatetime.value		= '';
@@ -3497,7 +3497,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				else
 					{
-					document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\"></a>";
+					document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Chiama il numero seguente\"></a>";
 					reselect_alt_dial = 0;
 					}
 				}
@@ -3590,15 +3590,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.xferchannel.value = "";
 			lastxferchannel='';
 
-			document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF_it.gif\" border=0 alt=\"CHIAMATA DI PERMESSO 3-WAY\">";
+			document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF_it.gif\" border=0 alt=\"LASCIA LA CONFERENZA\">";
 
-			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_it.gif\" border=0 alt=\"Manopola Con Il Cliente\"></a>";
+			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_it.gif\" border=0 alt=\"Chiama il Cliente\"></a>";
 
-			document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_it.gif\" border=0 alt=\"Manopola Del Cliente Del Parco\"></a>";
+			document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_it.gif\" border=0 alt=\"Parcheggia il cliente in chiamata\"></a>";
 
-			document.getElementById("HangupXferLine").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_hangupxferline_OFF_it.gif\" border=0 alt=\"Linea Di Xfer Di Hangup\">";
+			document.getElementById("HangupXferLine").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_hangupxferline_OFF_it.gif\" border=0 alt=\"Attacca la linea trasferita\">";
 
-			document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines_it.gif\" border=0 alt=\"Hangup Entrambe le Linee\"></a>";
+			document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines_it.gif\" border=0 alt=\"Attacca ciascun linea\"></a>";
 			}
 		}
 
@@ -3746,7 +3746,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
-		if (DispoChoice.length < 1) {alert("Dovete selezionare una disposizione");}
+		if (DispoChoice.length < 1) {alert("Selezionare una Disposizione");}
 		else
 			{
 			document.getElementById("CusTInfOSpaN").innerHTML = "";
@@ -3770,7 +3770,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
-		if (DispoChoice.length < 1) {alert("Dovete selezionare una disposizione");}
+		if (DispoChoice.length < 1) {alert("Selezionare una Disposizione");}
 		else
 			{
 			document.getElementById("CusTInfOSpaN").innerHTML = "";
@@ -3858,8 +3858,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
 				document.getElementById("DispoSelectBox").style.top = 1;
-				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizzi</a>";
-				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Hangup Ancora</a>";
+				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizza</a>";
+				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Attacca ancora</a>";
 
 				AgentDispoing = 0;
 
@@ -3906,7 +3906,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.vicidial_form.xfernumber.value = CalL_XC_b_NuMber;
 		}
 // ################################################################################
-// Esposizione message that customer has hungup the call before agent has
+// Mostra message that customer has hungup the call before agent has
 	function CustomerChanneLGone()
 		{
 		showDiv('CustomerGoneBox');
@@ -3932,7 +3932,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		dialedcall_send_hangup();
 		}
 // ################################################################################
-// Esposizione message that there are no voice channels in the VICIMANOPOLA session
+// Mostra message that there are no voice channels in the VICICHIAMA session
 	function NoneInSession()
 		{
 		showDiv('NoneInSessionBox');
@@ -4143,12 +4143,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function LogouT()
 		{
 		if (MD_channel_look==1)
-			{alert("Non potete annotare fuori durante il tentativo della manopola. \nAspetti 50 secondi la manopola per venire a mancare fuori se non è");}
+			{alert("Non potete disconnettervi durante una chiamata in attesa. \nAttendere 50 secondi finchè la chiamata non è risposta");}
 		else
 			{
 			if (VD_live_customer_call==1)
 				{
-				alert("ANCORA Una CHIAMATA IN TENSIONE! Appendala in su allora che potete.\n" + VD_live_customer_call);
+				alert("CHIAMATA ATTIVA IN CORSO! Attaccate e poi sconettetevi.\n" + VD_live_customer_call);
 				}
 			else
 				{
@@ -4190,7 +4190,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				hideDiv('MainPanel');
 				showDiv('LogouTBox');
 
-				document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">SCATTISI QUI PER ENTRARE ANCORA</a>\n";
+				document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">FAI CLICK QUI PER LOGGARTI DI NUOVO </a>\n";
 
 				logout_stop_timeouts = 1;
 					
@@ -4346,23 +4346,23 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 
 // ################################################################################
-// Move the Dispo frame out of the way and change the link to elevi
+// Move the Dispo frame out of the way and change the link to ingrandisci
 	function DispoMinimize()
 		{
 			showDiv('DispoButtonHideA');
 			showDiv('DispoButtonHideB');
 			showDiv('DispoButtonHideC');
 		document.getElementById("DispoSelectBox").style.top = 340;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\">elevi</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\">ingrandisci</a>";
 		}
 
 
 // ################################################################################
-// Move the Dispo frame to the top and change the link to minimizzi
+// Move the Dispo frame to the top and change the link to minimizza
 	function DispoMaximize()
 		{
 		document.getElementById("DispoSelectBox").style.top = 1;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizzi</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizza</a>";
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
@@ -4408,7 +4408,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			CallBackDatETimE = CallBackDatEForM + " " + CallBackTimEHouR + ":" + CallBackTimEMinuteS + ":00";
 
-			document.getElementById("CallBackDatEPrinT").innerHTML = "Selezioni una data qui sotto";
+			document.getElementById("CallBackDatEPrinT").innerHTML = "Selezioni una data sotto";
 			document.vicidial_form.CallBackDatESelectioN.value = '';
 			document.vicidial_form.CallBackCommenTsField.value = '';
 			document.vicidial_form.CBT_hour.value = '01';
@@ -4478,7 +4478,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if (agentcall_manual != '1')
 				{hideDiv('ManuaLDiaLButtons');}
 			if (agentcallsstatus != '1')
-				{hideDiv('AgentCondizioneSpan');}
+				{hideDiv('AgentStatusSpan');}
 			if ( (auto_dial_level != 0) || (manual_dial_preview != 1) )
 				{clearDiv('DiaLLeaDPrevieW');}
 			if (alt_phone_dialing != 1)
@@ -4488,7 +4488,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.getElementById("sessionIDspan").innerHTML = session_id;
 			if (campaign_recording == 'NEVER')
 				{
-				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Inizi A registrare\">";
+				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Inizia la Registrazione\">";
 				}
 			if (INgroupCOUNT > 0)
 				{
@@ -4530,7 +4530,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					if (document.vicidial_form.DiaLAltPhonE.checked==true)
 						{
 						reselect_alt_dial = 1;
-						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Numero Seguente Della Manopola\"></a>";
+						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_it.gif\" border=0 alt=\"Chiama il numero seguente\"></a>";
 
 						document.getElementById("MainStatuSSpan").innerHTML = "Dial Next Call";
 						}
@@ -4724,7 +4724,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		start_all_refresh();
 		}
 	function pause()	// Pauses the refreshing of the lists
-		{active_display=2;  display_message="  - L'ESPOSIZIONE ATTIVA HA FATTO UNA PAUSA - ";}
+		{active_display=2;  display_message="  - DISPLAY ATTIVO IN PAUSA - ";}
 	function start()	// resumes the refreshing of the lists
 		{active_display=1;  display_message='';}
 	function faster()	// lowers by 1000 milliseconds the time until the next refresh
@@ -4814,12 +4814,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.getElementById(divvar).innerHTML = '';
 			if (divvar == 'DiaLLeaDPrevieW')
 				{
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREVISIONE DEL CAVO<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> ANTEPRIMA CONTATTO<BR></font>";
 				document.getElementById("DiaLLeaDPrevieWHide").innerHTML = buildDivHTML;
 				}
 			if (divvar == 'DiaLDiaLAltPhonE')
 				{
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT DEL TELEFONO<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT CHIAMATE<BR></font>";
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = buildDivHTML;
 				}
 			}
@@ -4832,7 +4832,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if (divvar == 'DiaLLeaDPrevieW')
 				{
 				document.getElementById("DiaLLeaDPrevieWHide").innerHTML = '';
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREVISIONE DEL CAVO<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> ANTEPRIMA CONTATTO<BR></font>";
 				document.getElementById(divvar).innerHTML = buildDivHTML;
 				if (reselect_preview_dial==1)
 					{document.vicidial_form.LeadPreview.checked=true}
@@ -4840,7 +4840,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if (divvar == 'DiaLDiaLAltPhonE')
 				{
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = '';
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT DEL TELEFONO<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT CHIAMATE<BR></font>";
 				document.getElementById(divvar).innerHTML = buildDivHTML;
 				if (reselect_alt_dial==1)
 					{document.vicidial_form.DiaLAltPhonE.checked=true}
@@ -4872,14 +4872,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (divvar == 'SHOW')
 			{
 			conf_channels_xtra_display = 1;
-			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('HIDE');\">Le informazioni della scanalatura di chiamata di congresso del</a>";
+			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('HIDE');\">Nascondete le informazioni sul canale della conferenza</a>";
 			LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 			LMAcount=0;
 			}
 		else
 			{
 			conf_channels_xtra_display = 0;
-			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Mostri le informazioni della scanalatura di chiamata di congresso</a>";
+			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Mostrate le informazioni sul canale della conferenza</a>";
 			document.getElementById("outboundcallsspan").innerHTML = '';
 			LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 			LMAcount=0;
@@ -4892,13 +4892,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			showDiv('HotKeyEntriesBox');
 			hot_keys_active = 1;
-			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOut=\"HotKeys('OFF')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_it.gif\" border=0 alt=\"CHIAVI CALDE ATTIVE\"></a>";
+			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOut=\"HotKeys('OFF')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_it.gif\" border=0 alt=\"TASTI FUNZIONE ATTIVI\"></a>";
 			}
 		else
 			{
 			hideDiv('HotKeyEntriesBox');
 			hot_keys_active = 0;
-			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOver=\"HotKeys('ON')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_OFF_it.gif\" border=0 alt=\"CHIAVI CALDE INATTIVE\"></a>";
+			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOver=\"HotKeys('ON')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_OFF_it.gif\" border=0 alt=\"TASTI FUNZIONE INATTIVI\"></a>";
 			}
 		}
 
@@ -4910,7 +4910,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				HKbutton_allowed = 0;
 				showDiv('TransferMain');
-				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Congresso\"></a>";
+				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
 				}
 			else
 				{
@@ -4918,7 +4918,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				hideDiv('TransferMain');
 				if (showoffvar == 'YES')
 					{
-					document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Congresso\"></a>";
+					document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_it.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
 					}
 				}
 			}
@@ -4926,7 +4926,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			if (showxfervar != 'OFF')
 				{
-				alert('NON AVETE PERMESSI TRASFERIRE LE CHIAMATE');
+				alert('NON AVETE PERMESSI PER TRASFERIRE CHIAMATE');
 				}
 			}
 		}
@@ -5017,83 +5017,83 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=3 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
-<?	echo "Utente: $VD_login su Telefono: $SIP_user alla campagna: $VD_campaign&nbsp; \n"; ?>
-</TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text"><?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">TERMINE</a>\n"; ?>
+<?	echo "Inizio attività come Utente: $VD_login su Telefono: $SIP_user vai alla campagna: $VD_campaign&nbsp; \n"; ?>
+</TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text"><?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
 </TD></TR></TABLE>
 </SPAN>
 
 <span style="position:absolute;left:0px;top:13px;z-index:1;" id="Tabs">
     <table border=0 bgcolor="#FFFFFF" width=640 height=30>
 <TR VALIGN=TOP ALIGN=LEFT>
-<TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="../agc/images/vdc_tab_vicidial.gif" ALT="VICIMANOPOLA" WIDTH=115 HEIGHT=30 Border=0></A></TD>
+<TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="../agc/images/vdc_tab_vicidial.gif" ALT="VICICHIAMA" WIDTH=115 HEIGHT=30 Border=0></A></TD>
 <TD ALIGN=LEFT WIDTH=105><A HREF="#" onclick="ScriptPanelToFront();"><IMG SRC="../agc/images/vdc_tab_script.gif" ALT="SCRIPT" WIDTH=105 HEIGHT=30 Border=0></A></TD>
 <TD WIDTH=309 VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; ID di sessione: <span id=sessionIDspan></span></TD>
-<TD WIDTH=109><IMG SRC="../agc/images/agc_live_call_OFF_it.gif" NAME=livecall ALT="Vive La Chiamata" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD WIDTH=109><IMG SRC="../agc/images/agc_live_call_OFF_it.gif" NAME=livecall ALT="Chimate Attive" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </span>
 
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:3;" id="BenvenutoBoxA">
-    <table border=0 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="BenvenutoBoxAt">VICIMANOPOLA</span></TD></TR></TABLE>
+    <table border=0 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="BenvenutoBoxAt">VICICHIAMA</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:300px;top:365px;z-index:13;" id="ManuaLDiaLButtons"><font class="body_text">
-<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL();return false;">MANOPOLA MANUALE</a></span> <BR>
+<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL();return false;">Chiamata Manuale</a></span> <BR>
 </font></span>
 
 <span style="position:absolute;left:300px;top:350px;z-index:14;" id="CallbacksButtons"><font class="body_text">
-<span id="CBstatusSpan">X CHIAMATE RIPETUTE ATTIVE</span> <BR>
+<span id="CBstatusSpan">X RICHIAMATE ATTIVE</span> <BR>
 </font></span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBacKsLisTBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> CHIAMATE RIPETUTE PER L'AGENTE <? echo $VD_login ?>:<BR>Scatti sopra una chiamata ripetuta qui sotto ora per denominare la parte posteriore del cliente. Se scattate sopra un'annotazione qui sotto per denominarli, sarà rimossa dalla lista.
+    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> RICHIAMATE PER OPERATORE <? echo $VD_login ?>:<BR>Click su a callback below to call the customer back now. If you click su a record below to call it, it will be removed from the list.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
 	<BR> &nbsp; 
-	<a href="#" onclick="CalLBacKsLisTCheck();return false;">Rinfreschi</a>
+	<a href="#" onclick="CalLBacKsLisTCheck();return false;">Aggiorna</a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<a href="#" onclick="hideDiv('CallBacKsLisTBox');return false;">Vada Indietro</a>
+	<a href="#" onclick="hideDiv('CallBacKsLisTBox');return false;">Torna Indietro</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="NeWManuaLDiaLBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> NUOVO CAVO MANUALE DELLA MANOPOLA PER <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Fornisca le informazioni qui sotto per il nuovo cavo che desiderate denominare.
+    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> NUOVA CHIAMATA MANUALE PER IL CONTATTO <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Inserisci le informazioni sotto per il nuovo contatto da chiamare.
 	<BR>
 	<? 
 	if (eregi("X",dial_prefix))
 		{
-		echo "Nota: un prefisso della manopola di $dial_prefix sarà aggiunto all'inizio di questo numero<BR>\n";
+		echo "Nota: prefisso di chiamata  $dial_prefix sarà aggiunto all`inizio di questo numero<BR>\n";
 		}
 	?>
-	Nota: tutti i nuovi cavi manuali della manopola entreranno nella lista 999<BR><BR>
+	Nota: tutti i nuovi contatti da richiamare manualmente andranno nella lista 999<BR><BR>
 	<table><tr>
-	<td align=right><font class="body_text"> Codice Della Manopola: </td>
-	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (Ciò è solitamente un 1 negli S.U.A. e nel Canada)</td>
+	<td align=right><font class="body_text"> Codice di Chiamata: </td>
+	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (E solitamente un 1 negli USA e Canada)</td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Telefono Number: </td>
-	<td align=left><font class="body_text"><input type=text size=12 maxlength=10 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (un massimo delle 10 cifre - cifre soltanto)</td>
+	<td align=left><font class="body_text"><input type=text size=12 maxlength=10 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (10 cifre massimo, digita solo)</td>
 	</tr><tr>
-	<td align=right><font class="body_text"> Cavi Esistenti Di Ricerca: </td>
-	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (Questa opzione se controllato tenterà di trovare il numero di telefono nel sistema prima dell'inserimento esso come cavo nuovo)</td>
+	<td align=right><font class="body_text"> Cerca Contatti esistenti: </td>
+	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (Questa opzione tenterà di trovare il numero di telefono nel sistema prima di inserire un nuovo contatto)</td>
 	</tr><tr>
 
-	<td align=right colspan=2><BR><BR>Se desiderate comporre un numero e farli non aggiungere come nuovo cavo, entri nel dialstring esatto quel voi desiderano denominare nel giacimento della sovrapposizione di un comando manuale della manopola qui sotto. Al hangup questa chiamata dovrete aprire le CHIAMATE in QUESTO collegamento di SESSIONE alla parte inferiore dello schermo ed appenderli in su scattandosi sul relativo collegamento della scanalatura là.<BR> &nbsp; </td>
+	<td align=right colspan=2><BR><BR>If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Chiamata automatica field below. To hangup this call you will have to open the CHIAMATAS IN THIS SESSION link at the bottom of the screen and hang it up by clicking su its channel link there.<BR> &nbsp; </td>
 	</tr><tr>
-	<td align=right><font class="body_text"> Sovrapposizione di un comando manuale Della Manopola: </td>
-	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (le cifre soddisfano soltanto)</td>
+	<td align=right><font class="body_text"> Chiamata automatica: </td>
+	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (solo cifre grazie)</td>
 	</tr></table>
 	<BR>
-	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Manopola Ora</a>
+	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Chiama Ora</a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Vada Indietro</a>
+	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Torna Indietro</a>
 	</TD></TR></TABLE>
 </span>
 
 
 
-<span style="position:absolute;left:5px;top:350px;z-index:20;" id="AgentCondizioneSpan"><font class="body_text">
-La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dialing: <span id="AgentCondizioneCalls"></span> 
+<span style="position:absolute;left:5px;top:350px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
+Vostro Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="AgentStatusCalls"></span> 
 </font></span>
 
 
@@ -5101,16 +5101,16 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 	<table bgcolor="#CCCCFF" width=630><tr>
 	<td align=left>
 	<font class="body_text">
-	 <IMG SRC="../agc/images/vdc_XB_header_it.gif" border=0 alt="Trasferimento - Congresso"><BR>
-	<span STYLE="background-color: #CCCCCC" id="InternalCloser"><IMG SRC="../agc/images/vdc_XB_internalcloser_it.gif" border=0 alt="PIÙ VICINO INTERNO"></span>
-	<span STYLE="background-color: #CCCCCC" id="LocalCloser"><IMG SRC="../agc/images/vdc_XB_localcloser_OFF_it.gif" border=0 alt="LOCAL PIÙ VICINO"></span> 
+	 <IMG SRC="../agc/images/vdc_XB_header_it.gif" border=0 alt="Trasferimento - Conferenza"><BR>
+	<span STYLE="background-color: #CCCCCC" id="InternalCloser"><IMG SRC="../agc/images/vdc_XB_internalcloser_it.gif" border=0 alt="INTERNO PIU` VICINO"></span>
+	<span STYLE="background-color: #CCCCCC" id="LocalCloser"><IMG SRC="../agc/images/vdc_XB_localcloser_OFF_it.gif" border=0 alt="LOCALE PIÙ VICINO"></span> 
 	<span STYLE="background-color: #CCCCCC" id="CloserCode"><IMG SRC="../agc/images/vdc_XB_code.gif" border=0 alt="CODE"> <input type=text size=1 name=xfercode maxlength=2 class="cust_form"></span>
-	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="../agc/images/vdc_XB_hangupxferline_OFF_it.gif" border=0 alt="Linea Di Xfer Di Hangup"></span>
-	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="../agc/images/vdc_XB_hangupbothlines_it.gif" border=0 alt="Hangup Entrambe le Linee"></a></span>
+	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="../agc/images/vdc_XB_hangupxferline_OFF_it.gif" border=0 alt="Attacca la linea trasferita"></span>
+	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="../agc/images/vdc_XB_hangupbothlines_it.gif" border=0 alt="Attacca ciascun linea"></a></span>
 	
 	<BR>
 
-	<IMG SRC="../agc/images/vdc_XB_number_it.gif" border=0 alt="Numero da denominare"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
+	<IMG SRC="../agc/images/vdc_XB_number_it.gif" border=0 alt="Numero da chiamare"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
 	<IMG SRC="../agc/images/vdc_XB_secondi_it.gif" border=0 alt="secondi"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
 	<IMG SRC="../agc/images/vdc_XB_channel_it.gif" border=0 alt="channel"> <input type=text size=12 name=xferchannel maxlength=100 class="cust_form"> 
 	<input type=hidden name=xferuniqueid>
@@ -5119,10 +5119,10 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 	<a href="#" onclick="DtMf_PreSet_b();return false;"><font class="body_tiny">D2</font></a>
 	<BR>
 
-	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="../agc/images/vdc_XB_dialwithcustomer_it.gif" border=0 alt="Manopola Con Il Cliente"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="../agc/images/vdc_XB_parkcustomerdial_it.gif" border=0 alt="Manopola Del Cliente Del Parco"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="../agc/images/vdc_XB_leave3waycall_OFF_it.gif" border=0 alt="CHIAMATA DI PERMESSO 3-WAY"></span> 
-	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="../agc/images/vdc_XB_blindtransfer_OFF_it.gif" border=0 alt="Trasferimento Dei Ciechi Della Manopola"></span>
+	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="../agc/images/vdc_XB_dialwithcustomer_it.gif" border=0 alt="Chiama il Cliente"></a></span> 
+	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="../agc/images/vdc_XB_parkcustomerdial_it.gif" border=0 alt="Parcheggia il cliente in chiamata"></a></span> 
+	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="../agc/images/vdc_XB_leave3waycall_OFF_it.gif" border=0 alt="LASCIA LA CONFERENZA"></span> 
+	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="../agc/images/vdc_XB_blindtransfer_OFF_it.gif" border=0 alt="Effettua il trasferimento cieco "></span>
 	<span STYLE="background-color: #CCCCCC" id="DialBlindVMail"><IMG SRC="../agc/images/vdc_XB_ammessage_OFF.gif" border=0 alt="Blind Transfer VMail Message"></span>
 	</font>
 	</td>
@@ -5131,7 +5131,7 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 
 <span style="position:absolute;left:5px;top:310px;z-index:22;" id="HotKeyActionBox">
     <table border=0 bgcolor="#FFDD99" width=620 height=70>
-	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Cavo Dispositioned As: </font><BR><BR><CENTER>
+	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Contatto disposto come: </font><BR><BR><CENTER>
 	<font class="sd_text"><span id="HotKeyDispo"> - </span></font></CENTER>
 	</TD>
 	</TR></TABLE>
@@ -5139,8 +5139,8 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 
 <span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyEntriesBox">
     <table border=0 bgcolor="#FFDD99" width=620 height=70>
-	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Chiavi Calde Di Disposizione: </font></td><td colspan=2>
-	<font class="body_small">Una volta attivo, premi semplicemente la chiave di tastiera per la:</font></td></tr><tr>
+	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> tasti funzione per la disposizione: </font></td><td colspan=2>
+	<font class="body_small">Una volta attiva, premi sulla tastiera per la disposizione sulla chiamata sarà attaccata e disposta automaticamente:</font></td></tr><tr>
 	<TD width=200><font class="sk_text">
 	<span id="HotKeyBoxA"><? echo $HKboxA ?></span>
 	</font></TD>
@@ -5155,32 +5155,32 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 
 <span style="position:absolute;left:0px;top:12px;z-index:24;" id="NoneInSessionBox">
     <table border=1 bgcolor="#CCFFFF" width=600 height=500><TR><TD align=center> Nessuno è nella vostra sessione: <span id="NoneInSessionID"></span><BR>
-	<a href="#" onclick="NoneInSessionOK();return false;">Vada Indietro</a>
+	<a href="#" onclick="NoneInSessionOK();return false;">Torna Indietro</a>
 	<BR><BR>
-	<a href="#" onclick="NoneInSessionCalL();return false;">Agente Di Chiamata Ancora</a>
+	<a href="#" onclick="NoneInSessionCalL();return false;">Ancora Operatore di chiamata</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:25;" id="CustomerGoneBox">
-    <table border=1 bgcolor="#CCFFFF" width=650 height=500><TR><TD align=center> Il cliente ha appeso in su: <span id="CustomerGoneChanneL"></span><BR>
-	<a href="#" onclick="CustomerGoneOK();return false;">Vada Indietro</a>
+    <table border=1 bgcolor="#CCFFFF" width=650 height=500><TR><TD align=center> Il cliente ha attaccato: <span id="CustomerGoneChanneL"></span><BR>
+	<a href="#" onclick="CustomerGoneOK();return false;">Torna Indietro</a>
 	<BR><BR>
-	<a href="#" onclick="CustomerGoneHangup();return false;">Rivestimento e chiamata di disposizione</a>
+	<a href="#" onclick="CustomerGoneHangup();return false;">Termina e disponi la chiamata</a>
 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:26;" id="WrapupBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Chiamata Wrapup: <span id="WrapupTimer"></span> secondi restanti nel wrapup<BR><BR>
+    <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Chiamata tempo di pausa: <span id="WrapupTimer"></span> secondi restanti prima di nuova chiamata<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
-	<a href="#" onclick="WrapupFinish();return false;">Rivestimento Wrapup e pass</a>
+	<a href="#" onclick="WrapupFinish();return false;">Tempo scaduto, sbrigarsi  </a>
 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:27;" id="LogouTBox">
-    <table border=1 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">TERMINE</span></TD></TR></TABLE>
+    <table border=1 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:70px;z-index:28;" id="DispoButtonHideA">
@@ -5192,28 +5192,28 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:30;" id="DispoButtonHideC">
-    <table border=0 bgcolor="#CCFFCC" width=650 height=47><TR><TD align=center VALIGN=top>Tutti i cambiamenti fatti al cliente che le informazioni qui sotto attualmente non saranno comitted, voi devono cambiare le informazioni del cliente prima di voi hangup la chiamata. </TD></TR></TABLE>
+    <table border=0 bgcolor="#CCFFCC" width=650 height=47><TR><TD align=center VALIGN=top>Tutti i cambiamenti fatti sulle informazioni del cliente sotto non saranno effettuate, cambiare le informazioni prima di attaccare. </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;" id="DispoSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> CHIAMATA DI DISPOSIZIONE :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Ancora</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimizzi</a></span><BR>
-	<span id="DispoSelectContent"> Estremità-de-denomini La Selezione Di Disposizione </span>
+    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> DISPOSIZIONE CHIAMATA :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Attacca ancora</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimizza</a></span><BR>
+	<span id="DispoSelectContent"> Selezione di fine chiamata </span>
 	<input type=hidden name=DispoSelection><BR>
-	<input type=checkbox name=DispoSelectStop size=1 value="0"> SMETTA DI DENOMINARE <BR>
-	<a href="#" onclick="DispoSelectContent_create('','ReSET');return false;">RISISTEMAZIONE</a> | 
-	<a href="#" onclick="DispoSelect_submit();return false;">PRESENTI</a>
+	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUSA OPERATORE <BR>
+	<a href="#" onclick="DispoSelectContent_create('','ReSET');return false;">PULISCI SCHERMATA</a> | 
+	<a href="#" onclick="DispoSelect_submit();return false;">INVIA</a>
 	<BR><BR>
-	<a href="#" onclick="WeBForMDispoSelect_submit();return false;">WEB FORM PRESENTI</a>
+	<a href="#" onclick="WeBForMDispoSelect_submit();return false;">WEB FORM INVIA</a>
 	<BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:32;" id="CallBackSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> Selezioni una data di chiamata ripetuta :<span id="CallBackDatE"></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> Selezionate una richiamata :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN>
 	<input type=hidden name=CallBackTimESelectioN>
-	<span id="CallBackDatEPrinT">Selezioni una data qui sotto</span> &nbsp;
+	<span id="CallBackDatEPrinT">Selezioni una data sotto</span> &nbsp;
 	<span id="CallBackTimEPrinT"></span> &nbsp; &nbsp;
 	Hour: 
 	<SELECT SIZE=1 NAME="CBT_hour">
@@ -5242,57 +5242,57 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 	</select> &nbsp;<BR>
 	<?
 	if ($agentonly_callbacks)
-		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> LA MIA CHIAMATA RIPETUTA SOLTANTO <BR>";}
+		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> SOLTANTO LE MIE RICHIAMATE <BR>";}
 	?>
-	Osservazioni dei CB: <input type=text name="CallBackCommenTsField" size=50><BR><BR>
+	Commenti del CB : <input type=text name="CallBackCommenTsField" size=50><BR><BR>
 
-	<a href="#" onclick="CallBackDatE_submit();return false;">PRESENTI</a><BR><BR>
+	<a href="#" onclick="CallBackDatE_submit();return false;">INVIA</a><BR><BR>
 	<span id="CallBackDateContent"><?echo"$CCAL_OUT"?></span>
 	<BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:33;" id="CloserSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> SELEZIONE DI GRUPPO INBOUND PIÙ VICINA <BR>
-	<span id="CloserSelectContent"> Selezione Di Gruppo Inbound Più vicina </span>
+    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> SELEZIONE DI GRUPPO INBOUND PIÙ VICINO <BR>
+	<span id="CloserSelectContent"> Selezione di Gruppo Inbound più vicino </span>
 	<input type=hidden name=CloserSelectList><BR>
 	<input type=checkbox name=CloserSelectBlended size=1 value="0"> CHIAMATA MESCOLATA(outbound attivato) <BR>
-	<a href="#" onclick="CloserSelectContent_create();return false;">RISISTEMAZIONE</a> | 
-	<a href="#" onclick="CloserSelect_submit();return false;">PRESENTI</a>
+	<a href="#" onclick="CloserSelectContent_create();return false;">RESET</a> | 
+	<a href="#" onclick="CloserSelect_submit();return false;">INVIA</a>
 	<BR><BR><BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:34;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="../agc/images/blank.gif"></BUTTON>
-	<span id="DiaLLeaDPrevieWHide">Manica</span>
-	<span id="DiaLDiaLAltPhonEHide">Manica</span>
+	<span id="DiaLLeaDPrevieWHide">Canale</span>
+	<span id="DiaLDiaLAltPhonEHide">Canale</span>
 	<?
 	if (!$agentonly_callbacks)
-		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> LA MIA CHIAMATA RIPETUTA SOLTANTO <BR>";}
+		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> SOLTANTO LE MIE RICHIAMATE <BR>";}
 	?>
 </span>
 
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> TRASFERIMENTO IN TENSIONE DI CHIAMATA</b> <BR>Manica da trasferire: <span id="MainXfeRChanneL">Manica</span><BR></tr>
-	<tr><td>Estensioni:<BR><span id="MainXfeRContent"> Menu Di Estensioni </span></td>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> TRASFERIMENTO CHIAMATA ATTIVA</b> <BR>Canale trasferito: <span id="MainXfeRChanneL">Canale</span><BR></tr>
+	<tr><td>Interni:<BR><span id="MainXfeRContent"> Menu degli Interni </span></td>
 	<td>
 	<BR>
-	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Trasmetta all'estensione selezionata</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Trasmetta alla scatola selezionata del vmail</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">_ trasmett questo numero</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
-	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">RINFRESCHI</a> <BR><BR><BR>
-	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Di nuovo alla finestra principale</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Invia all` interno selezionato</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Invia alla VoiceMail selezionata</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Invia a questo numero </a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
+	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">AGGIORNA</a> <BR><BR><BR>
+	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Tornate alla schermata principale</a> <BR><BR>
 	</TD>
-	<TD>Congressi:<BR><font size=1>(scatti sopra un numero qui sotto per trasmettere ad un congresso)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Trasmetta la mia scanalatura anche<div class="scroll_list" id="MainXfeRconfContent"> Menu Di Congressi </div></td></TR></TABLE>
+	<TD>Conferenze:<BR><font size=1>(Seleziona il numero sopra per inviarlo ad una conferenza)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Invia anche il mio canale<div class="scroll_list" id="MainXfeRconfContent"> Menu Conferenza </div></td></TR></TABLE>
 </span>
 
 
 
 <span style="position:absolute;left:154px;top:65px;z-index:15;" id="ScriptPanel">
-    <table border=0 bgcolor="#FFE7D0" width=486 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIMANOPOLA SCRIPT</div></font></TD></TR></TABLE>
+    <table border=0 bgcolor="#FFE7D0" width=486 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICICHIAMA SCRIPT</div></font></TD></TR></TABLE>
 </span>
 
 
@@ -5300,40 +5300,40 @@ La Vostra Condizione: <span id="AgentCondizioneCondizione"></span> <BR>Calls Dia
 
 
 
-<!-- BEGIN *********   Here is the main VICIMANOPOLA display panel -->
+<!-- BEGIN *********   Here is the main VICICHIAMA display panel -->
 <span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
 <TABLE border=0 BGCOLOR="#E0C2D6" width=640 id="MainTable">
-<TR><TD colspan=3><font class="body_text"> CONDIZIONE: <span id="MainStatuSSpan"></span></font></TD></TR>
+<TR><TD colspan=3><font class="body_text"> STATUS: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
 <tr><td width=150 align=left valign=top>
 <font class="body_text"><center>
-<span STYLE="background-color: #CCFFCC" id="DiaLControl"><a href="#" onclick="ManualDialNext('','','','','');"><IMG SRC="../agc/images/vdc_LB_dialnextnumber_OFF_it.gif" border=0 alt="Numero Seguente Della Manopola"></a></span><BR>
-<span id="DiaLLeaDPrevieW"><font class="preview_text"> <input type=checkbox name=LeadPreview size=1 value="0"> PREVISIONE DEL CAVO<BR></font></span>
-<span id="DiaLDiaLAltPhonE"><font class="preview_text"> <input type=checkbox name=DiaLAltPhonE size=1 value="0"> ALT DEL TELEFONO<BR></font></span>
+<span STYLE="background-color: #CCFFCC" id="DiaLControl"><a href="#" onclick="ManualDialNext('','','','','');"><IMG SRC="../agc/images/vdc_LB_dialnextnumber_OFF_it.gif" border=0 alt="Chiama il numero seguente"></a></span><BR>
+<span id="DiaLLeaDPrevieW"><font class="preview_text"> <input type=checkbox name=LeadPreview size=1 value="0"> ANTEPRIMA CONTATTO<BR></font></span>
+<span id="DiaLDiaLAltPhonE"><font class="preview_text"> <input type=checkbox name=DiaLAltPhonE size=1 value="0"> ALT CHIAMATE<BR></font></span>
 
 <!--
 <?
 if ( ($manual_dial_preview) and ($auto_dial_level==0) )
-	{echo "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREVISIONE DEL CAVO<BR></font>";}
+	{echo "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> ANTEPRIMA CONTATTO<BR></font>";}
 if ( ($alt_phone_dialing) and ($auto_dial_level==0) )
-	{echo "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT DEL TELEFONO<BR></font>";}
+	{echo "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT CHIAMATE<BR></font>";}
 
 
 ?> -->
-LIMA DI REGISTRAZIONE:<BR>
+REGISTRAZIONE DOCUMENTO:<BR>
 </center>
 <font class="body_tiny"><span id="RecorDingFilename"></span></font><BR>
-IDENTIFICAZIONE ANNOTAZIONE: <font class="body_small"><span id="RecorDID"></span></font><BR>
+IDENTIFICAZIONE Registrazione: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <center>
-<!-- <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + head_conf + "','');return false;\">Annotazione</a> -->
-<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf','<?=$session_id ?>','');return false;"><IMG SRC="../agc/images/vdc_LB_startrecording_it.gif" border=0 alt="Inizi A registrare"></a></span><BR>
+<!-- <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + head_conf + "','');return false;\">Registrazione</a> -->
+<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf','<?=$session_id ?>','');return false;"><IMG SRC="../agc/images/vdc_LB_startrecording_it.gif" border=0 alt="Inizia la Registrazione"></a></span><BR>
 <span id="SpacerSpanA"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #FFFFFF" id="WebFormSpan"><IMG SRC="../agc/images/vdc_LB_webform_OFF_it.gif" border=0 alt="Forma Di Fotoricettore"></span><BR>
+<span STYLE="background-color: #FFFFFF" id="WebFormSpan"><IMG SRC="../agc/images/vdc_LB_webform_OFF_it.gif" border=0 alt="Interfacccia Web"></span><BR>
 <span id="SpacerSpanB"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #CCCCCC" id="ParkControl"><IMG SRC="../agc/images/vdc_LB_parkcall_OFF_it.gif" border=0 alt="Chiamata Del Parco"></span><BR>
-<span STYLE="background-color: #CCCCCC" id="XferControl"><IMG SRC="../agc/images/vdc_LB_transferconf_OFF_it.gif" border=0 alt="Trasferimento - Congresso"></span><BR>
+<span STYLE="background-color: #CCCCCC" id="ParkControl"><IMG SRC="../agc/images/vdc_LB_parkcall_OFF_it.gif" border=0 alt="Parcheggia la chiamata"></span><BR>
+<span STYLE="background-color: #CCCCCC" id="XferControl"><IMG SRC="../agc/images/vdc_LB_transferconf_OFF_it.gif" border=0 alt="Trasferimento - Conferenza"></span><BR>
 <span id="SpacerSpanC"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF_it.gif" border=0 alt="Cliente Di Hangup"></span><BR>
+<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF_it.gif" border=0 alt="Disconnetti il cliente"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="../agc/images/vdc_LB_senddtmf_it.gif" border=0 alt="Trasmetta DTMF"></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value=""></span><BR>
 </center>
@@ -5351,12 +5351,12 @@ IDENTIFICAZIONE ANNOTAZIONE: <font class="body_small"><span id="RecorDID"></span
 <input type=hidden name=callserverip value="">
 <table><tr>
 <td align=right><font class="body_text"> secondi: </td>
-<td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Manica: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Tempo Di Cust: <input type=text size=22 name=custdatetime class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Canale: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Tempo Di Cust: <input type=text size=22 name=custdatetime class="cust_form" value=""></td>
 </tr><tr>
-<td colspan=2 align=center> Le Informazioni Del Cliente: <span id="CusTInfOSpaN"></span></td>
+<td colspan=2 align=center> Informazioni Cliente: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
 <td align=right><font class="body_text"> Titolo: </td>
-<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; In primo luogo: <input type=text size=12 name=first_name maxlength=30 class="cust_form" value="">&nbsp; Mi:<input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Ultimo: <input type=text size=15 name=last_name maxlength=30 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; Primo: <input type=text size=12 name=first_name maxlength=30 class="cust_form" value="">&nbsp; Mi:<input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Ultimo: <input type=text size=15 name=last_name maxlength=30 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Indirizzo1: </td>
 <td align=left><font class="body_text"><input type=text size=50 name=address1 maxlength=100 class="cust_form" value=""></td>
@@ -5365,18 +5365,18 @@ IDENTIFICAZIONE ANNOTAZIONE: <font class="body_small"><span id="RecorDID"></span
 <td align=left><font class="body_text"><input type=text size=17 name=address2 maxlength=100 class="cust_form" value="">&nbsp; Indirizzo3: <input type=text size=25 name=address3 maxlength=100 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Città: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; Dichiari: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PostCode: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; Stato: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; Codice postale: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Provincia: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Identificazione Del Fornitore: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; ID Fornitore: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Telefono: </td>
-<td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=10 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Telefono: <input type=text size=11 name=alt_phone maxlength=10 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=10 class="cust_form" value="">&nbsp; Prefisso: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Telefono: <input type=text size=11 name=alt_phone maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Esposizione: </td>
+<td align=right><font class="body_text"> Mostra: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right valign=top><font class="body_text"> Osservazioni: </td>
+<td align=right valign=top><font class="body_text"> Note: </td>
 <?
 if ( ($multi_line_comments) )
 	{echo "<td align=left><font class=\"body_text\"><TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA></td>\n";}
@@ -5396,10 +5396,10 @@ else
 </td></tr>
 
 <tr><td align=left colspan=3>
-<table><tr height=32><td height=32><font face="Arial,Helvetica" size=1>Versione del fotoricettore-cliente di VICIMANOPOLA: <? echo $version ?> &nbsp; &nbsp; CONFIGURAZIONE: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Assistente: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
-<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Mostri le informazioni della scanalatura di chiamata di congresso</a></span></font></td><td align=right height=32>
+<table><tr height=32><td height=32><font face="Arial,Helvetica" size=1>Versione del webclient di VICICHIAMA: <? echo $version ?> &nbsp; &nbsp; CONFIGURAZIONE: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
+<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Mostrate le informazioni sul canale della conferenza</a></span></font></td><td align=right height=32>
 <? if ( ($HK_statuses_camp > 0) && ( ($user_level>=$HKuser_level) or ($VU_hotkeys_active > 0) ) ) { ?>
-<span id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="../agc/images/vdc_XB_hotkeysactive_OFF_it.gif" border=0 alt="CHIAVI CALDE INATTIVE"></a></span>
+<span id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="../agc/images/vdc_XB_hotkeysactive_OFF_it.gif" border=0 alt="TASTI FUNZIONE INATTIVI"></a></span>
 <? } ?>
 </td></tr>
 <tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
@@ -5411,7 +5411,7 @@ else
 </td></tr>
 </TABLE>
 </span>
-<!-- END *********   Here is the main VICIMANOPOLA display panel -->
+<!-- END *********   Here is the main VICICHIAMA display panel -->
 
 
 </TD></TR></TABLE>

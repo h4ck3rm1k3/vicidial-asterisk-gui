@@ -60,7 +60,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0) )
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -94,7 +94,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Esposizione Parcheggiata Di Chiamate";
+echo "<title>Display Chiamate Parcheggiate";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -106,7 +106,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if ( (strlen($exten)<1) or (strlen($protocol)<3) )
 	{
 	$channel_live=0;
-	echo "Exten $exten è non valido o protocollo $protocol è non valido\n";
+	echo "Exten $exten non è valido o protocollo $protocol non è valido\n";
 	exit;
 	}
 	else
@@ -133,7 +133,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";
+	echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

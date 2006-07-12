@@ -132,7 +132,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -167,7 +167,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
-echo "<title>Il Responsabile Trasmette: ";
+echo "<title>Il Responsabile invia a: ";
 if ($ACTION=="Originate")		{echo "Originate";}
 if ($ACTION=="Redirect")		{echo "Redirect";}
 if ($ACTION=="RedirectName")	{echo "RedirectName";}
@@ -190,14 +190,14 @@ if ($ACTION=="SysCIDOriginate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Exten $exten è non valido or queryCID $queryCID è non valido, Originate ordine non inserito\n";
+		echo "Exten $exten non è valido or queryCID $queryCID non è valido, Originate comando non inserito\n";
 	}
 	else
 	{
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $queryCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate ordine trasmesso per Exten $exten Manica $channel su $server_ip\n";
+	echo "Originate comando inviato a Exten $exten Canale $channel su $server_ip\n";
 	}
 }
 
@@ -211,8 +211,8 @@ if ($ACTION=="OriginateName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "extenName $extenName deve essere regolato\n";
 		echo "ext_context $ext_context deve essere regolato\n";
@@ -239,8 +239,8 @@ if ($ACTION=="OriginateNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "extenName $extenName deve essere regolato\n";
 		echo "exten $exten deve essere regolato\n";
@@ -267,7 +267,7 @@ if ($ACTION=="Originate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<10) )
 	{
-		echo "Exten $exten è non valido or queryCID $queryCID è non valido, Originate ordine non inserito\n";
+		echo "Exten $exten non è valido or queryCID $queryCID non è valido, Originate comando non inserito\n";
 	}
 	else
 	{
@@ -278,7 +278,7 @@ if ($ACTION=="Originate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate ordine trasmesso per Exten $exten Manica $channel su $server_ip\n";
+	echo "Originate comando inviato a Exten $exten Canale $channel su $server_ip\n";
 	}
 }
 
@@ -294,7 +294,7 @@ if ($ACTION=="HangupConfDial")
 	if ( (strlen($exten)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) )
 	{
 		$channel_live=0;
-		echo "conference $exten è non valido or ext_context $ext_context or queryCID $queryCID è non valido, Hangup ordine non inserito\n";
+		echo "conference $exten non è valido or ext_context $ext_context or queryCID $queryCID non è valido, Hangup comando non inserito\n";
 	}
 	else
 	{
@@ -331,7 +331,7 @@ if ($ACTION=="Hangup")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
 	{
 		$channel_live=0;
-		echo "Manica $channel è non valido or queryCID $queryCID è non valido, Hangup ordine non inserito\n";
+		echo "Canale $channel non è valido or queryCID $queryCID non è valido, Hangup comando non inserito\n";
 	}
 	else
 	{
@@ -361,7 +361,7 @@ if ($ACTION=="Hangup")
 			$rowx=mysql_fetch_row($rslt);
 			if ($rowx[0]==0)
 			{
-			echo "Call $CalLCID $channel non è in tensione su $call_server_ip, Checking Live Manica...\n";
+			echo "Call $CalLCID $channel non è attivo su $call_server_ip, Checking Live Canale...\n";
 
 				$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension LIKE \"%$exten\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -370,7 +370,7 @@ if ($ACTION=="Hangup")
 				if ($row[0]==0)
 				{
 				$channel_live=0;
-				echo "Manica $channel non è in tensione su $call_server_ip, Hangup ordine non inserito $rowx[0]\n$stmt\n";
+				echo "Canale $channel non è attivo su $call_server_ip, Hangup comando non inserito $rowx[0]\n$stmt\n";
 				}
 				else
 				{
@@ -383,7 +383,7 @@ if ($ACTION=="Hangup")
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
-		echo "Hangup ordine trasmesso per Manica $channel su $call_server_ip\n";
+		echo "Hangup comando inviato a Canale $channel su $call_server_ip\n";
 		}
 	}
 }
@@ -399,8 +399,8 @@ if ($ACTION=="RedirectVD")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "exten $exten deve essere regolato\n";
 		echo "ext_context $ext_context deve essere regolato\n";
@@ -416,13 +416,13 @@ if ($ACTION=="RedirectVD")
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
 			if (eregi("CLOSER",$campaign))
 				{
-				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
+				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRASF' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}
 			if ($auto_dial_level < 1)
 				{
-				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
+				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRASF' where uniqueid='$uniqueid';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -442,8 +442,8 @@ if ($ACTION=="RedirectToPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($extenName)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($parkedby)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "exten $exten deve essere regolato\n";
 		echo "extenName $extenName deve essere regolato\n";
@@ -467,8 +467,8 @@ if ($ACTION=="RedirectFromPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "exten $exten deve essere regolato\n";
 		echo "ext_context $ext_context deve essere regolato\n";
@@ -490,8 +490,8 @@ if ($ACTION=="RedirectName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "extenName $extenName deve essere regolato\n";
 		echo "ext_context $ext_context deve essere regolato\n";
@@ -518,8 +518,8 @@ if ($ACTION=="RedirectNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "extenName $extenName deve essere regolato\n";
 		echo "exten $exten deve essere regolato\n";
@@ -555,9 +555,9 @@ if ($ACTION=="RedirectXtra")
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
-			echo "Una di queste variabili è non valido:\n";
-			echo "Manica $channel deve essere più grande di 2 caratteri\n";
-			echo "ExtraManica $extrachannel deve essere più grande di 2 caratteri\n";
+			echo "Una di queste variabili non è valido:\n";
+			echo "Canale $channel deve essere più grande di 2 caratteri\n";
+			echo "ExtraCanale $extrachannel deve essere più grande di 2 caratteri\n";
 			echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 			echo "exten $exten deve essere regolato\n";
 			echo "ext_context $ext_context deve essere regolato\n";
@@ -582,7 +582,7 @@ if ($ACTION=="RedirectXtra")
 				else
 				{
 				$channel_liveX=0;
-				echo "Non può trovare il congresso vuoto su $server_ip, Redirect ordine non inserito\n";
+				echo "Non puoi trovare conferenze vuote su $server_ip, Redirect comando non inserito\n";
 				}
 			}
 
@@ -601,7 +601,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Manica $channel non è in tensione su $call_server_ip, Redirect ordine non inserito\n";
+					echo "Canale $channel non è attivo su $call_server_ip, Redirect comando non inserito\n";
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -617,7 +617,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Manica $channel non è in tensione su $server_ip, Redirect ordine non inserito\n";
+					echo "Canale $channel non è attivo su $server_ip, Redirect comando non inserito\n";
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -628,7 +628,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra ordine trasmesso per Manica $channel and \nExtraManica $extrachannel\n to $exten su $server_ip\n";
+					echo "RedirectXtra comando inviato a Canale $channel and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
 				}
 				else
 				{
@@ -652,7 +652,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra ordine trasmesso per Manica $channel su $call_server_ip and \nExtraManica $extrachannel\n to $exten su $server_ip\n";
+					echo "RedirectXtra comando inviato a Canale $channel su $call_server_ip and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
 				}
 			}
 			else
@@ -675,8 +675,8 @@ if ($ACTION=="Redirect")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili è non valido:\n";
-		echo "Manica $channel deve essere più grande di 2 caratteri\n";
+		echo "Una di queste variabili non è valido:\n";
+		echo "Canale $channel deve essere più grande di 2 caratteri\n";
 		echo "queryCID $queryCID deve essere più grande di 14 caratteri\n";
 		echo "exten $exten deve essere regolato\n";
 		echo "ext_context $ext_context deve essere regolato\n";
@@ -699,7 +699,7 @@ if ($ACTION=="Redirect")
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Manica $channel non è in tensione su $server_ip, Redirect ordine non inserito\n";
+				echo "Canale $channel non è attivo su $server_ip, Redirect comando non inserito\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -708,7 +708,7 @@ if ($ACTION=="Redirect")
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		echo "Redirect ordine trasmesso per Manica $channel su $server_ip\n";
+		echo "Redirect comando inviato a Canale $channel su $server_ip\n";
 		}
 	}
 }
@@ -730,7 +730,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Manica $channel è non valido or queryCID $queryCID è non valido or filename: $filename è non valido, $ACTION ordine non inserito\n";
+		echo "Canale $channel non è valido or queryCID $queryCID non è valido or filename: $filename non è valido, $ACTION comando non inserito\n";
 	}
 	else
 	{
@@ -747,7 +747,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Manica $channel non è in tensione su $server_ip, $ACTION ordine non inserito\n";
+				echo "Canale $channel non è attivo su $server_ip, $ACTION comando non inserito\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -789,7 +789,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				}
 
 			}
-		echo "$ACTION ordine trasmesso per Manica $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
+		echo "$ACTION comando inviato a Canale $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
 		}
 	}
 }
@@ -809,7 +809,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Manica $channel è non valido or exten $exten è non valido or filename: $filename è non valido, $ACTION ordine non inserito\n";
+		echo "Canale $channel non è valido or exten $exten non è valido or filename: $filename non è valido, $ACTION comando non inserito\n";
 	}
 	else
 	{
@@ -873,7 +873,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION ordine trasmesso per Manica $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n LA REGISTRAZIONE DURERÀ FINO A 60 MINUTI\n";
+		echo "$ACTION comando inviato a Canale $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n LA REGISTRAZIONE DURERÀ FINO A 60 MINUTI\n";
 	}
 }
 
@@ -890,7 +890,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='debug') {echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";}
+if ($format=='debug') {echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";}
 if ($format=='debug') {echo "\n</body>\n</html>\n";}
 	
 exit; 

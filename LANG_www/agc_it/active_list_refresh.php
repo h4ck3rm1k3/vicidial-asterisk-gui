@@ -106,7 +106,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
     exit;
 	}
   else
@@ -141,12 +141,12 @@ if ($format=='table')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    ADD: $ADD   server_ip: $server_ip-->\n";
-echo "<title>Esposizione Della Lista: ";
-if ($ADD==1)		{echo "Estensioni In tensione";}
-if ($ADD==2)		{echo "Estensioni Occupate";}
+echo "<title>Visualizza Lista: ";
+if ($ADD==1)		{echo "Interni Attivi";}
+if ($ADD==2)		{echo "Interni Occupati";}
 if ($ADD==3)		{echo "Linee Esterne";}
-if ($ADD==4)		{echo "Estensioni Locali";}
-if ($ADD==5)		{echo "Congressi";}
+if ($ADD==4)		{echo "Interni Locali";}
+if ($ADD==5)		{echo "Conferenze";}
 if ($ADD==99999)	{echo "AIUTO";}
 echo "</title>\n";
 echo "</head>\n";
@@ -450,7 +450,7 @@ if ($ADD==5)
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='table') {echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";}
+if ($format=='table') {echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";}
 if ($format=='table') {echo "\n</body>\n</html>\n";}
 	
 exit; 

@@ -262,7 +262,7 @@ $auth=$row[0];
 
 if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 {
-echo "Non valido Utentename/Parola d'accesso: |$user|$pass|\n";
+echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
 exit;
 }
 else
@@ -297,7 +297,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Scritto Di Domanda Della Base di dati";
+echo "<title>VICIDiaL Script per query su Database";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -315,7 +315,7 @@ if ($ACTION == 'regCLOSER')
 	if ( (strlen($closer_choice)<1) || (strlen($user)<1) )
 	{
 	$channel_live=0;
-	echo "Scelta Del Gruppo $closer_choice è non valido\n";
+	echo "Scelta del Gruppo $closer_choice non è valido\n";
 	exit;
 	}
 	else
@@ -343,7 +343,7 @@ if ($ACTION == 'regCLOSER')
 		$rslt=mysql_query($stmt, $link);
 		}
 	}
-	echo "Closer In Scelta Del Gruppo $closer_choice è stato registrato all'utente $user\n";
+	echo "Closer In Scelta del Gruppo $closer_choice è stato registrato dall` utente $user\n";
 }
 
 
@@ -360,8 +360,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1)  || (strlen($ext_context)<1) )
 	{
 	$channel_live=0;
-	echo "TRAMOGGIA VUOTA\n";
-	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context è non valido\n";
+	echo "LISTA DI CHIAMATA VUOTA\n";
+	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non è valido\n";
 	exit;
 	}
 	else
@@ -578,7 +578,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		}
 		else
 		{
-		echo "TRAMOGGIA VUOTA\n";
+		echo "LISTA DI CHIAMATA VUOTA\n";
 		}
 	}
 }
@@ -597,7 +597,7 @@ if ($ACTION == 'manDiaLskip')
 	{
 		$channel_live=0;
 		echo "LEAD NOT REVERTED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context è non valido\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non è valido\n";
 		exit;
 	}
 	else
@@ -627,7 +627,7 @@ if ($ACTION == 'manDiaLonly')
 	{
 		$channel_live=0;
 		echo "CHIAMATA NOT PLACED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context è non valido\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non è valido\n";
 		exit;
 	}
 	else
@@ -675,7 +675,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 if (strlen($MDnextCID)<18)
 	{
 	echo "NO\n";
-	echo "MDnextCID $MDnextCID è non valido\n";
+	echo "MDnextCID $MDnextCID non è valido\n";
 	exit;
 	}
 else
@@ -728,8 +728,8 @@ if ($stage == "start")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
-		echo "CEPPO NON INSERITO\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign è non valido\n";
+		echo "LOG NON INSERITO\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign non è valido\n";
 		exit;
 		}
 	else
@@ -747,7 +747,7 @@ if ($stage == "start")
 			}
 		else
 			{
-			echo "CEPPO NON INSERITO\n";
+			echo "LOG NON INSERITO\n";
 			}
 
 	#	##### insert log into call_log for manual VICIDiaL call
@@ -762,7 +762,7 @@ if ($stage == "start")
 	#		}
 	#	else
 	#		{
-	#		echo "CEPPO NON INSERITO\n";
+	#		echo "LOG NON INSERITO\n";
 	#		}
 		}
 	}
@@ -771,8 +771,8 @@ if ($stage == "end")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) )
 		{
-		echo "CEPPO NON INSERITO\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id è non valido\n";
+		echo "LOG NON INSERITO\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id non è valido\n";
 		exit;
 		}
 	else
@@ -835,7 +835,7 @@ if ($stage == "end")
 			}
 		else
 			{
-			echo "CEPPO NON INSERITO\n\n";
+			echo "LOG NON INSERITO\n\n";
 			}
 		}
 
@@ -957,7 +957,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagna $campaign è non valido\n";
+	echo "Campagna $campaign non è valido\n";
 	exit;
 	}
 	else
@@ -1209,13 +1209,13 @@ if ($ACTION == 'userLOGout')
 if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	{
 	echo "NO\n";
-	echo "campaign $campaign or conf_exten $conf_exten è non valido\n";
+	echo "campaign $campaign or conf_exten $conf_exten non è valido\n";
 	exit;
 	}
 else
 	{
-	##### Insert a TERMINE record into the user log
-	$stmt="INSERT INTO vicidial_user_log values('','$user','TERMINE','$campaign','$NOW_TIME','$StarTtime');";
+	##### Insert a LOGOUT record into the user log
+	$stmt="INSERT INTO vicidial_user_log values('','$user','LOGOUT','$campaign','$NOW_TIME','$StarTtime');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
@@ -1267,7 +1267,7 @@ if ($ACTION == 'updateDISPO')
 	$row='';   $rowx='';
 	if ( (strlen($dispo_choice)<1) || (strlen($lead_id)<1) )
 	{
-	echo "Dispo Choice $dispo or lead_id $lead_id è non valido\n";
+	echo "Dispo Choice $dispo or lead_id $lead_id non è valido\n";
 	exit;
 	}
 	else
@@ -1321,7 +1321,7 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 		}
 
-	echo 'Lead ' . $lead_id . ' è stato cambiato a ' . $dispo_choice . " Condizione\nNext agent_log_id:\n" . $agent_log_id . "\n";
+	echo 'Lead ' . $lead_id . ' è stato cambiato ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";
 }
 
 ################################################################################
@@ -1334,7 +1334,7 @@ if ($ACTION == 'updateLEAD')
 	$row='';   $rowx='';
 	if ( (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
-	echo "phone_number $phone_number or lead_id $lead_id è non valido\n";
+	echo "phone_number $phone_number or lead_id $lead_id non è valido\n";
 	exit;
 	}
 	else
@@ -1366,7 +1366,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	$row='';   $rowx='';
 	if ( (strlen($stage)<2) || (strlen($server_ip)<1) )
 	{
-	echo "stage $stage è non valido\n";
+	echo "stage $stage non è valido\n";
 	exit;
 	}
 	else
@@ -1404,7 +1404,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		}
 	}
-	echo 'Agent ' . $user . ' è ora nella condizione ' . $stage . "\n";
+	echo 'Agent ' . $user . ' è ora nello Status ' . $stage . "\n";
 }
 
 
@@ -1417,7 +1417,7 @@ if ($ACTION == 'UpdatEFavoritEs')
 	$channel_live=1;
 	if ( (strlen($favorites_list)<1) || (strlen($user)<1) || (strlen($exten)<1) )
 	{
-	echo "favorites list $favorites_list è non valido\n";
+	echo "favorites list $favorites_list non è valido\n";
 	exit;
 	}
 	else
@@ -1503,7 +1503,7 @@ if ($format=='debug')
 {
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-echo "\n<!-- tempo di esecuzione dello scritto: $RUNtime secondi -->";
+echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
 echo "\n</body>\n</html>\n";
 }
 	
