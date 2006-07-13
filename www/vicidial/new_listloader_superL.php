@@ -364,7 +364,7 @@ function ParseFileName() {
 						$security_phrase =		$row[$security_phrase_field];
 						$comments =				trim($row[$comments_field]);
 
-						if (strlen($phone_number)>8) {
+						if (strlen($phone_number)>6) {
 
 
 							if (strlen($list_id_override)>0) 
@@ -471,7 +471,7 @@ function ParseFileName() {
 				$security_phrase =		$row[$security_phrase_field];
 				$comments =				trim($row[$comments_field]);
 
-				if (strlen($phone_number)>8) {
+				if (strlen($phone_number)>6) {
 
 					if (strlen($list_id_override)>0) 
 						{
@@ -590,7 +590,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 					$security_phrase =		$row[21];
 					$comments =				trim($row[22]);
 
-					if (strlen($phone_number)>8) {
+					if (strlen($phone_number)>6) {
 
 						if (strlen($list_id_override)>0) 
 							{
@@ -691,7 +691,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);
 
-				if (strlen($phone_number)>8) {
+				if (strlen($phone_number)>6) {
 
 					if (strlen($list_id_override)>0) 
 						{

@@ -199,7 +199,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);
 
-				if (strlen($phone_number)>8) 
+				if (strlen($phone_number)>6) 
 					{
 					$entry_date =			"$pulldate";
 					$modify_date =			"";

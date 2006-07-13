@@ -159,7 +159,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 		if ($oWkC) {$comments=$oWkC->Value; }
 		$comments=~s/^\s*(.*?)\s*$/$1/;
 
-		if (length($phone_number)>8) {
+		if (length($phone_number)>6) {
 			if (length($forcelistid) > 0)
 				{
 				$list_id =	$forcelistid;		# set list_id to override value
