@@ -323,538 +323,550 @@ if ($manual =~ /n/i)
 	}
 else
 	{
-	print "\nSTARTING ASTGUICLIENT MANUAL CONFIGURATION PHASE...\n";
-	##### BEGIN astguiclient home directory prompting and existence check #####
-	$continue='NO';
-	while ($continue =~/NO/)
+	$config_finished='NO';
+	while ($config_finished =~/NO/)
 		{
-		print("\nastguiclient home path or press enter for default: [$PATHhome] ");
-		$PROMPThome = <STDIN>;
-		chomp($PROMPThome);
-		if (length($PROMPThome)>2)
+		print "\nSTARTING ASTGUICLIENT MANUAL CONFIGURATION PHASE...\n";
+		##### BEGIN astguiclient home directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPThome =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPThome")
+			print("\nastguiclient home path or press enter for default: [$PATHhome] ");
+			$PROMPThome = <STDIN>;
+			chomp($PROMPThome);
+			if (length($PROMPThome)>2)
 				{
-				print("$PROMPThome does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPThome = <STDIN>;
-				chomp($createPROMPThome);
-				if ($createPROMPThome =~ /n/i)
+				$PROMPThome =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPThome")
 					{
-					$continue='NO';
+					print("$PROMPThome does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPThome = <STDIN>;
+					chomp($createPROMPThome);
+					if ($createPROMPThome =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPThome`;
+							print "     $PROMPThome directory created\n";
+						$PATHhome=$PROMPThome;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPThome`;
-						print "     $PROMPThome directory created\n";
 					$PATHhome=$PROMPThome;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHhome=$PROMPThome;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHhome")
-				{
-				print("$PATHhome does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHhome = <STDIN>;
-				chomp($createPATHhome);
-				if ($createPATHhome =~ /n/i)
+				if (!-e "$PATHhome")
 					{
-					$continue='NO';
+					print("$PATHhome does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHhome = <STDIN>;
+					chomp($createPATHhome);
+					if ($createPATHhome =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHhome`;
+							print "     $PATHhome directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PATHhome`;
-						print "     $PATHhome directory created\n";
 					$continue='YES';
 					}
 				}
-			else
-				{
-				$continue='YES';
-				}
 			}
-		}
-	##### END astguiclient home directory prompting and existence check #####
+		##### END astguiclient home directory prompting and existence check #####
 
-	##### BEGIN astguiclient logs directory prompting and existence check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nastguiclient logs path or press enter for default: [$PATHlogs] ");
-		$PROMPTlogs = <STDIN>;
-		chomp($PROMPTlogs);
-		if (length($PROMPTlogs)>2)
+		##### BEGIN astguiclient logs directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTlogs =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPTlogs")
+			print("\nastguiclient logs path or press enter for default: [$PATHlogs] ");
+			$PROMPTlogs = <STDIN>;
+			chomp($PROMPTlogs);
+			if (length($PROMPTlogs)>2)
 				{
-				print("$PROMPTlogs does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPTlogs = <STDIN>;
-				chomp($createPROMPTlogs);
-				if ($createPROMPTlogs =~ /n/i)
+				$PROMPTlogs =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTlogs")
 					{
-					$continue='NO';
+					print("$PROMPTlogs does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTlogs = <STDIN>;
+					chomp($createPROMPTlogs);
+					if ($createPROMPTlogs =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTlogs`;
+							print "     $PROMPTlogs directory created\n";
+						$PATHlogs=$PROMPTlogs;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPTlogs`;
-						print "     $PROMPTlogs directory created\n";
 					$PATHlogs=$PROMPTlogs;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHlogs=$PROMPTlogs;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHlogs")
-				{
-				print("$PATHlogs does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHlogs = <STDIN>;
-				chomp($createPATHlogs);
-				if ($createPATHlogs =~ /n/i)
+				if (!-e "$PATHlogs")
 					{
-					$continue='NO';
+					print("$PATHlogs does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHlogs = <STDIN>;
+					chomp($createPATHlogs);
+					if ($createPATHlogs =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p --mode=0666 $PATHlogs`;
+						print "     $PATHlogs directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p --mode=0666 $PATHlogs`;
-					print "     $PATHlogs directory created\n";
 					$continue='YES';
 					}
 				}
-			else
-				{
-				$continue='YES';
-				}
 			}
-		}
-	##### END astguiclient logs directory prompting and existence check #####
+		##### END astguiclient logs directory prompting and existence check #####
 
-	##### BEGIN asterisk agi-bin directory prompting and existence check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nasterisk agi-bin path or press enter for default: [$PATHagi] ");
-		$PROMPTagi = <STDIN>;
-		chomp($PROMPTagi);
-		if (length($PROMPTagi)>2)
+		##### BEGIN asterisk agi-bin directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTagi =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPTagi")
+			print("\nasterisk agi-bin path or press enter for default: [$PATHagi] ");
+			$PROMPTagi = <STDIN>;
+			chomp($PROMPTagi);
+			if (length($PROMPTagi)>2)
 				{
-				print("$PROMPTagi does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPTagi = <STDIN>;
-				chomp($createPROMPTagi);
-				if ($createPROMPTagi =~ /n/i)
+				$PROMPTagi =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTagi")
 					{
-					$continue='NO';
+					print("$PROMPTagi does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTagi = <STDIN>;
+					chomp($createPROMPTagi);
+					if ($createPROMPTagi =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTagi`;
+							print "     $PROMPTagi directory created\n";
+						$PATHagi=$PROMPTagi;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPTagi`;
-						print "     $PROMPTagi directory created\n";
 					$PATHagi=$PROMPTagi;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHagi=$PROMPTagi;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHagi")
-				{
-				print("$PATHagi does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHagi = <STDIN>;
-				chomp($createPATHagi);
-				if ($createPATHagi =~ /n/i)
+				if (!-e "$PATHagi")
 					{
-					$continue='NO';
+					print("$PATHagi does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHagi = <STDIN>;
+					chomp($createPATHagi);
+					if ($createPATHagi =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHagi`;
+						print "     $PATHagi directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PATHagi`;
-					print "     $PATHagi directory created\n";
 					$continue='YES';
 					}
 				}
-			else
-				{
-				$continue='YES';
-				}
 			}
-		}
-	##### END asterisk agi-bin directory prompting and existence check #####
+		##### END asterisk agi-bin directory prompting and existence check #####
 
-	##### BEGIN server webroot directory prompting and existence check #####
-	$continue='NO';
-	while ( ($continue =~/NO/) && ($NOWEB < 1) )
-		{
-		print("\nserver webroot path or press enter for default: [$PATHweb] ");
-		$PROMPTweb = <STDIN>;
-		chomp($PROMPTweb);
-		if (length($PROMPTweb)>2)
+		##### BEGIN server webroot directory prompting and existence check #####
+		$continue='NO';
+		while ( ($continue =~/NO/) && ($NOWEB < 1) )
 			{
-			$PROMPTweb =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPTweb")
+			print("\nserver webroot path or press enter for default: [$PATHweb] ");
+			$PROMPTweb = <STDIN>;
+			chomp($PROMPTweb);
+			if (length($PROMPTweb)>2)
 				{
-				print("$PROMPTweb does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPTweb = <STDIN>;
-				chomp($createPROMPTweb);
-				if ($createPROMPTweb =~ /n/i)
+				$PROMPTweb =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTweb")
 					{
-					$continue='NO';
+					print("$PROMPTweb does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTweb = <STDIN>;
+					chomp($createPROMPTweb);
+					if ($createPROMPTweb =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTweb`;
+							print "     $PROMPTweb directory created\n";
+						$PATHweb=$PROMPTweb;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPTweb`;
-						print "     $PROMPTweb directory created\n";
 					$PATHweb=$PROMPTweb;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHweb=$PROMPTweb;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHweb")
-				{
-				print("$PATHweb does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHweb = <STDIN>;
-				chomp($createPATHweb);
-				if ($createPATHweb =~ /n/i)
+				if (!-e "$PATHweb")
 					{
-					$continue='NO';
+					print("$PATHweb does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHweb = <STDIN>;
+					chomp($createPATHweb);
+					if ($createPATHweb =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHweb`;
+						print "     $PATHweb directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PATHweb`;
-					print "     $PATHweb directory created\n";
 					$continue='YES';
 					}
 				}
-			else
-				{
-				$continue='YES';
-				}
 			}
-		}
-	##### END server webroot directory prompting and existence check #####
+		##### END server webroot directory prompting and existence check #####
 
-	##### BEGIN asterisk sounds directory prompting and existence check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nasterisk sounds path or press enter for default: [$PATHsounds] ");
-		$PROMPTsounds = <STDIN>;
-		chomp($PROMPTsounds);
-		if (length($PROMPTsounds)>2)
+		##### BEGIN asterisk sounds directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTsounds =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPTsounds")
+			print("\nasterisk sounds path or press enter for default: [$PATHsounds] ");
+			$PROMPTsounds = <STDIN>;
+			chomp($PROMPTsounds);
+			if (length($PROMPTsounds)>2)
 				{
-				print("$PROMPTsounds does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPTsounds = <STDIN>;
-				chomp($createPROMPTsounds);
-				if ($createPROMPTsounds =~ /n/i)
+				$PROMPTsounds =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTsounds")
 					{
-					$continue='NO';
+					print("$PROMPTsounds does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTsounds = <STDIN>;
+					chomp($createPROMPTsounds);
+					if ($createPROMPTsounds =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTsounds`;
+							print "     $PROMPTsounds directory created\n";
+						$PATHsounds=$PROMPTsounds;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPTsounds`;
-						print "     $PROMPTsounds directory created\n";
 					$PATHsounds=$PROMPTsounds;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHsounds=$PROMPTsounds;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHsounds")
-				{
-				print("$PATHsounds does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHsounds = <STDIN>;
-				chomp($createPATHsounds);
-				if ($createPATHsounds =~ /n/i)
+				if (!-e "$PATHsounds")
 					{
-					$continue='NO';
+					print("$PATHsounds does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHsounds = <STDIN>;
+					chomp($createPATHsounds);
+					if ($createPATHsounds =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHsounds`;
+						print "     $PATHsounds directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PATHsounds`;
-					print "     $PATHsounds directory created\n";
 					$continue='YES';
 					}
 				}
-			else
-				{
-				$continue='YES';
-				}
 			}
-		}
-	##### END asterisk sounds directory prompting and existence check #####
+		##### END asterisk sounds directory prompting and existence check #####
 
-	##### BEGIN asterisk monitor directory prompting and existence check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nasterisk monitor path or press enter for default: [$PATHmonitor] ");
-		$PROMPTmonitor = <STDIN>;
-		chomp($PROMPTmonitor);
-		if (length($PROMPTmonitor)>2)
+		##### BEGIN asterisk monitor directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTmonitor =~ s/ |\n|\r|\t|\/$//gi;
-			if (!-e "$PROMPTmonitor")
+			print("\nasterisk monitor path or press enter for default: [$PATHmonitor] ");
+			$PROMPTmonitor = <STDIN>;
+			chomp($PROMPTmonitor);
+			if (length($PROMPTmonitor)>2)
 				{
-				print("$PROMPTmonitor does not exist, would you like me to create it?(y/n) [y] ");
-				$createPROMPTmonitor = <STDIN>;
-				chomp($createPROMPTmonitor);
-				if ($createPROMPTmonitor =~ /n/i)
+				$PROMPTmonitor =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTmonitor")
 					{
-					$continue='NO';
+					print("$PROMPTmonitor does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTmonitor = <STDIN>;
+					chomp($createPROMPTmonitor);
+					if ($createPROMPTmonitor =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTmonitor`;
+							print "     $PROMPTmonitor directory created\n";
+						$PATHmonitor=$PROMPTmonitor;
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PROMPTmonitor`;
-						print "     $PROMPTmonitor directory created\n";
 					$PATHmonitor=$PROMPTmonitor;
 					$continue='YES';
 					}
 				}
 			else
 				{
-				$PATHmonitor=$PROMPTmonitor;
-				$continue='YES';
-				}
-			}
-		else
-			{
-			if (!-e "$PATHmonitor")
-				{
-				print("$PATHmonitor does not exist, would you like me to create it?(y/n) [y] ");
-				$createPATHmonitor = <STDIN>;
-				chomp($createPATHmonitor);
-				if ($createPATHmonitor =~ /n/i)
+				if (!-e "$PATHmonitor")
 					{
-					$continue='NO';
+					print("$PATHmonitor does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHmonitor = <STDIN>;
+					chomp($createPATHmonitor);
+					if ($createPATHmonitor =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHmonitor`;
+						print "     $PATHmonitor directory created\n";
+						$continue='YES';
+						}
 					}
 				else
 					{
-					`mkdir -p $PATHmonitor`;
-					print "     $PATHmonitor directory created\n";
 					$continue='YES';
 					}
+				}
+			}
+		##### END asterisk monitor directory prompting and existence check #####
+
+		##### BEGIN server_ip propmting and check #####
+		if (length($VARserver_ip)<7)
+			{	
+			### get best guess of IP address from ifconfig output ###
+			# inet addr:10.10.11.17  Bcast:10.10.255.255  Mask:255.255.0.0
+			@ip = `/sbin/ifconfig`;
+			$j=0;
+			while($#ip>=$j)
+				{
+				if ($ip[$j] =~ /inet addr/) {$VARserver_ip = $ip[$j]; $j=1000;}
+				$j++;
+				}
+			$VARserver_ip =~ s/.*addr:| Bcast.*|\r|\n|\t| //gi;
+			}
+
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nserver IP address or press enter for default: [$VARserver_ip] ");
+			$PROMPTserver_ip = <STDIN>;
+			chomp($PROMPTserver_ip);
+			if (length($PROMPTserver_ip)>6)
+				{
+				$PROMPTserver_ip =~ s/ |\n|\r|\t|\/$//gi;
+				$VARserver_ip=$PROMPTserver_ip;
+				$continue='YES';
 				}
 			else
 				{
 				$continue='YES';
 				}
 			}
-		}
-	##### END asterisk monitor directory prompting and existence check #####
-
-	##### BEGIN server_ip propmting and check #####
-	if (length($VARserver_ip)<7)
-		{	
-		### get best guess of IP address from ifconfig output ###
-		# inet addr:10.10.11.17  Bcast:10.10.255.255  Mask:255.255.0.0
-		@ip = `/sbin/ifconfig`;
-		$j=0;
-		while($#ip>=$j)
-			{
-			if ($ip[$j] =~ /inet addr/) {$VARserver_ip = $ip[$j]; $j=1000;}
-			$j++;
-			}
-		$VARserver_ip =~ s/.*addr:| Bcast.*|\r|\n|\t| //gi;
-		}
-
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nserver IP address or press enter for default: [$VARserver_ip] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTserver_ip);
-		if (length($PROMPTserver_ip)>6)
-			{
-			$PROMPTserver_ip =~ s/ |\n|\r|\t|\/$//gi;
-			$VARserver_ip=$PROMPTserver_ip;
-			$continue='YES';
-			}
-		else
-			{
-			$continue='YES';
-			}
-		}
-	##### END server_ip propmting and check  #####
+		##### END server_ip propmting and check  #####
 
 
-	##### BEGIN DB_server propmting and check #####
-	if (length($VARDB_server)<7)
-		{	
-		$VARDB_server = 'localhost';
-		}
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nDB server address or press enter for default: [$VARDB_server] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTDB_server);
-		if (length($PROMPTDB_server)>6)
-			{
-			$PROMPTDB_server =~ s/ |\n|\r|\t|\/$//gi;
-			$VARDB_server=$PROMPTDB_server;
-			$continue='YES';
+		##### BEGIN DB_server propmting and check #####
+		if (length($VARDB_server)<7)
+			{	
+			$VARDB_server = 'localhost';
 			}
-		else
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$continue='YES';
+			print("\nDB server address or press enter for default: [$VARDB_server] ");
+			$PROMPTDB_server = <STDIN>;
+			chomp($PROMPTDB_server);
+			if (length($PROMPTDB_server)>6)
+				{
+				$PROMPTDB_server =~ s/ |\n|\r|\t|\/$//gi;
+				$VARDB_server=$PROMPTDB_server;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
 			}
-		}
-	##### END DB_server propmting and check  #####
+		##### END DB_server propmting and check  #####
 
-	##### BEGIN DB_database propmting and check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nDB database name or press enter for default: [$VARDB_database] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTDB_database);
-		if (length($PROMPTDB_database)>6)
+		##### BEGIN DB_database propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTDB_database =~ s/ |\n|\r|\t|\/$//gi;
-			$VARDB_database=$PROMPTDB_database;
-			$continue='YES';
+			print("\nDB database name or press enter for default: [$VARDB_database] ");
+			$PROMPTDB_database = <STDIN>;
+			chomp($PROMPTDB_database);
+			if (length($PROMPTDB_database)>6)
+				{
+				$PROMPTDB_database =~ s/ |\n|\r|\t|\/$//gi;
+				$VARDB_database=$PROMPTDB_database;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
 			}
-		else
-			{
-			$continue='YES';
-			}
-		}
-	##### END DB_database propmting and check  #####
+		##### END DB_database propmting and check  #####
 
-	##### BEGIN DB_user propmting and check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nDB user login or press enter for default: [$VARDB_user] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTDB_user);
-		if (length($PROMPTDB_user)>6)
+		##### BEGIN DB_user propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTDB_user =~ s/ |\n|\r|\t|\/$//gi;
-			$VARDB_user=$PROMPTDB_user;
-			$continue='YES';
+			print("\nDB user login or press enter for default: [$VARDB_user] ");
+			$PROMPTDB_user = <STDIN>;
+			chomp($PROMPTDB_user);
+			if (length($PROMPTDB_user)>6)
+				{
+				$PROMPTDB_user =~ s/ |\n|\r|\t|\/$//gi;
+				$VARDB_user=$PROMPTDB_user;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
 			}
-		else
-			{
-			$continue='YES';
-			}
-		}
-	##### END DB_user propmting and check  #####
+		##### END DB_user propmting and check  #####
 
-	##### BEGIN DB_pass propmting and check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nDB user password or press enter for default: [$VARDB_pass] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTDB_pass);
-		if (length($PROMPTDB_pass)>6)
+		##### BEGIN DB_pass propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTDB_pass =~ s/ |\n|\r|\t|\/$//gi;
-			$VARDB_pass=$PROMPTDB_pass;
-			$continue='YES';
+			print("\nDB user password or press enter for default: [$VARDB_pass] ");
+			$PROMPTDB_pass = <STDIN>;
+			chomp($PROMPTDB_pass);
+			if (length($PROMPTDB_pass)>6)
+				{
+				$PROMPTDB_pass =~ s/ |\n|\r|\t|\/$//gi;
+				$VARDB_pass=$PROMPTDB_pass;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
 			}
-		else
-			{
-			$continue='YES';
-			}
-		}
-	##### END DB_pass propmting and check  #####
+		##### END DB_pass propmting and check  #####
 
-	##### BEGIN DB_port propmting and check #####
-	$continue='NO';
-	while ($continue =~/NO/)
-		{
-		print("\nDB connection port or press enter for default: [$VARDB_port] ");
-		$PROMPTserver_ip = <STDIN>;
-		chomp($PROMPTDB_port);
-		if (length($PROMPTDB_port)>6)
+		##### BEGIN DB_port propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
 			{
-			$PROMPTDB_port =~ s/ |\n|\r|\t|\/$//gi;
-			$VARDB_port=$PROMPTDB_port;
-			$continue='YES';
+			print("\nDB connection port or press enter for default: [$VARDB_port] ");
+			$PROMPTDB_port = <STDIN>;
+			chomp($PROMPTDB_port);
+			if (length($PROMPTDB_port)>6)
+				{
+				$PROMPTDB_port =~ s/ |\n|\r|\t|\/$//gi;
+				$VARDB_port=$PROMPTDB_port;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
 			}
-		else
+		##### END DB_port propmting and check  #####
+
+
+		print "\n";
+		print "  defined home path:      $PATHhome\n";
+		print "  defined logs path:      $PATHlogs\n";
+		print "  defined agi-bin path:   $PATHagi\n";
+		print "  defined webroot path:   $PATHweb\n";
+		print "  defined sounds path:    $PATHsounds\n";
+		print "  defined monitor path:   $PATHmonitor\n";
+		print "  defined server_ip:      $VARserver_ip\n";
+		print "  defined DB_server:      $VARDB_server\n";
+		print "  defined DB_database:    $VARDB_database\n";
+		print "  defined DB_user:        $VARDB_user\n";
+		print "  defined DB_pass:        $VARDB_pass\n";
+		print "  defined DB_port:        $VARDB_port\n";
+		print "\n";
+
+		print("Are these settings correct?(y/n): [y] ");
+		$PROMPTconfig = <STDIN>;
+		chomp($PROMPTconfig);
+		if ( (length($PROMPTconfig)>0) or ($PROMPTconfig =~ /y/i) )
 			{
-			$continue='YES';
+			$config_finished='YES';
 			}
 		}
-	##### END DB_port propmting and check  #####
-
-
-	print "Writing to astguiclient.conf file: $PATHconf\n";
-
-	open(conf, ">$PATHconf") || die "can't open $PATHconf: $!\n";
-	print conf "# astguiclient.conf - configuration elements for the astguiclient package\n";
-	print conf "# this is the astguiclient configuration file \n";
-	print conf "# all comments will be lost if you run install.pl again\n";
-	print conf "\n";
-	print conf "PATHhome => $PATHhome\n";
-	print conf "PATHlogs => $PATHlogs\n";
-	print conf "PATHagi => $PATHagi\n";
-	print conf "PATHweb => $PATHweb\n";
-	print conf "PATHsounds => $PATHsounds\n";
-	print conf "PATHmonitor => $PATHmonitor\n\n";
-	print conf "VARserver_ip => $VARserver_ip\n";
-	print conf "VARDB_server => $VARDB_server\n";
-	print conf "VARDB_database => $VARDB_database\n";
-	print conf "VARDB_user => $VARDB_user\n";
-	print conf "VARDB_pass => $VARDB_pass\n";
-	print conf "VARDB_port => $VARDB_port\n";
-	close(conf);
-
-	print "\n";
-	print "  defined home path:      $PATHhome\n";
-	print "  defined logs path:      $PATHlogs\n";
-	print "  defined agi-bin path:   $PATHagi\n";
-	print "  defined webroot path:   $PATHweb\n";
-	print "  defined sounds path:    $PATHsounds\n";
-	print "  defined monitor path:   $PATHmonitor\n";
-	print "  defined server_ip:      $VARserver_ip\n";
-	print "  defined DB_server:      $VARDB_server\n";
-	print "  defined DB_database:    $VARDB_database\n";
-	print "  defined DB_user:        $VARDB_user\n";
-	print "  defined DB_pass:        $VARDB_pass\n";
-	print "  defined DB_port:        $VARDB_port\n";
-	print "\n";
-
 	}
+
+print "Writing to astguiclient.conf file: $PATHconf\n";
+
+open(conf, ">$PATHconf") || die "can't open $PATHconf: $!\n";
+print conf "# astguiclient.conf - configuration elements for the astguiclient package\n";
+print conf "# this is the astguiclient configuration file \n";
+print conf "# all comments will be lost if you run install.pl again\n";
+print conf "\n";
+print conf "PATHhome => $PATHhome\n";
+print conf "PATHlogs => $PATHlogs\n";
+print conf "PATHagi => $PATHagi\n";
+print conf "PATHweb => $PATHweb\n";
+print conf "PATHsounds => $PATHsounds\n";
+print conf "PATHmonitor => $PATHmonitor\n\n";
+print conf "VARserver_ip => $VARserver_ip\n";
+print conf "VARDB_server => $VARDB_server\n";
+print conf "VARDB_database => $VARDB_database\n";
+print conf "VARDB_user => $VARDB_user\n";
+print conf "VARDB_pass => $VARDB_pass\n";
+print conf "VARDB_port => $VARDB_port\n";
+close(conf);
+
 
 print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 
