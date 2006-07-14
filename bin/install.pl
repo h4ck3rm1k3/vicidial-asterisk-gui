@@ -839,7 +839,7 @@ else
 		print("Are these settings correct?(y/n): [y] ");
 		$PROMPTconfig = <STDIN>;
 		chomp($PROMPTconfig);
-		if ( (length($PROMPTconfig)>0) or ($PROMPTconfig =~ /y/i) )
+		if ( (length($PROMPTconfig)<1) or ($PROMPTconfig =~ /y/i) )
 			{
 			$config_finished='YES';
 			}
