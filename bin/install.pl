@@ -15,7 +15,7 @@ $PATHconf =		'/etc/astguiclient.conf';
 # default path to home directory:
 $PATHhome =		'/usr/share/astguiclient';
 # default path to astguiclient logs directory: 
-$PATHlogs =		'/var/logs/astguiclient';
+$PATHlogs =		'/var/log/astguiclient';
 # default path to asterisk agi-bin directory: 
 $PATHagi =		'/var/lib/asterisk/agi-bin';
 # default path to web root directory: 
@@ -26,8 +26,12 @@ $PATHweb =		'/usr/local/apache2/htdocs';
 $PATHsounds =	'/var/lib/asterisk/sounds';
 # default path to asterisk recordings directory: 
 $PATHmonitor =	'/var/spool/asterisk';
-# default database server variable: 
+# default database server variables: 
 $VARDB_server =	'localhost';
+$VARDB_database =	'asterisk';
+$VARDB_user =	'cron';
+$VARDB_pass =	'1234';
+$VARDB_port =	'3306';
 
 ############################################
 
@@ -39,6 +43,10 @@ $CLIsounds=0;
 $CLImonitor=0;
 $CLIserver_ip=0;
 $CLIDB_server=0;
+$CLIDB_database=0;
+$CLIDB_user=0;
+$CLIDB_pass=0;
+$CLIDB_port=0;
 
 $COPYhome=0;
 $COPYlogs=0;
@@ -70,10 +78,13 @@ if (length($ARGV[0])>1)
 	print "script will look for an /etc/astguiclient.conf file for existing settings, and\n";
 	print "if not present will prompt for proper information then copy files.\n";
 	print "\n";
-	print "allowed run time options:\n";
+	print "installation options:\n";
 	print "  [--help] = this help screen\n";
 	print "  [--test] = test (will not copy files)\n";
 	print "  [--debug] = verbose debug messages\n";
+	print "  [--web-only] = only copy files/directories for web server install\n";
+	print "  [--without-web] = do not copy web files/directories\n\n";
+	print "configuration options:\n";
 	print "  [--home=/path/from/root] = define home path from root at runtime\n";
 	print "  [--logs=/path/from/root] = define logs path from root at runtime\n";
 	print "  [--agi=/path/from/root] = define agi-bin path from root at runtime\n";
@@ -81,7 +92,11 @@ if (length($ARGV[0])>1)
 	print "  [--sounds=/path/from/root] = define sounds path from root at runtime\n";
 	print "  [--monitor=/path/from/root] = define monitor path from root at runtime\n";
 	print "  [--server_ip=192.168.0.1] = define server IP address at runtime\n";
-	print "  [--DB_server=localhost] = define Database server IP address at runtime\n";
+	print "  [--DB_server=localhost] = define database server IP address at runtime\n";
+	print "  [--DB_database=localhost] = define database name at runtime\n";
+	print "  [--DB_user=cron] = define database user login at runtime\n";
+	print "  [--DB_pass=1234] = define database user password at runtime\n";
+	print "  [--DB_port=3306] = define database connection port at runtime\n";
 	print "\n";
 
 	exit;
@@ -96,6 +111,18 @@ if (length($ARGV[0])>1)
 		{
 		$TEST=1;   $T=1;
 		}
+		if ($args =~ /--web-only/i) # web-only flag
+		{
+		$WEBONLY=1;
+		}
+		if ($args =~ /--without-web/i) # without web flag
+		{
+		$NOWEB=1;
+		}
+		else
+		{
+		$NOWEB=0;
+		}
 		if ($args =~ /--home=/i) # CLI defined home path
 		{
 		@CLIhomeARY = split(/--home=/,$args);
@@ -103,7 +130,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIhomeARX[0])>2)
 			{
 			$PATHhome = $CLIhomeARX[0];
-			$PATHhome =~ s/\/$//gi;
+			$PATHhome =~ s/\/$| |\r|\n|\t//gi;
 			$CLIhome=1;
 			print "  CLI defined home path:      $PATHhome\n";
 			}
@@ -115,7 +142,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIlogsARX[0])>2)
 			{
 			$PATHlogs = $CLIlogsARX[0];
-			$PATHlogs =~ s/\/$//gi;
+			$PATHlogs =~ s/\/$| |\r|\n|\t//gi;
 			$CLIlogs=1;
 			print "  CLI defined logs path:      $PATHlogs\n";
 			}
@@ -127,7 +154,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIagiARX[0])>2)
 			{
 			$PATHagi = $CLIagiARX[0];
-			$PATHagi =~ s/\/$//gi;
+			$PATHagi =~ s/\/$| |\r|\n|\t//gi;
 			$CLIagi=1;
 			print "  CLI defined agi-bin path:   $PATHagi\n";
 			}
@@ -139,7 +166,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIwebARX[0])>2)
 			{
 			$PATHweb = $CLIwebARX[0];
-			$PATHweb =~ s/\/$//gi;
+			$PATHweb =~ s/\/$| |\r|\n|\t//gi;
 			$CLIweb=1;
 			print "  CLI defined webroot path:   $PATHweb\n";
 			}
@@ -151,7 +178,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIsoundsARX[0])>2)
 			{
 			$PATHsounds = $CLIsoundsARX[0];
-			$PATHsounds =~ s/\/$//gi;
+			$PATHsounds =~ s/\/$| |\r|\n|\t//gi;
 			$CLIsounds=1;
 			print "  CLI defined sounds path:    $PATHsounds\n";
 			}
@@ -163,7 +190,7 @@ if (length($ARGV[0])>1)
 		if (length($CLImonitorARX[0])>2)
 			{
 			$PATHmonitor = $CLImonitorARX[0];
-			$PATHmonitor =~ s/\/$//gi;
+			$PATHmonitor =~ s/\/$| |\r|\n|\t//gi;
 			$CLImonitor=1;
 			print "  CLI defined monitor path:   $PATHmonitor\n";
 			}
@@ -175,7 +202,7 @@ if (length($ARGV[0])>1)
 		if (length($CLIserver_ipARX[0])>2)
 			{
 			$VARserver_ip = $CLIserver_ipARX[0];
-			$VARserver_ip =~ s/\/$//gi;
+			$VARserver_ip =~ s/\/$| |\r|\n|\t//gi;
 			$CLIserver_ip=1;
 			print "  CLI defined server IP:      $VARserver_ip\n";
 			}
@@ -187,9 +214,57 @@ if (length($ARGV[0])>1)
 		if (length($CLIDB_serverARX[0])>2)
 			{
 			$VARDB_server = $CLIDB_serverARX[0];
-			$VARDB_server =~ s/\/$//gi;
+			$VARDB_server =~ s/\/$| |\r|\n|\t//gi;
 			$CLIDB_server=1;
 			print "  CLI defined DB server:      $VARDB_server\n";
+			}
+		}
+		if ($args =~ /--DB_database=/i) # CLI defined Database name
+		{
+		@CLIDB_databaseARY = split(/--DB_database=/,$args);
+		@CLIDB_databaseARX = split(/ /,$CLIDB_databaseARY[1]);
+		if (length($CLIDB_databaseARX[0])>1)
+			{
+			$VARDB_database = $CLIDB_databaseARX[0];
+			$VARDB_database =~ s/ |\r|\n|\t//gi;
+			$CLIDB_database=1;
+			print "  CLI defined DB database:    $VARDB_database\n";
+			}
+		}
+		if ($args =~ /--DB_user=/i) # CLI defined Database user login
+		{
+		@CLIDB_userARY = split(/--DB_user=/,$args);
+		@CLIDB_userARX = split(/ /,$CLIDB_userARY[1]);
+		if (length($CLIDB_userARX[0])>2)
+			{
+			$VARDB_user = $CLIDB_userARX[0];
+			$VARDB_user =~ s/ |\r|\n|\t//gi;
+			$CLIDB_user=1;
+			print "  CLI defined DB user:        $VARDB_user\n";
+			}
+		}
+		if ($args =~ /--DB_pass=/i) # CLI defined Database user password
+		{
+		@CLIDB_passARY = split(/--DB_pass=/,$args);
+		@CLIDB_passARX = split(/ /,$CLIDB_passARY[1]);
+		if (length($CLIDB_passARX[0])>2)
+			{
+			$VARDB_pass = $CLIDB_passARX[0];
+			$VARDB_pass =~ s/ |\r|\n|\t//gi;
+			$CLIDB_pass=1;
+			print "  CLI defined DB password:    $VARDB_pass\n";
+			}
+		}
+		if ($args =~ /--DB_port=/i) # CLI defined Database connection port
+		{
+		@CLIDB_portARY = split(/--DB_port=/,$args);
+		@CLIDB_portARX = split(/ /,$CLIDB_portARY[1]);
+		if (length($CLIDB_portARX[0])>2)
+			{
+			$VARDB_port = $CLIDB_portARX[0];
+			$VARDB_port =~ s/ |\r|\n|\t//gi;
+			$CLIDB_port=1;
+			print "  CLI defined DB port:        $VARDB_port\n";
 			}
 		}
 	}
@@ -227,11 +302,19 @@ if (-e "$PATHconf")
 			{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
 			{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+		if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+			{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+		if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+			{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+		if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+			{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+		if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 		$i++;
 		}
 	}
 
-print("\nWould you like to use manual configuration(y/n): [y] ");
+print("\nWould you like to use manual configuration and installation(y/n): [y] ");
 $manual = <STDIN>;
 chomp($manual);
 if ($manual =~ /n/i)
@@ -240,6 +323,7 @@ if ($manual =~ /n/i)
 	}
 else
 	{
+	print "\nSTARTING ASTGUICLIENT MANUAL CONFIGURATION PHASE...\n";
 	##### BEGIN astguiclient home directory prompting and existence check #####
 	$continue='NO';
 	while ($continue =~/NO/)
@@ -345,7 +429,7 @@ else
 					}
 				else
 					{
-					`mkdir -p $PATHlogs`;
+					`mkdir -p --mode=0666 $PATHlogs`;
 					print "     $PATHlogs directory created\n";
 					$continue='YES';
 					}
@@ -419,7 +503,7 @@ else
 
 	##### BEGIN server webroot directory prompting and existence check #####
 	$continue='NO';
-	while ($continue =~/NO/)
+	while ( ($continue =~/NO/) && ($NOWEB < 1) )
 		{
 		print("\nserver webroot path or press enter for default: [$PATHweb] ");
 		$PROMPTweb = <STDIN>;
@@ -653,191 +737,181 @@ else
 		}
 	##### END DB_server propmting and check  #####
 
-print "Writing to astguiclient.conf file: $PATHconf\n";
+	##### BEGIN DB_database propmting and check #####
+	$continue='NO';
+	while ($continue =~/NO/)
+		{
+		print("\nDB database name or press enter for default: [$VARDB_database] ");
+		$PROMPTserver_ip = <STDIN>;
+		chomp($PROMPTDB_database);
+		if (length($PROMPTDB_database)>6)
+			{
+			$PROMPTDB_database =~ s/ |\n|\r|\t|\/$//gi;
+			$VARDB_database=$PROMPTDB_database;
+			$continue='YES';
+			}
+		else
+			{
+			$continue='YES';
+			}
+		}
+	##### END DB_database propmting and check  #####
 
-open(conf, ">$PATHconf") || die "can't open $PATHconf: $!\n";
-print conf "# astguiclient.conf - configuration elements for the astguiclient package\n";
-print conf "# this is the astguiclient configuration file \n";
-print conf "# all comments will be lost if you run install.pl again\n";
-print conf "\n";
-print conf "PATHhome => $PATHhome\n";
-print conf "PATHlogs => $PATHlogs\n";
-print conf "PATHagi => $PATHagi\n";
-print conf "PATHweb => $PATHweb\n";
-print conf "PATHsounds => $PATHsounds\n";
-print conf "PATHmonitor => $PATHmonitor\n\n";
-print conf "VARserver_ip => $VARserver_ip\n";
-print conf "VARDB_server => $VARDB_server\n";
-close(conf);
+	##### BEGIN DB_user propmting and check #####
+	$continue='NO';
+	while ($continue =~/NO/)
+		{
+		print("\nDB user login or press enter for default: [$VARDB_user] ");
+		$PROMPTserver_ip = <STDIN>;
+		chomp($PROMPTDB_user);
+		if (length($PROMPTDB_user)>6)
+			{
+			$PROMPTDB_user =~ s/ |\n|\r|\t|\/$//gi;
+			$VARDB_user=$PROMPTDB_user;
+			$continue='YES';
+			}
+		else
+			{
+			$continue='YES';
+			}
+		}
+	##### END DB_user propmting and check  #####
 
-print "  defined home path:      $PATHhome\n";
-print "  defined logs path:      $PATHlogs\n";
-print "  defined agi-bin path:   $PATHagi\n";
-print "  defined webroot path:   $PATHweb\n";
-print "  defined sounds path:    $PATHsounds\n";
-print "  defined monitor path:   $PATHmonitor\n";
-print "  defined server_ip:      $VARserver_ip\n";
-print "  defined DB_server:      $VARDB_server\n";
+	##### BEGIN DB_pass propmting and check #####
+	$continue='NO';
+	while ($continue =~/NO/)
+		{
+		print("\nDB user password or press enter for default: [$VARDB_pass] ");
+		$PROMPTserver_ip = <STDIN>;
+		chomp($PROMPTDB_pass);
+		if (length($PROMPTDB_pass)>6)
+			{
+			$PROMPTDB_pass =~ s/ |\n|\r|\t|\/$//gi;
+			$VARDB_pass=$PROMPTDB_pass;
+			$continue='YES';
+			}
+		else
+			{
+			$continue='YES';
+			}
+		}
+	##### END DB_pass propmting and check  #####
 
+	##### BEGIN DB_port propmting and check #####
+	$continue='NO';
+	while ($continue =~/NO/)
+		{
+		print("\nDB connection port or press enter for default: [$VARDB_port] ");
+		$PROMPTserver_ip = <STDIN>;
+		chomp($PROMPTDB_port);
+		if (length($PROMPTDB_port)>6)
+			{
+			$PROMPTDB_port =~ s/ |\n|\r|\t|\/$//gi;
+			$VARDB_port=$PROMPTDB_port;
+			$continue='YES';
+			}
+		else
+			{
+			$continue='YES';
+			}
+		}
+	##### END DB_port propmting and check  #####
+
+
+	print "Writing to astguiclient.conf file: $PATHconf\n";
+
+	open(conf, ">$PATHconf") || die "can't open $PATHconf: $!\n";
+	print conf "# astguiclient.conf - configuration elements for the astguiclient package\n";
+	print conf "# this is the astguiclient configuration file \n";
+	print conf "# all comments will be lost if you run install.pl again\n";
+	print conf "\n";
+	print conf "PATHhome => $PATHhome\n";
+	print conf "PATHlogs => $PATHlogs\n";
+	print conf "PATHagi => $PATHagi\n";
+	print conf "PATHweb => $PATHweb\n";
+	print conf "PATHsounds => $PATHsounds\n";
+	print conf "PATHmonitor => $PATHmonitor\n\n";
+	print conf "VARserver_ip => $VARserver_ip\n";
+	print conf "VARDB_server => $VARDB_server\n";
+	print conf "VARDB_database => $VARDB_database\n";
+	print conf "VARDB_user => $VARDB_user\n";
+	print conf "VARDB_pass => $VARDB_pass\n";
+	print conf "VARDB_port => $VARDB_port\n";
+	close(conf);
+
+	print "\n";
+	print "  defined home path:      $PATHhome\n";
+	print "  defined logs path:      $PATHlogs\n";
+	print "  defined agi-bin path:   $PATHagi\n";
+	print "  defined webroot path:   $PATHweb\n";
+	print "  defined sounds path:    $PATHsounds\n";
+	print "  defined monitor path:   $PATHmonitor\n";
+	print "  defined server_ip:      $VARserver_ip\n";
+	print "  defined DB_server:      $VARDB_server\n";
+	print "  defined DB_database:    $VARDB_database\n";
+	print "  defined DB_user:        $VARDB_user\n";
+	print "  defined DB_pass:        $VARDB_pass\n";
+	print "  defined DB_port:        $VARDB_port\n";
+	print "\n";
 
 	}
-exit;
 
+print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 
+if ($WEBONLY < 1)
+	{
+	print "Creating $PATHhome/VICIDIAL/LEADS_IN/DONE directories...\n";
+	`mkdir $PATHhome/VICIDIAL`;
+	`mkdir $PATHhome/VICIDIAL/LEADS_IN`;
+	`mkdir $PATHhome/VICIDIAL/LEADS_IN/DONE`;
+	`chmod -R 0766 $PATHhome/VICIDIAL`;
 
+	print "Creating $PATHmonitor directories...\n";
+	`mkdir $PATHmonitor/monitor`;
+	`mkdir $PATHmonitor/monitor/ORIG`;
+	`mkdir $PATHmonitor/monitor/DONE`;
+	`chmod -R 0766 $PATHmonitor/monitor`;
 
+	print "Copying bin scripts to $PATHhome ...\n";
+	`cp -f ./bin/* $PATHhome/`;
 
+	print "setting cron scripts to executable...\n";
+	`chmod 0755 $PATHhome/*`;
 
+	print "Copying agi-bin scripts to $PATHagi ...\n";
+	`cp -f ./agi/* $PATHagi/`;
 
+	print "setting agi-bin scripts to executable...\n";
+	`chmod 0755 $PATHagi/*`;
 
+	print "Copying sounds to $PATHsounds...\n";
+	`cp -f ./sounds/* $PATHsounds/`;
+	}
+if ($NOWEB < 1)
+	{
+	print "Creating $PATHweb web directories...\n";
+	`mkdir $PATHweb/agc/`;
+	`mkdir $PATHweb/astguiclient/`;
+	`mkdir $PATHweb/vicidial/`;
+	`mkdir $PATHweb/vicidial/ploticus/`;
+	`mkdir $PATHweb/vicidial/agent_reports/`;
 
-print "\n----- INSTALL BUILD: $CLIlanguage -----\n\n";
-$LANG_FILE_ADMIN = "./translations/$CLIlanguage$US$language_admin_file";
-open(lang, "$LANG_FILE_ADMIN") || die "can't open $LANG_FILE_ADMIN: $!\n";
-@lang = <lang>;
-close(lang);
+	print "Copying web files...\n";
+	`cp -f -R ./www/* $PATHweb/`;
 
+	print "setting web scripts to executable...\n";
+	`chmod -R 0755 $PATHweb/agc/`;
+	`chmod -R 0755 $PATHweb/astguiclient/`;
+	`chmod -R 0755 $PATHweb/vicidial/`;
+	`chmod 0777 $PATHweb/vicidial/`;
+	`chmod 0777 $PATHweb/vicidial/ploticus/`;
+	`chmod 0777 $PATHweb/vicidial/agent_reports/`;
+	}
 
-print "INSTALLING SERVER SIDE COMPONENTS...\n";
-
-print "Creating cron/LOGS directory...\n";
-`mkdir $home/LOGS/`;
-
-print "setting LOGS directory to executable...\n";
-`chmod 0766 $home/LOGS`;
-
-print "Creating $home/VICIDIAL/LEADS_IN/DONE directory...\n";
-`mkdir $home/VICIDIAL`;
-`mkdir $home/VICIDIAL/LEADS_IN`;
-`mkdir $home/VICIDIAL/LEADS_IN/DONE`;
-`chmod -R 0766 $home/VICIDIAL`;
-
-print "Creating $monitor directories...\n";
-`mkdir $monitor/monitor`;
-`mkdir $monitor/monitor/ORIG`;
-`mkdir $monitor/monitor/DONE`;
-`chmod -R 0766 $monitor/monitor`;
-
-print "Copying cron scripts...\n";
-`cp -f ./ADMIN_adjust_GMTnow_on_leads.pl $home/`;
-`cp -f ./ADMIN_area_code_populate.pl $home/`;
-`cp -f ./ADMIN_keepalive_AST_send_listen.pl $home/`;
-`cp -f ./ADMIN_keepalive_send_listen.at $home/`;
-`cp -f ./ADMIN_keepalive_AST_update.pl $home/`;
-`cp -f ./ADMIN_keepalive_AST_VDautodial.pl $home/`;
-`cp -f ./ADMIN_keepalive_AST_VDremote_agents.pl $home/`;
-`cp -f ./ADMIN_restart_roll_logs.pl $home/`;
-`cp -f ./AST_agent_week.pl $home/`;
-`cp -f ./AST_cleanup_agent_log.pl $home/`;
-`cp -f ./AST_conf_update.pl $home/`;
-`cp -f ./AST_CRON_mix_recordings.pl $home/`;
-`cp -f ./AST_CRON_mix_recordings_BASIC.pl $home/`;
-`cp -f ./AST_CRON_mix_recordings_GSM.pl $home/`;
-`cp -f ./AST_DB_optimize.pl $home/`;
-`cp -f ./AST_flush_DBqueue.pl $home/`;
-`cp -f ./AST_manager_kill_hung_congested.pl $home/`;
-`cp -f ./AST_manager_listen.pl $home/`;
-`cp -f ./AST_manager_send.pl $home/`;
-`cp -f ./AST_reset_mysql_vars.pl $home/`;
-`cp -f ./AST_send_action_child.pl $home/`;
-`cp -f ./AST_SERVER_conf.pl $home/`;
-`cp -f ./AST_update.pl $home/`;
-`cp -f ./AST_VDauto_dial.pl $home/`;
-`cp -f ./AST_VDhopper.pl $home/`;
-`cp -f ./AST_VDremote_agents.pl $home/`;
-`cp -f ./AST_vm_update.pl $home/`;
-`cp -f ./phone_codes_GMT.txt $home/`;
-`cp -f ./start_asterisk_boot.pl $home/`;
-`cp -f ./VICIDIAL_IN_new_leads_file.pl $home/`;
-`cp -f ./test_VICIDIAL_lead_file.txt $home/VICIDIAL/LEADS_IN/`;
-
-
-print "setting cron scripts to executable...\n";
-`chmod 0755 $home/*`;
-
-print "Copying agi-bin scripts...\n";
-`cp -f ./agi-dtmf.agi $agibin/`;
-`cp -f ./agi-record_prompts.agi $agibin/`;
-`cp -f ./agi-VDAD_LB_closer.agi $agibin/`;
-`cp -f ./agi-VDAD_LB_closer_inbound.agi $agibin/`;
-`cp -f ./agi-VDAD_LB_transfer.agi $agibin/`;
-`cp -f ./agi-VDAD_LO_closer.agi $agibin/`;
-`cp -f ./agi-VDAD_LO_closer_inbound.agi $agibin/`;
-`cp -f ./agi-VDAD_LO_transfer.agi $agibin/`;
-`cp -f ./agi-VDADautoREMINDER.agi $agibin/`;
-`cp -f ./agi-VDADautoREMINDERxfer.agi $agibin/`;
-`cp -f ./agi-VDADcloser.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inbound.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inbound_5ID.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inbound_NOCID.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inboundANI.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inboundCID.agi $agibin/`;
-`cp -f ./agi-VDADcloser_inboundCIDlookup.agi $agibin/`;
-`cp -f ./agi-VDADcloser_PHONE.agi $agibin/`;
-`cp -f ./agi-VDADtransfer.agi $agibin/`;
-`cp -f ./agi-VDADtransferSURVEY.agi $agibin/`;
-`cp -f ./call_inbound.agi $agibin/`;
-`cp -f ./call_log.agi $agibin/`;
-`cp -f ./call_logCID.agi $agibin/`;
-`cp -f ./call_park.agi $agibin/`;
-`cp -f ./call_park_EXT.agi $agibin/`;
-`cp -f ./call_park_I.agi $agibin/`;
-`cp -f ./call_park_L.agi $agibin/`;
-`cp -f ./call_park_W.agi $agibin/`;
-`cp -f ./debug_speak.agi $agibin/`;
-`cp -f ./invalid_speak.agi $agibin/`;
-`cp -f ./park_CID.agi $agibin/`;
-`cp -f ./VD_amd.agi $agibin/`;
-`cp -f ./VD_amd_post.agi $agibin/`;
-`cp -f ./VD_hangup.agi $agibin/`;
-
-
-print "setting agi-bin scripts to executable...\n";
-`chmod 0755 $agibin/*`;
-
-print "Copying sounds...\n";
-`cp -f ./DTMF_sounds/* $sounds/`;
-
-print "Creating vicidial web directory...\n";
-`mkdir $webroot/vicidial/`;
-`mkdir $webroot/vicidial/ploticus/`;
-`mkdir $webroot/vicidial/agent_reports/`;
-
-print "Copying VICIDIALweb php files...\n";
-`cp -f ./VICIDIAL_web/* $webroot/vicidial/`;
-
-print "setting VICIDIALweb scripts to executable...\n";
-`chmod -R 0755 $webroot/vicidial/`;
-`chmod 0777 $webroot/vicidial/`;
-`chmod 0777 $webroot/vicidial/ploticus/`;
-`chmod 0777 $webroot/vicidial/agent_reports/`;
-
-print "Creating agc web directory...\n";
-`mkdir $webroot/agc/`;
-
-print "Copying agc php files...\n";
-`cp -R -f ./agc/* $webroot/agc/`;
-
-print "setting agc scripts to executable...\n";
-`chmod -R 0755 $webroot/agc/`;
-`chmod 0777 $webroot/agc/`;
-
-print "Creating astguiclient web directory...\n";
-`mkdir $webroot/astguiclient/`;
-
-print "Copying astguiclient web php files...\n";
-`cp -f ./astguiclient_web/* $webroot/astguiclient/`;
-
-print "setting astguiclient web scripts to executable...\n";
-`chmod -R 0755 $webroot/astguiclient/`;
-`chmod 0777 $webroot/astguiclient/`;
-
-
-
+print "\nASTGUICLIENT INSTALLATION FINISHED!     ENJOY!\n";
 
 $secy = time();		$secz = ($secy - $secX);		$minz = ($secz/60);		# calculate script runtime so far
 print "\n     - process runtime      ($secz sec) ($minz minutes)\n";
-print "\n\nDONE and EXITING\n";
 
 
 exit;
