@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 0.10
+# AST_VDhopper.pl version 0.11
 # *** DBI version ***
 #
 # DESCRIPTION:
@@ -37,6 +37,7 @@
 # 60511-1150 - Added inserts into vicidial_campaign_stats table
 # 60609-1451 - Added ability to filter by DNC list vicidial_dnc
 # 60614-1159 - Added campaign lead recycling ability
+# 60715-2251 - changed to use /etc/astguiclient.conf for configs
 #
 
 # constants
@@ -60,8 +61,6 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
-
-if (!$VDHLOGfile) {$VDHLOGfile = "/home/cron/hopper.$year-$mon-$mday";}
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -128,14 +127,55 @@ else
 print "no command line options set\n";
 }
 
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
 
-if (!$DB_port) {$DB_port='3306';}
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper.$year-$mon-$mday";}
+
+if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
