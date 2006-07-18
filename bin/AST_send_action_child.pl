@@ -35,6 +35,7 @@
 # 50823-1527 - Altered commandline debug options with debug printouts
 # 50902-1032 - Changed default logging to fulllog
 # 60718-0909 - changed to DBI by Marin Blu
+# 60718-1024 - changed to use /etc/astguiclient.conf for configs
 #
 
 $FULL_LOG = 1; # set to 1 for a full response log to be created in /home/cron/action_full.date
@@ -53,11 +54,6 @@ if ($sec < 10) {$sec = "0$sec";}
 $now_date_epoch = time();
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $action_log_date = "$year-$mon-$mday";
-
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
-
-if (!$DB_port) {$DB_port='3306';}
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -111,10 +107,53 @@ if (length($data1)>1)
 	{
 #	print "Data1 value = |$data1|\n";
 
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
 use DBI;
 use Net::Telnet ();
 	  
-	$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
     
 	### Grab Server values from the database
@@ -197,6 +236,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 						  Prompt => '/.*[\$%#>] $/',
 						  Output_record_separator => '',
 						  Errmode    => Return,);
+	#$MStelnetlog = "$PATHlogs/SAC_telnet_log.txt";
 	#$fh = $tn->dump_log("$MStelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
@@ -252,8 +292,8 @@ exit;
 
 sub full_event_logger {
 	### open the log file for writing ###
-	open(Lout, ">>/home/cron/action_full.$action_log_date")
-			|| die "Can't open /home/cron/action_full.$action_log_date: $!\n";
+	open(Lout, ">>$PATHlogs/action_full.$action_log_date")
+			|| die "Can't open $PATHlogs/action_full.$action_log_date: $!\n";
 
 	print Lout "$now_date|$event_string|\n";
 
