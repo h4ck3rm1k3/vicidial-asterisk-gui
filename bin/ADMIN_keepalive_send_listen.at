@@ -1,6 +1,0 @@
-#!/bin/sh
-
-/home/cron/ADMIN_keepalive_AST_send_listen.pl
-
-exit
-
