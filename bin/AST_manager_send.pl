@@ -30,6 +30,7 @@
 # 50823-1514 - Added commandline debug options with debug printouts
 # 50902-1051 - Added extra debug output launch sub(commented out)
 # 60718-0909 - changed to DBI by Marin Blu
+# 60718-1005 - changed to use /etc/astguiclient.conf for configs
 #
 
 # constants
@@ -80,10 +81,48 @@ else
 }
 ### end parsing run-time options ###
 
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
 
-if (!$DB_port) {$DB_port='3306';}
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
@@ -95,7 +134,7 @@ use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sle
 use DBI;
 #use Net::Telnet ();
 	  
-	$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
@@ -213,10 +252,10 @@ while($one_day_interval > 0)
 					{
 	#				$tn->buffer_empty;
 
-					$launch_string = "/home/cron/AST_send_action_child.pl --data1=$man_id  $callid $uniqueid $channel";
+					$launch_string = "$PATHhome/AST_send_action_child.pl --data1=$man_id  $callid $uniqueid $channel";
 			#		&launch_logger;
 
-					system("/home/cron/AST_send_action_child.pl --data1=$man_id >> /home/cron/action.$action_log_date \&");
+					system("$PATHhome/AST_send_action_child.pl --data1=$man_id >> $PATHlogs/action_send.$action_log_date \&");
 
 					$launch_string = "SENT $man_id  $callid $uniqueid $channel";
 			#		&launch_logger;
@@ -256,9 +295,9 @@ while($one_day_interval > 0)
 		if( ($COUNTER_OUTPUT) or ($DB) ){print STDERR "loop counter: |$endless_loop|\r";}
 
 		### putting a blank file called "sendmgr.kill" in a directory will automatically safely kill this program
-		if ( (-e '/home/cron/sendmgr.kill') or ($sendonlyone) )
+		if ( (-e '$PATHhome/sendmgr.kill') or ($sendonlyone) )
 			{
-			unlink('/home/cron/sendmgr.kill');
+			unlink('$PATHhome/sendmgr.kill');
 			$endless_loop=0;
 			$one_day_interval=0;
 			print "\nPROCESS KILLED MANUALLY... EXITING\n\n";
@@ -297,7 +336,7 @@ while($one_day_interval > 0)
 				if( ($COUNTER_OUTPUT) or ($DB) ){print "LISTENER DEAD STOPPING PROGRAM... ATTEMPTING TO START keepalive SCRIPT\n";}
 				$event_string='LISTENER DEAD STOPPING PROGRAM... ATTEMPTING TO START keepalive SCRIPT|';
 				&event_logger;
-				`/usr/bin/at now < /home/cron/ADMIN_keepalive_send_listen.at 2>/dev/null 1>&2`;
+				`/usr/bin/at now < $PATHhome/ADMIN_keepalive_send_listen.at 2>/dev/null 1>&2`;
 				}
 			}
 
@@ -351,8 +390,8 @@ $action_log_date = "$year-$mon-$mday";
 
 sub event_logger {
 	### open the log file for writing ###
-	open(Lout, ">>$MSLOGfile")
-			|| die "Can't open $MSLOGfile: $!\n";
+	open(Lout, ">>$PATHlogs/action_process.$action_log_date")
+			|| die "Can't open $PATHlogs/action_process.$action_log_date: $!\n";
 
 	print Lout "$now_date|$event_string|\n";
 
@@ -363,8 +402,8 @@ $event_string='';
 
 sub launch_logger {
 	### open the log file for writing ###
-	open(LLout, ">>/home/cron/action_launch.$action_log_date")
-			|| die "Can't open /home/cron/action_launch.$action_log_date: $!\n";
+	open(LLout, ">>$PATHlogs/action_launch.$action_log_date")
+			|| die "Can't open $PATHlogs/action_launch.$action_log_date: $!\n";
 
 	print LLout "$now_date|$launch_string|\n";
 
