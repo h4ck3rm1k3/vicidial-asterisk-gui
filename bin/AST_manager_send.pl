@@ -31,6 +31,7 @@
 # 50902-1051 - Added extra debug output launch sub(commented out)
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-1005 - changed to use /etc/astguiclient.conf for configs
+# 60718-1211 - removed need for ADMIN_keepalive_send_listen.at launching
 #
 
 # constants
@@ -336,7 +337,8 @@ while($one_day_interval > 0)
 				if( ($COUNTER_OUTPUT) or ($DB) ){print "LISTENER DEAD STOPPING PROGRAM... ATTEMPTING TO START keepalive SCRIPT\n";}
 				$event_string='LISTENER DEAD STOPPING PROGRAM... ATTEMPTING TO START keepalive SCRIPT|';
 				&event_logger;
-				`/usr/bin/at now < $PATHhome/ADMIN_keepalive_send_listen.at 2>/dev/null 1>&2`;
+			#	`/usr/bin/at now < $PATHhome/ADMIN_keepalive_send_listen.at 2>/dev/null 1>&2`;
+				`/usr/bin/screen -d -m $PATHhome/ADMIN_keepalive_AST_send_listen.pl 2>/dev/null 1>&2`
 				}
 			}
 
