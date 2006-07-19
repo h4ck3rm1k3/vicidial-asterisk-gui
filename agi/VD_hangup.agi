@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VD_hangup.agi version 0.2
+# VD_hangup.agi version 0.3   *DBI-version*
 #
 # NOTE: This script is only needed on Asterisk 1.2.X and higher systems
 # 
@@ -26,15 +26,57 @@
 # 60612-1500 - Added option for text log of hangup codes
 #            - Added option for PRI hangup code dispositions: BUSY, DISCONNECT
 # 60615-1101 - Fixed log updates for CLOSER transfer from fronter calls
+# 60719-1118 - changed to use DBI-DBD::mysql
+#            - changed to use /etc/astguiclient.conf for configs
 #
 
 $V = 1;		# set to 1 for verbose mode
 $M = 1;		# set to 1 for 2 line messages mode
 
-### Make sure this file is in a path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
 
-use Net::MySQL;
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
@@ -175,8 +217,8 @@ if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$ty
 if ($DEBUG =~ /^DEBUG$/)
 {
 	### open the error out file for writing ###
-	open(out, ">>/home/cron/HANGUP_test-output.txt")
-			|| die "Can't open /home/cron/HANGUP_test-output.txt: $!\n";
+	open(out, ">>$PATHlogs/HANGUP_test-output.txt")
+			|| die "Can't open $PATHlogs/HANGUP_test-output.txt: $!\n";
 
 	print out "$now_date|$hangup_cause|$dialstatus|$dial_time|$ring_time|$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";
 
@@ -198,30 +240,28 @@ if ($channel =~ /^Local/)
 {
 	if ( ($PRI =~ /^PRI$/) && ($callerid =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) && ( ($dialstatus =~ /BUSY/) || ( ($dialstatus =~ /CHANUNAVAIL/) && ($hangup_cause =~ /^1$|^28$/) ) ) )
 	{
-		my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-		
+		$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		    or die "Couldn't connect to database: " . DBI->errstr;
+
 		if ($dialstatus =~ /BUSY/) {$VDL_status = 'B'; $VDAC_status = 'BUSY';}
 		if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'DC'; $VDAC_status = 'DISCONNECT';}
 
 		$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAC update: |$affected_rows|$CIDlead_id\n";}
 
 		$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id\n";}
 
 		$stmtA = "UPDATE vicidial_log set status='$VDL_status' where uniqueid = '$uniqueid';";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|\n";}
 
-		$dbhA->close;
+		$dbhA->disconnect();
 	}
 	else
 	{
@@ -233,26 +273,25 @@ if ($channel =~ /^Local/)
 	exit;
 }
 
-if (!$DB_port) {$DB_port='3306';}
-
-  my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
 
 
 ########## FIND AND DELETE vicidial_auto_calls ##########
 $stmtA = "SELECT lead_id,callerid FROM vicidial_auto_calls where uniqueid = '$uniqueid' limit 1;";
 if($M){print STDERR "\n\n|$stmtA|\n";}
-$dbhA->query("$stmtA");
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
  $rec_countCUSTDATA=0;
-if ($dbhA->has_selected_record)
+while ($sthArows > $rec_count)
 	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$VD_lead_id	= "$record->[0]";
-		$VD_callerid	= "$record->[1]";
-		 $rec_countCUSTDATA++;
-		} 
+	@aryA = $sthA->fetchrow_array;
+	$VD_lead_id	= "$aryA[0]";
+	$VD_callerid	= "$aryA[1]";
+	 $rec_countCUSTDATA++;
 	}
+$sthA->finish();
 
 if (!$rec_countCUSTDATA)
 	{
@@ -261,27 +300,27 @@ if (!$rec_countCUSTDATA)
 	}
 
 $stmtA = "DELETE FROM vicidial_auto_calls where uniqueid='$uniqueid' order by call_time desc limit 1;";
-$dbhA->query("$stmtA");
-my $affected_rows = $dbhA->get_affected_rows_length;
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_callerid|$server_ip\n";}
 
 
 ########## FIND AND UPDATE vicidial_log ##########
 $stmtA = "SELECT start_epoch,status FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$VD_lead_id' limit 1;";
 if($M){print STDERR "\n\n|$stmtA|\n";}
-$dbhA->query("$stmtA");
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
  $epc_countCUSTDATA=0;
  $VD_closecallid='';
-if ($dbhA->has_selected_record)
+while ($sthArows > $rec_count)
 	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$VD_start_epoch	= "$record->[0]";
-		$VD_status	= "$record->[1]";
-		 $epc_countCUSTDATA++;
-		} 
+	@aryA = $sthA->fetchrow_array;
+	$VD_start_epoch	= "$aryA[0]";
+	$VD_status	= "$aryA[1]";
+	 $epc_countCUSTDATA++;
 	}
+$sthA->finish();
+
 if (!$epc_countCUSTDATA)
 	{
 	if($M){print STDERR "\nVD hangup: no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid\n";}
@@ -300,19 +339,20 @@ if (!$epc_countCUSTDATA)
 
 	$stmtA = "SELECT start_epoch,status,closecallid FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
 	 $epc_countCUSTDATA=0;
-	if ($dbhA->has_selected_record)
+	 $VD_closecallid='';
+	while ($sthArows > $rec_count)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$VD_start_epoch	= "$record->[0]";
-			$VD_status	= "$record->[1]";
-			$VD_closecallid	= "$record->[2]";
-			 $epc_countCUSTDATA++;
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$VD_start_epoch	= "$aryA[0]";
+		$VD_status	= "$aryA[1]";
+		$VD_closecallid	= "$aryA[2]";
+		 $epc_countCUSTDATA++;
 		}
+	$sthA->finish();
 	}
 if (!$epc_countCUSTDATA)
 	{
@@ -329,15 +369,13 @@ if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/)
 	########## FIND AND UPDATE vicidial_list ##########
 	$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$VD_lead_id';";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id\n";}
 	}
 
 $stmtA = "UPDATE vicidial_log set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid = '$uniqueid';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
-$dbhA->query("$stmtA");
-my $affected_rows = $dbhA->get_affected_rows_length;
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|\n";}
 
 
@@ -352,13 +390,12 @@ if (length($VD_closecallid) < 1)
 $VD_seconds = ($now_date_epoch - $VD_start_epoch);
 $stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
-$dbhA->query("$stmtA");
-my $affected_rows = $dbhA->get_affected_rows_length;
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|\n";}
 
 
 
-  $dbhA->close;
+$dbhA->disconnect();
 
 
 
