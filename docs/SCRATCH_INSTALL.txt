@@ -671,10 +671,10 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are four basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.9.1), the CVS_v1-0 branch(1.0
+this writing the official release is 1.2.10), the CVS_v1-0 branch(1.0
 with bug fixes not yet packaged and released) and the SVN_DEV version(development
 branch). Because there are bugs that affect astGUIclient in releases 1.0.8 and 
-1.0.9, we recommend using Asterisk 1.2.9.1 or 1.0.11.1. These instructions are how we 
+1.0.9, we recommend using Asterisk 1.2.10 or 1.0.11.1. These instructions are how we 
 get our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices
 and one IAX2 softphone. 
 
@@ -689,13 +689,13 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.9.1.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.6.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.10.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.7.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.3.tar.gz
-	- gunzip asterisk-1.2.9.1.tar.gz
-	- tar xvf asterisk-1.2.9.1.tar
-	- gunzip zaptel-1.2.6.tar.gz
-	- tar xvf zaptel-1.2.6.tar
+	- gunzip asterisk-1.2.10.tar.gz
+	- tar xvf asterisk-1.2.10.tar
+	- gunzip zaptel-1.2.7.tar.gz
+	- tar xvf zaptel-1.2.7.tar
 	- gunzip libpri-1.2.3.tar.gz
 	- tar xvf libpri-1.2.3.tar
    B. If you want latest 1.0 tree stable release:
@@ -730,7 +730,7 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.6
+	- cd ./zaptel-1.2.7
 	- make clean
 	- make
 	- make install
@@ -738,7 +738,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.9.1
+	- cd ../asterisk-1.2.10
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -1474,7 +1474,7 @@ use asterisk;
 GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
 GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.6');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.10');
 
 insert into server_updater values('10.10.10.15','');
 
