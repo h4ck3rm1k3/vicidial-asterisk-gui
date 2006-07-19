@@ -336,7 +336,7 @@ $talking_to_print = mysql_num_rows($rslt);
 #		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 1) 
+			if ($call_time_M_int >= 5) 
 				{$i++; continue;} 
 			else
 				{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $agent_paused++;  $agent_total++;}
