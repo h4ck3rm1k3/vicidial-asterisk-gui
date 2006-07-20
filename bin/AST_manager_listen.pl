@@ -36,6 +36,7 @@
 # 60403-1230 - Added SVN/1.4 support for different output
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-0955 - changed to use /etc/astguiclient.conf for configs
+# 60720-1142 - added keepalive to MySQL connection every 50 seconds
 #
 
 # constants
@@ -174,7 +175,7 @@ while ($sthArows > $rec_count)
 		if ($DBext_context)				{$ext_context = $DBext_context;}
 	 $rec_count++;
 	}
-    $sthA->finish();
+$sthA->finish();
 
 if (!$telnet_port) {$telnet_port = '5038';}
 
@@ -512,15 +513,25 @@ while($one_day_interval > 0)
 			}
 
 		### run a keepalive command to flush whatever is in the buffer through and to keep the connection alive
+		### Also, keep the MySQL connection alive by selecting the server_updater time for this server
 		if ($endless_loop =~ /00$|50$/) 
 			{
 				&get_time_now;
 
+			### Grab Server values to keep DB connection alive
+			$stmtA = "SELECT last_update FROM server_updater where server_ip = '$server_ip';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			@aryA = $sthA->fetchrow_array;
+				$last_update	=		"$aryA[0]";
+			$sthA->finish();
+
 			@list_lines = $tn->cmd(String => "Action: Command\nCommand: show uptime\n\n", Prompt => '/--END COMMAND--.*/', Errmode    => Return, Timeout    => 1); 
 			if($DB){print "input lines: $#list_lines\n";}
 
-			if($DB){print "+++++++++++++++++++++++++++++++sending keepalive transmit line $endless_loop|$now_date|\n";}
+			if($DB){print "+++++++++++++++++++++++++++++++sending keepalive transmit line $endless_loop|$now_date|$last_update|\n";}
 			$keepalive_count_loop=0;
+
 			}
 
 
