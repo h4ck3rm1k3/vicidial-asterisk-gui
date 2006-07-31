@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 #
-# agi-record_prompts.agi - for recording prompts to GSM file over the phone
-#     Saves recordings with 8-digit filenames to be played when exten is dialed
+# agi-record_prompts.agi version 0.2
+#
+# for recording prompts to GSM file over the phone
+# Saves recordings with 8-digit filenames to be played when exten is dialed
 #
 #	; prompt recording AGI script, ID is 4321
 #	exten => 8168,1,Answer
