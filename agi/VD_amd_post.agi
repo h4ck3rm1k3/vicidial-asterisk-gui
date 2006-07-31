@@ -248,7 +248,6 @@ if ($M) {print STDERR "--    VDAD vicidial_log AM update: |$affected_rows|$uniqu
 $stmtA = "UPDATE vicidial_list set status='AL' where lead_id='$VD_lead_id';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
 $affected_rows = $dbhA->do($stmtA);
-my $affected_rows = $dbhA->get_affected_rows_length;
 if ($M) {print STDERR "--    VDAD vicidial_list AM update: |$affected_rows|$uniqueid|\n";}
 
 

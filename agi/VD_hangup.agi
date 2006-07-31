@@ -284,7 +284,7 @@ $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
  $rec_countCUSTDATA=0;
-while ($sthArows > $rec_count)
+while ($sthArows > $rec_countCUSTDATA)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$VD_lead_id	= "$aryA[0]";
@@ -312,7 +312,7 @@ $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
  $epc_countCUSTDATA=0;
  $VD_closecallid='';
-while ($sthArows > $rec_count)
+while ($sthArows > $rec_countCUSTDATA)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$VD_start_epoch	= "$aryA[0]";
@@ -344,7 +344,7 @@ if (!$epc_countCUSTDATA)
 	$sthArows=$sthA->rows;
 	 $epc_countCUSTDATA=0;
 	 $VD_closecallid='';
-	while ($sthArows > $rec_count)
+	while ($sthArows > $rec_countCUSTDATA)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$VD_start_epoch	= "$aryA[0]";
