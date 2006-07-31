@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# call_inbound.agi
+# call_inbound.agi version 0.2   *DBI-version*
 # 
 # runs at the beginning and ending of every inbound call received
 # 
@@ -19,12 +19,58 @@
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
+# changes:
+# 60731-1435 - changed to use DBI-DBD::mysql
+#            - changed to use /etc/astguiclient.conf for configs
+#
 
 $V = 1;		# set to 1 for verbose mode
 $M = 1;		# set to 1 for 2 line messages mode
 
-### Make sure this file is in a path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;
 
 $US='_';
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -166,22 +212,18 @@ if ($stage =~ /START/)
 #	if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
 #	if ($channel =~ /^Zap\//) {$channel =~ s/-\d$//gi;}
 
-	use Net::MySQL;
-	  
-	if (!$DB_port) {$DB_port='3306';}
-
-	  my $mysql = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	    or die "Couldn't connect to database: " . DBI->errstr;
 
 	$stmtA = "INSERT INTO live_inbound (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$server_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
 	if ($V) {print STDERR "\n|$stmtA|\n";}
-	$mysql->query($stmtA)  or die  "Couldn't execute query:\n";
+	$affected_rows = $dbhA->do($stmtA);
 
 	$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$server_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
 	if ($V) {print STDERR "\n|$stmtA|\n";}
-	$mysql->query($stmtA)  or die  "Couldn't execute query:\n";
+	$affected_rows = $dbhA->do($stmtA);
 
-	  $mysql->close;
+	$dbhA->disconnect();
 	}
 
 
@@ -191,21 +233,18 @@ else
 
 	if ($V) {print STDERR "\nCALL INBOUND HUNG UP\n";}
 
-	use Net::MySQL;
-	  
-	if (!$DB_port) {$DB_port='3306';}
-
-	  my $dbh = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
+	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	    or die "Couldn't connect to database: " . DBI->errstr;
 
 	if ($V) {print STDERR "\nCONNECTED: deleting live_inbound record for $unique_id on $server_ip\n";}
 
-		$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$server_ip'";
-		$dbh->query($stmtA)  or die  "Couldn't execute query:\n";
-		$dbh->close;
+	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$server_ip'";
+	$affected_rows = $dbhA->do($stmtA);
+
+	$dbhA->disconnect();
 
 
-	if ($M) {print STDERR "+++++ CALL INBOUND HUNGUP: |$unique_id|\n";}
+	if ($M) {print STDERR "+++++ CALL INBOUND HUNGUP: |$unique_id|$affected_rows|\n";}
 	}
 if ($V) {print STDERR "\nAll Done Call Inbound Exiting:\n";}
 
