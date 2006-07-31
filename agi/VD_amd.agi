@@ -382,7 +382,7 @@ if ( ($DB_amd_send_to_vmx =~ /Y/) && (length($DB_am_message_exten) > 0) )
 	exit;
 	}
 
-$dbhA->close;
+$dbhA->disconnect();
 
 $AGI->hangup($channel);
 

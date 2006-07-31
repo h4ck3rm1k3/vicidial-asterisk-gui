@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# park_CID.agi version 0.1
+# park_CID.agi version 0.2   *DBI-version*
 # 
 # runs before the park extension to populate the parked_channels entry with the channel's callerid
 # 
@@ -14,13 +14,58 @@
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
+# changes:
+# 60731-1423 - changed to use DBI-DBD::mysql
+#            - changed to use /etc/astguiclient.conf for configs
+#
 
 $V = 0;		# set to 1 for verbose mode
 $M = 1;		# set to 1 for 2 line messages mode
 
-### Make sure this file is in a path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
 
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -142,20 +187,17 @@ if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$ty
 if ($V) {print STDERR "\nCALL BEING PARKED\n";}
 if ($M) {print STDERR "+++++ CALL PARK START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
 
-use Net::MySQL;
-  
-if (!$DB_port) {$DB_port='3306';}
 
-  my $mysql = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
 
 
 $stmtA = "UPDATE parked_channels set channel_group='$callerid' where server_ip='$server_ip' and channel='$channel';";
 if ($V) {print STDERR "\n|$stmtA|\n";}
-$mysql->query($stmtA)  or die  "Couldn't execute query:\n";
+	$affected_rows = $dbhA->do($stmtA);
+if ($M) {print STDERR "--    Park record updated: |$affected_rows|   |$callerid|$channel|$server_ip\n";}
 
-  $mysql->close;
-
+$dbhA->disconnect();
 
 
 

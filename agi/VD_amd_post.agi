@@ -252,7 +252,7 @@ if ($M) {print STDERR "--    VDAD vicidial_list AM update: |$affected_rows|$uniq
 
 
 
-$dbhA->close;
+$dbhA->disconnect();
 
 
 
