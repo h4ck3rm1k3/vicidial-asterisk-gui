@@ -2,6 +2,7 @@
 ### AST_timeonVDADall.php
 ### 
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Contributions by Magma Networks LLC <atarsha@magmanetworks.com>
 ###
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 # 
@@ -11,8 +12,11 @@
 # 60504-2023 - Modified click-to-listen for SIP phones by Angelito Manansala
 # 60619-1708 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
-# 60626-1455 - Added display of system load to bottom (Angelito Manansala)
-#
+#			 - Added 10 minutes on call (Magma Networks LLC)
+#			 - Added extended pause (exceeding 60 seconds -> 20 minutes) (Magma Networks LLC)
+#			 - Added Full Name Field to extract from Database (Magma Networks LLC)
+#			 - Added Barge Link (Magma Networks LLC)
+# 60731-1138 - fixed fullname formatting
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -21,62 +25,13 @@ require("dbconnect.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
-if (isset($_GET["server_ip"]))				{$server_ip=$_GET["server_ip"];}
-	elseif (isset($_POST["server_ip"]))		{$server_ip=$_POST["server_ip"];}
-if (isset($_GET["reset_counter"]))				{$reset_counter=$_GET["reset_counter"];}
-	elseif (isset($_POST["reset_counter"]))		{$reset_counter=$_POST["reset_counter"];}
-if (isset($_GET["RR"]))				{$RR=$_GET["RR"];}
-	elseif (isset($_POST["RR"]))		{$RR=$_POST["RR"];}
-if (isset($_GET["group"]))				{$group=$_GET["group"];}
-	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
-if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
-	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
-if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
-if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
-
-if (!isset($group))   {$group='';}
-
-function get_server_load($windows = false) {
-$os = strtolower(PHP_OS);
-if(strpos($os, "win") === false) {
-if(file_exists("/proc/loadavg")) {
-$load = file_get_contents("/proc/loadavg");
-$load = explode(' ', $load);
-return $load[0];
-}
-elseif(function_exists("shell_exec")) {
-$load = explode(' ', `uptime`);
-return $load[count($load)-1];
-}
-else {
-return false;
-}
-}
-elseif($windows) {
-if(class_exists("COM")) {
-$wmi = new COM("WinMgmts:\\\\.");
-$cpus = $wmi->InstancesOf("Win32_Processor");
-
-$cpuload = 0;
-$i = 0;
-while ($cpu = $cpus->Next()) {
-$cpuload += $cpu->LoadPercentage;
-$i++;
-}
-
-$cpuload = round($cpuload / $i, 2);
-return "$cpuload%";
-}
-else {
-return false;
-}
-}
-}
-
-$load_ave = get_server_load(true);
-
+$server_ip=$_GET["server_ip"];			if (!$server_ip) {$server_ip=$_POST["server_ip"];}
+$reset_counter=$_GET["reset_counter"];	if (!$reset_counter) {$reset_counter=$_POST["reset_counter"];}
+$RR=$_GET["RR"];						if (!$RR) {$RR=$_POST["RR"];}
+$group=$_GET["group"];					if (!$group) {$group=$_POST["group"];}
+$DB=$_GET["DB"];						if (!$DB) {$DB=$_POST["DB"];}
+$submit=$_GET["submit"];				if (!$submit) {$submit=$_POST["submit"];}
+$SUBMIT=$_GET["SUBMIT"];				if (!$SUBMIT) {$SUBMIT=$_POST["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -96,15 +51,12 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 	}
 
 $NOW_TIME = date("Y-m-d H:i:s");
-$NOW_DAY = date("Y-m-d");
-$NOW_HOUR = date("H:i:s");
 $STARTtime = date("U");
 $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 
-$stmt="select campaign_id from vicidial_campaigns where active='Y';";
+$stmt="select campaign_id from vicidial_campaigns;";
 $rslt=mysql_query($stmt, $link);
-if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
 $groups_to_print = mysql_num_rows($rslt);
 $i=0;
@@ -115,14 +67,13 @@ while ($i < $groups_to_print)
 	$i++;
 	}
 
-if (!isset($RR))   {$RR=40;}
+if (!$RR) {$RR=40;}
 
 $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 $reset_counter++;
 
-if (!isset($reset_counter))   {$reset_counter=0;}
 if ($reset_counter > 7)
 	{
 	$reset_counter=0;
@@ -174,65 +125,24 @@ echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB\">STOP</a> | <a href=\"$PHP_
 echo " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
 echo "\n\n";
 
-
 if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FORM>\n"; exit;}
 else
 {
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
-$HOPlev = $row[8];
 
-echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[0]&nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[1], $row[2], $row[3], $row[4], $row[5] &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>ORDER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[6] &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[7] &nbsp; &nbsp; </TD>";
-echo "</TR>";
-
-$stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$VDhop = $row[0];
-
-$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$DAleads = $row[0];
-$callsTODAY = $row[1];
-$dropsTODAY = $row[2];
-$drpctTODAY = $row[3];
-
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>LEADS IN HOPPER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $VDhop &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIALABLE LEADS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=CENTER COLSPAN=2><font size=2> &nbsp; <B> TIME:</B> </TD>";
-echo "</TR>";
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CALLS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CALLS DROPPED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY% &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=CENTER COLSPAN=2><font size=2> &nbsp; $NOW_TIME </TD>";
-echo "</TR></TABLE>";
-
-
+echo "<BR><font size=2>";
+echo "<B>DIAL LEVEL:</B> $row[0] &nbsp; &nbsp; &nbsp; &nbsp; ";
+echo "<B>STATUSES:</B> $row[1], $row[2], $row[3], $row[4], $row[5] &nbsp; &nbsp; &nbsp; &nbsp; ";
+echo "<B>ORDER:</B> $row[6]</font>";
 echo "</FORM>\n\n";
 }
 ###################################################################################
 ###### OUTBOUND CALLS
 ###################################################################################
 if (eregi("CLOSER",$group))
-	{
-	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);
-	$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
-	$closer_campaigns = "'$closer_campaigns'";
-
-	$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (campaign_id='" . mysql_real_escape_string($group) . "' and call_type='OUT') );";
-	}
+	{$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') and (campaign_id='" . mysql_real_escape_string($group) . "' or campaign_id LIKE \"CL_%\");";}
 else
 	{$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') and campaign_id='" . mysql_real_escape_string($group) . "';";}
 $rslt=mysql_query($stmt, $link);
@@ -290,13 +200,32 @@ $agent_paused=0;
 $agent_total=0;
 
 $Aecho = '';
-$Aecho .= "VICIDIAL: Agents Time On Calls Campaign: $group                      $NOW_TIME\n\n";
-$Aecho .= "+------------|--------+------------------+--------+-----------------+-----------------+---------+------------+\n";
-$Aecho .= "| STATION    | USER   |     SESSIONID    | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
-$Aecho .= "+------------|--------+------------------+--------+-----------------+-----------------+---------+------------+\n";
+$Aecho .= "VF DIALER: Agents Time On Calls Campaign: $group                      $NOW_TIME\n\n";
+$Aecho .= "+------------|--------+-----------------+----------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+$Aecho .= "| STATION    | USER   | FULL NAME       | SESSIONID      | BARGE | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
+$Aecho .= "+------------|--------+-----------------+----------------+-------+--------+-----------------+-----------------+---------+------------+\n";
 
 
-$stmt="select extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents where campaign_id='" . mysql_real_escape_string($group) . "' order by status,last_call_time;";
+$stmt="
+	select 
+		extension,
+		vicidial_live_agents.user,
+		conf_exten,
+		status,
+		server_ip,
+		UNIX_TIMESTAMP(last_call_time),
+		UNIX_TIMESTAMP(last_call_finish),
+		call_server_ip,
+		campaign_id,
+		vicidial_users.full_name as full_name
+	from vicidial_live_agents 
+	left join vicidial_users on vicidial_live_agents.user = vicidial_users.user
+	where 
+		campaign_id='" . mysql_real_escape_string($group) . "' 
+	order by 
+		status,
+		last_call_time;
+";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);
@@ -318,6 +247,8 @@ $talking_to_print = mysql_num_rows($rslt);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =		sprintf("%-10s", $row[8]);
+		$full_name =        sprintf("%-15s", $row[9]);
+			while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
 		$call_time_S = ($STARTtime - $row[5]);
 
 		$call_time_M = ($call_time_S / 60);
@@ -331,10 +262,10 @@ $talking_to_print = mysql_num_rows($rslt);
 		$call_time_MS =		sprintf("%7s", $call_time_MS);
 		$G = '';		$EG = '';
 		if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
-#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+#		if ($call_time_M_int >= 10) {$G='<SPAN class="red"><B>'; $EG='</B></SPAN>';}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 5) 
+			if ($call_time_M_int >= 20) 
 				{$i++; continue;} 
 			else
 				{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $agent_paused++;  $agent_total++;}
@@ -345,26 +276,24 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) ) {$agent_incall++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$agent_ready++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
+		$sessionid = trim($sessionid);
 
 		$agentcount++;
-		#$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$sessionid$EG | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
-		$sessionid=trim($sessionid);
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> |  $G$sessionid$EG <a href=\"sip:6$sessionid@$server_ip\">LISTEN</a>  | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$full_name$EG | $G$sessionid$EG <a href=\"sip:6$sessionid@$server_ip\">LISTEN</a> | <a href=\"sip:$sessionid@$server_ip\">BARGE</a> | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}
 
-		$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "+------------|--------+-----------------+----------------+--------+--------+-----------------+-----------------+---------+------------+\n";
 		$Aecho .= "  $agentcount agents logged in on all servers\n";
-		$Aecho .= "  System Load Average: $load_ave\n\n";
+		$Aecho .= "  NOTE: Click LISTEN to monitor agent call, you must have installed softphone on you machine.\n\n";
+
 
 		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Paused agents</B>\n";
 	#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - Balanced call</B>\n";
 		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - Agent waiting for call</B>\n";
-		$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - Over 5 minutes on call</B>\n\n";
-		$Aecho .= "  NOTE: Click LISTEN to monitor agent call, you must have softphone installed on you machine.\n\n";
-
-
+		$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - Over 5 minutes on call</B>\n";
+		$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - Over 10 minutes on call</B>\n";
 		if ($agent_ready > 0) {$B='<FONT class="b1">'; $BG='</FONT>';}
 		if ($agent_ready > 4) {$B='<FONT class="b2">'; $BG='</FONT>';}
 		if ($agent_ready > 9) {$B='<FONT class="b3">'; $BG='</FONT>';}
@@ -374,6 +303,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		echo "\n<BR>\n";
 
 		echo "$NFB$agent_total$NFE agents logged in &nbsp; &nbsp; &nbsp; &nbsp; \n";
+ 		
 		echo "$NFB$agent_incall$NFE agents in calls &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$B &nbsp;$agent_ready $BG$NFE agents waiting &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$agent_paused$NFE paused agents &nbsp; &nbsp; &nbsp; \n";
@@ -391,5 +321,3 @@ $talking_to_print = mysql_num_rows($rslt);
 </PRE>
 
 </BODY></HTML>
-
-
