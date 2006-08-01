@@ -38,6 +38,7 @@
 # 60609-1451 - Added ability to filter by DNC list vicidial_dnc
 # 60614-1159 - Added campaign lead recycling ability
 # 60715-2251 - changed to use /etc/astguiclient.conf for configs
+# 60801-1634 - Fixed Callback activation bug 000008
 #
 
 # constants
@@ -289,7 +290,7 @@ if ($CBHOLD_count > 0)
 			$event_string = "|CALLBACKS LISTACT|$affected_rows|";
 			&event_logger;
 
-		$stmtA = "UPDATE vicidial_callbacks set status='LIVE' where lead_id IN($update_leads);";
+		$stmtA = "UPDATE vicidial_callbacks set status='LIVE' where lead_id IN($update_leads) and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($DB) {print "Scheduled Callbacks Activated:  $affected_rows\n";}
 			$event_string = "|CALLBACKS CB ACT |$affected_rows|";
