@@ -1183,7 +1183,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		### If CALLBK, change vicidial_callback record to INACTIVE
 		if (eregi("CALLBK|CBHOLD", $dispo))
 			{
-			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id';";
+			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
