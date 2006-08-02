@@ -61,20 +61,20 @@ $REC_next = 0;
 
 if (-e "/prompt_count.txt")
 {
-	open(test, "prompt_count.txt") || die "can't open prompt_count.txt: $!\n";
+	open(test, "/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
 	@test = <test>;
 	close(test);
 
 	$REC_next = ($test[0] + 1);
 	$REC_id = ($REC_id + $REC_next);
 
-	open(test, ">prompt_count.txt") || die "can't open prompt_count.txt: $!\n";
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
 	print test "$REC_next";
 	close(test);
 }
 else
 {
-	open(test, ">prompt_count.txt") || die "can't open prompt_count.txt: $!\n";
+	open(test, ">/prompt_count.txt") || die "can't open /prompt_count.txt: $!\n";
 	print test "1";
 	close(test);
 	$REC_id = ($REC_id + 1);
