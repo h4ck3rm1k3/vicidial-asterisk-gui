@@ -626,7 +626,7 @@ if ($ACTION == 'manDiaLonly')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1) || (strlen($ext_context)<1) || (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "CALL NOT PLACED\n";
+		echo " CALL NOT PLACED\n";
 		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context is not valid\n";
 		exit;
 	}

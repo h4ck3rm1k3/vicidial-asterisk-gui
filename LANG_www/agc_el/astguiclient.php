@@ -53,7 +53,8 @@
 # 60104-1347 - Added basic layout for favorites editing frame
 # 60105-1124 - Finished Favorites frame and added DB submission
 # 60112-1622 - Several formatting changes
-# 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60421-1357 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1103 - Added variable filters to close security holes for login form
 # 
 
 require("dbconnect.php");
@@ -87,8 +88,16 @@ $user_abb = "$user$user$user$user";
 while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 	{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
 
-$version = '1.1.11';
-$build = '60421-1043';
+$version = '1.1.12';
+$build = '60619-1103';
+
+### security strip all non-alphanumeric characters out of the variables ###
+	$DB=ereg_replace("[^0-9a-z]","",$DB);
+	$phone_login=ereg_replace("[^0-9a-zA-Z]","",$phone_login);
+	$phone_pass=ereg_replace("[^0-9a-zA-Z]","",$phone_pass);
+	$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+	$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 
 if ($force_logout)
 {
@@ -363,8 +372,8 @@ else
 		while ($favorites_count > $o) 
 			{
 			$stmt="SELECT fullname,protocol from phones where extension = '$favorites[$o]' and server_ip='$server_ip';";
-			$rsltx=mysql_query($stmt, $link);
-			$rowx=mysql_fetch_row($rsltx);
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
 			$favorites_names[$o] =	$rowx[0];
 			$favorites_listX .= "$rowx[1]/$favorites[$o],";
 			$o++;
@@ -1516,7 +1525,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (out_calls > 0)
 						{
-						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ</td><td><font class=\"log_title\">ΑΡΙΘΜΟΣ</td><td align=right><font class=\"log_title\">ΜΗΚΟΣ (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
+						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ</td><td><font class=\"log_title\">ΑΡΙΘΜΟΣ</td><td align=right><font class=\"log_title\">ΜΗΚΟΣ (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < out_calls)
 							{
 							loop_ct++;
@@ -1544,7 +1553,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (in_calls > 0)
 						{
-						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ</td><td><font class=\"log_title\">ΣΕ-ΑΡΙΘΜΟ</td><td COLSPAN=2><font class=\"log_title\">ΚΛΗΣΗERID</td><td align=right><font class=\"log_title\">ΜΗΚΟΣ</td><td><font class=\"log_title\"> </td></tr>"
+						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ</td><td><font class=\"log_title\">ΣΕ-ΑΡΙΘΜΟ</td><td COLSPAN=2><font class=\"log_title\">CALLERID</td><td align=right><font class=\"log_title\">ΜΗΚΟΣ</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < in_calls)
 							{
 							loop_ct++;

@@ -111,6 +111,7 @@
 # 60608-1453 - Added CLOSER campaign allowable in-groups limitations
 # 60609-1123 - Added add-number-to-DNC-list function and manual dial check DNC
 # 60619-1047 - Added variable filters to close security holes for login form
+# 60804-1710 - fixed scheduled CALLBK for other languages build
 #
 
 require("dbconnect.php");
@@ -156,8 +157,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '1.1.85';
-$build = '60619-1047';
+$version = '1.1.86';
+$build = '60804-1710';
 
 if ($force_logout)
 {
@@ -177,7 +178,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 $conf_silent_prefix		= '7';	# vicidial_conferences prefix to enter silently
 $HKuser_level			= '5';	# minimum vicidial user_level for HotKeys
-#$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
+$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
 $manual_dial_preview	= '1';	# allow preview lead option when manual dial
 $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
@@ -847,13 +848,13 @@ else
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- alte WARTESCHLANGE und INANRUF umgeschaltete Liste:   |$affected_rows| -->\n";
+		print "<!-- alte WARTESCHLANGE und INCALL umgeschaltete Liste:   |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_hopper where status IN('QUEUE','INCALL','DONE') and user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- alte WARTESCHLANGE und INANRUF umgeschalteter Zufuhrbehälter: |$affected_rows| -->\n";
+		print "<!-- alte WARTESCHLANGE und INCALL umgeschalteter Zufuhrbehälter: |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_live_agents where user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
@@ -1319,23 +1320,23 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var AgainCalLSecondS = '';
 	var AgaiNCalLCID = '';
 	var CB_count_check = 60;
-	var agentcallsstatus = '<? echo $agentcallsstatus ?>'
-	var campagentstatctmax = '<? echo $campagentstatctmax ?>'
-	var campagentstatct = '0'
+	var agentcallsstatus = '<? echo $agentcallsstatus ?>';
+	var campagentstatctmax = '<? echo $campagentstatctmax ?>';
+	var campagentstatct = '0';
 	var manual_dial_in_progress = 0;
 	var auto_dial_alt_dial = 0;
 	var reselect_preview_dial = 0;
 	var reselect_alt_dial = 0;
 	var alt_dial_active = 0;
 	var mdnLisT_id = '999';
-	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>'
-	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>'
-	var agentcall_manual = '<? echo $agentcall_manual ?>'
-	var manual_dial_preview = '<? echo $manual_dial_preview ?>'
-	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>'
-	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>'
-	var wrapup_Sekunden = '<? echo $wrapup_Sekunden ?>'
-	var wrapup_message = '<? echo $wrapup_message ?>'
+	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>';
+	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>';
+	var agentcall_manual = '<? echo $agentcall_manual ?>';
+	var manual_dial_preview = '<? echo $manual_dial_preview ?>';
+	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
+	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
+	var wrapup_Sekunden = '<? echo $wrapup_Sekunden ?>';
+	var wrapup_message = '<? echo $wrapup_message ?>';
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>'
@@ -2258,7 +2259,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var CB_calls = all_CBs_array[0];
 						var loop_ct=0;
 						var conv_start=0;
-						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">ANRUFBACK DATE/TIME</td><td><font class=\"log_title\">ZAHL</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">STATUS</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST ANRUFDATE/TIME</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
+						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ANRUFBACK DATE/TIME</td><td><font class=\"log_title\">ZAHL</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">STATUS</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST ANRUFDATE/TIME</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
 						while (loop_ct < CB_calls)
 							{
 							loop_ct++;
@@ -2675,7 +2676,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						VDIC_web_form_address = VICIDiaL_web_form_address;
 
-						if (LeaDPreVDispO == 'ANRUFBK')
+						if (LeaDPreVDispO == 'CALLBK')
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS ANRUFBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
@@ -2697,7 +2698,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_de.gif\" border=0 alt=\"Hängezustand-Kunde\"></a>";
 
-							if (campaign_recording == 'ALLANRUFS')
+							if (campaign_recording == 'ALLCALLS')
 								{all_record = 'YES';}
 
 							if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -2889,7 +2890,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 					var MDOnextResponse_array=MDOnextResponse.split("\n");
 					MDnextCID = MDOnextResponse_array[0];
-					if (MDnextCID == "ANRUF NOT PLACED")
+					if (MDnextCID == " ANRUF NOT PLACED")
 						{
 						alert("Anruf wurde nicht gesetzt, es gab eine Störung:\n" + MDOnextResponse);
 						}
@@ -2902,7 +2903,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_de.gif\" border=0 alt=\"Hängezustand-Kunde\"></a>";
 
-						if (campaign_recording == 'ALLANRUFS')
+						if (campaign_recording == 'ALLCALLS')
 							{all_record = 'YES';}
 
 						if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -3116,7 +3117,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						document.getElementById("MainStatuSSpan").innerHTML = " Ankommend: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
 
-						if (LeaDPreVDispO == 'ANRUFBK')
+						if (LeaDPreVDispO == 'CALLBK')
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS ANRUFBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
@@ -3212,7 +3213,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform_de.gif\" border=0 alt=\"Netz-Form\"></a>\n";
 
-						if (campaign_recording == 'ALLANRUFS')
+						if (campaign_recording == 'ALLCALLS')
 							{all_record = 'YES';}
 
 						if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
@@ -3715,7 +3716,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		AgentDispoing = 1;
 		var VD_statuses_ct_half = parseInt(VD_statuses_ct / 2);
-		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B>ANRUF DISPOSITION</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
+		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> ANRUF DISPOSITION</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
 		var loop_ct = 0;
 		while (loop_ct < VD_statuses_ct)
 			{
@@ -3776,7 +3777,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.getElementById("CusTInfOSpaN").innerHTML = "";
 			document.getElementById("CusTInfOSpaN").style.background = panel_bgcolor;
 
-			if ( (DispoChoice == 'ANRUFBK') && (scheduled_callbacks > 0) ) {showDiv('CallBackSelectBox');}
+			if ( (DispoChoice == 'CALLBK') && (scheduled_callbacks > 0) ) {showDiv('CallBackSelectBox');}
 			else
 				{
 				var xmlhttp=false;

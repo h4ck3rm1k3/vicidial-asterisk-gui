@@ -142,7 +142,7 @@ OUTBOUND CALLS|ΕΞΕΡΧΟΜΕΝΕΣ ΚΛΗΣΕΙΣ|
 INBOUND CALLS|ΕΙΣΕΡΧΟΜΕΝΕΣ ΚΛΗΣΕΙΣ|
 Refresh rate|Ρυθμός ανανέωσης|
 MANUAL DIAL|ΧΕΙΡ.ΚΛΗΣΗ|
-CALL DATE/TIME|ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ|
+CALL DATE\/TIME|ΗΜΕΡΟΜΗΝΙΑ/ΧΡΟΝΟΣ ΚΛΗΣΗΣ|
 LOCAL HANGUP|ΤΟΠΙΚΟ ΚΛΕΙΣΙΜΟ ΤΗΛΕΦΩΝΟΥ|
 PARKED CALLS|ΣΤΑΘΜ.ΚΛΗΣΕΙΣ|
 PARKED BY|ΣΤΑΘΜΕΥΜΕΝΕΣ ΑΠΟ|
@@ -336,7 +336,7 @@ NUMBER|ΑΡΙΘΜΟΣ|
 LENGTH|ΜΗΚΟΣ|
 CALLERID|CALLERID|
 CallerID|CallerID|
-CALL|ΚΛΗΣΗ|
+ CALL| ΚΛΗΣΗ|
 PICKUP|ΕΠΑΝΑΛΕΙΨΗ|
 CONFERENCE|ΣΥΝΔΙΑΣΚΕΨΗ|
 Refresh|Ανανέωση|

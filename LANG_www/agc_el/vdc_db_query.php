@@ -372,7 +372,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		$affected_rows=1;
 		$CBleadIDset=1;
 
-		$stmt = "UPDATE vicidial_callbacks set status='INACTIVE' where callback_id='$callback_id';";
+		$stmt = "UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		}
@@ -493,7 +493,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 			$called_count++;
 
-			### flag the lead as called and change it's status to INΚΛΗΣΗ
+			### flag the lead as called and change it's status to INCALL
 			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='Y', called_count='$called_count',user='$user' where lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
@@ -603,7 +603,7 @@ if ($ACTION == 'manDiaLskip')
 	else
 	{
 		$called_count = ($called_count - 1);
-		### flag the lead as called and change it's status to INΚΛΗΣΗ
+		### flag the lead as called and change it's status to INCALL
 		$stmt = "UPDATE vicidial_list set status='$stage', called_count='$called_count',user='$user' where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -626,7 +626,7 @@ if ($ACTION == 'manDiaLonly')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1) || (strlen($ext_context)<1) || (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "ΚΛΗΣΗ NOT PLACED\n";
+		echo " ΚΛΗΣΗ NOT PLACED\n";
 		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context δεν ισχύει\n";
 		exit;
 	}
@@ -758,7 +758,7 @@ if ($stage == "start")
 
 	#	if ($affected_rows > 0)
 	#		{
-	#		echo "ΚΛΗΣΗ_LOG Εισαγωγή : $uniqueid|$channel|$NOW_TIME";
+	#		echo "CALL_LOG Εισαγωγή : $uniqueid|$channel|$NOW_TIME";
 	#		}
 	#	else
 	#		{
@@ -979,7 +979,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 		echo "1\n" . $lead_id . '|' . $uniqueid . '|' . $callerid . '|' . $channel . '|' . $call_server_ip . "|\n";
 
-		### update the agent status to INΚΛΗΣΗ in vicidial_live_agents
+		### update the agent status to INCALL in vicidial_live_agents
 		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME' where user='$user' and server_ip='$server_ip';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -1021,19 +1021,19 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$called_count	= trim("$row[30]");
 			}
 
-		### update the lead status to INΚΛΗΣΗ
+		### update the lead status to INCALL
 		$stmt = "UPDATE vicidial_list set status='INCALL', user='$user' where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
-		### update the log status to INΚΛΗΣΗ
+		### update the log status to INCALL
 		$stmt = "UPDATE vicidial_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL' where lead_id='$lead_id' and uniqueid='$uniqueid';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
 		if (eregi("CLOSER",$campaign))
 			{
-			### update the vicidial_closer_log user to INΚΛΗΣΗ
+			### update the vicidial_closer_log user to INCALL
 			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL' where lead_id='$lead_id' order by closecallid desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
@@ -1181,9 +1181,9 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 
 		### If ΚΛΗΣΗBK, change vicidial_callback record to INACTIVE
-		if ($dispo == 'ΚΛΗΣΗBK')
+		if (eregi("CALLBK|CBHΠΑΛΑΙΟ", $dispo))
 			{
-			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' order by callback_id desc LIMIT 1;";
+			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}

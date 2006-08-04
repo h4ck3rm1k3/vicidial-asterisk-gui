@@ -111,6 +111,7 @@
 # 60608-1453 - Added CLOSER campaign allowable in-groups limitations
 # 60609-1123 - Added add-number-to-DNC-list function and manual dial check DNC
 # 60619-1047 - Added variable filters to close security holes for login form
+# 60804-1710 - fixed scheduled CALLBK for other languages build
 #
 
 require("dbconnect.php");
@@ -156,8 +157,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '1.1.85';
-$build = '60619-1047';
+$version = '1.1.86';
+$build = '60804-1710';
 
 if ($force_logout)
 {
@@ -177,7 +178,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 $conf_silent_prefix		= '7';	# vicidial_conferences prefix to enter silently
 $HKuser_level			= '5';	# minimum vicidial user_level for HotKeys
-#$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
+$campaign_login_list	= '1';	# show drop-down list of campaigns at login	
 $manual_dial_preview	= '1';	# allow preview lead option when manual dial
 $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
@@ -1319,23 +1320,23 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var AgainCalLSecondS = '';
 	var AgaiNCalLCID = '';
 	var CB_count_check = 60;
-	var agentcallsstatus = '<? echo $agentcallsstatus ?>'
-	var campagentstatctmax = '<? echo $campagentstatctmax ?>'
-	var campagentstatct = '0'
+	var agentcallsstatus = '<? echo $agentcallsstatus ?>';
+	var campagentstatctmax = '<? echo $campagentstatctmax ?>';
+	var campagentstatct = '0';
 	var manual_dial_in_progress = 0;
 	var auto_dial_alt_dial = 0;
 	var reselect_preview_dial = 0;
 	var reselect_alt_dial = 0;
 	var alt_dial_active = 0;
 	var mdnLisT_id = '999';
-	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>'
-	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>'
-	var agentcall_manual = '<? echo $agentcall_manual ?>'
-	var manual_dial_preview = '<? echo $manual_dial_preview ?>'
-	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>'
-	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>'
-	var wrapup_seconds = '<? echo $wrapup_seconds ?>'
-	var wrapup_message = '<? echo $wrapup_message ?>'
+	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>';
+	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>';
+	var agentcall_manual = '<? echo $agentcall_manual ?>';
+	var manual_dial_preview = '<? echo $manual_dial_preview ?>';
+	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
+	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
+	var wrapup_seconds = '<? echo $wrapup_seconds ?>';
+	var wrapup_message = '<? echo $wrapup_message ?>';
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>'
@@ -2258,7 +2259,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var CB_calls = all_CBs_array[0];
 						var loop_ct=0;
 						var conv_start=0;
-						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CALLBACK DATE/TIME</td><td><font class=\"log_title\">NUMBER</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">STATUS</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST CALL DATE/TIME</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
+						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> CALLBACK DATE/TIME</td><td><font class=\"log_title\">NUMBER</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">STATUS</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST CALL DATE/TIME</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
 						while (loop_ct < CB_calls)
 							{
 							loop_ct++;
@@ -2889,7 +2890,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 					var MDOnextResponse_array=MDOnextResponse.split("\n");
 					MDnextCID = MDOnextResponse_array[0];
-					if (MDnextCID == "CALL NOT PLACED")
+					if (MDnextCID == " CALL NOT PLACED")
 						{
 						alert("call was not placed, there was an error:\n" + MDOnextResponse);
 						}
@@ -3715,7 +3716,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		AgentDispoing = 1;
 		var VD_statuses_ct_half = parseInt(VD_statuses_ct / 2);
-		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B>CALL DISPOSITION</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
+		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> CALL DISPOSITION</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
 		var loop_ct = 0;
 		while (loop_ct < VD_statuses_ct)
 			{

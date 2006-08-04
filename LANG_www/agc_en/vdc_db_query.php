@@ -372,7 +372,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		$affected_rows=1;
 		$CBleadIDset=1;
 
-		$stmt = "UPDATE vicidial_callbacks set status='INACTIVE' where callback_id='$callback_id';";
+		$stmt = "UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		}
@@ -626,7 +626,7 @@ if ($ACTION == 'manDiaLonly')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1) || (strlen($ext_context)<1) || (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "CALL NOT PLACED\n";
+		echo " CALL NOT PLACED\n";
 		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context is not valid\n";
 		exit;
 	}
@@ -1181,9 +1181,9 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 
 		### If CALLBK, change vicidial_callback record to INACTIVE
-		if ($dispo == 'CALLBK')
+		if (eregi("CALLBK|CBHOLD", $dispo))
 			{
-			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' order by callback_id desc LIMIT 1;";
+			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
