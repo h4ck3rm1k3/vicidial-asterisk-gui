@@ -259,7 +259,7 @@ if ($CBHOLD_count > 0)
 	$update_leads='';
 	$cbc=0;
 	$cba=0;
-	$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id;";
+	$stmtA = "SELECT vicidial_callbacks.lead_id,recipient,campaign_id,vicidial_callbacks.list_id,gmt_offset_now,state FROM vicidial_callbacks,vicidial_list where callback_time <= '$now_date' and vicidial_callbacks.status='ACTIVE' and vicidial_callbacks.lead_id=vicidial_list.lead_id;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -269,12 +269,13 @@ if ($CBHOLD_count > 0)
 		$lead_ids[$cbc] = $aryA[0];
 		$recipient = $aryA[1];
 		$update_leads .= "'$lead_ids[$cbc]',";
-		if ($recipient == 'ANYONE')
+		if ($recipient =~ /ANYONE/)
 			{
 			$CA_lead_id[$cba] = $aryA[0];
 			$CA_campaign_id[$cba] = $aryA[2];
 			$CA_list_id[$cba] = $aryA[3];
 			$CA_gmt_offset_now[$cba] = $aryA[4];
+			$CA_state[$cba] = $aryA[5];
 			$cba++;
 			}
 		$cbc++;
@@ -283,12 +284,6 @@ if ($CBHOLD_count > 0)
 	if ($cbc > 0)
 		{
 		chop($update_leads);
-
-		$stmtA = "UPDATE vicidial_list set status='CALLBK', called_since_last_reset='N' where lead_id IN($update_leads);";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($DB) {print "Scheduled Callbacks Activated:  $affected_rows\n";}
-			$event_string = "|CALLBACKS LISTACT|$affected_rows|";
-			&event_logger;
 
 		$stmtA = "UPDATE vicidial_callbacks set status='LIVE' where lead_id IN($update_leads) and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 		$affected_rows = $dbhA->do($stmtA);
@@ -306,7 +301,13 @@ if ($CBHOLD_count > 0)
 		$CAu=0;
 		foreach(@CA_lead_id)
 			{
-			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]';";
+			$stmtA = "UPDATE vicidial_list set status='CALLBK', called_since_last_reset='N' where lead_id='$CA_lead_id[$CAu]';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($DB) {print "Scheduled Callbacks Activated:  $affected_rows\n";}
+				$event_string = "|CALLBACKS LISTACT|$affected_rows|";
+				&event_logger;
+
+			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]';";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($DB) {print "ANYONE Scheduled Callback Inserted into hopper:  $affected_rows|$CA_lead_id[$CAu]\n";}
 			$CAu++;

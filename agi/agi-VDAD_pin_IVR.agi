@@ -164,7 +164,7 @@ while(<STDIN>) {
 
 	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
 	### allow for internal transfer data string "83009*3125551212*10000123*TESTCAMP*ABC*1234*"
-	if ($extension =~ /^8300\d\*/)
+	if ($extension =~ /^8320\d\*/)
 		{
 		@EXT_vars = split(/\*/, $extension);
 		
@@ -177,7 +177,7 @@ while(<STDIN>) {
 		}
 }
 
-	if ($V) {print STDERR "\nINBOUND DTMF CALL VDCL STARTED\n";}
+	if ($V) {print STDERR "\nINBOUND IVR PLAY CALL VDCL STARTED\n";}
 
 
 $AGI->stream_file('beep');
