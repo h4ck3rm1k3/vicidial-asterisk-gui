@@ -25,6 +25,7 @@
 # 50215-0954 - First version of script
 # 50810-1615 - Added database server variable definitions lookup
 # 60807-1003 - Changed to DBI
+#            - changed to use /etc/astguiclient.conf for configs
 #
 
 ### begin parsing run-time options ###
@@ -83,15 +84,56 @@ print "no command line options set\n";
 $US='__';
 $MT[0]='';
 
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
-if (!$DB_port) {$DB_port='3306';}
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+
+if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent.$year-$mon-$mday";}
+if (!$VARDB_port) {$VARDB_port='3306';}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -169,6 +211,7 @@ while($one_day_interval > 0)
 
 
 		$user_counter=0;
+		$DELusers='';
 		@DBremote_user=@MT;
 		@DBremote_server_ip=@MT;
 		@DBremote_campaign=@MT;
@@ -224,7 +267,34 @@ while($one_day_interval > 0)
 
 
 	###############################################################################
-	###### second traverse array of remote agents to be active and insert or update 
+	###### second grab all of the INACTIVE remote agents information from the database
+	###############################################################################
+		$stmtA = "SELECT * FROM vicidial_remote_agents where status IN('INACTIVE') and server_ip='$server_ip' order by user_start;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+				$Duser_start =				"$aryA[1]";
+				$Dnumber_of_lines =			"$aryA[2]";
+				$w=0;
+				while ($w < $Dnumber_of_lines)
+					{
+					$Duser_id = ($Duser_start + $w);
+					$DELusers .= "R/$Duser_id|";
+					$w++;
+					}
+			$rec_count++;
+			}
+		$sthA->finish();
+#		if ($DBX) {print STDERR "INACTIVE remote agents: |$DELusers|\n";}
+
+
+
+	###############################################################################
+	###### third traverse array of remote agents to be active and insert or update 
 	###### in vicidial_live_agents table 
 	###############################################################################
 		$h=0;
@@ -289,7 +359,7 @@ while($one_day_interval > 0)
 
 
 	###############################################################################
-	###### third validate that the calls that the vicidial_live_agents are on are not dead
+	###### fourth validate that the calls that the vicidial_live_agents are on are not dead
 	###### and if they are wipe out the values and set the agent record back to READY
 	###############################################################################
 		$stmtA = "SELECT user,extension,status,uniqueid,callerid FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
@@ -339,9 +409,18 @@ while($one_day_interval > 0)
 			
 			if ($autocallexists[$z] < 1)
 				{
-				$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
-				$affected_rows = $dbhA->do($stmtA);
-				if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|$VD_uniqueid[$z]\n";}
+				if ($DELusers =~ /R\/$VD_user[$z]\|/)
+					{
+					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='PAUSED', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|PAUSED|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
+					}
+				else
+					{
+					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
+					}
 				}
 
 			$z++;
@@ -363,9 +442,9 @@ while($one_day_interval > 0)
 		if($DB){print STDERR "\nloop counter: |$endless_loop|\n";}
 
 		### putting a blank file called "VDAD.kill" in the directory will automatically safely kill this program
-		if (-e '/home/cron/VDAD.kill')
+		if (-e '$PATHhome/VDAD.kill')
 			{
-			unlink('/home/cron/VDAD.kill');
+			unlink('$PATHhome/VDAD.kill');
 			$endless_loop=0;
 			$one_day_interval=0;
 			print "\nPROCESS KILLED MANUALLY... EXITING\n\n"
@@ -497,8 +576,8 @@ sub event_logger
 
 if ($DB) {print "$now_date|$event_string|\n";}
 	### open the log file for writing ###
-	open(Lout, ">>/home/cron/remote.$filedate")
-			|| die "Can't open /home/cron/remote.$filedate: $!\n";
+	open(Lout, ">>$VDRLOGfile")
+			|| die "Can't open $VDRLOGfile: $!\n";
 
 	print Lout "$now_date|$event_string|\n";
 
