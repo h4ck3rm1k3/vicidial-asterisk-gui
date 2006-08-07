@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_update.pl version 1.1.11  (build 60411-1032)
+# AST_update.pl version 14   *DBI-version*
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface and Net::MySQL to update the live_channels
@@ -48,9 +48,10 @@
 # 51229-1355 - Added ability to take ! as delimited for 1.2 show channels concise
 # 60117-1202 - Changed IAX2 client phone channel to reflect change to '-' iteration
 # 60411-1032 - Fixed bug in test section that caused crash with ** in extension
+# 60807-1605 - Changed to DBI
 #
 
-$build = '60411-1032';
+$build = '60807-1605';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -133,37 +134,37 @@ if (!$DB_port) {$DB_port='3306';}
 	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
 	&event_logger;
 
-use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use Net::MySQL;
 use Net::Telnet ();
-	  
-	my $dbhA = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 	&event_logger;
 
 ### Grab Server values from the database
 $stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version FROM servers where server_ip = '$server_ip';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
 	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$DBtelnet_host	=			"$record->[0]";
-		$DBtelnet_port	=			"$record->[1]";
-		$DBASTmgrUSERNAME	=		"$record->[2]";
-		$DBASTmgrSECRET	=			"$record->[3]";
-		$DBASTmgrUSERNAMEupdate	=	"$record->[4]";
-		$DBASTmgrUSERNAMElisten	=	"$record->[5]";
-		$DBASTmgrUSERNAMEsend	=	"$record->[6]";
-		$DBmax_vicidial_trunks	=	"$record->[7]";
-		$DBanswer_transfer_agent=	"$record->[8]";
-		$DBSERVER_GMT		=		"$record->[9]";
-		$DBext_context	=			"$record->[10]";
-		$DBasterisk_version	=		"$record->[11]";
+	 @aryA = $sthA->fetchrow_array;
+		$DBtelnet_host	=			"$aryA[0]";
+		$DBtelnet_port	=			"$aryA[1]";
+		$DBASTmgrUSERNAME	=		"$aryA[2]";
+		$DBASTmgrSECRET	=			"$aryA[3]";
+		$DBASTmgrUSERNAMEupdate	=	"$aryA[4]";
+		$DBASTmgrUSERNAMElisten	=	"$aryA[5]";
+		$DBASTmgrUSERNAMEsend	=	"$aryA[6]";
+		$DBmax_vicidial_trunks	=	"$aryA[7]";
+		$DBanswer_transfer_agent=	"$aryA[8]";
+		$DBSERVER_GMT		=		"$aryA[9]";
+		$DBext_context	=			"$aryA[10]";
+		$DBasterisk_version	=		"$aryA[11]";
 		if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 		if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 		if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -176,8 +177,9 @@ if ($dbhA->has_selected_record)
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
 		if ($DBasterisk_version)		{$AST_ver = $DBasterisk_version;}
-		} 
+	 $rec_count++;
 	}
+$sthA->finish();
 
 	if ($AST_ver =~ /^1\.2|^CVS|^SVN/i) {$show_channels_12_format = 1;}
 	else {$show_channels_12_format = 0;}
@@ -188,17 +190,19 @@ if ($dbhA->has_selected_record)
 	$Zap_client_list='|';
 	$stmtA = "SELECT extension FROM phones where protocol = 'Zap' and server_ip='$server_ip'";
 	if($DB){print STDERR "|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
-	   {
-		$iter=$dbhA->create_record_iterator;
-		while ( $record = $iter->each)
-			{
-			print STDERR $record->[0],"\n";
-			$Zap_client_list .= "$record->[0]|";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+			print STDERR $aryA[0],"\n";
+			$Zap_client_list .= "$aryA[0]|";
 			$Zap_client_count++;
-			}
-	   }
+		$rec_count++;
+		}
+	$sthA->finish();
 
 ##### LOOK FOR IAX2 CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 	print STDERR "LOOKING FOR IAX2 clients assigned to this server:\n";
@@ -206,25 +210,28 @@ if ($dbhA->has_selected_record)
 	$IAX2_client_list='|';
 	$stmtA = "SELECT extension FROM phones where protocol = 'IAX2' and server_ip='$server_ip'";
 	if($DB){print STDERR "|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
-	   {
-		$iter=$dbhA->create_record_iterator;
-		while ( $record = $iter->each)
-			{
-			print STDERR $record->[0],"\n";
-			$IAX2_client_list .= "$record->[0]|";
-			if ($record->[0] !~ /\@/)
-				{$IAX2_client_list .= "$record->[0]$AMP$record->[0]|";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+			print STDERR $aryA[0],"\n";
+			$IAX2_client_list .= "$aryA[0]|";
+			if ($aryA[0] !~ /\@/)
+				{$IAX2_client_list .= "$aryA[0]$AMP$aryA[0]|";}
 			else
 				{
-				$IAX_user = $record->[0];
+				$IAX_user = $aryA[0];
 				$IAX_user =~ s/\@.*$//gi;
 				$IAX2_client_list .= "$IAX_user|";
 				}
 			$IAX2_client_count++;
-			}
-	   }
+		$rec_count++;
+		}
+	$sthA->finish();
+
 
 ##### LOOK FOR SIP CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 	print STDERR "LOOKING FOR SIP clients assigned to this server:\n";
@@ -232,25 +239,27 @@ if ($dbhA->has_selected_record)
 	$SIP_client_list='|';
 	$stmtA = "SELECT extension FROM phones where protocol = 'SIP' and server_ip='$server_ip'";
 	if($DB){print STDERR "|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
-	   {
-		$iter=$dbhA->create_record_iterator;
-		while ( $record = $iter->each)
-			{
-			print STDERR $record->[0],"\n";
-			$SIP_client_list .= "$record->[0]|";
-			if ($record->[0] !~ /\@/)
-				{$SIP_client_list .= "$record->[0]$AMP$record->[0]|";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+			print STDERR $aryA[0],"\n";
+			$SIP_client_list .= "$aryA[0]|";
+			if ($aryA[0] !~ /\@/)
+				{$SIP_client_list .= "$aryA[0]$AMP$aryA[0]|";}
 			else
 				{
-				$SIP_user = $record->[0];
+				$SIP_user = $aryA[0];
 				$SIP_user =~ s/\@.*$//gi;
 				$SIP_client_list .= "$SIP_user|";
 				}
 			$SIP_client_count++;
-			}
-	   }
+		$rec_count++;
+		}
+	$sthA->finish();
 
 	print STDERR "Zap Clients:  $Zap_client_list\n";
 	print STDERR "IAX2 Clients: $IAX2_client_list\n";
@@ -489,7 +498,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 				$stmtA = "INSERT INTO server_performance (start_time,server_ip,sysload,freeram,usedram,processes,channels_total,trunks_total,clients_total,clients_zap,clients_iax,clients_local,clients_sip,live_recordings,cpu_user_percent,cpu_system_percent,cpu_idle_percent) values('$now_date','$server_ip','$serverLOAD','$MEMfree','$MEMused','$serverPROCESSES','$#list_channels','$channel_counter','$sip_counter','$test_zap_count','$test_iax_count','$test_local_count','$test_sip_count','$recording_count','$cpuUSERcent','$cpuSYSTcent','$cpuIDLEcent')";
 					if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtA|\n";}
-				$dbhA->query($stmtA)  or die  "Couldn't execute query: |$stmtA|\n";
+				$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
 				}
 			}
 
@@ -501,17 +510,19 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$Zap_client_list='|';
 				$stmtA = "SELECT extension FROM phones where protocol = 'Zap' and server_ip='$server_ip'";
 				if($DB){print STDERR "|$stmtA|\n";}
-				$dbhA->query("$stmtA");
-				if ($dbhA->has_selected_record)
-				   {
-					$iter=$dbhA->create_record_iterator;
-					while ( $record = $iter->each)
-						{
-						print STDERR $record->[0],"\n";
-						$Zap_client_list .= "$record->[0]|";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+						print STDERR $aryA[0],"\n";
+						$Zap_client_list .= "$aryA[0]|";
 						$Zap_client_count++;
-						}
-				   }
+					$rec_count++;
+					}
+				$sthA->finish();
 
 			##### LOOK FOR IAX2 CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 				print STDERR "LOOKING FOR IAX2 clients assigned to this server:\n";
@@ -519,25 +530,27 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$IAX2_client_list='|';
 				$stmtA = "SELECT extension FROM phones where protocol = 'IAX2' and server_ip='$server_ip'";
 				if($DB){print STDERR "|$stmtA|\n";}
-				$dbhA->query("$stmtA");
-				if ($dbhA->has_selected_record)
-				   {
-					$iter=$dbhA->create_record_iterator;
-					while ( $record = $iter->each)
-						{
-						print STDERR $record->[0],"\n";
-						$IAX2_client_list .= "$record->[0]|";
-						if ($record->[0] !~ /\@/)
-							{$IAX2_client_list .= "$record->[0]$AMP$record->[0]|";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+						print STDERR $aryA[0],"\n";
+						$IAX2_client_list .= "$aryA[0]|";
+						if ($aryA[0] !~ /\@/)
+							{$IAX2_client_list .= "$aryA[0]$AMP$aryA[0]|";}
 						else
 							{
-							$IAX_user = $record->[0];
+							$IAX_user = $aryA[0];
 							$IAX_user =~ s/\@.*$//gi;
 							$IAX2_client_list .= "$IAX_user|";
 							}
 						$IAX2_client_count++;
-						}
-				   }
+					$rec_count++;
+					}
+				$sthA->finish();
 
 			##### LOOK FOR SIP CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 				print STDERR "LOOKING FOR SIP clients assigned to this server:\n";
@@ -545,26 +558,27 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$SIP_client_list='|';
 				$stmtA = "SELECT extension FROM phones where protocol = 'SIP' and server_ip='$server_ip'";
 				if($DB){print STDERR "|$stmtA|\n";}
-				$dbhA->query("$stmtA");
-				if ($dbhA->has_selected_record)
-				   {
-					$iter=$dbhA->create_record_iterator;
-					while ( $record = $iter->each)
-						{
-						print STDERR $record->[0],"\n";
-						$SIP_client_list .= "$record->[0]|";
-						if ($record->[0] !~ /\@/)
-							{$SIP_client_list .= "$record->[0]$AMP$record->[0]|";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+						print STDERR $aryA[0],"\n";
+						$SIP_client_list .= "$aryA[0]|";
+						if ($aryA[0] !~ /\@/)
+							{$SIP_client_list .= "$aryA[0]$AMP$aryA[0]|";}
 						else
 							{
-							$SIP_user = $record->[0];
+							$SIP_user = $aryA[0];
 							$SIP_user =~ s/\@.*$//gi;
 							$SIP_client_list .= "$SIP_user|";
 							}
 						$SIP_client_count++;
-						}
-				   }
-
+					$rec_count++;
+					}
+				$sthA->finish();
 
 				print STDERR "Zap Clients:  $Zap_client_list\n";
 				print STDERR "IAX2 Clients: $IAX2_client_list\n";
@@ -704,7 +718,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 							{
 							$stmtA = "INSERT INTO $live_channels (channel,server_ip,extension,channel_data) values('$channel','$server_ip','$extension','$channel_data')";
 								if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtA|\n";}
-							$dbhA->query($stmtA)  or die  "Couldn't execute query: |$stmtA|\n";
+							$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
 							}
 						}
 
@@ -729,7 +743,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 							{
 							$stmtA = "INSERT INTO $live_sip_channels (channel,server_ip,extension,channel_data) values('$channel','$server_ip','$extension','$channel_data')";
 								if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtA|\n";}
-							$dbhA->query($stmtA)  or die  "Couldn't execute query: |$stmtA|\n";
+							$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query: |$stmtA|\n";
 							}
 						}
 					}
@@ -750,8 +764,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 							($DELchannel, $DELextension) = split(/\_\_/, $DBchannels[$d]);
 							$stmtB = "DELETE FROM $live_channels where server_ip='$server_ip' and channel='$DELchannel' and extension='$DELextension' limit 1";
 								if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtB|\n";}
-							$dbhA->query($stmtB);
-				#			$dbhA->query($stmtB)  or die  "Couldn't execute query:\n";
+							$affected_rows = $dbhA->do($stmtB);
 						}
 					$d++;
 					}
@@ -767,8 +780,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 							($DELchannel, $DELextension) = split(/\_\_/, $DBsips[$d]);
 							$stmtB = "DELETE FROM $live_sip_channels where server_ip='$server_ip' and channel='$DELchannel' and extension='$DELextension' limit 1";
 								if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtB|\n";}
-							$dbhA->query($stmtB);
-				#			$dbhA->query($stmtB)  or die  "Couldn't execute query:\n";
+							$affected_rows = $dbhA->do($stmtB);
 						}
 					$d++;
 					}
@@ -830,10 +842,10 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				&event_logger;
 				$stmtB = "DELETE FROM $live_sip_channels where server_ip='$server_ip'";
 					if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtB|\n";}
-				$dbhA->query($stmtB);
+				$affected_rows = $dbhA->do($stmtB);
 				$stmtB = "DELETE FROM $live_channels where server_ip='$server_ip'";
 					if( ($DB) or ($UD_bad_grab) ){print STDERR "\n|$stmtB|\n";}
-				$dbhA->query($stmtB);
+				$affected_rows = $dbhA->do($stmtB);
 				}
 
 			}
@@ -860,10 +872,10 @@ if (!$telnet_port) {$telnet_port = '5038';}
 		&event_logger;
 
 
-	$dbhA->close;
+$dbhA->disconnect();
 
 
-	if($DB){print "DONE... Exiting... Goodbye... See you later... Really I mean it this time\n";}
+if($DB){print "DONE... Exiting... Goodbye... See you later... Really I mean it this time\n";}
 
 
 exit;
@@ -889,45 +901,46 @@ $sip_client_counter=0;
 
 	if($DB){print STDERR "\n|SELECT channel,extension FROM $live_channels where server_ip = '$server_ip'|\n";}
 
-$dbhA->query("SELECT channel,extension FROM $live_channels where server_ip = '$server_ip'");
-if ($dbhA->has_selected_record)
-   {
-	$iter=$dbhA->create_record_iterator;
-	$rec_count=0;
-	while ( $record = $iter->each)
-		{
-		if($DB){print STDERR $record->[0],"|", $record->[1],"\n";}
-			$DBchannels[$channel_counter] = "$record->[0]$US$record->[1]";
+$stmtA = "SELECT channel,extension FROM $live_channels where server_ip = '$server_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	if($DB){print STDERR $aryA[0],"|", $aryA[1],"\n";}
+		$DBchannels[$channel_counter] = "$aryA[0]$US$aryA[1]";
+	$channel_counter++;
+	$rec_count++;
+	}
+$sthA->finish();
 
-		$channel_counter++;
-		$rec_count++;
-		}
-   }
+$stmtA = "SELECT channel,extension FROM $live_sip_channels where server_ip = '$server_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count_sip=0;
+while ($sthArows > $rec_count_sip)
+	{
+	@aryA = $sthA->fetchrow_array;
+	if($DB){print STDERR $aryA[0],"|", $aryA[1],"\n";}
+		$DBsips[$sip_counter] = "$aryA[0]$US$aryA[1]";
 
-$dbhA->query("SELECT channel,extension FROM $live_sip_channels where server_ip = '$server_ip'");
-if ($dbhA->has_selected_record)
-   {
-	$iter=$dbhA->create_record_iterator;
-	$rec_count_sip=0;
-	while ( $record = $iter->each)
-		{
-		if($DB){print STDERR $record->[0],"|", $record->[1],"\n";}
-			$DBsips[$sip_counter] = "$record->[0]$US$record->[1]";
-
-		if ($record->[0] =~ /^Zap/) {$zap_client_counter++;}
-		if ($record->[0] =~ /^IAX/) {$iax_client_counter++;}
-		if ($record->[0] =~ /^Local/) {$local_client_counter++;}
-		if ($record->[0] =~ /^SIP/) {$sip_client_counter++;}
-		$sip_counter++;
-		$rec_count_sip++;
-		}
-   }
+	if ($aryA[0] =~ /^Zap/) {$zap_client_counter++;}
+	if ($aryA[0] =~ /^IAX/) {$iax_client_counter++;}
+	if ($aryA[0] =~ /^Local/) {$local_client_counter++;}
+	if ($aryA[0] =~ /^SIP/) {$sip_client_counter++;}
+	$sip_counter++;
+	$rec_count_sip++;
+	}
+$sthA->finish();
 
 	&get_time_now;
 
 $stmtU = "UPDATE $server_updater set last_update='$now_date' where server_ip='$server_ip'";
 	if($DB){print STDERR "\n|$stmtU|\n";}
-$dbhA->query($stmtU);
+$affected_rows = $dbhA->do($stmtA);
 
 }
 
@@ -950,127 +963,130 @@ sub validate_parked_channels
 
 if (!$run_validate_parked_channels_now) 
 	{
-
 	$parked_counter=0;
 	@ARchannel=@MT;   @ARextension=@MT;   @ARparked_time=@MT;   @ARparked_time_UNIX=@MT;   
-	$dbhA->query("SELECT channel,extension,parked_time,UNIX_TIMESTAMP(parked_time) FROM $parked_channels where server_ip = '$server_ip' order by channel desc, parked_time desc");
-	if ($dbhA->has_selected_record)
-	   {
-		$iter=$dbhA->create_record_iterator;
-		$rec_count=0;
-		while ( $record = $iter->each)
+	$stmtA = "SELECT channel,extension,parked_time,UNIX_TIMESTAMP(parked_time) FROM $parked_channels where server_ip = '$server_ip' order by channel desc, parked_time desc;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$PQchannel =			$aryA[0];
+		$PQextension =			$aryA[1];
+		$PQparked_time =		$aryA[2];
+		$PQparked_time_UNIX =	$aryA[3];
+			if($DB){print STDERR "\n|$PQchannel|$PQextension|$PQparked_time|$PQparked_time_UNIX|\n";}
+
+		$dbhC = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+		$AR=0;
+		$record_deleted=0;
+		foreach(@ARchannel)
 		   {
-			$PQchannel = $record->[0];
-			$PQextension = $record->[1];
-			$PQparked_time = $record->[2];
-			$PQparked_time_UNIX = $record->[3];
-				if($DB){print STDERR "\n|$PQchannel|$PQextension|$PQparked_time|$PQparked_time_UNIX|\n";}
-
-			my $dbhC = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
-
-			$AR=0;
-			$record_deleted=0;
-			foreach(@ARchannel)
-			   {
-				if (@ARchannel[$AR] eq "$PQchannel")
-					{
-					if (@ARparked_time_UNIX[$AR] > $PQparked_time_UNIX)
-						{
-							if($DBX){print "Duplicate parked channel delete: |$PQchannel|$PQparked_time|\n";}
-						$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' and parked_time='$PQparked_time' limit 1";
-								if($DB){print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
-							$dbhC->query($stmtPQ);
-							
-							$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
-							$$DEL_chan_park_counter=0;
-						$record_deleted++;
-						}
-
-					}
-
-				$AR++;
-			   }
-			
-			
-			
-			if (!$record_deleted)
+			if (@ARchannel[$AR] eq "$PQchannel")
 				{
-				$ARchannel[$rec_count] = $record->[0];
-				$ARextension[$rec_count] = $record->[1];
-				$ARparked_time[$rec_count] = $record->[2];
-				$ARparked_time_UNIX[$rec_count] = $record->[3];
-			
-
-				my $dbhB = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-					or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
-
-				$event_string='LOGGED INTO MYSQL SERVER ON 2 CONNECTIONS TO VALIDATE PARKED CALLS|';
-				&event_logger;
-
-
-			   $dbhB->query("SELECT count(*) FROM $live_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension'");
-			   if ($dbhB->has_selected_record)
-				   {
-					$iterB=$dbhB->create_record_iterator;
-					$rec_countB=0;
-					while ( $recordB = $iterB->each)
-					   {
-						$PQcount = $recordB->[0];
-							if($DB){print STDERR "\n|$PQcount|\n";}
-
-						if ($PQcount < 1)
-							{
-							$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
-							$$DEL_chan_park_counter++;
-								if($DBX){print STDERR "Parked counter down|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n";}
-
-							### if the parked channel doesn't exist 6 times then delete it from table
-							if ($$DEL_chan_park_counter > 5)
-								{
-							if($DBX){print "          parked channel delete: |$PQchannel|$PQparked_time|\n";}
-								$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' limit 1";
-									if($DB){print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
-								$dbhC->query($stmtPQ);
-
-									$ARchannel[$rec_count] = '';
-									$ARextension[$rec_count] = '';
-									$ARparked_time[$rec_count] = '';
-									$ARparked_time_UNIX[$rec_count] = '';
-								$$DEL_chan_park_counter=0;
-								}
-							}
-						else
-						   {
-							$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
-							$$DEL_chan_park_counter=0;
-						   }
-					   }
-				   }
-
-				$event_string='CLOSING MYSQL CONNECTIONS OPENED TO VALIDATE PARKED CALLS|';
-				&event_logger;
-
-
-				$dbhB->close;
+				if (@ARparked_time_UNIX[$AR] > $PQparked_time_UNIX)
+					{
+						if($DBX){print "Duplicate parked channel delete: |$PQchannel|$PQparked_time|\n";}
+					$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' and parked_time='$PQparked_time' limit 1";
+							if($DB){print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
+						$affected_rows = $dbhC->do($stmtPQ);
+						
+						$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
+						$$DEL_chan_park_counter=0;
+					$record_deleted++;
+					}
 
 				}
 
-			$dbhC->close;
-
+			$AR++;
 		   }
+		
+		
+		
+		if (!$record_deleted)
+			{
+			$ARchannel[$rec_count] =			$aryA[0];
+			$ARextension[$rec_count] =			$aryA[1];
+			$ARparked_time[$rec_count] =		$aryA[2];
+			$ARparked_time_UNIX[$rec_count] =	$aryA[3];
+		
+
+		$dbhB = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+
+			$event_string='LOGGED INTO MYSQL SERVER ON 2 CONNECTIONS TO VALIDATE PARKED CALLS|';
+			&event_logger;
+
+
+			$stmtB = "SELECT count(*) FROM $live_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension'");
+			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+			$sthBrows=$sthB->rows;
+			$rec_countB=0;
+			while ($sthBrows > $rec_countB)
+				{
+				@aryB = $sthB->fetchrow_array;
+				$PQcount = $aryB[0];
+					if($DB){print STDERR "\n|$PQcount|\n";}
+
+				$rec_countB++;
+				}
+			$sthA->finish();
+
+			if ($PQcount < 1)
+				{
+				$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
+				$$DEL_chan_park_counter++;
+					if($DBX){print STDERR "Parked counter down|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n";}
+
+				### if the parked channel doesn't exist 6 times then delete it from table
+				if ($$DEL_chan_park_counter > 5)
+					{
+				if($DBX){print "          parked channel delete: |$PQchannel|$PQparked_time|\n";}
+					$stmtPQ = "DELETE FROM $parked_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension' limit 1";
+						if($DB){print STDERR "\n|$stmtPQ|$$DEL_chan_park_counter|$DEL_chan_park_counter|\n\n";}
+					$affected_rows = $dbhC->do($stmtPQ);
+
+						$ARchannel[$rec_count] = '';
+						$ARextension[$rec_count] = '';
+						$ARparked_time[$rec_count] = '';
+						$ARparked_time_UNIX[$rec_count] = '';
+					$$DEL_chan_park_counter=0;
+					}
+				}
+			else
+			   {
+				$DEL_chan_park_counter = "DEL$PQchannel$PQextension";
+				$$DEL_chan_park_counter=0;
+			   }
+
+
+
+			$event_string='CLOSING MYSQL CONNECTIONS OPENED TO VALIDATE PARKED CALLS|';
+			&event_logger;
+
+
+			$dbhB->disconnect();
+
+			}
+
+		$dbhC->disconnect();
+
 		$parked_counter++;
 		$rec_count++;
-	   }
+		}
+
+	$sthA->finish();
 
 	$run_validate_parked_channels_now=5;	# set to run every five times the subroutine runs
-
 	}
 
-	$run_validate_parked_channels_now--;
-
+$run_validate_parked_channels_now--;
 }
 
 
