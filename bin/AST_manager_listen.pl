@@ -504,9 +504,9 @@ while($one_day_interval > 0)
 		if($DB){print STDERR "loop counter: |$endless_loop|$keepalive_count_loop|\r";}
 
 		### putting a blank file called "sendmgr.kill" in a directory will automatically safely kill this program
-		if ( (-e '/home/cron/listenmgr.kill') or ($sendonlyone) )
+		if ( (-e "$PATHhome/listenmgr.kill") or ($sendonlyone) )
 			{
-			unlink('/home/cron/listenmgr.kill');
+			unlink("$PATHhome/listenmgr.kill");
 			$endless_loop=0;
 			$one_day_interval=0;
 			print "\nPROCESS KILLED MANUALLY... EXITING\n\n";

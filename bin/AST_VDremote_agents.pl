@@ -442,9 +442,9 @@ while($one_day_interval > 0)
 		if($DB){print STDERR "\nloop counter: |$endless_loop|\n";}
 
 		### putting a blank file called "VDAD.kill" in the directory will automatically safely kill this program
-		if (-e '$PATHhome/VDAD.kill')
+		if (-e "$PATHhome/VDAD.kill")
 			{
-			unlink('$PATHhome/VDAD.kill');
+			unlink("$PATHhome/VDAD.kill");
 			$endless_loop=0;
 			$one_day_interval=0;
 			print "\nPROCESS KILLED MANUALLY... EXITING\n\n"

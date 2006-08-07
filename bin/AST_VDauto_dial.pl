@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDauto_dial.pl version 0.11
+# AST_VDauto_dial.pl version 0.12   *DBI-version*
 #
 # DESCRIPTION:
 # uses Net::MySQL to place auto_dial calls on the VICIDIAL dialer system 
@@ -45,6 +45,7 @@
 #            - Altered dead call section to accept DISCONNECT detection from VD_hangup
 # 60614-1142 - Added code to work with recycled leads, multi called_since_last_reset values
 #            - Removed gmt lead validation because it is already done by VDhopper
+# 60807-1438 - Changed to DBI
 #
 
 
@@ -111,33 +112,34 @@ if (!$DB_port) {$DB_port='3306';}
 	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
 	&event_logger;	# writes to the log and if debug flag is set prints to STDOUT
 
-use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use Net::MySQL;
+use DBI;
 	
 	### connect to MySQL database defined in the AST_SERVER_conf.pl file
-	my $dbhA = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+	$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
+
 
 ### Grab Server values from the database
 $stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context FROM servers where server_ip = '$server_ip';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
 	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$DBtelnet_host	=			"$record->[0]";
-		$DBtelnet_port	=			"$record->[1]";
-		$DBASTmgrUSERNAME	=		"$record->[2]";
-		$DBASTmgrSECRET	=			"$record->[3]";
-		$DBASTmgrUSERNAMEupdate	=	"$record->[4]";
-		$DBASTmgrUSERNAMElisten	=	"$record->[5]";
-		$DBASTmgrUSERNAMEsend	=	"$record->[6]";
-		$DBmax_vicidial_trunks	=	"$record->[7]";
-		$DBanswer_transfer_agent=	"$record->[8]";
-		$DBSERVER_GMT		=		"$record->[9]";
-		$DBext_context	=			"$record->[10]";
+	 @aryA = $sthA->fetchrow_array;
+		$DBtelnet_host	=			"$aryA[0]";
+		$DBtelnet_port	=			"$aryA[1]";
+		$DBASTmgrUSERNAME	=		"$aryA[2]";
+		$DBASTmgrSECRET	=			"$aryA[3]";
+		$DBASTmgrUSERNAMEupdate	=	"$aryA[4]";
+		$DBASTmgrUSERNAMElisten	=	"$aryA[5]";
+		$DBASTmgrUSERNAMEsend	=	"$aryA[6]";
+		$DBmax_vicidial_trunks	=	"$aryA[7]";
+		$DBanswer_transfer_agent=	"$aryA[8]";
+		$DBSERVER_GMT		=		"$aryA[9]";
+		$DBext_context	=			"$aryA[10]";
 		if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 		if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 		if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -149,9 +151,9 @@ if ($dbhA->has_selected_record)
 		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
-		} 
+	 $rec_count++;
 	}
-
+$sthA->finish();
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 	&event_logger;
@@ -197,16 +199,18 @@ while($one_day_interval > 0)
 
 		##### Get a listing of the users that are active and ready to take calls
 		##### Also get a listing of the campaigns and campaigns/serverIP that will be used
-		$dbhA->query("SELECT user,server_ip,campaign_id,conf_exten FROM vicidial_live_agents where status IN('READY','QUEUE','INCALL','DONE') and server_ip='$server_ip' and last_update_time > '$BDtsSQLdate' order by last_call_time");
-		if ($dbhA->has_selected_record)
-		   {
-			$iter=$dbhA->create_record_iterator;
-			while ( $record = $iter->each)
-				{
-				$DBlive_user[$user_counter] =		"$record->[0]";
-				$DBlive_server_ip[$user_counter] =	"$record->[1]";
-				$DBlive_campaign[$user_counter] =	"$record->[2]";
-				$DBlive_conf_exten[$user_counter] =	"$record->[3]";
+		$stmtA = "SELECT user,server_ip,campaign_id,conf_exten FROM vicidial_live_agents where status IN('READY','QUEUE','INCALL','DONE') and server_ip='$server_ip' and last_update_time > '$BDtsSQLdate' order by last_call_time";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+				$DBlive_user[$user_counter] =		"$aryA[0]";
+				$DBlive_server_ip[$user_counter] =	"$aryA[1]";
+				$DBlive_campaign[$user_counter] =	"$aryA[2]";
+				$DBlive_conf_exten[$user_counter] =	"$aryA[3]";
 				
 				if ($user_campaigns !~ /\|$DBlive_campaign[$user_counter]\|/i)
 					{
@@ -222,8 +226,9 @@ while($one_day_interval > 0)
 					$user_CIPct++;
 					}
 				$user_counter++;
-				}
-		   }
+			$rec_count++;
+			}
+		$sthA->finish();
 
 		$event_string="LIVE AGENTS LOGGED IN: $user_counter";
 		&event_logger;
@@ -243,22 +248,25 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$dbhA->query("SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'");
-			if ($dbhA->has_selected_record)
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				   while ( $record = $iter->each)
-				   {
-				   $DBIPadlevel[$user_CIPct] = "$record->[0]";
-				   $DBIPcalltime[$user_CIPct] = "$record->[1]";
-				   $DBIPdialtimeout[$user_CIPct] = "$record->[2]";
-				   $DBIPdialprefix[$user_CIPct] = "$record->[3]";
-				   $DBIPcampaigncid[$user_CIPct] = "$record->[4]";
-				   $DBIPactive[$user_CIPct] = "$record->[5]";
-				   $DBIPvdadexten[$user_CIPct] = "$record->[6]";
-				   $DBIPclosercamp[$user_CIPct] = "$record->[7]";
-				   } 
+				@aryA = $sthA->fetchrow_array;
+					$DBIPadlevel[$user_CIPct] =		"$aryA[0]";
+					$DBIPcalltime[$user_CIPct] =	"$aryA[1]";
+					$DBIPdialtimeout[$user_CIPct] =	"$aryA[2]";
+					$DBIPdialprefix[$user_CIPct] =	"$aryA[3]";
+					$DBIPcampaigncid[$user_CIPct] =	"$aryA[4]";
+					$DBIPactive[$user_CIPct] =		"$aryA[5]";
+					$DBIPvdadexten[$user_CIPct] =	"$aryA[6]";
+					$DBIPclosercamp[$user_CIPct] =	"$aryA[7]";
+				$rec_count++;
 				}
+			$sthA->finish();
 
 			$DBIPgoalcalls[$user_CIPct] = ($DBIPadlevel[$user_CIPct] * $DBIPcount[$user_CIPct]);
 			if ($DBIPactive[$user_CIPct] =~ /N/) {$DBIPgoalcalls[$user_CIPct] = 0;}
@@ -270,15 +278,18 @@ while($one_day_interval > 0)
 			$active_line_counter=0;
 			$active_line_goal=0;
 			### see how many total VDAD calls are going on right now for max limiter
-			$dbhA->query("SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER');");
-			if ($dbhA->has_selected_record)
+			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				   while ( $record = $iter->each)
-				   {
-				   $active_line_counter = "$record->[0]";
-				   } 
+				@aryA = $sthA->fetchrow_array;
+					$active_line_counter = "$aryA[0]";
+				$rec_count++;
 				}
+			$sthA->finish();
 
 			### see how many calls are alrady active per campaign per server and 
 			### subtract that number from goalcalls to determine how many new 
@@ -296,15 +307,18 @@ while($one_day_interval > 0)
 				$campaign_query = "( (call_type='IN' and campaign_id IN($DBIPclosercamp[$user_CIPct])) or (campaign_id='$DBIPcampaign[$user_CIPct]' and call_type='OUT') )";
 				}
 			else {$campaign_query = "(campaign_id='$DBIPcampaign[$user_CIPct]' and call_type='OUT')";}
-			$dbhA->query("SELECT count(*) FROM vicidial_auto_calls where $campaign_query and server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');");
-			if ($dbhA->has_selected_record)
+			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where $campaign_query and server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				   while ( $record = $iter->each)
-				   {
-				   $DBIPexistcalls[$user_CIPct] = "$record->[0]";
-				   } 
+				@aryA = $sthA->fetchrow_array;
+					$DBIPexistcalls[$user_CIPct] = "$aryA[0]";
+				$rec_count++;
 				}
+			$sthA->finish();
 
 			$DBIPmakecalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]);
 			$MVT_msg = '';
@@ -337,8 +351,7 @@ while($one_day_interval > 0)
 				{
 				$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
 				print "|$stmtA|\n";
-			   $dbhA->query("$stmtA");
-				my $UDaffected_rows = $dbhA->get_affected_rows_length;
+			   $UDaffected_rows = $dbhA->do($stmtA);
 				print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
 
 					if ($UDaffected_rows)
@@ -348,16 +361,18 @@ while($one_day_interval > 0)
 						{
 						$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' LIMIT 1";
 						print "|$stmtA|\n";
-						   $dbhA->query("$stmtA");
-						   if ($dbhA->has_selected_record)
-						   {
-						   $iter=$dbhA->create_record_iterator;
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							$rec_count=0;
 							 $rec_countCUSTDATA=0;
-							   while ( $record = $iter->each)
-							   {
-								   $lead_id			= "$record->[0]";
-							   }
-						   }
+							while ($sthArows > $rec_count)
+								{
+								@aryA = $sthA->fetchrow_array;
+									$lead_id =		"$aryA[0]";
+								$rec_count++;
+								}
+							$sthA->finish();
 
 						if ($lead_id_call_list =~ /\|$lead_id\|/)
 							{
@@ -371,29 +386,30 @@ while($one_day_interval > 0)
 							{
 							$stmtA = "UPDATE vicidial_hopper set status='INCALL' where lead_id='$lead_id'";
 							print "|$stmtA|\n";
-						   $dbhA->query("$stmtA");
-							my $UQaffected_rows = $dbhA->get_affected_rows_length;
+						   $UQaffected_rows = $dbhA->do($stmtA);
 							print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
 
 							$stmtA = "SELECT * FROM vicidial_list where lead_id='$lead_id';";
-							$dbhA->query("$stmtA");
-								if ($dbhA->has_selected_record)
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							$rec_count=0;
+							 $rec_countCUSTDATA=0;
+							while ($sthArows > $rec_count)
 								{
-								$iter=$dbhA->create_record_iterator;
-								 $rec_countCUSTDATA=0;
-								   while ( $record = $iter->each)
-								   {
-									   $gmt_offset_now	= "$record->[8]";
-									   $called_since_last_reset	= "$record->[9]";
-									   $phone_code		= "$record->[10]";
-									   $phone_number	= "$record->[11]";
-									   $called_count	= "$record->[30]";
+								@aryA = $sthA->fetchrow_array;
+									$gmt_offset_now	=			"$aryA[8]";
+									$called_since_last_reset =	"$aryA[9]";
+									$phone_code	=				"$aryA[10]";
+									$phone_number =				"$aryA[11]";
+									$called_count =				"$aryA[30]";
 
 									$rec_countCUSTDATA++;
-								   } 
+								$rec_count++;
 								}
+							$sthA->finish();
 
-								if ($rec_countCUSTDATA)
+							if ($rec_countCUSTDATA)
 								{
 								### update called_count
 								$called_count++;
@@ -410,12 +426,10 @@ while($one_day_interval > 0)
 								else {$CSLR = 'Y';}
 
 								$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
-							   $dbhA->query("$stmtA");
-								my $affected_rows = $dbhA->get_affected_rows_length;
+								$affected_rows = $dbhA->do($stmtA);
 
 								$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
-							   $dbhA->query("$stmtA");
-								my $affected_rows = $dbhA->get_affected_rows_length;
+								$affected_rows = $dbhA->do($stmtA);
 
 								$CCID_on=0;   $CCID='';
 								$local_DEF = 'Local/';
@@ -448,14 +462,14 @@ while($one_day_interval > 0)
 
 								### insert a NEW record to the vicidial_manager table to be processed
 									$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
-									$dbhA->query($stmtA);
+									$affected_rows = $dbhA->do($stmtA);
 
 									$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|";
 									 &event_logger;
 
 								### insert a SENT record to the vicidial_auto_calls table 
 									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT')";
-									$dbhA->query($stmtA);
+									$affected_rows = $dbhA->do($stmtA);
 
 								### sleep for a tenth of a second to not flood the server with new calls
 								usleep(1*100*1000);
@@ -491,21 +505,23 @@ while($one_day_interval > 0)
 		$kill_vac=0;
 
 		$stmtA = "SELECT callerid,server_ip,channel,uniqueid FROM vicidial_auto_calls where server_ip='$server_ip' order by call_time;";
-		$dbhA->query("$stmtA");
-		if ($dbhA->has_selected_record)
-		{
-		$iter=$dbhA->create_record_iterator;
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
 		 $rec_countCUSTDATA=0;
-		   while ( $record = $iter->each)
-		   {
-			   $KLcallerid[$kill_vac]		= "$record->[0]";
-			   $KLserver_ip[$kill_vac]		= "$record->[1]";
-			   $KLchannel[$kill_vac]		= "$record->[2]";
-			   $KLuniqueid[$kill_vac]		= "$record->[3]";
-
+		 $kill_vac=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+				$KLcallerid[$kill_vac]		= "$aryA[0]";
+				$KLserver_ip[$kill_vac]		= "$aryA[1]";
+				$KLchannel[$kill_vac]		= "$aryA[2]";
+				$KLuniqueid[$kill_vac]		= "$aryA[3]";
 			$kill_vac++;
-		   } 
-		}
+			$rec_count++;
+			}
+		$sthA->finish();
 
 		$kill_vac=0;
 		foreach(@KLcallerid)
@@ -515,57 +531,63 @@ while($one_day_interval > 0)
 				$end_epoch=0;   $CLuniqueid='';
 
 				$stmtA = "SELECT end_epoch,uniqueid FROM call_log where caller_code='$KLcallerid[$kill_vac]' and server_ip='$KLserver_ip[$kill_vac]' order by end_epoch, start_time desc limit 1;";
-				$dbhA->query("$stmtA");
-				if ($dbhA->has_selected_record)
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				 $rec_countCUSTDATA=0;
+				while ($sthArows > $rec_count)
 					{
-					$iter=$dbhA->create_record_iterator;
-					 $rec_countCUSTDATA=0;
-					   while ( $record = $iter->each)
-						{
-						$end_epoch		= "$record->[0]";
-						$CLuniqueid		= "$record->[1]";
-						} 
+					@aryA = $sthA->fetchrow_array;
+						$end_epoch		= "$aryA[0]";
+						$CLuniqueid		= "$aryA[1]";
+					$rec_count++;
 					}
+				$sthA->finish();
 
 				if ( (length($KLuniqueid[$kill_vac]) > 15) && (length($CLuniqueid) < 15) )
 					{
 					$stmtA = "SELECT end_epoch,uniqueid FROM call_log where uniqueid='$KLuniqueid[$kill_vac]' and server_ip='$KLserver_ip[$kill_vac]' order by end_epoch, start_time desc limit 1;";
-					$dbhA->query("$stmtA");
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					 $rec_countCUSTDATA=0;
+					while ($sthArows > $rec_count)
 						{
-						$iter=$dbhA->create_record_iterator;
-						 $rec_countCUSTDATA=0;
-						   while ( $record = $iter->each)
-							{
-							$end_epoch		= "$record->[0]";
-							$CLuniqueid		= "$record->[1]";
-							} 
+						@aryA = $sthA->fetchrow_array;
+							$end_epoch		= "$aryA[0]";
+							$CLuniqueid		= "$aryA[1]";
+						$rec_count++;
 						}
+					$sthA->finish();
 					}
 				if ($end_epoch > 1000)
 					{
 					$CLlead_id=''; $auto_call_id=''; $CLstatus=''; $CLcampaign_id=''; $CLphone_number=''; $CLphone_code='';
 
 					$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code FROM vicidial_auto_calls where callerid='$KLcallerid[$kill_vac]'";
-					$dbhA->query("$stmtA");
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					 $rec_countCUSTDATA=0;
+					while ($sthArows > $rec_count)
 						{
-						$iter=$dbhA->create_record_iterator;
-						 $rec_countCUSTDATA=0;
-						   while ( $record = $iter->each)
-							{
-							$auto_call_id	= "$record->[0]";
-							$CLlead_id		= "$record->[1]";
-							$CLphone_number	= "$record->[2]";
-							$CLstatus		= "$record->[3]";
-							$CLcampaign_id	= "$record->[4]";
-							$CLphone_code	= "$record->[5]";
-							} 
+						@aryA = $sthA->fetchrow_array;
+							$auto_call_id	= "$aryA[0]";
+							$CLlead_id		= "$aryA[1]";
+							$CLphone_number	= "$aryA[2]";
+							$CLstatus		= "$aryA[3]";
+							$CLcampaign_id	= "$aryA[4]";
+							$CLphone_code	= "$aryA[5]";
+						$rec_count++;
 						}
+					$sthA->finish();
+
 					$stmtA = "DELETE from vicidial_auto_calls where auto_call_id='$auto_call_id'";
 		#			$stmtA = "UPDATE vicidial_auto_calls set status='PAUSED' where callerid='$KLcallerid[$kill_vac]'";
-					$dbhA->query("$stmtA");
-					my $affected_rows = $dbhA->get_affected_rows_length;
+					$affected_rows = $dbhA->do($stmtA);
 
 					$event_string = "|     dead call vac deleted|$auto_call_id|$CLlead_id|$KLcallerid[$kill_vac]|$end_epoch|$affected_rows|$KLchannel[$kill_vac]|";
 					 &event_logger;
@@ -584,23 +606,21 @@ while($one_day_interval > 0)
 							$end_epoch = ($now_date_epoch + 1);
 							$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$CLuniqueid','$CLlead_id','$CLcampaign_id','$SQLdate','$now_date_epoch','$CLnew_status','$CLphone_code','$CLphone_number','VDAD','N','1','$end_epoch')";
 								if($M){print STDERR "\n|$stmtA|\n";}
-							$dbhA->query($stmtA);
+							$affected_rows = $dbhA->do($stmtA);
 
-							$event_string = "|     dead NA call added to log $CLuniqueid|$CLlead_id|$CLphone_number|$CLstatus|$CLnew_status|";
+							$event_string = "|     dead NA call added to log $CLuniqueid|$CLlead_id|$CLphone_number|$CLstatus|$CLnew_status|$affected_rows|";
 							 &event_logger;
 
 							}
 
 						$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
-						$dbhA->query("$stmtA");
-						my $affected_rows = $dbhA->get_affected_rows_length;
+						$affected_rows = $dbhA->do($stmtA);
 
 						$event_string = "|     dead call vac lead marked $CLnew_status|$CLlead_id|$CLphone_number|$CLstatus|";
 						 &event_logger;
 
 						$stmtA = "UPDATE vicidial_live_agents set status='PAUSED',random_id='10' where  callerid='$KLcallerid[$kill_vac]';";
-						$dbhA->query("$stmtA");
-						my $affected_rows = $dbhA->get_affected_rows_length;
+						$affected_rows = $dbhA->do($stmtA);
 
 						$event_string = "|     dead call vla agent PAUSED $affected_rows|$CLlead_id|$CLphone_number|$CLstatus|";
 						 &event_logger;
@@ -619,8 +639,7 @@ while($one_day_interval > 0)
 
 		### pause agents that have disconnected or closed their apps over 30 seconds ago
 		$stmtA = "UPDATE vicidial_live_agents set status='PAUSED',random_id='10' where server_ip='$server_ip' and last_update_time < '$PDtsSQLdate' and status NOT IN('PAUSED')";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     lagged call vla agent PAUSED $affected_rows|$PDtsSQLdate|$BDtsSQLdate|$tsSQLdate|";
 		 &event_logger;
@@ -630,26 +649,27 @@ while($one_day_interval > 0)
 			@VALOuser=@MT; @VALOcampaign=@MT; @VALOtimelog=@MT; @VALOextension=@MT;
 			$logcount=0;
 			$stmtA = "SELECT user,campaign_id,last_update_time,extension FROM vicidial_live_agents where server_ip='$server_ip' and status = 'PAUSED' and random_id='10' order by last_update_time desc limit $affected_rows";
-			$dbhA->query("$stmtA");
-			if ($dbhA->has_selected_record)
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			 $rec_countCUSTDATA=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				 $rec_countCUSTDATA=0;
-				   while ( $record = $iter->each)
-					{
-					$VALOuser[$logcount]		= "$record->[0]";
-					$VALOcampaign[$logcount]	= "$record->[1]";
-					$VALOtimelog[$logcount]	= "$record->[2]";
-					$VALOextension[$logcount]	= "$record->[3]";
+				@aryA = $sthA->fetchrow_array;
+					$VALOuser[$logcount] =		"$aryA[0]";
+					$VALOcampaign[$logcount] =	"$aryA[1]";
+					$VALOtimelog[$logcount]	=	"$aryA[2]";
+					$VALOextension[$logcount] = "$aryA[3]";
 					$logcount++;
-					} 
+				$rec_count++;
 				}
+			$sthA->finish();
 			$logrun=0;
 			foreach(@VALOuser)
 				{
 				$stmtA = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch) values('$VALOuser[$logrun]','LOGOUT','$VALOcampaign[$logrun]','$SQLdate','$now_date_epoch');";
-				$dbhA->query("$stmtA");
-				my $affected_rows = $dbhA->get_affected_rows_length;
+				$affected_rows = $dbhA->do($stmtA);
 
 				$event_string = "|          lagged agent LOGOUT entry inserted $VALOuser[$logrun]|$VALOcampaign[$logrun]|$VALOextension[$logcount]|";
 				 &event_logger;
@@ -662,8 +682,7 @@ while($one_day_interval > 0)
 
 		### delete call records that are SENT for over 3 minutes
 		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$XDSQLdate' and status NOT IN('XFER','CLOSER','LIVE')";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     lagged call vac agent DELETED $affected_rows|$XDSQLdate|";
 		 &event_logger;
@@ -694,30 +713,31 @@ while($one_day_interval > 0)
 			{
 			### delete call records that are LIVE for over 10 minutes
 			$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$TDSQLdate' and status NOT IN('XFER','CLOSER')";
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			$affected_rows = $dbhA->do($stmtA);
 
 			$event_string = "|     lagged call vac agent DELETED $affected_rows|$TDSQLdate|LIVE|";
 			 &event_logger;
 
 			### Grab Server values from the database in case they've changed
 			$stmtA = "SELECT max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context FROM servers where server_ip = '$server_ip';";
-			$dbhA->query("$stmtA");
-			if ($dbhA->has_selected_record)
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				   while ( $record = $iter->each)
-					{
-					$DBmax_vicidial_trunks	=	"$record->[0]";
-					$DBanswer_transfer_agent=	"$record->[1]";
-					$DBSERVER_GMT		=		"$record->[2]";
-					$DBext_context	=			"$record->[3]";
+				@aryA = $sthA->fetchrow_array;
+					$DBmax_vicidial_trunks	=	"$aryA[0]";
+					$DBanswer_transfer_agent=	"$aryA[1]";
+					$DBSERVER_GMT		=		"$aryA[2]";
+					$DBext_context	=			"$aryA[3]";
 					if ($DBmax_vicidial_trunks)		{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
 					if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 					if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 					if ($DBext_context)				{$ext_context = $DBext_context;}
-					} 
+				$rec_count++;
 				}
+			$sthA->finish();
 
 			$event_string = "|     updating server parameters $max_vicidial_trunks|$answer_transfer_agent|$SERVER_GMT|$ext_context|";
 			 &event_logger;
@@ -770,7 +790,7 @@ while($one_day_interval > 0)
 		&event_logger;
 
 
-	$dbhA->close;
+	$dbhA->disconnect();
 
 
 	if($DB){print "DONE... Exiting... Goodbye... See you later... Really I mean it this time\n";}
