@@ -127,6 +127,8 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 
+	&get_time_now;	# update time/date variables
+
 if (!$VDRLOGfile) {$VDRLOGfile = "$PATHlogs/remoteagent.$year-$mon-$mday";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
