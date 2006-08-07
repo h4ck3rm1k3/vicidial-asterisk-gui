@@ -469,7 +469,7 @@ while($one_day_interval > 0)
 		&event_logger;
 
 
-	$dbhA->close;
+$dbhA->disconnect();
 
 
 	if($DB){print "DONE... Exiting... Goodbye... See you later... Really I mean it this time\n";}

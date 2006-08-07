@@ -1,28 +1,26 @@
 #!/usr/bin/perl
-# ADMIN_area_code_populate.pl version 1.1.12      for Perl
+# ADMIN_area_code_populate.pl version 0.3   *DBI-version*
 #
 # Copyright (C) 2006  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # Description:
 # server application that allows load areacodes into to asterisk list database
 #
-#
 # CHANGES
 # 60615-1514 - Changed to ignore the header row
+# 60807-1003 - Changed to DBI
 #
 
-use lib ".\\",".\\libs", './', './libs', '../libs', '/usr/local/perl_TK/libs', 'C:\\AST_VICI\\libs';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # needed to have perl sleep in increments of less than one second
-use Net::MySQL;
+use DBI;	  
 
 ### Make sure this file is in a libs path or put the absolute path to it
 require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
 if (!$DB_port) {$DB_port='3306';}
 
-$dbh = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
-
+$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 $slash_star = '\*';
 
@@ -50,7 +48,7 @@ $slash_star = '\*';
 			{
 				chop($ins_stmt);
 				chop($ins_stmt);
-				$dbh->query($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
+				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
 				$ins_stmt="insert into vicidial_phone_codes VALUES ";
 				print STDERR "$pc\n";
 			}
@@ -60,8 +58,10 @@ $slash_star = '\*';
 
 	chop($ins_stmt);
 	chop($ins_stmt);
-	$dbh->query($ins_stmt);
+	$affected_rows = $dbhA->do($ins_stmt);
 	$ins_stmt="insert into vicidial_phone_codes VALUES ";
 	print STDERR "$pc\n";
+
+$dbhA->disconnect();
 
 exit;
