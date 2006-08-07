@@ -302,7 +302,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 					while ($sthArows > $rec_count)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$NEW_campaign_leads_to_call = "$aryA[0]";
 						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
 						$dst =			$aryA[5];
 						$dst_range =	$aryA[6];
@@ -323,7 +322,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 					while ($sthArows > $rec_count)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$NEW_campaign_leads_to_call = "$aryA[0]";
 						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
 						$dst =			$aryA[5];
 						$dst_range =	$aryA[6];
@@ -344,7 +342,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 					while ($sthArows > $rec_count)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$NEW_campaign_leads_to_call = "$aryA[0]";
 						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
 						$dst =			$aryA[5];
 						$dst_range =	$aryA[6];
@@ -365,7 +362,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 					while ($sthArows > $rec_count)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$NEW_campaign_leads_to_call = "$aryA[0]";
 						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
 						$dst =			$aryA[5];
 						$dst_range =	$aryA[6];

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDremote_agents.pl version 0.1
+# AST_VDremote_agents.pl version 0.2   *DBI-version*
 #
 # DESCRIPTION:
 # uses Net::MySQL to keep remote agents logged in to the VICIDIAL system 
@@ -24,6 +24,7 @@
 # changes:
 # 50215-0954 - First version of script
 # 50810-1615 - Added database server variable definitions lookup
+# 60807-1003 - Changed to DBI
 #
 
 ### begin parsing run-time options ###
@@ -53,9 +54,15 @@ if (length($ARGV[0])>1)
 		{
 		$loop_delay = '2000';
 		}
-		if ($args =~ /-v/i)
+		if ($args =~ /--debug/i)
 		{
-		$V=1; # Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
+		$DB=1;
+		print "\n-----DEBUGGING -----\n\n";
+		}
+		if ($args =~ /--debugX/i)
+		{
+		$DBX=1;
+		print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
 		}
 		if ($args =~ /-t/i)
 		{
@@ -68,7 +75,6 @@ else
 {
 print "no command line options set\n";
 	$loop_delay = '2000';
-	$V=1;
 }
 ### end parsing run-time options ###
 
@@ -82,26 +88,20 @@ require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
 if (!$DB_port) {$DB_port='3306';}
 
-use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
-use Net::MySQL;
-	
-	### connect to MySQL database defined in the AST_SERVER_conf.pl file
-	my $dbhA = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
 $stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
-	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$DBSERVER_GMT		=		"$record->[0]";
-		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
-		} 
-	}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+@aryA = $sthA->fetchrow_array;
+$DBSERVER_GMT		=		$aryA[0];
+if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
+$sthA->finish();
 
 
 	&get_time_now;	# update time/date variables
@@ -126,17 +126,15 @@ while($one_day_interval > 0)
 		if ($endless_loop =~ /0$|5$/)
 		{
 		### delete call records that are LIVE for over 10 minutes and last_update_time < '$PDtsSQLdate'
-		$stmtA = "DELETE FROM vicidial_live_agents where server_ip='$server_ip' and status IN('PAUSED') and extension LIKE \"R/%\"";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$stmtA = "DELETE FROM vicidial_live_agents where server_ip='$server_ip' and status IN('PAUSED') and extension LIKE \"R/%\";";
+		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     lagged call vla agent DELETED $affected_rows";
 		 &event_logger;
 
 
-		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\"";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
+		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     QUEUEd call listing vla UPDATEd $affected_rows";
 		 &event_logger;
@@ -188,17 +186,19 @@ while($one_day_interval > 0)
 	###############################################################################
 	###### first grab all of the ACTIVE remote agents information from the database
 	###############################################################################
-		$dbhA->query("SELECT * FROM vicidial_remote_agents where status IN('ACTIVE') and server_ip='$server_ip' order by user_start");
-		if ($dbhA->has_selected_record)
-		   {
-			$iter=$dbhA->create_record_iterator;
-			while ( $record = $iter->each)
-				{
-				$user_start =				"$record->[1]";
-				$number_of_lines =			"$record->[2]";
-				$conf_exten =				"$record->[4]";
-				$campaign_id =				"$record->[6]";
-				$closer_campaigns =			"$record->[7]";
+		$stmtA = "SELECT * FROM vicidial_remote_agents where status IN('ACTIVE') and server_ip='$server_ip' order by user_start;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+				$user_start =				"$aryA[1]";
+				$number_of_lines =			"$aryA[2]";
+				$conf_exten =				"$aryA[4]";
+				$campaign_id =				"$aryA[6]";
+				$closer_campaigns =			"$aryA[7]";
 
 				$y=0;
 				while ($y < $number_of_lines)
@@ -216,9 +216,11 @@ while($one_day_interval > 0)
 					$user_counter++;
 					}
 				
-				}
-			if ($V) {print STDERR "$user_counter live remote agents ACTIVE\n";}
-		   }
+			$rec_count++;
+			}
+		$sthA->finish();
+		if ($DB) {print STDERR "$user_counter live remote agents ACTIVE\n";}
+   
 
 
 	###############################################################################
@@ -232,47 +234,53 @@ while($one_day_interval > 0)
 				{
 				
 				### check to see if the record exists and only needs random number update
-				$dbhA->query("SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]'");
-				if ($dbhA->has_selected_record)
+				$stmtA = "SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
 					{
-					$iter=$dbhA->create_record_iterator;
-					   while ( $record = $iter->each)
-					   {
-					   $loginexistsRANDOM[$h] = "$record->[0]";
-					   } 
+					@aryA = $sthA->fetchrow_array;
+					$loginexistsRANDOM[$h] =	"$aryA[0]";
+					$rec_count++;
 					}
+				$sthA->finish();
+				
 				if ($loginexistsRANDOM[$h] > 0)
 					{
-					$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]' where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]'";
-					$dbhA->query("$stmtA");
-					my $affected_rows = $dbhA->get_affected_rows_length;
-					if ($V) {print STDERR "$DBremote_user[$h] $DBremote_campaign[$h] ONLY RANDOM ID UPDATE: $affected_rows\n";}
+					$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]' where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($DBX) {print STDERR "$DBremote_user[$h] $DBremote_campaign[$h] ONLY RANDOM ID UPDATE: $affected_rows\n";}
 					}
 				### check if record for user on server exists at all in vicidial_live_agents
 				else
 					{
-					$dbhA->query("SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip'");
-					if ($dbhA->has_selected_record)
+					$stmtA = "SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip'";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
 						{
-						$iter=$dbhA->create_record_iterator;
-						   while ( $record = $iter->each)
-						   {
-						   $loginexistsALL[$h] = "$record->[0]";
-						   } 
+						@aryA = $sthA->fetchrow_array;
+						$loginexistsALL[$h] =	"$aryA[0]";
+						$rec_count++;
 						}
+					$sthA->finish();
+
 					if ($loginexistsALL[$h] > 0)
 						{
-						$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]',campaign_id='$DBremote_campaign[$h]',conf_exten='$DBremote_conf_exten[$h]',closer_campaigns='$DBremote_closer[$h]', status='READY' where user='$DBremote_user[$h]' and server_ip='$server_ip'";
-						$dbhA->query("$stmtA");
-						my $affected_rows = $dbhA->get_affected_rows_length;
-						if ($V) {print STDERR "$DBremote_user[$h] ALL UPDATE: $affected_rows\n";}
+						$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]',campaign_id='$DBremote_campaign[$h]',conf_exten='$DBremote_conf_exten[$h]',closer_campaigns='$DBremote_closer[$h]', status='READY' where user='$DBremote_user[$h]' and server_ip='$server_ip';";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print STDERR "$DBremote_user[$h] ALL UPDATE: $affected_rows\n";}
 						}
 					### no records exist so insert a new one
 					else
 						{
-						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','')";
-						$dbhA->query("$stmtA");
-						if ($V) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
+						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','');";
+						$affected_rows = $dbhA->do($stmtA);
+						if ($DBX) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
 						}
 					}
 				}
@@ -284,49 +292,56 @@ while($one_day_interval > 0)
 	###### third validate that the calls that the vicidial_live_agents are on are not dead
 	###### and if they are wipe out the values and set the agent record back to READY
 	###############################################################################
-		$dbhA->query("SELECT user,extension,status,uniqueid,callerid FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10");
-		if ($dbhA->has_selected_record)
-		   {
-			$iter=$dbhA->create_record_iterator;
+		$stmtA = "SELECT user,extension,status,uniqueid,callerid FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
 			$z=0;
-			while ( $record = $iter->each)
-				{
-				$VDuser =				"$record->[0]";
-				$VDextension =			"$record->[1]";
-				$VDstatus =				"$record->[2]";
-				$VDuniqueid =			"$record->[3]";
-				$VDcallerid =			"$record->[4]";
-				$VDrandom = int( rand(9999999)) + 10000000;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VDuser =				"$aryA[0]";
+			$VDextension =			"$aryA[1]";
+			$VDstatus =				"$aryA[2]";
+			$VDuniqueid =			"$aryA[3]";
+			$VDcallerid =			"$aryA[4]";
+			$VDrandom = int( rand(9999999)) + 10000000;
 
-				$VD_user[$z] =			"$VDuser";
-				$VD_extension[$z] =		"$VDextension";
-				$VD_status[$z] =		"$VDstatus";
-				$VD_uniqueid[$z] =		"$VDuniqueid";
-				$VD_callerid[$z] =		"$VDcallerid";
-				$VD_random[$z] =		"$VDrandom";
-					
-				$z++;				
-				}
-			if ($V) {print STDERR "$z remote agents on calls\n";}
-		   }
+			$VD_user[$z] =			"$VDuser";
+			$VD_extension[$z] =		"$VDextension";
+			$VD_status[$z] =		"$VDstatus";
+			$VD_uniqueid[$z] =		"$VDuniqueid";
+			$VD_callerid[$z] =		"$VDcallerid";
+			$VD_random[$z] =		"$VDrandom";
+				
+			$z++;				
+			$rec_count++;
+			}
+		$sthA->finish();
+		if ($DB) {print STDERR "$z remote agents on calls\n";}
+
 		$z=0;
 		foreach(@VD_user) 
 			{
-			$dbhA->query("SELECT count(*) FROM vicidial_auto_calls where uniqueid='$VD_uniqueid[$z]' and server_ip='$server_ip'");
-			if ($dbhA->has_selected_record)
+			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where uniqueid='$VD_uniqueid[$z]' and server_ip='$server_ip';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$iter=$dbhA->create_record_iterator;
-				   while ( $record = $iter->each)
-				   {
-				   $autocallexists[$z] = "$record->[0]";
-				   } 
+				@aryA = $sthA->fetchrow_array;
+				$autocallexists[$z] =	"$aryA[0]";
+				$rec_count++;
 				}
+			$sthA->finish();
+			
 			if ($autocallexists[$z] < 1)
 				{
-				$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip'";
-				$dbhA->query("$stmtA");
-				my $affected_rows = $dbhA->get_affected_rows_length;
-				if ($V) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|$VD_uniqueid[$z]\n";}
+				$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
+				$affected_rows = $dbhA->do($stmtA);
+				if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|$VD_uniqueid[$z]\n";}
 				}
 
 			$z++;
