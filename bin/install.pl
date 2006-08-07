@@ -889,6 +889,10 @@ if ($WEBONLY < 1)
 	print "setting cron scripts to executable...\n";
 	`chmod 0755 $PATHhome/*`;
 
+	print "Copying extras files to $PATHhome ...\n";
+	`cp -f ./extras/phone_codes_GMT.txt $PATHhome/`;
+	`cp -f ./extras/MySQL_AST_CREATE_tables.sql $PATHhome/`;
+
 	print "Copying agi-bin scripts to $PATHagi ...\n";
 	`cp -f ./agi/* $PATHagi/`;
 
