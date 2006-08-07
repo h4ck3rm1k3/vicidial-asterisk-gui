@@ -16,6 +16,7 @@
 #            - Added option to force a gmt value(field after COMMENTS field)
 # 60616-0958 - Added listID override feature to force all leads into same list
 # 60807-1003 - Changed to DBI
+#            - changed to use /etc/astguiclient.conf for configs
 #
 
 $secX = time();
@@ -33,6 +34,51 @@ $inSD = $pulldate0;
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 
 
+
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+
+if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads.$year-$mon-$mday";}
+
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_IN_new_leads_file.pl --\n\n";
 print "This program is designed to take a tab delimited file and import it into the VICIDIAL system. \n\n";
 
@@ -49,7 +95,7 @@ if (length($ARGV[0])>1)
 	if ($args =~ /--help|-h/i)
 	{
 	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-forcegmt] = forces gmt value of column after comments column\n  [-debug] = debug output\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-h] = this help screen\n\n";
-	print "This script takes in lead files in the following order when they are placed in the /home/cron/VICIDIAL/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
+	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
 	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS\n\n";
 	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS\n\n";
 	}
@@ -99,9 +145,10 @@ print "no command line options set\n";
 
 $suf = '.txt';
 $people_packages_id_update='';
-$dir1 = '/home/cron/VICIDIAL/LEADS_IN';
-$dir2 = '/home/cron/VICIDIAL/LEADS_IN/DONE';
+$dir1 = "$PATHhome/LEADS_IN";
+$dir2 = "$PATHhome/LEADS_IN/DONE";
 
+	if($DBX){print STDERR "\nLEADS_IN directory: |$dir1|\n";}
 
  opendir(FILE, "$dir1/");
  @FILES = readdir(FILE);
@@ -131,38 +178,18 @@ foreach(@FILES)
 			rename("$dir1/$GOODfname","$dir1/$FILES[$i]");
 			$FILEname = $FILES[$i];
 
-			$Routfile = "ERR_$source$FILES[$i]";
-			$Soutfile = "STS_$source$FILES[$i]";
-			$Toutfile = "SQL_$source$FILES[$i]";
-			$Doutfile = "DEL_$source$FILES[$i]";
-
 			`cp -f $dir1/$FILES[$i] $dir2/$source$FILES[$i]`;
 
 	### open the in file for reading ###
 	open(infile, "$dir2/$source$FILES[$i]")
 			|| die "Can't open $source$FILES[$i]: $!\n";
 
-	### open the error out file for writing ###
-	open(Rout, ">>$dir2/$Routfile")
-			|| die "Can't open $Routfile: $!\n";
 
-	### open the error out file for writing ###
-	open(Tout, ">>$dir2/$Toutfile")
-			|| die "Can't open $Toutfile: $!\n";
-
-	### open the error out file for writing ###
-	open(Dout, ">>$dir2/$Doutfile")
-			|| die "Can't open $Doutfile: $!\n";
-
-
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
-
-if (!$DB_port) {$DB_port='3306';}
+if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
@@ -180,14 +207,6 @@ $sthA->finish();
 if ($isdst) {$LOCAL_GMT_OFF++;} 
 if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
 
-
-
-
-
-
-
-
-	print "\n\n SQL inserts will be put in $Toutfile\n\n";
 
 	$a=0;	### each line of input file counter ###
 	$b=0;	### status of 'APPROVED' counter ###
@@ -472,8 +491,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				}
 
 	### open the stats out file for writing ###
-	open(Sout, ">>/$dir2/$Soutfile")
-			|| die "Can't open $Soutfile: $!\n";
+	open(Sout, ">>$VDHLOGfile")
+			|| die "Can't open $VDHLOGfile: $!\n";
 
 
 	### close file handler and DB connections ###
@@ -494,14 +513,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 #	print Sout "Credits:          $g\n\n";
 
 	close(infile);
-	close(Rout);
-	chmod 0777, "$dir2/$Routfile";
 	close(Sout);
-	chmod 0777, "$dir2/$Soutfile";
-	close(Tout);
-	chmod 0777, "$dir2/$Toutfile";
-	close(Dout);
-	chmod 0777, "$dir2/$Doutfile";
+	chmod 0777, "$VDHLOGfile";
 
 			if (!$T) {`mv -f $dir1/$FILEname $dir2/$FILEname`;}
 

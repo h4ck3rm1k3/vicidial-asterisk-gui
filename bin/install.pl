@@ -872,11 +872,10 @@ print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 
 if ($WEBONLY < 1)
 	{
-	print "Creating $PATHhome/VICIDIAL/LEADS_IN/DONE directories...\n";
-	`mkdir $PATHhome/VICIDIAL`;
-	`mkdir $PATHhome/VICIDIAL/LEADS_IN`;
-	`mkdir $PATHhome/VICIDIAL/LEADS_IN/DONE`;
-	`chmod -R 0766 $PATHhome/VICIDIAL`;
+	print "Creating $PATHhome/LEADS_IN/DONE directories...\n";
+	`mkdir $PATHhome/LEADS_IN`;
+	`mkdir $PATHhome/LEADS_IN/DONE`;
+	`chmod -R 0766 $PATHhome/LEADS_IN`;
 
 	print "Creating $PATHmonitor directories...\n";
 	`mkdir $PATHmonitor/monitor`;
