@@ -10,6 +10,7 @@
 # 50810-1451 - removed '-L' flag for screen logging of output (optimization)
 # 50823-1446 - Added commandline debug options with debug printouts
 # 51229-1027 - fixed typo of array name
+# 60807-1315 - changed to use /etc/astguiclient.conf for settings
 #
 
 $DB=0; # Debug flag
@@ -55,6 +56,25 @@ else
 ### end parsing run-time options ###
 
 
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	$i++;
+	}
+
+$REGhome = $PATHhome;
+$REGhome =~ s/\//\\\//gi;
+
 #@psoutput = `ps -f -C AST_update --no-headers`;
 #@psoutput = `ps -f -C AST_updat* --no-headers`;
 #@psoutput = `/bin/ps -f --no-headers -A`;
@@ -69,7 +89,7 @@ foreach (@psoutput)
 if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 @psline = split(/\/usr\/bin\/perl /,$psoutput[$i]);
 
-if ($psline[1] =~ /\/home\/cron\/AST_update\.pl/) 
+if ($psline[1] =~ /$REGhome\/AST_update\.pl/) 
 	{
 	$running_update++;
 	if ($DB) {print "UPDATE RUNNING: |$psline[1]|\n";}
@@ -96,7 +116,7 @@ foreach (@psoutput2)
 	if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 	@psline = split(/\/usr\/bin\/perl /,$psoutput2[$i]);
 
-	if ($psline[1] =~ /\/home\/cron\/AST_update\.pl/) 
+	if ($psline[1] =~ /$REGhome\/AST_update\.pl/) 
 		{
 		$running_update++;
 		if ($DB) {print "UPDATE RUNNING: |$psline[1]|\n";}
@@ -109,7 +129,7 @@ if (!$running_update)
 	{ 
 	if ($DB) {print "starting AST_update...\n";}
 	# add a '-L' to the command below to activate logging
-	`/usr/bin/screen -d -m -S ASTupdate /home/cron/AST_update.pl`;
+	`/usr/bin/screen -d -m -S ASTupdate $PATHhome/AST_update.pl`;
 	}
 }
 
