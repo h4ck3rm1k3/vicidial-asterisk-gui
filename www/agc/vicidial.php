@@ -112,6 +112,7 @@
 # 60609-1123 - Added add-number-to-DNC-list function and manual dial check DNC
 # 60619-1047 - Added variable filters to close security holes for login form
 # 60804-1710 - fixed scheduled CALLBK for other languages build
+# 60808-1145 - Added consultative transfers with customer data
 #
 
 require("dbconnect.php");
@@ -157,8 +158,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '1.1.86';
-$build = '60804-1710';
+$version = '2.0.87';
+$build = '60808-1145';
 
 if ($force_logout)
 {
@@ -1480,18 +1481,26 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			var manual_number = document.vicidial_form.xfernumber.value;
 			var manual_string = manual_number.toString();
 			}
-		if (document.vicidial_form.xferoverride.checked==false)
+		var regXFvars = new RegExp("XFER","g");
+		if (manual_string.match(regXFvars))
 			{
-			if (manual_string.length=='11')
-				{manual_string = "9" + manual_string;}
-			 else
+			var donothing=1;
+			}
+		else
+			{
+			if (document.vicidial_form.xferoverride.checked==false)
 				{
-				if (manual_string.length=='10')
-					{manual_string = "91" + manual_string;}
+				if (manual_string.length=='11')
+					{manual_string = "9" + manual_string;}
 				 else
 					{
-					if (manual_string.length=='7')
-						{manual_string = "9" + manual_string;}
+					if (manual_string.length=='10')
+						{manual_string = "91" + manual_string;}
+					 else
+						{
+						if (manual_string.length=='7')
+							{manual_string = "9" + manual_string;}
+						}
 					}
 				}
 			}
@@ -1527,8 +1536,28 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			xmlhttp = new XMLHttpRequest();
 			}
 		if (xmlhttp) 
-			{ 
-
+			{
+			var regCXFvars = new RegExp("CXFER","g");
+			var tasknum_string = tasknum.toString();
+			if (tasknum_string.match(regCXFvars))
+				{
+				var Ctasknum = tasknum_string.replace(regCXFvars, '');
+				if (Ctasknum.length < 2)
+					{Ctasknum = '990009';}
+				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+				tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+				}
+			var regAXFvars = new RegExp("AXFER","g");
+			if (tasknum_string.match(regAXFvars))
+				{
+				var Ctasknum = tasknum_string.replace(regAXFvars, '');
+				if (Ctasknum.length < 2)
+					{Ctasknum = '83009';}
+				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+				if (closerxfercamptail.length < 3)
+					{closerxfercamptail = 'IVR';}
+				tasknum = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
+				}
 			if (taskprefix == 'NO') {var orig_prefix = '';}
 			  else {var orig_prefix = agc_dial_prefix;}
 			if (taskreverse == 'YES')
@@ -1927,18 +1956,36 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				var queryCID = "XBvdcW" + epoch_sec + user_abb;
 				var blindxferdialstring = document.vicidial_form.xfernumber.value;
-				if (document.vicidial_form.xferoverride.checked==false)
+				var regXFvars = new RegExp("XFER","g");
+				if (blindxferdialstring.match(regXFvars))
 					{
-					if (blindxferdialstring.length=='11')
-						{blindxferdialstring = dial_prefix + "" + blindxferdialstring;}
-					 else
+					var regAXFvars = new RegExp("AXFER","g");
+					if (blindxferdialstring.match(regAXFvars))
 						{
-						if (blindxferdialstring.length=='10')
-							{blindxferdialstring = dial_prefix + "1" + blindxferdialstring;}
+						var Ctasknum = blindxferdialstring.replace(regAXFvars, '');
+						if (Ctasknum.length < 2)
+							{Ctasknum = '83009';}
+						var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+						if (closerxfercamptail.length < 3)
+							{closerxfercamptail = 'IVR';}
+						blindxferdialstring = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
+						}
+					}
+				else
+					{
+					if (document.vicidial_form.xferoverride.checked==false)
+						{
+						if (blindxferdialstring.length=='11')
+							{blindxferdialstring = dial_prefix + "" + blindxferdialstring;}
 						 else
 							{
-							if (blindxferdialstring.length=='7')
-								{blindxferdialstring = dial_prefix + ""  + blindxferdialstring;}
+							if (blindxferdialstring.length=='10')
+								{blindxferdialstring = dial_prefix + "1" + blindxferdialstring;}
+							 else
+								{
+								if (blindxferdialstring.length=='7')
+									{blindxferdialstring = dial_prefix + ""  + blindxferdialstring;}
+								}
 							}
 						}
 					}
