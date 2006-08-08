@@ -49,9 +49,10 @@
 # 60117-1202 - Changed IAX2 client phone channel to reflect change to '-' iteration
 # 60411-1032 - Fixed bug in test section that caused crash with ** in extension
 # 60807-1605 - Changed to DBI
+# 60808-1005 - changed to use /etc/astguiclient.conf for configs
 #
 
-$build = '60807-1605';
+$build = '60808-1005';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -124,12 +125,51 @@ else
 
 
 
-### Make sure this file is in a libs path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
 
-if (!$DB_port) {$DB_port='3306';}
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
 
 	&get_time_now;
+
+if (!$UPLOGfile) {$UPLOGfile = "$PATHlogs/update.$year-$mon-$mday";}
+if (!$VARDB_port) {$VARDB_port='3306';}
 
 	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
 	&event_logger;
@@ -138,7 +178,7 @@ use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sle
 use Net::Telnet ();
 use DBI;	  
 
-$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
@@ -793,9 +833,9 @@ if (!$telnet_port) {$telnet_port = '5038';}
 		if($DB){print STDERR "\nloop counter: |$endless_loop|\n";}
 
 		### putting a blank file called "update.kill" in a directory will automatically safely kill this program
-		if (-e '/home/cron/update.kill')
+		if (-e "$PATHhome/update.kill")
 			{
-			unlink('/home/cron/update.kill');
+			unlink("$PATHhome/update.kill");
 			$endless_loop=0;
 			$one_day_interval=0;
 			print "\nPROCESS KILLED MANUALLY... EXITING\n\n"
@@ -979,8 +1019,8 @@ if (!$run_validate_parked_channels_now)
 		$PQparked_time_UNIX =	$aryA[3];
 			if($DB){print STDERR "\n|$PQchannel|$PQextension|$PQparked_time|$PQparked_time_UNIX|\n";}
 
-		$dbhC = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
-		 or die "Couldn't connect to database: " . DBI->errstr;
+		$dbhC = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 		$AR=0;
 		$record_deleted=0;
@@ -1015,15 +1055,14 @@ if (!$run_validate_parked_channels_now)
 			$ARparked_time_UNIX[$rec_count] =	$aryA[3];
 		
 
-		$dbhB = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
-		 or die "Couldn't connect to database: " . DBI->errstr;
+		$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 
 			$event_string='LOGGED INTO MYSQL SERVER ON 2 CONNECTIONS TO VALIDATE PARKED CALLS|';
 			&event_logger;
 
-
-			$stmtB = "SELECT count(*) FROM $live_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension'");
+			$stmtB = "SELECT count(*) FROM $live_channels where server_ip='$server_ip' and channel='$PQchannel' and extension='$PQextension';";
 			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 			$sthBrows=$sthB->rows;
@@ -1118,8 +1157,8 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 ##### open the log file for writing ###
 sub event_logger 
 {
-open(Lout, ">>$LOGfile")
-		|| die "Can't open $LOGfile: $!\n";
+open(Lout, ">>$UPLOGfile")
+		|| die "Can't open $UPLOGfile: $!\n";
 print Lout "$now_date|$event_string|\n";
 close(Lout);
 $event_string='';
