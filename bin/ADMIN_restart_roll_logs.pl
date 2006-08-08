@@ -18,18 +18,6 @@ $now_date_epoch = time();
 $now_date = "$year-$mon-$mday---$hour$min$sec";
 
 
-print "rolling AST_update log...\n";
-`mv -f /home/cron/LOG_AST_update.log /home/cron/LOGS/LOG_AST_update.log.$now_date`;
-
-print "rolling MSAST_update log...\n";
-`mv -f /home/cron/MSLOG_AST_update.log /home/cron/LOGS/MSLOG_AST_update.log.$now_date`;
-
-print "rolling LIAST_update log...\n";
-`mv -f /home/cron/LILOG_AST_update.log /home/cron/LOGS/LILOG_AST_update.log.$now_date`;
-
-print "rolling VDAST_update log...\n";
-`mv -f /home/cron/VDLOG_AST_update.log /home/cron/LOGS/VDLOG_AST_update.log.$now_date`;
-
 print "rolling Asterisk messages log...\n";
 `mv -f /var/log/asterisk/messages /var/log/asterisk/messages.$now_date`;
 
