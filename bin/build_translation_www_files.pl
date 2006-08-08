@@ -1,31 +1,60 @@
 #!/usr/bin/perl
 
-# build_translation_www_files.pl
+# build_translation_www_files.pl - converts web pages to other language
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
+# changes:
+# 60808-1029 - Changed to use /etc/astguiclient.conf for configs
+#
 
 ############################################
-# install_server_files.pl - puts server files in the right places
-#
-# modify the variables below to customize for your system.
+# grab variables from /etc/astguiclient.conf
+
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
 #
 # path to home directory: (assumes it already exists)
-$home =		'/home/cron';
-
-# path to agi-bin directory: (assumes it already exists)
-$agibin =	'/var/lib/asterisk/agi-bin';
+$home =		$PATHhome;
 
 # path to web root directory: (assumes it already exists)
-#$webroot =	'/var/www/html';
-#$webroot =	'/home/www/htdocs';
-$webroot =	'/usr/local/apache2/htdocs';
-
-# path to asterisk sounds directory: (assumes it already exists)
-$sounds =	'/var/lib/asterisk/sounds';
-
-# path to asterisk recordings directory: (assumes it already exists)
-$monitor =	'/var/spool/asterisk';
+$webroot =	$PATHweb;
 
 ############################################
 
