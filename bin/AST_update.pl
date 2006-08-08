@@ -50,9 +50,10 @@
 # 60411-1032 - Fixed bug in test section that caused crash with ** in extension
 # 60807-1605 - Changed to DBI
 # 60808-1005 - changed to use /etc/astguiclient.conf for configs
+# 60808-1500 - Fixed another bug in that caused crash with ** in extension
 #
 
-$build = '60808-1005';
+$build = '60808-1500';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -407,12 +408,14 @@ if (!$telnet_port) {$telnet_port = '5038';}
 					$channel_match=$channel;
 					$channel_match =~ s/\/\d+$|-\d+$//gi;
 					$channel_match =~ s/^IAX2\///gi;
+					$channel_match =~ s/\*/\\\*/gi;
 					if ($IAX2_client_list =~ /\|$channel_match\|/i) {$test_iax_count++;}
 					}
 				if ($Zap_client_count) 
 					{
 					$channel_match=$channel;
 					$channel_match =~ s/^Zap\///gi;
+					$channel_match =~ s/\*/\\\*/gi;
 					if ($Zap_client_list =~ /\|$channel_match\|/i) {$test_zap_count++;}
 					}
 				}
@@ -718,6 +721,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 						$channel_match=$channel;
 						$channel_match =~ s/\/\d+$|-\d+$//gi;
 						$channel_match =~ s/^IAX2\///gi;
+						$channel_match =~ s/\*/\\\*/gi;
 	#					print "checking for IAX2 client:   |$channel_match|\n";
 						if ($IAX2_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 						}
@@ -725,6 +729,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 						{
 						$channel_match=$channel;
 						$channel_match =~ s/^Zap\///gi;
+						$channel_match =~ s/\*/\\\*/gi;
 	#					print "checking for Zap client:   |$channel_match|\n";
 						if ($Zap_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 						}
@@ -733,6 +738,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 						$channel_match=$channel;
 						$channel_match =~ s/-\S+$//gi;
 						$channel_match =~ s/^SIP\///gi;
+						$channel_match =~ s/\*/\\\*/gi;
 	#					print "checking for SIP client:   |$channel_match|\n";
 						if ($SIP_client_list =~ /\|$channel_match\|/i) {$line_type = 'CLIENT';}
 						}

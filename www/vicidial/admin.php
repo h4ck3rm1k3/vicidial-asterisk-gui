@@ -283,8 +283,6 @@ if (isset($_GET["attempt_maximum"]))				{$attempt_maximum=$_GET["attempt_maximum
 ### DIGITS ONLY ###
 $user_level = ereg_replace("[^0-9]","",$user_level);
 $wrapup_seconds = ereg_replace("[^0-9]","",$wrapup_seconds);
-$xferconf_a_number = ereg_replace("[^0-9]","",$xferconf_a_number);
-$xferconf_b_number = ereg_replace("[^0-9]","",$xferconf_b_number);
 $drop_call_seconds = ereg_replace("[^0-9]","",$drop_call_seconds);
 $voicemail_ext = ereg_replace("[^0-9]","",$voicemail_ext);
 $safe_harbor_exten = ereg_replace("[^0-9]","",$safe_harbor_exten);
@@ -381,6 +379,10 @@ $auto_dial_level = ereg_replace("[^\.0-9]","",$auto_dial_level);
 ### ALPHA-NUMERIC and spaces and hash and star and comma
 $xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
 $xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_b_dtmf);
+
+### ALPHACAPS-NUMERIC
+$xferconf_a_number = ereg_replace("[^0-9A-Z]","",$xferconf_a_number);
+$xferconf_b_number = ereg_replace("[^0-9A-Z]","",$xferconf_b_number);
 
 ### ALPHA-NUMERIC and underscore and dash
 $dial_status_e = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status_e);
@@ -494,12 +496,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60619-1523 - Added variable filtering to eliminate SQL injection attack threat
 # 60622-1216 - Fixed HotKey addition form issues and variable filtering
 # 60623-1159 - Fixed Scheduled Callbacks over-filtering bug and filter_sql bug
+# 60808-1147 - changed filtering for and added instructions for consutative transfers
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '1.1.12-3';
-$build = '60623-1159';
+$version = '2.0.56';
+$build = '60808-1147';
 
 $STARTtime = date("U");
 
@@ -1153,7 +1156,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed.
+<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
 
 <BR>
 <A NAME="vicidial_campaigns-alt_number_dialing">
@@ -1300,7 +1303,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed.
+<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
 
 <BR>
 <A NAME="vicidial_inbound_groups-drop_call_seconds">

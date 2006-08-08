@@ -1,116 +1,22 @@
-﻿############################################################  ADMIN
+############################################################  ADMIN
 
-Drop Call Seconds -<\/B> The number of seconds from the time the customer line is picked up until the call is considered a DROP, only applies to outbound calls|Sekunden zur Verbindung -</B> Anzahl der Sekunden vom Abnehmen des Kunden bis zur Erkennung als Verbindung, betrifft nur abgehende Verbindungen|
-Safe Harbor Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Sicherheitsnachricht -</B> Wenn auf Y gesetzt wird dem Kunden nach Ablauf der Sekunden zur Verbindung, ohne zu einem Agenten verbunden worden zu sein, eine Nachricht abgespielt. Diese Einstellung setzt die Option Senden zu einer Voicemail Box ausser Kraft, wenn diese auf Y steht|
-Safe Harbor Exten -<\/B> This is the dialplan extension that the desired Safe Harbor audio file is located at on your server|Sicherheitsnebenstelle -</B> Dies ist die Wählplan Nebenstelle, wo sich die gewünschte Sicherheits-Audiodatei auf Ihrem Server befindet|
-Drop Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Verbindungs-Nachricht-</B> Wenn auf Y gesetzt wird dem Kunden nach Ablauf der Sekunden zur Verbindung, ohne zu einem Agenten verbunden worden zu sein, eine Nachricht abgespielt. Diese Einstellung setzt die Option Senden zu einer Voicemail Box ausser Kraft, wenn diese auf Y steht|
-Drop Exten -<\/B> This is the dialplan extension that the desired Dropped call audio file is located at on your server|Verbindungs-Nebenstelle -</B> Dies ist die Wählplan-Nebenstelle, wo sich die gewünschte Audiodatei für die aufgebaute Verbindung auf Ihrem Server befindet|
-Call Time ID -<\/B> This is the short name of a Vicidial Call Time Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|Anrufzeit ID -</B> Dies ist der kurze Name von einer Vicidial Anrufzeit Definition. Es muss ein eindeutiger Bezeichner sein. Leerzeichen und Punkte sind in diesem Feld nicht erlaubt. Maximal 10 Zeichen, mindestens 2|
-Call Time Name -<\/B> This is a more descriptive name of the Call Time Definition. This is a short summary of the Call Time definition. max 30 characters, minimum of 2 characters|Anrufzeit Name -</B> Dies ist ein besser beschreibender Name für die Anrufzeit Definition. Es ist eine kurze Zusammenfassung der Anrufzeit Definition. Maximal 30 Zeichen, mindestens 2|
-Call Time Comments -<\/B> This is where you can place comments for a Vicidial Call Time Definition such as -10am to 4pm with extra call state restrictions-.  max 255 characters|Anrufzeit Kommentare -</B> Hier können Sie Kommentare für eine Vicidial Anrufzeit Definition wie -10 bis 14 Uhr mit eigenen Beschränkungen für das angerufene Land- machen. Maximal 255 Zeichen|
-Default Start and Stop Times -<\/B> This is the default time that calling will be allowed to be started or stopped within this call time definition if the day-of-the-week start time is not defined. 0 is midnight. To prevent calling completely set this field to 2400 and set the Default Stop time to 2400. To allow calling 24 hours a day set the start time to 0 and the stop time to 2400|Standard Start and Stop Zeiten -</B> Dies ist die Standardzeit, zu der Anrufe innerhalb der Anrufzeitdefinition gestartet oder gestoppt werden dürfen, wenn die Wochentag Startzeit nicht definiert ist. 0 ist Mitternacht. Um Anrufe komplett zu verhindern den Wert auf 2400 und die Standard Stopzeit ebenfalls auf 2400 setzen. Um Anrufe für 24 Stunden am Tag zu erlauben die Startzeit auf 0 und die Stopzeit auf 2400 setzen|
-Weekday Start and Stop Times -<\/B> These are the custom times per day that can be set for the call time definition. same rules apply as with the Default start and stop times|Wochentag Start and Stop Zeit -</B> Dies sind die speziellen Zeiten pro Tag, welche für die Anrufzeit Definition gesetzt werden können. Es gelten die selben Regeln wie für Start und Stop Zeiten|
-State Call Time Definitions -<\/B> This is the list of State specific call time definitions that are followed in this Call Time Definition|Land Anrufzeit Definition -</B> Dies ist die Liste der landspezifischen Anrufzeit Definitionen, die von dieser Anrufzeit Definition beachtet werden|
-State Call Time State -<\/B> This is the two letter code for the state that this calling time definition is for. For this to be in effect the local call time that is set in the campaign must have this state call time record in it as well as all of the leads having two letter state codes in them|Landesspezifische Anrufzeit Definition -</B> Dies ist der zwei Buchstaben Code für das Land, für das die Anrufzeit Definition gilt. Damit diese ausgeführt wird muss die in der Kampagne gesetzte lokale Anrufzeit diese landesspezifische Anrufzeit Aufzeichnung enthalten, genauso wie alle anzurufenden Anschlüsse den landesspezifischen zwei Buchstaben Code enthalten müssen |
-Delete Call Times -<\/B> This option allows the user to be able to delete vicidial call times records and vicidial state call times records from the system|Löschen Anrufzeiten -</B> Diese Option erlaubt dem Nutzer die Vicidial Anrufzeiten Aufzeichnungen und Vicidial Status Anrufzeiten Aufzeichnungen vom System zu löschen|
-Modify Call Times -<\/B> This option allows the user to view and modify the call times and state call times records. A user doesn't need this option enabled if they only need to change the call times option on the campaigns screen|Ändere Anrufzeiten -</B> Diese Option erlaubt dem Nutzer das Ansehen und Ändern der Anrufzeiten und Status Anrufzeiten Aufzeichnungen. Ein Nutzer braucht diese Option nicht aktiviert, wenn er nur die Anrufzeit Option auf der Kampagnen-Sicht ändern können muss|
-Wrapup Seconds -<\/B> The number of seconds to force an agent to wait before allowing them to receive or dial another call. The timer begins as soon as an agent hangs up on their customer - or in the case of alternate number dialing when the agent finishes the lead - Default is 0 seconds. If the timer runs out before the agent has dispositioned the call, the agent still will NOT move on to the next call until they select a disposition|Sekunden Nachbereitung -</B> Anzahl der Sekunden, die ein Agent bis zum nächsten erhaltenen Anruf oder Wählen eines anderen Anrufs warten muss. Die Zeit beginnt, sobald ein Agent bei seinem Kunden aufgelegt hat - oder im Fall der alternativen Nummernwahl, wenn ein Agent das Telefonat beendet - Standard ist 0 Sekunden. Wenn die Zeit abgelaufen ist bevor der Agent den Anruf eingeordnet hat, wird der Agent dennoch nicht zum nächsten Anruf kommen, bevor er eine Einteilung gewählt hat|
-Wrapup Message -<\/B> This is a campaign-specific message to be displayed on the wrapup screen if wrapup seconds is set|Nachbereitungsnachricht -</B> Dies ist eine Kampagnen-spezifische Nachricht, die bei gesetzten Sekunden Nachbereitung auf dem Nachbereitungsbildschirm angezeigt wird|
-You are not authorized to view this page. Please go back|Sie haben nicht die Rechte, um diese Seite anzusehen. Bitte zurück gehen|
-Day and time options will appear once you have created the Call Time Definition|Datums und Zeitoptionen erscheinen, wenn die Anrufzeitdefinition angelegt wurde|
-State Call Time ID, name and state must be at least 2 characters in length|Landesspezifische Anrufzeit ID, Name und Land müssen mindestens 2 Zeichen Länge haben|
-Call Time ID and name must be at least 2 characters in length|Anrufzeit ID und Name müssen mindestens 2 Zeichen Länge haben|
-Active State Call Time Definitions for this Record|Aktive landesspezifische Anrufzeit Definitionen für diese Aufnahme|
-there is already a call time entry with this ID|Es existiert bereits ein Anrufzeiteintrag mit dieser ID|
-CALL TIMES USING THIS STATE CALL TIME|Anrufzeiten, die diese landesspezifische Anrufzeit benutzen|
-STATE CALL TIME DEFINITION NOT ADDED|Landesspezifische Anrufzeitdefinition nicht hinzugefügt|
-DELETE THIS STATE CALL TIME DEFINITION|Diese landesspezifische Anrufzeitdefinition löschen|
-Modify Call Time State Definitions List|Bearbeite Anrufzeit Landdefinitions-Liste|
-CALL TIME DEFINITION NOT ADDED|Anrufzeit Definition nicht hinzugefügt|
-DELETE THIS CALL TIME DEFINITION|Lösche diese Anrufzeit Definition|
-short description of the call time|Kurze Beschreibung der Anrufzeit|
-CAMPAIGNS USING THIS CALL TIME|Kampagnen, die diese Anrufzeit nutzen|
-STATE CALL TIME NOT MODIFIED|Landesspezifische Anrufzeit nicht geändert|
-CALL TIME NOT MODIFIED|Anrufzeit nicht geändert|
-STATE CALL TIME MODIFIED|Landesspezifische Anrufzeit geändert|
-CALL TIME MODIFIED|Anrufzeit geändert|
-Default Start:|Standard Start|
-Default Stop:|Standard Stop|
-Sunday Start:|Sonntag Start|
-Sunday Stop:|Sonntag Stop|
-Monday Start:|Montag Start|
-Monday Stop:|Montag Stop|
-Tuesday Start:|Dienstag Start|
-Tuesday Stop:|Dienstag Stop|
-Wednesday Start:|Mittwoch Start|
-Wednesday Stop:|Mittwoch Stop|
-Thursday Start:|Donnerstag Start|
-Thursday Stop:|Donnerstag Stop|
-Friday Start:|Freitag Start|
-Friday Stop:|Freitag Stop|
-Saturday Start:|Sonnabend Start|
-Saturday Stop:|Sonnabend Stop|
-State Rule Added|Landesrichtlinie hinzugefügt|
-State Rule Removed|Landesrichlinie gelöscht|
-STATE CALL TIME LISTINGS|Liste der landesspezifische Anrufzeiten|
-CALL TIME LISTINGS|Anrufzeiten Liste|
-STATE CALL TIME ADDED|landesspezifische Anrufzeiten hinzugefügt|
-CALL TIME ADDED|Anrufzeit hinzugefügt|
-Drop Call Seconds|Verbindungsaufbau Sekunden|
-Use Safe Harbor Message|Benutze Sicherheitsnachricht|
-Safe Harbor Exten|Sicherheitsnebenstelle|
-Use Drop Message|Benutze Verbindungsaufbaunachricht|
-Drop Exten|Verbindungsaufbaunebenstelle|
-SIP Listen Version|Höre auf SIP Version|
-Add New Call Time|Füge neue Anrufzeit hinzu|
-Add New State Call Time|Füge neue landesspezifische Anrufzeit hinzu|
-New Call Time Addition|Neue Anrufzeit hinzufügen|
-New State Call Time Addition|Neue landesspezifische Anrufzeit hinzufügen|
-Modify Call Time|Bearbeite Anrufzeit|
-MODIFY A CALL TIME|Bearbeite eine Anrufzeit|
-Modify State Call Time|Bearbeite landesspezifische Anrufzeit|
-MODIFY A STATE CALL TIME|Bearbeite eine landesspezifische Anrufzeit|
-Delete Call Time|Lösche Anrufzeit|
-Delete State Call Time|Lösche landesspezifische Anrufzeit|
-State Call Times|Landesspezische Anrufzeiten|
-State Call Time ID|Landesspezifische Anrufzeiten ID|
-State Call Time Name|Landesspezifischer Anrufzeiten Name|
-State Call Time Comments|Landesspezifischer Anrufzeiten Kommentar|
-STATE CALL TIME NOT DELETED|Landesspezifische Anrufzeit nicht gelöscht|
-CALL TIME DELETION COMPLETED|Löschen der Anrufzeiten beendet|
-STATE CALL TIME DELETION COMPLETED|Löschen der landesspezifischen Anrufzeit beendet|
-CALL TIME NOT DELETED|Anrufzeit nicht gelöscht|
-Call Time ID must be at least 2 characters in length|Anrufzeit ID muss mindestens 2 Zeichen lang sein|
-STATE CALL TIME DELETION CONFIRMATION|Löschen der landesspezifischen Anrufzeit bestätigen|
-CALL TIME DELETION CONFIRMATION|Löschen der Anrufzeit bestätigen|
-Call Times|Anrufzeiten|
-CALL TIMES|Anrufzeiten|
-SHOW CALL TIMES|Zeige Anrufzeiten|
-ADD NEW CALL TIME|Hinzufügen neuer Anrufzeiten|
-SHOW STATE CALL TIMES|Zeige landesspezifische Anrufzeiten|
-ADD NEW STATE CALL TIME|Hinzufügen neuer landesspezifischer Anrufzeiten|
-Call Time ID|Anrufzeit ID|
-Call Time Name|Anrufzeit Name|
-Call Time Comments|Anrufzeit Kommentare|
-short description of the call time|Kurze Beschreibung der Anrufzeiten|
-HIDE|Verberge|
-SHOW|Zeige|
-Show Dialable Leads Count|Zeige Anzahl anrufbarer Anschlüsse|
-Dialable Lead Count|Anzahl anrufbarer Anschlüsse|
-TEST ON CAMPAIGN|Testen der Kampagne|
-Wrapup Seconds:|Nachbereitung Sekunden|
-Wrapup Message:|Nachbereitung Nachricht|
-Alt Number Dialing|Alternative Nummer wählen|
-no active lists selected for this campaign|Keine aktiven Listen für diese Kampagne gewählt|
-Realtime Screen|Echtzeit Bildschirm|
+If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field||
 
 
 ############################################################ CLIENT
 
-Search Existing Leads|Suche existierende Anschlüsse|
-This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Wenn diese Option gesetzt ist wird versucht, die Telefonnummer im System zu finden, bevor sie als neuer Anschluss eingefügt wird|
-Finish Wrapup and Move On|Beende Nachbereitung und mache weiter|
-seconds remaining in wrapup|Verbleibende Sekunden der Nachbereitung|
-Call Wrapup:|Anruf Nachbereitung|
 
 
+
+
+############################################################  ADMIN Manual
+
+Add consultative transfer info to Capmaign modification screen info
+
+
+
+############################################################  AGENT Manual
+
+Add consultative transfer info to transfer-conf frame info
+
+If you want to Consultative Transfer, a fronter to a closer, you must place CXFER in the number-to-dial field(Your manager may have set a preset to do this) and the proper dialstring will be sent to do a Local Consultative Transfer. Once the call is picked up and you have finished your introductions you can leave the customer with the closer agent and move on to your next call by clicking on the LEAVE 3WAY CALL button. If you want to Blind transfer a customer to an internal IVR then you must place AXFER in the number-to-dial field(Your manager may have set a preset to do this).
