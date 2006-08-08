@@ -5336,7 +5336,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <span id="SpacerSpanC"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="./images/vdc_LB_hangupcustomer_OFF.gif" border=0 alt="Hangup Customer"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF"></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value=""></span><BR>
+<span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF"></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></span><BR>
 </center>
 </font>
 </td>

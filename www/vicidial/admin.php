@@ -378,9 +378,9 @@ $scheduled_callbacks = ereg_replace("[^0-9a-zA-Z]","",$scheduled_callbacks);
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
 $auto_dial_level = ereg_replace("[^\.0-9]","",$auto_dial_level);
 
-### DIGITS and spaces and hash and star and comma
-$xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9]","",$xferconf_a_dtmf);
-$xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9]","",$xferconf_b_dtmf);
+### ALPHA-NUMERIC and spaces and hash and star and comma
+$xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
+$xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_b_dtmf);
 
 ### ALPHA-NUMERIC and underscore and dash
 $dial_status_e = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status_e);
