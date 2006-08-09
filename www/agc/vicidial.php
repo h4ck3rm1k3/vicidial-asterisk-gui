@@ -113,6 +113,7 @@
 # 60619-1047 - Added variable filters to close security holes for login form
 # 60804-1710 - fixed scheduled CALLBK for other languages build
 # 60808-1145 - Added consultative transfers with customer data
+# 60808-2232 - Added campaign name to pulldown for login screen
 #
 
 require("dbconnect.php");
@@ -158,8 +159,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.87';
-$build = '60808-1145';
+$version = '2.0.88';
+$build = '60808-2232';
 
 if ($force_logout)
 {
@@ -187,6 +188,8 @@ $view_scripts			= '1';	# set to 1 to show the SCRIPTS tab
 $dispo_check_all_pause	= '0';	# set to 1 to allow for persistent pause after dispo
 $agentcallsstatus		= '0';	# set to 1 to show agent status and call count
    $campagentstatctmax	= '0';	# Number of seconds for campaign call and agent stats
+$show_campname_pulldown	= '1';	# set to 1 to show campaign name on login pulldown
+$webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -224,7 +227,7 @@ if ($campaign_login_list > 0)
 $camp_form_code  = "<select size=1 name=VD_campaign>\n";
 $camp_form_code .= "<option value=\"\"></option>\n";
 
-$stmt="SELECT campaign_id from vicidial_campaigns where active='Y' order by campaign_id";
+$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' order by campaign_id";
 $rslt=mysql_query($stmt, $link);
 $camps_to_print = mysql_num_rows($rslt);
 
@@ -232,15 +235,19 @@ $o=0;
 while ($camps_to_print > $o) 
 	{
 	$rowx=mysql_fetch_row($rslt);
+	if ($show_campname_pulldown)
+		{$campname = " - $rowx[1]";}
+	else
+		{$campname = '';}
 	if ($VD_campaign)
 		{
 		if (eregi("$VD_campaign",$rowx[0]))
-			{$camp_form_code .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0]</option>\n";}
+			{$camp_form_code .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0]$campname</option>\n";}
 		else
-			{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]</option>\n";}
+			{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
 		}
 	else
-		{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]</option>\n";}
+		{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
 	$o++;
 	}
 $camp_form_code .= "</select>\n";
@@ -262,7 +269,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
 echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Re-Login </TD>";
 echo "</TR>\n";
@@ -301,7 +308,7 @@ if ($user_login_first == 1)
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 	echo "<CENTER><BR><B>User Login</B><BR><BR>";
-	echo "<TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Campaign Login </TD>";
 	echo "</TR>\n";
@@ -339,7 +346,7 @@ if ($user_login_first == 1)
 		echo "</TR></TABLE>\n";
 		echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-		echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+		echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 		echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login </TD>";
 		echo "</TR>\n";
@@ -376,7 +383,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
 echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Phone Login </TD>";
 echo "</TR>\n";
@@ -617,7 +624,7 @@ $VDloginDISPLAY=0;
 	echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 	echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-	echo "<TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Campaign Login </TD>";
 	echo "</TR>\n";
@@ -656,7 +663,7 @@ if (!$authphone)
 	echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_campaign VALUE=\"$VD_campaign\">\n";
-	echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Error</TD>";
 	echo "</TR>\n";
@@ -795,6 +802,11 @@ else
 	if (strlen($session_ext) > 10) {$session_ext = substr($session_ext, 0, 10);}
 	$session_rand = (rand(1,9999999) + 10000000);
 	$session_name = "$StarTtimE$US$session_ext$session_rand";
+
+	if ($webform_sessionname)
+		{$webform_sessionname = "&session_name=$session_name";}
+	else
+		{$webform_sessionname = '';}
 
 	$stmt="DELETE from web_client_sessions where start_time < '$past_month_date' and extension='$extension' and server_ip = '$server_ip' and program = 'vicidial';";
 	if ($DB) {echo "|$stmt|\n";}
@@ -1341,6 +1353,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>';
+	var webform_session = '<? echo $webform_sessionname ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2710,7 +2723,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&session_id=" + session_id + 
 						"&phone=" + document.vicidial_form.phone_number.value + 
 						"&parked_by=" + document.vicidial_form.lead_id.value +
-						"&dispo=" + LeaDDispO;
+						"&dispo=" + LeaDDispO + '' +
+						webform_session;
 						
 // $VICIDIAL_web_QUERY_STRING =~ s/ /+/gi;
 // $VICIDIAL_web_QUERY_STRING =~ s/\`|\~|\:|\;|\#|\'|\"|\{|\}|\(|\)|\*|\^|\%|\$|\!|\%|\r|\t|\n//gi;
@@ -3244,7 +3258,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&session_id=" + session_id + 
 						"&phone=" + document.vicidial_form.phone_number.value + 
 						"&parked_by=" + document.vicidial_form.lead_id.value +
-						"&dispo=" + LeaDDispO;
+						"&dispo=" + LeaDDispO + '' +
+						webform_session;
 						
 						var regWFspace = new RegExp(" ","ig");
 						web_form_vars = web_form_vars.replace(regWF, '');
@@ -3350,7 +3365,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		"&session_id=" + session_id + 
 		"&phone=" + document.vicidial_form.phone_number.value + 
 		"&parked_by=" + document.vicidial_form.lead_id.value +
-		"&dispo=" + LeaDDispO;
+		"&dispo=" + LeaDDispO + '' +
+		webform_session;
 		
 		var regWFspace = new RegExp(" ","ig");
 		web_form_vars = web_form_vars.replace(regWF, '');
