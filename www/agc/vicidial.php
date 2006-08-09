@@ -115,6 +115,7 @@
 # 60808-1145 - Added consultative transfers with customer data
 # 60808-2232 - Added campaign name to pulldown for login screen
 # 60809-1603 - Added option to locally transfer consult xfers
+# 60809-1732 - Added recheck of transferred channels before customer gone mesg
 #
 
 require("dbconnect.php");
@@ -160,8 +161,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.89';
-$build = '60809-1603';
+$version = '2.0.90';
+$build = '60809-1732';
 
 if ($force_logout)
 {
@@ -3069,6 +3070,69 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 
+
+// ################################################################################
+// Check to see if there is a call being sent from the auto-dialer to agent conf
+	function ReChecKCustoMerChaN()
+		{
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			recheckVDAI_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=VDADREcheckINCOMING" + "&agent_log_id=" + agent_log_id + "&lead_id=" + document.vicidial_form.lead_id.value;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(recheckVDAI_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					var recheck_incoming = null;
+					recheck_incoming = xmlhttp.responseText;
+				//	alert(xmlhttp.responseText);
+					var recheck_VDIC_array=recheck_incoming.split("\n");
+					if (recheck_VDIC_array[0] == '1')
+						{
+						var reVDIC_data_VDAC=recheck_VDIC_array[1].split("|");
+						if (reVDIC_data_VDAC[3] == lastcustchannel)
+							{
+						// do nothing
+							}
+						else
+							{
+					alert("Channel has changed from:\n" + lastcustchannel + '|' + lastcustserverip + "\nto:\n" + reVDIC_data_VDAC[3] + '|' + reVDIC_data_VDAC[4]);
+							document.vicidial_form.callchannel.value	= reVDIC_data_VDAC[3];
+							lastcustchannel = reVDIC_data_VDAC[3];
+							document.vicidial_form.callserverip.value	= reVDIC_data_VDAC[4];
+							lastcustserverip = reVDIC_data_VDAC[4];
+							custchannellive = 1;
+							}
+						}
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+
+
+
 // ################################################################################
 // Check to see if there is a call being sent from the auto-dialer to agent conf
 	function check_for_auto_incoming()
@@ -4620,6 +4684,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (logout_stop_timeouts==1)	{WaitingForNextStep=1;}
 			if ( (custchannellive < -30) && (lastcustchannel.length > 3) ) {CustomerChanneLGone();}
+			if ( (custchannellive < -10) && (lastcustchannel.length > 3) ) {ReChecKCustoMerChaN();}
 			if ( (nochannelinsession > 16) && (check_n > 15) ) {NoneInSession();}
 			if (wrapup_seconds > 0)	
 				{

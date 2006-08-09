@@ -944,6 +944,46 @@ if ($stage == "end")
 
 
 ################################################################################
+### VDADREcheckINCOMING - for auto-dial VICIDiaL dialing this will recheck for
+###                       calls to see if the channel has updated
+################################################################################
+if ($ACTION == 'VDADREcheckINCOMING')
+{
+	$MT[0]='';
+	$row='';   $rowx='';
+	$channel_live=1;
+	if ( (strlen($campaign)<1) || (strlen($server_ip)<1) || (strlen($lead_id)<1) )
+	{
+	$channel_live=0;
+	echo "0\n";
+	echo "Campaign $campaign is not valid\n";
+	echo "lead_id $lead_id is not valid\n";
+	exit;
+	}
+	else
+	{
+	### grab the call and lead info from the vicidial_live_agents table
+	$stmt = "SELECT lead_id,uniqueid,callerid,channel,call_server_ip FROM vicidial_live_agents where server_ip = '$server_ip' and user='$user' and campaign_id='$campaign' and lead_id='$lead_id';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+	$queue_leadID_ct = mysql_num_rows($rslt);
+
+	if ($queue_leadID_ct > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$lead_id	=$row[0];
+		$uniqueid	=$row[1];
+		$callerid	=$row[2];
+		$channel	=$row[3];
+		$call_server_ip	=$row[4];
+			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
+		echo "1\n" . $lead_id . '|' . $uniqueid . '|' . $callerid . '|' . $channel . '|' . $call_server_ip . "|\n";
+		}
+	}
+}
+
+
+################################################################################
 ### VDADcheckINCOMING - for auto-dial VICIDiaL dialing this will check for calls
 ###                     in the vicidial_live_agents table in QUEUE status, then
 ###                     lookup the lead info and pass it back to vicidial.php

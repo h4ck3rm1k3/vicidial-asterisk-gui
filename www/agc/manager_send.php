@@ -615,12 +615,13 @@ if ($ACTION=="RedirectXtraCX")
 			}	
 			else
 			{
-			$stmt="SELECT server_ip,conf_exten FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
+			$stmt="SELECT server_ip,conf_exten,user FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$rowx=mysql_fetch_row($rslt);
 			$dest_server_ip = $rowx[0];
 			$dest_session_id = $rowx[1];
+			$dest_user = $rowx[2];
 
 				$S='*';
 				$D_s_ip = explode('.', $dest_server_ip);
@@ -632,7 +633,7 @@ if ($ACTION=="RedirectXtraCX")
 				if (strlen($D_s_ip[2])<3) {$D_s_ip[2] = "0$D_s_ip[2]";}
 				if (strlen($D_s_ip[3])<2) {$D_s_ip[3] = "0$D_s_ip[3]";}
 				if (strlen($D_s_ip[3])<3) {$D_s_ip[3] = "0$D_s_ip[3]";}
-				$dest_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S$dest_session_id";
+				$dest_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S$dest_session_id$S$lead_id$S$dest_user$S";
 
 				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Redirect','$queryCID','Channel: $channel','Context: $ext_context','Exten: $dest_dialstring','Priority: $ext_priority','CallerID: $queryCID','','','','','');";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
