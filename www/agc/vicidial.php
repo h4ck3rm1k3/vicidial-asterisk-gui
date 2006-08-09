@@ -114,6 +114,7 @@
 # 60804-1710 - fixed scheduled CALLBK for other languages build
 # 60808-1145 - Added consultative transfers with customer data
 # 60808-2232 - Added campaign name to pulldown for login screen
+# 60809-1603 - Added option to locally transfer consult xfers
 #
 
 require("dbconnect.php");
@@ -159,8 +160,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.88';
-$build = '60808-2232';
+$version = '2.0.89';
+$build = '60809-1603';
 
 if ($force_logout)
 {
@@ -190,6 +191,7 @@ $agentcallsstatus		= '0';	# set to 1 to show agent status and call count
    $campagentstatctmax	= '0';	# Number of seconds for campaign call and agent stats
 $show_campname_pulldown	= '1';	# set to 1 to show campaign name on login pulldown
 $webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
+$local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1354,6 +1356,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>';
 	var webform_session = '<? echo $webform_sessionname ?>';
+	var local_consult_xfers = '<? echo $local_consult_xfers ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2056,7 +2059,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var queryCID = "VXvdcW" + epoch_sec + user_abb;
 				var redirectdestination = "NEXTAVAILABLE";
 				var redirectXTRAvalue = XDchannel;
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectXtra&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue;
+				var redirecttype_test = document.vicidial_form.xfernumber.value;
+				var regRXFvars = new RegExp("CXFER","g");
+				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
+					{var redirecttype = 'RedirectXtraCX';}
+				else
+					{var redirecttype = 'RedirectXtra';}
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value;
 				}
 			if (taskvar == 'ParK')
 				{

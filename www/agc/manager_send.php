@@ -59,6 +59,7 @@
 # 60310-2022 - Fixed NEXTAVAILABLE bug in leave-3way-call redirect function
 # 60421-1413 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1158 - Added variable filters to close security holes for login form
+# 60809-1544 - Added direct transfers to leave-3ways in consultative transfers
 #
 
 require("dbconnect.php");
@@ -122,8 +123,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '0.0.24';
-$build = '60619-1158';
+$version = '0.0.25';
+$build = '60809-1544';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -543,6 +544,114 @@ if ($ACTION=="RedirectNameVmail")
 		$row=mysql_fetch_row($rslt);
 		$exten = "$exten$row[0]";
 		$ACTION="Redirect";
+		}
+	}
+}
+
+if ($ACTION=="RedirectXtraCX")
+{
+	$row='';   $rowx='';
+	$channel_liveX=1;
+	$channel_liveY=1;
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($extrachannel)<3) )
+	{
+		$channel_liveX=0;
+		$channel_liveY=0;
+		echo "One of these variables is not valid:\n";
+		echo "Channel $channel must be greater than 2 characters\n";
+		echo "ExtraChannel $extrachannel must be greater than 2 characters\n";
+		echo "queryCID $queryCID must be greater than 14 characters\n";
+		echo "exten $exten must be set\n";
+		echo "ext_context $ext_context must be set\n";
+		echo "ext_priority $ext_priority must be set\n";
+		echo "\nRedirect Action not sent\n";
+	}
+	else
+	{
+		if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
+
+		$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0]==0)
+		{
+			$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$call_server_ip' and channel='$channel';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			if ($rowx[0]==0)
+			{
+				$channel_liveX=0;
+				echo "Channel $channel is not live on $call_server_ip, Redirect command not inserted\n";
+			}	
+		}
+		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0]==0)
+		{
+			$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$server_ip' and channel='$extrachannel';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			if ($rowx[0]==0)
+			{
+				$channel_liveY=0;
+				echo "Channel $channel is not live on $server_ip, Redirect command not inserted\n";
+			}	
+		}
+		if ( ($channel_liveX==1) && ($channel_liveY==1) )
+		{
+			$stmt="SELECT count(*) FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			if ($rowx[0] < 1)
+			{
+				$channel_liveY=0;
+				echo "No Local agent to send call to, Redirect command not inserted\n";
+			}	
+			else
+			{
+			$stmt="SELECT server_ip,conf_exten FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			$dest_server_ip = $rowx[0];
+			$dest_session_id = $rowx[1];
+
+				$S='*';
+				$D_s_ip = explode('.', $dest_server_ip);
+				if (strlen($D_s_ip[0])<2) {$D_s_ip[0] = "0$D_s_ip[0]";}
+				if (strlen($D_s_ip[0])<3) {$D_s_ip[0] = "0$D_s_ip[0]";}
+				if (strlen($D_s_ip[1])<2) {$D_s_ip[1] = "0$D_s_ip[1]";}
+				if (strlen($D_s_ip[1])<3) {$D_s_ip[1] = "0$D_s_ip[1]";}
+				if (strlen($D_s_ip[2])<2) {$D_s_ip[2] = "0$D_s_ip[2]";}
+				if (strlen($D_s_ip[2])<3) {$D_s_ip[2] = "0$D_s_ip[2]";}
+				if (strlen($D_s_ip[3])<2) {$D_s_ip[3] = "0$D_s_ip[3]";}
+				if (strlen($D_s_ip[3])<3) {$D_s_ip[3] = "0$D_s_ip[3]";}
+				$dest_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S$dest_session_id";
+
+				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Redirect','$queryCID','Channel: $channel','Context: $ext_context','Exten: $dest_dialstring','Priority: $ext_priority','CallerID: $queryCID','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+
+				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','$queryCID','Channel: $extrachannel','','','','','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+
+				echo "RedirectXtraCX command sent for Channel $channel on $call_server_ip and \nHungup $extrachannel on $server_ip\n";
+			}
+		}
+		else
+		{
+			if ($channel_liveX==1)
+			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
+			if ($channel_liveY==1)
+			{$ACTION="Redirect";   $channel=$extrachannel;}
+
 		}
 	}
 }
