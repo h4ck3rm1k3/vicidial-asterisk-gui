@@ -29,8 +29,8 @@
 $V = 1;		# set to 1 for verbose mode
 $M = 1;		# set to 1 for 2 line messages mode
 
-$first_audio_file = '85100001';
-$second_audio_file = '85100000';
+$first_audio_file = '85100003';
+$second_audio_file = '85100004';
 $goodbye_audio_file = 'US_reminder_goodbye';
 
 #$first_audio_file = 'US_reminder_message';

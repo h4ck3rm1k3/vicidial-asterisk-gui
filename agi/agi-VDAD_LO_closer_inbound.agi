@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_LO_closer_inbound.agi version 0.3
+# agi-VDAD_LO_closer_inbound.agi version 0.4   *DBI-version*
 # 
 # runs when a call comes in from an inbound call. This script will 
 # send the calls out to the closers that are logged in.
@@ -31,21 +31,21 @@
 #
 # changes:
 # 60504-1214 - Added drop second/message/exten options from inbound_group
+# 60809-1056 - Changed to DBI by Marin Blu
 #
 
 $V = 1;		# set to 1 for verbose mode
 $M = 1;		# set to 1 for 2 line messages mode
 
-$DROP_TIME = 360;	### number of seconds to wait until you drop a waiting call
+$DROP_TIME = 360;	### default number of seconds to wait until you drop a waiting call
 
 ### Make sure this file is in a path or put the absolute path to it
 require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
-use Net::MySQL;
+use DBI;
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
-
 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -227,42 +227,51 @@ exit;
 
 if (!$DB_port) {$DB_port='3306';}
 
-  my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+  my $dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass") 
+      or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
+$cbc=0;
 $stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks FROM servers where server_ip = '$server_ip';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
-	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	while ($sthArows > $cbc)
 		{
-		$DBvoicemail_dump_exten	= "$record->[0]";
-		$DBext_context		= "$record->[1]";
-		$DBanswer_transfer_agent	= "$record->[2]";
-		$DBSERVER_GMT		= "$record->[3]";
-		$DBasterisk_version	= "$record->[4]";
-		$DBmax_vicidial_trunks	= "$record->[5]";
+		@aryA = $sthA->fetchrow_array;
+		
+		$DBvoicemail_dump_exten	= "$aryA[0]";
+		$DBext_context		= "$aryA[1]";
+		$DBanswer_transfer_agent	= "$aryA[2]";
+		$DBSERVER_GMT		= "$aryA[3]";
+		$DBasterisk_version	= "$aryA[4]";
+		$DBmax_vicidial_trunks	= "$aryA[5]";
 		if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
 		if ($DBext_context)		{$ext_context = $DBext_context;}
 		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 		if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
 		if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
-		} 
-	}
-
+		$cbc++;
+		}
+	$sthA->finish();  
 
 ### insert a record into the vicidial_list table 
 $stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now) values('$SQLdate','$tsSQLdate','INBND','$fronter','$channel_group','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','-5.00');";
-$dbhA->query($stmtA);
-   $dbhA->query("select LAST_INSERT_ID() LIMIT 1;");
-   if ($dbhA->has_selected_record)
-	{
-         $iterA=$dbhA->create_record_iterator;
-	  while ($recordA = $iterA->each)
-		{$insert_lead_id = "$recordA->[0]";} 
-	}
+$affected_rows = $dbhA->do($stmtA);
+   $cbc=0;
+   $stmtA = "select LAST_INSERT_ID() LIMIT 1;";
+   $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	while ($sthArows > $cbc)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$insert_lead_id = "$aryA[0]";
+		$cbc++; 
+		}
+   $sthA->finish();   
+   
 $new_lead_id = $insert_lead_id;
 if($M){print STDERR "\n|$stmtA|$new_lead_id|\n";}
 
@@ -276,42 +285,44 @@ if($M){print STDERR "\n|$stmtA|$new_lead_id|\n";}
 	print STDERR "callerID changed: $YqueryCID\n";
 
 ### Grab inbound_group values from the database
+$cbc=0;
 $stmtA = "SELECT drop_call_seconds,drop_message,drop_exten FROM vicidial_inbound_groups where group_id = '$channel_group';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
-	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	while ($sthArows > $cbc)
 		{
-		$DBdrop_call_seconds	= "$record->[0]";
-		$DBdrop_message		= "$record->[1]";
-		$DBdrop_exten		= "$record->[2]";
+		@aryA = $sthA->fetchrow_array;	
+		$DBdrop_call_seconds	= "$aryA[0]";
+		$DBdrop_message		= "$aryA[1]";
+		$DBdrop_exten		= "$aryA[2]";
 		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
 		if ($DBdrop_message)		{$drop_message = $DBdrop_message;}
 		if ($DBdrop_exten)		{$drop_exten = $DBdrop_exten;}
-		} 
-	}
+		$cbc++;
+		}
+	$sthA->finish();  
 
 
 
 ### insert a LIVE record to the vicidial_auto_calls table 
 $stmtA = "INSERT INTO vicidial_auto_calls values('','$server_ip','$channel_group','LIVE','$new_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN')";
-$dbhA->query($stmtA);
+$affected_rows = $dbhA->do($stmtA);
 if($M){print STDERR "\n|$stmtA|\n";}
 
 	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$new_lead_id','$channel_group','$SQLdate','$now_date_epoch','XFER','$phone_code','$phone_number','$fronter','N')";
 		if($M){print STDERR "\n|$stmtA|\n";}
-	$dbhA->query($stmtA);
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD : |$new_lead_id|$fronter|insert to vicidial_log: $uniqueid\n";}
 
 $stmtA = "INSERT INTO vicidial_closer_log (lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$new_lead_id','$channel_group','$SQLdate','$now_date_epoch','QUEUE','$phone_code','$phone_number','VDCL','N')";
 	if($M){print STDERR "\n|$stmtA|\n";}
-$dbhA->query($stmtA);
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDCL : |$new_lead_id|insert to vicidial_closer_log\n";}
 
 $stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer) values('$new_lead_id','$channel_group','$SQLdate','$phone_code','$phone_number','$fronter','VDXL')";
 	if($M){print STDERR "\n|$stmtA|\n";}
-$dbhA->query($stmtA);
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDXL : |$new_lead_id|insert to vicidial_closer_log\n";}
 
 $VDADlead_id = $new_lead_id;
@@ -340,17 +351,20 @@ if ($channel_status < 1)
 		}
 	}
 
+	$cbc=0;
 	$stmtA = "SELECT next_agent_call FROM vicidial_inbound_groups where group_id='$channel_group';";
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_countCUSTDATA=0;    
+	while ($sthArows > $cbc)
 		{
-		$iter=$dbhA->create_record_iterator;
-		 $rec_countCUSTDATA=0;
-		   while ( $record = $iter->each)
-			{
-			$CAMP_callorder	= "$record->[0]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$CAMP_callorder	= "$aryA[0]";
+		$cbc++;
 		}
+	$sthA->finish(); 
 
 	$agent_call_order='order by last_call_finish';
 	if ($CAMP_callorder =~ /overall_user_level/i) {$agent_call_order = 'order by user_level desc,last_call_finish';}
@@ -358,62 +372,67 @@ if ($channel_status < 1)
 	if ($CAMP_callorder =~ /oldest_call_finish/i) {$agent_call_order = 'order by last_call_finish';}
 	if ($CAMP_callorder =~ /random/i) {$agent_call_order = 'order by random_id';}
 	
-		 $rec_countWAIT=0;
+	$rec_countWAIT=0;
+	$cbc=0;
 	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$server_ip' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$VDADlead_id';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+ 
+	while ($sthArows > $cbc)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$rec_countWAIT = "$record->[0]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$rec_countWAIT = "$aryA[0]";
+		$cbc++;
 		}
+	$sthA->finish();
+
 	if ($rec_countWAIT < 1)
 		{
 		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$server_ip' and campaign_id LIKE \"%CLOSER%\" and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		my $affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|$server_ip\n";}
 	#	if ($M) {print STDERR "|$stmtA|\n";}
 		if ($affected_rows > 0)
 			{
+			$cbc=0;	
 			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$server_ip' and campaign_id LIKE \"%CLOSER%\" and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-			$dbhA->query("$stmtA");
-			if ($dbhA->has_selected_record)
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_countCUSTDATA=0;
+				while ($sthArows > $cbc)
 				{
-				$iter=$dbhA->create_record_iterator;
-				 $rec_countCUSTDATA=0;
-				   while ( $record = $iter->each)
-					{
-					$VDADconf_exten	= "$record->[0]";
-					$VDADuser	= "$record->[1]";
-					$VDADextension	= "$record->[2]";
-					} 
+				@aryA = $sthA->fetchrow_array;
+
+				$VDADconf_exten	= "$aryA[0]";
+				$VDADuser	= "$aryA[1]";
+				$VDADextension	= "$aryA[2]";
+			
+				$cbc++;
 				}
+			$sthA->finish();
+			}
 			else
-				{
-				print STDERR "NNNNNNNNNN No agent record found!!!\n";
-				}
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
+			}
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER' where callerid='$callerid';";
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDCL XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
 
 			$stmtA = "UPDATE vicidial_xfer_log set closer='$VDADuser' where lead_id = '$new_lead_id' order by call_date desc limit 1;";
 				if($M){print STDERR "\n\n|$stmtA|\n";}
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDXL vicidial_xfer_log update: |$affected_rows|$new_lead_id|$VDADuser\n";}
 
 			$stmtA = "UPDATE vicidial_closer_log set user='$VDADuser' where lead_id='$new_lead_id' order by call_date desc limit 1;";
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    closer log : |$affected_rows|update of vcl table: $new_lead_id\n|$stmtA|\n";}
 
-			$dbhA->close;
+			$dbhA->disconnect();
 
 			print STDERR "\nexiting the VDAD app, transferring call to $VDADconf_exten\n";
 			print "SET CONTEXT $ext_context\n";
@@ -437,7 +456,6 @@ if ($channel_status < 1)
 			print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 			
 			exit;
-			}
 		}
 	else
 		{
@@ -446,64 +464,70 @@ if ($channel_status < 1)
 
 ###################################################################################################
 ### noone found locally available, now check for someone on another server to take the call
-
+         $cbc=0;
 		 $rec_countWAITrem=0;
 	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip!='$server_ip' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$VDADlead_id';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+ 
+	while ($sthArows > $cbc)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$rec_countWAITrem = "$record->[0]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$rec_countWAITrem = "$aryA[0]";
+		$cbc++;
 		}
+	$sthA->finish();
+	
 	if ($rec_countWAITrem < 1)
 		{
 		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$server_ip' where status IN('CLOSER','READY') and server_ip!='$server_ip' and campaign_id LIKE \"%CLOSER%\" and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
-		$dbhA->query("$stmtA");
+		my $affected_rows = $dbhA->do($stmtA);
 		my $affected_rows = $dbhA->get_affected_rows_length;
 		if ($M) {print STDERR "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|$server_ip\n";}
 	#	if ($M) {print STDERR "|$stmtA|\n";}
 		if ($affected_rows > 0)
 			{
+			$cbc=0;	
 			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and server_ip!='$server_ip' and campaign_id LIKE \"%CLOSER%\" and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-			$dbhA->query("$stmtA");
-			if ($dbhA->has_selected_record)
+
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_countCUSTDATA=0;
+				while ($sthArows > $cbc)
 				{
-				$iter=$dbhA->create_record_iterator;
-				 $rec_countCUSTDATA=0;
-				   while ( $record = $iter->each)
-					{
-					$VDADconf_exten	= "$record->[0]";
-					$VDADuser	= "$record->[1]";
-					$VDADextension	= "$record->[2]";
-					$VDADserver_ip	= "$record->[3]";
-					} 
+				@aryA = $sthA->fetchrow_array;
+
+				$VDADconf_exten	= "$aryA[0]";
+				$VDADuser	= "$aryA[1]";
+				$VDADextension	= "$aryA[2]";
+				$VDADserver_ip	= "$aryA[3]";
+			
+				$cbc++;
 				}
+			$sthA->finish();
+			}
 			else
-				{
-				print STDERR "NNNNNNNNNN No agent record found!!!\n";
-				}
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
+			}
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER' where callerid='$callerid';";
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDCL XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
 
 			$stmtA = "UPDATE vicidial_xfer_log set closer='$VDADuser' where lead_id = '$new_lead_id' order by call_date desc limit 1;";
 				if($M){print STDERR "\n\n|$stmtA|\n";}
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDXL vicidial_xfer_log update: |$affected_rows|$new_lead_id|$VDADuser\n";}
 
 			$stmtA = "UPDATE vicidial_closer_log set user='$VDADuser' where lead_id='$new_lead_id' order by call_date desc limit 1;";
-			$dbhA->query("$stmtA");
-			my $affected_rows = $dbhA->get_affected_rows_length;
+			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    closer log : |$affected_rows|update of vcl table: $new_lead_id\n|$stmtA|\n";}
 
-			$dbhA->close;
+			$dbhA->disconnect();
 
 			### format the remote server dialstring to get the call to the overflow agent meetme room
 			$S='*';
@@ -539,7 +563,6 @@ if ($channel_status < 1)
 			print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 			
 			exit;
-			}
 		}
 	else
 		{
@@ -597,20 +620,21 @@ if ($drop_seconds < 1)
 		}
 	else
 		{
+		$cbc=0;	
 		$stmtA = "SELECT voicemail_ext FROM vicidial_inbound_groups where group_id = '$channel_group' limit 1;";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		if ($dbhA->has_selected_record)
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_countCUSTDATA=0;
+		while ($sthArows > $cbc)
 			{
-			$iter=$dbhA->create_record_iterator;
-			 $rec_countCUSTDATA=0;
-			   while ( $record = $iter->each)
-				{
-				$VDADvoicemail_ext	= "$record->[0]";
-				$VDADvoicemail_ext =~ s/\D//gi;
-				$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";
-				} 
+			$VDADvoicemail_ext	= "$aryA[0]";
+			$VDADvoicemail_ext =~ s/\D//gi;
+			$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";
+			$cbc++;
 			}
+	       $sthA->finish();
 		}
 	}
 
@@ -632,13 +656,12 @@ if ($drop_seconds < 1)
 		{
 		### insert a NEW record to the vicidial_manager table to be processed
 		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-		$dbhA->query($stmtA)  or die  "Couldn't execute query:\n";
+		$affected_rows = $dbhA->do($stmtA) or die  "Couldn't execute query:\n";
 			if ($M) {print STDERR "--    VDCL call_hungup timout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager\n";}
 		}
 
 	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$server_ip' order by call_time desc limit 1;";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	my $affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDCL vac record deleted: |$affected_rows| $channel_group|$server_ip\n";}
 
 #	$stmtA = "UPDATE vicidial_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where uniqueid = '$uniqueid';";
@@ -649,21 +672,20 @@ if ($drop_seconds < 1)
 
 	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where lead_id = '$new_lead_id' order by start_epoch desc limit 1;";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	my $affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDCL vicidial_closer_log update: |$affected_rows|$new_lead_id\n";}
 
 	$stmtA = "UPDATE vicidial_list set status='XDROP' where lead_id = '$new_lead_id';";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	my $affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDCL vicidial_list update: |$affected_rows|$new_lead_id\n";}
 
 }
 
 
 
-  $dbhA->close;
+  $dbhA->disconnect();
+
 
 
 
