@@ -62,6 +62,11 @@ NOTE: In a multi-server setup you may want to have your database and web server 
   	[default]
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX,2,Hangup
+	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+
+	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+	exten => _8600XXX*.,AGI(agi-VDADfixCXFER.agi)
 
   SERVER TWO(ASTtest2-10.10.10.16) 
     extensions.conf:
@@ -71,7 +76,11 @@ NOTE: In a multi-server setup you may want to have your database and web server 
   	[default]
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*015*8600XXX,2,Hangup
+	exten => _010*010*010*016*8600XXX,1,Goto(default,${EXTEN:16},1)
 
+	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _8600XXX*.,AGI(agi-VDADfixCXFER.agi)
 
 4. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed:
 

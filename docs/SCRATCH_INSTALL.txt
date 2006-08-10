@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.1.1.12               2006-06-22
+Asterisk/astguiclient install from scratch.    v.2.0.1               2006-08-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -273,6 +273,7 @@ following modules first:   (say YES if asked to install prerequisites)
    - reload cpan
 - then you can install other modules:
    - install DBI
+   - force install DBD::mysql	(must at least have mysqlclient installed)
    - install O/OY/OYAMA/Net-MySQL-0.08.tar.gz
    - install Net::Telnet
    - install Time::HiRes
@@ -1657,6 +1658,11 @@ exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inb
 exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
+
+exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+exten => _8600XXX*.,AGI(agi-VDADfixCXFER.agi)
+
 
 
 ; parameters for agi-VDADcloser.agi (2 fields separated by five dashes "-----"):

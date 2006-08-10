@@ -17,7 +17,7 @@ Requirements for installing astGUIclient/VICIDIAL on an Asterisk server:
 - SoX 12.17.5 or greater must be installed
 - GNU screen 3.9.15 or greater must be installed
 - ntp must be installed and syncd to same time source as any other servers
-- Perl5 with several CPAN modules(Time::HiRes, Net::MySQL, Net::Telnet, etc)
+- Perl5 with several CPAN modules(Time::HiRes, DBD::mysql, Net::Telnet, etc)
 - Access to MySQL server, must be version 4.0.X or higher
 - Access to Apache/PHP webserver
 - Several entries in the cron for interval-running scripts and keepalives
