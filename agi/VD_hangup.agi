@@ -376,7 +376,7 @@ if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/)
 $stmtA = "UPDATE vicidial_log set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid = '$uniqueid';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
 $affected_rows = $dbhA->do($stmtA);
-if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|\n";}
+if ($M) {print STDERR "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|$VD_status|\n";}
 
 
 
