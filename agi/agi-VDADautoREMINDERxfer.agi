@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADautoREMINDERxfer.agi version 0.1
+# agi-VDADautoREMINDERxfer.agi version 0.2   *DBI-version*
 # 
 # runs when a call comes in from the VICIDIAL auto_dialer. This script will 
 # send the calls out to specified voicemail boxes or specified extensions if 
@@ -28,6 +28,8 @@
 #
 # CHANGES
 # 60511-1214 - First build
+# 60810-1729 - Changed to DBI
+#            - changed to use /etc/astguiclient.conf for configs
 #
 
 $V = 1;		# set to 1 for verbose mode
@@ -41,10 +43,50 @@ $callback_audio_file = 'US_reminder_callback';
 $goodbye_audio_file = 'US_reminder_goodbye';
 
 
-### Make sure this file is in a path or put the absolute path to it
-require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
-use Net::MySQL;
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;	  
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
@@ -207,59 +249,60 @@ sleep(1);
 
 $AGI->stream_file('beep');
 
-  my $dbhA = Net::MySQL->new(hostname=>"$DB_server", database=>"$DB_database", user=>"$DB_user", password=>"$DB_pass", port => "$DB_port") or   die "Couldn't connect to database: $DB_server - $DB_database\n";
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
 $stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks FROM servers where server_ip = '$server_ip';";
-$dbhA->query("$stmtA");
-if ($dbhA->has_selected_record)
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+ $rec_count=0;
+while ($sthArows > $rec_count)
 	{
-	$iter=$dbhA->create_record_iterator;
-	   while ( $record = $iter->each)
-		{
-		$DBvoicemail_dump_exten	= "$record->[0]";
-		$DBext_context		= "$record->[1]";
-		$DBanswer_transfer_agent	= "$record->[2]";
-		$DBSERVER_GMT		= "$record->[3]";
-		$DBasterisk_version	= "$record->[4]";
-		$DBmax_vicidial_trunks	= "$record->[5]";
-		if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
-		if ($DBext_context)		{$ext_context = $DBext_context;}
-		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
-		if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
-		if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
-		if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
-		} 
+	@aryA = $sthA->fetchrow_array;
+	$DBvoicemail_dump_exten	= "$aryA[0]";
+	$DBext_context		= "$aryA[1]";
+	$DBanswer_transfer_agent	= "$aryA[2]";
+	$DBSERVER_GMT		= "$aryA[3]";
+	$DBasterisk_version	= "$aryA[4]";
+	$DBmax_vicidial_trunks	= "$aryA[5]";
+	if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
+	if ($DBext_context)		{$ext_context = $DBext_context;}
+	if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
+	if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
+	if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
+	if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+	 $rec_count++;
 	}
+$sthA->finish();
 
-
-######### INSERT/UPDATE CALL RECORD ##########
+### Grab call parameters from vicidial_auto_calls table
 $stmtA = "UPDATE vicidial_auto_calls set uniqueid='$unique_id', channel='$channel',status='LIVE' where callerid='$callerid' order by call_time desc limit 1;";
-$dbhA->query("$stmtA");
-my $affected_rows = $dbhA->get_affected_rows_length;
+$affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
 if ($affected_rows > 0)
 	{
 	$stmtA = "SELECT campaign_id,phone_number,phone_code,lead_id,call_time FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	 $rec_count=0;
+	while ($sthArows > $rec_count)
 		{
-		$iter=$dbhA->create_record_iterator;
-		 $rec_countCUSTDATA=0;
-		   while ( $record = $iter->each)
-			{
-			$VDADcampaign	= "$record->[0]";
-			$VDADphone	= "$record->[1]";
-			$VDADphone_code	= "$record->[2]";
-			$VDADlead_id	= "$record->[3]";
-			$VDADcall_time	= "$record->[4]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$VDADcampaign	= "$aryA[0]";
+		$VDADphone	= "$aryA[1]";
+		$VDADphone_code	= "$aryA[2]";
+		$VDADlead_id	= "$aryA[3]";
+		$VDADcall_time	= "$aryA[4]";
+		 $rec_count++;
 		}
-
+	$sthA->finish();
 
 	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$CIDlead_id','$VDADcampaign','$SQLdate','$now_date_epoch','N','$VDADphone_code','$VDADphone','VDAD','N')";
 		if($M){print STDERR "\n|$stmtA|\n";}
-	$dbhA->query($stmtA);
+	$affected_rows = $dbhA->do($stmtA);
 
 	if ($M) {print STDERR "--    VDAD : |$VDADlead_id|$CIDlead_id|insert to vicidial_log: $uniqueid\n";}
 
@@ -280,22 +323,20 @@ if ($pin < 1)
 		$AGI->stream_file("$goodbye_audio_file");
 
 		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vac record deleted: |$affected_rows| $VDADcampaign|$server_ip\n";}
 
 		$end_date_epoch = time();
 		$length_in_sec = ($end_date_epoch - $now_date_epoch);
 
 		$stmtA = "UPDATE vicidial_log set end_epoch='$end_date_epoch', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$CIDlead_id';";
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vac record deleted: |$affected_rows| $VDADcampaign|$server_ip|$end_date_epoch|$now_date_epoch|$length_in_sec|\n";}
 
 		$VHqueryCID = "VHNGUP$tsSQLdate";
 		### insert a NEW record to the vicidial_manager table to be processed
 		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-		$dbhA->query($stmtA)  or die  "Couldn't execute query:\n";
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD call_hungup timout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager\n";}
 
 		sleep(1);
@@ -324,14 +365,12 @@ if ($pin == "1")	### send call to voicemail
 #	$AGI->stream_file("$voicemail_xfer_file");
 
 	$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
 	
 	$stmtA = "UPDATE vicidial_list set status='VM' where lead_id = '$CIDlead_id';";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id|XFER\n";}
 
 		($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -349,22 +388,23 @@ if ($pin == "1")	### send call to voicemail
 	print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 
 	$stmtA = "UPDATE vicidial_log set status='VM', end_epoch='$end_date_epoch', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$CIDlead_id';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vac record updated: |$affected_rows| $VDADcampaign|$server_ip\n";}
 
 	$VMAIL_box=0;
 	### Grab Server values from the database
 	$stmtA = "SELECT security_phrase FROM vicidial_list where lead_id = '$CIDlead_id';";
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	 $rec_count=0;
+	while ($sthArows > $rec_count)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$VMAIL_box	= "$record->[0]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$VMAIL_box		= "$aryA[0]";
+		 $rec_count++;
 		}
+	$sthA->finish();
 
 	### SEND CALL TO VOICEMAIL BOX ###
 	print STDERR "\nexiting the VDAD app, transferring call to $voicemail_dump_exten$VMAIL_box\n";
@@ -383,14 +423,12 @@ if ($pin == "2")	### mark call as a CALLBK
 	
 	# Thank you for your response, your agent will be contacting you shortly.
 	$stmtA = "DELETE from vicidial_auto_calls where callerid='$callerid';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD DONE : |$affected_rows|delete of vac table: $callerid\n|$stmtA|\n";}
 	
 	$stmtA = "UPDATE vicidial_list set status='CALLBK' where lead_id = '$CIDlead_id';";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id|XFER\n";}
 
 		($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -408,8 +446,7 @@ if ($pin == "2")	### mark call as a CALLBK
 	print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 
 	$stmtA = "UPDATE vicidial_log set status='CALLBK', end_epoch='$end_date_epoch', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$CIDlead_id';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vac record updated: |$affected_rows| $VDADcampaign|$server_ip\n";}
 
 	$AGI->stream_file("$callback_audio_file");
@@ -417,7 +454,7 @@ if ($pin == "2")	### mark call as a CALLBK
 	$VHqueryCID = "VHNGUP$tsSQLdate";
 	### insert a NEW record to the vicidial_manager table to be processed
 	$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-	$dbhA->query($stmtA)  or die  "Couldn't execute query:\n";
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD call_hungup timout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager\n";}
 
 	sleep(1);
@@ -432,14 +469,12 @@ if ($pin == "3")	### send call to extension
 #	$AGI->stream_file("$voicemail_xfer_file");
 
 	$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
 	
 	$stmtA = "UPDATE vicidial_list set status='XFER' where lead_id = '$CIDlead_id';";
 		if($M){print STDERR "\n\n|$stmtA|\n";}
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id|XFER\n";}
 
 		($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -457,22 +492,23 @@ if ($pin == "3")	### send call to extension
 	print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 
 	$stmtA = "UPDATE vicidial_log set status='XFER', end_epoch='$end_date_epoch', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$CIDlead_id';";
-	$dbhA->query("$stmtA");
-	my $affected_rows = $dbhA->get_affected_rows_length;
+	$affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDAD vac record updated: |$affected_rows| $VDADcampaign|$server_ip\n";}
 
 	$VMAIL_box=0;
 	### Grab Server values from the database
 	$stmtA = "SELECT comments FROM vicidial_list where lead_id = '$CIDlead_id';";
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	 $rec_count=0;
+	while ($sthArows > $rec_count)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$XFER_exten	= "$record->[0]";
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$XFER_exten		= "$aryA[0]";
+		 $rec_count++;
 		}
+	$sthA->finish();
 
 	### SEND CALL TO VOICEMAIL BOX ###
 	print STDERR "\nexiting the VDAD app, transferring call to $XFER_exten\n";
@@ -558,14 +594,12 @@ $channel_status = $AGI->channel_status("$channel");
 		{
 		$stmtA = "UPDATE vicidial_log set status='MP' where uniqueid = '$uniqueid' and lead_id='$CIDlead_id';";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vicidial_log update: N|$affected_rows|$uniqueid\n";}
 
 		$stmtA = "UPDATE vicidial_list set status='MP' where lead_id = '$CIDlead_id';";
 			if($M){print STDERR "\n\n|$stmtA|\n";}
-		$dbhA->query("$stmtA");
-		my $affected_rows = $dbhA->get_affected_rows_length;
+		$affected_rows = $dbhA->do($stmtA);
 		if ($M) {print STDERR "--    VDAD vicidial_list update: N|$affected_rows|$CIDlead_id\n";}
 		}                
 
