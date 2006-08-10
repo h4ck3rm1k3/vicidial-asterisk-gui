@@ -113,6 +113,10 @@ if (isset($_GET["call_server_ip"]))				{$call_server_ip=$_GET["call_server_ip"];
 	elseif (isset($_POST["call_server_ip"]))	{$call_server_ip=$_POST["call_server_ip"];}
 if (isset($_GET["CalLCID"]))				{$CalLCID=$_GET["CalLCID"];}
 	elseif (isset($_POST["CalLCID"]))		{$CalLCID=$_POST["CalLCID"];}
+if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
+	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
+if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
+	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -633,7 +637,7 @@ if ($ACTION=="RedirectXtraCX")
 				if (strlen($D_s_ip[2])<3) {$D_s_ip[2] = "0$D_s_ip[2]";}
 				if (strlen($D_s_ip[3])<2) {$D_s_ip[3] = "0$D_s_ip[3]";}
 				if (strlen($D_s_ip[3])<3) {$D_s_ip[3] = "0$D_s_ip[3]";}
-				$dest_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S$dest_session_id$S$lead_id$S$dest_user$S";
+				$dest_dialstring = "$D_s_ip[0]$S$D_s_ip[1]$S$D_s_ip[2]$S$D_s_ip[3]$S$dest_session_id$S$lead_id$S$dest_user$S$phone_code$S$phone_number$S$campaign$S";
 
 				$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Redirect','$queryCID','Channel: $channel','Context: $ext_context','Exten: $dest_dialstring','Priority: $ext_priority','CallerID: $queryCID','','','','','');";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}

@@ -116,6 +116,7 @@
 # 60808-2232 - Added campaign name to pulldown for login screen
 # 60809-1603 - Added option to locally transfer consult xfers
 # 60809-1732 - Added recheck of transferred channels before customer gone mesg
+# 60810-1011 - Fixed CXFER leave 3way call bugs
 #
 
 require("dbconnect.php");
@@ -161,8 +162,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.90';
-$build = '60809-1732';
+$version = '2.0.91';
+$build = '60810-1011';
 
 if ($force_logout)
 {
@@ -2061,12 +2062,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var redirectdestination = "NEXTAVAILABLE";
 				var redirectXTRAvalue = XDchannel;
 				var redirecttype_test = document.vicidial_form.xfernumber.value;
+				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
 				var regRXFvars = new RegExp("CXFER","g");
 				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
 					{var redirecttype = 'RedirectXtraCX';}
 				else
 					{var redirecttype = 'RedirectXtra';}
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value;
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&campaign=CL_" + campaign + '' + closerxfercamptail;
 				}
 			if (taskvar == 'ParK')
 				{
