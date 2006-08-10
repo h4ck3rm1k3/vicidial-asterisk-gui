@@ -165,6 +165,11 @@ if ($V)
 if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";}
 
 if ($V) {print STDERR "\nCXFERfix : $lead_id $user $channel $uniqueid\n";}
+	$CIDlead = sprintf("%010s", $lead_id);
+	$CIDlead = "C123412345$CIDlead";
+	print "SET CALLERID $CIDlead\n";
+	checkresult($result);
+	print STDERR "callerID changed: $CIDlead\n";
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
@@ -175,8 +180,6 @@ $stmtA = "UPDATE vicidial_live_agents SET channel='$channel',call_server_ip='$se
 $affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDAD vicidial_live_agents update: |$affected_rows|$lead_id\n";}
 
-	$CIDlead = sprintf("%010s", $lead_id);
-	$CIDlead = "C123412345$CIDlead";
 ########## INSERT NEW vicidial_auto_calls record ##########
 $stmtA = "INSERT INTO vicidial_auto_calls SET channel='$channel',server_ip='$server_ip',uniqueid='$uniqueid',campaign_id='$campaign_id',status='CLOSER',lead_id='$lead_id',phone_code='$phone_code',phone_number='$phone_number',call_time='$SQLdate',call_type='IN',callerid='$CIDlead';";
 	if($M){print STDERR "\n\n|$stmtA|\n";}
@@ -184,6 +187,7 @@ $affected_rows = $dbhA->do($stmtA);
 if ($M) {print STDERR "--    VDAD vicidial_auto_calls insert: |$affected_rows|$lead_id\n";}
 
 $dbhA->disconnect();
+
 
 print STDERR "\nexiting the CXFERfix app, transferring call to $conf_exten\n";
 #print "SET CONTEXT $ext_context\n";
