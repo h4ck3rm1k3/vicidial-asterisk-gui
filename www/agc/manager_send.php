@@ -12,7 +12,7 @@
 #  - $user
 #  - $pass
 # optional variables:
-#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectVD','HangupConfDial')
+#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial')
 #  - $queryCID - ('CN012345678901234567',...)
 #  - $format - ('text','debug')
 #  - $channel - ('Zap/41-1','SIP/test101-1jut','IAX2/iaxy@iaxy',...)
@@ -397,7 +397,7 @@ if ($ACTION=="Hangup")
 
 
 ######################
-# ACTION=Redirect, RedirectName, RedirectNameVmail, RedirectToPark, RedirectFromPark, RedirectVD
+# ACTION=Redirect, RedirectName, RedirectNameVmail, RedirectToPark, RedirectFromPark, RedirectVD, RedirectXtra, RedirectXtraCX
 # - insert Redirect Manager statement using extensions name
 ######################
 if ($ACTION=="RedirectVD")
@@ -615,15 +615,15 @@ if ($ACTION=="RedirectXtraCX")
 			}	
 			else
 			{
-			$stmt="SELECT server_ip,conf_exten,user FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
-			$rslt=mysql_query($stmt, $link);
-			$rowx=mysql_fetch_row($rslt);
-			$dest_server_ip = $rowx[0];
-			$dest_session_id = $rowx[1];
-			$dest_user = $rowx[2];
-
+				$stmt="SELECT server_ip,conf_exten,user FROM vicidial_live_agents where lead_id='$lead_id' and user!='$user';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rslt);
+				$dest_server_ip = $rowx[0];
+				$dest_session_id = $rowx[1];
+				$dest_user = $rowx[2];
 				$S='*';
+
 				$D_s_ip = explode('.', $dest_server_ip);
 				if (strlen($D_s_ip[0])<2) {$D_s_ip[0] = "0$D_s_ip[0]";}
 				if (strlen($D_s_ip[0])<3) {$D_s_ip[0] = "0$D_s_ip[0]";}
