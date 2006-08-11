@@ -428,6 +428,10 @@ if ($rec_countWAIT < 1)
 		
 		exit;
 		}
+	else
+		{
+		print STDERR "NNNNNNNNNN No agent record found!!!\n";
+		}
 	}
 else
 	{
@@ -515,6 +519,10 @@ if ($rec_countWAITrem < 1)
 		print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 		
 		exit;
+		}
+	else
+		{
+		print STDERR "NNNNNNNNNN No agent record found!!!\n";
 		}
 	}
 else

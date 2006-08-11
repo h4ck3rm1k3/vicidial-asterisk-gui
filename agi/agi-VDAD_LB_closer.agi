@@ -236,67 +236,67 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 ### Grab Server values from the database
 $cbc=0;
 $stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks FROM servers where server_ip = '$server_ip';";
-	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-		
-		$DBvoicemail_dump_exten	= "$aryA[0]";
-		$DBext_context		= "$aryA[1]";
-		$DBanswer_transfer_agent	= "$aryA[2]";
-		$DBSERVER_GMT		= "$aryA[3]";
-		$DBasterisk_version	= "$aryA[4]";
-		$DBmax_vicidial_trunks	= "$aryA[5]";
-		if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
-		if ($DBext_context)		{$ext_context = $DBext_context;}
-		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
-		if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
-		if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
-		if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
-		$cbc++;
-		}
-	$sthA->finish(); 
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	
+	$DBvoicemail_dump_exten	= "$aryA[0]";
+	$DBext_context		= "$aryA[1]";
+	$DBanswer_transfer_agent	= "$aryA[2]";
+	$DBSERVER_GMT		= "$aryA[3]";
+	$DBasterisk_version	= "$aryA[4]";
+	$DBmax_vicidial_trunks	= "$aryA[5]";
+	if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
+	if ($DBext_context)		{$ext_context = $DBext_context;}
+	if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
+	if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
+	if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
+	if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+	$cbc++;
+	}
+$sthA->finish(); 
 
 ### Grab call parameters from vicidial_list table
 $cbc=0;
 $stmtA = "SELECT phone_number,phone_code,user FROM vicidial_list where lead_id='$CIDlead_id' limit 1;";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-		$VDADcampaign	= "$channel_group";
-		$VDADphone	= "$aryA[0]";
-		$VDADphone_code	= "$aryA[1]";
-		$VDADlead_id	= "$CIDlead_id";
-		$VDADfronter	= "$aryA[2]";
-		$cbc++;
-		}
-	$sthA->finish();  
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VDADcampaign	= "$channel_group";
+	$VDADphone	= "$aryA[0]";
+	$VDADphone_code	= "$aryA[1]";
+	$VDADlead_id	= "$CIDlead_id";
+	$VDADfronter	= "$aryA[2]";
+	$cbc++;
+	}
+$sthA->finish();  
 	
 
 ### Grab inbound_group values from the database
 $cbc=0;
 $stmtA = "SELECT drop_call_seconds,drop_message,drop_exten FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-			
-		$DBdrop_call_seconds	= "$aryA[0]";
-		$DBdrop_message		= "$aryA[1]";
-		$DBdrop_exten		= "$aryA[2]";
-		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
-		if ($DBdrop_message)		{$drop_message = $DBdrop_message;}
-		if ($DBdrop_exten)		{$drop_exten = $DBdrop_exten;}
-		$cbc++;
-		}
-	$sthA->finish();  
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+		
+	$DBdrop_call_seconds	= "$aryA[0]";
+	$DBdrop_message		= "$aryA[1]";
+	$DBdrop_exten		= "$aryA[2]";
+	if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
+	if ($DBdrop_message)		{$drop_message = $DBdrop_message;}
+	if ($DBdrop_exten)		{$drop_exten = $DBdrop_exten;}
+	$cbc++;
+	}
+$sthA->finish();  
 	
 
 ### insert a LIVE record to the vicidial_auto_calls table 
@@ -399,7 +399,7 @@ if ($channel_status < 1)
 				$VDADserver_ip	= "$aryA[3]";
 				$cbc++;
 				}
-	       $sthA->finish();  
+		       $sthA->finish();  
 
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER' where callerid='$callerid';";
 			my $affected_rows = $dbhA->do($stmtA);
@@ -447,6 +447,10 @@ if ($channel_status < 1)
 			print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 			
 			exit;
+			}
+		else
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
 			}
 		}
 	else

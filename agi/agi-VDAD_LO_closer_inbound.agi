@@ -272,75 +272,75 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 ### Grab Server values from the database
 $cbc=0;
 $stmtA = "SELECT voicemail_dump_exten,ext_context,answer_transfer_agent,local_gmt,asterisk_version,max_vicidial_trunks FROM servers where server_ip = '$server_ip';";
-	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-		
-		$DBvoicemail_dump_exten	= "$aryA[0]";
-		$DBext_context		= "$aryA[1]";
-		$DBanswer_transfer_agent	= "$aryA[2]";
-		$DBSERVER_GMT		= "$aryA[3]";
-		$DBasterisk_version	= "$aryA[4]";
-		$DBmax_vicidial_trunks	= "$aryA[5]";
-		if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
-		if ($DBext_context)		{$ext_context = $DBext_context;}
-		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
-		if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
-		if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
-		if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
-		$cbc++;
-		}
-	$sthA->finish();  
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	
+	$DBvoicemail_dump_exten	= "$aryA[0]";
+	$DBext_context		= "$aryA[1]";
+	$DBanswer_transfer_agent	= "$aryA[2]";
+	$DBSERVER_GMT		= "$aryA[3]";
+	$DBasterisk_version	= "$aryA[4]";
+	$DBmax_vicidial_trunks	= "$aryA[5]";
+	if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
+	if ($DBext_context)		{$ext_context = $DBext_context;}
+	if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
+	if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
+	if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
+	if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+	$cbc++;
+	}
+$sthA->finish();  
 
 ### insert a record into the vicidial_list table 
 $stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now) values('$SQLdate','$tsSQLdate','INBND','$fronter','$channel_group','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','-5.00');";
 $affected_rows = $dbhA->do($stmtA);
-   $cbc=0;
-   $stmtA = "select LAST_INSERT_ID() LIMIT 1;";
-   $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-		$insert_lead_id = "$aryA[0]";
-		$cbc++; 
-		}
-   $sthA->finish();   
+$cbc=0;
+$stmtA = "select LAST_INSERT_ID() LIMIT 1;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$insert_lead_id = "$aryA[0]";
+	$cbc++; 
+	}
+$sthA->finish();   
    
 $new_lead_id = $insert_lead_id;
 if($M){print STDERR "\n|$stmtA|$new_lead_id|\n";}
 
-	$PADlead_id = sprintf("%09s", $new_lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
-	# YmmddhhmmssLLLLLLLLL
-		$YqueryCID = "Y$CIDdate$PADlead_id";
-		$callerid = $YqueryCID;
-	### set the callerid 
-	print "SET CALLERID $YqueryCID\n";
-	checkresult($result);
-	print STDERR "callerID changed: $YqueryCID\n";
+$PADlead_id = sprintf("%09s", $new_lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
+# YmmddhhmmssLLLLLLLLL
+	$YqueryCID = "Y$CIDdate$PADlead_id";
+	$callerid = $YqueryCID;
+### set the callerid 
+print "SET CALLERID $YqueryCID\n";
+checkresult($result);
+print STDERR "callerID changed: $YqueryCID\n";
 
 ### Grab inbound_group values from the database
 $cbc=0;
 $stmtA = "SELECT drop_call_seconds,drop_message,drop_exten FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;	
-		$DBdrop_call_seconds	= "$aryA[0]";
-		$DBdrop_message		= "$aryA[1]";
-		$DBdrop_exten		= "$aryA[2]";
-		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
-		if ($DBdrop_message)		{$drop_message = $DBdrop_message;}
-		if ($DBdrop_exten)		{$drop_exten = $DBdrop_exten;}
-		$cbc++;
-		}
-	$sthA->finish();  
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;	
+	$DBdrop_call_seconds	= "$aryA[0]";
+	$DBdrop_message		= "$aryA[1]";
+	$DBdrop_exten		= "$aryA[2]";
+	if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
+	if ($DBdrop_message)		{$drop_message = $DBdrop_message;}
+	if ($DBdrop_exten)		{$drop_exten = $DBdrop_exten;}
+	$cbc++;
+	}
+$sthA->finish();  
 
 
 
@@ -349,10 +349,10 @@ $stmtA = "INSERT INTO vicidial_auto_calls values('','$server_ip','$channel_group
 $affected_rows = $dbhA->do($stmtA);
 if($M){print STDERR "\n|$stmtA|\n";}
 
-	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$new_lead_id','$channel_group','$SQLdate','$now_date_epoch','XFER','$phone_code','$phone_number','$fronter','N')";
-		if($M){print STDERR "\n|$stmtA|\n";}
-	$affected_rows = $dbhA->do($stmtA);
-	if ($M) {print STDERR "--    VDAD : |$new_lead_id|$fronter|insert to vicidial_log: $uniqueid\n";}
+$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$new_lead_id','$channel_group','$SQLdate','$now_date_epoch','XFER','$phone_code','$phone_number','$fronter','N')";
+	if($M){print STDERR "\n|$stmtA|\n";}
+$affected_rows = $dbhA->do($stmtA);
+if ($M) {print STDERR "--    VDAD : |$new_lead_id|$fronter|insert to vicidial_log: $uniqueid\n";}
 
 $stmtA = "INSERT INTO vicidial_closer_log (lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$new_lead_id','$channel_group','$SQLdate','$now_date_epoch','QUEUE','$phone_code','$phone_number','VDCL','N')";
 	if($M){print STDERR "\n|$stmtA|\n";}
@@ -453,11 +453,7 @@ if ($channel_status < 1)
 				$cbc++;
 				}
 			$sthA->finish();
-			}
-			else
-			{
-			print STDERR "NNNNNNNNNN No agent record found!!!\n";
-			}
+
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER' where callerid='$callerid';";
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDCL XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
@@ -495,6 +491,11 @@ if ($channel_status < 1)
 			print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 			
 			exit;
+			}
+		else
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
+			}
 		}
 	else
 		{
@@ -548,11 +549,7 @@ if ($channel_status < 1)
 				$cbc++;
 				}
 			$sthA->finish();
-			}
-			else
-			{
-			print STDERR "NNNNNNNNNN No agent record found!!!\n";
-			}
+
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER' where callerid='$callerid';";
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($M) {print STDERR "--    VDCL XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|\n";}
@@ -602,6 +599,11 @@ if ($channel_status < 1)
 			print STDERR "\nXXXXXXXXXX VDAD transferred: start|stop      $start_time|$now_date\n";
 			
 			exit;
+			}
+		else
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
+			}
 		}
 	else
 		{
@@ -702,12 +704,6 @@ if ($drop_seconds < 1)
 	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$server_ip' order by call_time desc limit 1;";
 	my $affected_rows = $dbhA->do($stmtA);
 	if ($M) {print STDERR "--    VDCL vac record deleted: |$affected_rows| $channel_group|$server_ip\n";}
-
-#	$stmtA = "UPDATE vicidial_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where uniqueid = '$uniqueid';";
-#		if($M){print STDERR "\n\n|$stmtA|\n";}
-#	$dbhA->query("$stmtA");
-#	my $affected_rows = $dbhA->get_affected_rows_length;
-#	if ($M) {print STDERR "--    VDCL vicidial_log update: |$affected_rows|$uniqueid\n";}
 
 	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where lead_id = '$new_lead_id' order by start_epoch desc limit 1;";
 		if($M){print STDERR "\n\n|$stmtA|\n";}

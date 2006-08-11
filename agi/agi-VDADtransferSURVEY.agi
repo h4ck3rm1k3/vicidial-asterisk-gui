@@ -460,6 +460,10 @@ if ($channel_status < 1)
 			
 			exit;
 			}
+		else
+			{
+			print STDERR "NNNNNNNNNN No agent record found!!!\n";
+			}
 		}
 	else
 		{
