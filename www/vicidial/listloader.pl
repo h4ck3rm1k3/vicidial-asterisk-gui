@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-### listloader.pl
+### listloader.pl   version 0.2   *DBI-version*
 ### 
 ### Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
 ###
@@ -9,6 +9,7 @@
 # CHANGES
 # 60616-1548 - Added listID override feature to force all leads into same list
 #            - Added gmt_offset_now lookup for each lead
+# 60811-1232 - Changed to DBI
 #
 
 ### begin parsing run-time options ###
@@ -42,15 +43,15 @@ if (length($ARGV[0])>1)
 
 use Spreadsheet::ParseExcel;
 use Time::Local;
-use Net::MySQL;
+use DBI;	  
 
 ### Make sure this file is in a libs path or put the absolute path to it
 require("/home/cron/AST_SERVER_conf.pl");	# local configuration file
 
 if (!$DB_port) {$DB_port='3306';}
 
-$dbhA = Net::MySQL->new(hostname => "$DB_server", database => "$DB_database", user => "$DB_user", password => "$DB_pass", port => "$DB_port") 
-	or 	die "Couldn't connect to database: $DB_server - $DB_database\n";
+$dbhA = DBI->connect("DBI:mysql:$DB_database:$DB_server:$DB_port", "$DB_user", "$DB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 
 $|=0;
@@ -72,16 +73,18 @@ $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 
 	### Grab Server values from the database
 	$stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";
-	$dbhA->query("$stmtA");
-	if ($dbhA->has_selected_record)
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
 		{
-		$iter=$dbhA->create_record_iterator;
-		   while ( $record = $iter->each)
-			{
-			$DBSERVER_GMT		=		"$record->[0]";
-			if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
-			} 
+		@aryA = $sthA->fetchrow_array;
+		$DBSERVER_GMT		=		"$aryA[0]";
+		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
+		$rec_count++;
 		}
+	$sthA->finish();
 
 	$LOCAL_GMT_OFF = $SERVER_GMT;
 	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
@@ -171,76 +174,80 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 					{
 					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						$dbhA->query($stmtA);
-					 $rec_countW=0;
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
 						{
-						$iterA=$dbhA->create_record_iterator;
-						   while ($recordA = $iterA->each)
-							{
-							$gmt_offset =	$recordA->[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$recordA->[5];
-							$dst_range =	$recordA->[6];
-							$PC_processed++;
-							} 
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
 						}
+					$sthA->finish();
 					}
 				### MEXICO ###
 				if ($phone_code =~ /^52$/)
 					{
 					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						$dbhA->query($stmtA);
-					 $rec_countW=0;
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
 						{
-						$iterA=$dbhA->create_record_iterator;
-						   while ($recordA = $iterA->each)
-							{
-							$gmt_offset =	$recordA->[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$recordA->[5];
-							$dst_range =	$recordA->[6];
-							$PC_processed++;
-							} 
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
 						}
+					$sthA->finish();
 					}
 				### AUSTRALIA ###
 				if ($phone_code =~ /^61$/)
 					{
 					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						$dbhA->query($stmtA);
-					 $rec_countW=0;
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
 						{
-						$iterA=$dbhA->create_record_iterator;
-						   while ($recordA = $iterA->each)
-							{
-							$gmt_offset =	$recordA->[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$recordA->[5];
-							$dst_range =	$recordA->[6];
-							$PC_processed++;
-							} 
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
 						}
+					$sthA->finish();
 					}
 				### ALL OTHER COUNTRY CODES ###
 				if (!$PC_processed)
 					{
 					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code';";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
-						$dbhA->query($stmtA);
-					 $rec_countW=0;
-					if ($dbhA->has_selected_record)
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
 						{
-						$iterA=$dbhA->create_record_iterator;
-						   while ($recordA = $iterA->each)
-							{
-							$gmt_offset =	$recordA->[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$recordA->[5];
-							$dst_range =	$recordA->[6];
-							$PC_processed++;
-							} 
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
 						}
+					$sthA->finish();
 					}
 
 				### Find out if DST to raise the gmt offset ###
@@ -307,7 +314,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 			if ($multi_insert_counter > 8) {
 				### insert good deal into pending_transactions table ###
 				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
-				$dbhA->query("$stmtZ");
+				$affected_rows = $dbhA->do($stmtZ);
 				print STMT_FILE $stmtZ."\r\n";
 				$multistmt='';
 				$multi_insert_counter=0;
@@ -333,7 +340,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 
 if ($multi_insert_counter > 0) {
 	$stmtZ = "INSERT INTO vicidial_list values ".substr($multistmt, 0, -1).";";
-	$dbhA->query("$stmtZ");
+	$affected_rows = $dbhA->do($stmtZ);
 	print STMT_FILE $stmtZ."\r\n";
 }
 
