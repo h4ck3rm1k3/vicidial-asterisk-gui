@@ -85,7 +85,9 @@ ASTmgrUSERNAMEsend VARCHAR(20) NOT NULL default 'sendcron',
 local_gmt VARCHAR(5) default '-5',
 voicemail_dump_exten VARCHAR(20) NOT NULL default '85026666666666',
 answer_transfer_agent VARCHAR(20) NOT NULL default '8365',
-ext_context VARCHAR(20) NOT NULL default 'default'
+ext_context VARCHAR(20) NOT NULL default 'default',
+sys_perf_log ENUM('Y','N') default 'N',
+vd_server_logs ENUM('Y','N') default 'Y'
 );
 
 

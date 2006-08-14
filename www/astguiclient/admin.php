@@ -16,10 +16,11 @@
 # 60427-1137 - Fixed phone search bug
 # 60620-1243 - Added variable filtering to eliminate SQL injection attack threat
 # 60814-1402 - Added off-hour gmt values (India, Australia, etc...)
+# 60814-1540 - Added system performance logging and script logging options
 #
 
 $version = '2.0.1';
-$build = '60814-1402';
+$build = '60814-1540';
 
 require("dbconnect.php");
 
@@ -198,6 +199,10 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 if (isset($_GET["CoNfIrM"]))				{$CoNfIrM=$_GET["CoNfIrM"];}
 	elseif (isset($_POST["CoNfIrM"]))		{$CoNfIrM=$_POST["CoNfIrM"];}
+if (isset($_GET["sys_perf_log"]))			{$sys_perf_log=$_GET["sys_perf_log"];}
+	elseif (isset($_POST["sys_perf_log"]))	{$sys_perf_log=$_POST["sys_perf_log"];}
+if (isset($_GET["vd_server_logs"]))				{$vd_server_logs=$_GET["vd_server_logs"];}
+	elseif (isset($_POST["vd_server_logs"]))	{$vd_server_logs=$_POST["vd_server_logs"];}
 
 ##### BEGIN VARIABLE FILTERING FOR SECURITY #####
 
@@ -209,6 +214,8 @@ $computer_ip = ereg_replace("[^\.0-9]","",$computer_ip);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
+$sys_perf_log = ereg_replace("[^NY]","",$sys_perf_log);
+$vd_server_logs = ereg_replace("[^NY]","",$vd_server_logs);
 
 ### DIGITS ONLY ###
 $dialplan_number = ereg_replace("[^0-9]","",$dialplan_number);
@@ -857,6 +864,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Default Context -</B> The default dialplan context used for scripts that operate for this server. Default is 'default'
 
+<BR>
+<A NAME="servers-sys_perf_log">
+<BR>
+<B>System Performance -</B> Setting this option to Y will enable logging of system performance stats for the server machine including system load, system processes and Asterisk channels in use. Default is N.
+
+<BR>
+<A NAME="servers-vd_server_logs">
+<BR>
+<B>Server Logs -</B> Setting this option to Y will enable logging of all VICIDIAL related scripts to their text log files. Setting this to N will stop writing logs to files for these processes, also the screen logging of asterisk will be disabled if this is set to N when Asterisk is started. Default is Y.
+
 
 <BR><BR><BR><BR>
 
@@ -1292,6 +1309,8 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select
 echo "<tr bgcolor=#B6D3FC><td align=right>VMail Dump Exten: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$row[14]\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL AD extension: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$row[15]\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Default Context: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$row[16]\">$NWB#servers-ext_context$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>System Performance: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$row[17]</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$row[18]</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
 
@@ -1510,7 +1529,7 @@ if ($ADD==41)
 				{
 				echo "<br>SERVER MODIFIED: $server_ip\n";
 
-				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context' where server_id='$old_server_id';";
+				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs' where server_id='$old_server_id';";
 				$rslt=mysql_query($stmt, $link);
 				}
 			}
@@ -1542,6 +1561,8 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select
 echo "<tr bgcolor=#B6D3FC><td align=right>VMail Dump Exten: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$row[14]\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL AD extension: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$row[15]\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Default Context: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$row[16]\">$NWB#servers-ext_context$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>System Performance: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$row[17]</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$row[18]</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
 

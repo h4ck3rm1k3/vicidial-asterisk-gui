@@ -51,13 +51,15 @@
 # 60807-1605 - Changed to DBI
 # 60808-1005 - changed to use /etc/astguiclient.conf for configs
 # 60808-1500 - Fixed another bug in that caused crash with ** in extension
+# 60814-1523 - SYSLOG and SYSPERF looked up from database, dynamic settings
 #
 
-$build = '60808-1500';
+$build = '60814-1523';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
 $SYSPERF_rec=0;	# is dial-time recording turned on
+$SYSLOG=0; # set to 1 to write log to a file
 $DB=0;	# Debug flag, set to 1 for debug messages  WARNING LOTS OF OUTPUT!!!
 $DBX=0;	# Debug flag, set to 1 for debug messages  WARNING LOTS OF OUTPUT!!!
 $US='__';
@@ -186,7 +188,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	&event_logger;
 
 ### Grab Server values from the database
-$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version FROM servers where server_ip = '$server_ip';";
+$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,asterisk_version,sys_perf_log,vd_server_logs FROM servers where server_ip = '$server_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -206,6 +208,8 @@ while ($sthArows > $rec_count)
 		$DBSERVER_GMT		=		"$aryA[9]";
 		$DBext_context	=			"$aryA[10]";
 		$DBasterisk_version	=		"$aryA[11]";
+		$DBsys_perf_log	=			"$aryA[12]";
+		$DBvd_server_logs =			"$aryA[13]";
 		if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 		if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 		if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -218,6 +222,8 @@ while ($sthArows > $rec_count)
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
 		if ($DBasterisk_version)		{$AST_ver = $DBasterisk_version;}
+		if ($DBsys_perf_log =~ /Y/)		{$SYSPERF = '1';}
+		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
 	 $rec_count++;
 	}
 $sthA->finish();
@@ -626,6 +632,26 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				print STDERR "Zap Clients:  $Zap_client_list\n";
 				print STDERR "IAX2 Clients: $IAX2_client_list\n";
 				print STDERR "SIP Clients:  $SIP_client_list\n";
+			### Grab Server values from the database
+				$stmtA = "SELECT sys_perf_log,vd_server_logs FROM servers where server_ip = '$server_ip';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					 @aryA = $sthA->fetchrow_array;
+						$DBsys_perf_log	=			"$aryA[0]";
+						$DBvd_server_logs =			"$aryA[1]";
+						if ($DBsys_perf_log =~ /Y/)		{$SYSPERF = '1';}
+							else {$SYSPERF = '0';}
+						if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+							else {$SYSLOG = '0';}
+					 $rec_count++;
+					}
+				$sthA->finish();
+			if ($SYSPERFDB)
+				{print "SYSPERF RELOAD: $DBsys_perf_log:$SYSPERF|$DBvd_server_logs:$SYSLOG\n";}
 			}
 
 	@list_chan_12=@MT;
@@ -1163,9 +1189,12 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 ##### open the log file for writing ###
 sub event_logger 
 {
-open(Lout, ">>$UPLOGfile")
-		|| die "Can't open $UPLOGfile: $!\n";
-print Lout "$now_date|$event_string|\n";
-close(Lout);
+if ($SYSLOG)
+	{
+	open(Lout, ">>$UPLOGfile")
+			|| die "Can't open $UPLOGfile: $!\n";
+	print Lout "$now_date|$event_string|\n";
+	close(Lout);
+	}
 $event_string='';
 }
