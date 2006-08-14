@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 0.11
-# *** DBI version ***
+# AST_VDhopper.pl version 2.0.1   *DBI-version*
 #
 # DESCRIPTION:
 # uses DBD::MySQL to update the VICIDIAL leads hopper for the streamlined 
@@ -39,6 +38,7 @@
 # 60614-1159 - Added campaign lead recycling ability
 # 60715-2251 - changed to use /etc/astguiclient.conf for configs
 # 60801-1634 - Fixed Callback activation bug 000008
+# 60814-1720 - added option for no logging to file
 #
 
 # constants
@@ -181,13 +181,24 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 
 ### Grab Server values from the database
-$stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-@aryA = $sthA->fetchrow_array;
-$DBSERVER_GMT		=		$aryA[0];
-if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-$sthA->finish();
+	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$DBvd_server_logs =			"$aryA[0]";
+			$DBSERVER_GMT		=		"$aryA[1]";
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
+			if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
+		 $rec_count++;
+		}
+	$sthA->finish();
+
+
 
 $secX = time();
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
@@ -1215,15 +1226,16 @@ exit;
 
 
 
-sub event_logger {
+sub event_logger
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$VDHLOGfile")
 			|| die "Can't open $VDHLOGfile: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }
 

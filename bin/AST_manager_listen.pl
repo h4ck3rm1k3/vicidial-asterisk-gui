@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_listen.pl version 1.1.12   *DBI-version*
+# AST_manager_listen.pl version 2.0.1   *DBI-version*
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -37,6 +37,7 @@
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-0955 - changed to use /etc/astguiclient.conf for configs
 # 60720-1142 - added keepalive to MySQL connection every 50 seconds
+# 60814-1733 - added option for no logging to file
 #
 
 # constants
@@ -127,9 +128,6 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
-	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
-	&event_logger;
-
 #use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
@@ -138,12 +136,8 @@ use Net::Telnet ();
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
 
-	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
-	&event_logger;
-
-
 ### Grab Server values from the database
-$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context FROM servers where server_ip = '$server_ip';";
+$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,vd_server_logs FROM servers where server_ip = '$server_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -162,6 +156,7 @@ while ($sthArows > $rec_count)
 		$DBanswer_transfer_agent=	"$aryA[8]";
 		$DBSERVER_GMT		=		"$aryA[9]";
 		$DBext_context	=			"$aryA[10]";
+		$DBvd_server_logs =			"$aryA[11]";
 		if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 		if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 		if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -173,11 +168,16 @@ while ($sthArows > $rec_count)
 		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
+		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+			else {$SYSLOG = '0';}
 	 $rec_count++;
 	}
 $sthA->finish();
 
 if (!$telnet_port) {$telnet_port = '5038';}
+
+	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
+	&event_logger;
 
 $one_day_interval = 90;		# 1 day loops for 3 months
 while($one_day_interval > 0)
@@ -518,6 +518,22 @@ while($one_day_interval > 0)
 			{
 				&get_time_now;
 
+			### Grab Server values from the database
+				$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					 @aryA = $sthA->fetchrow_array;
+						$DBvd_server_logs =			"$aryA[0]";
+						if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+							else {$SYSLOG = '0';}
+					 $rec_count++;
+					}
+				$sthA->finish();
+
 			### Grab Server values to keep DB connection alive
 			$stmtA = "SELECT last_update FROM server_updater where server_ip = '$server_ip';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -589,15 +605,16 @@ $action_log_date = "$year-$mon-$mday";
 
 
 
-sub event_logger {
+sub event_logger 
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$PATHlogs/listen_process.$action_log_date")
 			|| die "Can't open $PATHlogs/listen_process.$action_log_date: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }
 
@@ -606,10 +623,11 @@ $event_string='';
 
 sub manager_output_logger
 {
-open(MOout, ">>$PATHlogs/listen.$action_log_date")
+if ($SYSLOG)
+	{
+	open(MOout, ">>$PATHlogs/listen.$action_log_date")
 			|| die "Can't open $PATHlogs/listen.$action_log_date: $!\n";
-
 	print MOout "$now_date|$manager_string|\n";
-
 	close(MOout);
+	}
 }

@@ -47,6 +47,7 @@
 #            - Removed gmt lead validation because it is already done by VDhopper
 # 60807-1438 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
+# 60814-1749 - added option for no logging to file
 #
 
 
@@ -151,9 +152,6 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";}
 
-	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
-	&event_logger;	# writes to the log and if debug flag is set prints to STDOUT
-
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
 	
@@ -161,9 +159,8 @@ use DBI;
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
 
-
 ### Grab Server values from the database
-$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context FROM servers where server_ip = '$server_ip';";
+$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,max_vicidial_trunks,answer_transfer_agent,local_gmt,ext_context,vd_server_logs FROM servers where server_ip = '$server_ip';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -182,6 +179,7 @@ while ($sthArows > $rec_count)
 		$DBanswer_transfer_agent=	"$aryA[8]";
 		$DBSERVER_GMT		=		"$aryA[9]";
 		$DBext_context	=			"$aryA[10]";
+		$DBvd_server_logs =			"$aryA[11]";
 		if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 		if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 		if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
@@ -193,6 +191,8 @@ while ($sthArows > $rec_count)
 		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
+		if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+			else {$SYSLOG = '0';}
 	 $rec_count++;
 	}
 $sthA->finish();
@@ -419,10 +419,13 @@ while($one_day_interval > 0)
 						if ($lead_id_call_list =~ /\|$lead_id\|/)
 							{
 							print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
-							open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
-									|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
-							print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
-							close(DUPout);
+							if ($SYSLOG)
+								{
+								open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
+										|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
+								print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
+								close(DUPout);
+								}
 							}
 						else
 							{
@@ -753,6 +756,22 @@ while($one_day_interval > 0)
 			}
 		if ($endless_loop =~ /0$/)	# run every ten cycles (about 25 seconds)
 			{
+			### Grab Server values from the database
+				$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					 @aryA = $sthA->fetchrow_array;
+						$DBvd_server_logs =			"$aryA[0]";
+						if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+							else {$SYSLOG = '0';}
+					 $rec_count++;
+					}
+				$sthA->finish();
+
 			### delete call records that are LIVE for over 10 minutes
 			$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$TDSQLdate' and status NOT IN('XFER','CLOSER')";
 			$affected_rows = $dbhA->do($stmtA);
@@ -935,15 +954,14 @@ if ($Tsec < 10) {$Tsec = "0$Tsec";}
 
 sub event_logger
 {
-
 if ($DB) {print "$now_date|$event_string|\n";}
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$VDADLOGfile")
 			|| die "Can't open $VDADLOGfile: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }

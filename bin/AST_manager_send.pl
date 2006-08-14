@@ -32,6 +32,7 @@
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-1005 - changed to use /etc/astguiclient.conf for configs
 # 60718-1211 - removed need for ADMIN_keepalive_send_listen.at launching
+# 60814-1712 - added option for no logging to file
 #
 
 # constants
@@ -127,9 +128,6 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
-	$event_string='PROGRAM STARTED||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||';
-	&event_logger;
-
 #use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
@@ -137,6 +135,23 @@ use DBI;
 	  
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
+
+### Grab Server values from the database
+	$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$DBvd_server_logs =			"$aryA[0]";
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
+		 $rec_count++;
+		}
+	$sthA->finish();
+
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 	&event_logger;
@@ -256,7 +271,14 @@ while($one_day_interval > 0)
 					$launch_string = "$PATHhome/AST_send_action_child.pl --data1=$man_id  $callid $uniqueid $channel";
 			#		&launch_logger;
 
-					system("$PATHhome/AST_send_action_child.pl --data1=$man_id >> $PATHlogs/action_send.$action_log_date \&");
+					if ($SYSLOG)
+						{
+						system("$PATHhome/AST_send_action_child.pl --data1=$man_id >> $PATHlogs/action_send.$action_log_date \&");
+						}
+					else
+						{
+						system("$PATHhome/AST_send_action_child.pl --data1=$man_id \&");
+						}
 
 					$launch_string = "SENT $man_id  $callid $uniqueid $channel";
 			#		&launch_logger;
@@ -307,6 +329,23 @@ while($one_day_interval > 0)
 		if ($endless_loop =~ /0$/)
 			{
 				&get_time_now;
+
+			### Grab Server values from the database
+				$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					 @aryA = $sthA->fetchrow_array;
+						$DBvd_server_logs =			"$aryA[0]";
+						if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+							else {$SYSLOG = '0';}
+					 $rec_count++;
+					}
+				$sthA->finish();
+
 
 			if( ($COUNTER_OUTPUT) or ($DB) ){print "checking to see if listener is dead |$sendonlyone|$running_listen|\n";}
 			#@psoutput = `/bin/ps -f --no-headers -A`;
@@ -390,26 +429,28 @@ $action_log_date = "$year-$mon-$mday";
 
 
 
-sub event_logger {
+sub event_logger 
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$PATHlogs/action_process.$action_log_date")
 			|| die "Can't open $PATHlogs/action_process.$action_log_date: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }
 
-sub launch_logger {
+sub launch_logger
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(LLout, ">>$PATHlogs/action_launch.$action_log_date")
 			|| die "Can't open $PATHlogs/action_launch.$action_log_date: $!\n";
-
 	print LLout "$now_date|$launch_string|\n";
-
 	close(LLout);
-
+	}
 $event_string='';
 }

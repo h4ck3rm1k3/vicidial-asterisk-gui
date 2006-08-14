@@ -26,6 +26,7 @@
 # 50810-1615 - Added database server variable definitions lookup
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
+# 60814-1726 - added option for no logging to file
 #
 
 ### begin parsing run-time options ###
@@ -139,13 +140,22 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
-$stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-@aryA = $sthA->fetchrow_array;
-$DBSERVER_GMT		=		$aryA[0];
-if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
-$sthA->finish();
+	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$DBvd_server_logs =			"$aryA[0]";
+			$DBSERVER_GMT		=		"$aryA[1]";
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
+			if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
+		 $rec_count++;
+		}
+	$sthA->finish();
 
 
 	&get_time_now;	# update time/date variables
@@ -169,6 +179,23 @@ while($one_day_interval > 0)
 
 		if ($endless_loop =~ /0$|5$/)
 		{
+		### Grab Server values from the database
+			$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				 @aryA = $sthA->fetchrow_array;
+					$DBvd_server_logs =			"$aryA[0]";
+					if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+						else {$SYSLOG = '0';}
+				 $rec_count++;
+				}
+			$sthA->finish();
+
+
 		### delete call records that are LIVE for over 10 minutes and last_update_time < '$PDtsSQLdate'
 		$stmtA = "DELETE FROM vicidial_live_agents where server_ip='$server_ip' and status IN('PAUSED') and extension LIKE \"R/%\";";
 		$affected_rows = $dbhA->do($stmtA);
@@ -575,15 +602,14 @@ if ($Tsec < 10) {$Tsec = "0$Tsec";}
 
 sub event_logger
 {
-
 if ($DB) {print "$now_date|$event_string|\n";}
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$VDRLOGfile")
 			|| die "Can't open $VDRLOGfile: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }

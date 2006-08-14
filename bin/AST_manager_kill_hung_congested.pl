@@ -25,6 +25,7 @@
 # 50823-1525 - Added commandline debug options with debug printouts
 # 60717-1247 - changed to DBI by Marin Blu
 # 60717-1536 - changed to use /etc/astguiclient.conf for configs
+# 60814-1706 - added option for no logging to file
 #
 
 # constants
@@ -116,10 +117,28 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
 
+if (!$KHLOGfile) {$KHLOGfile = "$PATHlogs/congest.$year-$mon-$mday";}
+
 use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
+
+### Grab Server values from the database
+	$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$DBvd_server_logs =			"$aryA[0]";
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
+		 $rec_count++;
+		}
+	$sthA->finish();
 
 $stmtA = "SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and extension = 'CONGEST' and channel LIKE \"Local%\" limit 99";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -352,14 +371,15 @@ $CIDdate = "$year$mon$mday$hour$min$sec";
 
 
 
-sub event_logger {
+sub event_logger 
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$KHLOGfile")
 			|| die "Can't open $KHLOGfile: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }

@@ -36,6 +36,7 @@
 # 50902-1032 - Changed default logging to fulllog
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-1024 - changed to use /etc/astguiclient.conf for configs
+# 60814-1720 - added option for no logging to file
 #
 
 $FULL_LOG = 1; # set to 1 for a full response log to be created in $PATHlogs/action_full.date
@@ -157,7 +158,7 @@ use Net::Telnet ();
     or die "Couldn't connect to database: " . DBI->errstr;
     
 	### Grab Server values from the database
-	$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEsend FROM servers where server_ip = '$server_ip';";
+	$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEsend,vd_server_logs FROM servers where server_ip = '$server_ip';";
 	    $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -170,11 +171,14 @@ use Net::Telnet ();
 			$DBASTmgrUSERNAME	=		"$aryA[2]";
 			$DBASTmgrSECRET	=			"$aryA[3]";
 			$DBASTmgrUSERNAMEsend	=	"$aryA[4]";
+			$DBvd_server_logs =			"$aryA[5]";
 			if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
 			if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
 			if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
 			if ($DBASTmgrSECRET)			{$ASTmgrSECRET = $DBASTmgrSECRET;}
 			if ($DBASTmgrUSERNAMEsend)		{$ASTmgrUSERNAMEsend = $DBASTmgrUSERNAMEsend;}
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
 	      $rec_count++;
 		 } 
          $sthA->finish();
@@ -290,14 +294,15 @@ print "DONE execute time: $script_time seconds\n";
 
 exit;
 
-sub full_event_logger {
+sub full_event_logger 
+{
+if ($SYSLOG)
+	{
 	### open the log file for writing ###
 	open(Lout, ">>$PATHlogs/action_full.$action_log_date")
 			|| die "Can't open $PATHlogs/action_full.$action_log_date: $!\n";
-
 	print Lout "$now_date|$event_string|\n";
-
 	close(Lout);
-
+	}
 $event_string='';
 }
