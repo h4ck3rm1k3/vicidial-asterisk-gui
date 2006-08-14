@@ -1,3 +1,7 @@
 ################ INSTALL
 
-Short installation instructions for astGUIclient 2.0 tree will go here
+Short installation instructions for astGUIclient 2.0 tree will go here.
+
+run the install.pl script from this directory:
+perl install.pl
+
