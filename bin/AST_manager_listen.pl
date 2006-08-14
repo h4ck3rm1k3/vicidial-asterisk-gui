@@ -191,7 +191,7 @@ while($one_day_interval > 0)
 	$tn = new Net::Telnet (Port => $telnet_port,
 						  Prompt => '/.*[\$%#>] $/',
 						  Output_record_separator => '',);
-	#$LItelnetlog = '/home/cron/listen_telnet_log.txt'  # uncomment for telnet log
+	#$LItelnetlog = "$PATHlogs/listen_telnet_log.txt"  # uncomment for telnet log
 	#$fh = $tn->dump_log("$LItelnetlog");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMElisten) > 3) {$telnet_login = $ASTmgrUSERNAMElisten;}
 	else {$telnet_login = $ASTmgrUSERNAME;}

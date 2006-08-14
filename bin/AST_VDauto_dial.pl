@@ -419,8 +419,8 @@ while($one_day_interval > 0)
 						if ($lead_id_call_list =~ /\|$lead_id\|/)
 							{
 							print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
-							open(DUPout, ">>/home/cron/VDAD_DUPLICATE.$file_date")
-									|| die "Can't open /home/cron/VDAD_DUPLICATE.$file_date: $!\n";
+							open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
+									|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
 							print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
 							close(DUPout);
 							}

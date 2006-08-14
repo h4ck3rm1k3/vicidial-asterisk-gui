@@ -38,7 +38,7 @@
 # 60718-1024 - changed to use /etc/astguiclient.conf for configs
 #
 
-$FULL_LOG = 1; # set to 1 for a full response log to be created in /home/cron/action_full.date
+$FULL_LOG = 1; # set to 1 for a full response log to be created in $PATHlogs/action_full.date
 
 $secX = time();
 

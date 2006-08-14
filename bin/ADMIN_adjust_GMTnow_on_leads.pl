@@ -218,10 +218,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
     $sthA->finish();
 	if ($DB) {print " - GMT phone codes records: $rec_countZ\n";}
 
-#	open(codefile, "/home/cron/phone_codes_GMT.txt") || die "can't open /home/cron/phone_codes_GMT.txt: $!\n";
-#	@codefile = <codefile>;
-#	close(codefile);
-
 $ep=0; $ei=0; $ee=0;
 $d=0;
 foreach (@phone_codes)
