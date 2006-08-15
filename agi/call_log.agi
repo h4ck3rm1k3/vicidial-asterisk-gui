@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# call_log.agi version 0.9   *DBI-version*
+# call_log.agi version 0.10   *DBI-version*
 # 
 # runs at the beginning and ending of every external call made and received
 # 
@@ -24,10 +24,10 @@
 # 60622-0956 - Altered log for Zap client phones for consistent output
 # 60718-1638 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
+# 60815-1023 - added output options check from database
 #
 
-$V = 0;		# set to 1 for verbose mode
-$M = 1;		# set to 1 for 2 line messages mode
+$script = 'call_log.agi';
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -40,7 +40,6 @@ if ($sec < 10) {$sec = "0$sec";}
 
 $now_date_epoch = time();
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
-
 
 
 # default path to astguiclient configuration file:
@@ -81,26 +80,48 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
 if (!$VARDB_port) {$VARDB_port='3306';}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
+
+use DBI;
+  
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
+
+### Grab Server values from the database
+$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	$AGILOG = '0';
+	 @aryA = $sthA->fetchrow_array;
+		$DBagi_output =			"$aryA[0]";
+		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
+		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
+		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
+	 $rec_count++;
+	}
+$sthA->finish();
+
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
-if ($V) {print STDERR "Perl Environment Dump:\n";}
+	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
 	{
-	$args = "$args $ARGV[$i]";
-	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
-	$i++;
+		$args = "$args $ARGV[$i]";
+		if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
+		$i++;
 	}
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+		print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
 	}
 	else
 	{
@@ -143,16 +164,12 @@ if ($V) {print STDERR "Perl Environment Dump:\n";}
 		}
 	}
 }
-else
-{
-if ($V) {print "no command line options set\n";}
-}
 
 $|=1;
 while(<STDIN>) {
 	chomp;
 	last unless length($_);
-	if ($V)
+	if ($AGILOG)
 	{
 		if (/^agi_(\w+)\:\s+(.*)$/)
 		{
@@ -190,16 +207,15 @@ while(<STDIN>) {
 	## until here.
 }
 
-	if ($V)
-	{
+if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-		if ($V) {print STDERR "AGI Environment Dump:\n";}
-		foreach $i (sort keys %AGI) {
-			if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
-		}
-	}
+foreach $i (sort keys %AGI) 
+{
+	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
+}
 
-if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|\n";}
+
+if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   &agi_output;}
 
 if ( ($extension =~ /h/i) && (length($extension) < 3))  {$stage = 'END';}
 else {$stage = 'START';}
@@ -207,13 +223,7 @@ else {$stage = 'START';}
 ### call start stage
 if ($stage =~ /START/)
 	{
-	use DBI;
-	  
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-	    or die "Couldn't connect to database: " . DBI->errstr;
-
-	if ($V) {print STDERR "\nCALL STARTED\n";}
-	if ($M) {print STDERR "+++++ CALL LOG START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
+	if ($AGILOG) {$agi_string = "+++++ CALL LOG START : $now_date";   &agi_output;}
 
 	if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
 	if ($channel =~ /^IAX2/) {$channel =~ s/\/\d+$//gi;}
@@ -222,15 +232,14 @@ if ($stage =~ /START/)
 		$channel_line = $channel;
 		$channel_line =~ s/^Zap\///gi;
 
-		$stmtA = "SELECT count(*) FROM phones where server_ip='$server_ip' and extension='$channel_line' and protocol='Zap';";
+		$stmtA = "SELECT count(*) FROM phones where server_ip='$VARserver_ip' and extension='$channel_line' and protocol='Zap';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
 		@aryA = $sthA->fetchrow_array;
-		if($DB){print STDERR $aryA[0]," NEW Actions to send on server $server_ip      $endless_loop\n";}
 		$is_client_phone	 = "$aryA[0]";
+		if ($AGILOG) {$agi_string = "Local Zap phone: $aryA[0]|$channel_line|";   &agi_output;}
 		$sthA->finish();
-		   if ($V) {print STDERR "$is_client_phone|$channel_line|\n";}
 
 		if ($is_client_phone < 1)
 			{
@@ -262,9 +271,9 @@ if ($stage =~ /START/)
 		$extension = $SIP_ext;
 		}
 
-	$stmtA = "INSERT INTO call_log (uniqueid,channel,channel_group,type,server_ip,extension,number_dialed,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,caller_code) values('$unique_id','$channel','$channel_group','$type','$server_ip','$extension','$number_dialed','$now_date','$now_date_epoch','','','','','$callerid')";
+	$stmtA = "INSERT INTO call_log (uniqueid,channel,channel_group,type,server_ip,extension,number_dialed,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,caller_code) values('$unique_id','$channel','$channel_group','$type','$VARserver_ip','$extension','$number_dialed','$now_date','$now_date_epoch','','','','','$callerid')";
 
-	if ($V) {print STDERR "\n|$stmtA|\n";}
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 
 	$dbhA->disconnect();
@@ -274,15 +283,7 @@ if ($stage =~ /START/)
 ### call end stage
 else		 
 	{
-
-	if ($V) {print STDERR "\nCALL HUNG UP\n";}
-
-	use DBI;
-	  
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-	    or die "Couldn't connect to database: " . DBI->errstr;
-
-	if ($V) {print STDERR "\nCONNECTED\n";}
+	if ($AGILOG) {$agi_string = "|CALL HUNG UP|";   &agi_output;}
 
 	### get uniqueid and start_epoch from the call_log table
 	$stmtA = "SELECT uniqueid,start_epoch FROM call_log where uniqueid='$unique_id';";
@@ -294,7 +295,7 @@ else
 		{
 		@aryA = $sthA->fetchrow_array;
 		$start_time	=			"$aryA[1]";
-		   if ($V) {print STDERR $aryA[0],"|", $aryA[1],"\n";}
+		if ($AGILOG) {$agi_string = "|$aryA[0]|$aryA[1]|";   &agi_output;}
 		$rec_count++;
 		}
 	$sthA->finish();
@@ -305,20 +306,20 @@ else
 		$length_in_min = ($length_in_sec / 60);
 		$length_in_min = sprintf("%8.2f", $length_in_min);
 
-		if ($V) {print STDERR "\nQUERY done: start time = $start_time | sec: $length_in_sec | min: $length_in_min |\n";}
+		if ($AGILOG) {$agi_string = "QUERY done: start time = $start_time | sec: $length_in_sec | min: $length_in_min |";   &agi_output;}
 
 		$stmtA = "UPDATE call_log set end_time='$now_date',end_epoch='$now_date_epoch',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where uniqueid='$unique_id'";
 
-		if ($V) {print STDERR "\n|$stmtA|\n";}
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
 		}
 
-	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$server_ip'";
-	if ($V) {print STDERR "\n|$stmtA|\n";}
+	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$VARserver_ip'";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 
 ##### BEGIN Park Log entry check and update #####
-	$stmtA = "SELECT UNIX_TIMESTAMP(parked_time),UNIX_TIMESTAMP(grab_time) FROM park_log where uniqueid='$unique_id' and server_ip='$server_ip' LIMIT 1;";
+	$stmtA = "SELECT UNIX_TIMESTAMP(parked_time),UNIX_TIMESTAMP(grab_time) FROM park_log where uniqueid='$unique_id' and server_ip='$VARserver_ip' LIMIT 1;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -328,14 +329,14 @@ else
 		@aryA = $sthA->fetchrow_array;
 		$parked_time	=			"$aryA[0]";
 		$grab_time	=			"$aryA[1]";
-		   if ($V) {print STDERR $aryA[0],"|", $aryA[1],"\n";}
+		if ($AGILOG) {$agi_string = "|$aryA[0]|$aryA[1]|";   &agi_output;}
 		$rec_count++;
 		}
 	$sthA->finish();
 
 	  if ($rec_count)
 	  {
-	  print STDERR "*****Entry found for $unique_id-$server_ip in park_log: $parked_time|$grab_time\n";
+	if ($AGILOG) {$agi_string = "*****Entry found for $unique_id-$VARserver_ip in park_log: $parked_time|$grab_time";   &agi_output;}
 	     if ($parked_time > $grab_time)
 	     {
 		$parked_sec=($now_date_epoch - $parked_time);
@@ -347,16 +348,32 @@ else
 		$parked_sec=($grab_time - $parked_time);
 	     }
 
-		$stmtA = "UPDATE park_log set status='HUNGUP',hangup_time='$now_date',parked_sec='$parked_sec',talked_sec='$talked_sec' where uniqueid='$unique_id' and server_ip='$server_ip'";
+		$stmtA = "UPDATE park_log set status='HUNGUP',hangup_time='$now_date',parked_sec='$parked_sec',talked_sec='$talked_sec' where uniqueid='$unique_id' and server_ip='$VARserver_ip'";
 		$affected_rows = $dbhA->do($stmtA);
 	   }
-#	   else {print STDERR "*****No entry found for $unique_id-$server_ip in park_log\n";}
 ##### END Park Log entry check and update #####
 
 	$dbhA->disconnect();
 
-	if ($M) {print STDERR "+++++ CALL LOG HUNGUP: |$unique_id|$channel|$extension|$now_date|min: $length_in_min|\n";}
+	if ($AGILOG) {$agi_string = "+++++ CALL LOG HUNGUP: |$unique_id|$channel|$extension|$now_date|min: $length_in_min|";   &agi_output;}
 	}
-if ($V) {print STDERR "\nAll Done Exiting:\n";}
 
 exit;
+
+
+
+sub agi_output
+{
+if ($AGILOG >=2)
+	{
+	### open the log file for writing ###
+	open(Lout, ">>$AGILOGfile")
+			|| die "Can't open $AGILOGfile: $!\n";
+	print Lout "$now_date|$script|$agi_string\n";
+	close(Lout);
+	}
+	### send to STDERR writing ###
+if ( ($AGILOG == '1') || ($AGILOG == '3') )
+	{print STDERR "$now_date|$script|$agi_string\n";}
+$agi_string='';
+}
