@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# park_CID.agi version 0.2   *DBI-version*
+# park_CID.agi version 0.3   *DBI-version*
 # 
 # runs before the park extension to populate the parked_channels entry with the channel's callerid
 # 
@@ -17,10 +17,21 @@
 # changes:
 # 60731-1423 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
+# 60815-1256 - added output options check from database
 #
 
-$V = 0;		# set to 1 for verbose mode
-$M = 1;		# set to 1 for 2 line messages mode
+$script = 'park_CID.agi';
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -60,36 +71,43 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
 use DBI;
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-$year = ($year + 1900);
-$mon++;
-if ($mon < 10) {$mon = "0$mon";}
-if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
-if ($min < 10) {$min = "0$min";}
-if ($sec < 10) {$sec = "0$sec";}
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
 
-$now_date_epoch = time();
-$now_date = "$year-$mon-$mday $hour:$min:$sec";
-
+### Grab Server values from the database
+$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	$AGILOG = '0';
+	 @aryA = $sthA->fetchrow_array;
+		$DBagi_output =			"$aryA[0]";
+		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
+		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
+		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
+	 $rec_count++;
+	}
+$sthA->finish();
 
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
-if ($V) {print STDERR "Perl Environment Dump:\n";}
+	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
 	{
 	$args = "$args $ARGV[$i]";
-	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
 	if ($args =~ />| |\"/i)
@@ -130,16 +148,13 @@ if ($V) {print STDERR "Perl Environment Dump:\n";}
 		}
 	}
 }
-else
-{
-if ($V) {print "no command line options set\n";}
-}
+
 
 $|=1;
 while(<STDIN>) {
 	chomp;
 	last unless length($_);
-	if ($V)
+	if ($AGILOG)
 	{
 		if (/^agi_(\w+)\:\s+(.*)$/)
 		{
@@ -172,35 +187,43 @@ while(<STDIN>) {
 		}
 }
 
-	if ($V)
-	{
+if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-		if ($V) {print STDERR "AGI Environment Dump:\n";}
-		foreach $i (sort keys %AGI) {
-			if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
-		}
-	}
-
-if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|\n";}
+foreach $i (sort keys %AGI) 
+{
+	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
+}
 
 
-if ($V) {print STDERR "\nCALL BEING PARKED\n";}
-if ($M) {print STDERR "+++++ CALL PARK START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
+if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   &agi_output;}
+
+if ($AGILOG) {$agi_string = "CALL BEING PARKED";   &agi_output;}
 
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-    or die "Couldn't connect to database: " . DBI->errstr;
-
-
-$stmtA = "UPDATE parked_channels set channel_group='$callerid' where server_ip='$server_ip' and channel='$channel';";
-if ($V) {print STDERR "\n|$stmtA|\n";}
+$stmtA = "UPDATE parked_channels set channel_group='$callerid' where server_ip='$VARserver_ip' and channel='$channel';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
-if ($M) {print STDERR "--    Park record updated: |$affected_rows|   |$callerid|$channel|$server_ip\n";}
+if ($AGILOG) {$agi_string = "--    Park record updated: |$affected_rows|   |$callerid|$channel|$VARserver_ip";   &agi_output;}
 
 $dbhA->disconnect();
 
 
-
-if ($V) {print STDERR "\nAll Done Exiting:\n";}
-
 exit;
+
+
+
+sub agi_output
+{
+if ($AGILOG >=2)
+	{
+	### open the log file for writing ###
+	open(Lout, ">>$AGILOGfile")
+			|| die "Can't open $AGILOGfile: $!\n";
+	print Lout "$now_date|$script|$agi_string\n";
+	close(Lout);
+	}
+	### send to STDERR writing ###
+if ( ($AGILOG == '1') || ($AGILOG == '3') )
+	{print STDERR "$now_date|$script|$agi_string\n";}
+$agi_string='';
+}
