@@ -472,7 +472,8 @@ display_dialable_count ENUM('Y','N') default 'Y',
 wrapup_seconds SMALLINT(3) UNSIGNED default '0',
 wrapup_message VARCHAR(255) default 'Wrapup Call',
 closer_campaigns TEXT default '',
-use_internal_dnc ENUM('Y','N') default 'N'
+use_internal_dnc ENUM('Y','N') default 'N',
+allcalls_delay SMALLINT(3) UNSIGNED default '0'
 );
 
  CREATE TABLE vicidial_lists (

@@ -117,6 +117,7 @@
 # 60809-1603 - Added option to locally transfer consult xfers
 # 60809-1732 - Added recheck of transferred channels before customer gone mesg
 # 60810-1011 - Fixed CXFER leave 3way call bugs
+# 60816-1602 - Added ALLCALLS recording delay option allcalls_delay
 #
 
 require("dbconnect.php");
@@ -162,8 +163,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.91';
-$build = '60810-1011';
+$version = '2.0.92';
+$build = '60816-1602';
 
 if ($force_logout)
 {
@@ -525,7 +526,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -559,6 +560,7 @@ $VDloginDISPLAY=0;
 			   $wrapup_message=$row[27];
 			   $closer_campaigns=$row[28];
 			   $use_internal_dnc=$row[29];
+			   $allcalls_delay=$row[30];
 
 			if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
 				{$scheduled_callbacks='1';}
@@ -1330,6 +1332,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var previous_called_count = '';
 	var hot_keys_active = 0;
 	var all_record = 'NO';
+	var all_record_count = 0;
 	var LeaDDispO = '';
 	var LeaDPreVDispO = '';
 	var AgaiNHanguPChanneL = '';
@@ -1357,6 +1360,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>';
+	var allcalls_delay = '<? echo $allcalls_delay ?>';
 	var webform_session = '<? echo $webform_sessionname ?>';
 	var local_consult_xfers = '<? echo $local_consult_xfers ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
@@ -2599,6 +2603,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE)
 		{
 		all_record = 'NO';
+		all_record_count=0;
 		document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
 		if (document.vicidial_form.LeadPreview.checked==true)
 			{
@@ -2910,6 +2915,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function ManualDialOnly(taskaltnum)
 		{
 		all_record = 'NO';
+		all_record_count=0;
 		if (taskaltnum == 'ALTPhoneE')
 			{
 			var manDiaLonly_num = document.vicidial_form.alt_phone.value;
@@ -3140,6 +3146,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function check_for_auto_incoming()
 		{
 		all_record = 'NO';
+		all_record_count=0;
 		document.vicidial_form.lead_id.value = '';
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -4771,8 +4778,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				if (all_record == 'YES')
 					{
-					conf_send_recording('MonitorConf',session_id ,'');
-					all_record = 'NO';
+					if (all_record_count < allcalls_delay)
+						{all_record_count++;}
+					else
+						{
+						conf_send_recording('MonitorConf',session_id ,'');
+						all_record = 'NO';
+						all_record_count=0;
+						}
 					}
 
 
