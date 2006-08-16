@@ -118,6 +118,7 @@
 # 60809-1732 - Added recheck of transferred channels before customer gone mesg
 # 60810-1011 - Fixed CXFER leave 3way call bugs
 # 60816-1602 - Added ALLCALLS recording delay option allcalls_delay
+# 60816-1716 - Fixed customer time display bug and client DST setting
 #
 
 require("dbconnect.php");
@@ -163,8 +164,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.92';
-$build = '60816-1602';
+$version = '2.0.93';
+$build = '60816-1716';
 
 if ($force_logout)
 {
@@ -172,6 +173,7 @@ if ($force_logout)
     exit;
 }
 
+$isdst = date("I");
 $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");
 $tsNOW_TIME = date("YmdHis");
@@ -179,6 +181,7 @@ $FILE_TIME = date("Ymd-His");
 $CIDdate = date("ymdHis");
 	$month_old = mktime(0, 0, 0, date("m"), date("d")-2,  date("Y"));
 	$past_month_date = date("Y-m-d H:i:s",$month_old);
+
 
 $random = (rand(1000000, 9999999) + 10000000);
 
@@ -195,6 +198,7 @@ $agentcallsstatus		= '0';	# set to 1 to show agent status and call count
 $show_campname_pulldown	= '1';	# set to 1 to show campaign name on login pulldown
 $webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
 $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
+$clientDST				= '1';	# set to 1 to check for DST on server for agent time
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -754,6 +758,10 @@ else
 	$DBX_pass=$row[58];
 	$DBX_port=$row[59];
 
+	if ($clientDST)
+		{
+		$local_gmt = ($local_gmt + $isdst);
+		}
 	if ($protocol == 'EXTERNAL')
 		{
 		$protocol = 'Local';
