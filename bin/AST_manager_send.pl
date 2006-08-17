@@ -33,6 +33,7 @@
 # 60718-1005 - changed to use /etc/astguiclient.conf for configs
 # 60718-1211 - removed need for ADMIN_keepalive_send_listen.at launching
 # 60814-1712 - added option for no logging to file
+# 60817-1211 - added more ARGS to go to child process to remove DBI from child
 #
 
 # constants
@@ -121,9 +122,6 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 	&get_time_now;
@@ -131,26 +129,35 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 #use lib './lib', '../lib';
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
-#use Net::Telnet ();
 	  
 	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
     or die "Couldn't connect to database: " . DBI->errstr;
 
-### Grab Server values from the database
-	$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
-	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	$rec_count=0;
-	while ($sthArows > $rec_count)
-		{
-		 @aryA = $sthA->fetchrow_array;
-			$DBvd_server_logs =			"$aryA[0]";
+	### Grab Server values from the database
+	$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEsend,vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+	    $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		 while ($sthArows > $rec_count)
+		 {
+     	 	@aryA = $sthA->fetchrow_array;
+			$DBtelnet_host	=			"$aryA[0]";
+			$DBtelnet_port	=			"$aryA[1]";
+			$DBASTmgrUSERNAME	=		"$aryA[2]";
+			$DBASTmgrSECRET	=			"$aryA[3]";
+			$DBASTmgrUSERNAMEsend	=	"$aryA[4]";
+			$DBvd_server_logs =			"$aryA[5]";
+			if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
+			if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
+			if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
+			if ($DBASTmgrSECRET)			{$ASTmgrSECRET = $DBASTmgrSECRET;}
+			if ($DBASTmgrUSERNAMEsend)		{$ASTmgrUSERNAMEsend = $DBASTmgrUSERNAMEsend;}
 			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
 				else {$SYSLOG = '0';}
-		 $rec_count++;
-		}
-	$sthA->finish();
+	      $rec_count++;
+		 } 
+         $sthA->finish();
 
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
@@ -169,13 +176,13 @@ while($one_day_interval > 0)
 	$affected_rows=0;
 	$NEW_actions=0;
 
-	$stmtA = "SELECT count(*) from vicidial_manager where server_ip = '$server_ip' and status = 'NEW'";
+	$stmtA = "SELECT count(*) from vicidial_manager where server_ip = '$VARserver_ip' and status = 'NEW'";
 	    $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
 		$rec_count=0;
 	 	@aryA = $sthA->fetchrow_array;
-		if($DB){print STDERR $aryA[0]," NEW Actions to send on server $server_ip      $endless_loop\n";}
+		if($DB){print STDERR $aryA[0]," NEW Actions to send on server $VARserver_ip      $endless_loop\n";}
 		$NEW_actions	 = "$aryA[0]";
 		$rec_count++;
 	    $sthA->finish();
@@ -186,7 +193,7 @@ while($one_day_interval > 0)
 		}
 	else
 		{
-		$stmtA = "UPDATE vicidial_manager set status='QUEUE' where server_ip = '$server_ip' and status = 'NEW' order by entry_date limit 1";
+		$stmtA = "UPDATE vicidial_manager set status='QUEUE' where server_ip = '$VARserver_ip' and status = 'NEW' order by entry_date limit 1";
 	    $affected_rows = $dbhA->do($stmtA);
 		if ($DB) {print STDERR "rows updated to QUEUE: |$affected_rows|\n";}
 		}
@@ -194,7 +201,7 @@ while($one_day_interval > 0)
 
 	if ($affected_rows)
 		{
-		$stmtA = "SELECT * FROM vicidial_manager where server_ip = '$server_ip' and status = 'QUEUE' order by entry_date desc limit 1";
+		$stmtA = "SELECT * FROM vicidial_manager where server_ip = '$VARserver_ip' and status = 'QUEUE' order by entry_date desc limit 1";
 					$event_string="SQL_QUERY|$stmtA|";
 				&event_logger;
 
@@ -219,7 +226,7 @@ while($one_day_interval > 0)
 				$cmd_line_f	 = "$aryA[13]";
 				$cmd_line_g	 = "$aryA[14]";
 				$cmd_line_h	 = "$aryA[15]";
-				$cmd_line_i	 = "$record->[16]";
+				$cmd_line_i	 = "$aryA[16]";
 				$cmd_line_j	 = "$aryA[17]";
 				$cmd_line_k	 = "$aryA[18]";
 
@@ -242,7 +249,7 @@ while($one_day_interval > 0)
 					{
 					$SENDNOW=0;
 					if($DB){print STDERR "\n|checking for dead call before executing|$callid|$uniqueid|\n";}
-					   $stmtB = "SELECT count(*) FROM vicidial_manager where server_ip = '$server_ip' and callerid='$callid' and status = 'DEAD'";
+					   $stmtB = "SELECT count(*) FROM vicidial_manager where server_ip = '$VARserver_ip' and callerid='$callid' and status = 'DEAD'";
 					   $sthB = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 					   $sthB->execute or die "executing: $stmtA ", $dbhA->errstr;
 					   $sthArows=$sthB->rows;
@@ -268,16 +275,37 @@ while($one_day_interval > 0)
 					{
 	#				$tn->buffer_empty;
 
-					$launch_string = "$PATHhome/AST_send_action_child.pl --data1=$man_id  $callid $uniqueid $channel";
-			#		&launch_logger;
+#	encode
+#	$str =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+#	decode
+#	$str =~ s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+#
+#	 --SYSLOG=$SYSLOG --PATHlogs=$PATHlogs --telnet_host=$telnet_host --telnet_port=$telnet_port --ASTmgrUSERNAME=$ASTmgrUSERNAME --ASTmgrSECRET=$ASTmgrSECRET --ASTmgrUSERNAMEsend=$ASTmgrUSERNAMEsend --action=$action --cmd_line_b=$cmd_line_b --cmd_line_c=$cmd_line_c --cmd_line_d=$cmd_line_d --cmd_line_e=$cmd_line_e --cmd_line_f=$cmd_line_f --cmd_line_g=$cmd_line_g --cmd_line_h=$cmd_line_h --cmd_line_i=$cmd_line_i --cmd_line_j=$cmd_line_j --cmd_line_k=$cmd_line_k
+
+					$cPATHlogs =	$PATHlogs;
+					$cPATHlogs =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_b =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_c =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_d =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_e =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_f =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_g =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_h =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_i =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_j =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+					$cmd_line_k =~	s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+
+					$launch_string = "$PATHhome/AST_send_action_child.pl --SYSLOG=$SYSLOG --PATHlogs=$cPATHlogs --telnet_host=$telnet_host --telnet_port=$telnet_port --ASTmgrUSERNAME=$ASTmgrUSERNAME --ASTmgrSECRET=$ASTmgrSECRET --ASTmgrUSERNAMEsend=$ASTmgrUSERNAMEsend --action=$action --cmd_line_b=$cmd_line_b --cmd_line_c=$cmd_line_c --cmd_line_d=$cmd_line_d --cmd_line_e=$cmd_line_e --cmd_line_f=$cmd_line_f --cmd_line_g=$cmd_line_g --cmd_line_h=$cmd_line_h --cmd_line_i=$cmd_line_i --cmd_line_j=$cmd_line_j --cmd_line_k=$cmd_line_k  $callid $uniqueid $channel";
+					&launch_logger;
+
 
 					if ($SYSLOG)
 						{
-						system("$PATHhome/AST_send_action_child.pl --data1=$man_id >> $PATHlogs/action_send.$action_log_date \&");
+						system("$PATHhome/AST_send_action_child.pl --SYSLOG=$SYSLOG --PATHlogs=$PATHlogs --telnet_host=$telnet_host --telnet_port=$telnet_port --ASTmgrUSERNAME=$ASTmgrUSERNAME --ASTmgrSECRET=$ASTmgrSECRET --ASTmgrUSERNAMEsend=$ASTmgrUSERNAMEsend --action=$action --cmd_line_b=$cmd_line_b --cmd_line_c=$cmd_line_c --cmd_line_d=$cmd_line_d --cmd_line_e=$cmd_line_e --cmd_line_f=$cmd_line_f --cmd_line_g=$cmd_line_g --cmd_line_h=$cmd_line_h --cmd_line_i=$cmd_line_i --cmd_line_j=$cmd_line_j --cmd_line_k=$cmd_line_k >> $PATHlogs/action_send.$action_log_date \&");
 						}
 					else
 						{
-						system("$PATHhome/AST_send_action_child.pl --data1=$man_id \&");
+						system("$PATHhome/AST_send_action_child.pl --SYSLOG=$SYSLOG --PATHlogs=$PATHlogs --telnet_host=$telnet_host --telnet_port=$telnet_port --ASTmgrUSERNAME=$ASTmgrUSERNAME --ASTmgrSECRET=$ASTmgrSECRET --ASTmgrUSERNAMEsend=$ASTmgrUSERNAMEsend --action=$action --cmd_line_b=$cmd_line_b --cmd_line_c=$cmd_line_c --cmd_line_d=$cmd_line_d --cmd_line_e=$cmd_line_e --cmd_line_f=$cmd_line_f --cmd_line_g=$cmd_line_g --cmd_line_h=$cmd_line_h --cmd_line_i=$cmd_line_i --cmd_line_j=$cmd_line_j --cmd_line_k=$cmd_line_k \&");
 						}
 
 					$launch_string = "SENT $man_id  $callid $uniqueid $channel";

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_send_action_child.pl version 0.3   *DBI-version
+# AST_send_action_child.pl version 0.4   *DBI-version
 # 
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -37,9 +37,11 @@
 # 60718-0909 - changed to DBI by Marin Blu
 # 60718-1024 - changed to use /etc/astguiclient.conf for configs
 # 60814-1720 - added option for no logging to file
+# 60817-1244 - removed all DB calls and config file open to reduce footprint
 #
 
 $FULL_LOG = 1; # set to 1 for a full response log to be created in $PATHlogs/action_full.date
+$MT[0]='';
 
 $secX = time();
 
@@ -66,36 +68,248 @@ if (length($ARGV[0])>1)
 	$i++;
 	}
 
-#			print "DB0: |$ARGS|$#ARGV|$i|\n";
-
 	if ($ARGS =~ /--help/i)
 	{
-	print "allowed run time options:\n  [-debug] = debug output\n  [-debugX] = Extra-debug output\n  [-fulllog] = full response logging\n  [--data1=XXXXXXX] = vicidial_manager record\n\n\n";
+		print "allowed run time options:\n";
+		print "  [--help] = this help screen\n";
+		print "required flags:\n";
+		print "  [--SYSLOG] = whether to log actions or not\n";
+		print "  [--PATHlogs] = logs directory path\n";
+		print "  [--telnet_host] = IP address to connect to Asterisk Manager\n";
+		print "  [--telnet_port] = port to connect to Asterisk Manager\n";
+		print "  [--ASTmgrUSERNAME] = username for Asterisk Manager login\n";
+		print "  [--ASTmgrSECRET] = secret or password for Asterisk Manager login\n";
+		print "  [--ASTmgrUSERNAMEsend] = username specific for sending actions for Asterisk Manager login\n";
+		print "  [--action] = type of manager action to send\n";
+		print "  [--cmd_line_X] = lines to send to Manager after action\n";
+		print "                   X replaced with b-k (10 lines)\n";
+		print "\n";
+
+		exit;
 	}
 	else
 	{
-		if ($args =~ /-debug/i)
-		{
-		$DB=1; # Debug flag
-		}
-		if ($args =~ /--debugX/i)
-		{
-		$DBX=1;
-		print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
-		}
-		if ($args =~ /-fulllog/i)
-		{
-		$FULL_LOG=1; # Full response logging enabled
-		}
-		if ($ARGS =~ /--data1=/i)
-		{
-		$data1 = $ARGS;
-#			print "DB1: |$ARGS|\n";
-		$data1 =~ s/^.*--data1=//gi;
-#			print "DB2: |$data1|\n";
-		$data1 =~ s/ .*$//gi;
-#			print "DB3: |$data1|\n";
-		}
+		if ($ARGS =~ /--SYSLOG=1/) # CLI defined SYSLOG
+				{$SYSLOG=1;}
+		else
+				{$SYSLOG=0;}
+		if ($ARGS=~ /--PATHlogs=/) # CLI defined PATHlogs
+			{
+			@CLIARY = split(/--PATHlogs=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$PATHlogs = $CLIARX[0];
+				$PATHlogs =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  PATHlogs:               $PATHlogs\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--telnet_host=/) # CLI defined telnet_host
+			{
+			@CLIARY = split(/--telnet_host=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$telnet_host = $CLIARX[0];
+				$telnet_host =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  telnet_host:            $telnet_host\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--telnet_port=/) # CLI defined telnet_port
+			{
+			@CLIARY = split(/--telnet_port=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$telnet_port = $CLIARX[0];
+				$telnet_port =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  telnet_port:            $telnet_port\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--ASTmgrUSERNAME=/) # CLI defined ASTmgrUSERNAME
+			{
+			@CLIARY = split(/--ASTmgrUSERNAME=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$ASTmgrUSERNAME = $CLIARX[0];
+				$ASTmgrUSERNAME =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  ASTmgrUSERNAME:         $ASTmgrUSERNAME\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--ASTmgrSECRET=/) # CLI defined ASTmgrSECRET
+			{
+			@CLIARY = split(/--ASTmgrSECRET=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$ASTmgrSECRET = $CLIARX[0];
+				$ASTmgrSECRET =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  ASTmgrSECRET:           $ASTmgrSECRET\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--ASTmgrUSERNAMEsend=/) # CLI defined ASTmgrUSERNAMEsend
+			{
+			@CLIARY = split(/--ASTmgrUSERNAMEsend=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$ASTmgrUSERNAMEsend = $CLIARX[0];
+				$ASTmgrUSERNAMEsend =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  ASTmgrUSERNAMEsend:     $ASTmgrUSERNAMEsend\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--action=/) # CLI defined action
+			{
+			@CLIARY = split(/--action=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$action = $CLIARX[0];
+				$action =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  action:                 $action\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_b=/) # CLI defined cmd_line_b
+			{
+			@CLIARY = split(/--cmd_line_b=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_b = $CLIARX[0];
+				$cmd_line_b =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_b:             $cmd_line_b\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_c=/) # CLI defined cmd_line_c
+			{
+			@CLIARY = split(/--cmd_line_c=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_c = $CLIARX[0];
+				$cmd_line_c =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_c:             $cmd_line_c\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_d=/) # CLI defined cmd_line_d
+			{
+			@CLIARY = split(/--cmd_line_d=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_d = $CLIARX[0];
+				$cmd_line_d =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_d:             $cmd_line_d\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_e=/) # CLI defined cmd_line_e
+			{
+			@CLIARY = split(/--cmd_line_e=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_e = $CLIARX[0];
+				$cmd_line_e =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_e:             $cmd_line_e\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_f=/) # CLI defined cmd_line_f
+			{
+			@CLIARY = split(/--cmd_line_f=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_f = $CLIARX[0];
+				$cmd_line_f =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_f:             $cmd_line_f\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_g=/) # CLI defined cmd_line_g
+			{
+			@CLIARY = split(/--cmd_line_g=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_g = $CLIARX[0];
+				$cmd_line_g =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_g:             $cmd_line_g\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_h=/) # CLI defined cmd_line_h
+			{
+			@CLIARY = split(/--cmd_line_h=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_h = $CLIARX[0];
+				$cmd_line_h =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_h:             $cmd_line_h\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_i=/) # CLI defined cmd_line_i
+			{
+			@CLIARY = split(/--cmd_line_i=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_i = $CLIARX[0];
+				$cmd_line_i =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_i:             $cmd_line_i\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_j=/) # CLI defined cmd_line_j
+			{
+			@CLIARY = split(/--cmd_line_j=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_j = $CLIARX[0];
+				$cmd_line_j =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_j:             $cmd_line_j\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /--cmd_line_k=/) # CLI defined cmd_line_k
+			{
+			@CLIARY = split(/--cmd_line_k=/,$ARGS);
+			@CLIARX = split(/ /,$CLIARY[1]);
+			if (length($CLIARX[0])>2)
+				{
+				$cmd_line_k = $CLIARX[0];
+				$cmd_line_k =~ s/\/$| |\r|\n|\t//gi;
+				if ($DB) {print "  cmd_line_k:             $cmd_line_k\n";}
+				}
+			@CLIARY = @MT;   @CLIARX = @MT;
+			}
+		if ($ARGS=~ /-debug/i)
+			{
+			$DB=1; # Debug flag
+			}
+		if ($ARGS=~ /--debugX/i)
+			{
+			$DBX=1;
+			print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
+			}
+		if ($ARGS=~ /-fulllog/i)
+			{
+			$FULL_LOG=1; # Full response logging enabled
+			}
 
 	}
 }
@@ -104,144 +318,70 @@ else
 #print "no command line options set\n\n";
 }
 
-if (length($data1)>1)
+if (length($action)>1)
 	{
-#	print "Data1 value = |$data1|\n";
+	$PATHlogs =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_b =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_c =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_d =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_e =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_f =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_g =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_h =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_i =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_j =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
+	$cmd_line_k =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
 
-# default path to astguiclient configuration file:
-$PATHconf =		'/etc/astguiclient.conf';
+	$originate_command  = '';
+	$originate_command .= "Action: $action\n";
+	if (length($cmd_line_b)>3) {$originate_command .= "$cmd_line_b\n";}
+	if (length($cmd_line_c)>3) {$originate_command .= "$cmd_line_c\n";}
+	if (length($cmd_line_d)>3) {$originate_command .= "$cmd_line_d\n";}
+	if (length($cmd_line_e)>3) {$originate_command .= "$cmd_line_e\n";}
+	if (length($cmd_line_f)>3) {$originate_command .= "$cmd_line_f\n";}
+	if (length($cmd_line_g)>3) {$originate_command .= "$cmd_line_g\n";}
+	if (length($cmd_line_h)>3) {$originate_command .= "$cmd_line_h\n";}
+	if (length($cmd_line_i)>3) {$originate_command .= "$cmd_line_i\n";}
+	if (length($cmd_line_j)>3) {$originate_command .= "$cmd_line_j\n";}
+	if (length($cmd_line_k)>3) {$originate_command .= "$cmd_line_k\n";}
+	$originate_command .= "\n";
 
-open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
-@conf = <conf>;
-close(conf);
-$i=0;
-foreach(@conf)
-	{
-	$line = $conf[$i];
-	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
-	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
-		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
-		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
-		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
-		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
-		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
-	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
-		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
-	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
-		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
-		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
-		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
-		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
-		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
-		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
-	$i++;
-	}
-
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
-if (!$VARDB_port) {$VARDB_port='3306';}
-
-use DBI;
-use Net::Telnet ();
-	  
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-    or die "Couldn't connect to database: " . DBI->errstr;
-    
-	### Grab Server values from the database
-	$stmtA = "SELECT telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEsend,vd_server_logs FROM servers where server_ip = '$server_ip';";
-	    $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		 while ($sthArows > $rec_count)
-		 {
-     	 	@aryA = $sthA->fetchrow_array;
-			$DBtelnet_host	=			"$aryA[0]";
-			$DBtelnet_port	=			"$aryA[1]";
-			$DBASTmgrUSERNAME	=		"$aryA[2]";
-			$DBASTmgrSECRET	=			"$aryA[3]";
-			$DBASTmgrUSERNAMEsend	=	"$aryA[4]";
-			$DBvd_server_logs =			"$aryA[5]";
-			if ($DBtelnet_host)				{$telnet_host = $DBtelnet_host;}
-			if ($DBtelnet_port)				{$telnet_port = $DBtelnet_port;}
-			if ($DBASTmgrUSERNAME)			{$ASTmgrUSERNAME = $DBASTmgrUSERNAME;}
-			if ($DBASTmgrSECRET)			{$ASTmgrSECRET = $DBASTmgrSECRET;}
-			if ($DBASTmgrUSERNAMEsend)		{$ASTmgrUSERNAMEsend = $DBASTmgrUSERNAMEsend;}
-			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
-				else {$SYSLOG = '0';}
-	      $rec_count++;
-		 } 
-         $sthA->finish();
-
-	$stmtA = "SELECT * FROM vicidial_manager where man_id = '$data1'";
-	    $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		 while ($sthArows > $rec_count)
-		 {
-     	 	@aryA = $sthA->fetchrow_array;
-		
-			$man_id		 = "$aryA[0]";
-			$uniqueid	 = "$aryA[1]";
-			$channel	 = "$aryA[6]";
-			$action		 = "$aryA[7]";
-			$callid		 = "$aryA[8]";
-			$cmd_line_b	 = "$aryA[9]";
-			$cmd_line_c	 = "$aryA[10]";
-			$cmd_line_d	 = "$aryA[11]";
-			$cmd_line_e	 = "$aryA[12]";
-			$cmd_line_f	 = "$aryA[13]";
-			$cmd_line_g	 = "$aryA[14]";
-			$cmd_line_h	 = "$aryA[15]";
-			$cmd_line_i	 = "$aryA[16]";
-			$cmd_line_j	 = "$aryA[17]";
-			$cmd_line_k	 = "$aryA[18]";
-
-			$originate_command  = '';
-			$originate_command .= "Action: $action\n";
-			if (length($cmd_line_b)>3) {$originate_command .= "$cmd_line_b\n";}
-			if (length($cmd_line_c)>3) {$originate_command .= "$cmd_line_c\n";}
-			if (length($cmd_line_d)>3) {$originate_command .= "$cmd_line_d\n";}
-			if (length($cmd_line_e)>3) {$originate_command .= "$cmd_line_e\n";}
-			if (length($cmd_line_f)>3) {$originate_command .= "$cmd_line_f\n";}
-			if (length($cmd_line_g)>3) {$originate_command .= "$cmd_line_g\n";}
-			if (length($cmd_line_h)>3) {$originate_command .= "$cmd_line_h\n";}
-			if (length($cmd_line_i)>3) {$originate_command .= "$cmd_line_i\n";}
-			if (length($cmd_line_j)>3) {$originate_command .= "$cmd_line_j\n";}
-			if (length($cmd_line_k)>3) {$originate_command .= "$cmd_line_k\n";}
-			$originate_command .= "\n";
-		$rec_count++;
-	   }
-       $sthA->finish();
-       
-		$dbhA->disconnect();
+	if ($DB) {print "  SYSLOG:                 $SYSLOG\n";}
+	if ($DB) {print "  PATHlogs:               $PATHlogs\n";}
+	if ($DB) {print "  telnet_host:            $telnet_host\n";}
+	if ($DB) {print "  telnet_port:            $telnet_port\n";}
+	if ($DB) {print "  ASTmgrSECRET:           $ASTmgrSECRET\n";}
+	if ($DB) {print "  ASTmgrUSERNAME:         $ASTmgrUSERNAME\n";}
+	if ($DB) {print "  ASTmgrUSERNAMEsend:     $ASTmgrUSERNAMEsend\n";}
+	if ($DB) {print "  action:                 $action\n";}
+	if ($DB) {print "  cmd_line_b:             $cmd_line_b\n";}
+	if ($DB) {print "  cmd_line_c:             $cmd_line_c\n";}
+	if ($DB) {print "  cmd_line_d:             $cmd_line_d\n";}
+	if ($DB) {print "  cmd_line_e:             $cmd_line_e\n";}
+	if ($DB) {print "  cmd_line_f:             $cmd_line_f\n";}
+	if ($DB) {print "  cmd_line_g:             $cmd_line_g\n";}
+	if ($DB) {print "  cmd_line_h:             $cmd_line_h\n";}
+	if ($DB) {print "  cmd_line_i:             $cmd_line_i\n";}
+	if ($DB) {print "  cmd_line_j:             $cmd_line_j\n";}
+	if ($DB) {print "  cmd_line_k:             $cmd_line_k\n";}
 
 
-	print "$now_date|$data1|\n$originate_command";
-	$event_string = "0|$data1|";
+	print "$now_date|$SYSLOG|\n$originate_command";
+	$event_string = "0|$SYSLOG|";
 	$event_string .= "\n$originate_command";
-		if ($FULL_LOG) {&full_event_logger;}
+	if ( ($FULL_LOG) && ($SYSLOG) )
+		 {&full_event_logger;}
 
-if (!$telnet_port) {$telnet_port = '5038';}
+	use Net::Telnet ();
+	  
+	if (!$telnet_port) {$telnet_port = '5038';}
 
 	### connect to asterisk manager through telnet
 	$tn = new Net::Telnet (Port => $telnet_port,
 						  Prompt => '/.*[\$%#>] $/',
 						  Output_record_separator => '',
 						  Errmode    => Return,);
-	#$MStelnetlog = "$PATHlogs/SAC_telnet_log.txt";
-	#$fh = $tn->dump_log("$MStelnetlog");  # uncomment for telnet log
+	#$fh = $tn->dump_log("$PATHlogs/SAC_telnet_log.txt");  # uncomment for telnet log
 	if (length($ASTmgrUSERNAMEsend) > 3) {$telnet_login = $ASTmgrUSERNAMEsend;}
 	else {$telnet_login = $ASTmgrUSERNAME;}
 	$tn->open("$telnet_host"); 
@@ -253,9 +393,9 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 	@list_channels = $tn->cmd(String => "$originate_command", Prompt => '/.*/'); 
 
-sleep(3);
+	sleep(3);
 	
-	if ($FULL_LOG) 
+	if ( ($FULL_LOG) && ($SYSLOG) )
 		{
 		$event_string = "1|$data1|";   $k=0;
 		foreach(@list_channels) {$event_string .= "$list_channels[$k]";   $k++;}
@@ -268,9 +408,9 @@ sleep(3);
 
 	@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
 
-sleep(2);
+	sleep(2);
 
-	if ($FULL_LOG) 
+	if ( ($FULL_LOG) && ($SYSLOG) )
 		{
 		$event_string = "2|$data1|";   $k=0;
 		foreach(@list_channels) {$event_string .= "$list_channels[$k]";   $k++;}
@@ -282,8 +422,6 @@ sleep(2);
 	$tn->buffer_empty;
 
 	$ok = $tn->close;
-
-
 
 
 	}
