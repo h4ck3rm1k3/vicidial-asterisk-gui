@@ -36,9 +36,9 @@ agc|htglobalize.php|1
 "NOV"|"LIS"|
 "DEC"|"GRU"|
 \./images/|../agc/images/|
-BORDER|RAMKA|
-VALUE=SUBMIT|VALUE=ZATWIERDŹ|
-TYPE=SUBMIT|TYPE=Zatwierdź|
+BORDER|Border|
+VALUE=SUBMIT|VALUE=SUBMIT|
+TYPE=SUBMIT|TYPE=Submit|
 MAXLENGTH|maxlength|
 ### BEGIN translation phrases through 1.1.11 release ###
 English|Anglieski|
