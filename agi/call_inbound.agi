@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# call_inbound.agi version 0.2   *DBI-version*
+# call_inbound.agi version 0.3   *DBI-version*
 # 
 # runs at the beginning and ending of every inbound call received
 # 
@@ -22,10 +22,25 @@
 # changes:
 # 60731-1435 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
+# 60817-1102 - added output options check from database
 #
 
-$V = 1;		# set to 1 for verbose mode
-$M = 1;		# set to 1 for 2 line messages mode
+$script = 'call_inbound.agi';
+
+$US='_';
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$Y = substr($year, 0, 1);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+$filedate = "$US$Y$mon$mday$hour$min$sec$US";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -65,39 +80,42 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
 if (!$VARDB_port) {$VARDB_port='3306';}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
 use DBI;
 
-$US='_';
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-$year = ($year + 1900);
-$Y = substr($year, 0, 1);
-$mon++;
-if ($mon < 10) {$mon = "0$mon";}
-if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
-if ($min < 10) {$min = "0$min";}
-if ($sec < 10) {$sec = "0$sec";}
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
 
-$now_date_epoch = time();
-$now_date = "$year-$mon-$mday $hour:$min:$sec";
-$filedate = "$US$Y$mon$mday$hour$min$sec$US";
-
+### Grab Server values from the database
+$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	$AGILOG = '0';
+	 @aryA = $sthA->fetchrow_array;
+		$DBagi_output =			"$aryA[0]";
+		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
+		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
+		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
+	 $rec_count++;
+	}
+$sthA->finish();
 
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
-if ($V) {print STDERR "Perl Environment Dump:\n";}
+	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
 	{
 	$args = "$args $ARGV[$i]";
-	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
 	
@@ -143,16 +161,12 @@ if ($V) {print STDERR "Perl Environment Dump:\n";}
 		}
 	}
 }
-else
-{
-if ($V) {print "no command line options set\n";}
-}
 
 $|=1;
 while(<STDIN>) {
 	chomp;
 	last unless length($_);
-	if ($V)
+	if ($AGILOG)
 	{
 		if (/^agi_(\w+)\:\s+(.*)$/)
 		{
@@ -186,18 +200,17 @@ while(<STDIN>) {
 		}
 }
 
-if ($V)
-{
+if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-	if ($V) {print STDERR "AGI Environment Dump:\n";}
-	foreach $i (sort keys %AGI) {
-		if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
-	}
+foreach $i (sort keys %AGI) 
+{
+	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
 
-        $callerid = "\"$calleridname\" <$callerid>";
+if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   &agi_output;}
 
-if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|\n";}
+
+        $callerid = "\"$calleridname\" <$callerid>";
 
 if ($extension =~ /h/i) {$stage = 'END';}
 else {$stage = 'START';}
@@ -206,21 +219,17 @@ else {$stage = 'START';}
 if ($stage =~ /START/)
 	{
 
-	if ($V) {print STDERR "\nCALL INBOUND STARTED\n";}
-	if ($M) {print STDERR "+++++ CALL INBOUND START : |$unique_id|$channel|$extension|$type|$callerid|$now_date\n";}
+	if ($AGILOG) {$agi_string = "+++++ CALL INBOUND START : |$now_date|";   &agi_output;}
 
 #	if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
 #	if ($channel =~ /^Zap\//) {$channel =~ s/-\d$//gi;}
 
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-	    or die "Couldn't connect to database: " . DBI->errstr;
-
-	$stmtA = "INSERT INTO live_inbound (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$server_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
-	if ($V) {print STDERR "\n|$stmtA|\n";}
+	$stmtA = "INSERT INTO live_inbound (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$VARserver_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 
-	$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$server_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
-	if ($V) {print STDERR "\n|$stmtA|\n";}
+	$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,inbound_number,comment_a,comment_b,comment_c,comment_d,comment_e) values('$unique_id','$channel','$VARserver_ip','$callerid','$extension','$phone_ext','$now_date','$inbound_number','$comment_a','$comment_b','$comment_c','$comment_d','$comment_e')";
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 
 	$dbhA->disconnect();
@@ -230,23 +239,15 @@ if ($stage =~ /START/)
 ### call end stage
 else		 
 	{
+	if ($AGILOG) {$agi_string = "CALL INBOUND HUNG UP; deleting live_inbound record for $unique_id";   &agi_output;}
 
-	if ($V) {print STDERR "\nCALL INBOUND HUNG UP\n";}
-
-	$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-	    or die "Couldn't connect to database: " . DBI->errstr;
-
-	if ($V) {print STDERR "\nCONNECTED: deleting live_inbound record for $unique_id on $server_ip\n";}
-
-	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$server_ip'";
+	$stmtA = "DELETE from live_inbound where uniqueid='$unique_id' and server_ip='$VARserver_ip'";
 	$affected_rows = $dbhA->do($stmtA);
 
 	$dbhA->disconnect();
 
-
-	if ($M) {print STDERR "+++++ CALL INBOUND HUNGUP: |$unique_id|$affected_rows|\n";}
+	if ($AGILOG) {$agi_string = "+++++ CALL INBOUND HUNGUP: |$unique_id|$affected_rows|";   &agi_output;}
 	}
-if ($V) {print STDERR "\nAll Done Call Inbound Exiting:\n";}
 
 exit;
 
@@ -271,4 +272,21 @@ sub checkresult {
 		print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
 	}
+}
+
+
+sub agi_output
+{
+if ($AGILOG >=2)
+	{
+	### open the log file for writing ###
+	open(Lout, ">>$AGILOGfile")
+			|| die "Can't open $AGILOGfile: $!\n";
+	print Lout "$now_date|$script|$agi_string\n";
+	close(Lout);
+	}
+	### send to STDERR writing ###
+if ( ($AGILOG == '1') || ($AGILOG == '3') )
+	{print STDERR "$now_date|$script|$agi_string\n";}
+$agi_string='';
 }

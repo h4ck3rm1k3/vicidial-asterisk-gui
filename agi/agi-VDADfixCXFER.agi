@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADfixCXFER.agi version 0.1   *DBI-version*
+# agi-VDADfixCXFER.agi version 0.3   *DBI-version*
 # 
 # runs when a Consultative transfer is released by the vicidial fronter as the
 # call arrives on another channel so that the vicidial_live_agents record is
@@ -15,10 +15,20 @@
 #
 # changes:
 # 60809-1749 - first build
+# 60817-1122 - added output options check from database
 #
 
-$V = 1;		# set to 1 for verbose mode
-$M = 1;		# set to 1 for 2 line messages mode
+$script = 'agi-VDADfixCXFER.agi';
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -58,34 +68,44 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
 if (!$VARDB_port) {$VARDB_port='3306';}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-$year = ($year + 1900);
-$mon++;
-if ($mon < 10) {$mon = "0$mon";}
-if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
-if ($min < 10) {$min = "0$min";}
-if ($sec < 10) {$sec = "0$sec";}
-	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
+
+### Grab Server values from the database
+$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	$AGILOG = '0';
+	 @aryA = $sthA->fetchrow_array;
+		$DBagi_output =			"$aryA[0]";
+		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
+		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
+		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
+	 $rec_count++;
+	}
+$sthA->finish();
+
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
-if ($V) {print STDERR "Perl Environment Dump:\n";}
+	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
 	{
 	$args = "$args $ARGV[$i]";
-	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
 
@@ -122,17 +142,13 @@ if ($V) {print STDERR "Perl Environment Dump:\n";}
 		}
 	}
 }
-else
-{
-if ($V) {print "no command line options set\n";}
-}
 
 $|=1;
 while(<STDIN>) 
 {
 	chomp;
 	last unless length($_);
-	if ($V)
+	if ($AGILOG)
 	{
 		if (/^agi_(\w+)\:\s+(.*)$/)
 		{
@@ -153,43 +169,39 @@ while(<STDIN>)
 	$phone_number =		$EXTEN[4];
 	$campaign_id =		$EXTEN[5];
 
-if ($V)
-{
+if ($AGILOG) {$agi_string = "AGI Environment Dump:";   &agi_output;}
 
-	if ($V) {print STDERR "AGI Environment Dump:\n";}
-	foreach $i (sort keys %AGI) {
-		if ($V) {print STDERR " -- $i = $AGI{$i}\n";}
-	}
+foreach $i (sort keys %AGI) 
+{
+	if ($AGILOG) {$agi_string = " -- $i = $AGI{$i}";   &agi_output;}
 }
 
-if ($V) {print STDERR "AGI Environment Dump: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|\n";}
+if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|$calleridname|$priority|";   &agi_output;}
 
-if ($V) {print STDERR "\nCXFERfix : $lead_id $user $channel $uniqueid\n";}
+if ($AGILOG) {$agi_string = "CXFERfix : $lead_id $user $channel $uniqueid";   &agi_output;}
+
 	$CIDlead = sprintf("%010s", $lead_id);
 	$CIDlead = "C123412345$CIDlead";
 	print "SET CALLERID $CIDlead\n";
 	checkresult($result);
-	print STDERR "callerID changed: $CIDlead\n";
-
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-    or die "Couldn't connect to database: " . DBI->errstr;
+	if ($AGILOG) {$agi_string = "callerID changed: $CIDlead";   &agi_output;}
 
 ########## FIND AND UPDATE vicidial_live_agents ##########
-$stmtA = "UPDATE vicidial_live_agents SET channel='$channel',call_server_ip='$server_ip',uniqueid='$uniqueid' where user='$user' and lead_id='$lead_id';";
-	if($M){print STDERR "\n\n|$stmtA|\n";}
+$stmtA = "UPDATE vicidial_live_agents SET channel='$channel',call_server_ip='$VARserver_ip',uniqueid='$uniqueid' where user='$user' and lead_id='$lead_id';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($M) {print STDERR "--    VDAD vicidial_live_agents update: |$affected_rows|$lead_id\n";}
+if ($AGILOG) {$agi_string = "--    VDAD vicidial_live_agents update: |$affected_rows|$lead_id|";   &agi_output;}
 
 ########## INSERT NEW vicidial_auto_calls record ##########
-$stmtA = "INSERT INTO vicidial_auto_calls SET channel='$channel',server_ip='$server_ip',uniqueid='$uniqueid',campaign_id='$campaign_id',status='CLOSER',lead_id='$lead_id',phone_code='$phone_code',phone_number='$phone_number',call_time='$SQLdate',call_type='IN',callerid='$CIDlead';";
-	if($M){print STDERR "\n\n|$stmtA|\n";}
+$stmtA = "INSERT INTO vicidial_auto_calls SET channel='$channel',server_ip='$VARserver_ip',uniqueid='$uniqueid',campaign_id='$campaign_id',status='CLOSER',lead_id='$lead_id',phone_code='$phone_code',phone_number='$phone_number',call_time='$SQLdate',call_type='IN',callerid='$CIDlead';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($M) {print STDERR "--    VDAD vicidial_auto_calls insert: |$affected_rows|$lead_id\n";}
+if ($AGILOG) {$agi_string = "--    VDAD vicidial_auto_calls insert: |$affected_rows|$lead_id|";   &agi_output;}
 
 $dbhA->disconnect();
 
 
-print STDERR "\nexiting the CXFERfix app, transferring call to $conf_exten\n";
+if ($AGILOG) {$agi_string = "exiting the CXFERfix app, transferring call to $conf_exten";   &agi_output;}
 #print "SET CONTEXT $ext_context\n";
 #	checkresult($result);
 print "SET EXTENSION $conf_exten\n";
@@ -222,4 +234,22 @@ sub checkresult {
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
 	}
+}
+
+
+
+sub agi_output
+{
+if ($AGILOG >=2)
+	{
+	### open the log file for writing ###
+	open(Lout, ">>$AGILOGfile")
+			|| die "Can't open $AGILOGfile: $!\n";
+	print Lout "$now_date|$script|$agi_string\n";
+	close(Lout);
+	}
+	### send to STDERR writing ###
+if ( ($AGILOG == '1') || ($AGILOG == '3') )
+	{print STDERR "$now_date|$script|$agi_string\n";}
+$agi_string='';
 }

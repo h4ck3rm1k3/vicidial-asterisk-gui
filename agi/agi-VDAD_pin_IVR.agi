@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_pin_IVR.agi version 0.1   *DBI-version*
+# agi-VDAD_pin_IVR.agi version 0.2   *DBI-version*
 # 
 # At the end of a call, the agent transfers customer to this script
 #
@@ -23,11 +23,11 @@
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
-# 60802-1304 -  first build
+# 60802-1304 - first build
+# 60817-1113 - added output options check from database
 #
 
-$V = 1;		# set to 1 for verbose mode
-$M = 1;		# set to 1 for 2 line messages mode
+$script = 'agi-VDAD_pin_IVR.agi';
 
 $first_audio_file = '85100003';
 $second_audio_file = '85100004';
@@ -46,6 +46,16 @@ $campaign_id =		'TESTCAMP';
 $product_code =		'ABC';
 $user =			'1234';
 $pin =			'0';
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -85,37 +95,44 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
 if (!$VARDB_port) {$VARDB_port='3306';}
+if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
 
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+    or die "Couldn't connect to database: " . DBI->errstr;
 
-
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-$year = ($year + 1900);
-$mon++;
-if ($mon < 10) {$mon = "0$mon";}
-if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
-if ($min < 10) {$min = "0$min";}
-if ($sec < 10) {$sec = "0$sec";}
-	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
+### Grab Server values from the database
+$stmtA = "SELECT agi_output FROM servers where server_ip = '$VARserver_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	$AGILOG = '0';
+	 @aryA = $sthA->fetchrow_array;
+		$DBagi_output =			"$aryA[0]";
+		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
+		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
+		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}
+	 $rec_count++;
+	}
+$sthA->finish();
 
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
-if ($V) {print STDERR "Perl Environment Dump:\n";}
+	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
 	{
 	$args = "$args $ARGV[$i]";
-	if ($V) {print STDERR "$i|$ARGV[$i]|\n";}
+	if ($AGILOG) {$agi_string = "$i|$ARGV[$i]";   &agi_output;}
 	$i++;
 	}
 
@@ -145,16 +162,12 @@ if ($V) {print STDERR "Perl Environment Dump:\n";}
 		}
 	}
 }
-else
-{
-if ($V) {print "no command line options set\n";}
-}
 
 $|=1;
 while(<STDIN>) {
 	chomp;
 	last unless length($_);
-	if ($V)
+	if ($AGILOG)
 	{
 		if (/^agi_(\w+)\:\s+(.*)$/)
 		{
@@ -177,7 +190,7 @@ while(<STDIN>) {
 		}
 }
 
-	if ($V) {print STDERR "\nINBOUND IVR PLAY CALL VDCL STARTED\n";}
+	if ($AGILOG) {$agi_string = "INBOUND IVR PLAY CALL VDCL STARTED";   &agi_output;}
 
 
 $AGI->stream_file('beep');
@@ -186,9 +199,6 @@ sleep(1);
 
 $AGI->stream_file("$first_audio_file");
 
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
-    or die "Couldn't connect to database: " . DBI->errstr;
-
 ### insert a record into the vicidial_list_pins table 
 $stmtA = "INSERT INTO vicidial_list_pins (entry_time,phone_number,lead_id,campaign_id,product_code,user,digits) values('$SQLdate','$phone_number','$lead_id','$campaign_id','$product_code','$user','IVR');";
 
@@ -196,7 +206,7 @@ $affected_rows = $dbhA->do($stmtA);
 
 $insert_pin_id = $dbhA->{'mysql_insertid'};
 
-if($M){print STDERR "\n|$stmtA|$insert_pin_id|$affected_rows|\n";}
+if ($AGILOG) {$agi_string = "|$stmtA|$insert_pin_id|$affected_rows|";   &agi_output;}
 
 $dbhA->disconnect();
 
@@ -209,3 +219,19 @@ $AGI->stream_file("$goodbye_audio_file");
 
 exit;
 
+
+sub agi_output
+{
+if ($AGILOG >=2)
+	{
+	### open the log file for writing ###
+	open(Lout, ">>$AGILOGfile")
+			|| die "Can't open $AGILOGfile: $!\n";
+	print Lout "$now_date|$script|$agi_string\n";
+	close(Lout);
+	}
+	### send to STDERR writing ###
+if ( ($AGILOG == '1') || ($AGILOG == '3') )
+	{print STDERR "$now_date|$script|$agi_string\n";}
+$agi_string='';
+}
