@@ -982,6 +982,10 @@ This works for most customers.  Folks that want inbound then also sign up for
 DIDs, each of which has its own IAX username.  (Which is the 10 digit DID).
 Each username has its own password which is managed through their web interface.
 
+NOTE: If you will be using the G729 codec through binfone there is now a 
+dedicated G729 gateway that only handles G729 calls. Please use this address to
+register to if you plan on using G729 as your codec: iax-g729.binfone.com
+
       iax.conf:
 	[general]
 	register => 1112223333:PASSWORD@iax.binfone.com
