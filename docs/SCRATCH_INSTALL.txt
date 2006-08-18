@@ -1009,6 +1009,13 @@ Each username has its own password which is managed through their web interface.
 	exten => 1112223333,2,Dial(sip/gs102,55,o)
 	exten => 1112223333,3,Hangup
 
+
+     dnsmgr.conf:   # It is very helpful to enable dnsmgr
+	[general]
+	enable=yes		; enable creation of managed DNS lookups
+	refreshinterval=300	; refresh managed DNS lookups every <n> seconds
+
+
 ##### END EXAMPLE
 
 
@@ -1205,8 +1212,13 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*015*8600XXX,2,Hangup
 
+10. edit dnsmgr.conf:   # It is very helpful to enable dnsmgr
+	[general]
+	enable=yes		; enable creation of managed DNS lookups
+	refreshinterval=300	; refresh managed DNS lookups every <n> seconds
 
-10.  Now that you have configured Asterisk, it is time to try to start it for the 
+
+11.  Now that you have configured Asterisk, it is time to try to start it for the 
 first time.
    - First make sure that your T1 line(or other telco line) is connected to the 
 digium card. 
