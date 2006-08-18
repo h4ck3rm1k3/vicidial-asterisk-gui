@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.1               2006-08-XX
+Asterisk/astguiclient install from scratch.    v.2.0.1               2006-09-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -225,25 +225,59 @@ installation we are assuming that there are no other machines on our network to
 help the Asterisk server, so it must have everything it needs installed locally.
 
 
-It's nice to have a non-root account to put applications and have things run on 
-when you don't want to use root. We use cron user account for this purpose.
 
+SUBPHASE 3.0: MySQL requirements
 
+You must at least have Mysql client installed on each VICIDIAL server, but you 
+only need one database server.
 
-SUBPHASE 3.0: creating an underpriveledged user account
+MySQL is a fast database system that is very easy to integrate with any 
+application. You can either install the server on the local Asterisk system or 
+have one somewhere on your network. For our purposes, we are creating an Asterisk 
+installation that is self contained and needs no other local servers to operate,
+so we will need to install mysql on this machine.
+*REQUIRED and OPTIONAL* (only install MySQL server locally if you don't want to use an installation 
+on another machine, Mysql client is required on all VICIDIAL servers)
+NOTE: a minimum of MySQL server 4.0.X is required
 
-1. type "adduser cron" at the command prompt
-2. follow the prompts and assign a password that you will remember to the new 
-user. The home directory should be /home/cron/ for this new user.
+  Go to http://www.mysql.com/ and download the mysql package
+   - to install this directly on the command line type:
+	- cd /usr/local
+	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
+	- gunzip mysql-4.0.27.tar.gz
+	- tar xvf mysql-4.0.27.tar
+	- cd mysql-4.0.27
+	- groupadd mysql
+	- useradd -g mysql mysql
+	- "./configure --prefix=/usr/local/mysql --enable-large-files --enable-shared=yes --with-readline"
+	   **** If only MySQL client is needed for DBD::mysql then use this:
+		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline"
+	- make
+	- make install
+	- scripts/mysql_install_db
+	- chown -R root  /usr/local/mysql
+	- chown -R mysql /usr/local/mysql/var
+	- chgrp -R mysql /usr/local/mysql
+	- cp support-files/my-medium.cnf /etc/my.cnf
+	- /usr/local/mysql/bin/mysqld_safe --user=mysql &
+   - you are done
+
+   ***** NOTE: if you will be using any of the DBI perl scripts: *****
+   Every machine that you will be using the newer BDI perl scripts on will need
+   to have the perl modules DBI and DBD::mysql installed on them. To do this
+   you will also need to at least have the MySQL client installed on the server
+   (see above) then you will need to go to 'cpan' and "install DBI" and 
+   "install DBD::mysql". You may need to "force install DBD::mysql" if the DBD
+   tests fail on your first try, but that is OK since the tests are not needed
 
 
 
 SUBPHASE 3.1: Installing Perl Modules
 
-NOTE - you can install ActiveState http://www.activestate.com perl for faster 
-executing code that uses less processor time, but it is not required. Here's 
-the source for ActiveState Perl 5.6: (it's free)
-	http://downloads.activestate.com/ActivePerl/src/5.6/AP638_source.tgz
+NOTE - you can install ActiveState http://www.activestate.com perl which may 
+improve performance, but it is not required. Here's the source for ActiveState
+Perl 5.8: (it's free)
+	http://downloads.activestate.com/ActivePerl/src/5.8/AP817_source.tgz
 I hope to add the lengthy steps for installing it as your default perl on your
 server but I need some time and a free machine to do that.
 
@@ -273,8 +307,7 @@ following modules first:   (say YES if asked to install prerequisites)
    - reload cpan
 - then you can install other modules:
    - install DBI
-   - force install DBD::mysql	(must at least have mysqlclient installed)
-   - install O/OY/OYAMA/Net-MySQL-0.08.tar.gz
+   - force install DBD::mysql	(must at least have mysqlclientlibs installed)
    - install Net::Telnet
    - install Time::HiRes
    - install OLE::Storage_Lite		(needed for super list loader Excel)
@@ -400,12 +433,12 @@ the time is the same on our client computers and our servers.
 6. Go to http://www.ntp.org/ and download the ntpd package
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.2.tar.gz
+	- wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.2p3.tar.gz
 		If you get compilation errors here try 4.1.2:
 	  - wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.1.2.tar.gz
-	- gunzip ntp-stable-4.2.0a-20060224.tar.gz
-	- tar xvf ntp-stable-4.2.0a-20060224.tar
-	- cd ntp-4.2.0
+	- gunzip ntp-4.2.2p3.tar.gz
+	- tar xvf ntp-4.2.2p3.tar.gz
+	- cd ntp-4.2.2p3
 	- ./configure
 	- make
 	- make install
@@ -416,37 +449,17 @@ the time is the same on our client computers and our servers.
    - you are done
 
 
-aftpd is a tftp server which is a file transfer method used by many VOIP phones 
-to get their firmware and/or configuration files. This is optional.
-*OPTIONAL* (only if you want it for a VOIP phone you are going to use)
-
-7. Go to ftp://ftp.mamalinux.com/pub/atftp and download the aftpd package
-   - to install this directly on the command line type:
-	- cd /usr/local
-	- ncftpget ftp://ftp.mamalinux.com/pub/atftp/atftp-0.7.tar.gz
-	- gunzip atftp-0.7.tar.gz
-	- tar xvf atftp-0.7.tar
-	- cd atftp-0.7
-	- ./configure
-	- make
-	- make install
-	- mkdir /usr/local/tftp 	# create the directory to put files in
-	- chmod 0777 /usr/local/tftp	# set permissions for new directory
-	- "/usr/local/sbin/in.tftpd --verbose=6 --daemon --port=69 --user cron /usr/local/tftp"	# command to start tftpd server
-   - you are done
-
-
 iftop is a good console bandwidth visualization tool that shows you active 
 connections, where they are going to/from and how much of your precious bandwidth 
 they are using. *OPTIONAL*
 
-8. Go to http://www.ex-parrot.com/~pdw/iftop/ and download the package
+7. Go to http://www.ex-parrot.com/~pdw/iftop/ and download the package
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://www.tcpdump.org/release/libpcap-0.8.3.tar.gz
-	- gunzip libpcap-0.8.3.tar.gz
-	- tar xvf libpcap-0.8.3.tar
-	- cd libpcap-0.8.3
+	- wget http://www.tcpdump.org/release/libpcap-0.9.4.tar.gz
+	- gunzip libpcap-0.9.4.tar.gz
+	- tar xvf libpcap-0.9.4.tar
+	- cd libpcap-0.9.4
 	- ./configure
 	- make
 	- make install
@@ -467,7 +480,7 @@ within PNG files simply by creating a config file and a data file. We use this
 package along with the included PHP script to generate server performance graphs
 that can be displayed real-time on a web page. *OPTIONAL*
 
-9. Go to http://ploticus.sourceforge.net/ and download the package
+8. Go to http://ploticus.sourceforge.net/ and download the package
    - to install this directly on the command line type:
 	NOTE: you may have to edit the Makefile to remove X11 if you don't have it
 	- cd /usr/local	
@@ -483,76 +496,13 @@ that can be displayed real-time on a web page. *OPTIONAL*
    need the 'pl' script to be linked or copied into your htdocs/vicidial/ploticus directory
    NOTE: you may need to edit the Makefile for ploticus if you do not have X11
 
-MySQL is a fast database system that is very easy to integrate with any 
-application. You can either install it on the local Asterisk system or have one 
-somewhere on your network. For our purposes, we are creating an Asterisk 
-installation that is self contained and needs no other local servers to operate, 
-so we will need to install mysql on this machine.
-*OPTIONAL* (only install MySQL locally if you don't want to use an installation 
-on another machine)
-NOTE: a minimum of MySQL 4.0.X is required
-
-10. Go to http://www.mysql.com/ and download the mysql package
-   - to install this directly on the command line type:
-	- cd /usr/local
-	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
-	- gunzip mysql-4.0.27.tar.gz
-	- tar xvf mysql-4.0.27.tar
-	- cd mysql-4.0.27
-	- groupadd mysql
-	- useradd -g mysql mysql
-	- "./configure --prefix=/usr/local/mysql --enable-large-files --enable-shared=yes --with-readline"
-		If only MySQL client is needed for DBD::mysql then use this:
-		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline"
-	- make
-	- make install
-	- scripts/mysql_install_db
-	- chown -R root  /usr/local/mysql
-	- chown -R mysql /usr/local/mysql/var
-	- chgrp -R mysql /usr/local/mysql
-	- cp support-files/my-medium.cnf /etc/my.cnf
-	- /usr/local/mysql/bin/mysqld_safe --user=mysql &
-   - you are done
-
-   ***** NOTE: if you use MySQL version 4.0.X: *****
-   (http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz)
-   Then you need to make sure that you use the 0.08 version of the Net::MySQL
-   perl module. This can be found in the astguiclient release zip file in the 
-   libs/Net folder(MySQL.pm). Here are instructions on how to replace the 
-   0.09 version of MySQL.pm with the 0.08 version which is MySQL 4.0.X compatible:
-	- cpan
-	- install O/OY/OYAMA/Net-MySQL-0.08.tar.gz
-	    or you can use the version included with the astguiclient release:
-	- locate -u
-	- locate MySQL.pm (replace the path below with the path you find)
-	- mv /usr/lib/perl5/site_perl/5.8.6/Net/MySQL.pm MySQL.pm-old
-	- cp /home/cron/astguiclient_1.1.12-3/libs/Net/MySQL.pm /usr/lib/perl5/site_perl/5.8.6/Net/MySQL.pm
-   If you do not do this, then you will see MySQL authentication errors on your 
-   Asterisk server.
-
-   ***** NOTE: if you use MySQL version 4.1.12 or greater: *****
-   (http://mirror.services.wisc.edu/mysql/Downloads/MySQL-4.1/mysql-4.1.18.tar.gz)
-   If you are using the 0.08 version of the Net::MySQL perl module with 4.1.X 
-   Then you need to make sure that you use the SET PASSWORD ... OLD_PASSWORD to 
-   allow the older client libraries to connect to the MySQL server, or you can 
-   start your mysqld server with the "-old-passwords" option. If you do not do 
-   this, then you will see MySQL authentication errors on your Asterisk server.
-
-   ***** NOTE: if you will be using any of the DBI perl scripts: *****
-   Every machine that you will be using the newer BDI perl scripts on will need
-   to have the perl modules DBI and DBD::mysql installed on them. To do this
-   you will also need to at least have the MySQL client installed on the server
-   (see above) then you will need to go to 'cpan' and "install DBI" and 
-   "install DBD::mysql". You may need to "force install DBD::mysql" if the DBD
-   tests fail on your first try, but that is OK since the tests are not needed
-
 
 openssh is a remote login protocol server that is always a good idea to have 
 updated on your system, so we're going to install a new version now.
 *OPTIONAL* (only updated as a precaution, not manditory)
 	[NOTE: newer zlib is needed before installing]
 
-11. Go to http://www.openssh.org/ and download the linux source for openssh
+9. Go to http://www.openssh.org/ and download the linux source for openssh
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.zlib.net/zlib-1.2.3.tar.gz
@@ -563,7 +513,7 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.3p2.tar.gz
+        - wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.3p2.tar.gz
 	- gunzip openssh-4.3p2.tar.gz
 	- tar xvf openssh-4.3p2.tar
 	- cd openssh-4.3p2
@@ -578,7 +528,7 @@ locally and have it work with apache, you need it installed on your machine
 *OPTIONAL* (only install openssl if you want to use SSL secured web pages on 
 your locally installed copy of Apache web server)
 
-12. Go to http://www.openssl.org/ and download the linux source for openssl
+10. Go to http://www.openssl.org/ and download the linux source for openssl
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.openssl.org/source/openssl-0.9.8b.tar.gz
@@ -597,22 +547,22 @@ functionalities we need to have Apache and PHP installed on this machine.
 *OPTIONAL* (only install Apache and PHP locally if you don't want to use an 
 installation on another machine)
 
-13. Go to http://www.apache.org/ and download the apache unix source
+11. Go to http://www.apache.org/ and download the apache unix source
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.58.tar.gz
-	- gunzip httpd-2.0.58.tar.gz
-	- tar xvf httpd-2.0.58.tar
-	- wget http://us2.php.net/distributions/php-4.4.2.tar.gz
+	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.59.tar.gz
+	- gunzip httpd-2.0.59.tar.gz
+	- tar xvf httpd-2.0.59.tar
+	- wget http://us2.php.net/distributions/php-4.4.4.tar.gz
 		NOTE: PHP 5.1.1 has also been tested with this release
-	- gunzip php-4.4.2.tar.gz
-	- tar xvf php-4.4.2.tar
-	- cd httpd-2.0.58
+	- gunzip php-4.4.4.tar.gz
+	- tar xvf php-4.4.4.tar
+	- cd httpd-2.0.59
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install
-	- cd ../php-4.4.2
+	- cd ../php-4.4.4
 	- ./configure --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql
 	- make
 	- make install
@@ -635,7 +585,7 @@ the load of your web traffic across many servers. If you are running more than
 another cheap web server to handle the extra load.
 *OPTIONAL*
 
-14. Go to http://balance.sourceforge.net to download the most recent source version
+12. Go to http://balance.sourceforge.net to download the most recent source version
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://voxel.dl.sourceforge.net/sourceforge/balance/balance-3.34.tgz
@@ -655,13 +605,13 @@ you want to use the latest development code of Asterisk you will need to have
 this loaded on your system.
 *OPTIONAL*
 
-15. Go to http://subversion.tigris.org to download the most recent source version
+13. Go to http://subversion.tigris.org to download the most recent source version
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://subversion.tigris.org/downloads/subversion-1.3.0.tar.gz
-	- gunzip subversion-1.3.0.tar.gz
-	- tar xvf subversion-1.3.0.tar
-	- cd subversion-1.3.0
+	- wget http://subversion.tigris.org/downloads/subversion-1.3.2.tar.gz
+	- gunzip subversion-1.3.2.tar.gz
+	- tar xvf subversion-1.3.2.tar
+	- cd subversion-1.3.2
 	- ./configure --enable-ssl --with-neon
 	- make
 	- make install
@@ -671,13 +621,11 @@ this loaded on your system.
 PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
-There are four basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.10), the CVS_v1-0 branch(1.0
-with bug fixes not yet packaged and released) and the SVN_DEV version(development
-branch). Because there are bugs that affect astGUIclient in releases 1.0.8 and 
-1.0.9, we recommend using Asterisk 1.2.10 or 1.0.11.1. These instructions are how we 
-get our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices
-and one IAX2 softphone. 
+There are two basic ways to install Asterisk, an official release(at the time of 
+this writing the official release is 1.2.10) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.10. These instructions are how we get 
+our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
+one IAX2 softphone. 
 
 NOTE: If you want to use release 1.0.8 or 9 we would recommend either using the 
 CVS_v1-0_Stable branch where the issues are fixed, or patching your 1.0.8/1.0.9 code
@@ -699,24 +647,10 @@ with the following patch:
 	- tar xvf zaptel-1.2.7.tar
 	- gunzip libpri-1.2.3.tar.gz
 	- tar xvf libpri-1.2.3.tar
-   B. If you want latest 1.0 tree stable release:
-	- wget http://ftp.digium.com/pub/asterisk/old-releases/asterisk-1.0.11.1.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.0.10.tar.gz
-	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.0.9.tar.gz
-	- gunzip asterisk-1.0.11.1.tar.gz
-	- tar xvf asterisk-1.0.11.1.tar
-	- gunzip zaptel-1.0.10.tar.gz
-	- tar xvf zaptel-1.0.10.tar
-	- gunzip libpri-1.0.9.tar.gz
-	- tar xvf libpri-1.0.9.tar
-   C. if you want latest SVN_DEV version (sometimes unstable) [1.3 tree]
+   B. if you want latest SVN_DEV version (sometimes unstable) [1.3 tree]
 	- svn checkout http://svn.digium.com/svn/asterisk/trunk asterisk
 	- svn checkout http://svn.digium.com/svn/zaptel/trunk zaptel
 	- svn checkout http://svn.digium.com/svn/libpri/trunk libpri
-   D. if you want latest STABLE 1.2 tree version (stable)
-	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
-	- svn checkout http://svn.digium.com/svn/zaptel/branches/1.2 zaptel-1.2
-	- svn checkout http://svn.digium.com/svn/libpri/branches/1.2 libpri-1.2
   - ALL ->
 	- (1.0 tree)if you want to allow for more than 100 voicemail messages in a 
           mailbox(warning this will slightly increase memory usage when a call
@@ -1417,9 +1351,11 @@ VICIDIAL components to the system. (NOTE: make sure you have added the user "cro
 
 SUBPHASE 6.0: putting the files in place
 
+There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
+
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
 package(as of this writing it is 1.1.12)
-   - to install this directly on the command line type:
+   - for 1.1 release:
 	- cd /home/cron
 	- mkdir astguiclient
 	- cd astguiclient
@@ -1435,6 +1371,12 @@ package(as of this writing it is 1.1.12)
 		$DB_database = 'asterisk';
 		$DB_user = 'cron';
 		$DB_pass = '1234';
+   - for SVN 2.0 trunk:
+	- mkdir /usr/src/astguiclient
+	- cd /usr/src/astguiclient
+	- svn checkout svn://205.201.151.21:43690/agc_2-X
+	- cd trunk
+	- perl install.pl
    - there is one more file you need that's not included with the download 
 package, it's the conf.gsm file(this is the half-hour music file that we use 
 to put people on hold). I have a free classical music file that is available 
