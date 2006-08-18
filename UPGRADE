@@ -1,0 +1,7 @@
+################ UPGRADE
+
+If you are upgrading to the 2.0 code tree from the 1.1 code tree there have been several changes made to the code base and to where some files are stored in the release as well as on your machine.
+
+\. /path/from/root/extras/upgrade_2.0.1.sql
+
+perl install.pl
