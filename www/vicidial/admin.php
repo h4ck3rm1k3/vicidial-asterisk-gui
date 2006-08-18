@@ -501,12 +501,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60623-1159 - Fixed Scheduled Callbacks over-filtering bug and filter_sql bug
 # 60808-1147 - changed filtering for and added instructions for consutative transfers
 # 60816-1552 - added allcalls_delay start delay for recordings in vicidial.php
+# 60817-2226 - fixed bug that would not allow lead recycling of non-selectable statuses
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.57';
-$build = '60816-1552';
+$version = '2.0.58';
+$build = '60817-2226';
 
 $STARTtime = date("U");
 
@@ -4250,28 +4251,32 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><se
 	$statuses_list='';
 
 	$o=0;
-	while ($statuses_to_print > $o) {
+	while ($statuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
 		$o++;
-	}
+		}
 
-	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' and selectable='Y' order by status";
+	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
 	$rslt=mysql_query($stmt, $link);
 	$Cstatuses_to_print = mysql_num_rows($rslt);
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) {
+	while ($Cstatuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
 		$o++;
-	}
+		}
 echo "$statuses_list";
 echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
 echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
@@ -4567,7 +4572,7 @@ echo "<input type=hidden name=ADD value=25>\n";
 echo "<input type=hidden name=active value=\"N\">\n";
 echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 echo "Status: <select size=1 name=status>\n";
-echo "$HKstatuses_list\n";
+echo "$LRstatuses_list\n";
 echo "</select> &nbsp; \n";
 echo "Attempt Delay: <input size=7 maxlength=5 name=attempt_delay>\n";
 echo "Attempt Maximum: <input size=5 maxlength=3 name=attempt_maximum>\n";
@@ -4649,24 +4654,26 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><se
 	$statuses_list='';
 
 	$o=0;
-	while ($statuses_to_print > $o) {
+	while ($statuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$o++;
-	}
+		}
 
 	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
 	$rslt=mysql_query($stmt, $link);
 	$Cstatuses_to_print = mysql_num_rows($rslt);
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) {
+	while ($Cstatuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$o++;
-	}
+		}
 echo "$statuses_list";
 echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
 echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
