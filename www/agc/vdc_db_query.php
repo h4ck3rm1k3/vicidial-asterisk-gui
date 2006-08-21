@@ -68,6 +68,7 @@
 #  - $callback_id - ('12345','12346',...)
 #  - $use_internal_dnc - ('Y','N')
 #  - $omit_phone_code - ('Y','N')
+#  - $no_delete_sessions - ('0','1')
 
 # changes
 # 50629-1044 - First build of script
@@ -106,10 +107,10 @@
 # 60619-1117 - Added variable filters to close security holes for login form
 # 60623-1414 - Fixed variable filter for phone_code and fixed manual dial logic
 # 60821-1600 - Added ability to omit the phone code on vicidial lead dialing
-#
+# 60821-1647 - Added ability to not delete sessions at logout
 
-$version = '2.0.35';
-$build = '60821-1600';
+$version = '2.0.36';
+$build = '60821-1647';
 
 require("dbconnect.php");
 
@@ -1274,11 +1275,14 @@ else
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
 
-	##### Remove the reservation on the vicidial_conferences meetme room
-	$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
-	if ($DB) {echo "$stmt\n";}
-	$rslt=mysql_query($stmt, $link);
-	$vc_remove = mysql_affected_rows($link);
+	if ($no_delete_sessions < 1)
+		{
+		##### Remove the reservation on the vicidial_conferences meetme room
+		$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		$vc_remove = mysql_affected_rows($link);
+		}
 
 	##### Delete the vicidial_live_agents record for this session
 	$stmt="DELETE from vicidial_live_agents where server_ip='$server_ip' and user ='$user';";

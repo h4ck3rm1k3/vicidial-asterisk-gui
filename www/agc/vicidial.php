@@ -121,6 +121,7 @@
 # 60816-1716 - Fixed customer time display bug and client DST setting
 # 60821-1555 - Added option to omit phone_code on dialout of leads
 # 60821-1628 - Added ALLFORCE recording option
+# 60821-1643 - Added no_delete_sessions option to not delete sessions
 #
 
 require("dbconnect.php");
@@ -166,8 +167,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.95';
-$build = '60821-1628';
+$version = '2.0.96';
+$build = '60821-1643';
 
 if ($force_logout)
 {
@@ -201,6 +202,7 @@ $show_campname_pulldown	= '1';	# set to 1 to show campaign name on login pulldow
 $webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
 $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
 $clientDST				= '1';	# set to 1 to check for DST on server for agent time
+$no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1373,6 +1375,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>';
 	var allcalls_delay = '<? echo $allcalls_delay ?>';
 	var omit_phone_code = '<? echo $omit_phone_code ?>';
+	var no_delete_sessions = '<? echo $no_delete_sessions ?>';
 	var webform_session = '<? echo $webform_sessionname ?>';
 	var local_consult_xfers = '<? echo $local_consult_xfers ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
@@ -4346,7 +4349,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				if (xmlhttp) 
 					{ 
-					VDlogout_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=userLOGout&format=text&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol;
+					VDlogout_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=userLOGout&format=text&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&no_delete_sessions=" + no_delete_sessions;
 					xmlhttp.open('POST', 'vdc_db_query.php'); 
 					xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 					xmlhttp.send(VDlogout_query); 
