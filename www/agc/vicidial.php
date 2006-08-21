@@ -120,6 +120,7 @@
 # 60816-1602 - Added ALLCALLS recording delay option allcalls_delay
 # 60816-1716 - Fixed customer time display bug and client DST setting
 # 60821-1555 - Added option to omit phone_code on dialout of leads
+# 60821-1628 - Added ALLFORCE recording option
 #
 
 require("dbconnect.php");
@@ -165,8 +166,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.94';
-$build = '60821-1555';
+$version = '2.0.95';
+$build = '60821-1628';
 
 if ($force_logout)
 {
@@ -1911,7 +1912,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var query_recording_exten = recording_exten;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
 				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"./images/vdc_LB_stoprecording.gif\" border=0 alt=\"Stop Recording\"></a>";
-				document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
+
+				if (campaign_recording == 'ALLFORCE')
+					{
+					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
+					}
+				else
+					{
+					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
+					}
 			}
 			if (taskconfrectype == 'StopMonitorConf')
 				{
@@ -1919,7 +1928,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var query_recording_exten = session_id;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
 				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"./images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Recording\"></a>";
-				document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
+				if (campaign_recording == 'ALLFORCE')
+					{
+					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
+					}
+				else
+					{
+					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
+					}
 				}
 			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
 			xmlhttp.open('POST', 'manager_send.php'); 
@@ -2223,7 +2239,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if ( (taskMDstage != "start") && (VDstop_rec_after_each_call == 1) )
 							{
 							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"./images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Recording\"></a>";
-							if (campaign_recording == 'NEVER')
+							if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
 								{
 								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 								}
@@ -2787,7 +2803,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
 
-							if (campaign_recording == 'ALLCALLS')
+							if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
 
 							if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -2993,7 +3009,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
 
-						if (campaign_recording == 'ALLCALLS')
+						if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
 
 						if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -3368,7 +3384,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"./images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
 
-						if (campaign_recording == 'ALLCALLS')
+						if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
 
 						if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
@@ -4643,7 +4659,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.LeadLookuP.checked=true;
 
 			document.getElementById("sessionIDspan").innerHTML = session_id;
-			if (campaign_recording == 'NEVER')
+			if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
 				{
 				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 				}

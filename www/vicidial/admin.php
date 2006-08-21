@@ -506,12 +506,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60816-1552 - added allcalls_delay start delay for recordings in vicidial.php
 # 60817-2226 - fixed bug that would not allow lead recycling of non-selectable statuses
 # 60821-1543 - added option to Omit Phone Code while dialing in vicidial
+# 60821-1625 - added ALLFORCE recording option for campaign_recording
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.59';
-$build = '60821-1543';
+$version = '2.0.60';
+$build = '60821-1625';
 
 $STARTtime = date("U");
 
@@ -1140,7 +1141,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-campaign_recording">
 <BR>
-<B>Campaign Recording -</B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent.
+<B>Campaign Recording -</B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_filename">
@@ -1150,7 +1151,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-allcalls_delay">
 <BR>
-<B>Recording Delay -</B> For ALLCALLS recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0.
+<B>Recording Delay -</B> For ALLCALLS and ALLFORCE recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_script">
@@ -4339,7 +4340,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Campaign VDAD exten: </td><td align=le
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Rec exten: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Recording: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Recording: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Rec Filename: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
 
