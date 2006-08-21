@@ -48,6 +48,7 @@
 # 60807-1438 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
 # 60814-1749 - added option for no logging to file
+# 60821-1546 - added option to not dial phone_code per campaign
 #
 
 
@@ -210,6 +211,8 @@ while($one_day_interval > 0)
 	{
 		&get_time_now;
 
+		$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";
+
 	###############################################################################
 	###### first figure out how many calls should be placed for each campaign per server
 	###############################################################################
@@ -231,6 +234,7 @@ while($one_day_interval > 0)
 		@DBIPgoalcalls=@MT;
 		@DBIPmakecalls=@MT;
 		@DBIPclosercamp=@MT;
+		@DBIPomitcode=@MT;
 
 		$active_line_counter=0;
 		$user_counter=0;
@@ -290,7 +294,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -306,6 +310,9 @@ while($one_day_interval > 0)
 					$DBIPactive[$user_CIPct] =		"$aryA[5]";
 					$DBIPvdadexten[$user_CIPct] =	"$aryA[6]";
 					$DBIPclosercamp[$user_CIPct] =	"$aryA[7]";
+					$omit_phone_code =				"$aryA[8]";
+						if ($omit_phone_code =~ /Y/) {$DBIPomitcode[$user_CIPct] = 1;}
+						else {$DBIPomitcode[$user_CIPct] = 0;}
 				$rec_count++;
 				}
 			$sthA->finish();
@@ -499,14 +506,19 @@ while($one_day_interval > 0)
 
 							   $lead_id_call_list .= "$lead_id|";
 
+								### whether to omit phone_code or not
+								if ($DBIPomitcode[$user_CIPct] > 0) 
+									{$Ndialstring = "$Local_out_prefix$phone_number";}
+								else
+									{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
+
 								### use manager middleware-app to connect the next call to the meetme room
 								# VmmddhhmmssLLLLLLLLL
 									$VqueryCID = "V$CIDdate$PADlead_id";
 								if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
 								else {$CIDstring = "$VqueryCID";}
-
 								### insert a NEW record to the vicidial_manager table to be processed
-									$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
+									$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
 									$affected_rows = $dbhA->do($stmtA);
 
 									$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|";

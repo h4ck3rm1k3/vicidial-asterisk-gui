@@ -177,6 +177,8 @@ while($one_day_interval > 0)
 	{
 		&get_time_now;
 
+		$VDRLOGfile = "$PATHlogs/remoteagent.$year-$mon-$mday";
+
 		if ($endless_loop =~ /0$|5$/)
 		{
 		### Grab Server values from the database
