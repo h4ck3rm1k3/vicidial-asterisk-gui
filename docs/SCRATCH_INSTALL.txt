@@ -2337,6 +2337,7 @@ must have permissions in the vicidial_user table(Load Leads set to 1) .
 Instructions on it's use are included on the page through the help question 
 mark link.
 NOTE: in PHP you must have "fileuploads" enabled for this page to work.
+NOTE: it is important to have your proper country code in the phone_code field of your leads so that the GMT offset encodding will properly code the time zones for your leads. For the USA/Canada/Caribbean this would be 1. For the UK this is 44 and Mexico is 52 and so on.
 
 Second we need to add the disposition statuses into the system, all of these 
 queries are below:
