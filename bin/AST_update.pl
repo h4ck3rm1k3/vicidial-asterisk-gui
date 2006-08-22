@@ -1012,7 +1012,7 @@ $sthA->finish();
 
 $stmtU = "UPDATE $server_updater set last_update='$now_date' where server_ip='$server_ip'";
 	if($DB){print STDERR "\n|$stmtU|\n";}
-$affected_rows = $dbhA->do($stmtA);
+$affected_rows = $dbhA->do($stmtU);
 
 }
 
