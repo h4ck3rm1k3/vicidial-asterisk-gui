@@ -39,6 +39,7 @@
 # 60715-2251 - changed to use /etc/astguiclient.conf for configs
 # 60801-1634 - Fixed Callback activation bug 000008
 # 60814-1720 - added option for no logging to file
+# 60822-1527 - added campaign_stats and logging options for adaptive dialing
 #
 
 # constants
@@ -52,6 +53,7 @@ $vicidial_hopper='vicidial_hopper';
 $insert_auto_CB_to_hopper	= 1; # set to 1 to automatically insert ANYONE callbacks into the hopper
 
 
+$secX = time();
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
 $mon++;
@@ -62,6 +64,42 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
+
+### get date-time of one hour ago ###
+	$VDL_hour = ($secX - (60 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_hour);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_hour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of half hour ago ###
+	$VDL_halfhour = ($secX - (30 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_halfhour);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_halfhour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of five minutes ago ###
+	$VDL_five = ($secX - (5 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_five);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_five = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of one minute ago ###
+	$VDL_one = ($secX - (1 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_one);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_one = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -166,12 +204,7 @@ foreach(@conf)
 	$i++;
 	}
 
-# Customized Variables
-$server_ip = $VARserver_ip;		# Asterisk server IP
-
-
 if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper.$year-$mon-$mday";}
-
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
@@ -369,11 +402,24 @@ if ($DB) {print "CAMPAIGNS TO PROCESSES HOPPER FOR:  $rec_count|$#campaign_id\n"
 $i=0;
 foreach(@campaign_id)
 	{
+	### BEGIN - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
+	$vicidial_log = 'vicidial_log';
 	$VCSdialable_leads=0;
 	$VCScalls_today=0;
 	$VCSdrops_today=0;
 	$VCSdrops_today_pct=0;
-	$vicidial_log = 'vicidial_log';
+	$VCScalls_hour=0;
+	$VCSdrops_hour=0;
+	$VCSdrops_hour_pct=0;
+	$VCScalls_halfhour=0;
+	$VCSdrops_halfhour=0;
+	$VCSdrops_halfhour_pct=0;
+	$VCScalls_five=0;
+	$VCSdrops_five=0;
+	$VCSdrops_five_pct=0;
+	$VCScalls_one=0;
+	$VCSdrops_one=0;
+	$VCSdrops_one_pct=0;
 
 	$stmtA = "SELECT dialable_leads from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -388,6 +434,7 @@ foreach(@campaign_id)
 		}
 	$sthA->finish();
 
+	# TODAY CALL AND DROP STATS
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -421,11 +468,176 @@ foreach(@campaign_id)
 		$sthA->finish();
 		}
 
+	# LAST HOUR CALL AND DROP STATS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCScalls_hour =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	if ($VCScalls_hour > 0)
+		{
+		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSdrops_hour =		 "$aryA[0]";
+			if ($VCSdrops_hour > 0)
+				{
+				$VCSdrops_hour_pct = ( ($VCSdrops_hour / $VCScalls_hour) * 100 );
+				$VCSdrops_hour_pct = sprintf("%.2f", $VCSdrops_hour_pct);	
+				}
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
 
+	# LAST HALFHOUR CALL AND DROP STATS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCScalls_halfhour =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	if ($VCScalls_halfhour > 0)
+		{
+		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSdrops_halfhour =		 "$aryA[0]";
+			if ($VCSdrops_halfhour > 0)
+				{
+				$VCSdrops_halfhour_pct = ( ($VCSdrops_halfhour / $VCScalls_halfhour) * 100 );
+				$VCSdrops_halfhour_pct = sprintf("%.2f", $VCSdrops_halfhour_pct);	
+				}
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
 
-	$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct' where campaign_id='$campaign_id[$i]';";
+	# LAST FIVE MINUTE CALL AND DROP STATS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCScalls_five =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	if ($VCScalls_five > 0)
+		{
+		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSdrops_five =		 "$aryA[0]";
+			if ($VCSdrops_five > 0)
+				{
+				$VCSdrops_five_pct = ( ($VCSdrops_five / $VCScalls_five) * 100 );
+				$VCSdrops_five_pct = sprintf("%.2f", $VCSdrops_five_pct);	
+				}
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+
+	# LAST ONE MINUTE CALL AND DROP STATS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCScalls_one =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	if ($VCScalls_one > 0)
+		{
+		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status IN('DROP','XDROP');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSdrops_one =		 "$aryA[0]";
+			if ($VCSdrops_one > 0)
+				{
+				$VCSdrops_one_pct = ( ($VCSdrops_one / $VCScalls_one) * 100 );
+				$VCSdrops_one_pct = sprintf("%.2f", $VCSdrops_one_pct);	
+				}
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+
+		$stmtA = "SELECT count(*) from vicidial_live_agents where campaign_id='$campaign_id[$i]' and status  NOT IN('PAUSED');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSagents =		 "$aryA[0]";
+			$rec_count++;
+			}
+		$sthA->finish();
+
+		$stmtA = "SELECT auto_dial_level from vicidial_campaigns where campaign_id='$campaign_id[$i]';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VCSdial_level =		 "$aryA[0]";
+			$rec_count++;
+			}
+		$sthA->finish();
+
+	$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
 	$affected_rows = $dbhA->do($stmtA);
-	if ($DBX) {print "campaign stats updated:  $affected_rows|$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|$campaign_id[$i]|\n";}
+	$adaptive_string = "|$VCSagents|$VCSdial_level|   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
+	if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
+
+		&adaptive_logger;
+
+	### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
 
 	##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
 	$g=0;
@@ -1220,7 +1432,14 @@ foreach(@campaign_id)
 
 $dbhA->disconnect();
 
-if($DB){print "DONE... Exiting... Goodbye... See you later... Really, I mean it :)\n";}
+if($DB)
+{
+### calculate time to run script ###
+$secY = time();
+$secZ = ($secY - $secX);
+
+if (!$q) {print "DONE. Script execution time in seconds: $secZ\n";}
+}
 
 exit;
 
@@ -1240,3 +1459,17 @@ $event_string='';
 }
 
 
+sub adaptive_logger
+{
+if ($SYSLOG)
+	{
+	$VDHCLOGfile = "$PATHlogs/adaptive-$campaign_id[$i].$year-$mon-$mday";
+
+	### open the log file for writing ###
+	open(Aout, ">>$VDHCLOGfile")
+			|| die "Can't open $VDHCLOGfile: $!\n";
+	print Aout "$now_date$adaptive_string\n";
+	close(Aout);
+	}
+$adaptive_string='';
+}
