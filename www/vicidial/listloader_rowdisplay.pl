@@ -11,6 +11,35 @@
 # 60811-1329 - changed to use /etc/astguiclient.conf for configs
 #
 
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	$i++;
+	}
+
+	if ($args =~ /--help|-h/i)
+	{
+	print "allowed run time options:\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-h] = this help screen\n\n";
+	}
+	else
+	{
+		if ($args =~ /--lead-file=/i)
+		{
+		@data_in = split(/--lead-file=/,$args);
+			$lead_file = $data_in[1];
+			$lead_file =~ s/ .*//gi;
+	#	print "\n----- LEAD FILE: $lead_file -----\n\n";
+		}
+		else
+			{$lead_file = './vicidial_temp_file.xls';}
+	}
+}
+### end parsing run-time options ###
+
 use Spreadsheet::ParseExcel;
 use Time::Local;
 use DBI;	  
@@ -63,7 +92,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 
-$oBook = Spreadsheet::ParseExcel::Workbook->Parse("./vicidial_temp_file.xls");
+$oBook = Spreadsheet::ParseExcel::Workbook->Parse("$lead_file");
 my($iR, $iC, $oWkS, $oWkC);
 $var_str="";
 
@@ -100,7 +129,7 @@ while ($sthArows > $rec_count)
 		print "  <tr bgcolor=#D9E6FE>\r\n";
 		print "    <th><font class=standard>".$field_name.": </font></td>\r\n";
 		print "    <th><select name='".$$names[$i]."_field'>\r\n";
-		print "     <option value=''>---------------------</option>\r\n";
+		print "     <option value='9999'>---------------------</option>\r\n";
 
 		for ($j=0; $j<scalar(@xls_row); $j++) 
 			{

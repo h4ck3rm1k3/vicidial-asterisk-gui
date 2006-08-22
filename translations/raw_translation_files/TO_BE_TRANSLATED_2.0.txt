@@ -18,6 +18,7 @@ Campaign Recording -<\/B> This menu allows you to choose what level of recording
 
 Add consultative transfer info to Capmaign modification screen info
 
+Add note about phone_code being manditory for proper GMT offset encoding for proper time zone.
 
 
 ############################################################  AGENT Manual

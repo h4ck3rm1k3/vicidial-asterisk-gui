@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-### listloader.pl   version 0.2   *DBI-version*
+### listloader.pl   version 0.3   *DBI-version*
 ### 
 ### Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
 ###
@@ -11,6 +11,7 @@
 #            - Added gmt_offset_now lookup for each lead
 # 60811-1232 - Changed to DBI
 # 60811-1329 - changed to use /etc/astguiclient.conf for configs
+# 60822-1121 - fixed for nonwritable directories
 #
 
 ### begin parsing run-time options ###
@@ -33,10 +34,20 @@ if (length($ARGV[0])>1)
 		{
 		@data_in = split(/--forcelistid=/,$args);
 			$forcelistid = $data_in[1];
+			$forcelistid =~ s/ .*//gi;
 		print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";
 		}
 		else
 			{$forcelistid = '';}
+		if ($args =~ /--lead-file=/i)
+		{
+		@data_in = split(/--lead-file=/,$args);
+			$lead_file = $data_in[1];
+			$lead_file =~ s/ .*//gi;
+	#	print "\n----- LEAD FILE: $lead_file -----\n\n";
+		}
+		else
+			{$lead_file = './vicidial_temp_file.xls';}
 	}
 }
 ### end parsing run-time options ###
@@ -138,7 +149,7 @@ $total=0; $good=0; $bad=0;
 print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing Excel file...\n";
 open(STMT_FILE, "> $PATHlogs/listloader_stmts.txt");
 
-$oBook = Spreadsheet::ParseExcel::Workbook->Parse("./vicidial_temp_file.xls");
+$oBook = Spreadsheet::ParseExcel::Workbook->Parse("$lead_file");
 my($iR, $iC, $oWkS, $oWkC);
 
 foreach $oWkS (@{$oBook->{Worksheet}}) {

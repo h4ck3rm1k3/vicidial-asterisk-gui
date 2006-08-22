@@ -11,12 +11,13 @@
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60616-1006 - added listID override and gmt_offset lookup while loading
 # 60619-1652 - Added variable filtering to eliminate SQL injection attack threat
+# 60822-1105 - fixed for nonwritable directories
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 #
 
-$version = '1.1.12';
-$build = '60619-1652';
+$version = '2.0.1';
+$build = '60822-1105';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -142,8 +143,16 @@ function ShowProgress(good, bad, total) {
 if ($leadfile and filesize($LF_path)<=8388608) {
 	print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
 	flush();
-	copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
-	$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
+	if ($WeBRooTWritablE > 0)
+		{
+		copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
+		$lead_file = "./vicidial_temp_file.txt";
+		}
+	else
+		{
+		$lead_file = "$LF_path";
+		}
+	$file=fopen("$lead_file", "r");
 	if ($WeBRooTWritablE > 0)
 		{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 	$pulldate=date("Y-m-d H:i:s");
@@ -157,7 +166,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 
 	if (count($field_check)>=5) {
 		flush();
-		$file=fopen("./vicidial_temp_file.txt", "r");
+		$file=fopen("$lead_file", "r");
 		$total=0; $good=0; $bad=0;
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file... ($tab_count|$pipe_count)\n";
 
