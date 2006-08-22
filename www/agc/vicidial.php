@@ -122,6 +122,7 @@
 # 60821-1555 - Added option to omit phone_code on dialout of leads
 # 60821-1628 - Added ALLFORCE recording option
 # 60821-1643 - Added no_delete_sessions option to not delete sessions
+# 60822-0512 - Changed phone number fields to be maxlength of 12
 #
 
 require("dbconnect.php");
@@ -5255,7 +5256,7 @@ echo "</head>\n";
 	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (This is usually a 1 in the USA-Canada)</td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Phone Number: </td>
-	<td align=left><font class="body_text"><input type=text size=12 maxlength=10 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (10 digits max - digits only)</td>
+	<td align=left><font class="body_text"><input type=text size=14 maxlength=12 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (12 digits max - digits only)</td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Search Existing Leads: </td>
 	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (This option if checked will attempt to find the phone number in the system before inserting it as a new lead)</td>
@@ -5554,7 +5555,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
-<td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=10 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=10 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=12 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Show: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
