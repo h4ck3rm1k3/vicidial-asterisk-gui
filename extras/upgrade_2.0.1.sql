@@ -12,3 +12,4 @@ ALTER TABLE vicidial_closer_log MODIFY phone_number VARCHAR(12);
 ALTER TABLE vicidial_xfer_log MODIFY phone_number VARCHAR(12);
 ALTER TABLE vicidial_list_pins MODIFY phone_number VARCHAR(12);
 ALTER TABLE vicidial_dnc MODIFY phone_number VARCHAR(12);
+ALTER TABLE vicidial_list MODIFY alt_phone VARCHAR(12);
