@@ -62,6 +62,7 @@ if ($mday < 10) {$mday = "0$mday";}
 if ($hour < 10) {$Fhour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
+$file_date = "$year-$mon-$mday";
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $VDL_date = "$year-$mon-$mday 00:00:01";
 
@@ -1463,7 +1464,7 @@ sub adaptive_logger
 {
 if ($SYSLOG)
 	{
-	$VDHCLOGfile = "$PATHlogs/adaptive-$campaign_id[$i].$year-$mon-$mday";
+	$VDHCLOGfile = "$PATHlogs/adaptive-$campaign_id[$i].$file_date";
 
 	### open the log file for writing ###
 	open(Aout, ">>$VDHCLOGfile")
