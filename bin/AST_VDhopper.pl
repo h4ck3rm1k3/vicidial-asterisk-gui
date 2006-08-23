@@ -605,35 +605,56 @@ foreach(@campaign_id)
 		$sthA->finish();
 		}
 
-		$stmtA = "SELECT count(*) from vicidial_live_agents where campaign_id='$campaign_id[$i]' and status  NOT IN('PAUSED');";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCSagents =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
+	$VCSINCALL=0;
+	$VCSREADY=0;
+	$VCSCLOSER=0;
+	$VCSPAUSED=0;
+	$VCSagents=0;
+	$VCSagents_calc=0;
+	$VCSagents_active=0;
 
-		$stmtA = "SELECT auto_dial_level from vicidial_campaigns where campaign_id='$campaign_id[$i]';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCSdial_level =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
+	# COUNTS OF STATUSES OF AGENTS IN THIS CAMPAIGN
+	$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSagent_count =		 "$aryA[0]";
+		$VCSagent_status =		 "$aryA[1]";
+		$rec_count++;
+		if ($VCSagent_status =~ /INCALL|QUEUE/) {$VCSINCALL = ($VCSINCALL + $VCSagent_count);}
+		if ($VCSagent_status =~ /READY/) {$VCSREADY = ($VCSREADY + $VCSagent_count);}
+		if ($VCSagent_status =~ /CLOSER/) {$VCSCLOSER = ($VCSCLOSER + $VCSagent_count);}
+		if ($VCSagent_status =~ /PAUSED/) {$VCSPAUSED = ($VCSPAUSED + $VCSagent_count);}
+		$VCSagents = ($VCSagents + $VCSagent_count);
+		}
+	$sthA->finish();
+
+	if ($available_only_ratio_tally =~ /Y/) 
+		{$VCSagents_calc = $VCSREADY;}
+	else
+		{$VCSagents_calc = ($VCSINCALL + $VCSREADY);}
+	$VCSagents_active = ($VCSINCALL + $VCSREADY + $VCSCLOSER);
+
+	$stmtA = "SELECT auto_dial_level from vicidial_campaigns where campaign_id='$campaign_id[$i]';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdial_level =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
 
 	$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
 	$affected_rows = $dbhA->do($stmtA);
-	$adaptive_string = "|$VCSagents|$VCSdial_level|   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
+	$adaptive_string = "|AGENTS: $VCSagents|ACTIVE: $VCSagents_active|CALC: $VCSagents_calc|INCALL: $VCSINCALL|READY: $VCSREADY|LEVEL: $VCSdial_level|   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
 	if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
 
 		&adaptive_logger;

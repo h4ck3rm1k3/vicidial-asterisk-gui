@@ -443,7 +443,7 @@ park_file_name VARCHAR(10),
 web_form_address VARCHAR(255),
 allow_closers ENUM('Y','N'),
 hopper_level INT(8) UNSIGNED default '1',
-auto_dial_level ENUM('0','1','1.1','1.2','1.3','1.4','1.5','1.6','1.7','1.8','1.9','2.0','2.2','2.5','2.7','3.0','3.5','4.0') default '0',
+auto_dial_level VARCHAR(6) default '0',
 next_agent_call ENUM('random','oldest_call_start','oldest_call_finish','overall_user_level') default 'oldest_call_finish',
 local_call_time VARCHAR(10) DEFAULT '9am-9pm',
 voicemail_ext VARCHAR(10),
@@ -474,7 +474,11 @@ wrapup_message VARCHAR(255) default 'Wrapup Call',
 closer_campaigns TEXT default '',
 use_internal_dnc ENUM('Y','N') default 'N',
 allcalls_delay SMALLINT(3) UNSIGNED default '0',
-omit_phone_code ENUM('Y','N') default 'N'
+omit_phone_code ENUM('Y','N') default 'N',
+dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE') default 'MANUAL',
+available_only_ratio_tally ENUM('Y','N') default 'N',
+adaptive_dropped_percentage SMALLINT(3) default '3',
+adaptive_maximum_level VARCHAR(6) default '3.0'
 );
 
  CREATE TABLE vicidial_lists (
