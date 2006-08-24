@@ -251,6 +251,7 @@ while ($sthArows > $rec_count)
 	$available_only_ratio_tally[$rec_count] =	$aryA[47];
 	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
 	$adaptive_maximum_level[$rec_count] =		$aryA[49];
+	$adaptive_latest_target_gmt[$rec_count] =	$aryA[50];
 
 	$rec_count++;
 	}
@@ -902,10 +903,12 @@ foreach(@campaign_id)
 	#	$available_only_ratio_tally[$rec_count] =	$aryA[47];
 	#	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
 	#	$adaptive_maximum_level[$rec_count] =		$aryA[49];
+	#	$adaptive_latest_target_gmt[$rec_count] =	$aryA[50];
+	#	$adaptive_latest_target_gmt
 
 		$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
 		$affected_rows = $dbhA->do($stmtA);
-		$adaptive_string = "|AGENTS: $VCSagents|ACTIVE: $VCSagents_active|CALC: $VCSagents_calc|INCALL: $VCSINCALL|READY: $VCSREADY|LEVEL: $auto_dial_level[$i]|$dial_method[$i]|$available_only_ratio_tally[$i]|$adaptive_dropped_percentage[$i]|$adaptive_maximum_level[$i]|   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
+		$adaptive_string = "|AGENTS: $VCSagents|ACTIVE: $VCSagents_active|CALC: $VCSagents_calc|INCALL: $VCSINCALL|READY: $VCSREADY|LEVEL: $auto_dial_level[$i]|$dial_method[$i]|$available_only_ratio_tally[$i]|$adaptive_dropped_percentage[$i]|$adaptive_maximum_level[$i]|$adaptive_latest_target_gmt[$i]   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
 		if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
 
 			&adaptive_logger;

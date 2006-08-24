@@ -14,8 +14,12 @@ ALTER TABLE vicidial_list_pins MODIFY phone_number VARCHAR(12);
 ALTER TABLE vicidial_dnc MODIFY phone_number VARCHAR(12);
 ALTER TABLE vicidial_list MODIFY alt_phone VARCHAR(12);
 
+ALTER TABLE phones MODIFY local_gmt VARCHAR(6) default '-5';
+ALTER TABLE servers MODIFY local_gmt VARCHAR(6) default '-5';
+
 ALTER TABLE vicidial_campaigns MODIFY auto_dial_level VARCHAR(6) default '0';
 ALTER TABLE vicidial_campaigns ADD dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE') default 'MANUAL';
 ALTER TABLE vicidial_campaigns ADD available_only_ratio_tally ENUM('Y','N') default 'N';
 ALTER TABLE vicidial_campaigns ADD adaptive_dropped_percentage SMALLINT(3) default '3';
 ALTER TABLE vicidial_campaigns ADD adaptive_maximum_level VARCHAR(6) default '3.0';
+ALTER TABLE vicidial_campaigns ADD adaptive_latest_target_gmt VARCHAR(6) default '-7';

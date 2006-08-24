@@ -16,7 +16,7 @@ picture VARCHAR(19),
 messages INT(4),
 old_messages INT(4),
 protocol ENUM('SIP','Zap','IAX2','EXTERNAL') default 'SIP',
-local_gmt TINYINT(2) default '-5',
+local_gmt VARCHAR(6) default '-5',
 ASTmgrUSERNAME VARCHAR(20) default 'cron',
 ASTmgrSECRET VARCHAR(20) default '1234',
 login_user VARCHAR(20),
@@ -82,7 +82,7 @@ ASTmgrSECRET VARCHAR(20) NOT NULL default '1234',
 ASTmgrUSERNAMEupdate VARCHAR(20) NOT NULL default 'updatecron',
 ASTmgrUSERNAMElisten VARCHAR(20) NOT NULL default 'listencron',
 ASTmgrUSERNAMEsend VARCHAR(20) NOT NULL default 'sendcron',
-local_gmt VARCHAR(5) default '-5',
+local_gmt VARCHAR(6) default '-5',
 voicemail_dump_exten VARCHAR(20) NOT NULL default '85026666666666',
 answer_transfer_agent VARCHAR(20) NOT NULL default '8365',
 ext_context VARCHAR(20) NOT NULL default 'default',
@@ -478,7 +478,8 @@ omit_phone_code ENUM('Y','N') default 'N',
 dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE') default 'MANUAL',
 available_only_ratio_tally ENUM('Y','N') default 'N',
 adaptive_dropped_percentage SMALLINT(3) default '3',
-adaptive_maximum_level VARCHAR(6) default '3.0'
+adaptive_maximum_level VARCHAR(6) default '3.0',
+adaptive_latest_target_gmt VARCHAR(6) default '-7'
 );
 
  CREATE TABLE vicidial_lists (
