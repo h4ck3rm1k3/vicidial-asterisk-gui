@@ -904,7 +904,6 @@ foreach(@campaign_id)
 	#	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
 	#	$adaptive_maximum_level[$rec_count] =		$aryA[49];
 	#	$adaptive_latest_target_gmt[$rec_count] =	$aryA[50];
-	#	$adaptive_latest_target_gmt
 
 		$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
 		$affected_rows = $dbhA->do($stmtA);

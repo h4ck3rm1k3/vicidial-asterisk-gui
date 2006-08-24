@@ -3,7 +3,7 @@
 # AST_VDauto_dial.pl version 0.12   *DBI-version*
 #
 # DESCRIPTION:
-# uses Net::MySQL to place auto_dial calls on the VICIDIAL dialer system 
+# Places auto_dial calls on the VICIDIAL dialer system 
 #
 # SUMMARY:
 # This program was designed for people using the Asterisk PBX with VICIDIAL
@@ -49,6 +49,7 @@
 #            - changed to use /etc/astguiclient.conf for configs
 # 60814-1749 - added option for no logging to file
 # 60821-1546 - added option to not dial phone_code per campaign
+# 60824-1437 - added available_only_ratio_tally option
 #
 
 
@@ -220,12 +221,15 @@ while($one_day_interval > 0)
 		@DBlive_server_ip=@MT;
 		@DBlive_campaign=@MT;
 		@DBlive_conf_exten=@MT;
+		@DBlive_status=@MT;
 		@DBcampaigns=@MT;
 		@DBIPaddress=@MT;
 		@DBIPcampaign=@MT;
 		@DBIPactive=@MT;
 		@DBIPvdadexten=@MT;
 		@DBIPcount=@MT;
+		@DBIPACTIVEcount=@MT;
+		@DBIPINCALLcount=@MT;
 		@DBIPadlevel=@MT;
 		@DBIPdialtimeout=@MT;
 		@DBIPdialprefix=@MT;
@@ -242,10 +246,11 @@ while($one_day_interval > 0)
 		$user_campaigns_counter = 0;
 		$user_campaignIP = '|';
 		$user_CIPct = 0;
+		$active_agents = "'READY','QUEUE','INCALL','DONE'";
 
 		##### Get a listing of the users that are active and ready to take calls
 		##### Also get a listing of the campaigns and campaigns/serverIP that will be used
-		$stmtA = "SELECT user,server_ip,campaign_id,conf_exten FROM vicidial_live_agents where status IN('READY','QUEUE','INCALL','DONE') and server_ip='$server_ip' and last_update_time > '$BDtsSQLdate' order by last_call_time";
+		$stmtA = "SELECT user,server_ip,campaign_id,conf_exten,status FROM vicidial_live_agents where status IN($active_agents) and server_ip='$server_ip' and last_update_time > '$BDtsSQLdate' order by last_call_time";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -257,6 +262,7 @@ while($one_day_interval > 0)
 				$DBlive_server_ip[$user_counter] =	"$aryA[1]";
 				$DBlive_campaign[$user_counter] =	"$aryA[2]";
 				$DBlive_conf_exten[$user_counter] =	"$aryA[3]";
+				$DBlive_status[$user_counter] =		"$aryA[4]";
 				
 				if ($user_campaigns !~ /\|$DBlive_campaign[$user_counter]\|/i)
 					{
@@ -287,18 +293,29 @@ while($one_day_interval > 0)
 				{
 				if ( ($DBlive_campaign[$user_counter] =~ /$DBIPcampaign[$user_CIPct]/i) && ($DBlive_server_ip[$user_counter] =~ /$DBIPaddress[$user_CIPct]/i) )
 					{
-					$DBIPcount[$user_CIPct]++
+					$DBIPcount[$user_CIPct]++;
+					$DBIPACTIVEcount[$user_CIPct] = ($DBIPACTIVEcount[$user_CIPct] + 0);
+					$DBIPINCALLcount[$user_CIPct] = ($DBIPINCALLcount[$user_CIPct] + 0);
+					if ($DBlive_status[$user_counter] =~ /READY|DONE/) 
+						{
+						$DBIPACTIVEcount[$user_CIPct]++;
+						}
+					else
+						{
+						$DBIPINCALLcount[$user_CIPct]++;
+						}
 					}
 				$user_counter++;
 				}
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
 			$rec_count=0;
+			$active_only=0;
 			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
@@ -313,11 +330,19 @@ while($one_day_interval > 0)
 					$omit_phone_code =				"$aryA[8]";
 						if ($omit_phone_code =~ /Y/) {$DBIPomitcode[$user_CIPct] = 1;}
 						else {$DBIPomitcode[$user_CIPct] = 0;}
+					$available_only_ratio_tally =	"$aryA[9]";
+						if ($available_only_ratio_tally =~ /Y/) 
+							{
+							$DBIPcount[$user_CIPct] = $DBIPACTIVEcount[$user_CIPct];
+							$active_only=1;
+							}
 				$rec_count++;
 				}
 			$sthA->finish();
 
 			$DBIPgoalcalls[$user_CIPct] = ($DBIPadlevel[$user_CIPct] * $DBIPcount[$user_CIPct]);
+			if ($active_only > 0) 
+				{$DBIPgoalcalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] + $DBIPINCALLcount[$user_CIPct]);}
 			if ($DBIPactive[$user_CIPct] =~ /N/) {$DBIPgoalcalls[$user_CIPct] = 0;}
 			$DBIPgoalcalls[$user_CIPct] = sprintf("%.0f", $DBIPgoalcalls[$user_CIPct]);
 
