@@ -207,6 +207,7 @@ while($one_day_interval > 0)
 {
 
 	$endless_loop=5760000;		# 30 days minutes at XXX seconds per loop
+	$stat_count=1;
 
 	while($endless_loop > 0)
 	{
@@ -237,6 +238,7 @@ while($one_day_interval > 0)
 		@DBIPexistcalls=@MT;
 		@DBIPgoalcalls=@MT;
 		@DBIPmakecalls=@MT;
+		@DBIPlivecalls=@MT;
 		@DBIPclosercamp=@MT;
 		@DBIPomitcode=@MT;
 
@@ -404,6 +406,93 @@ while($one_day_interval > 0)
 				}
 			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]) $MVT_msg";
 			&event_logger;
+
+
+
+			### Calculate campaign-wide agent waiting and calls waiting differential
+			### This is used by the AST_VDadapt script to see if the current dial_level
+			### should be changed at all
+			$total_agents=0;
+			$ready_agents=0;
+			$waiting_calls=0;
+
+			$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$DBIPcampaign[$user_CIPct]' and last_update_time > '$halfminSQLdate' group by status;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCSagent_count =		 "$aryA[0]";
+				$VCSagent_status =		 "$aryA[1]";
+				$rec_count++;
+				if ($VCSagent_status =~ /READY|DONE/) {$ready_agents = ($ready_agents + $VCSagent_count);}
+				$total_agents = ($total_agents + $VCSagent_count);
+				}
+			$sthA->finish();
+
+			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where $campaign_query and status IN('LIVE');";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+					$waiting_calls = "$aryA[0]";
+				$rec_count++;
+				}
+			$sthA->finish();
+
+			$stat_ready_agents[$user_CIPct][$stat_count] = $ready_agents;
+			$stat_waiting_calls[$user_CIPct][$stat_count] = $waiting_calls;
+			$stat_total_agents[$user_CIPct][$stat_count] = $total_agents;
+
+			$stat_it=20;
+			$ready_diff_total=0;
+			$waiting_diff_total=0;
+			$total_agents_total=0;
+			$ready_diff_avg=0;
+			$waiting_diff_avg=0;
+			$total_agents_avg=0;
+			$stat_differential=0;
+			if ($stat_count < 20) 
+				{
+				$stat_it = $stat_count;
+				$stat_B = 1;
+				}
+			else
+				{
+				$stat_B = ($stat_count - 19);
+				}
+			
+			$it=0;
+			while($it < $stat_it)
+				{
+				$it_ary = ($it + $stat_B);
+				$ready_diff_total = ($ready_diff_total + $stat_ready_agents[$user_CIPct][$it_ary]);
+				$waiting_diff_total = ($waiting_diff_total + $stat_waiting_calls[$user_CIPct][$it_ary]);
+				$total_agents_total = ($total_agents_total + $stat_total_agents[$user_CIPct][$it_ary]);
+		#		$event_string="$stat_count $it_ary   $stat_total_agents[$user_CIPct][$it_ary]|$stat_ready_agents[$user_CIPct][$it_ary]|$stat_waiting_calls[$user_CIPct][$it_ary]";
+		#		&event_logger;
+				$it++;
+				}
+			
+			if ($ready_diff_total > 0) 
+				{$ready_diff_avg = ($ready_diff_total / $stat_it);}
+			if ($waiting_diff_total > 0) 
+				{$waiting_diff_avg = ($waiting_diff_total / $stat_it);}
+			if ($total_agents_total > 0) 
+				{$total_agents_avg = ($total_agents_total / $stat_it);}
+			$stat_differential = ($ready_diff_avg - $waiting_diff_avg);
+
+			$event_string="CAMPAIGN DIFFERENTIAL: $total_agents_avg   $stat_differential   ($ready_diff_avg - $waiting_diff_avg)";
+			&event_logger;
+
+			$stmtA = "UPDATE vicidial_campaign_stats SET differential_onemin='$stat_differential', agents_average_onemin='$total_agents_avg' where campaign_id='$DBIPcampaign[$user_CIPct]';";
+			$affected_rows = $dbhA->do($stmtA);
+
 
 			$user_CIPct++;
 			}
@@ -849,15 +938,15 @@ while($one_day_interval > 0)
 
 			$i=0;
 			foreach (@psoutput)
-			{
-				chomp($psoutput[$i]);
+				{
+					chomp($psoutput[$i]);
 
-			@psline = split(/\/usr\/bin\/perl /,$psoutput[$i]);
+				@psline = split(/\/usr\/bin\/perl /,$psoutput[$i]);
 
-			if ($psline[1] =~ /AST_manager_li/) {$running_listen++;}
+				if ($psline[1] =~ /AST_manager_li/) {$running_listen++;}
 
-			$i++;
-			}
+				$i++;
+				}
 
 			if (!$running_listen) 
 				{
@@ -871,7 +960,7 @@ while($one_day_interval > 0)
 
 		$bad_grabber_counter=0;
 
-
+	$stat_count++;
 	}
 
 
@@ -960,6 +1049,7 @@ if ($Phour < 10) {$Phour = "0$Phour";}
 if ($Pmin < 10) {$Pmin = "0$Pmin";}
 if ($Psec < 10) {$Psec = "0$Psec";}
 	$PDtsSQLdate = "$Pyear$Pmon$Pmday$Phour$Pmin$Psec";
+	$halfminSQLdate = "$Pyear-$Pmon-$Pmday $Phour:$Pmin:$Psec";
 
 $XDtarget = ($secX - 120);
 ($Xsec,$Xmin,$Xhour,$Xmday,$Xmon,$Xyear,$Xwday,$Xyday,$Xisdst) = localtime($XDtarget);

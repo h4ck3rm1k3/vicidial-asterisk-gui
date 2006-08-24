@@ -753,7 +753,9 @@ drops_fivemin INT(9) UNSIGNED default '0',
 drops_fivemin_pct VARCHAR(6) default '0',
 calls_onemin INT(9) UNSIGNED default '0',
 drops_onemin INT(9) UNSIGNED default '0',
-drops_onemin_pct VARCHAR(6) default '0'
+drops_onemin_pct VARCHAR(6) default '0',
+differential_onemin VARCHAR(20) default '0',
+agents_average_onemin VARCHAR(20) default '0'
 );
 
  CREATE TABLE vicidial_dnc (

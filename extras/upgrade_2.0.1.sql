@@ -23,3 +23,6 @@ ALTER TABLE vicidial_campaigns ADD available_only_ratio_tally ENUM('Y','N') defa
 ALTER TABLE vicidial_campaigns ADD adaptive_dropped_percentage SMALLINT(3) default '3';
 ALTER TABLE vicidial_campaigns ADD adaptive_maximum_level VARCHAR(6) default '3.0';
 ALTER TABLE vicidial_campaigns ADD adaptive_latest_target_gmt VARCHAR(6) default '-7';
+
+ALTER TABLE vicidial_campaign_stats ADD differential_onemin VARCHAR(20) default '0';
+ALTER TABLE vicidial_campaign_stats ADD agents_average_onemin VARCHAR(20) default '0';
