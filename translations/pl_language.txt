@@ -1,7 +1,7 @@
 # pl_language.txt - this file is for the internationalization of the astGUIclient 
 # client web pages. The associated install.pl file will take the language as an 
 # argument and alter the php scripts to the language typed in the command line:
-# example: ./config.pl --language=pl
+# example: ./config.pl --language=es
 # current languages in the file:
 # - English - (en) no alterations
 # - Polish - (pl) first column
@@ -49,28 +49,28 @@ Italian|Włoski|
 agc_check_voicemail_BLINK.gif|agc_check_voicemail_BLINK.gif|
 agc_check_voicemail_OFF.gif|agc_check_voicemail_OFF.gif|
 agc_check_voicemail_ON.gif|agc_check_voicemail_ON.gif|
-agc_live_call_OFF.gif|agc_live_call_OFF.gif|
-agc_live_call_ON.gif|agc_live_call_ON.gif|
+agc_live_call_OFF.gif|agc_live_call_OFF_pl.gif|
+agc_live_call_ON.gif|agc_live_call_ON_pl.gif|
 agc_tab_active_lines.gif|agc_tab_active_lines.gif|
 agc_tab_conferences.gif|agc_tab_conferences.gif|
 agc_tab_main.gif|agc_tab_main.gif|
 vdc_LB_dialnextnumber.gif|vdc_LB_dialnextnumber.gif|
 vdc_LB_dialnextnumber_OFF.gif|vdc_LB_dialnextnumber_OFF.gif|
 vdc_LB_grabparkedcall.gif|vdc_LB_grabparkedcall.gif|
-vdc_LB_hangupcustomer.gif|vdc_LB_hangupcustomer.gif|
-vdc_LB_hangupcustomer_OFF.gif|vdc_LB_hangupcustomer_OFF.gif|
-vdc_LB_parkcall.gif|vdc_LB_parkcall.gif|
-vdc_LB_parkcall_OFF.gif|vdc_LB_parkcall_OFF.gif|
-vdc_LB_pause.gif|vdc_LB_pause.gif|
-vdc_LB_pause_OFF.gif|vdc_LB_pause_OFF.gif|
-vdc_LB_resume.gif|vdc_LB_resume.gif|
-vdc_LB_resume_OFF.gif|vdc_LB_resume_OFF.gif|
-vdc_LB_startrecording.gif|vdc_LB_startrecording.gif|
-vdc_LB_stoprecording.gif|vdc_LB_stoprecording.gif|
-vdc_LB_transferconf.gif|vdc_LB_transferconf.gif|
-vdc_LB_transferconf_OFF.gif|vdc_LB_transferconf_OFF.gif|
-vdc_LB_webform.gif|vdc_LB_webform.gif|
-vdc_LB_webform_OFF.gif|vdc_LB_webform_OFF.gif|
+vdc_LB_hangupcustomer.gif|vdc_LB_hangupcustomer_pl.gif|
+vdc_LB_hangupcustomer_OFF.gif|vdc_LB_hangupcustomer_OFF_pl.gif|
+vdc_LB_parkcall.gif|vdc_LB_parkcall_pl.gif|
+vdc_LB_parkcall_OFF.gif|vdc_LB_parkcall_OFF_pl.gif|
+vdc_LB_pause.gif|vdc_LB_pause_pl.gif|
+vdc_LB_pause_OFF.gif|vdc_LB_pause_OFF_pl.gif|
+vdc_LB_resume.gif|vdc_LB_resume_pl.gif|
+vdc_LB_resume_OFF.gif|vdc_LB_resume_OFF_pl.gif|
+vdc_LB_startrecording.gif|vdc_LB_startrecording_pl.gif|
+vdc_LB_stoprecording.gif|vdc_LB_stoprecording_pl.gif|
+vdc_LB_transferconf.gif|vdc_LB_transferconf_pl.gif|
+vdc_LB_transferconf_OFF.gif|vdc_LB_transferconf_OFF_pl.gif|
+vdc_LB_webform.gif|vdc_LB_webform_pl.gif|
+vdc_LB_webform_OFF.gif|vdc_LB_webform_OFF_pl.gif|
 vdc_XB_blindtransfer.gif|vdc_XB_blindtransfer.gif|
 vdc_XB_blindtransfer_OFF.gif|vdc_XB_blindtransfer_OFF.gif|
 vdc_XB_dialwithcustomer.gif|vdc_XB_dialwithcustomer.gif|
@@ -87,8 +87,8 @@ vdc_XB_localcloser.gif|vdc_XB_localcloser.gif|
 vdc_XB_localcloser_OFF.gif|vdc_XB_localcloser_OFF.gif|
 vdc_XB_parkcustomerdial.gif|vdc_XB_parkcustomerdial.gif|
 vdc_XB_parkcustomerdial_OFF.gif|vdc_XB_parkcustomerdial_OFF.gif|
-vdc_XB_hotkeysactive.gif|vdc_XB_hotkeysactive.gif|
-vdc_XB_hotkeysactive_OFF.gif|vdc_XB_hotkeysactive_OFF.gif|
+vdc_XB_hotkeysactive.gif|vdc_XB_hotkeysactive_pl.gif|
+vdc_XB_hotkeysactive_OFF.gif|vdc_XB_hotkeysactive_OFF_pl.gif|
 vdc_LB_senddtmf.gif|vdc_LB_senddtmf.gif|
 vdc_LB_senddtmf_OFF.gif|vdc_LB_senddtmf_OFF.gif|
 vdc_XB_header.gif|vdc_XB_header.gif|
@@ -98,9 +98,9 @@ vdc_XB_seconds.gif|vdc_XB_seconds.gif|
 vdc_tab_script.gif|vdc_tab_script.gif|
 You have now logged out. Thank you|Wylogowałeś się. Do zobaczenia|
 astGUIclient web-client VERSION|astGUIclient VERSION|
-astGUIclient web client|web client astGUIclient|
-VICIDIAL web client|web client VICIDIAL|
-VICIDIAL web-client version|wersja web client VICIDIAL|
+astGUIclient web client|klient astGUIclient|
+VICIDIAL web client|klient VICIDIAL|
+VICIDIAL web-client version|wersja klienta VICIDIAL|
 You can only monitor Zap channels|Możesz tylko monitorować kanały Zap|
 Stop Record|Zakończ nagrywanie|
 you are logged into this phone|podłączyłeś się do telefonu|
@@ -192,8 +192,8 @@ has been changed to|zmieniono na|
 information has been updated|informacje zostały zaktualizowane|
 is now in status|jest w statusie|
 Voicemail Check|Sprawdzanie poczty głosowej|
-voicemail box|skrzka głosowa|
-Re-Login|Powtóre zalogowanie|
+voicemail box|skrzynka głosowa|
+Re-Login|Powtórne zalogowanie|
 User Password|Hasło użytkownika|
 User Login|Login użytkownika|
 Phone Login|Login telefonu|
@@ -240,7 +240,7 @@ Dial Blind Transfer|Dial Blind Transfer|
 Dial timed out, contact your system administrator|Minął czas wybierania, skontaktuj się z administratorem|
 No more leads in the hopper for campaign|Brak numerów w zasobniku dla tej kampani|
 Web Form|Web Formularz|
-You Must Select a Disposition|Musisz wybrać opcję|
+You Must Select a Disposition|Musisz wybrać rezultat rozmowy|
 GROUPS NOT SELECTED|Nie wybrana grupa|
 SELECTED GROUPS|Grupa wybrana|
 You cannot log out during a Dial attempt|Nie możesz wylogować się w trakcie wybierania|
@@ -251,7 +251,7 @@ Show conference call channel information|Pokaż informacje o konferencjach|
 Logged in as User|Zalogowany jako|
 Noone is in your session|Nie ma telefonu w Twojej sesji|
 Customer has hung up|Klient sie rozłączył|
-End-of-call Disposition Selection|Koniec rozmowy, wybierz opcję|
+End-of-call Disposition Selection|Koniec rozmowy, wybierz rezultat|
 CLOSER INBOUND GROUP SELECTION|CLOSER INBOUND GROUP SELECTION|
 Closer Inbound Group Selection|Closer Inbound Group Selection|
 BLENDED CALLING|BLENDED CALLING|
@@ -261,11 +261,11 @@ Lead was not reverted, there was an error|Numer nie został przywrócowny, wyst�
 call was not placed, there was an error|call was not placed, there was an error|
 Number to call|Numer do wybrania|
 Customer Information|Informacje o kliencie|
-Lead Dispositioned As|Opcja na numerze|
+Lead Dispositioned As|Rezultat rozmowy|
 Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call|Zmiany wprowadzone w informacjach o kliencie będą zapisane tylko podczas trwania połączenia. Nie po rozłączaniu!|
 When active, simply press the keyboard key for the desired disposition for this call. The call will then be hungup and dispositioned automatically|Kiedy aktywne, naciśnij guzik na klawiaturze w celu wybrania opcji dla tej rozmowy. Rozmowa zostanie automatycznie rozłączona a opcja ustawiona|
 Disposition Hot Keys|Klawisze skrótu|
-Cust Time|Cust Time|
+Cust Time|Zegar|
 RECORD ID|RECORD ID|
 RECORDING FILE|Plik nagrania|
 HOT KEYS ACTIVE|Klawisze skróru aktywne|
@@ -275,35 +275,35 @@ SKIP LEAD|Pomiń numer|
 DIAL LEAD|Wybierz numer|
 LEAD PREVIEW|Podgląd numeru|
 PAUSE AGENT DIALING|Zatrzymaj dzwonienie|
-DISPOSITION CALL|DISPOSITION CALL|
+DISPOSITION CALL|REZULTAT ROZMOWY|
  session ID| ID sesji|
  to campaign| do kampani|
-Select a CallBack Date|Wybierz datę zadzwoń później|
+Select a CallBack Date|Wybierz datę inny termin|
 maximize|maksymalizuj|
 minimize|minimalizuj|
 You must choose a date|Musisz wybrać datę|
 Select a Date Below|Wybierz datę poniżej|
-Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Wybierz link zadzwoń później żeby połączyć się teraz.|
+Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Wybierz link inny termin żeby połączyć się teraz.|
 If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Dial Override field below. To hangup this call you will have to open the CALLS IN THIS SESSION link at the bottom of the screen and hang it up by clicking on its channel link there|Jeżeli chcesz wybrać numer którego nie został dodany do listy wpisz numer ....|
 YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD|Nie możesz ominąć zadzwoń poźniej, musisz wybrać ten numer!|
 YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE|Musisz być w trybie przerwa żeby wybrać numer ręcznie|
 Enter information below for the new lead you wish to call|Wpisz poniżej informacje o numerze pod który chcesz zadzwonić|
-YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|Musisz być w trybie przerwa żeby sprawdzić zadzwoń później|
+YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|Musisz być w trybie przerwa żeby sprawdzić ustawion inne terminy|
 Note: all new manual dial leads will go into list 999|Note: all new manual dial leads will go into list 999|
 YOU DO NOT HAVE PERMISSIONS TO TRANSFER CALLS|Nie masz uprawnień do przenoszenia rozmów|
 will be added to the beginning of this number|będzie dodane na początku tego numeru|
 This is usually a 1 in the USA-Canada|This is usually a 1 in the USA-Canada|
-NEW MANUAL DIAL LEAD FOR|NEW MANUAL DIAL LEAD FOR|
-Finish and Disposition Call|Finish and Disposition Call|
+NEW MANUAL DIAL LEAD FOR|Ręczne wybieranie numeru dla|
+Finish and Disposition Call|Zakończ i wprowadź rezultat rozmowy|
 10 digits max - digits only|maksymalnie 10 cyfr|
 Note: a dial prefix of|Komentarz: Prefix numeru|
 Hangup Again|Rozłącz się ponownie|
 Go Back|Wróć|
 Call Agent Again|Ponownie połącz się z telefonem|
-MY CALLBACK ONLY|Tylko moje zadzwoń później|
-NO ACTIVE CALLBACKS|Brak aktywnych zadzwoń później|
-ACTIVE CALLBACKS|Aktywne zadzwoń później|
-CALLBACKS FOR AGENT|Zadzwoń później dla agenta|
+MY CALLBACK ONLY|Tylko moje inne terminy|
+NO ACTIVE CALLBACKS|Brak aktywnych innych terminów|
+ACTIVE CALLBACKS|Aktywne inne terminy|
+CALLBACKS FOR AGENT|Inne terminy dla agenta|
 Dial Code:|Dial Code:|
 Dial Override|Dial Override|
 digits only please|tylko cyfry|
@@ -367,9 +367,9 @@ Invalid|Nieprawidłowy|
 Username|Nazwa użytkownika|
 CUSTOM|CUSTOM|
 Notes|Notatki|
-First|Pierwsze|
-MI: |MI: |
-Last|Ostatnie|
+First|Imię|
+MI: |2 Imię: |
+Last|Nazwisko|
 Address|Adres|
 City|Miasto|
 State|Stan|
