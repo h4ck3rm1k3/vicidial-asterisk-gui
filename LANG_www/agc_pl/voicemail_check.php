@@ -21,6 +21,7 @@
 # 50503-1241 - added session_name checking for extra security
 # 50711-1201 - removed HTTP authentication in favor of user/pass vars
 # 60421-1147 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1204 - Added variable filters to close security holes for login form
 #
 
 require("dbconnect.php");
@@ -39,11 +40,14 @@ if (isset($_GET["format"]))					{$format=$_GET["format"];}
 if (isset($_GET["vmail_box"]))				{$vmail_box=$_GET["vmail_box"];}
 	elseif (isset($_POST["vmail_box"]))		{$vmail_box=$_POST["vmail_box"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 
-$version = '0.0.4';
-$build = '60421-1147';
+$version = '0.0.5';
+$build = '60619-1204';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -103,7 +107,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if (strlen($vmail_box)<1)
 	{
 	$channel_live=0;
-	echo "skrzka głosowa $vmail_box nie jest prawidłowy\n";
+	echo "skrzynka głosowa $vmail_box nie jest prawidłowy\n";
 	exit;
 	}
 	else

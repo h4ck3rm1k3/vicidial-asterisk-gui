@@ -67,6 +67,8 @@
 #  - $recipient - ('ANYONE,'USERONLY')
 #  - $callback_id - ('12345','12346',...)
 #  - $use_internal_dnc - ('Y','N')
+#  - $omit_phone_code - ('Y','N')
+#  - $no_delete_sessions - ('0','1')
 
 # changes
 # 50629-1044 - First build of script
@@ -104,10 +106,11 @@
 # 60609-1148 - Added ability to check for manual dial numbers in DNC
 # 60619-1117 - Added variable filters to close security holes for login form
 # 60623-1414 - Fixed variable filter for phone_code and fixed manual dial logic
-#
+# 60821-1600 - Added ability to omit the phone code on vicidial lead dialing
+# 60821-1647 - Added ability to not delete sessions at logout
 
-$version = '0.0.34';
-$build = '60623-1414';
+$version = '2.0.36';
+$build = '60821-1647';
 
 require("dbconnect.php");
 
@@ -232,6 +235,8 @@ if (isset($_GET["callback_id"]))				{$callback_id=$_GET["callback_id"];}
 	elseif (isset($_POST["callback_id"]))		{$callback_id=$_POST["callback_id"];}
 if (isset($_GET["use_internal_dnc"]))			{$use_internal_dnc=$_GET["use_internal_dnc"];}
 	elseif (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
+if (isset($_GET["omit_phone_code"]))			{$omit_phone_code=$_GET["omit_phone_code"];}
+	elseif (isset($_POST["omit_phone_code"]))	{$omit_phone_code=$_POST["omit_phone_code"];}
 
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
@@ -534,9 +539,14 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if ($CCID_on) {$CIDstring = "\"$MqueryCID\" <$CCID>";}
 				else {$CIDstring = "$MqueryCID";}
 
+				### whether to omit phone_code or not
+				if (eregi('Y',$omit_phone_code)) 
+					{$Ndialstring = "$Local_out_prefix$phone_number";}
+				else
+					{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
 				### insert the call action into the vicidial_manager table to initiate the call
 				#	$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $conf_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
-				$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Local_out_prefix$phone_code$phone_number','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
+				$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -653,9 +663,14 @@ if ($ACTION == 'manDiaLonly')
 		if ($CCID_on) {$CIDstring = "\"$MqueryCID\" <$CCID>";}
 		else {$CIDstring = "$MqueryCID";}
 
+		### whether to omit phone_code or not
+		if (eregi('Y',$omit_phone_code)) 
+			{$Ndialstring = "$Local_out_prefix$phone_number";}
+		else
+			{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
 		### insert the call action into the vicidial_manager table to initiate the call
 		#	$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $conf_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
-		$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Local_out_prefix$phone_code$phone_number','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
+		$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
@@ -1260,11 +1275,14 @@ else
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
 
-	##### Remove the reservation na the vicidial_conferences meetme room
-	$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
-	if ($DB) {echo "$stmt\n";}
-	$rslt=mysql_query($stmt, $link);
-	$vc_remove = mysql_affected_rows($link);
+	if ($no_delete_sessions < 1)
+		{
+		##### Remove the reservation na the vicidial_conferences meetme room
+		$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		$vc_remove = mysql_affected_rows($link);
+		}
 
 	##### Delete the vicidial_live_agents record for this session
 	$stmt="DELETE from vicidial_live_agents where server_ip='$server_ip' and user ='$user';";

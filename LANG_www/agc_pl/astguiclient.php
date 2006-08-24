@@ -143,7 +143,7 @@ $agcDIR = eregi_replace('astguiclient.php','',$agcDIR);
 	{
 	header ("Content-type: text/html; charset=utf-8");
 
-	echo "<title>web client astGUIclient: Login</title>\n";
+	echo "<title>klient astGUIclient: Login</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -202,7 +202,7 @@ echo "<!-- WERSJA: $version     BUILD: $build      ADD: $ADD-->\n";
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>web client astGUIclient: Login telefonu</title>\n";
+echo "<title>klient astGUIclient: Login telefonu</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE><TR><TD></TD>\n";
@@ -239,7 +239,7 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>web client astGUIclient: Login telefonu</title>\n";
+	echo "<title>klient astGUIclient: Login telefonu</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -268,7 +268,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 	}
 else
 	{
-	echo "<title>web client astGUIclient</title>\n";
+	echo "<title>klient astGUIclient</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -484,9 +484,9 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var phone_pass = '<? echo $phone_pass ?>';
 	var session_name = '<? echo $session_name ?>';
 	var image_livecall_OFF = new Image();
-	image_livecall_OFF.src="../agc/images/agc_live_call_OFF.gif";
+	image_livecall_OFF.src="../agc/images/agc_live_call_OFF_pl.gif";
 	var image_livecall_ON = new Image();
-	image_livecall_ON.src="../agc/images/agc_live_call_ON.gif";
+	image_livecall_ON.src="../agc/images/agc_live_call_ON_pl.gif";
 	var image_voicemail_OFF = new Image();
 	image_voicemail_OFF.src="../agc/images/agc_check_voicemail_OFF.gif";
 	var image_voicemail_ON = new Image();
@@ -2055,7 +2055,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Send Originate command to manager to direct user to skrzka głosowa
+// Send Originate command to manager to direct user to skrzynka głosowa
 	function SendCheckVoiceMail() 
 		{
 		var xmlhttp=false;
@@ -2717,7 +2717,7 @@ echo "</head>\n";
 <TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Panel aktywnych lini" WIDTH=139 HEIGHT=30 Border=0></A></TD>
 <TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Panel konferencyjny" WIDTH=139 HEIGHT=30 Border=0></A></TD>
 <TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Sprawdź pocztę głosową" WIDTH=170 HEIGHT=30 Border=0></A></TD>
-<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Rozmowa" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD><IMG SRC="../agc/images/agc_live_call_OFF_pl.gif" NAME=livecall ALT="Rozmowa" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </SPAN>
 

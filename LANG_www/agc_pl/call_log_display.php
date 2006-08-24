@@ -27,6 +27,7 @@
 # 50711-1202 - removed HTTP authentication in favor of user/pass vars
 # 60323-1550 - added option for showing different number dialed in log
 # 60421-1401 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1202 - Added variable filters to close security holes for login form
 # 
 
 require("dbconnect.php");
@@ -47,6 +48,9 @@ if (isset($_GET["exten"]))				{$exten=$_GET["exten"];}
 if (isset($_GET["protocol"]))				{$protocol=$_GET["protocol"];}
 	elseif (isset($_POST["protocol"]))		{$protocol=$_POST["protocol"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 if (!isset($in_limit))   {$in_limit="100";}
@@ -54,8 +58,8 @@ if (!isset($out_limit))   {$out_limit="100";}
 $number_dialed = 'number_dialed';
 #$number_dialed = 'extension';
 
-$version = '0.0.7';
-$build = '60421-1401';
+$version = '0.0.8';
+$build = '60619-1202';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

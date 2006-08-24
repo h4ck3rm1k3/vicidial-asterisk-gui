@@ -27,6 +27,7 @@
 # 50711-1204 - removed HTTP authentication in favor of user/pass vars
 # 60103-1541 - added favorite extens status display
 # 60421-1359 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1203 - Added variable filters to close security holes for login form
 #
 
 require("dbconnect.php");
@@ -51,11 +52,14 @@ if (isset($_GET["favorites_count"]))				{$favorites_count=$_GET["favorites_count
 if (isset($_GET["favorites_list"]))				{$favorites_list=$_GET["favorites_list"];}
 	elseif (isset($_POST["favorites_list"]))		{$favorites_list=$_POST["favorites_list"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 
-$version = '1.1.11';
-$build = '60421-1359';
+$version = '1.1.12';
+$build = '60619-1203';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
