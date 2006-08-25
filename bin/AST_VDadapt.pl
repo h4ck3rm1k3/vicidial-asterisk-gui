@@ -717,7 +717,10 @@ foreach(@campaign_id)
 				# Factor in the intensity setting
 				$intensity_mul = ($adaptive_intensity[$i] / 100);
 				if ($differential_pct_raw < 0)
-					{$intensity_diff = ($differential_pct_raw * ($intensity_mul - 1) );}
+					{
+					$abs_intensity_mul = abs($intensity_mul - 1);
+					$intensity_diff = ($differential_pct_raw * $abs_intensity_mul);
+					}
 				else
 					{$intensity_diff = ($differential_pct_raw * ($intensity_mul + 1) );}
 				$intensity_pct = sprintf("%.2f", $intensity_diff);	
