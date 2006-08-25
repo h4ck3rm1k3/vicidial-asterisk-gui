@@ -24,3 +24,5 @@ The second set of data to gather is dropped call information across several inte
 5. Total drops and total calls for the campaign in the past one minute
 Also, the drop percentage is calculated and stored in the vicidial_campaign_stats table.
 
+
+To use adaptive dialing you must have the AST_VDadapt.pl script in your crontab running every minute.
