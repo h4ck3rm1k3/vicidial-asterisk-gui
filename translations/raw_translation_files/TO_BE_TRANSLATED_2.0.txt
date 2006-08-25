@@ -12,6 +12,7 @@ Available Only Tally -<\/B> This field if set to Y will leave out INCALL and QUE
 Drop Percentage Limit -<\/B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO
 Maximum Adapt Dial Level -<\/B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0
 Latest Target Timezone -<\/B> This field is only used by the ADAPT_TAPERED dial method. You should select the current GMT offset value or timezone of the latest region that you will be calling. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling. NOTE- If you are calling in the USA and you have a very small amount of leads in Alaska or Hawaii but many leads in Pacific time zone, you should choose the pacific time zone for this field for the ADAPT_TAPERED dial method to work properly
+Adapt Intensity Modifier -<\/B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods
 
 System Performance
 Server Logs
@@ -24,6 +25,7 @@ Available Only Tally
 Drop Percentage Limit
 Maximum Adapt Dial Level
 Latest Target Timezone
+Adapt Intensity Modifier
 
 ############################################################ CLIENT
 

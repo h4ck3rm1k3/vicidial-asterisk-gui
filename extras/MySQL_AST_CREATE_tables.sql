@@ -479,7 +479,8 @@ dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVER
 available_only_ratio_tally ENUM('Y','N') default 'N',
 adaptive_dropped_percentage SMALLINT(3) default '3',
 adaptive_maximum_level VARCHAR(6) default '3.0',
-adaptive_latest_target_gmt VARCHAR(6) default '-7'
+adaptive_latest_target_gmt VARCHAR(6) default '-7',
+adaptive_intensity VARCHAR(6) default '0'
 );
 
  CREATE TABLE vicidial_lists (

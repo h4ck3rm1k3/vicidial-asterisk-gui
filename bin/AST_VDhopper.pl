@@ -1247,18 +1247,3 @@ if ($SYSLOG)
 $event_string='';
 }
 
-
-sub adaptive_logger
-{
-if ($SYSLOG)
-	{
-	$VDHCLOGfile = "$PATHlogs/adaptive-$campaign_id[$i].$file_date";
-
-	### open the log file for writing ###
-	open(Aout, ">>$VDHCLOGfile")
-			|| die "Can't open $VDHCLOGfile: $!\n";
-	print Aout "$now_date$adaptive_string\n";
-	close(Aout);
-	}
-$adaptive_string='';
-}

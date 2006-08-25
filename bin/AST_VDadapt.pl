@@ -302,6 +302,8 @@ foreach(@campaign_id)
 		$VCScalls_one=0;
 		$VCSdrops_one=0;
 		$VCSdrops_one_pct=0;
+		$differential_onemin=0;
+		$agents_average_onemin=0;
 
 		$stmtA = "SELECT dialable_leads from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -315,142 +317,6 @@ foreach(@campaign_id)
 			$rec_count++;
 			}
 		$sthA->finish();
-
-		# TODAY CALL AND DROP STATS
-		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCScalls_today =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
-		if ($VCScalls_today > 0)
-			{
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSdrops_today =		 "$aryA[0]";
-				if ($VCSdrops_today > 0)
-					{
-					$VCSdrops_today_pct = ( ($VCSdrops_today / $VCScalls_today) * 100 );
-					$VCSdrops_today_pct = sprintf("%.2f", $VCSdrops_today_pct);	
-					}
-				$rec_count++;
-				}
-			$sthA->finish();
-			}
-
-		# LAST HOUR CALL AND DROP STATS
-		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCScalls_hour =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
-		if ($VCScalls_hour > 0)
-			{
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSdrops_hour =		 "$aryA[0]";
-				if ($VCSdrops_hour > 0)
-					{
-					$VCSdrops_hour_pct = ( ($VCSdrops_hour / $VCScalls_hour) * 100 );
-					$VCSdrops_hour_pct = sprintf("%.2f", $VCSdrops_hour_pct);	
-					}
-				$rec_count++;
-				}
-			$sthA->finish();
-			}
-
-		# LAST HALFHOUR CALL AND DROP STATS
-		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCScalls_halfhour =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
-		if ($VCScalls_halfhour > 0)
-			{
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSdrops_halfhour =		 "$aryA[0]";
-				if ($VCSdrops_halfhour > 0)
-					{
-					$VCSdrops_halfhour_pct = ( ($VCSdrops_halfhour / $VCScalls_halfhour) * 100 );
-					$VCSdrops_halfhour_pct = sprintf("%.2f", $VCSdrops_halfhour_pct);	
-					}
-				$rec_count++;
-				}
-			$sthA->finish();
-			}
-
-		# LAST FIVE MINUTE CALL AND DROP STATS
-		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCScalls_five =		 "$aryA[0]";
-			$rec_count++;
-			}
-		$sthA->finish();
-		if ($VCScalls_five > 0)
-			{
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSdrops_five =		 "$aryA[0]";
-				if ($VCSdrops_five > 0)
-					{
-					$VCSdrops_five_pct = ( ($VCSdrops_five / $VCScalls_five) * 100 );
-					$VCSdrops_five_pct = sprintf("%.2f", $VCSdrops_five_pct);	
-					}
-				$rec_count++;
-				}
-			$sthA->finish();
-			}
 
 		# LAST ONE MINUTE CALL AND DROP STATS
 		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one';";
@@ -484,112 +350,23 @@ foreach(@campaign_id)
 				$rec_count++;
 				}
 			$sthA->finish();
-			}
 
-		$VCSINCALL=0;
-		$VCSREADY=0;
-		$VCSCLOSER=0;
-		$VCSPAUSED=0;
-		$VCSagents=0;
-		$VCSagents_calc=0;
-		$VCSagents_active=0;
-
-		# COUNTS OF STATUSES OF AGENTS IN THIS CAMPAIGN
-		$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VCSagent_count =		 "$aryA[0]";
-			$VCSagent_status =		 "$aryA[1]";
-			$rec_count++;
-			if ($VCSagent_status =~ /INCALL|QUEUE/) {$VCSINCALL = ($VCSINCALL + $VCSagent_count);}
-			if ($VCSagent_status =~ /READY/) {$VCSREADY = ($VCSREADY + $VCSagent_count);}
-			if ($VCSagent_status =~ /CLOSER/) {$VCSCLOSER = ($VCSCLOSER + $VCSagent_count);}
-			if ($VCSagent_status =~ /PAUSED/) {$VCSPAUSED = ($VCSPAUSED + $VCSagent_count);}
-			$VCSagents = ($VCSagents + $VCSagent_count);
-			}
-		$sthA->finish();
-
-		if ($available_only_ratio_tally =~ /Y/) 
-			{$VCSagents_calc = $VCSREADY;}
-		else
-			{$VCSagents_calc = ($VCSINCALL + $VCSREADY);}
-		$VCSagents_active = ($VCSINCALL + $VCSREADY + $VCSCLOSER);
-
-		### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
-
-		##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
-		$g=0;
-		$p='13';
-		$GMT_gmt[0] = '';
-		$GMT_hour[0] = '';
-		$GMT_day[0] = '';
-			if ($DBX) {print "\n   |GMT-DAY-HOUR|   ";}
-		while ($p > -13)
-			{
-			$pzone = ($GMT_now + ($p * 3600));
-				($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
-			$phour=($phour * 100);
-			$tz = sprintf("%.2f", $p);	
-			$GMT_gmt[$g] = "$tz";
-			$GMT_day[$g] = "$pday";
-			$GMT_hour[$g] = ($phour + $pmin);
-			$p = ($p - 0.25);
-				if ($DBX) {print "|$GMT_gmt[$g]-$GMT_day[$g]-$GMT_hour[$g]|";}
-			$g++;
-			}
-			if ($DBX) {print "\n";}
-
-		$stmtA = "SELECT * FROM vicidial_call_times where call_time_id='$local_call_time[$i]';";
-			if ($DBX) {print "   |$stmtA|\n";}
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$Gct_default_start =	"$aryA[3]";
-			$Gct_default_stop =		"$aryA[4]";
-			$Gct_sunday_start =		"$aryA[5]";
-			$Gct_sunday_stop =		"$aryA[6]";
-			$Gct_monday_start =		"$aryA[7]";
-			$Gct_monday_stop =		"$aryA[8]";
-			$Gct_tuesday_start =	"$aryA[9]";
-			$Gct_tuesday_stop =		"$aryA[10]";
-			$Gct_wednesday_start =	"$aryA[11]";
-			$Gct_wednesday_stop =	"$aryA[12]";
-			$Gct_thursday_start =	"$aryA[13]";
-			$Gct_thursday_stop =	"$aryA[14]";
-			$Gct_friday_start =		"$aryA[15]";
-			$Gct_friday_stop =		"$aryA[16]";
-			$Gct_saturday_start =	"$aryA[17]";
-			$Gct_saturday_stop =	"$aryA[18]";
-			$Gct_state_call_times = "$aryA[19]";
-			$rec_count++;
-			}
-		$sthA->finish();
-
-		$ct_states = '';
-		$ct_state_gmt_SQL = '';
-		$del_state_gmt_SQL = '';
-		$ct_srs=0;
-		$b=0;
-		if (length($Gct_state_call_times)>2)
-			{
-			@state_rules = split(/\|/,$Gct_state_call_times);
-			$ct_srs = ($#state_rules - 2);
-			}
-		while($ct_srs >= $b)
-			{
-			if (length($state_rules[$b])>1)
+			# TODAY CALL AND DROP STATS
+			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
-				$stmtA = "SELECT * from vicidial_state_call_times where state_call_time_id='$state_rules[$b]';";
-					if ($DBX) {print "   |$stmtA|\n";}
+				@aryA = $sthA->fetchrow_array;
+				$VCScalls_today =		 "$aryA[0]";
+				$rec_count++;
+				}
+			$sthA->finish();
+			if ($VCScalls_today > 0)
+				{
+				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
@@ -597,321 +374,584 @@ foreach(@campaign_id)
 				while ($sthArows > $rec_count)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$Gstate_call_time_id =		"$aryA[0]";
-					$Gstate_call_time_state =	"$aryA[1]";
-					$Gsct_default_start =		"$aryA[4]";
-					$Gsct_default_stop =		"$aryA[5]";
-					$Gsct_sunday_start =		"$aryA[6]";
-					$Gsct_sunday_stop =			"$aryA[7]";
-					$Gsct_monday_start =		"$aryA[8]";
-					$Gsct_monday_stop =			"$aryA[9]";
-					$Gsct_tuesday_start =		"$aryA[10]";
-					$Gsct_tuesday_stop =		"$aryA[11]";
-					$Gsct_wednesday_start =		"$aryA[12]";
-					$Gsct_wednesday_stop =		"$aryA[13]";
-					$Gsct_thursday_start =		"$aryA[14]";
-					$Gsct_thursday_stop =		"$aryA[15]";
-					$Gsct_friday_start =		"$aryA[16]";
-					$Gsct_friday_stop =			"$aryA[17]";
-					$Gsct_saturday_start =		"$aryA[18]";
-					$Gsct_saturday_stop =		"$aryA[19]";
-					$ct_states .="'$Gstate_call_time_state',";
+					$VCSdrops_today =		 "$aryA[0]";
+					if ($VCSdrops_today > 0)
+						{
+						$VCSdrops_today_pct = ( ($VCSdrops_today / $VCScalls_today) * 100 );
+						$VCSdrops_today_pct = sprintf("%.2f", $VCSdrops_today_pct);	
+						}
 					$rec_count++;
 					}
 				$sthA->finish();
-
-				$r=0;
-				$state_gmt='';
-				$del_state_gmt='';
-				while($r < $g)
-					{
-					if ($GMT_day[$r]==0)	#### Sunday local time
-						{
-						if (($Gsct_sunday_start==0) and ($Gsct_sunday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_sunday_start) and ($GMT_hour[$r]<$Gsct_sunday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==1)	#### Monday local time
-						{
-						if (($Gsct_monday_start==0) and ($Gsct_monday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_monday_start) and ($GMT_hour[$r]<$Gsct_monday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==2)	#### Tuesday local time
-						{
-						if (($Gsct_tuesday_start==0) and ($Gsct_tuesday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_tuesday_start) and ($GMT_hour[$r]<$Gsct_tuesday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==3)	#### Wednesday local time
-						{
-						if (($Gsct_wednesday_start==0) and ($Gsct_wednesday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_wednesday_start) and ($GMT_hour[$r]<$Gsct_wednesday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==4)	#### Thursday local time
-						{
-						if (($Gsct_thursday_start==0) and ($Gsct_thursday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_thursday_start) and ($GMT_hour[$r]<$Gsct_thursday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==5)	#### Friday local time
-						{
-						if (($Gsct_friday_start==0) and ($Gsct_friday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_friday_start) and ($GMT_hour[$r]<$Gsct_friday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==6)	#### Saturday local time
-						{
-						if (($Gsct_saturday_start==0) and ($Gsct_saturday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_saturday_start) and ($GMT_hour[$r]<$Gsct_saturday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							else
-								{$del_state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					$r++;
-					}
-				$state_gmt = "$state_gmt'99'";
-				$del_state_gmt = "$del_state_gmt'99'";
-				$ct_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
-				$del_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($del_state_gmt)) ";
 				}
 
-			$b++;
+			# LAST HOUR CALL AND DROP STATS
+			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCScalls_hour =		 "$aryA[0]";
+				$rec_count++;
+				}
+			$sthA->finish();
+			if ($VCScalls_hour > 0)
+				{
+				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCSdrops_hour =		 "$aryA[0]";
+					if ($VCSdrops_hour > 0)
+						{
+						$VCSdrops_hour_pct = ( ($VCSdrops_hour / $VCScalls_hour) * 100 );
+						$VCSdrops_hour_pct = sprintf("%.2f", $VCSdrops_hour_pct);	
+						}
+					$rec_count++;
+					}
+				$sthA->finish();
+				}
+
+			# LAST HALFHOUR CALL AND DROP STATS
+			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCScalls_halfhour =		 "$aryA[0]";
+				$rec_count++;
+				}
+			$sthA->finish();
+			if ($VCScalls_halfhour > 0)
+				{
+				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCSdrops_halfhour =		 "$aryA[0]";
+					if ($VCSdrops_halfhour > 0)
+						{
+						$VCSdrops_halfhour_pct = ( ($VCSdrops_halfhour / $VCScalls_halfhour) * 100 );
+						$VCSdrops_halfhour_pct = sprintf("%.2f", $VCSdrops_halfhour_pct);	
+						}
+					$rec_count++;
+					}
+				$sthA->finish();
+				}
+
+			# LAST FIVE MINUTE CALL AND DROP STATS
+			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCScalls_five =		 "$aryA[0]";
+				$rec_count++;
+				}
+			$sthA->finish();
+			if ($VCScalls_five > 0)
+				{
+				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VCSdrops_five =		 "$aryA[0]";
+					if ($VCSdrops_five > 0)
+						{
+						$VCSdrops_five_pct = ( ($VCSdrops_five / $VCScalls_five) * 100 );
+						$VCSdrops_five_pct = sprintf("%.2f", $VCSdrops_five_pct);	
+						}
+					$rec_count++;
+					}
+				$sthA->finish();
+				}
+
+			$VCSINCALL=0;
+			$VCSREADY=0;
+			$VCSCLOSER=0;
+			$VCSPAUSED=0;
+			$VCSagents=0;
+			$VCSagents_calc=0;
+			$VCSagents_active=0;
+
+			# COUNTS OF STATUSES OF AGENTS IN THIS CAMPAIGN
+			$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCSagent_count =		 "$aryA[0]";
+				$VCSagent_status =		 "$aryA[1]";
+				$rec_count++;
+				if ($VCSagent_status =~ /INCALL|QUEUE/) {$VCSINCALL = ($VCSINCALL + $VCSagent_count);}
+				if ($VCSagent_status =~ /READY/) {$VCSREADY = ($VCSREADY + $VCSagent_count);}
+				if ($VCSagent_status =~ /CLOSER/) {$VCSCLOSER = ($VCSCLOSER + $VCSagent_count);}
+				if ($VCSagent_status =~ /PAUSED/) {$VCSPAUSED = ($VCSPAUSED + $VCSagent_count);}
+				$VCSagents = ($VCSagents + $VCSagent_count);
+				}
+			$sthA->finish();
+
+			if ($available_only_ratio_tally =~ /Y/) 
+				{$VCSagents_calc = $VCSREADY;}
+			else
+				{$VCSagents_calc = ($VCSINCALL + $VCSREADY);}
+			$VCSagents_active = ($VCSINCALL + $VCSREADY + $VCSCLOSER);
+
+			### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
+
+			# GET AVERAGES FROM THIS CAMPAIGN
+			$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$differential_onemin =		 "$aryA[0]";
+				$agents_average_onemin =	 "$aryA[1]";
+				$rec_count++;
+				}
+			$sthA->finish();
+
+
+
+
+			##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
+			$g=0;
+			$p='13';
+			$GMT_gmt[0] = '';
+			$GMT_hour[0] = '';
+			$GMT_day[0] = '';
+				if ($DBX) {print "\n   |GMT-DAY-HOUR|   ";}
+			while ($p > -13)
+				{
+				$pzone = ($GMT_now + ($p * 3600));
+					($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
+				$phour=($phour * 100);
+				$tz = sprintf("%.2f", $p);	
+				$GMT_gmt[$g] = "$tz";
+				$GMT_day[$g] = "$pday";
+				$GMT_hour[$g] = ($phour + $pmin);
+				$p = ($p - 0.25);
+					if ($DBX) {print "|$GMT_gmt[$g]-$GMT_day[$g]-$GMT_hour[$g]|";}
+				$g++;
+				}
+				if ($DBX) {print "\n";}
+
+			$stmtA = "SELECT * FROM vicidial_call_times where call_time_id='$local_call_time[$i]';";
+				if ($DBX) {print "   |$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$Gct_default_start =	"$aryA[3]";
+				$Gct_default_stop =		"$aryA[4]";
+				$Gct_sunday_start =		"$aryA[5]";
+				$Gct_sunday_stop =		"$aryA[6]";
+				$Gct_monday_start =		"$aryA[7]";
+				$Gct_monday_stop =		"$aryA[8]";
+				$Gct_tuesday_start =	"$aryA[9]";
+				$Gct_tuesday_stop =		"$aryA[10]";
+				$Gct_wednesday_start =	"$aryA[11]";
+				$Gct_wednesday_stop =	"$aryA[12]";
+				$Gct_thursday_start =	"$aryA[13]";
+				$Gct_thursday_stop =	"$aryA[14]";
+				$Gct_friday_start =		"$aryA[15]";
+				$Gct_friday_stop =		"$aryA[16]";
+				$Gct_saturday_start =	"$aryA[17]";
+				$Gct_saturday_stop =	"$aryA[18]";
+				$Gct_state_call_times = "$aryA[19]";
+				$rec_count++;
+				}
+			$sthA->finish();
+
+			$ct_states = '';
+			$ct_state_gmt_SQL = '';
+			$del_state_gmt_SQL = '';
+			$ct_srs=0;
+			$b=0;
+			if (length($Gct_state_call_times)>2)
+				{
+				@state_rules = split(/\|/,$Gct_state_call_times);
+				$ct_srs = ($#state_rules - 2);
+				}
+			while($ct_srs >= $b)
+				{
+				if (length($state_rules[$b])>1)
+					{
+					$stmtA = "SELECT * from vicidial_state_call_times where state_call_time_id='$state_rules[$b]';";
+						if ($DBX) {print "   |$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$Gstate_call_time_id =		"$aryA[0]";
+						$Gstate_call_time_state =	"$aryA[1]";
+						$Gsct_default_start =		"$aryA[4]";
+						$Gsct_default_stop =		"$aryA[5]";
+						$Gsct_sunday_start =		"$aryA[6]";
+						$Gsct_sunday_stop =			"$aryA[7]";
+						$Gsct_monday_start =		"$aryA[8]";
+						$Gsct_monday_stop =			"$aryA[9]";
+						$Gsct_tuesday_start =		"$aryA[10]";
+						$Gsct_tuesday_stop =		"$aryA[11]";
+						$Gsct_wednesday_start =		"$aryA[12]";
+						$Gsct_wednesday_stop =		"$aryA[13]";
+						$Gsct_thursday_start =		"$aryA[14]";
+						$Gsct_thursday_stop =		"$aryA[15]";
+						$Gsct_friday_start =		"$aryA[16]";
+						$Gsct_friday_stop =			"$aryA[17]";
+						$Gsct_saturday_start =		"$aryA[18]";
+						$Gsct_saturday_stop =		"$aryA[19]";
+						$ct_states .="'$Gstate_call_time_state',";
+						$rec_count++;
+						}
+					$sthA->finish();
+
+					$r=0;
+					$state_gmt='';
+					$del_state_gmt='';
+					while($r < $g)
+						{
+						if ($GMT_day[$r]==0)	#### Sunday local time
+							{
+							if (($Gsct_sunday_start==0) and ($Gsct_sunday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_sunday_start) and ($GMT_hour[$r]<$Gsct_sunday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==1)	#### Monday local time
+							{
+							if (($Gsct_monday_start==0) and ($Gsct_monday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_monday_start) and ($GMT_hour[$r]<$Gsct_monday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==2)	#### Tuesday local time
+							{
+							if (($Gsct_tuesday_start==0) and ($Gsct_tuesday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_tuesday_start) and ($GMT_hour[$r]<$Gsct_tuesday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==3)	#### Wednesday local time
+							{
+							if (($Gsct_wednesday_start==0) and ($Gsct_wednesday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_wednesday_start) and ($GMT_hour[$r]<$Gsct_wednesday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==4)	#### Thursday local time
+							{
+							if (($Gsct_thursday_start==0) and ($Gsct_thursday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_thursday_start) and ($GMT_hour[$r]<$Gsct_thursday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==5)	#### Friday local time
+							{
+							if (($Gsct_friday_start==0) and ($Gsct_friday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_friday_start) and ($GMT_hour[$r]<$Gsct_friday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==6)	#### Saturday local time
+							{
+							if (($Gsct_saturday_start==0) and ($Gsct_saturday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_saturday_start) and ($GMT_hour[$r]<$Gsct_saturday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								else
+									{$del_state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						$r++;
+						}
+					$state_gmt = "$state_gmt'99'";
+					$del_state_gmt = "$del_state_gmt'99'";
+					$ct_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
+					$del_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($del_state_gmt)) ";
+					}
+
+				$b++;
+				}
+			if (length($ct_states)>2)
+				{
+				$ct_states =~ s/,$//gi;
+				$ct_statesSQL = "and state NOT IN($ct_states)";
+				}
+			else
+				{
+				$ct_statesSQL = "";
+				}
+
+			$r=0;
+			$default_gmt='';
+			$del_default_gmt='';
+			while($r < $g)
+				{
+				if ($GMT_day[$r]==0)	#### Sunday local time
+					{
+					if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==1)	#### Monday local time
+					{
+					if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==2)	#### Tuesday local time
+					{
+					if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==3)	#### Wednesday local time
+					{
+					if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==4)	#### Thursday local time
+					{
+					if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==5)	#### Friday local time
+					{
+					if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==6)	#### Saturday local time
+					{
+					if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						else
+							{$del_default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				$r++;
+				}
+
+			$default_gmt = "$default_gmt'99'";
+			$del_default_gmt = "$del_default_gmt'99'";
+			$all_gmtSQL = "(gmt_offset_now IN($default_gmt) $ct_statesSQL) $ct_state_gmt_SQL";
+			$del_gmtSQL = "(gmt_offset_now IN($del_default_gmt) $ct_statesSQL) $del_state_gmt_SQL";
+
+			##### END calculate what gmt_offset_now values are within the allowed local_call_time setting ###
+
+			$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
+			$affected_rows = $dbhA->do($stmtA);
+
+			$differential_mul = ($differential_onemin / $agents_average_onemin);
+			$differential_pct = ($differential_mul * 100);
+			$differential_pct = sprintf("%.2f", $differential_pct);	
+			$suggested_dial_level = ($auto_dial_level[$i] * ($differential_mul + 1) );
+			$suggested_dial_level = sprintf("%.3f", $suggested_dial_level);	
+
+			$adaptive_string  = "\n";
+			$adaptive_string .= "CAMPAIGN:   $campaign_id[$i]\n";
+			$adaptive_string .= "SETTINGS-\n";
+			$adaptive_string .= "   DIAL_LEVEL: $auto_dial_level[$i]\n";
+			$adaptive_string .= "   DIALMETHOD: $dial_method[$i]\n";
+			$adaptive_string .= "   AVAIL ONLY: $available_only_ratio_tally[$i]\n";
+			$adaptive_string .= "   DROP PCNT:  $adaptive_dropped_percentage[$i]\n";
+			$adaptive_string .= "   MAX LEVEL:  $adaptive_maximum_level[$i]\n";
+			$adaptive_string .= "   LATEST GMT: $adaptive_latest_target_gmt[$i]\n";
+			$adaptive_string .= "CURRENT STATS-\n";
+			$adaptive_string .= "   AVG AGENTS:      $agents_average_onemin\n";
+			$adaptive_string .= "   AGENTS:          $VCSagents  ACTIVE: $VCSagents_active   CALC: $VCSagents_calc  INCALL: $VCSINCALL    READY: $VCSREADY\n";
+			$adaptive_string .= "   DL DIFFERENTIAL: $differential_onemin\n";
+			$adaptive_string .= "      PERCENT DIFF: $differential_pct\n";
+			$adaptive_string .= "      SUGGEST DL:   $suggested_dial_level = ($auto_dial_level[$i] *($differential_mul+1))\n";
+			$adaptive_string .= "   TODAY DROPS:     $VCScalls_today   $VCSdrops_today   $VCSdrops_today_pct%\n";
+			$adaptive_string .= "   ONE HOUR DROPS:  $VCScalls_hour   $VCSdrops_hour   $VCSdrops_hour_pct%\n";
+			$adaptive_string .= "   HALF HOUR DROPS: $VCScalls_halfhour   $VCSdrops_halfhour   $VCSdrops_halfhour_pct%\n";
+			$adaptive_string .= "   FIVE MIN DROPS:  $VCScalls_five   $VCSdrops_five   $VCSdrops_five_pct%\n";
+			$adaptive_string .= "   ONE MIN DROPS:   $VCScalls_one   $VCSdrops_one   $VCSdrops_one_pct%\n";
+
+			if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
+
+				&adaptive_logger;
+
 			}
-		if (length($ct_states)>2)
-			{
-			$ct_states =~ s/,$//gi;
-			$ct_statesSQL = "and state NOT IN($ct_states)";
-			}
-		else
-			{
-			$ct_statesSQL = "";
-			}
-
-		$r=0;
-		$default_gmt='';
-		$del_default_gmt='';
-		while($r < $g)
-			{
-			if ($GMT_day[$r]==0)	#### Sunday local time
-				{
-				if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==1)	#### Monday local time
-				{
-				if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==2)	#### Tuesday local time
-				{
-				if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==3)	#### Wednesday local time
-				{
-				if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==4)	#### Thursday local time
-				{
-				if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==5)	#### Friday local time
-				{
-				if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==6)	#### Saturday local time
-				{
-				if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					else
-						{$del_default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			$r++;
-			}
-
-		$default_gmt = "$default_gmt'99'";
-		$del_default_gmt = "$del_default_gmt'99'";
-		$all_gmtSQL = "(gmt_offset_now IN($default_gmt) $ct_statesSQL) $ct_state_gmt_SQL";
-		$del_gmtSQL = "(gmt_offset_now IN($del_default_gmt) $ct_statesSQL) $del_state_gmt_SQL";
-
-		##### END calculate what gmt_offset_now values are within the allowed local_call_time setting ###
-
-	#	$auto_dial_level[$rec_count] =	 "$aryA[14]";
-	#	$dial_method[$rec_count] =					$aryA[46];
-	#	$available_only_ratio_tally[$rec_count] =	$aryA[47];
-	#	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
-	#	$adaptive_maximum_level[$rec_count] =		$aryA[49];
-	#	$adaptive_latest_target_gmt[$rec_count] =	$aryA[50];
-
-		$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
-		$affected_rows = $dbhA->do($stmtA);
-		$adaptive_string = "|AGENTS: $VCSagents|ACTIVE: $VCSagents_active|CALC: $VCSagents_calc|INCALL: $VCSINCALL|READY: $VCSREADY|LEVEL: $auto_dial_level[$i]|$dial_method[$i]|$available_only_ratio_tally[$i]|$adaptive_dropped_percentage[$i]|$adaptive_maximum_level[$i]|$adaptive_latest_target_gmt[$i]   |$VCScalls_today|$VCSdrops_today|$VCSdrops_today_pct|   |$VCScalls_hour|$VCSdrops_hour|$VCSdrops_hour_pct|   |$VCScalls_halfhour|$VCSdrops_halfhour|$VCSdrops_halfhour_pct|   |$VCScalls_five|$VCSdrops_five|$VCSdrops_five_pct|   |$VCScalls_one|$VCSdrops_one|$VCSdrops_one_pct|   $campaign_id[$i]|";
-		if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
-
-			&adaptive_logger;
-
 		}
 	$i++;
 	}
