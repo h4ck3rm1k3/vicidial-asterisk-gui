@@ -1,0 +1,26 @@
+PREDICTIVE Summary and Overview                                 2006-08-24
+
+*** PREDICTIVE OUTBOUND CALLING FUNCTIONALITY WAS ADDED IN THE 2.0.1 RELEASE ***
+
+This will outline the methods used to predictively dial outbound calling campaigns in VICIDIAL with the ADAPT dial methods. This is a description of the first versions of three different Predictive/Adaptive dialing algorithms used in VICIDIAL. As the need arises we will create more versions of different algorithms in the future.
+
+
+The gathering of data to analyze:
+
+In order to properly analyze calling trends and adapt to the current list that is being called we need to first gather a lot of data to analyze.
+
+The first set of data we want to gather is the recent queue and agent statistics for each campaign. This information is gathered by the AST_VDauto_dial.pl script as it runs through each loop every 2.5-3.0 seconds. The data gathered in this script are all averages of the last 60 seconds of agent and queue activity:
+1. The average number of agents that are logged into the campaign across one minute
+2. The average number of calls waiting to be transferred to an agent across one minute
+3. The average number of agents waiting for calls across one minute
+4. The difference between the waiting calls and ready agents across one minute
+	This number if positive means that on average more agents were waiting for calls than calls waiting for agents in the last minute for that campaign.
+
+The second set of data to gather is dropped call information across several intervals. This information will be gathered by the actual AST_VDadapt.pl script that will also be the script actually changing the dial level when the predictive/adaptive dial method is activated. Once a minute this script will gather:
+1. total drops and total calls for the campaign since midnight
+2. Total drops and total calls for the campaign in the past hour
+3. Total drops and total calls for the campaign in the past half hour hour
+4. Total drops and total calls for the campaign in the past five minutes
+5. Total drops and total calls for the campaign in the past one minute
+Also, the drop percentage is calculated and stored in the vicidial_campaign_stats table.
+
