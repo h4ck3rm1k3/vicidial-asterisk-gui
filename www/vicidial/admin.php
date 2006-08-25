@@ -4440,8 +4440,8 @@ echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td ali
 echo "<tr bgcolor=#BDFFBD><td align=right>Latest Target Timezone: </td><td align=left><select size=1 name=adaptive_latest_target_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-2.50</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-4.50</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$adaptive_latest_target_gmt</option></select> (MUST Adjust for DST) $NWB#vicidial_campaigns-adaptive_latest_target_gmt$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
-$n=20;
-while ($n>=-20)
+$n=40;
+while ($n>=-40)
 	{
 	echo "<option>$n</option>\n";
 	$n--;
@@ -4852,8 +4852,8 @@ echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><sele
 echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
-$n=20;
-while ($n>=-20)
+$n=40;
+while ($n>=-40)
 	{
 	echo "<option>$n</option>\n";
 	$n--;
