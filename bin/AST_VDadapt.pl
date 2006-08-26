@@ -8,6 +8,8 @@
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # 60823-1302 - first build from AST_VDhopper.pl
+# 60825-1734 - functional alpha version, no loop
+# 60826-0857 - added loop and CLI flag options
 #
 
 # constants
@@ -30,28 +32,65 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [--dbgmt] = show GMT offset of records as they are inserted into hopper\n  [-t] = test\n  [--level=XXX] = force a hopper_level of XXX\n  [--campaign=XXX] = run for campaign XXX only\n  [-force] = force calculation of suggested predictive dial_level\n  [-test] = test only, do not alter dial_level\n\n";
+	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [--dbgmt] = show GMT offset of records as they are inserted into hopper\n  [-t] = test\n  [--loops=XXX] = force a number of loops of XXX\n  [--delay=XXX] = force a loop delay of XXX seconds\n  [--campaign=XXX] = run for campaign XXX only\n  [-force] = force calculation of suggested predictive dial_level\n  [-test] = test only, do not alter dial_level\n\n";
 	}
 	else
 	{
-		if ($args =~ /--campaign=/i)
+		if ($args =~ /--campaign=/i) # CLI defined campaign
 		{
-		#	print "\n|$ARGS|\n\n";
-		@data_in = split(/--campaign=/,$args);
-			$CLIcampaign = $data_in[1];
-		}
+		@CLIvarARY = split(/--campaign=/,$args);
+		@CLIvarARX = split(/ /,$CLIvarARY[1]);
+		if (length($CLIvarARX[0])>2)
+			{
+			$CLIcampaign = $CLIvarARX[0];
+			$CLIcampaign =~ s/\/$| |\r|\n|\t//gi;
+			}
 		else
 			{$CLIcampaign = '';}
-		if ($args =~ /--level=/i)
-		{
-		@data_in = split(/--level=/,$args);
-			$CLIlevel = $data_in[1];
-			$CLIlevel =~ s/ .*$//gi;
-			$CLIlevel =~ s/\D//gi;
-		print "\n-----HOPPER LEVEL OVERRIDE: $CLIlevel -----\n\n";
+		@CLIvarARY=@MT;   @CLIvarARY=@MT;
 		}
+		if ($args =~ /--level=/i) # CLI defined level
+		{
+		@CLIvarARY = split(/--level=/,$args);
+		@CLIvarARX = split(/ /,$CLIvarARY[1]);
+		if (length($CLIvarARX[0])>2)
+			{
+			$CLIlevel = $CLIvarARX[0];
+			$CLIlevel =~ s/\/$| |\r|\n|\t//gi;
+			$CLIlevel =~ s/\D//gi;
+			}
 		else
 			{$CLIlevel = '';}
+		@CLIvarARY=@MT;   @CLIvarARY=@MT;
+		}
+		if ($args =~ /--loops=/i) # CLI defined loops
+		{
+		@CLIvarARY = split(/--loops=/,$args);
+		@CLIvarARX = split(/ /,$CLIvarARY[1]);
+		if (length($CLIvarARX[0])>2)
+			{
+			$CLIloops = $CLIvarARX[0];
+			$CLIloops =~ s/\/$| |\r|\n|\t//gi;
+			$CLIloops =~ s/\D//gi;
+			}
+		else
+			{$CLIloops = '1000000';}
+		@CLIvarARY=@MT;   @CLIvarARY=@MT;
+		}
+		if ($args =~ /--delay=/i) # CLI defined delay
+		{
+		@CLIvarARY = split(/--delay=/,$args);
+		@CLIvarARX = split(/ /,$CLIvarARY[1]);
+		if (length($CLIvarARX[0])>2)
+			{
+			$CLIdelay = $CLIvarARX[0];
+			$CLIdelay =~ s/\/$| |\r|\n|\t//gi;
+			$CLIdelay =~ s/\D//gi;
+			}
+		else
+			{$CLIdelay = '15';}
+		@CLIvarARY=@MT;   @CLIvarARY=@MT;
+		}
 		if ($args =~ /--debug/i)
 		{
 		$DB=1;
@@ -122,7 +161,6 @@ foreach(@conf)
 	$i++;
 	}
 
-if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/hopper.$year-$mon-$mday";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
 use DBI;	  
@@ -132,11 +170,13 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 
 
+$master_loop=0;
 
+### Start master loop ###
+while ($master_loop<$CLIloops) 
+{
 
-### Start loop code ###
-
-### Grab Server values from the database
+	### Grab Server values from the database
 	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -156,13 +196,13 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 
 
-$secX = time();
+	$secX = time();
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
 	$LOCAL_GMT_OFF = $SERVER_GMT;
 	$LOCAL_GMT_OFF_STD = $SERVER_GMT;
 	if ($isdst) {$LOCAL_GMT_OFF++;} 
 
-$GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
+	$GMT_now = ($secX - ($LOCAL_GMT_OFF * 3600));
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($GMT_now);
 	$mon++;
 	$year = ($year + 1900);
@@ -799,6 +839,10 @@ foreach(@campaign_id)
 	$i++;
 	}
 
+sleep($CLIdelay);
+
+$master_loop++;
+}
 
 $dbhA->disconnect();
 
@@ -819,6 +863,8 @@ sub event_logger
 {
 if ($SYSLOG)
 	{
+	if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/adapt.$year-$mon-$mday";}
+
 	### open the log file for writing ###
 	open(Lout, ">>$VDHLOGfile")
 			|| die "Can't open $VDHLOGfile: $!\n";
