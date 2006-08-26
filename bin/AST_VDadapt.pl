@@ -16,55 +16,7 @@ $US='__';
 $MT[0]='';
 
 $secT = time();
-$secX = time();
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-$year = ($year + 1900);
-$mon++;
-if ($mon < 10) {$mon = "0$mon";}
-if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
-if ($min < 10) {$min = "0$min";}
-if ($sec < 10) {$sec = "0$sec";}
-$file_date = "$year-$mon-$mday";
-$now_date = "$year-$mon-$mday $hour:$min:$sec";
-$VDL_date = "$year-$mon-$mday 00:00:01";
-$current_hourmin = "$hour$min";
-
-### get date-time of one hour ago ###
-	$VDL_hour = ($secX - (60 * 60));
-($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_hour);
-$Vyear = ($Vyear + 1900);
-$Vmon++;
-if ($Vmon < 10) {$Vmon = "0$Vmon";}
-if ($Vmday < 10) {$Vmday = "0$Vmday";}
-$VDL_hour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
-
-### get date-time of half hour ago ###
-	$VDL_halfhour = ($secX - (30 * 60));
-($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_halfhour);
-$Vyear = ($Vyear + 1900);
-$Vmon++;
-if ($Vmon < 10) {$Vmon = "0$Vmon";}
-if ($Vmday < 10) {$Vmday = "0$Vmday";}
-$VDL_halfhour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
-
-### get date-time of five minutes ago ###
-	$VDL_five = ($secX - (5 * 60));
-($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_five);
-$Vyear = ($Vyear + 1900);
-$Vmon++;
-if ($Vmon < 10) {$Vmon = "0$Vmon";}
-if ($Vmday < 10) {$Vmday = "0$Vmday";}
-$VDL_five = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
-
-### get date-time of one minute ago ###
-	$VDL_one = ($secX - (1 * 60));
-($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_one);
-$Vyear = ($Vyear + 1900);
-$Vmon++;
-if ($Vmon < 10) {$Vmon = "0$Vmon";}
-if ($Vmday < 10) {$Vmday = "0$Vmday";}
-$VDL_one = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+	&get_time_now;
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -78,7 +30,7 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [--dbgmt] = show GMT offset of records as they are inserted into hopper\n  [-t] = test\n  [--level=XXX] = force a hopper_level of XXX\n  [--campaign=XXX] = run for campaign XXX only\n\n";
+	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [--dbgmt] = show GMT offset of records as they are inserted into hopper\n  [-t] = test\n  [--level=XXX] = force a hopper_level of XXX\n  [--campaign=XXX] = run for campaign XXX only\n  [-force] = force calculation of suggested predictive dial_level\n  [-test] = test only, do not alter dial_level\n\n";
 	}
 	else
 	{
@@ -178,6 +130,11 @@ use DBI;
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
+
+
+
+
+### Start loop code ###
 
 ### Grab Server values from the database
 	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
@@ -885,4 +842,59 @@ if ($SYSLOG)
 	close(Aout);
 	}
 $adaptive_string='';
+}
+
+sub get_time_now
+{
+$secX = time();
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+$file_date = "$year-$mon-$mday";
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+$VDL_date = "$year-$mon-$mday 00:00:01";
+$current_hourmin = "$hour$min";
+
+### get date-time of one hour ago ###
+	$VDL_hour = ($secX - (60 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_hour);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_hour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of half hour ago ###
+	$VDL_halfhour = ($secX - (30 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_halfhour);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_halfhour = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of five minutes ago ###
+	$VDL_five = ($secX - (5 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_five);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_five = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get date-time of one minute ago ###
+	$VDL_one = ($secX - (1 * 60));
+($Vsec,$Vmin,$Vhour,$Vmday,$Vmon,$Vyear,$Vwday,$Vyday,$Visdst) = localtime($VDL_one);
+$Vyear = ($Vyear + 1900);
+$Vmon++;
+if ($Vmon < 10) {$Vmon = "0$Vmon";}
+if ($Vmday < 10) {$Vmday = "0$Vmday";}
+$VDL_one = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+
 }

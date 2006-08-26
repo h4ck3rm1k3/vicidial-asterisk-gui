@@ -17,12 +17,30 @@ The first set of data we want to gather is the recent queue and agent statistics
 	This number if positive means that on average more agents were waiting for calls than calls waiting for agents in the last minute for that campaign.
 
 The second set of data to gather is dropped call information across several intervals. This information will be gathered by the actual AST_VDadapt.pl script that will also be the script actually changing the dial level when the predictive/adaptive dial method is activated. Once a minute this script will gather:
-1. total drops and total calls for the campaign since midnight
+1. Total drops and total calls for the campaign since midnight
 2. Total drops and total calls for the campaign in the past hour
-3. Total drops and total calls for the campaign in the past half hour hour
+3. Total drops and total calls for the campaign in the past half hour
 4. Total drops and total calls for the campaign in the past five minutes
 5. Total drops and total calls for the campaign in the past one minute
 Also, the drop percentage is calculated and stored in the vicidial_campaign_stats table.
 
 
+The settings in the campaign detail screen:
+
+Dial Method - This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift(as defined by call_time selected for campaign) and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods.
+
+Auto Dial Level - This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow.
+
+Available Only Tally - This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
+
+Drop Percentage Limit - This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
+
+Maximum Adapt Dial Level - This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
+
+Latest Target Timezone - This field is only used by the ADAPT_TAPERED dial method. You should select the current GMT offset value or timezone of the latest region that you will be calling. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling. NOTE- If you are calling in the USA and you have a very small amount of leads in Alaska or Hawaii but many leads in Pacific time zone, you should choose the pacific time zone for this field for the ADAPT_TAPERED dial method to work properly.
+
+Adapt Intensity Modifier - This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+
+
 To use adaptive dialing you must have the AST_VDadapt.pl script in your crontab running every minute.
+
