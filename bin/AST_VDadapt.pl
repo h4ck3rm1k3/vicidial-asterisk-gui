@@ -12,6 +12,14 @@
 # 60826-0857 - added loop and CLI flag options
 #
 
+# TODO
+# - write ADMIN_keepalive script for this script to keep it running continuously
+# - separate Drop calculation and target dial level calculation into different subroutines
+# - add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
+# - alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
+# - change latest_target_gmt to latest_target_time which would be a 4 digit server time number to reduce confusion
+# 
+
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate lots of lines of output per minute
 $US='__';
