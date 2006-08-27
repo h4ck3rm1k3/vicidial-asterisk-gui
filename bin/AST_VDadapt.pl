@@ -10,13 +10,12 @@
 # 60823-1302 - first build from AST_VDhopper.pl
 # 60825-1734 - functional alpha version, no loop
 # 60826-0857 - added loop and CLI flag options
-#
+# 60827-0035 - separate Drop calculation and target dial level calculation into different subroutines
+#            - alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
 
 # TODO
 # - write ADMIN_keepalive script for this script to keep it running continuously
-# - separate Drop calculation and target dial level calculation into different subroutines
 # - add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
-# - alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
 # - change latest_target_gmt to latest_target_time which would be a 4 digit server time number to reduce confusion
 # 
 
@@ -40,7 +39,7 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [--dbgmt] = show GMT offset of records as they are inserted into hopper\n  [-t] = test\n  [--loops=XXX] = force a number of loops of XXX\n  [--delay=XXX] = force a loop delay of XXX seconds\n  [--campaign=XXX] = run for campaign XXX only\n  [-force] = force calculation of suggested predictive dial_level\n  [-test] = test only, do not alter dial_level\n\n";
+	print "allowed run time options(must stay in this order):\n  [--debug] = debug\n  [--debugX] = super debug\n  [-t] = test\n  [--loops=XXX] = force a number of loops of XXX\n  [--delay=XXX] = force a loop delay of XXX seconds\n  [--campaign=XXX] = run for campaign XXX only\n  [-force] = force calculation of suggested predictive dial_level\n  [-test] = test only, do not alter dial_level\n\n";
 	}
 	else
 	{
@@ -96,7 +95,7 @@ if (length($ARGV[0])>1)
 			$CLIdelay =~ s/\D//gi;
 			}
 		else
-			{$CLIdelay = '15';}
+			{$CLIdelay = '1';}
 		@CLIvarARY=@MT;   @CLIvarARY=@MT;
 		}
 		if ($args =~ /--debug/i)
@@ -108,11 +107,6 @@ if (length($ARGV[0])>1)
 		{
 		$DBX=1;
 		print "\n----- SUPER DEBUG -----\n\n";
-		}
-		if ($args =~ /--dbgmt/i)
-		{
-		$DB_show_offset=1;
-		print "\n-----DEBUG GMT -----\n\n";
 		}
 		if ($args =~ /-force/i)
 		{
@@ -180,9 +174,15 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 $master_loop=0;
 
+$diff_ratio_updater=0;
+$drop_count_updater=0;
+
+$stat_count=1;
+
 ### Start master loop ###
 while ($master_loop<$CLIloops) 
 {
+	&get_time_now;
 
 	### Grab Server values from the database
 	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
@@ -290,565 +290,42 @@ foreach(@campaign_id)
 	$event_string = "|$campaign_id[$i]|$hopper_level[$i]|$hopper_ready_count|$local_call_time[$i]||";
 	&event_logger;	
 
+	##### IF THERE ARE NO LEADS IN THE HOPPER FOR THE CAMPAIGN WE DO NOT WANT TO ADJUST THE DIAL_LEVEL
 	if ($hopper_ready_count>0)
 		{
 		### BEGIN - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
 		$vicidial_log = 'vicidial_log';
-		$VCSdialable_leads=0;
-		$VCScalls_today=0;
-		$VCSdrops_today=0;
-		$VCSdrops_today_pct=0;
-		$VCScalls_hour=0;
-		$VCSdrops_hour=0;
-		$VCSdrops_hour_pct=0;
-		$VCScalls_halfhour=0;
-		$VCSdrops_halfhour=0;
-		$VCSdrops_halfhour_pct=0;
-		$VCScalls_five=0;
-		$VCSdrops_five=0;
-		$VCSdrops_five_pct=0;
-		$VCScalls_one=0;
-		$VCSdrops_one=0;
-		$VCSdrops_one_pct=0;
 		$differential_onemin=0;
 		$agents_average_onemin=0;
 
-		$stmtA = "SELECT dialable_leads from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
+		### Grab the count of agents and lines
+		if ($campaign_id[$i] !~ /CLOSER/)
 			{
-			@aryA = $sthA->fetchrow_array;
-			$VCSdialable_leads =		 "$aryA[0]";
-			$rec_count++;
+			&count_agents_lines;
 			}
-		$sthA->finish();
 
-		# LAST ONE MINUTE CALL AND DROP STATS
-		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_count=0;
-		while ($sthArows > $rec_count)
+		### Update Drop counter every 60 seconds
+		if ($drop_count_updater>=60)
 			{
-			@aryA = $sthA->fetchrow_array;
-			$VCScalls_one =		 "$aryA[0]";
-			$rec_count++;
+			&calculate_drops;
 			}
-		$sthA->finish();
-		if ($VCScalls_one > 0)
+
+		### Calculate and update Dial level every 15 seconds
+		if ($diff_ratio_updater>=15)
 			{
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status IN('DROP','XDROP');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSdrops_one =		 "$aryA[0]";
-				if ($VCSdrops_one > 0)
-					{
-					$VCSdrops_one_pct = ( ($VCSdrops_one / $VCScalls_one) * 100 );
-					$VCSdrops_one_pct = sprintf("%.2f", $VCSdrops_one_pct);	
-					}
-				$rec_count++;
-				}
-			$sthA->finish();
-
-			# TODAY CALL AND DROP STATS
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date';";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCScalls_today =		 "$aryA[0]";
-				$rec_count++;
-				}
-			$sthA->finish();
-			if ($VCScalls_today > 0)
-				{
-				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$VCSdrops_today =		 "$aryA[0]";
-					if ($VCSdrops_today > 0)
-						{
-						$VCSdrops_today_pct = ( ($VCSdrops_today / $VCScalls_today) * 100 );
-						$VCSdrops_today_pct = sprintf("%.2f", $VCSdrops_today_pct);	
-						}
-					$rec_count++;
-					}
-				$sthA->finish();
-				}
-
-			# LAST HOUR CALL AND DROP STATS
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour';";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCScalls_hour =		 "$aryA[0]";
-				$rec_count++;
-				}
-			$sthA->finish();
-			if ($VCScalls_hour > 0)
-				{
-				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$VCSdrops_hour =		 "$aryA[0]";
-					if ($VCSdrops_hour > 0)
-						{
-						$VCSdrops_hour_pct = ( ($VCSdrops_hour / $VCScalls_hour) * 100 );
-						$VCSdrops_hour_pct = sprintf("%.2f", $VCSdrops_hour_pct);	
-						}
-					$rec_count++;
-					}
-				$sthA->finish();
-				}
-
-			# LAST HALFHOUR CALL AND DROP STATS
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour';";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCScalls_halfhour =		 "$aryA[0]";
-				$rec_count++;
-				}
-			$sthA->finish();
-			if ($VCScalls_halfhour > 0)
-				{
-				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$VCSdrops_halfhour =		 "$aryA[0]";
-					if ($VCSdrops_halfhour > 0)
-						{
-						$VCSdrops_halfhour_pct = ( ($VCSdrops_halfhour / $VCScalls_halfhour) * 100 );
-						$VCSdrops_halfhour_pct = sprintf("%.2f", $VCSdrops_halfhour_pct);	
-						}
-					$rec_count++;
-					}
-				$sthA->finish();
-				}
-
-			# LAST FIVE MINUTE CALL AND DROP STATS
-			$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five';";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCScalls_five =		 "$aryA[0]";
-				$rec_count++;
-				}
-			$sthA->finish();
-			if ($VCScalls_five > 0)
-				{
-				$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$VCSdrops_five =		 "$aryA[0]";
-					if ($VCSdrops_five > 0)
-						{
-						$VCSdrops_five_pct = ( ($VCSdrops_five / $VCScalls_five) * 100 );
-						$VCSdrops_five_pct = sprintf("%.2f", $VCSdrops_five_pct);	
-						}
-					$rec_count++;
-					}
-				$sthA->finish();
-				}
-
-			$VCSINCALL=0;
-			$VCSREADY=0;
-			$VCSCLOSER=0;
-			$VCSPAUSED=0;
-			$VCSagents=0;
-			$VCSagents_calc=0;
-			$VCSagents_active=0;
-
-			# COUNTS OF STATUSES OF AGENTS IN THIS CAMPAIGN
-			$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$VCSagent_count =		 "$aryA[0]";
-				$VCSagent_status =		 "$aryA[1]";
-				$rec_count++;
-				if ($VCSagent_status =~ /INCALL|QUEUE/) {$VCSINCALL = ($VCSINCALL + $VCSagent_count);}
-				if ($VCSagent_status =~ /READY/) {$VCSREADY = ($VCSREADY + $VCSagent_count);}
-				if ($VCSagent_status =~ /CLOSER/) {$VCSCLOSER = ($VCSCLOSER + $VCSagent_count);}
-				if ($VCSagent_status =~ /PAUSED/) {$VCSPAUSED = ($VCSPAUSED + $VCSagent_count);}
-				$VCSagents = ($VCSagents + $VCSagent_count);
-				}
-			$sthA->finish();
-
-			if ($available_only_ratio_tally =~ /Y/) 
-				{$VCSagents_calc = $VCSREADY;}
-			else
-				{$VCSagents_calc = ($VCSINCALL + $VCSREADY);}
-			$VCSagents_active = ($VCSINCALL + $VCSREADY + $VCSCLOSER);
-
-			### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
-
-			# GET AVERAGES FROM THIS CAMPAIGN
-			$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$differential_onemin =		 "$aryA[0]";
-				$agents_average_onemin =	 "$aryA[1]";
-				$rec_count++;
-				}
-			$sthA->finish();
-
-
-
-
-			##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
-			$last_target_hour=0;
-			$g=0;
-			$p='13';
-			$GMT_gmt[0] = '';
-			$GMT_hour[0] = '';
-			$GMT_day[0] = '';
-				if ($DBX) {print "\n   |GMT-DAY-HOUR|   ";}
-			while ($p > -13)
-				{
-				$pzone = ($GMT_now + ($p * 3600));
-					($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
-				$phour=($phour * 100);
-				$tz = sprintf("%.2f", $p);	
-				$GMT_gmt[$g] = "$tz";
-				$GMT_day[$g] = "$pday";
-				$GMT_hour[$g] = ($phour + $pmin);
-				$p = ($p - 0.25);
-					if ($DBX) {print "|$GMT_gmt[$g]-$GMT_day[$g]-$GMT_hour[$g]|";}
-				$g++;
-				}
-				if ($DBX) {print "\n";}
-
-			$stmtA = "SELECT * FROM vicidial_call_times where call_time_id='$local_call_time[$i]';";
-				if ($DBX) {print "   |$stmtA|\n";}
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-				$Gct_default_start =	"$aryA[3]";
-				$Gct_default_stop =		"$aryA[4]";
-				$Gct_sunday_start =		"$aryA[5]";
-				$Gct_sunday_stop =		"$aryA[6]";
-				$Gct_monday_start =		"$aryA[7]";
-				$Gct_monday_stop =		"$aryA[8]";
-				$Gct_tuesday_start =	"$aryA[9]";
-				$Gct_tuesday_stop =		"$aryA[10]";
-				$Gct_wednesday_start =	"$aryA[11]";
-				$Gct_wednesday_stop =	"$aryA[12]";
-				$Gct_thursday_start =	"$aryA[13]";
-				$Gct_thursday_stop =	"$aryA[14]";
-				$Gct_friday_start =		"$aryA[15]";
-				$Gct_friday_stop =		"$aryA[16]";
-				$Gct_saturday_start =	"$aryA[17]";
-				$Gct_saturday_stop =	"$aryA[18]";
-				$Gct_state_call_times = "$aryA[19]";
-				$rec_count++;
-				}
-			$sthA->finish();
-
-			$ct_states = '';
-			$ct_state_gmt_SQL = '';
-			$del_state_gmt_SQL = '';
-			$ct_srs=0;
-			$b=0;
-			$r=0;
-			$default_gmt='';
-			$del_default_gmt='';
-			while($r < $g)
-				{
-				if ($GMT_day[$r]==0)	#### Sunday local time
-					{
-					if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==1)	#### Monday local time
-					{
-					if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==2)	#### Tuesday local time
-					{
-					if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==3)	#### Wednesday local time
-					{
-					if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==4)	#### Thursday local time
-					{
-					if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==5)	#### Friday local time
-					{
-					if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				if ($GMT_day[$r]==6)	#### Saturday local time
-					{
-					if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
-						{
-						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					else
-						{
-						if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
-							{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
-						}
-					}
-				$r++;
-				}
-			##### END calculate what gmt_offset_now values are within the allowed local_call_time setting ###
-
-			## UPDATE STATS FOR CAMPAIGN
-			$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
-			$affected_rows = $dbhA->do($stmtA);
-
-
-			if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($force_test>0) )
-				{
-				# Calculate the optimal dial_level differential for the past minute
-				$differential_mul = ($differential_onemin / $agents_average_onemin);
-				$differential_pct_raw = ($differential_mul * 100);
-				$differential_pct = sprintf("%.2f", $differential_pct_raw);
-
-				# Factor in the intensity setting
-				$intensity_mul = ($adaptive_intensity[$i] / 100);
-				if ($differential_pct_raw < 0)
-					{
-					$abs_intensity_mul = abs($intensity_mul - 1);
-					$intensity_diff = ($differential_pct_raw * $abs_intensity_mul);
-					}
-				else
-					{$intensity_diff = ($differential_pct_raw * ($intensity_mul + 1) );}
-				$intensity_pct = sprintf("%.2f", $intensity_diff);	
-				$intensity_diff_mul = ($intensity_diff / 100);
-
-				# Suggested dial_level based on differential
-				$suggested_dial_level = ($auto_dial_level[$i] * ($differential_mul + 1) );
-				$suggested_dial_level = sprintf("%.3f", $suggested_dial_level);
-
-				# Suggested dial_level based on differential with intensity setting
-				$intensity_dial_level = ($auto_dial_level[$i] * ($intensity_diff_mul + 1) );
-				$intensity_dial_level = sprintf("%.3f", $intensity_dial_level);
-
-				# Calculate last timezone target for ADAPT_TAPERED
-				$last_hour_diff_gmt = ($LOCAL_GMT_OFF - $adaptive_latest_target_gmt[$i]);
-				$last_hour_diff = ($last_hour_diff_gmt * 100);
-				$last_target_hour_final = ($last_target_hour + $last_hour_diff);
-				if ($last_target_hour_final>2400) {$last_target_hour_final=2400;}
-				$tapered_hours_left = ($last_target_hour_final - $current_hourmin);
-				if ($tapered_hours_left > 1000)
-					{$tapered_rate = 1;}
-				else
-					{$tapered_rate = ($tapered_hours_left / 1000);}
-
-				$adaptive_string  = "\n";
-				$adaptive_string .= "CAMPAIGN:   $campaign_id[$i]\n";
-				$adaptive_string .= "SETTINGS-\n";
-				$adaptive_string .= "   DIAL_LEVEL: $auto_dial_level[$i]\n";
-				$adaptive_string .= "   DIALMETHOD: $dial_method[$i]\n";
-				$adaptive_string .= "   AVAIL ONLY: $available_only_ratio_tally[$i]\n";
-				$adaptive_string .= "   DROP PCNT:  $adaptive_dropped_percentage[$i]\n";
-				$adaptive_string .= "   MAX LEVEL:  $adaptive_maximum_level[$i]\n";
-				$adaptive_string .= "   SERVER GMT: $LOCAL_GMT_OFF   - $current_hourmin\n";
-				$adaptive_string .= "   LATESTHOUR: $last_target_hour\n";
-				$adaptive_string .= "   LATEST GMT: $adaptive_latest_target_gmt[$i]\n";
-				$adaptive_string .= "   LATETARGET: $last_target_hour_final     ($tapered_hours_left left|$tapered_rate)\n";
-				$adaptive_string .= "   INTENSITY:  $adaptive_intensity[$i]\n";
-				$adaptive_string .= "CURRENT STATS-\n";
-				$adaptive_string .= "   AVG AGENTS:      $agents_average_onemin\n";
-				$adaptive_string .= "   AGENTS:          $VCSagents  ACTIVE: $VCSagents_active   CALC: $VCSagents_calc  INCALL: $VCSINCALL    READY: $VCSREADY\n";
-				$adaptive_string .= "   DL DIFFERENTIAL: $differential_onemin\n";
-				$adaptive_string .= "DIAL LEVEL SUGGESTION-\n";
-				$adaptive_string .= "      PERCENT DIFF: $differential_pct\n";
-				$adaptive_string .= "      SUGGEST DL:   $suggested_dial_level = ($auto_dial_level[$i] * ($differential_mul + 1) )\n";
-				$adaptive_string .= "      INTENSE DIFF: $intensity_pct\n";
-				$adaptive_string .= "      INTENSE DL:   $intensity_dial_level = ($auto_dial_level[$i] * ($intensity_diff_mul + 1) )\n";
-				if ($intensity_dial_level > $adaptive_maximum_level[$i])
-					{
-					$adaptive_string .= "      DIAL LEVEL OVER CAP! SETTING TO CAP: $adaptive_maximum_level[$i]\n";
-					$intensity_dial_level = $adaptive_maximum_level[$i];
-					}
-				if ($intensity_dial_level < 1)
-					{
-					$adaptive_string .= "      DIAL LEVEL TOO LOW! SETTING TO 1\n";
-					$intensity_dial_level = "1.0";
-					}
-				$adaptive_string .= "DROP STATS-\n";
-				$adaptive_string .= "   TODAY DROPS:     $VCScalls_today   $VCSdrops_today   $VCSdrops_today_pct%\n";
-				$adaptive_string .= "   ONE HOUR DROPS:  $VCScalls_hour   $VCSdrops_hour   $VCSdrops_hour_pct%\n";
-				$adaptive_string .= "   HALF HOUR DROPS: $VCScalls_halfhour   $VCSdrops_halfhour   $VCSdrops_halfhour_pct%\n";
-				$adaptive_string .= "   FIVE MIN DROPS:  $VCScalls_five   $VCSdrops_five   $VCSdrops_five_pct%\n";
-				$adaptive_string .= "   ONE MIN DROPS:   $VCScalls_one   $VCSdrops_one   $VCSdrops_one_pct%\n";
-
-				### DROP PERCENTAGE RULES TO LOWER DIAL_LEVEL ###
-				if ( ($VCScalls_one > 20) && ($VCSdrops_one_pct > 50) )
-					{
-					$intensity_dial_level = ($intensity_dial_level / 2);
-					$adaptive_string .= "      DROP RATE OVER 50% FOR LAST MINUTE! CUTTING DIAL LEVEL TO: $intensity_dial_level\n";
-					}
-				if ( ($VCScalls_today > 50) && ($VCSdrops_today_pct > $adaptive_dropped_percentage[$i]) )
-					{
-					if ($dial_method[$i] =~ /ADAPT_HARD_LIMIT/) 
-						{
-						$intensity_dial_level = "1.0";
-						$adaptive_string .= "      DROP RATE OVER HARD LIMIT FOR TODAY! HARD DIAL LEVEL TO: 1.0\n";
-						}
-					if ($dial_method[$i] =~ /ADAPT_AVERAGE/) 
-						{
-						$intensity_dial_level = ($intensity_dial_level / 2);
-						$adaptive_string .= "      DROP RATE OVER LIMIT FOR TODAY! AVERAGING DIAL LEVEL TO: $intensity_dial_level\n";
-						}
-					if ($dial_method[$i] =~ /ADAPT_TAPERED/) 
-						{
-						if ($tapered_hours_left < 0) 
-							{
-							$intensity_dial_level = "1.0";
-							$adaptive_string .= "      DROP RATE OVER LAST HOUR LIMIT FOR TODAY! TAPERING DIAL LEVEL TO: 1.0\n";
-							}
-						else
-							{
-							$intensity_dial_level = ($intensity_dial_level * $tapered_rate);
-							$adaptive_string .= "      DROP RATE OVER LIMIT FOR TODAY! TAPERING DIAL LEVEL TO: $intensity_dial_level\n";
-							}
-						}
-					}
-
-				### ALWAYS RAISE DIAL_LEVEL TO 1.0 IF IT IS LOWER ###
-				if ($intensity_dial_level < 1)
-					{
-					$adaptive_string .= "      DIAL LEVEL TOO LOW! SETTING TO 1\n";
-					$intensity_dial_level = "1.0";
-					}
-
-				if (!$TEST)
-					{
-					$stmtA = "UPDATE vicidial_campaigns SET auto_dial_level='$intensity_dial_level' where campaign_id='$campaign_id[$i]';";
-					$Uaffected_rows = $dbhA->do($stmtA);
-					}
-
-				$adaptive_string .= "DIAL LEVEL UPDATED TO: $intensity_dial_level          CONFIRM: $Uaffected_rows\n";
-				}
-
-			if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
-
-				&adaptive_logger;
-
+			&calculate_dial_level;
 			}
+
 		}
 	$i++;
 	}
 
+$diff_ratio_updater = ($diff_ratio_updater + $CLIdelay);
+$drop_count_updater = ($drop_count_updater + $CLIdelay);
+
 sleep($CLIdelay);
 
+$stat_count++;
 $master_loop++;
 }
 
@@ -949,6 +426,640 @@ $Vmon++;
 if ($Vmon < 10) {$Vmon = "0$Vmon";}
 if ($Vmday < 10) {$Vmday = "0$Vmday";}
 $VDL_one = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+}
 
 
+sub count_agents_lines
+{
+### Calculate campaign-wide agent waiting and calls waiting differential
+$total_agents=0;
+$ready_agents=0;
+$waiting_calls=0;
+
+$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCSagent_count =		 "$aryA[0]";
+	$VCSagent_status =		 "$aryA[1]";
+	$rec_count++;
+	if ($VCSagent_status =~ /READY|DONE/) {$ready_agents = ($ready_agents + $VCSagent_count);}
+	$total_agents = ($total_agents + $VCSagent_count);
+	}
+$sthA->finish();
+
+$stmtA = "SELECT count(*) FROM vicidial_auto_calls where campaign_id='$campaign_id[$i]' and status IN('LIVE');";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+		$waiting_calls = "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$stat_ready_agents[$i][$stat_count] = $ready_agents;
+$stat_waiting_calls[$i][$stat_count] = $waiting_calls;
+$stat_total_agents[$i][$stat_count] = $total_agents;
+
+$stat_it=15;
+$ready_diff_total=0;
+$waiting_diff_total=0;
+$total_agents_total=0;
+$ready_diff_avg=0;
+$waiting_diff_avg=0;
+$total_agents_avg=0;
+$stat_differential=0;
+if ($stat_count < 15) 
+	{
+	$stat_it = $stat_count;
+	$stat_B = 1;
+	}
+else
+	{
+	$stat_B = ($stat_count - 14);
+	}
+
+$it=0;
+while($it < $stat_it)
+	{
+	$it_ary = ($it + $stat_B);
+	$ready_diff_total = ($ready_diff_total + $stat_ready_agents[$i][$it_ary]);
+	$waiting_diff_total = ($waiting_diff_total + $stat_waiting_calls[$i][$it_ary]);
+	$total_agents_total = ($total_agents_total + $stat_total_agents[$i][$it_ary]);
+#		$event_string="$stat_count $it_ary   $stat_total_agents[$i][$it_ary]|$stat_ready_agents[$i][$it_ary]|$stat_waiting_calls[$i][$it_ary]";
+#		&event_logger;
+	$it++;
+	}
+
+if ($ready_diff_total > 0) 
+	{$ready_diff_avg = ($ready_diff_total / $stat_it);}
+if ($waiting_diff_total > 0) 
+	{$waiting_diff_avg = ($waiting_diff_total / $stat_it);}
+if ($total_agents_total > 0) 
+	{$total_agents_avg = ($total_agents_total / $stat_it);}
+$stat_differential = ($ready_diff_avg - $waiting_diff_avg);
+
+$event_string="CAMPAIGN DIFFERENTIAL: $total_agents_avg   $stat_differential   ($ready_diff_avg - $waiting_diff_avg)";
+&event_logger;
+
+#	$stmtA = "UPDATE vicidial_campaign_stats SET differential_onemin='$stat_differential', agents_average_onemin='$total_agents_avg' where campaign_id='$DBIPcampaign[$i]';";
+#	$affected_rows = $dbhA->do($stmtA);
+}
+
+
+sub calculate_drops
+{
+$drop_count_updater=0;
+$VCScalls_today=0;
+$VCSdrops_today=0;
+$VCSdrops_today_pct=0;
+$VCScalls_hour=0;
+$VCSdrops_hour=0;
+$VCSdrops_hour_pct=0;
+$VCScalls_halfhour=0;
+$VCSdrops_halfhour=0;
+$VCSdrops_halfhour_pct=0;
+$VCScalls_five=0;
+$VCSdrops_five=0;
+$VCSdrops_five_pct=0;
+$VCScalls_one=0;
+$VCSdrops_one=0;
+$VCSdrops_one_pct=0;
+
+# LAST ONE MINUTE CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_one =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_one > 0)
+	{
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_one =		 "$aryA[0]";
+		if ($VCSdrops_one > 0)
+			{
+			$VCSdrops_one_pct = ( ($VCSdrops_one / $VCScalls_one) * 100 );
+			$VCSdrops_one_pct = sprintf("%.2f", $VCSdrops_one_pct);	
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+# TODAY CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_today =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_today > 0)
+	{
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_today =		 "$aryA[0]";
+		if ($VCSdrops_today > 0)
+			{
+			$VCSdrops_today_pct = ( ($VCSdrops_today / $VCScalls_today) * 100 );
+			$VCSdrops_today_pct = sprintf("%.2f", $VCSdrops_today_pct);	
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+# LAST HOUR CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_hour =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_hour > 0)
+	{
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_hour =		 "$aryA[0]";
+		if ($VCSdrops_hour > 0)
+			{
+			$VCSdrops_hour_pct = ( ($VCSdrops_hour / $VCScalls_hour) * 100 );
+			$VCSdrops_hour_pct = sprintf("%.2f", $VCSdrops_hour_pct);	
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+# LAST HALFHOUR CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_halfhour =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_halfhour > 0)
+	{
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_halfhour =		 "$aryA[0]";
+		if ($VCSdrops_halfhour > 0)
+			{
+			$VCSdrops_halfhour_pct = ( ($VCSdrops_halfhour / $VCScalls_halfhour) * 100 );
+			$VCSdrops_halfhour_pct = sprintf("%.2f", $VCSdrops_halfhour_pct);	
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+# LAST FIVE MINUTE CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_five =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_five > 0)
+	{
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_five =		 "$aryA[0]";
+		if ($VCSdrops_five > 0)
+			{
+			$VCSdrops_five_pct = ( ($VCSdrops_five / $VCScalls_five) * 100 );
+			$VCSdrops_five_pct = sprintf("%.2f", $VCSdrops_five_pct);	
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+}
+
+
+
+sub calculate_dial_level
+{
+$diff_ratio_updater=0;
+$VCSINCALL=0;
+$VCSREADY=0;
+$VCSCLOSER=0;
+$VCSPAUSED=0;
+$VCSagents=0;
+$VCSagents_calc=0;
+$VCSagents_active=0;
+
+# COUNTS OF STATUSES OF AGENTS IN THIS CAMPAIGN
+$stmtA = "SELECT count(*),status from vicidial_live_agents where campaign_id='$campaign_id[$i]' and last_update_time > '$VDL_one' group by status;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCSagent_count =		 "$aryA[0]";
+	$VCSagent_status =		 "$aryA[1]";
+	$rec_count++;
+	if ($VCSagent_status =~ /INCALL|QUEUE/) {$VCSINCALL = ($VCSINCALL + $VCSagent_count);}
+	if ($VCSagent_status =~ /READY/) {$VCSREADY = ($VCSREADY + $VCSagent_count);}
+	if ($VCSagent_status =~ /CLOSER/) {$VCSCLOSER = ($VCSCLOSER + $VCSagent_count);}
+	if ($VCSagent_status =~ /PAUSED/) {$VCSPAUSED = ($VCSPAUSED + $VCSagent_count);}
+	$VCSagents = ($VCSagents + $VCSagent_count);
+	}
+$sthA->finish();
+
+if ($available_only_ratio_tally =~ /Y/) 
+	{$VCSagents_calc = $VCSREADY;}
+else
+	{$VCSagents_calc = ($VCSINCALL + $VCSREADY);}
+$VCSagents_active = ($VCSINCALL + $VCSREADY + $VCSCLOSER);
+
+### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
+
+if ($campaign_id[$i] =~ /CLOSER/)
+	{
+	# GET AVERAGES FROM THIS CAMPAIGN
+	$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$differential_onemin =		 "$aryA[0]";
+		$agents_average_onemin =	 "$aryA[1]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+else
+	{
+	$agents_average_onemin =	$total_agents_avg;  
+	$differential_onemin =		$stat_differential;
+	}
+
+##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
+$last_target_hour=0;
+$g=0;
+$p='13';
+$GMT_gmt[0] = '';
+$GMT_hour[0] = '';
+$GMT_day[0] = '';
+	if ($DBX) {print "\n   |GMT-DAY-HOUR|   ";}
+while ($p > -13)
+	{
+	$pzone = ($GMT_now + ($p * 3600));
+		($psec,$pmin,$phour,$pmday,$pmon,$pyear,$pday,$pyday,$pisdst) = localtime($pzone);
+	$phour=($phour * 100);
+	$tz = sprintf("%.2f", $p);	
+	$GMT_gmt[$g] = "$tz";
+	$GMT_day[$g] = "$pday";
+	$GMT_hour[$g] = ($phour + $pmin);
+	$p = ($p - 0.25);
+		if ($DBX) {print "|$GMT_gmt[$g]-$GMT_day[$g]-$GMT_hour[$g]|";}
+	$g++;
+	}
+	if ($DBX) {print "\n";}
+
+$stmtA = "SELECT * FROM vicidial_call_times where call_time_id='$local_call_time[$i]';";
+	if ($DBX) {print "   |$stmtA|\n";}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$Gct_default_start =	"$aryA[3]";
+	$Gct_default_stop =		"$aryA[4]";
+	$Gct_sunday_start =		"$aryA[5]";
+	$Gct_sunday_stop =		"$aryA[6]";
+	$Gct_monday_start =		"$aryA[7]";
+	$Gct_monday_stop =		"$aryA[8]";
+	$Gct_tuesday_start =	"$aryA[9]";
+	$Gct_tuesday_stop =		"$aryA[10]";
+	$Gct_wednesday_start =	"$aryA[11]";
+	$Gct_wednesday_stop =	"$aryA[12]";
+	$Gct_thursday_start =	"$aryA[13]";
+	$Gct_thursday_stop =	"$aryA[14]";
+	$Gct_friday_start =		"$aryA[15]";
+	$Gct_friday_stop =		"$aryA[16]";
+	$Gct_saturday_start =	"$aryA[17]";
+	$Gct_saturday_stop =	"$aryA[18]";
+	$Gct_state_call_times = "$aryA[19]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$ct_states = '';
+$ct_state_gmt_SQL = '';
+$del_state_gmt_SQL = '';
+$ct_srs=0;
+$b=0;
+$r=0;
+$default_gmt='';
+$del_default_gmt='';
+while($r < $g)
+	{
+	if ($GMT_day[$r]==0)	#### Sunday local time
+		{
+		if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==1)	#### Monday local time
+		{
+		if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==2)	#### Tuesday local time
+		{
+		if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==3)	#### Wednesday local time
+		{
+		if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==4)	#### Thursday local time
+		{
+		if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==5)	#### Friday local time
+		{
+		if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	if ($GMT_day[$r]==6)	#### Saturday local time
+		{
+		if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
+			{
+			if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		else
+			{
+			if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
+				{if ($GMT_hour[$r] > $last_target_hour) {$last_target_hour=$GMT_hour[$r];}}
+			}
+		}
+	$r++;
+	}
+##### END calculate what gmt_offset_now values are within the allowed local_call_time setting ###
+
+## UPDATE STATS FOR CAMPAIGN
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today',drops_today='$VCSdrops_today',drops_today_pct='$VCSdrops_today_pct',calls_hour='$VCScalls_hour',drops_hour='$VCSdrops_hour',drops_hour_pct='$VCSdrops_hour_pct',calls_halfhour='$VCScalls_halfhour',drops_halfhour='$VCSdrops_halfhour',drops_halfhour_pct='$VCSdrops_halfhour_pct',calls_fivemin='$VCScalls_five',drops_fivemin='$VCSdrops_five',drops_fivemin_pct='$VCSdrops_five_pct',calls_onemin='$VCScalls_one',drops_onemin='$VCSdrops_one',drops_onemin_pct='$VCSdrops_one_pct' where campaign_id='$campaign_id[$i]';";
+$affected_rows = $dbhA->do($stmtA);
+
+
+if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($force_test>0) )
+	{
+	# Calculate the optimal dial_level differential for the past minute
+	$differential_mul = ($differential_onemin / $agents_average_onemin);
+	$differential_pct_raw = ($differential_mul * 100);
+	$differential_pct = sprintf("%.2f", $differential_pct_raw);
+
+	# Factor in the intensity setting
+	$intensity_mul = ($adaptive_intensity[$i] / 100);
+	if ($differential_pct_raw < 0)
+		{
+		$abs_intensity_mul = abs($intensity_mul - 1);
+		$intensity_diff = ($differential_pct_raw * $abs_intensity_mul);
+		}
+	else
+		{$intensity_diff = ($differential_pct_raw * ($intensity_mul + 1) );}
+	$intensity_pct = sprintf("%.2f", $intensity_diff);	
+	$intensity_diff_mul = ($intensity_diff / 100);
+
+	# Suggested dial_level based on differential
+	$suggested_dial_level = ($auto_dial_level[$i] * ($differential_mul + 1) );
+	$suggested_dial_level = sprintf("%.3f", $suggested_dial_level);
+
+	# Suggested dial_level based on differential with intensity setting
+	$intensity_dial_level = ($auto_dial_level[$i] * ($intensity_diff_mul + 1) );
+	$intensity_dial_level = sprintf("%.3f", $intensity_dial_level);
+
+	# Calculate last timezone target for ADAPT_TAPERED
+	$last_hour_diff_gmt = ($LOCAL_GMT_OFF - $adaptive_latest_target_gmt[$i]);
+	$last_hour_diff = ($last_hour_diff_gmt * 100);
+	$last_target_hour_final = ($last_target_hour + $last_hour_diff);
+	if ($last_target_hour_final>2400) {$last_target_hour_final=2400;}
+	$tapered_hours_left = ($last_target_hour_final - $current_hourmin);
+	if ($tapered_hours_left > 1000)
+		{$tapered_rate = 1;}
+	else
+		{$tapered_rate = ($tapered_hours_left / 1000);}
+
+	$adaptive_string  = "\n";
+	$adaptive_string .= "CAMPAIGN:   $campaign_id[$i]\n";
+	$adaptive_string .= "SETTINGS-\n";
+	$adaptive_string .= "   DIAL_LEVEL: $auto_dial_level[$i]\n";
+	$adaptive_string .= "   DIALMETHOD: $dial_method[$i]\n";
+	$adaptive_string .= "   AVAIL ONLY: $available_only_ratio_tally[$i]\n";
+	$adaptive_string .= "   DROP PCNT:  $adaptive_dropped_percentage[$i]\n";
+	$adaptive_string .= "   MAX LEVEL:  $adaptive_maximum_level[$i]\n";
+	$adaptive_string .= "   SERVER GMT: $LOCAL_GMT_OFF   - $current_hourmin\n";
+	$adaptive_string .= "   LATESTHOUR: $last_target_hour\n";
+	$adaptive_string .= "   LATEST GMT: $adaptive_latest_target_gmt[$i]\n";
+	$adaptive_string .= "   LATETARGET: $last_target_hour_final     ($tapered_hours_left left|$tapered_rate)\n";
+	$adaptive_string .= "   INTENSITY:  $adaptive_intensity[$i]\n";
+	$adaptive_string .= "CURRENT STATS-\n";
+	$adaptive_string .= "   AVG AGENTS:      $agents_average_onemin\n";
+	$adaptive_string .= "   AGENTS:          $VCSagents  ACTIVE: $VCSagents_active   CALC: $VCSagents_calc  INCALL: $VCSINCALL    READY: $VCSREADY\n";
+	$adaptive_string .= "   DL DIFFERENTIAL: $differential_onemin\n";
+	$adaptive_string .= "DIAL LEVEL SUGGESTION-\n";
+	$adaptive_string .= "      PERCENT DIFF: $differential_pct\n";
+	$adaptive_string .= "      SUGGEST DL:   $suggested_dial_level = ($auto_dial_level[$i] * ($differential_mul + 1) )\n";
+	$adaptive_string .= "      INTENSE DIFF: $intensity_pct\n";
+	$adaptive_string .= "      INTENSE DL:   $intensity_dial_level = ($auto_dial_level[$i] * ($intensity_diff_mul + 1) )\n";
+	if ($intensity_dial_level > $adaptive_maximum_level[$i])
+		{
+		$adaptive_string .= "      DIAL LEVEL OVER CAP! SETTING TO CAP: $adaptive_maximum_level[$i]\n";
+		$intensity_dial_level = $adaptive_maximum_level[$i];
+		}
+	if ($intensity_dial_level < 1)
+		{
+		$adaptive_string .= "      DIAL LEVEL TOO LOW! SETTING TO 1\n";
+		$intensity_dial_level = "1.0";
+		}
+	$adaptive_string .= "DROP STATS-\n";
+	$adaptive_string .= "   TODAY DROPS:     $VCScalls_today   $VCSdrops_today   $VCSdrops_today_pct%\n";
+	$adaptive_string .= "   ONE HOUR DROPS:  $VCScalls_hour   $VCSdrops_hour   $VCSdrops_hour_pct%\n";
+	$adaptive_string .= "   HALF HOUR DROPS: $VCScalls_halfhour   $VCSdrops_halfhour   $VCSdrops_halfhour_pct%\n";
+	$adaptive_string .= "   FIVE MIN DROPS:  $VCScalls_five   $VCSdrops_five   $VCSdrops_five_pct%\n";
+	$adaptive_string .= "   ONE MIN DROPS:   $VCScalls_one   $VCSdrops_one   $VCSdrops_one_pct%\n";
+
+	### DROP PERCENTAGE RULES TO LOWER DIAL_LEVEL ###
+	if ( ($VCScalls_one > 20) && ($VCSdrops_one_pct > 50) )
+		{
+		$intensity_dial_level = ($intensity_dial_level / 2);
+		$adaptive_string .= "      DROP RATE OVER 50% FOR LAST MINUTE! CUTTING DIAL LEVEL TO: $intensity_dial_level\n";
+		}
+	if ( ($VCScalls_today > 50) && ($VCSdrops_today_pct > $adaptive_dropped_percentage[$i]) )
+		{
+		if ($dial_method[$i] =~ /ADAPT_HARD_LIMIT/) 
+			{
+			$intensity_dial_level = "1.0";
+			$adaptive_string .= "      DROP RATE OVER HARD LIMIT FOR TODAY! HARD DIAL LEVEL TO: 1.0\n";
+			}
+		if ($dial_method[$i] =~ /ADAPT_AVERAGE/) 
+			{
+			$intensity_dial_level = ($intensity_dial_level / 2);
+			$adaptive_string .= "      DROP RATE OVER LIMIT FOR TODAY! AVERAGING DIAL LEVEL TO: $intensity_dial_level\n";
+			}
+		if ($dial_method[$i] =~ /ADAPT_TAPERED/) 
+			{
+			if ($tapered_hours_left < 0) 
+				{
+				$intensity_dial_level = "1.0";
+				$adaptive_string .= "      DROP RATE OVER LAST HOUR LIMIT FOR TODAY! TAPERING DIAL LEVEL TO: 1.0\n";
+				}
+			else
+				{
+				$intensity_dial_level = ($intensity_dial_level * $tapered_rate);
+				$adaptive_string .= "      DROP RATE OVER LIMIT FOR TODAY! TAPERING DIAL LEVEL TO: $intensity_dial_level\n";
+				}
+			}
+		}
+
+	### ALWAYS RAISE DIAL_LEVEL TO 1.0 IF IT IS LOWER ###
+	if ($intensity_dial_level < 1)
+		{
+		$adaptive_string .= "      DIAL LEVEL TOO LOW! SETTING TO 1\n";
+		$intensity_dial_level = "1.0";
+		}
+
+	if (!$TEST)
+		{
+		$stmtA = "UPDATE vicidial_campaigns SET auto_dial_level='$intensity_dial_level' where campaign_id='$campaign_id[$i]';";
+		$Uaffected_rows = $dbhA->do($stmtA);
+		}
+
+	$adaptive_string .= "DIAL LEVEL UPDATED TO: $intensity_dial_level          CONFIRM: $Uaffected_rows\n";
+	}
+
+if ($DB) {print "campaign stats updated:  $campaign_id[$i]   $adaptive_string\n";}
+
+	&adaptive_logger;
 }
