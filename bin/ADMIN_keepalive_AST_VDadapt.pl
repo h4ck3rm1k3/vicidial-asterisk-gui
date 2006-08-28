@@ -126,7 +126,7 @@ if (!$running_VDAD)
 	{ 
 	if ($DB) {print "starting AST_VDadapt...\n";}
 	# add a '-L' to the command below to activate logging
-	`/usr/bin/screen -d -m -S ASTVDadapt $PATHhome/AST_VDadapt.pl`;
+	`/usr/bin/screen -d -m -S ASTVDadapt $PATHhome/AST_VDadapt.pl --debug`;
 	}
 }
 

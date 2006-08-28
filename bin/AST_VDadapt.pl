@@ -172,6 +172,13 @@ if (length($ARGV[0])>1)
 			}
 	}
 }
+else
+{
+$CLIcampaign = '';
+$CLIlevel = '';
+$CLIloops = '1000000';
+$CLIdelay = '1';
+}
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
