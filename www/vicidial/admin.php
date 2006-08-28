@@ -4469,8 +4469,8 @@ echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
-$n=10;
-while ($n>=-10)
+$n=40;
+while ($n>=-40)
 	{
 	$nabs = abs($n);
 	$dtl = 'Balanced';
