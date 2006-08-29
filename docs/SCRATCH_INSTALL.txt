@@ -1369,23 +1369,13 @@ SUBPHASE 6.0: putting the files in place
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 1.1.12)
-   - for 1.1 release:
-	- cd /home/cron
-	- mkdir astguiclient
-	- cd astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_1.1.12-3.zip
-	- unzip astguiclient_1.1.12-3.zip
-	- chmod 0755 install_server_files.pl
-	- perl install_server_files.pl
-	- cd ../
-	- vi AST_SERVER_conf.pl
-	   - edit the values of this file(here's what we used):
-		$server_ip = '10.10.10.15';
-		$DB_server = 'localhost';
-		$DB_database = 'asterisk';
-		$DB_user = 'cron';
-		$DB_pass = '1234';
+package(as of this writing it is 2.0.1)
+   - for 2.0.X release:
+	- mkdir /usr/src/astguiclient
+	- cd /usr/src/astguiclient
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1b1.zip
+	- unzip astguiclient_2.0.1b1.zip
+	- perl install.pl
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
@@ -2563,9 +2553,6 @@ the Privacy settings under the Options menu.
 
 
 PHASE 7.0: You are done with installation
-
-Now you can celebrate, you have installed a complete phone system with dialer 
-and GUI applications on all of your clients.
 
 If you have problems and it is not working right(and are NOT celebrating right
 now), feel free to take a look at the FAQ for solutions to common installation 

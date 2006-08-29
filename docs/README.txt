@@ -70,32 +70,27 @@ vicidial in your MySQL database
    + Runs under UNIX CLI in the cron of the Asterisk Server
    + Requires perl (Net::FTP and Net::Ping optional if FTPing to archive server)
 
- - AST_SERVER_conf.pl - file where you define your variables for the server apps
-   + Must be present in the /home/cron/ directory
-
  - AST_manager_listen.pl - listener for the Asterisk Central Queue System (ACQS)
-   + Must be present in the /home/cron/ directory
+   + Must be present in the astguiclient directory
    + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
 
  - AST_manager_send.pl - send-spawn for the ACQS
-   + Must be present in the /home/cron/ directory
+   + Must be present in the astguiclient directory
    + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
 
  - AST_send_action_child.pl - blind-send for the ACQS
-   + Must be present in the /home/cron/ directory
+   + Must be present in the astguiclient directory
    + Requires Net::Telnet, Net::MySQL perl Modules
 
  - ADMIN_keepalive_AST_send_listen.pl - checks to see that ACQS is running
    + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - ADMIN_keepalive_send_listen.at - used for batch restarts of ACQS in seconds
 
  - AST_manager_kill_hung_congested.pl - kills CONGEST Local/ channels
    + To be used with VICIDIAL
    + Must put entry for this script in the cron as "* * * * * /path/to/script"
 
  - ADMIN_listener_restart.pl - automatically restart ACQS 
-   + Assumes installation in /home/cron/
+   + Assumes installation in astguiclient
 
  - ADMIN_restart_roll_logs.pl - rolls logs over datestamp upon restart
    + put this script in your machine's startup routine
@@ -155,6 +150,9 @@ vicidial in your MySQL database
  - AST_VDhopper.pl - script to keep leads in the VICIDIAL hopper
    + To be used with VICIDIAL
    + recommended to put into cron as "* * * * * /path/to/script"
+
+ - AST_VDadapt.pl - controls predictive dialing call pacing
+   + Must be present in the astguiclient directory
 
  - ADMIN_keepalive_AST_VDautodial.pl - checks to see that VDAD is running
    + Must put entry for this script in the cron as "* * * * * /path/to/script"
@@ -216,10 +214,11 @@ modern web browsers
 
 
 TO BE ADDED:
-See the TODO.txt file for more info on what has been finished in this version as
-well as what we're thinking of working on. The items marked HIGH priority in the
-TODO file are the ones we expect to have finished for the next release. If you 
-have suggestions please send them.
+See the TODO page on the project Wiki for more info on what has been finished in
+this version as well as what we're thinking of working on. The items marked HIGH
+priority in the TODO file are the ones we expect to have finished for the next 
+release. If you have suggestions please send them.
+http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
 
 
 NOTES:
@@ -479,13 +478,13 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.0 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
       default places
  * if upgrading from 1.1.0 run the upgrade_1.1.1.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.1.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.1.sql)
 
 1.1.3 - Sixteenth public release - 2005-06-10
 - fixed config bug in AST_VDauto_dial.pl script
@@ -495,13 +494,13 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.0 - 1.1.2 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
       default places
  * if upgrading from 1.1.0 run the upgrade_1.1.1.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.1.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.1.sql)
 
 1.1.4 - Seventeenth public release - 2005-06-24
 - fixed new Local channel bugs caused by changes in Asterisk 1.0.8 and CVS
@@ -512,7 +511,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.3 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -520,7 +519,7 @@ UPGRADE NOTES:
   - if using VICIDIAL download the new client script to all client stations
   - make sure you populate the new $AST_ver variable in AST_SERVER_conf.pl
  * if upgrading from 1.1.3 run the upgrade_1.1.4.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.4.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.4.sql)
 
 1.1.5 - Eighteenth public release - 2005-08-12
 - fixed new Local channel bugs caused by changes in Asterisk 1.0.8 and 1.0.9
@@ -531,7 +530,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.4 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -539,7 +538,7 @@ UPGRADE NOTES:
   - VICIDIAL perl/TK client is unchanged from 1.1.4
   - make sure you check the astguiclient admin.php server parameters
  * if upgrading from 1.1.4 run the upgrade_1.1.5.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.5.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.5.sql)
 
 1.1.6 - Nineteenth public release - 2005-08-29
 - streamlined many of the server apps and added command-line debug capability
@@ -549,7 +548,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.5 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -559,7 +558,7 @@ UPGRADE NOTES:
   - make sure you check the astguiclient admin.php server parameters
   - make the agi-VDADtransfer.agi changes in extensions.conf (mentioned in SCRATCH_INSTALL doc)
  * if upgrading from 1.1.5 run the upgrade_1.1.6.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.6.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.6.sql)
 
 1.1.7 - Twentieth public release - 2005-10-05
 - Added HotKeys key binding for VICIDIAL web-client fast dispositioning
@@ -571,7 +570,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.6 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -582,7 +581,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.6 run the upgrade_1.1.7.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.7.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.7.sql)
 
 1.1.8 - Twenty-First public release - 2005-11-10
 - Added per-campaign call recording options to VICIDIAL
@@ -592,7 +591,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.7 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -602,7 +601,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.7 run the upgrade_1.1.8.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.8.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.8.sql)
 
 1.1.9 - Twenty-Second public release - 2006-01-19
 - Added Load Balancing of Inbound and Outbound calls across multiple Asterisk
@@ -617,7 +616,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.8 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -627,7 +626,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.8 run the upgrade_1.1.9.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.9.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.9.sql)
 
 1.1.10 - Twenty-Third public release - 2006-03-17
 - Added capability to work with app_amd(answering machine detection)
@@ -640,7 +639,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.9 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -651,7 +650,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.9 run the upgrade_1.1.10.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.10.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.10.sql)
 
 1.1.11 - Twenty-Fourth public release - 2006-04-28
 - Added Agent-only Scheduled Callbacks
@@ -664,7 +663,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.10 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -674,7 +673,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.10 run the upgrade_1.1.11.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.11.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.11.sql)
 
 1.1.12 - Twenty-Fifth public release - 2006-06-22
 - Security enhancements of PHP scripts to reduce SQL-injection and other threats
@@ -692,7 +691,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.11 you need to:
   - download the new version from the project website
-  - unzip the zip file into the /home/cron/astguiclient directory
+  - unzip the zip file into the astguiclientastguiclient directory
   - and either:
     + copy the web pages and all server apps to their proper locations manually
     + or run the install_server_files.pl script to put all items in their
@@ -702,7 +701,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.11 run the upgrade_1.1.12.sql script in MySQL
-   (\. /home/cron/astguiclient/upgrade_1.1.12.sql)
+   (\. astguiclientastguiclient/upgrade_1.1.12.sql)
  * if upgrading from older version you will need to run this query for each 
    campaign in VICIDIAL in MySQL:
    (INSERT INTO vicidial_campaign_stats (campaign_id) values('campaignname');)
@@ -714,6 +713,7 @@ UPGRADE NOTES:
 - Ability to redirect AGI output to file, STDERR, both or nowhere.
 - Code and process optimization of many of the server-side scripts
 - Added a Predictive outbound dialing algorithm with many user-defined settings
+- Wrote new BASE_INSTALL.txt doc for simple install and added sample conf files
 - Many other changes and bug fixes listed in the TODO Wiki webpage:
      http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
 UPGRADE NOTES:

@@ -145,6 +145,7 @@ These are available in these sample conf files:
 ./conf_examples/voicemail.conf.sample
 ./conf_examples/manager.conf.sample
 ./conf_examples/logger.conf.sample
+./conf_examples/dnsmgr.conf.sample
 
 For more information on configuring Asterisk or your phones read the 
 SCRATCH_INSTALL document.
@@ -165,8 +166,8 @@ package(as of this writing it is 2.0.1)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1.zip
-	- unzip astguiclient_2.0.1.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1b1.zip
+	- unzip astguiclient_2.0.1b1.zip
 	- perl install.pl
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
@@ -550,29 +551,7 @@ NEW and submit. Now your system is ready to dial.
 
 
 
-PHASE 8: VICIDIAL REMOTE AGENTS
-
-With v1.0 of VICIDIAL we have the ability to use a simple web form to give
-remote agents a way to receive calls to whatever number they happen to be at, 
-and they can view/edit call details and see a call log all through a web page
-(vdremote.php) or http://10.10.10.15/vicidial/vdremote.php on this installation.
-Remote Agents is only recommended for inbound calls because of the extra time 
-needed to dial a number out to transfer the call to. To set up remote agents,
-just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the 
-userID start also has a user login so they can get to the vdremote page). You 
-will see that you can set up a remote agent entry to take multiple lines if you
-wish meaning that, for example, if you need to send all of your calls to another
-location because of a massive snowstorm(and none of your agents showed up at work)
-you just log in that remote agent record with say 10 lines and then all of those
-calls will be directed to the same number you set up for the remote agent. Then 
-again you could just get your agents to log in from home if they have a phone 
-and computer
-
-
-
-
-
-PHASE 9: astGUIclient and VICIDIAL WEB CLIENTS
+PHASE 8: astGUIclient and VICIDIAL WEB CLIENTS
 
 The browser requirements for the web-client interfaces are:
 - Firefox 0.9 or greater (Firefox 1.0.7 is the recommended browser)
@@ -632,10 +611,29 @@ the Privacy settings under the Options menu.
 
 
 
-PHASE 10: You are done with installation
+PHASE 9: VICIDIAL REMOTE AGENTS
 
-Now you can celebrate, you have installed a complete phone system with dialer 
-and GUI applications on all of your clients. 
+With v1.0 of VICIDIAL we have the ability to use a simple web form to give
+remote agents a way to receive calls to whatever number they happen to be at, 
+and they can view/edit call details and see a call log all through a web page
+(vdremote.php) or http://10.10.10.15/vicidial/vdremote.php on this installation.
+Remote Agents is only recommended for inbound calls because of the extra time 
+needed to dial a number out to transfer the call to. To set up remote agents,
+just go to the vicidial admin.php page and ADD NEW REMOTE AGENTS(Make sure the 
+userID start also has a user login so they can get to the vdremote page). You 
+will see that you can set up a remote agent entry to take multiple lines if you
+wish meaning that, for example, if you need to send all of your calls to another
+location because of a massive snowstorm(and none of your agents showed up at work)
+you just log in that remote agent record with say 10 lines and then all of those
+calls will be directed to the same number you set up for the remote agent. Then 
+again you could just get your agents to log in from home if they have a phone 
+and computer
+
+
+
+
+
+PHASE 10: You are done with installation
 
 If you have problems and it is not working right(and are NOT celebrating right
 now), feel free to take a look at the FAQ for solutions to common installation 
