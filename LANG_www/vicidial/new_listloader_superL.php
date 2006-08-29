@@ -13,11 +13,12 @@
 # 60616-1240 - added listID override
 # 60616-1604 - added gmt lookup for each lead
 # 60619-1651 - Added variable filtering to eliminate SQL injection attack threat
+# 60822-1121 - fixed for nonwritable directories
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '1.1.12-1';
-$build = '60619-1651';
+$version = '2.0.1';
+$build = '60822-1121';
 
 
 require("dbconnect.php");
@@ -94,6 +95,8 @@ if (isset($_GET["comments_field"]))				{$comments_field=$_GET["comments_field"];
 if (isset($_GET["list_id_override"]))				{$list_id_override=$_GET["list_id_override"];}
 	elseif (isset($_POST["list_id_override"]))		{$list_id_override=$_POST["list_id_override"];}
 	$list_id_override = (preg_replace("/\D/","",$list_id_override));
+if (isset($_GET["lead_file"]))					{$lead_file=$_GET["lead_file"];}
+	elseif (isset($_POST["lead_file"]))			{$lead_file=$_POST["lead_file"];}
 
 # $country_field=$_GET["country_field"];					if (!$country_field) {$country_field=$_POST["country_field"];}
 
@@ -114,7 +117,7 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $auth=$row[0];
 
-$fp = fopen ("./project_auth_entries.txt", "a");
+if ($WeBRooTWritablE > 0) {$fp = fopen ("./project_auth_entries.txt", "a");}
 $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
@@ -143,13 +146,19 @@ $browser = getenv("HTTP_USER_AGENT");
 			echo "You do not have permissions to load leads\n";
 			exit;
 			}
-		fwrite ($fp, "LIST_LOAD|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0) 
+			{
+			fwrite ($fp, "LIST_LOAD|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	else
 		{
-		fwrite ($fp, "LIST_LOAD|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0) 
+			{
+			fwrite ($fp, "LIST_LOAD|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
+			fclose($fp);
+			}
 		}
 	}
 
@@ -303,9 +312,11 @@ function ParseFileName() {
 
 		if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name)) {
 			# copy($leadfile, "./vicidial_temp_file.txt");
-			$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
-			$stmt_file=fopen("listloader_stmts.txt", "w");
-
+			$file=fopen("$lead_file", "r");
+			if ($WeBRooTWritablE > 0)
+				{
+				$stmt_file=fopen("listloader_stmts.txt", "w");
+				}
 			$buffer=fgets($file, 4096);
 			$tab_count=substr_count($buffer, "\t");
 			$pipe_count=substr_count($buffer, "|");
@@ -315,7 +326,7 @@ function ParseFileName() {
 
 			if (count($field_check)>=5) {
 				flush();
-				$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
+				$file=fopen("$lead_file", "r");
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file...\n";
 
 			if (strlen($list_id_override)>0) 
@@ -364,7 +375,7 @@ function ParseFileName() {
 						$security_phrase =		$row[$security_phrase_field];
 						$comments =				trim($row[$comments_field]);
 
-						if (strlen($phone_number)>8) {
+						if (strlen($phone_number)>6) {
 
 
 							if (strlen($list_id_override)>0) 
@@ -416,19 +427,21 @@ function ParseFileName() {
 			}
 		} else if (!eregi(".csv", $leadfile_name)) {
 			# copy($leadfile, "./vicidial_temp_file.xls");
-			$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.xls", "r");
+			$file=fopen("$lead_file", "r");
 
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing Excel file... \n";
 			if (strlen($list_id_override)>0) 
 			{
 			print "<BR><BR>LIST ID OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>\n";
 			}
-		# print "$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field";
-			passthru("$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override");
+		# print "|$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override --lead_file=$lead_file|";
+			passthru("$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override --lead-file=$lead_file");
 		} else {
 			# copy($leadfile, "./vicidial_temp_file.csv");
-			$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.csv", "r");
-			$stmt_file=fopen("listloader_stmts.txt", "w");
+			$file=fopen("$lead_file", "r");
+
+			if ($WeBRooTWritablE > 0)
+				{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 			
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
 			if (strlen($list_id_override)>0) 
@@ -471,7 +484,7 @@ function ParseFileName() {
 				$security_phrase =		$row[$security_phrase_field];
 				$comments =				trim($row[$comments_field]);
 
-				if (strlen($phone_number)>8) {
+				if (strlen($phone_number)>6) {
 
 					if (strlen($list_id_override)>0) 
 						{
@@ -528,9 +541,18 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 	if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name)) {
 
-		copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
-		$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
-		if ($WeBRooTWritablE > 0) 
+		if ($WeBRooTWritablE > 0)
+			{
+			copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
+			$lead_file = "./vicidial_temp_file.txt";
+			}
+		else
+			{
+			copy($LF_path, "/tmp/vicidial_temp_file.txt");
+			$lead_file = "/tmp/vicidial_temp_file.txt";
+			}
+		$file=fopen("$lead_file", "r");
+		if ($WeBRooTWritablE > 0)
 			{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 
 		$buffer=fgets($file, 4096);
@@ -542,7 +564,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 		if (count($field_check)>=5) {
 			flush();
-			$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
+			$file=fopen("$lead_file", "r");
 			$total=0; $good=0; $bad=0;
 			print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file... ($tab_count|$pipe_count)\n";
 			if (strlen($list_id_override)>0) 
@@ -590,7 +612,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 					$security_phrase =		$row[21];
 					$comments =				trim($row[22]);
 
-					if (strlen($phone_number)>8) {
+					if (strlen($phone_number)>6) {
 
 						if (strlen($list_id_override)>0) 
 							{
@@ -640,15 +662,39 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 		} else {
 			print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: The file does not have the required number of fields to process it.</B></font></center>";
 		}
-	} else if (!eregi(".csv", $leadfile_name)) {
-		copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.xls");
-		$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.xls", "r");
+	} else if (!eregi(".csv", $leadfile_name)) 
+		{
+		if ($WeBRooTWritablE > 0)
+			{
+			copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.xls");
+			$lead_file = "$WeBServeRRooT/vicidial/vicidial_temp_file.xls";
+			}
+		else
+			{
+			copy($LF_path, "/tmp/vicidial_temp_file.xls");
+			$lead_file = "/tmp/vicidial_temp_file.xls";
+			}
+		$file=fopen("$lead_file", "r");
 
-		passthru("$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override");
-	} else {
-		copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.csv");
-		$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.csv", "r");
-		$stmt_file=fopen("listloader_stmts.txt", "w");
+	#	echo "|$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override --lead-file=$lead_file|";
+		passthru("$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override --lead-file=$lead_file");
+	
+		}
+		else 
+		{
+		if ($WeBRooTWritablE > 0)
+			{
+			copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.csv");
+			$lead_file = "$WeBServeRRooT/vicidial/vicidial_temp_file.csv";
+			}
+		else
+			{
+			copy($LF_path, "/tmp/vicidial_temp_file.csv");
+			$lead_file = "/tmp/vicidial_temp_file.csv";
+			}
+		$file=fopen("$lead_file", "r");
+		if ($WeBRooTWritablE > 0)
+			{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 		
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
 
@@ -691,7 +737,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);
 
-				if (strlen($phone_number)>8) {
+				if (strlen($phone_number)>6) {
 
 					if (strlen($list_id_override)>0) 
 						{
@@ -752,10 +798,21 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 			$rslt=mysql_query("select vendor_lead_code, source_id, list_id, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments from vicidial_list limit 1", $link);
 			
 
-			if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name)) {
-				copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
-				$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
-				$stmt_file=fopen("listloader_stmts.txt", "w");
+			if (!eregi(".csv", $leadfile_name) && !eregi(".xls", $leadfile_name)) 
+				{
+				if ($WeBRooTWritablE > 0)
+					{
+					copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.txt");
+					$lead_file = "$WeBServeRRooT/vicidial/vicidial_temp_file.txt";
+					}
+				else
+					{
+					copy($LF_path, "/tmp/vicidial_temp_file.txt");
+					$lead_file = "/tmp/vicidial_temp_file.txt";
+					}
+				$file=fopen("$lead_file", "r");
+				if ($WeBRooTWritablE > 0)
+					{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 
 				$buffer=fgets($file, 4096);
 				$tab_count=substr_count($buffer, "\t");
@@ -764,7 +821,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				if ($tab_count>$pipe_count) {$delimiter="\t";  $delim_name="tab";} else {$delimiter="|";  $delim_name="pipe";}
 				$field_check=explode($delimiter, $buffer);
 				flush();
-				$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.txt", "r");
+				$file=fopen("$lead_file", "r");
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing $delim_name-delimited file...\n";
 
 				if (strlen($list_id_override)>0) 
@@ -826,13 +883,39 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 					#print "    </td>\r\n";
 					#print "  </tr>\r\n";
 				}
-			} else if (!eregi(".csv", $leadfile_name)) {
-				copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.xls");
-				passthru("$WeBServeRRooT/vicidial/listloader_rowdisplay.pl");
-			} else {
-				copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.csv");
-				$file=fopen("$WeBServeRRooT/vicidial/vicidial_temp_file.csv", "r");
-				$stmt_file=fopen("listloader_stmts.txt", "w");
+			} 
+			else if (!eregi(".csv", $leadfile_name)) 
+			{
+				if ($WeBRooTWritablE > 0)
+					{
+					copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.xls");
+					$lead_file = "$WeBServeRRooT/vicidial/vicidial_temp_file.xls";
+					}
+				else
+					{
+					copy($LF_path, "/tmp/vicidial_temp_file.xls");
+					$lead_file = "/tmp/vicidial_temp_file.xls";
+					}
+
+			#	echo "|$WeBServeRRooT/vicidial/listloader_rowdisplay.pl --lead-file=$lead_file|";
+				passthru("$WeBServeRRooT/vicidial/listloader_rowdisplay.pl --lead-file=$lead_file");
+			} 
+			else 
+			{
+				if ($WeBRooTWritablE > 0)
+					{
+					copy($LF_path, "$WeBServeRRooT/vicidial/vicidial_temp_file.csv");
+					$lead_file = "$WeBServeRRooT/vicidial/vicidial_temp_file.csv";
+					}
+				else
+					{
+					copy($LF_path, "/tmp/vicidial_temp_file.csv");
+					$lead_file = "/tmp/vicidial_temp_file.csv";
+					}
+				$file=fopen("$lead_file", "r");
+
+				if ($WeBRooTWritablE > 0)
+					{$stmt_file=fopen("$WeBServeRRooT/vicidial/listloader_stmts.txt", "w");}
 				
 				print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Processing CSV file... \n";
 				
@@ -895,6 +978,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				}
 			}
 			print "  <tr bgcolor='#330099'>\r\n";
+			print "  <input type=hidden name=lead_file value=\"$lead_file\">\r\n";
 			print "  <input type=hidden name=list_id_override value=\"$list_id_override\">\r\n";
 			print "    <th colspan=2><input type=submit name='OK_to_process' value='OK TO PROCESS'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick=\"javascript:document.location='new_listloader_superL.php'\" value=\"START OVER\" name='reload_page'></th>\r\n";
 			print "  </tr>\r\n";

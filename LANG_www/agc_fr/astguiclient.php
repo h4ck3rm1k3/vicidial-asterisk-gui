@@ -55,11 +55,10 @@
 # 60112-1622 - Several formatting changes
 # 60421-1357 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1103 - Added variable filters to close security holes for login form
+# 60829-1528 - Made compatible with WeBRooTWritablE setting in dbconnect.php
 # 
 
 require("dbconnect.php");
-
-#require_once("htglobalize.php");
 
 ### If you have globals turned off uncomment these lines
 if (isset($_GET["user"]))					{$user=$_GET["user"];}
@@ -88,8 +87,8 @@ $user_abb = "$user$user$user$user";
 while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 	{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
 
-$version = '1.1.12';
-$build = '60619-1103';
+$version = '2.0.1';
+$build = '60829-1528';
 
 ### security strip all non-alphanumeric characters out of the variables ###
 	$DB=ereg_replace("[^0-9a-z]","",$DB);
@@ -124,7 +123,8 @@ $FILE_TIME = date("Ymd-His");
 
 $US='_';
 $CL=':';
-$fp = fopen ("./astguiclient_auth_entries.txt", "a");
+if ($WeBRooTWritablE > 0)
+	{$fp = fopen ("./astguiclient_auth_entries.txt", "a");}
 $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
@@ -183,13 +183,19 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname=$row[0];
-		fwrite ($fp, "VICICADRAN|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "VICICADRAN|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	else
 		{
-		fwrite ($fp, "VICICADRAN|FAIL|$date|$user|$pass|$ip|$browser|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "VICICADRAN|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	}
 
@@ -484,15 +490,15 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var phone_pass = '<? echo $phone_pass ?>';
 	var session_name = '<? echo $session_name ?>';
 	var image_livecall_OFF = new Image();
-	image_livecall_OFF.src="../agc/images/agc_live_call_OFF_fr.gif";
+	image_livecall_OFF.src="../agc/images/agc_live_call_OFF.gif";
 	var image_livecall_ON = new Image();
-	image_livecall_ON.src="../agc/images/agc_live_call_ON_fr.gif";
+	image_livecall_ON.src="../agc/images/agc_live_call_ON.gif";
 	var image_voicemail_OFF = new Image();
-	image_voicemail_OFF.src="../agc/images/agc_check_voicemail_OFF_fr.gif";
+	image_voicemail_OFF.src="../agc/images/agc_check_voicemail_OFF.gif";
 	var image_voicemail_ON = new Image();
-	image_voicemail_ON.src="../agc/images/agc_check_voicemail_ON_fr.gif";
+	image_voicemail_ON.src="../agc/images/agc_check_voicemail_ON.gif";
 	var image_voicemail_BLINK = new Image();
-	image_voicemail_BLINK.src="../agc/images/agc_check_voicemail_BLINK_fr.gif";
+	image_voicemail_BLINK.src="../agc/images/agc_check_voicemail_BLINK.gif";
 	var favorites = new Array();
 	var favorites_names = new Array();
 	var favorites_busy = new Array();
@@ -2713,11 +2719,11 @@ echo "</head>\n";
 <?	echo "Bienvenue $LOGfullname, votre téléphone: $fullname - $protocol/$extension sur $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">DÉCONNEXION</a><BR>\n"; ?>
 </TD></TR>
 <TR VALIGN=TOP ALIGN=LEFT>
-<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main_fr.gif" ALT="Panneau Principal" WIDTH=83 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines_fr.gif" ALT="Lignes Actives Panneau" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences_fr.gif" ALT="Panneau De Conférences" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON_fr.gif" NAME=voicemail ALT="Vérifiez Voicemail" WIDTH=170 HEIGHT=30 Border=0></A></TD>
-<TD><IMG SRC="../agc/images/agc_live_call_OFF_fr.gif" NAME=livecall ALT="Vivent L'Appel" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main.gif" ALT="Panneau Principal" WIDTH=83 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Lignes Actives Panneau" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Panneau De Conférences" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Vérifiez Voicemail" WIDTH=170 HEIGHT=30 Border=0></A></TD>
+<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Vivent L'Appel" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </SPAN>
 

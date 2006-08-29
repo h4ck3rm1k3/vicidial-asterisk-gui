@@ -86,7 +86,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -120,7 +120,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
 echo "<title>Sprawdzanie numeru wewnętrznego konferencji";
 echo "</title>\n";
 echo "</head>\n";
@@ -244,7 +244,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
-		echo "Konferencja $conf_exten zarejestrował się $exten\n";
+		echo "Konferencja $conf_exten został zarejestrowany $exten\n";
 	}
 
 

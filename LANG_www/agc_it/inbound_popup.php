@@ -29,6 +29,7 @@
 # 50503-1244 - added session_name checking for extra security
 # 50711-1203 - removed HTTP authentication in favor of user/pass vars
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1205 - Added variable filters to close security holes for login form
 #
 
 require("dbconnect.php");
@@ -61,12 +62,14 @@ if (isset($_GET["local_web_callerID_URL_enc"]))			{$local_web_callerID_URL_enc=$
 if (isset($_GET["local_web_callerID_URL_enc"]))			{$local_web_callerID_URL = rawurldecode($local_web_callerID_URL_enc);}
 	else {$local_web_callerID_URL = '';}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 
-$version = '0.0.5';
-$build = '60421-1043';
+$version = '0.0.6';
+$build = '60619-1205';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

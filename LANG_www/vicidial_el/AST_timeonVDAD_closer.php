@@ -173,7 +173,7 @@ $talking_to_print = mysql_num_rows($rslt);
 	while ($i < $ext_count)
 		{
 
-		$stmt="select campaign_id from vicidial_auto_calls where uniqueid='$uniqueid[$i]' and server_ip='" . mysql_real_escape_string($server_ip) . "';";
+		$stmt="select campaign_id from vicidial_auto_calls where lead_id='$lead_id[$i]' and server_ip='" . mysql_real_escape_string($server_ip) . "';";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$camp_to_print = mysql_num_rows($rslt);

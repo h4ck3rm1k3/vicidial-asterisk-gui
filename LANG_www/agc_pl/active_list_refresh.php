@@ -125,7 +125,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -159,14 +159,14 @@ if ($format=='table')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    ADD: $ADD   server_ip: $server_ip-->\n";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    ADD: $ADD   server_ip: $server_ip-->\n";
 echo "<title>Listy: ";
 if ($ADD==1)		{echo "Aktywne numery wewnętrzne";}
-if ($ADD==2)		{echo "Zajęte numery zewnętrzne";}
+if ($ADD==2)		{echo "Zajęte numery wewnętrzne";}
 if ($ADD==3)		{echo "Linie zewnętrzne";}
 if ($ADD==4)		{echo "Numery wewnętrzne";}
 if ($ADD==5)		{echo "Konferencje";}
-if ($ADD==99999)	{echo "Pomoc";}
+if ($ADD==99999)	{echo "POMOC";}
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";

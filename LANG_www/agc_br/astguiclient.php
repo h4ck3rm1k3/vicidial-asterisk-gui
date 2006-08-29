@@ -55,11 +55,10 @@
 # 60112-1622 - Several formatting changes
 # 60421-1357 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1103 - Added variable filters to close security holes for login form
+# 60829-1528 - Made compatible with WeBRooTWritablE setting in dbconnect.php
 # 
 
 require("dbconnect.php");
-
-#require_once("htglobalize.php");
 
 ### If you have globals turned off uncomment these lines
 if (isset($_GET["user"]))					{$user=$_GET["user"];}
@@ -88,8 +87,8 @@ $user_abb = "$user$user$user$user";
 while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 	{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
 
-$version = '1.1.12';
-$build = '60619-1103';
+$version = '2.0.1';
+$build = '60829-1528';
 
 ### security strip all non-alphanumeric characters out of the variables ###
 	$DB=ereg_replace("[^0-9a-z]","",$DB);
@@ -124,7 +123,8 @@ $FILE_TIME = date("Ymd-His");
 
 $US='_';
 $CL=':';
-$fp = fopen ("./astguiclient_auth_entries.txt", "a");
+if ($WeBRooTWritablE > 0)
+	{$fp = fopen ("./astguiclient_auth_entries.txt", "a");}
 $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
@@ -183,13 +183,19 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname=$row[0];
-		fwrite ($fp, "VICIDISCAR|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "VICIDISCAR|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	else
 		{
-		fwrite ($fp, "VICIDISCAR|FAIL|$date|$user|$pass|$ip|$browser|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "VICIDISCAR|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	}
 

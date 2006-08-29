@@ -64,7 +64,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0) )
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -97,7 +97,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
 echo "<title>Zawieszone rozmowy";
 echo "</title>\n";
 echo "</head>\n";

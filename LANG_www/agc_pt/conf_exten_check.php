@@ -31,6 +31,7 @@
 # 51121-1353 - Altered echo statements for several small PHP speed optimizations
 # 60410-1424 - Added ability to grab calls-being-placed and agent status
 # 60421-1405 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1201 - Added variable filters to close security holes for login form
 #
 
 require("dbconnect.php");
@@ -59,13 +60,16 @@ if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"
 if (isset($_GET["campagentstdisp"]))			{$campagentstdisp=$_GET["campagentstdisp"];}
 	elseif (isset($_POST["campagentstdisp"]))	{$campagentstdisp=$_POST["campagentstdisp"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 if (!isset($ACTION))   {$ACTION="refresh";}
 if (!isset($client))   {$client="agc";}
 
-$version = '0.0.8';
-$build = '60421-1405';
+$version = '0.0.9';
+$build = '60619-1201';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

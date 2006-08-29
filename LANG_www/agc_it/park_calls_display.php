@@ -21,6 +21,7 @@
 # 50524-1515 - First build of script
 # 50711-1208 - removed HTTP authentication in favor of user/pass vars
 # 60421-1111 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1205 - Added variable filters to close security holes for login form
 # 
 
 require("dbconnect.php");
@@ -41,12 +42,15 @@ if (isset($_GET["exten"]))					{$exten=$_GET["exten"];}
 if (isset($_GET["protocol"]))				{$protocol=$_GET["protocol"];}
 	elseif (isset($_POST["protocol"]))		{$protocol=$_POST["protocol"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))		{$format="text";}
 if (!isset($park_limit))	{$park_limit="1000";}
 
-$version = '0.0.3';
-$build = '60421-1111';
+$version = '0.0.4';
+$build = '60619-1205';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

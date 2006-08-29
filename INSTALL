@@ -1,7 +1,13 @@
 ################ INSTALL
 
-Short installation instructions for astGUIclient 2.0 tree will go here.
+For in-depth installation instructions read the docs/SCRATCH_INSTALL.txt file
 
+For more brief install instructions read the docs/BASE_INSTALL.txt file
+
+For Requirements of astGUIclient/VICIDIAL read the docs/REQUIREMENTS.txt file
+
+
+To place the astGUIclient/VICIDIAL files where they belong on the server:
 run the install.pl script from this directory:
 perl install.pl
 

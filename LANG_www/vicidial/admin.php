@@ -274,6 +274,25 @@ if (isset($_GET["attempt_delay"]))					{$attempt_delay=$_GET["attempt_delay"];}
 	elseif (isset($_POST["attempt_delay"]))			{$attempt_delay=$_POST["attempt_delay"];}
 if (isset($_GET["attempt_maximum"]))				{$attempt_maximum=$_GET["attempt_maximum"];}
 	elseif (isset($_POST["attempt_maximum"]))		{$attempt_maximum=$_POST["attempt_maximum"];}
+if (isset($_GET["allcalls_delay"]))					{$allcalls_delay=$_GET["allcalls_delay"];}
+	elseif (isset($_POST["allcalls_delay"]))		{$allcalls_delay=$_POST["allcalls_delay"];}
+if (isset($_GET["omit_phone_code"]))				{$omit_phone_code=$_GET["omit_phone_code"];}
+	elseif (isset($_POST["omit_phone_code"]))		{$omit_phone_code=$_POST["omit_phone_code"];}
+if (isset($_GET["adaptive_maximum_level"]))				{$adaptive_maximum_level=$_GET["adaptive_maximum_level"];}
+	elseif (isset($_POST["adaptive_maximum_level"]))	{$adaptive_maximum_level=$_POST["adaptive_maximum_level"];}
+if (isset($_GET["adaptive_dropped_percentage"]))		{$adaptive_dropped_percentage=$_GET["adaptive_dropped_percentage"];}
+	elseif (isset($_POST["adaptive_dropped_percentage"])){$adaptive_dropped_percentage=$_POST["adaptive_dropped_percentage"];}
+if (isset($_GET["available_only_ratio_tally"]))			{$available_only_ratio_tally=$_GET["available_only_ratio_tally"];}
+	elseif (isset($_POST["available_only_ratio_tally"])){$available_only_ratio_tally=$_POST["available_only_ratio_tally"];}
+if (isset($_GET["dial_method"]))					{$dial_method=$_GET["dial_method"];}
+	elseif (isset($_POST["dial_method"]))			{$dial_method=$_POST["dial_method"];}
+if (isset($_GET["adaptive_latest_server_time"]))			{$adaptive_latest_server_time=$_GET["adaptive_latest_server_time"];}
+	elseif (isset($_POST["adaptive_latest_server_time"])){$adaptive_latest_server_time=$_POST["adaptive_latest_server_time"];}
+if (isset($_GET["adaptive_intensity"]))				{$adaptive_intensity=$_GET["adaptive_intensity"];}
+	elseif (isset($_POST["adaptive_intensity"]))	{$adaptive_intensity=$_POST["adaptive_intensity"];}
+if (isset($_GET["adaptive_dl_diff_target"]))			{$adaptive_dl_diff_target=$_GET["adaptive_dl_diff_target"];}
+	elseif (isset($_POST["adaptive_dl_diff_target"]))	{$adaptive_dl_diff_target=$_POST["adaptive_dl_diff_target"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -283,8 +302,6 @@ if (isset($_GET["attempt_maximum"]))				{$attempt_maximum=$_GET["attempt_maximum
 ### DIGITS ONLY ###
 $user_level = ereg_replace("[^0-9]","",$user_level);
 $wrapup_seconds = ereg_replace("[^0-9]","",$wrapup_seconds);
-$xferconf_a_number = ereg_replace("[^0-9]","",$xferconf_a_number);
-$xferconf_b_number = ereg_replace("[^0-9]","",$xferconf_b_number);
 $drop_call_seconds = ereg_replace("[^0-9]","",$drop_call_seconds);
 $voicemail_ext = ereg_replace("[^0-9]","",$voicemail_ext);
 $safe_harbor_exten = ereg_replace("[^0-9]","",$safe_harbor_exten);
@@ -344,6 +361,9 @@ $attempt_maximum = ereg_replace("[^0-9]","",$attempt_maximum);
 $attempt_delay = ereg_replace("[^0-9]","",$attempt_delay);
 $hotkey = ereg_replace("[^0-9]","",$hotkey);
 $list_id = ereg_replace("[^0-9]","",$list_id);
+$allcalls_delay = ereg_replace("[^0-9]","",$allcalls_delay);
+$adaptive_dropped_percentage = ereg_replace("[^0-9]","",$adaptive_dropped_percentage);
+$adaptive_latest_server_time = ereg_replace("[^0-9]","",$adaptive_latest_server_time);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -357,6 +377,8 @@ $reset_list = ereg_replace("[^NY]","",$reset_list);
 $fronter_display = ereg_replace("[^NY]","",$fronter_display);
 $drop_message = ereg_replace("[^NY]","",$drop_message);
 $use_internal_dnc = ereg_replace("[^NY]","",$use_internal_dnc);
+$omit_phone_code = ereg_replace("[^NY]","",$omit_phone_code);
+$available_only_ratio_tally = ereg_replace("[^NY]","",$available_only_ratio_tally);
 
 ### ALPHA-NUMERIC ONLY ###
 $user = ereg_replace("[^0-9a-zA-Z]","",$user);
@@ -377,10 +399,15 @@ $scheduled_callbacks = ereg_replace("[^0-9a-zA-Z]","",$scheduled_callbacks);
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
 $auto_dial_level = ereg_replace("[^\.0-9]","",$auto_dial_level);
+$adaptive_maximum_level = ereg_replace("[^\.0-9]","",$adaptive_maximum_level);
 
-### DIGITS and spaces and hash and star and comma
-$xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9]","",$xferconf_a_dtmf);
-$xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9]","",$xferconf_b_dtmf);
+### ALPHA-NUMERIC and spaces and hash and star and comma
+$xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
+$xferconf_b_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_b_dtmf);
+
+### ALPHACAPS-NUMERIC
+$xferconf_a_number = ereg_replace("[^0-9A-Z]","",$xferconf_a_number);
+$xferconf_b_number = ereg_replace("[^0-9A-Z]","",$xferconf_b_number);
 
 ### ALPHA-NUMERIC and underscore and dash
 $dial_status_e = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status_e);
@@ -402,6 +429,7 @@ $group_id = ereg_replace("[^-\_0-9a-zA-Z]","",$group_id);
 $user_group = ereg_replace("[^-\_0-9a-zA-Z]","",$user_group);
 $OLDuser_group = ereg_replace("[^-\_0-9a-zA-Z]","",$OLDuser_group);
 $state_rule = ereg_replace("[^-\_0-9a-zA-Z]","",$state_rule);
+$dial_method = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_method);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -424,6 +452,8 @@ $lead_filter_comments = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$lead_filter_comm
 $campaign_rec_filename = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_rec_filename);
 $call_time_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$call_time_name);
 $call_time_comments = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$call_time_comments);
+$adaptive_intensity = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$adaptive_intensity);
+$adaptive_dl_diff_target = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$adaptive_dl_diff_target);
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
@@ -493,13 +523,23 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60613-1415 - Added lead recycling options to campaign detail screen
 # 60619-1523 - Added variable filtering to eliminate SQL injection attack threat
 # 60622-1216 - Fixed HotKey addition form issues and variable filtering
-# 60623-1159 - Fixed Scheduled Callbacks over-filtering bug
+# 60623-1159 - Fixed Scheduled Callbacks over-filtering bug and filter_sql bug
+# 60808-1147 - changed filtering for and added instructions for consutative transfers
+# 60816-1552 - added allcalls_delay start delay for recordings in vicidial.php
+# 60817-2226 - fixed bug that would not allow lead recycling of non-selectable statuses
+# 60821-1543 - added option to Omit Phone Code while dialing in vicidial
+# 60821-1625 - added ALLFORCE recording option for campaign_recording
+# 60823-1154 - added fields for adaptive dialing
+# 60824-1326 - added adaptive_latest_target_gmt for ADAPT_TAPERED dial method
+# 60825-1205 - added adaptive_intensity for ADAPT_ dial methods
+# 60828-1019 - changed adaptive_latest_target_gmt to adaptive_latest_server_time
+# 60828-1115 - added adaptive_dl_diff_target and changed intensity dropdown
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '1.1.12-3';
-$build = '60623-1159';
+$version = '2.0.65';
+$build = '60828-1115';
 
 $STARTtime = date("U");
 
@@ -1077,9 +1117,44 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Force Reset of Hopper -</B> This allows you to wipe out the hopper contents upon form submission. It should be filled again when the VDhopper script runs.
 
 <BR>
+<A NAME="vicidial_campaigns-dial_method">
+<BR>
+<B>Dial Method -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift(as defined by call_time selected for campaign) and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods.
+
+<BR>
 <A NAME="vicidial_campaigns-auto_dial_level">
 <BR>
 <B>Auto Dial Level -</B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow.
+
+<BR>
+<A NAME="vicidial_campaigns-available_only_ratio_tally">
+<BR>
+<B>Available Only Tally -</B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
+
+<BR>
+<A NAME="vicidial_campaigns-adaptive_dropped_percentage">
+<BR>
+<B>Drop Percentage Limit -</B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
+
+<BR>
+<A NAME="vicidial_campaigns-adaptive_maximum_level">
+<BR>
+<B>Maximum Adapt Dial Level -</B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
+
+<BR>
+<A NAME="vicidial_campaigns-adaptive_latest_server_time">
+<BR>
+<B>Latest Server Time -</B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling.
+
+<BR>
+<A NAME="vicidial_campaigns-adaptive_intensity">
+<BR>
+<B>Adapt Intensity Modifier -</B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+
+<BR>
+<A NAME="vicidial_campaigns-adaptive_dl_diff_target">
+<BR>
+<B>Dial Level Difference Target -</B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
 
 <BR>
 <A NAME="vicidial_campaigns-next_agent_call">
@@ -1106,6 +1181,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Dial Prefix -</B> This field allows for more easily changing a path of dialing to go out through a different method without doing a reload in Asterisk. Default is 9 based upon a 91NXXNXXXXXX in the dialplan - extensions.conf.
 
 <BR>
+<A NAME="vicidial_campaigns-omit_phone_code">
+<BR>
+<B>Omit Phone Code -</B> This field allows you to leave out the phone_code field while dialing within VICIDIAL. For instance if you are dialing in the UK from the UK you would have 44 in as your phone_code field for all leads, but you just want to dial 10 digits in your dialplan extensions.conf to place calls instead of 44 then 10 digits. Default is N.
+
+<BR>
 <A NAME="vicidial_campaigns-campaign_cid">
 <BR>
 <B>Campaign CallerID -</B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service(RBS) circuits. This will also work through most VOIP(SIP or IAX trunks) providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID.
@@ -1123,12 +1203,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-campaign_recording">
 <BR>
-<B>Campaign Recording -</B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent.
+<B>Campaign Recording -</B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_filename">
 <BR>
 <B>Campaign Rec Filename -</B> This field allows you to customize the name of the recording when Campaign recording is ONDEMAND or ALLCALLS. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max.
+
+<BR>
+<A NAME="vicidial_campaigns-allcalls_delay">
+<BR>
+<B>Recording Delay -</B> For ALLCALLS and ALLFORCE recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_script">
@@ -1153,7 +1238,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed.
+<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
 
 <BR>
 <A NAME="vicidial_campaigns-alt_number_dialing">
@@ -1300,7 +1385,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed.
+<B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
 
 <BR>
 <A NAME="vicidial_inbound_groups-drop_call_seconds">
@@ -1965,7 +2050,7 @@ if (strlen($phone_number) > 2)
 echo "<br>ADD A NUMBER TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=121>\n";
 echo "<center><TABLE width=600 cellspacing=3>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Phone Number: </td><td align=left><input type=text name=phone_number size=12 maxlength=10> (digits only)$NWB#vicidial_list-dnc$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Phone Number: </td><td align=left><input type=text name=phone_number size=14 maxlength=12> (digits only)$NWB#vicidial_list-dnc$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
 
@@ -2813,7 +2898,29 @@ if ($ADD==41)
 		{
 		echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
 
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', auto_dial_level='$auto_dial_level', next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc' where campaign_id='$campaign_id';";
+		if ($dial_method == 'RATIO')
+			{
+			if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
+			$adlSQL = "auto_dial_level='$auto_dial_level',";
+			}
+		else
+			{
+			if ($dial_method == 'MANUAL') 
+				{
+				$auto_dial_level='0';
+				$adlSQL = "auto_dial_level='0',";
+				}
+			else
+				{
+				$adlSQL = "";
+				if ($auto_dial_level < 1) 
+					{
+					$auto_dial_level = "1.0";
+					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					}
+				}
+			}
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -2928,7 +3035,29 @@ if ($ADD==44)
 		{
 		echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
 
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', auto_dial_level='$auto_dial_level',lead_filter_id='$lead_filter_id' where campaign_id='$campaign_id';";
+		if ($dial_method == 'RATIO')
+			{
+			if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
+			$adlSQL = "auto_dial_level='$auto_dial_level',";
+			}
+		else
+			{
+			if ($dial_method == 'MANUAL') 
+				{
+				$auto_dial_level='0';
+				$adlSQL = "auto_dial_level='0',";
+				}
+			else
+				{
+				$adlSQL = "";
+				if ($auto_dial_level < 1) 
+					{
+					$auto_dial_level = "1.0";
+					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					}
+				}
+			}
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -4215,6 +4344,15 @@ echo "<TABLE><TR><TD>\n";
 	$wrapup_message = $row[41];
 #	$closer_campaigns = $row[42];
 	$use_internal_dnc = $row[43];
+	$allcalls_delay = $row[44];
+	$omit_phone_code = $row[45];
+	$dial_method = $row[46];
+	$available_only_ratio_tally = $row[47];
+	$adaptive_dropped_percentage = $row[48];
+	$adaptive_maximum_level = $row[49];
+	$adaptive_latest_server_time = $row[50];
+	$adaptive_intensity = $row[51];
+	$adaptive_dl_diff_target = $row[52];
 
 echo "<br>MODIFY A CAMPAIGNS RECORD: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Basic View</a>";
 echo " | Detail View</a> | ";
@@ -4237,28 +4375,32 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><se
 	$statuses_list='';
 
 	$o=0;
-	while ($statuses_to_print > $o) {
+	while ($statuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
 		$o++;
-	}
+		}
 
-	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' and selectable='Y' order by status";
+	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
 	$rslt=mysql_query($stmt, $link);
 	$Cstatuses_to_print = mysql_num_rows($rslt);
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) {
+	while ($Cstatuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
 		$o++;
-	}
+		}
 echo "$statuses_list";
 echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
 echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
@@ -4290,7 +4432,58 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><sel
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Drop Percentage Limit: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
+$n=100;
+while ($n>=1)
+	{
+	echo "<option>$n</option>\n";
+	$n--;
+	}
+echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Latest Server Time: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 digits only</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+$n=40;
+while ($n>=-40)
+	{
+	$dtl = 'Balanced';
+	if ($n<0) {$dtl = 'Less Intense';}
+	if ($n>0) {$dtl = 'More Intense';}
+	if ($n == $adaptive_intensity) 
+		{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+	else
+		{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+	$n--;
+	}
+echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
+
+
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
+$n=40;
+while ($n>=-40)
+	{
+	$nabs = abs($n);
+	$dtl = 'Balanced';
+	if ($n<0) {$dtl = 'Agents Waiting for Calls';}
+	if ($n>0) {$dtl = 'Calls Waiting for Agents';}
+	if ($n == $adaptive_dl_diff_target) 
+		{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
+	else
+		{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
+	$n--;
+	}
+echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
+
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 
@@ -4303,15 +4496,19 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Dial Timeout: </td><td align=left><inp
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Dial Prefix: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
+echo "<tr bgcolor=#B6D3FC><td align=right>Omit Phone Code: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
+
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign CallerID: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign VDAD exten: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Rec exten: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Recording: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Recording: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Rec Filename: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#B6D3FC><td align=right>Recording Delay: </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
 echo "$scripts_list";
@@ -4552,7 +4749,7 @@ echo "<input type=hidden name=ADD value=25>\n";
 echo "<input type=hidden name=active value=\"N\">\n";
 echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 echo "Status: <select size=1 name=status>\n";
-echo "$HKstatuses_list\n";
+echo "$LRstatuses_list\n";
 echo "</select> &nbsp; \n";
 echo "Attempt Delay: <input size=7 maxlength=5 name=attempt_delay>\n";
 echo "Attempt Maximum: <input size=5 maxlength=3 name=attempt_maximum>\n";
@@ -4612,6 +4809,8 @@ echo "<TABLE><TR><TD>\n";
 	$lead_filter_id = $row[35];
 		if ($lead_filter_id=='') {$lead_filter_id='NONE';}
 	$display_dialable_count = $row[39];
+	$dial_method = $row[46];
+	$adaptive_intensity = $row[51];
 
 echo "<br>MODIFY A CAMPAIGN'S RECORD: $row[0] - Basic View | ";
 echo "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\">Detail View</a> | ";
@@ -4634,24 +4833,26 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><se
 	$statuses_list='';
 
 	$o=0;
-	while ($statuses_to_print > $o) {
+	while ($statuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$o++;
-	}
+		}
 
 	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
 	$rslt=mysql_query($stmt, $link);
 	$Cstatuses_to_print = mysql_num_rows($rslt);
 
 	$o=0;
-	while ($Cstatuses_to_print > $o) {
+	while ($Cstatuses_to_print > $o) 
+		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$o++;
-	}
+		}
 echo "$statuses_list";
 echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
 echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
@@ -4683,7 +4884,24 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><sel
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+
+echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+$n=40;
+while ($n>=-40)
+	{
+	$dtl = 'Balanced';
+	if ($n<0) {$dtl = 'Less Intense';}
+	if ($n>0) {$dtl = 'More Intense';}
+	if ($n == $adaptive_intensity) 
+		{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+	else
+		{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+	$n--;
+	}
+echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left>$script_id</td></tr>\n";
 

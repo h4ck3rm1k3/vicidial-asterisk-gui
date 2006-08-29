@@ -267,7 +267,7 @@ $auth=$row[0];
 
 if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 {
-echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
 exit;
 }
 else
@@ -301,8 +301,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Skrypt odpytujący bazę danych";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    USER: $user   server_ip: $server_ip-->\n";
+echo "<title>VICIDiaL Skrypt zapytań do bazy danych";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -394,7 +394,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC Numer\n";
+					echo "DNC NUMER\n";
 					exit;
 					}
 				}
@@ -743,7 +743,7 @@ if ($stage == "start")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
-		echo "LOG NOT ENTERED\n";
+		echo "Dziennik nie zapisany\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign nie jest prawidłowy\n";
 		exit;
 		}
@@ -757,12 +757,12 @@ if ($stage == "start")
 
 		if ($affected_rows > 0)
 			{
-			echo "VICIDiaL_LOG Inserted: $uniqueid|$channel|$NOW_TIME\n";
+			echo "VICIDiaL_LOG Wstawiony: $uniqueid|$channel|$NOW_TIME\n";
 			echo "$StarTtime\n";
 			}
 		else
 			{
-			echo "LOG NOT ENTERED\n";
+			echo "Dziennik nie zapisany\n";
 			}
 
 	#	##### insert log into call_log for manual VICIDiaL call
@@ -773,11 +773,11 @@ if ($stage == "start")
 
 	#	if ($affected_rows > 0)
 	#		{
-	#		echo "CALL_LOG Inserted: $uniqueid|$channel|$NOW_TIME";
+	#		echo "CALL_LOG Wstawiony: $uniqueid|$channel|$NOW_TIME";
 	#		}
 	#	else
 	#		{
-	#		echo "LOG NOT ENTERED\n";
+	#		echo "Dziennik nie zapisany\n";
 	#		}
 		}
 	}
@@ -786,7 +786,7 @@ if ($stage == "end")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) )
 		{
-		echo "LOG NOT ENTERED\n";
+		echo "Dziennik nie zapisany\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id nie jest prawidłowy\n";
 		exit;
 		}
@@ -850,7 +850,7 @@ if ($stage == "end")
 			}
 		else
 			{
-			echo "LOG NOT ENTERED\n\n";
+			echo "Dziennik nie zapisany\n\n";
 			}
 		}
 
@@ -1236,7 +1236,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 
 		### If RozmowaBK, change vicidial_callback record to INACTIVE
-		if (eregi("CALLBK|CBHStary", $dispo))
+		if (eregi("CALLBK|CBHSTARY", $dispo))
 			{
 			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1269,8 +1269,8 @@ if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	}
 else
 	{
-	##### Insert a LOGOUT record into the user log
-	$stmt="INSERT INTO vicidial_user_log values('','$user','LOGOUT','$campaign','$NOW_TIME','$StarTtime');";
+	##### Insert a WYLOGUJ record into the user log
+	$stmt="INSERT INTO vicidial_user_log values('','$user','WYLOGUJ','$campaign','$NOW_TIME','$StarTtime');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
@@ -1372,7 +1372,7 @@ if ($ACTION == 'updateDISPO')
 	$agent_log_id = mysql_insert_id();
 
 	### RozmowaBACK ENTRY
-	if ( ($dispo_choice == 'CBHStary') and (strlen($CallBackDatETimE)>10) )
+	if ( ($dispo_choice == 'CBHSTARY') and (strlen($CallBackDatETimE)>10) )
 		{
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments');";
 		if ($DB) {echo "$stmt\n";}
@@ -1462,7 +1462,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		}
 	}
-	echo 'Agent ' . $user . ' jest w statusie ' . $stage . "\n";
+	echo 'Agent ' . $user . ' ma statusie ' . $stage . "\n";
 }
 
 

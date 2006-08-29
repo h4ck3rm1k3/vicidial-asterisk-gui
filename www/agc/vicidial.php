@@ -169,8 +169,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.96';
-$build = '60821-1643';
+$version = '2.0.97';
+$build = '60829-1531';
 
 if ($force_logout)
 {

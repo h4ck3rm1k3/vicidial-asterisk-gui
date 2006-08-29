@@ -61,7 +61,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -95,7 +95,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
 echo "<title>Sprawdzanie poczty głosowej";
 echo "</title>\n";
 echo "</head>\n";
@@ -107,7 +107,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if (strlen($vmail_box)<1)
 	{
 	$channel_live=0;
-	echo "skrzynka głosowa $vmail_box nie jest prawidłowy\n";
+	echo "skrzynka poczty głosowej $vmail_box nie jest prawidłowy\n";
 	exit;
 	}
 	else

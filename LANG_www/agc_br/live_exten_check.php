@@ -27,6 +27,8 @@
 # 50711-1204 - removed HTTP authentication in favor of user/pass vars
 # 60103-1541 - added favorite extens status display
 # 60421-1359 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1203 - Added variable filters to close security holes for login form
+# 60825-1029 - Fixed translation variable issue ChannelA
 #
 
 require("dbconnect.php");
@@ -51,11 +53,14 @@ if (isset($_GET["favorites_count"]))				{$favorites_count=$_GET["favorites_count
 if (isset($_GET["favorites_list"]))				{$favorites_list=$_GET["favorites_list"];}
 	elseif (isset($_POST["favorites_list"]))		{$favorites_list=$_POST["favorites_list"];}
 
+$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
 
-$version = '1.1.11';
-$build = '60421-1359';
+$version = '2.0.1';
+$build = '60825-1029';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -141,8 +146,8 @@ echo "$row[0]|";
 		{
 		$loop_count++;
 		$row=mysql_fetch_row($rslt);
-		$CanalA[$loop_count] = "$row[0]";
-		$CanalB[$loop_count] = "$row[1]";
+		$ChanneLA[$loop_count] = "$row[0]";
+		$ChanneLB[$loop_count] = "$row[1]";
 		if ($format=='debug') {echo "\n<!-- $row[0]     $row[1] -->";}
 		}
 	}
@@ -151,7 +156,7 @@ echo "$row[0]|";
 	while($loop_count > $counter)
 	{
 		$counter++;
-	$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and channel_data = '$ChannelA[$counter]';";
+	$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and channel_data = '$ChanneLA[$counter]';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 	if ($rslt) {$trunk_count = mysql_num_rows($rslt);}
@@ -159,13 +164,13 @@ echo "$row[0]|";
 		{
 		$row=mysql_fetch_row($rslt);
 		echo "Conversation: $counter ~";
-		echo "CanalA: $CanalA[$counter] ~";
-		echo "CanalB: $CanalB[$counter] ~";
+		echo "CanalA: $ChanneLA[$counter] ~";
+		echo "CanalB: $ChanneLB[$counter] ~";
 		echo "CanalBtrunk: $row[0]|";
 		}
 		else
 		{
-		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel_data = '$ChannelA[$counter]';";
+		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel_data = '$ChanneLA[$counter]';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		if ($rslt) {$trunk_count = mysql_num_rows($rslt);}
@@ -173,13 +178,13 @@ echo "$row[0]|";
 			{
 			$row=mysql_fetch_row($rslt);
 			echo "Conversation: $counter ~";
-			echo "CanalA: $CanalA[$counter] ~";
-			echo "CanalB: $CanalB[$counter] ~";
+			echo "CanalA: $ChanneLA[$counter] ~";
+			echo "CanalB: $ChanneLB[$counter] ~";
 			echo "CanalBtrunk: $row[0]|";
 			}
 			else
 			{
-			$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$ChannelB[$counter]%\";";
+			$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$ChanneLB[$counter]%\";";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			if ($rslt) {$trunk_count = mysql_num_rows($rslt);}
@@ -187,13 +192,13 @@ echo "$row[0]|";
 				{
 				$row=mysql_fetch_row($rslt);
 				echo "Conversation: $counter ~";
-				echo "CanalA: $CanalA[$counter] ~";
-				echo "CanalB: $CanalB[$counter] ~";
+				echo "CanalA: $ChanneLA[$counter] ~";
+				echo "CanalB: $ChanneLB[$counter] ~";
 				echo "CanalBtrunk: $row[0]|";
 				}
 				else
 				{
-				$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and channel LIKE \"$ChannelB[$counter]%\";";
+				$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and channel LIKE \"$ChanneLB[$counter]%\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				if ($rslt) {$trunk_count = mysql_num_rows($rslt);}
@@ -201,16 +206,16 @@ echo "$row[0]|";
 					{
 					$row=mysql_fetch_row($rslt);
 					echo "Conversation: $counter ~";
-					echo "CanalA: $CanalA[$counter] ~";
-					echo "CanalB: $CanalB[$counter] ~";
+					echo "CanalA: $ChanneLA[$counter] ~";
+					echo "CanalB: $ChanneLB[$counter] ~";
 					echo "CanalBtrunk: $row[0]|";
 					}
 					else
 					{
 					echo "Conversation: $counter ~";
-					echo "CanalA: $CanalA[$counter] ~";
-					echo "CanalB: $CanalB[$counter] ~";
-					echo "CanalBtrunk: $CanalA[$counter]|";
+					echo "CanalA: $ChanneLA[$counter] ~";
+					echo "CanalB: $ChanneLB[$counter] ~";
+					echo "CanalBtrunk: $ChanneLA[$counter]|";
 					}
 				}
 			}

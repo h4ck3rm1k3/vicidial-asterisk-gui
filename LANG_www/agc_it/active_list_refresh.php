@@ -37,6 +37,7 @@
 # 50610-1155 - Added NULL check on MySQL results to reduced errors
 # 50711-1209 - removed HTTP authentication in favor of user/pass vars
 # 60421-1155 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60619-1118 - Added variable filters to close security holes for login form
 #
 
 require("dbconnect.php");
@@ -79,6 +80,24 @@ if (isset($_GET["textareawidth"]))			{$textareawidth=$_GET["textareawidth"];}
 if (isset($_GET["field_name"]))				{$field_name=$_GET["field_name"];}
 	elseif (isset($_POST["field_name"]))	{$field_name=$_POST["field_name"];}
 
+### security strip all non-alphanumeric characters out of the variables ###
+	$user=ereg_replace("[^0-9a-zA-Z]","",$user);
+	$pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+	$ADD=ereg_replace("[^0-9]","",$ADD);
+	$order=ereg_replace("[^0-9a-zA-Z]","",$order);
+	$format=ereg_replace("[^0-9a-zA-Z]","",$format);
+	$bgcolor=ereg_replace("[^\#0-9a-zA-Z]","",$bgcolor);
+	$txtcolor=ereg_replace("[^\#0-9a-zA-Z]","",$txtcolor);
+	$txtsize=ereg_replace("[^0-9a-zA-Z]","",$txtsize);
+	$selectsize=ereg_replace("[^0-9a-zA-Z]","",$selectsize);
+	$selectfontsize=ereg_replace("[^0-9a-zA-Z]","",$selectfontsize);
+	$selectedext=ereg_replace("[^ \#\*\:\/\@\.\-\_0-9a-zA-Z]","",$selectedext);
+	$selectedtrunk=ereg_replace("[^ \#\*\:\/\@\.\-\_0-9a-zA-Z]","",$selectedtrunk);
+	$selectedlocal=ereg_replace("[^ \#\*\:\/\@\.\-\_0-9a-zA-Z]","",$selectedlocal);
+	$textareaheight=ereg_replace("[^0-9a-zA-Z]","",$textareaheight);
+	$textareawidth=ereg_replace("[^0-9a-zA-Z]","",$textareawidth);
+	$field_name=ereg_replace("[^ \#\*\:\/\@\.\-\_0-9a-zA-Z]","",$field_name);
+
 # default optional vars if not set
 if (!isset($ADD))				{$ADD="1";}
 if (!isset($order))				{$order='desc';}
@@ -91,8 +110,8 @@ if (!isset($selectfontsize))	{$selectfontsize='10';}
 if (!isset($textareaheight))	{$textareaheight='10';}
 if (!isset($textareawidth))		{$textareawidth='20';}
 
-$version = '0.0.7';
-$build = '60421-1155';
+$version = '0.0.8';
+$build = '60619-1118';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

@@ -85,7 +85,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -124,7 +124,7 @@ while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
 	<script language="Javascript">	
 		var server_ip = '<? echo $server_ip ?>';
@@ -250,11 +250,11 @@ echo "<!-- WERSJA: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip
 	</script>
 
 <?
-echo "<title>Przyhodzące rozmowa";
+echo "<title>AKTYWNA PRZYHODZĄCA ROZMOWA";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=\"#CCC2E0\" marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onload=\"link_timeout();\">\n";
-echo "<CENTER><H2>Przyhodzące rozmowa</H2>\n";
+echo "<CENTER><H2>AKTYWNA PRZYHODZĄCA ROZMOWA</H2>\n";
 echo "<B>$NOW_TIME</B><BR><BR>\n";
 }
 
@@ -282,7 +282,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 		if ($format=='debug') {echo "\n<!-- $row[0]|$row[1]|$row[2]|$row[3]|$row[4]|$row[5]|$row[6]|$row[7]|$row[8]|$row[9]|$row[10]|$row[11]|$row[12]|$row[13]| -->";}
 		echo "<table width=95% cellpadding=1 cellspacing=3>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Kanał: </td><td align=left>$row[1]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>CallerID: </td><td align=left>$row[3]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>IDRozmówcy: </td><td align=left>$row[3]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n";
 
 		$phone = eregi_replace(".*\<","",$row[3]);
@@ -315,14 +315,14 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_c=$row[11]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_d=$row[12]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_e=$row[13]";
-		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">CUSTOM</a> - \n";
+		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">UŻYTKOWNIKA</a> - \n";
 
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Numery wybrane: </td><td align=left>$row[8]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Wybierany numer: </td><td align=left>$row[8]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Notatki: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
-		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">Rozłącz</a> - \n";
-		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">Prześlij do poczty głosowej</a>\n";
+		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">ROZŁĄCZ</a> - \n";
+		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">PRZEŚLIJ DO MOJEJ POCZTY GŁOSOWEJ</a>\n";
 		echo "</span></td></tr>\n";
 		echo "</table>\n";
 

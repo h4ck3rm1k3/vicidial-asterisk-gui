@@ -121,7 +121,7 @@ echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
 
 
-	$stmt="SELECT count(*),channel_group, sum(length_in_sec) from call_log where extension='$extension' and server_ip='$server_ip' and start_time >= '$begin_date 0:00:01'  and start_time <= '$end_date 23:59:59' group by channel_group order by channel_group";
+	$stmt="SELECT count(*),channel_group, sum(length_in_sec) from call_log where extension='" . mysql_real_escape_string($extension) . "' and server_ip='" . mysql_real_escape_string($server_ip) . "' and start_time >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and start_time <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by channel_group order by channel_group";
 	$rslt=mysql_query($stmt, $link);
 	$statuses_to_print = mysql_num_rows($rslt);
 #	echo "|$stmt|\n";
@@ -160,7 +160,7 @@ echo "<tr><td><font size=2>CHANNEL GROUP </td><td align=right><font size=2>COUNT
 		$o++;
 	}
 
-	$stmt="SELECT sum(length_in_sec) from call_log where extension='$extension' and server_ip='$server_ip' and start_time >= '$begin_date 0:00:01'  and start_time <= '$end_date 23:59:59'";
+	$stmt="SELECT sum(length_in_sec) from call_log where extension='" . mysql_real_escape_string($extension) . "' and server_ip='" . mysql_real_escape_string($server_ip) . "' and start_time >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and start_time <= '" . mysql_real_escape_string($end_date) . " 23:59:59'";
 	$rslt=mysql_query($stmt, $link);
 	$counts_to_print = mysql_num_rows($rslt);
 		$row=mysql_fetch_row($rslt);
@@ -184,7 +184,7 @@ echo "<B>LAST 1000 CALLS FOR DATE RANGE:</B>\n";
 echo "<TABLE width=400 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>NUMBER </td><td><font size=2>CHANNEL GROUP </td><td align=right><font size=2> DATE</td><td align=right><font size=2> LENGTH(MIN.)</td></tr>\n";
 
-	$stmt="SELECT number_dialed,channel_group,start_time,length_in_min from call_log where extension='$extension' and server_ip='$server_ip' and start_time >= '$begin_date 0:00:01'  and start_time <= '$end_date 23:59:59' LIMIT 1000";
+	$stmt="SELECT number_dialed,channel_group,start_time,length_in_min from call_log where extension='" . mysql_real_escape_string($extension) . "' and server_ip='" . mysql_real_escape_string($server_ip) . "' and start_time >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and start_time <= '" . mysql_real_escape_string($end_date) . " 23:59:59' LIMIT 1000";
 	$rslt=mysql_query($stmt, $link);
 	$events_to_print = mysql_num_rows($rslt);
 #	echo "|$stmt|\n";

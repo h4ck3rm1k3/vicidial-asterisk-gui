@@ -2,6 +2,7 @@
 ### AST_timeonVDADall.php
 ### 
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Contributions by Magma Networks LLC <atarsha@magmanetworks.com>
 ###
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 # 
@@ -11,7 +12,10 @@
 # 60504-2023 - Modified click-to-listen for SIP phones by Angelito Manansala
 # 60619-1708 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
-#
+#			 - Added 10 minutes on call (Magma Networks LLC)
+#			 - Added extended pause (exceeding 60 seconds -> 20 minutes) (Magma Networks LLC)
+#			 - Added Full Name Field to extract from Database (Magma Networks LLC)
+#			 - Added Barge Link (Magma Networks LLC)
 header ("Content-type: text/html; charset=utf-8");
 
 require("dbconnect.php");
@@ -195,12 +199,31 @@ $agent_total=0;
 
 $Aecho = '';
 $Aecho .= "VF DIALER: Agents Time On Calls Kampagne: $group                      $NOW_TIME\n\n";
-$Aecho .= "+------------|--------+------------------+--------+-----------------+-----------------+---------+------------+\n";
-$Aecho .= "| STATION    | USER   |     SESSIONID    | STATUS | BEDIENERIP       | CALL BEDIENERIP  | MM:SS   | CAMPAIGN   |\n";
-$Aecho .= "+------------|--------+------------------+--------+-----------------+-----------------+---------+------------+\n";
+$Aecho .= "+------------|--------+-----------------+----------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+$Aecho .= "| STATION    | USER   | FULL NAME       | SESSIONID      | BARGE | STATUS | BEDIENERIP       | CALL BEDIENERIP  | MM:SS   | CAMPAIGN   |\n";
+$Aecho .= "+------------|--------+-----------------+----------------+-------+--------+-----------------+-----------------+---------+------------+\n";
 
 
-$stmt="select extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents where campaign_id='" . mysql_real_escape_string($group) . "' order by status,last_call_time;";
+$stmt="
+	select 
+		extension,
+		vicidial_live_agents.user,
+		conf_exten,
+		status,
+		server_ip,
+		UNIX_TIMESTAMP(last_call_time),
+		UNIX_TIMESTAMP(last_call_finish),
+		call_server_ip,
+		campaign_id,
+		vicidial_users.full_name as full_name
+	from vicidial_live_agents 
+	left join vicidial_users on vicidial_live_agents.user = vicidial_users.user
+	where 
+		campaign_id='" . mysql_real_escape_string($group) . "' 
+	order by 
+		status,
+		last_call_time;
+";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);
@@ -222,6 +245,8 @@ $talking_to_print = mysql_num_rows($rslt);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =		sprintf("%-10s", $row[8]);
+		$full_name =        sprintf("%-15s", $row[9]);
+			while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
 		$call_time_S = ($STARTtime - $row[5]);
 
 		$call_time_M = ($call_time_S / 60);
@@ -235,10 +260,10 @@ $talking_to_print = mysql_num_rows($rslt);
 		$call_time_MS =		sprintf("%7s", $call_time_MS);
 		$G = '';		$EG = '';
 		if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
-#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+#		if ($call_time_M_int >= 10) {$G='<SPAN class="red"><B>'; $EG='</B></SPAN>';}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 1) 
+			if ($call_time_M_int >= 20) 
 				{$i++; continue;} 
 			else
 				{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $agent_paused++;  $agent_total++;}
@@ -252,21 +277,21 @@ $talking_to_print = mysql_num_rows($rslt);
 		$sessionid = trim($sessionid);
 
 		$agentcount++;
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> |  $G$sessionid$EG <a href=\"sip:6$sessionid@$server_ip\">LISTEN</a>  | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$full_name$EG | $G$sessionid$EG <a href=\"sip:6$sessionid@$server_ip\">LISTEN</a> | <a href=\"sip:$sessionid@$server_ip\">BARGE</a> | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}
 
-		$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "+------------|--------+-----------------+----------------+--------+--------+-----------------+-----------------+---------+------------+\n";
 		$Aecho .= "  $agentcount agents logged in on all servers\n";
-		$Aecho .= "  NOTE: Click LISTERN to monitor agent call, you must have installed softphone on you machine.\n\n";
+		$Aecho .= "  NOTE: Click LISTEN to monitor agent call, you must have installed softphone on you machine.\n\n";
 
 
 		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Pausierte Mittel</B>\n";
 	#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - Balanced call</B>\n";
 		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - Agent waiting for call</B>\n";
 		$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - Over 5 minutes on call</B>\n";
-
+		$Aecho .= "  <SPAN class=\"red\"><B>          </SPAN> - Über 10 Minuten beim Anruf</B>\n";
 		if ($agent_ready > 0) {$B='<FONT class="b1">'; $BG='</FONT>';}
 		if ($agent_ready > 4) {$B='<FONT class="b2">'; $BG='</FONT>';}
 		if ($agent_ready > 9) {$B='<FONT class="b3">'; $BG='</FONT>';}

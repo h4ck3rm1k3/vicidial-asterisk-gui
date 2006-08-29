@@ -123,6 +123,7 @@
 # 60821-1628 - Added ALLFORCE recording option
 # 60821-1643 - Added no_delete_sessions option to not delete sessions
 # 60822-0512 - Changed phone number fields to be maxlength of 12
+# 60829-1531 - Made compatible with WeBRooTWritablE setting in dbconnect.php
 #
 
 require("dbconnect.php");
@@ -168,8 +169,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.96';
-$build = '60821-1643';
+$version = '2.0.97';
+$build = '60829-1531';
 
 if ($force_logout)
 {
@@ -416,7 +417,8 @@ exit;
 }
 else
 {
-$fp = fopen ("./vicidial_auth_entries.txt", "a");
+if ($WeBRooTWritablE > 0)
+	{$fp = fopen ("./vicidial_auth_entries.txt", "a");}
 $VDloginDISPLAY=0;
 
 	if ( (strlen($VD_login)<2) or (strlen($VD_pass)<2) or (strlen($VD_campaign)<2) )
@@ -449,9 +451,11 @@ $VDloginDISPLAY=0;
 		$VU_vicidial_recording=$row[7];
 		$VU_vicidial_transfers=$row[8];
 		$VU_closer_default_blended=$row[9];
-		fwrite ($fp, "vdweb|GOOD|$date|$VD_login|$VD_pass|$ip|$browser|$LOGfullname|\n");
-		fclose($fp);
-
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "vdweb|GOOD|$date|$VD_login|$VD_pass|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		$user_abb = "$VD_login$VD_login$VD_login$VD_login";
 		while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 			{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
@@ -621,8 +625,11 @@ $VDloginDISPLAY=0;
 		}
 	else
 		{
-		fwrite ($fp, "vdweb|FAIL|$date|$VD_login|$VD_pass|$ip|$browser|\n");
-		fclose($fp);
+		if ($WeBRooTWritablE > 0)
+			{
+			fwrite ($fp, "vdweb|FAIL|$date|$VD_login|$VD_pass|$ip|$browser|\n");
+			fclose($fp);
+			}
 		$VDloginDISPLAY=1;
 		$VDdisplayMESSAGE = "La conexión incorrecta, intentelo otra vez, por favor<BR>";
 		}
@@ -1033,8 +1040,8 @@ $CTODAY = date("Y-m");
 $CTODAYmday = date("j");
 $CINC=0;
 
-$Cmonths = Array('January','February','March','April','May','June',
-				'July','August','September','October','November','December');
+$Cmonths = Array('Enero','February','Marcha','Abril','Puede','Junio',
+				'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre');
 $Cdays = Array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 
 $CCAL_OUT = '';

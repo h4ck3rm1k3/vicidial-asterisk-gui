@@ -4,6 +4,11 @@
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # the purpose of this script and webpage is to allow for remote or local users of the system to log in and grab phone calls that are coming inbound into the Asterisk server and being put in the parked_channels table while they hear a soundfile for a limited amount of time before being forwarded on to either a set extension or a voicemail box. This gives remote or local agents a way to grab calls without tying up their phone lines all day. The agent sees the refreshing screen of calls on park and when they want to take one they just click on it, and a small window opens that will allow them to grab the call and/or look up more information on the caller through the callerID that is given(if available)
+# 
+# changes:
+# 60620-1343 - Added variable filtering to eliminate SQL injection attack threat
+#            - Added required user/pass to gain access to this page
+#
 
 require("dbconnect.php");
 
@@ -13,6 +18,8 @@ $PHP_SELF=$_SERVER['PHP_SELF'];
 $submit=$_GET["submit"];				if (!$submit) {$submit=$_POST["submit"];}
 $SUBMIT=$_GET["SUBMIT"];				if (!$SUBMIT) {$SUBMIT=$_POST["SUBMIT"];}
 
+$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");

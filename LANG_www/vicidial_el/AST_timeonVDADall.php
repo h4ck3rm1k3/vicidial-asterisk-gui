@@ -13,6 +13,7 @@
 # 60608-1539 - Fixed CLOSER tallies for active calls
 # 60619-1658 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 60626-1453 - Added display of system load to bottom (Angelito Manansala)
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -38,6 +39,46 @@ if (isset($_GET["ΕΠΙΒΕΒΑΙΩΣΗ"]))				{$ΕΠΙΒΕΒΑΙΩΣΗ=$_GET["�
 	elseif (isset($_POST["ΕΠΙΒΕΒΑΙΩΣΗ"]))		{$ΕΠΙΒΕΒΑΙΩΣΗ=$_POST["ΕΠΙΒΕΒΑΙΩΣΗ"];}
 
 if (!isset($group))   {$group='';}
+
+function get_server_load($windows = false) {
+$os = strtolower(PHP_OS);
+if(strpos($os, "win") === false) {
+if(file_exists("/proc/loadavg")) {
+$load = file_get_contents("/proc/loadavg");
+$load = explode(' ', $load);
+return $load[0];
+}
+elseif(function_exists("shell_exec")) {
+$load = explode(' ', `uptime`);
+return $load[count($load)-1];
+}
+else {
+return false;
+}
+}
+elseif($windows) {
+if(class_exists("COM")) {
+$wmi = new COM("WinMgmts:\\\\.");
+$cpus = $wmi->InstancesOf("Win32_Processor");
+
+$cpuload = 0;
+$i = 0;
+while ($cpu = $cpus->Next()) {
+$cpuload += $cpu->LoadPercentage;
+$i++;
+}
+
+$cpuload = round($cpuload / $i, 2);
+return "$cpuload%";
+}
+else {
+return false;
+}
+}
+}
+
+$load_ave = get_server_load(true);
+
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -139,10 +180,11 @@ echo "\n\n";
 if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FORM>\n"; exit;}
 else
 {
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $HOPlev = $row[8];
+$DIALmethod = $row[9];
 
 echo "<BR><table cellpadding=0 cellspacing=0><TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[0]&nbsp; &nbsp; </TD>";
@@ -156,13 +198,21 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
 
-$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct,differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
 $callsTODAY = $row[1];
 $dropsTODAY = $row[2];
 $drpctTODAY = $row[3];
+$diffONEMIN = $row[4];
+$agentsONEMIN = $row[5];
+if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
+	{
+	$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
+	$diffpctONEMIN = sprintf("%01.2f", $diffpctONEMIN);
+	}
+else {$diffpctONEMIN = '0.00';}
 
 echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
@@ -175,6 +225,13 @@ echo "<TD ALIGN=RIGHT><font size=2><B>CALLS TODAY:</B></TD><TD ALIGN=LEFT><font 
 echo "<TD ALIGN=RIGHT><font size=2><B>CALLS DROPPED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY% &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=CENTER COLSPAN=2><font size=2> &nbsp; $NOW_TIME </TD>";
+echo "</TR>";
+echo "<TR>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIAL METHOD:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>AVG AGENTS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
+
 echo "</TR></TABLE>";
 
 
@@ -295,7 +352,7 @@ $talking_to_print = mysql_num_rows($rslt);
 #		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 1) 
+			if ($call_time_M_int >= 5) 
 				{$i++; continue;} 
 			else
 				{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $agent_paused++;  $agent_total++;}
@@ -314,7 +371,8 @@ $talking_to_print = mysql_num_rows($rslt);
 		}
 
 		$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
-		$Aecho .= "  $agentcount agents logged in on all servers\n\n";
+		$Aecho .= "  $agentcount agents logged in on all servers\n";
+		$Aecho .= "  System Load Average: $load_ave\n\n";
 
 		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Χειριστές σε παύση</B>\n";
 	#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - Balanced call</B>\n";

@@ -142,7 +142,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy Nazwa użytkownika/Hasło: |$user|$pass|\n";
+    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
     exit;
 	}
   else
@@ -176,14 +176,14 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     BUILD: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
-echo "<title>Manager Send: ";
+echo "<!-- WERSJA: $version     KOMPILACJA: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
+echo "<title>Wyślij do zarządzania: ";
 if ($ACTION=="Originate")		{echo "Originate";}
 if ($ACTION=="Redirect")		{echo "Redirect";}
 if ($ACTION=="RedirectName")	{echo "RedirectName";}
 if ($ACTION=="Hangup")			{echo "Hangup";}
 if ($ACTION=="Command")			{echo "Command";}
-if ($ACTION==99999)	{echo "Pomoc";}
+if ($ACTION==99999)	{echo "POMOC";}
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -200,7 +200,7 @@ if ($ACTION=="SysCIDOriginate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wprowadzona\n";
+		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -277,7 +277,7 @@ if ($ACTION=="Originate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<10) )
 	{
-		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wprowadzona\n";
+		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -304,7 +304,7 @@ if ($ACTION=="HangupConfDial")
 	if ( (strlen($exten)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) )
 	{
 		$channel_live=0;
-		echo "conference $exten nie jest prawidłowy or ext_context $ext_context or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wprowadzona\n";
+		echo "conference $exten nie jest prawidłowy or ext_context $ext_context or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -341,7 +341,7 @@ if ($ACTION=="Hangup")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
 	{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wprowadzona\n";
+		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -380,7 +380,7 @@ if ($ACTION=="Hangup")
 				if ($row[0]==0)
 				{
 				$channel_live=0;
-				echo "Kanał $channel nie jest aktywna na $call_server_ip, Hangup komenda nie wprowadzona $rowx[0]\n$stmt\n";
+				echo "Kanał $channel nie jest aktywna na $call_server_ip, Hangup komenda nie wstawiona $rowx[0]\n$stmt\n";
 				}
 				else
 				{
@@ -426,13 +426,13 @@ if ($ACTION=="RedirectVD")
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
 			if (eregi("CLOSER",$campaign))
 				{
-				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
+				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRANSFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}
 			if ($auto_dial_level < 1)
 				{
-				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
+				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRANSFER' where uniqueid='$uniqueid';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -587,7 +587,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wprowadzona\n";
+				echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -603,7 +603,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wprowadzona\n";
+				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -615,7 +615,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0] < 1)
 			{
 				$channel_liveY=0;
-				echo "No Local agent to send call to, Redirect komenda nie wprowadzona\n";
+				echo "No Local agent to send call to, Redirect komenda nie wstawiona\n";
 			}	
 			else
 			{
@@ -701,7 +701,7 @@ if ($ACTION=="RedirectXtra")
 				else
 				{
 				$channel_liveX=0;
-				echo "Nie mogę znaleźć wolnej konferencji na $server_ip, Redirect komenda nie wprowadzona\n";
+				echo "Nie mogę znaleźć wolnej konferencji na $server_ip, Redirect komenda nie wstawiona\n";
 				}
 			}
 
@@ -720,7 +720,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wprowadzona\n";
+					echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -736,7 +736,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wprowadzona\n";
+					echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -818,7 +818,7 @@ if ($ACTION=="Redirect")
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wprowadzona\n";
+				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -849,7 +849,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wprowadzona\n";
+		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -866,7 +866,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, $ACTION komenda nie wprowadzona\n";
+				echo "Kanał $channel nie jest aktywna na $server_ip, $ACTION komenda nie wstawiona\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -928,7 +928,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or exten $exten nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wprowadzona\n";
+		echo "Kanał $channel nie jest prawidłowy or exten $exten nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wstawiona\n";
 	}
 	else
 	{
@@ -992,7 +992,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION komenda wysłana do Kanał $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n Nagrywanie zakończy się po 60 minutach\n";
+		echo "$ACTION komenda wysłana do Kanał $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n NAGRYWANIE BĘDZIE TRWAĆ MAKSYMALNIE 60 MINUT\n";
 	}
 }
 
