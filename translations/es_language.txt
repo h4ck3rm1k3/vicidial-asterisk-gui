@@ -401,3 +401,16 @@ This option if checked will attempt to find the phone number in the system befor
 Finish Wrapup and Move On|Final Wrapup y movimiento encendido|
 seconds remaining in wrapup|segundos restantes en wrapup|
 Call Wrapup:|Llamada Wrapup:|
+### months of the year for CallBack date select screen ###
+January|Enero|
+Frebruary|Febrero|
+March|Marcha|
+April|Abril|
+May|Puede|
+June|Junio|
+July|Julio|
+August|Agosto|
+September|Septiembre|
+October|Octubre|
+November|Noviembre|
+December|Diciembre|

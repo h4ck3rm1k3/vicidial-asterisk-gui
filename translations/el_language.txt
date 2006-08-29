@@ -399,3 +399,16 @@ This option if checked will attempt to find the phone number in the system befor
 Finish Wrapup and Move On|Τελείωμα Τυλίγματος και προχωράει|
 seconds remaining in wrapup|απομύνοντα δευτερόλεπτα σε τύλιγμα|
 Call Wrapup:|Τύλιγμα Κλήσης:|
+### months of the year for CallBack date select screen ###
+January|Φεβρουάριος|
+Frebruary|Ιανουαρίου|
+March|Μάρτιος|
+April|Απρίλιος|
+May|Μάιος|
+June|Ιούνιος|
+July|Ιούλιος|
+August|Αύγουστος|
+September|Σεπτέμβριος|
+October|Οκτώβριος|
+November|Νοέμβριος|
+December|Δεκέμβριος|

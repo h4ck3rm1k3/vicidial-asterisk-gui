@@ -399,3 +399,16 @@ This option if checked will attempt to find the phone number in the system befor
 Finish Wrapup and Move On|Revestimento Wrapup e movimento sobre|
 seconds remaining in wrapup|segundos restantes no wrapup|
 Call Wrapup:|Chamada Wrapup:|
+### months of the year for CallBack date select screen ###
+January|Janeiro|
+Frebruary|Fevereiro|
+March|Março|
+April|Abril|
+May|Pode|
+June|Junho|
+July|Julho|
+August|Agosto|
+September|Setembro|
+October|Outubro|
+November|Novembro|
+December|Dezembro|
