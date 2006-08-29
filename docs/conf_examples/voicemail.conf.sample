@@ -1,0 +1,22 @@
+; /etc/asterisk/voicemail.conf:
+; This is the sample voicemail configuration file
+
+[general]
+format=wav49|gsm|wav
+serveremail=asterisk
+attach=yes
+skipms=3000
+maxsilence=10
+silencethreshold=128
+maxlogins=3
+
+[zonemessages]
+eastern=America/New_York|'vm-received' Q 'digits/at' IMp
+central=America/Chicago|'vm-received' Q 'digits/at' IMp
+central24=America/Chicago|'vm-received' q 'digits/at' H 'digits/hundred' M 'hours'
+
+[default]
+102 => 102,Grandstream Mailbox,root@localhost
+2000 => 2000,Sipura Mailbox 1
+2001 => 2001,Sipura Mailbox 2
+3001 => 3001,Firefly Mailbox 1

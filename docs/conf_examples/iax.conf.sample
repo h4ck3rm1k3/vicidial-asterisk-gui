@@ -1,0 +1,46 @@
+; /etc/asterisk/iax.conf:
+; Here is an example of a configuration where there is one IAX phone, one IAX 
+; server as a friend and one IAX trunk from a service provider (binfone.com)
+
+[general]
+bindport=4569
+iaxcompat=yes
+bandwidth=high
+allow=all
+allow=gsm                      ; Always allow GSM, it's cool :)
+jitterbuffer=no
+tos=lowdelay
+
+register => 1112223333:PASSWORD@iax.binfone.com
+
+[1112223333]
+auth=md5
+type=friend
+username=1112223333
+secret=PASSWORD
+host=iax.binfone.com
+context=incoming-IAX-context-in-extensions.conf
+
+[ASTtest2]
+type=friend
+accountcode=IAXtrunk2
+context=default
+auth=plaintext
+host=dynamic
+permit=0.0.0.0/0.0.0.0
+secret=test
+disallow=all
+allow=ulaw
+qualify=yes
+
+[firefly01]
+type=friend
+accountcode=firefly01
+context=default
+auth=plaintext
+host=dynamic
+permit=0.0.0.0/0.0.0.0
+secret=test
+disallow=all
+allow=gsm
+qualify=yes

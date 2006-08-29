@@ -1,0 +1,61 @@
+; /etc/asterisk/sip.conf:
+; Here is an example of a configuration where there are three SIP phones 
+; and one SIP trunk connected
+
+[general]
+port = 5060
+bindaddr = 0.0.0.0
+context = default
+; register SIP account on remote machine if using SIP trunks
+; register => testSIPtrunk:test@10.10.10.16:5060
+;
+; setup account for SIP trunking:
+; [SIPtrunk]
+; disallow=all
+; allow=ulaw
+; allow=alaw
+; type=friend
+; username=testSIPtrunk
+; secret=test
+; host=10.10.10.16
+; dtmfmode=inband
+; qualify=1000
+
+[gs102]
+disallow=all
+allow=ulaw
+allow=alaw
+type=friend
+username=gs102
+secret=test
+host=dynamic
+dtmfmode=inband
+defaultip=10.10.10.16
+qualify=1000
+mailbox=102
+
+[spa2000]
+disallow=all
+allow=ulaw
+allow=alaw
+type=friend
+username=spa2000
+secret=test
+host=dynamic
+dtmfmode=inband
+defaultip=10.10.10.17
+qualify=1000
+mailbox=2000
+
+[spa2001]
+disallow=all
+allow=ulaw
+allow=alaw
+type=friend
+username=spa2001
+secret=test
+host=dynamic
+dtmfmode=inband
+defaultip=10.10.10.17
+qualify=1000
+mailbox=2001

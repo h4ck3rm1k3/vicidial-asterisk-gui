@@ -1,0 +1,537 @@
+; /etc/asterisk/meetme.conf:
+; This is the sample meetme conferencing configuration file
+
+[general]
+static=yes
+writeprotect=no
+
+[globals]
+CONSOLE=Console/dsp                             ; Console interface for demo
+TRUNK=Zap/g1                                    ; Trunk interface
+TRUNKX=Zap/g2					; 2nd trunk interface
+TRUNKIAX=IAX2/ASTtest1:test@10.10.10.16:4569	; IAX trunk interface
+TRUNKIAX1=IAX2/ASTtest1:test@10.10.10.16:4569	; IAX trunk interface
+TRUNKBINFONE=IAX2/1112223333:PASSWORD@iax.binfone.com	; IAX trunk interface
+SIPtrunk=SIP/1234:PASSWORD@sip.provider.net	; SIP trunk
+
+[default]
+; Extension 8600 + 8601 conference rooms
+exten => 8600,1,Meetme,8600
+exten => 8601,1,Meetme,8601
+
+; Extension 102 - Grandstream hardphone
+exten => 102,1,Playback,transfer|skip     ; "Please hold while..."
+exten => 102,2,Dial,sip/gs102|20|to       ; Ring, 20 secs max
+exten => 102,3,Voicemail,u102             ; Send to voicemail...
+; Extension 2000 Sipura line 1
+exten => 2000,1,Dial,sip/spa2000|30|to    ; Ring, 30 secs max
+exten => 2000,2,Voicemail,u2000           ; Send to voicemail...
+; Extension 2001 Sipura line 2
+exten => 2001,1,Dial,sip/spa2001|30|to    ; Ring, 30 secs max
+exten => 2001,2,Voicemail,u2001           ; Send to voicemail...
+; Extension 2020 rings both sipura lines
+exten => 2001,1,Dial,sip/spa2000&sip/spa2001|30|to    ; Ring, 30 secs max
+exten => 2001,2,Voicemail,u2000           ; Send to voicemail...
+; Extension 301 rings the firefly softphone
+exten => 301,1,Dial,(IAX2/firefly01@firefly01/s)
+exten => 301,2,Hangup
+
+; # timeout invalid rules
+exten => #,1,Playback(invalid)              ; "Thanks for trying the demo"
+exten => #,2,Hangup                     ; Hang them up.
+exten => t,1,Goto(#,1)                  ; If they take too long, give up
+exten => i,1,Playback(invalid)          ; "That's not valid, try again"
+
+; Give voicemail at extension 8500
+exten => 8500,1,VoicemailMain
+exten => 8500,2,Goto(s,6)
+
+; ASTERISK AGENTS LOGINS FOR QUEUES (NOT part of VICIDIAL)
+; the following assumes phone agent login and exten are 3 digits and the same
+; also assumes that 3-digit login is present in agents.conf and queueus.conf
+;Agent Logout then stay onhook, DIAL 54 + 3-digit ID
+exten => _54XXX,1,AgentCallbackLogin(||)
+; the following are used to login and logout of Asterisk Queues from phone
+;Agent Login then stay offhook on the phone, DIAL 55 + 3-digit ID
+exten => _55XXX,1,AgentLogin(${EXTEN:1})
+;Agent Login then stay onhook, phones will ring, DIAL 56 + 3-digit ID
+exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
+
+; Extension 4001 rings Zap phone
+exten => 4001,1,Dial,Zap/1|30|		; ring Zap device 1
+exten => 4001,2,Voicemail,u4001         ; Send to voicemail...
+
+exten => h,1,DeadAGI(call_log.agi,${EXTEN}) ; DeadAGI is new
+exten => h,2,DeadAGI(VD_hangup.agi,PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+; Extension 3429 - Inbound 800 number (1-800-555-3429)
+exten => _**3429,1,Ringing
+exten => _**3429,2,AGI(call_log.agi,${EXTEN})
+exten => _**3429,3,Answer
+exten => _**3429,4,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _**3429,5,Voicemail,u2000           
+; Extension 3429 - with ANI [callerID]
+exten => _*NXXNXXXXXX*3429,1,Ringing
+exten => _*NXXNXXXXXX*3429,2,AGI(call_log.agi,${EXTEN})
+exten => _*NXXNXXXXXX*3429,3,Answer
+exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000           
+
+; Inbound call from BINFONE
+; exten => 1112223333,1,AGI(call_log.agi,${EXTEN})
+; exten => 1112223333,2,Dial(sip/gs102,55,o)
+; exten => 1112223333,3,Hangup
+
+; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
+exten => 7275551212,1,Ringing
+exten => 7275551212,2,Wait(1)
+exten => 7275551212,3,AGI(call_logCID.agi,${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
+exten => 7275551212,4,Answer
+exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001|30|to
+exten => 7275551212,6,Voicemail,u2000
+
+; dial a long distance outbound number to the UK
+exten => _901144XXXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _901144XXXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},55,tTo)
+exten => _901144XXXXXXXXXX,3,Hangup
+
+; dial a long distance outbound number to Australia
+exten => _901161XXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
+exten => _901161XXXXXXXXX,3,Hangup
+
+; dial an 800 outbound number
+exten => _91800NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91800NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
+exten => _91800NXXXXXX,3,Hangup
+exten => _91888NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91888NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
+exten => _91888NXXXXXX,3,Hangup
+exten => _91877NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91877NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
+exten => _91877NXXXXXX,3,Hangup
+exten => _91866NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91866NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
+exten => _91866NXXXXXX,3,Hangup
+
+; dial a local 727 outbound number with area code
+exten => _9727NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,tTo)
+exten => _9727NXXXXXX,3,Hangup
+
+; dial a local 813 outbound number with area code
+exten => _9813NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
+exten => _9813NXXXXXX,3,Hangup
+
+; dial a long distance outbound number
+exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
+exten => _91NXXNXXXXXX,3,Hangup
+; dial a long distance outbound number through BINFONE
+; exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+; exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
+; exten => _91NXXNXXXXXX,3,Hangup
+; dial a long distance outbound number through a SIP provider
+; exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
+; exten => _91NXXNXXXXXX,3,Hangup
+
+; dial a local outbound number (modified because of only LD T1)
+exten => _9NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,tTo)
+exten => _9NXXXXXX,3,Hangup
+
+; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
+; 1. the extension of the phone to ring as defined in the asterisk.phones table
+; 2. the phone number that was called, for the live_inbound/_log entry
+; 3. a text description of the number that was called in
+; 4-7. optional fields, they are also passed as fields in the GUI to web browser
+
+; Extension 3429 - Inbound 800 number (1-800-555-3429)
+exten => _**3429,1,Ringing
+exten => _**3429,2,AGI(call_log.agi,${EXTEN})
+exten => _**3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
+exten => _**3429,4,Answer
+exten => _**3429,5,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _**3429,6,Voicemail,u2000
+; Extension 3429 - with ANI [callerID]
+exten => _*NXXNXXXXXX*3429,1,Ringing
+exten => _*NXXNXXXXXX*3429,2,AGI(call_log.agi,${EXTEN})
+exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
+exten => _*NXXNXXXXXX*3429,3,Answer
+exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
+
+exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+
+; ### server 2 extens:
+; exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+; exten => _010*010*010*016*8600XXX,2,Hangup
+; exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+; exten => _010*010*010*016*8600XXX*.,2,Hangup
+
+
+; parameters for agi-VDADcloser.agi (2 fields separated by five dashes "-----"):
+; 1. the full extension formatted by VICIDIAL for internal transfers * separated
+; 2. the word START to denote the beginning of the acceptance of the transfer
+; inbound VICIDIAL transfer calls [can arrive through PRI T1 crossover or IAX channel]
+exten => _90009.,1,Answer                  ; Answer the line
+exten => _90009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
+exten => _90009.,3,Hangup
+
+; parameters for agi-VDADcloser_inbound....agi (7 fields separated by five dashes "-----"):
+; 1. the full name of the IN GROUP to be used in vicidial for the inbound call
+; 2. the phone number that was called, for the log entry
+; 3. the callerID or lead_id of the person that called(usually overridden)
+; 4. the park extension audio file name if used
+; 5. the status of the call initially(usually not used)
+; 6. the list_id to insert the new lead under if it is new (and callerID available)
+; 7. the phone dialing code to insert with the new lead if new (and callerID available)
+
+; inbound VICIDIAL call with CID delivery through T1 PRI
+exten => 1234,1,Ringing                 ; call ringing
+exten => 1234,2,Wait(1)                 ; Wait 1 second for CID delivery from PRI
+exten => 1234,3,Answer                  ; Answer the line
+exten => 1234,4,AGI(agi-VDADcloser_inboundCID.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
+exten => 1234,5,Hangup
+
+; inbound VICIDIAL call with ANI delivery through robbed-bit T1 (*NXXNXXXXXX*DNIS)
+exten => 1234,1,Answer                  ; Answer the line
+exten => 1234,2,AGI(agi-VDADcloser_inboundANI.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
+exten => 1234,3,Hangup
+
+; inbound VICIDIAL call with prompt for 4-digit fronter code
+exten => 1234,1,Answer                  ; Answer the line
+exten => 1234,2,AGI(agi-VDADcloser_inbound.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
+exten => 1234,3,Hangup
+
+; barge monitoring extension
+exten => 8159,1,ZapBarge
+exten => 8159,2,Hangup
+
+; ZapBarge direct channel extensions
+exten => 8612001,1,ZapBarge(1)
+exten => 8612002,1,ZapBarge(2)
+exten => 8612003,1,ZapBarge(3)
+exten => 8612004,1,ZapBarge(4)
+exten => 8612005,1,ZapBarge(5)
+exten => 8612006,1,ZapBarge(6)
+exten => 8612007,1,ZapBarge(7)
+exten => 8612008,1,ZapBarge(8)
+exten => 8612009,1,ZapBarge(9)
+exten => 8612010,1,ZapBarge(10)
+exten => 8612011,1,ZapBarge(11)
+exten => 8612012,1,ZapBarge(12)
+exten => 8612013,1,ZapBarge(13)
+exten => 8612014,1,ZapBarge(14)
+exten => 8612015,1,ZapBarge(15)
+exten => 8612016,1,ZapBarge(16)
+exten => 8612017,1,ZapBarge(17)
+exten => 8612018,1,ZapBarge(18)
+exten => 8612019,1,ZapBarge(19)
+exten => 8612020,1,ZapBarge(20)
+exten => 8612021,1,ZapBarge(21)
+exten => 8612022,1,ZapBarge(22)
+exten => 8612023,1,ZapBarge(23)
+exten => 8612024,1,ZapBarge(24)
+
+; astGUIclient conferences
+exten => 8600011,1,Meetme,8600011|q
+exten => 8600012,1,Meetme,8600012|q
+exten => 8600013,1,Meetme,8600013|q
+exten => 8600014,1,Meetme,8600014|q
+exten => 8600015,1,Meetme,8600015|q
+exten => 8600016,1,Meetme,8600016|q
+exten => 8600017,1,Meetme,8600017|q
+exten => 8600018,1,Meetme,8600018|q
+exten => 8600019,1,Meetme,8600019|q
+exten => 8600020,1,Meetme,8600020|q
+exten => 8600021,1,Meetme,8600021|q
+exten => 8600022,1,Meetme,8600022|q
+exten => 8600023,1,Meetme,8600023|q
+exten => 8600024,1,Meetme,8600024|q
+exten => 8600025,1,Meetme,8600025|q
+exten => 8600026,1,Meetme,8600026|q
+exten => 8600027,1,Meetme,8600027|q
+exten => 8600028,1,Meetme,8600028|q
+exten => 8600029,1,Meetme,8600029|q
+
+; VICIDIAL conferences
+exten => 8600051,1,Meetme,8600051
+exten => 8600052,1,Meetme,8600052
+exten => 8600053,1,Meetme,8600053
+exten => 8600054,1,Meetme,8600054
+exten => 8600055,1,Meetme,8600055
+exten => 8600056,1,Meetme,8600056
+exten => 8600057,1,Meetme,8600057
+exten => 8600058,1,Meetme,8600058
+exten => 8600059,1,Meetme,8600059
+exten => 8600060,1,Meetme,8600060
+exten => 8600061,1,Meetme,8600061
+exten => 8600062,1,Meetme,8600062
+exten => 8600063,1,Meetme,8600063
+exten => 8600064,1,Meetme,8600064
+exten => 8600065,1,Meetme,8600065
+exten => 8600066,1,Meetme,8600066
+exten => 8600067,1,Meetme,8600067
+exten => 8600068,1,Meetme,8600068
+exten => 8600069,1,Meetme,8600069
+exten => 8600070,1,Meetme,8600070
+exten => 8600071,1,Meetme,8600071
+exten => 8600072,1,Meetme,8600072
+exten => 8600073,1,Meetme,8600073
+exten => 8600074,1,Meetme,8600074
+exten => 8600075,1,Meetme,8600075
+exten => 8600076,1,Meetme,8600076
+exten => 8600077,1,Meetme,8600077
+exten => 8600078,1,Meetme,8600078
+exten => 8600079,1,Meetme,8600079
+exten => 8600080,1,Meetme,8600080
+exten => 8600081,1,Meetme,8600081
+exten => 8600082,1,Meetme,8600082
+exten => 8600083,1,Meetme,8600083
+exten => 8600084,1,Meetme,8600084
+exten => 8600085,1,Meetme,8600085
+exten => 8600086,1,Meetme,8600086
+exten => 8600087,1,Meetme,8600087
+exten => 8600088,1,Meetme,8600088
+exten => 8600089,1,Meetme,8600089
+exten => 8600090,1,Meetme,8600090
+exten => 8600091,1,Meetme,8600091
+exten => 8600092,1,Meetme,8600092
+exten => 8600093,1,Meetme,8600093
+exten => 8600094,1,Meetme,8600094
+exten => 8600095,1,Meetme,8600095
+exten => 8600096,1,Meetme,8600096
+exten => 8600097,1,Meetme,8600097
+exten => 8600098,1,Meetme,8600098
+exten => 8600099,1,Meetme,8600099
+exten => 8600100,1,Meetme,8600100
+; quiet entry and leaving conferences for VICIDIAL
+exten => 78600051,1,Meetme,8600051|q
+exten => 78600052,1,Meetme,8600052|q
+exten => 78600053,1,Meetme,8600053|q
+exten => 78600054,1,Meetme,8600054|q
+exten => 78600055,1,Meetme,8600055|q
+exten => 78600056,1,Meetme,8600056|q
+exten => 78600057,1,Meetme,8600057|q
+exten => 78600058,1,Meetme,8600058|q
+exten => 78600059,1,Meetme,8600059|q
+exten => 78600060,1,Meetme,8600060|q
+exten => 78600061,1,Meetme,8600061|q
+exten => 78600062,1,Meetme,8600062|q
+exten => 78600063,1,Meetme,8600063|q
+exten => 78600064,1,Meetme,8600064|q
+exten => 78600065,1,Meetme,8600065|q
+exten => 78600066,1,Meetme,8600066|q
+exten => 78600067,1,Meetme,8600067|q
+exten => 78600068,1,Meetme,8600068|q
+exten => 78600069,1,Meetme,8600069|q
+exten => 78600070,1,Meetme,8600070|q
+exten => 78600071,1,Meetme,8600071|q
+exten => 78600072,1,Meetme,8600072|q
+exten => 78600073,1,Meetme,8600073|q
+exten => 78600074,1,Meetme,8600074|q
+exten => 78600075,1,Meetme,8600075|q
+exten => 78600076,1,Meetme,8600076|q
+exten => 78600077,1,Meetme,8600077|q
+exten => 78600078,1,Meetme,8600078|q
+exten => 78600079,1,Meetme,8600079|q
+exten => 78600080,1,Meetme,8600080|q
+exten => 78600081,1,Meetme,8600081|q
+exten => 78600082,1,Meetme,8600082|q
+exten => 78600083,1,Meetme,8600083|q
+exten => 78600084,1,Meetme,8600084|q
+exten => 78600085,1,Meetme,8600085|q
+exten => 78600086,1,Meetme,8600086|q
+exten => 78600087,1,Meetme,8600087|q
+exten => 78600088,1,Meetme,8600088|q
+exten => 78600089,1,Meetme,8600089|q
+exten => 78600090,1,Meetme,8600090|q
+exten => 78600091,1,Meetme,8600091|q
+exten => 78600092,1,Meetme,8600092|q
+exten => 78600093,1,Meetme,8600093|q
+exten => 78600094,1,Meetme,8600094|q
+exten => 78600095,1,Meetme,8600095|q
+exten => 78600096,1,Meetme,8600096|q
+exten => 78600097,1,Meetme,8600097|q
+exten => 78600098,1,Meetme,8600098|q
+exten => 78600099,1,Meetme,8600099|q
+exten => 78600100,1,Meetme,8600100|q
+; quiet monitor extensions for meetme rooms (for room managers)
+exten => 68600051,1,Meetme,8600051|mq
+exten => 68600052,1,Meetme,8600052|mq
+exten => 68600053,1,Meetme,8600053|mq
+exten => 68600054,1,Meetme,8600054|mq
+exten => 68600055,1,Meetme,8600055|mq
+exten => 68600056,1,Meetme,8600056|mq
+exten => 68600057,1,Meetme,8600057|mq
+exten => 68600058,1,Meetme,8600058|mq
+exten => 68600059,1,Meetme,8600059|mq
+exten => 68600060,1,Meetme,8600060|mq
+exten => 68600061,1,Meetme,8600061|mq
+exten => 68600062,1,Meetme,8600062|mq
+exten => 68600063,1,Meetme,8600063|mq
+exten => 68600064,1,Meetme,8600064|mq
+exten => 68600065,1,Meetme,8600065|mq
+exten => 68600066,1,Meetme,8600066|mq
+exten => 68600067,1,Meetme,8600067|mq
+exten => 68600068,1,Meetme,8600068|mq
+exten => 68600069,1,Meetme,8600069|mq
+exten => 68600070,1,Meetme,8600070|mq
+exten => 68600071,1,Meetme,8600071|mq
+exten => 68600072,1,Meetme,8600072|mq
+exten => 68600073,1,Meetme,8600073|mq
+exten => 68600074,1,Meetme,8600074|mq
+exten => 68600075,1,Meetme,8600075|mq
+exten => 68600076,1,Meetme,8600076|mq
+exten => 68600077,1,Meetme,8600077|mq
+exten => 68600078,1,Meetme,8600078|mq
+exten => 68600079,1,Meetme,8600079|mq
+exten => 68600080,1,Meetme,8600080|mq
+exten => 68600081,1,Meetme,8600081|mq
+exten => 68600082,1,Meetme,8600082|mq
+exten => 68600083,1,Meetme,8600083|mq
+exten => 68600084,1,Meetme,8600084|mq
+exten => 68600085,1,Meetme,8600085|mq
+exten => 68600086,1,Meetme,8600086|mq
+exten => 68600087,1,Meetme,8600087|mq
+exten => 68600088,1,Meetme,8600088|mq
+exten => 68600089,1,Meetme,8600089|mq
+exten => 68600090,1,Meetme,8600090|mq
+exten => 68600091,1,Meetme,8600091|mq
+exten => 68600092,1,Meetme,8600092|mq
+exten => 68600093,1,Meetme,8600093|mq
+exten => 68600094,1,Meetme,8600094|mq
+exten => 68600095,1,Meetme,8600095|mq
+exten => 68600096,1,Meetme,8600096|mq
+exten => 68600097,1,Meetme,8600097|mq
+exten => 68600098,1,Meetme,8600098|mq
+exten => 68600099,1,Meetme,8600099|mq
+exten => 68600100,1,Meetme,8600100|mq
+
+; park channel for client GUI parking, hangup after 30 minutes
+;    create a GSM formatted audio file named "park.gsm" that is 30 minutes long
+;    and put it in /var/lib/asterisk/sounds
+exten => 8301,1,Answer
+exten => 8301,2,AGI(park_CID.agi)
+exten => 8301,3,Playback(park)
+exten => 8301,4,Hangup 
+exten => 8303,1,Answer
+exten => 8303,2,AGI(park_CID.agi)
+exten => 8303,3,Playback(conf)
+exten => 8303,4,Hangup 
+
+; park channel for client GUI conferencing, hangup after 30 minutes
+;    create a GSM formatted audio file named "conf.gsm" that is 30 minutes long
+;    and put it in /var/lib/asterisk/sounds
+exten => 8302,1,Answer
+exten => 8302,2,Playback(conf)
+exten => 8302,3,Hangup
+
+; default audio for safe harbor 2-second-after-hello message then hangup
+;    create a GSM formatted audio file complies with safe harbor rules
+;    and put it in /var/lib/asterisk/sounds then change filename below
+exten => 8307,1,Answer
+exten => 8307,2,Playback(vm-goodbye)
+exten => 8307,3,Hangup
+
+; this is used for recording conference calls, the client app sends the filename
+;    value as a callerID recordings go to /var/spool/asterisk/monitor (WAV)
+exten => 8309,1,Answer
+exten => 8309,2,Monitor(wav,${CALLERIDNAME})
+exten => 8309,3,Wait,3600
+exten => 8309,4,Hangup
+
+; this is used for recording conference calls, the client app sends the filename
+;    value as a callerID recordings go to /var/spool/asterisk/monitor (GSM)
+exten => 8310,1,Answer
+exten => 8310,2,Monitor(gsm,${CALLERIDNAME})
+exten => 8310,3,Wait,3600
+exten => 8310,4,Hangup
+
+; this is used for playing a message to an answering machine forwarded from AMD in VICIDIAL
+;    replace conf with the message file you want to leave
+exten => 8320,1,WaitForSilence(2000,2) ; AMD got machine.  leave message after recording
+exten => 8320,2,Playback(conf)
+exten => 8320,3,AGI(VD_amd_post.agi,${EXTEN})
+exten => 8320,4,Hangup
+
+; this is used to allow the GUI to send you directly into voicemail
+;     don't forget to set GUI variable $voicemail_exten to this extension
+exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
+exten => 8501,2,Hangup
+
+; this is used to allow the GUI to send live calls directly into voicemail
+;     don't forget to set GUI variable $voicemail_dump_exten to this extension
+exten => _85026666666666.,1,Wait(2)
+exten => _85026666666666.,2,Voicemail(${EXTEN:14})
+exten => _85026666666666.,3,Hangup
+
+; this is used for sending DTMF signals within conference calls, the client app
+;    sends the digits to be played in the callerID field
+;    sound files must be placed in /var/lib/asterisk/sounds
+exten => 8500998,1,Answer
+exten => 8500998,2,Playback(silence)
+exten => 8500998,3,AGI(agi-dtmf.agi)
+exten => 8500998,4,Hangup
+
+; prompt recording AGI script, ID is 4321
+exten => 8168,1,Answer
+exten => 8168,2,AGI(agi-record_prompts.agi)
+exten => 8168,3,Hangup
+
+; playback of recorded prompts
+exten => _851XXXXX,1,Answer
+exten => _851XXXXX,2,Playback(${EXTEN})
+exten => _851XXXXX,3,Hangup
+
+; VICIDIAL_auto_dialer transfer script:
+exten => 8365,1,AGI(call_log.agi,${EXTEN})
+exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
+exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
+exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
+exten => 8365,5,Hangup
+
+; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
+exten => 8366,1,AGI(call_log.agi,${EXTEN})
+exten => 8366,2,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
+exten => 8366,3,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
+exten => 8366,4,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
+exten => 8366,5,Hangup
+
+; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
+exten => 8367,1,AGI(call_log.agi,${EXTEN})
+exten => 8367,2,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+exten => 8367,5,Hangup
+
+; VICIDIAL_auto_dialer transfer script Load Balanced:
+exten => 8368,1,AGI(call_log.agi,${EXTEN})
+exten => 8368,2,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8368,5,Hangup
+
+; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
+exten => 8369,1,AGI(call_log.agi,${EXTEN})
+exten => 8369,2,AMD(3500|1500|300|5000|120|50|5|256)
+exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
+exten => 8369,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8369,7,Hangup
+
+; VICIDIAL auto-dial reminder script
+exten => 8372,1,AGI(call_log.agi,${EXTEN})
+exten => 8372,2,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
+exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
+exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
+exten => 8372,5,Hangup
+
+
+

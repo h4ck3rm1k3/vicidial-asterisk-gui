@@ -1038,8 +1038,7 @@ we have set up:
 	[zonemessages]
 	eastern=America/New_York|'vm-received' Q 'digits/at' IMp
 	central=America/Chicago|'vm-received' Q 'digits/at' IMp
-	central24=America/Chicago|'vm-received' q 'digits/at' H 'digits/hundred' 
-M 'hours'
+	central24=America/Chicago|'vm-received' q 'digits/at' H 'digits/hundred' M 'hours'
 	[default]
 	102 => 102,Grandstream Mailbox,root@localhost
 	2000 => 2000,Sipura Mailbox 1
@@ -1351,7 +1350,7 @@ coming in going through Zaptel line card. There isn't much to do but set your
 Zaptel config files up and put entries into your extensions.conf file:
 
 1. Add an entry into your extensions.conf file like below
-	; Extension 4001 rings IAX phone
+	; Extension 4001 rings Zap phone
 	exten => 4001,1,Dial,Zap/1|30|		; ring Zap device 1
 	exten => 4001,2,Voicemail,u4001         ; Send to voicemail...
 
@@ -1439,6 +1438,26 @@ insert into server_updater values('10.10.10.15','');
 
 insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
 
+insert into conferences values('8600011','10.10.10.15','');
+insert into conferences values('8600012','10.10.10.15','');
+insert into conferences values('8600013','10.10.10.15','');
+insert into conferences values('8600014','10.10.10.15','');
+insert into conferences values('8600015','10.10.10.15','');
+insert into conferences values('8600016','10.10.10.15','');
+insert into conferences values('8600017','10.10.10.15','');
+insert into conferences values('8600018','10.10.10.15','');
+insert into conferences values('8600019','10.10.10.15','');
+insert into conferences values('8600020','10.10.10.15','');
+insert into conferences values('8600021','10.10.10.15','');
+insert into conferences values('8600022','10.10.10.15','');
+insert into conferences values('8600023','10.10.10.15','');
+insert into conferences values('8600024','10.10.10.15','');
+insert into conferences values('8600025','10.10.10.15','');
+insert into conferences values('8600026','10.10.10.15','');
+insert into conferences values('8600027','10.10.10.15','');
+insert into conferences values('8600028','10.10.10.15','');
+insert into conferences values('8600029','10.10.10.15','');
+
 quit
 
    run this command from command line:
@@ -1447,8 +1466,9 @@ quit
 ######------ END Mysql data entry ------######
 
 NOTE: if you are not installing using default user/pass or have MySQL on another 
-server, you will need to edit the dbconnect.php files in the astguiclient, vicidial 
-and agc directories of your webroot.
+server, you will need to edit either the /etc/astguiclient.conf file or the 
+dbconnect.php files in the astguiclient, vicidial and agc directories of your 
+webroot.
 
 3. Enter the astguiclient administration page:
 http://10.10.10.15/astguiclient/admin.php
@@ -1478,17 +1498,9 @@ spa2000:
    - now your phones are all all set up in the astguiclient system and you can 
 use this website to add new phones to be used with astguiclient and monitor 
 the number of calls people are making.
-	- click on the "ADD A NEW CONFERENCE" link at the top and enter in the 
-proper information for each of the new conference lines we will be 
-adding in a future step. Here's what we entered for out server:
-	   - Phone extension: 
-	   - Conference Number: 8600011
-	   - Server IP: 	10.10.10.15
-	- for the rest of the conference entries simply increment the conference 
-number up to 8600029 in the above example
-   - now your database is set up for the astguiclient conferences which will 
-allow you to have up to 6 remote parties that you called from your GUI client 
-application in one conference.
+	- now your database is set up for the astguiclient conferences which 
+	will allow you to have over 6 remote parties that you called from your 
+	GUI client application in one conference.
 	- click on the "LIST ALL SERVERS" link at the top then click on the
 	server to modify. Verify that the GMT time zone and all other fields 
 	are what you want them to be. There is a setting(Max VICIDIAL Trunks)
@@ -2477,13 +2489,9 @@ easy way to allow for auto failover and/or redundancy. Also, this client will
 work over SSL connections(https) for encrypted communications with the server.
 
 New in astGUIclient release 1.1.7 is multi-language support. multi-language 
-versions of web-clients and admin pages are available in the LANG_agc.zip and 
-LANG_admin.zip files and can be unzipped into your webroot directory. Make sure
-you check the dbconnect.php file in each directory.
+versions of web-clients and admin pages are available in the LANG_www directory
+and can be unzipped into your webroot directory. 
 
-NOTE: make sure you have your machine time-syncing with an ntp server
- Windows instructions: http://www.tech-recipes.com/windows_tips466.html
-                       http://support.microsoft.com/kb/q216734/
 
 
 SUBPHASE 6.9: VICIDIAL web-only client:
@@ -2540,9 +2548,8 @@ easy way to allow for auto failover and/or redundancy. Also, this client will
 work over SSL connections(https) for encrypted communications with the server.
 
 New in astGUIclient release 1.1.7 is multi-language support. multi-language 
-versions of web-clients and admin pages are available in the LANG_agc.zip and 
-LANG_admin.zip files and can be unzipped into your webroot directory. Make sure
-you check the dbconnect.php file in each directory.
+versions of web-clients and admin pages are available in the LANG_www directory
+and can be unzipped into your webroot directory.
 
 Admin Note: If you want to enable your agents to login with only their user/pass
 you can hardcode the phone_login and phone_pass into the query string(URL) and
@@ -2553,21 +2560,18 @@ It is recommended if you are in a call center environment that you would disable
 the "Saved Form Information" option in Firefox settings. This is a checkbox in 
 the Privacy settings under the Options menu.
 
-NOTE: make sure you have your machine time-syncing with an ntp server
- Windows instructions: http://www.tech-recipes.com/windows_tips466.html
-                       http://support.microsoft.com/kb/q216734/
-
 
 
 PHASE 7.0: You are done with installation
 
 Now you can celebrate, you have installed a complete phone system with dialer 
-and GUI applications on all of your clients. the astGUIclient has a help screen 
-that pops up and explains most of it's features. 
+and GUI applications on all of your clients.
 
 If you have problems and it is not working right(and are NOT celebrating right
 now), feel free to take a look at the FAQ for solutions to common installation 
-errors or send an email to the mailing list:
+errors, read the SCRATCH_INSTALL document, visit the VICIDIAL forum or send an
+email to the mailing list:
+http://www.eflo.net/VICIDIALforum/index.php
 https://lists.sourceforge.net/lists/listinfo/astguiclient-users
 
 Also, check out our weblog: http://astguiclient.blogspot.com/
