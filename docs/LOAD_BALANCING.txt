@@ -21,6 +21,8 @@ NOTE: In a multi-server setup you may want to have your database and web server 
 	- AST_cleanup_agent_log.pl
 	- ADMIN_adjust_GMTnow_on_leads.pl
 	- AST_DB_optimize.pl
+	- ADMIN_keepalive_AST_VDadapt.pl
+	- AST_VDadapt.pl
 
 
 2. The two servers need to be registered to each other as IAX2 friends:
@@ -129,4 +131,6 @@ If you have any questions or problems please post to the astguiclient-users list
 - AST_cleanup_agent_log.pl
 - ADMIN_adjust_GMTnow_on_leads.pl
 - AST_DB_optimize.pl
+- ADMIN_keepalive_AST_VDadapt.pl
+- AST_VDadapt.pl
 

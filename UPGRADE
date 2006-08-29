@@ -1,7 +1,58 @@
 ################ UPGRADE
 
-If you are upgrading to the 2.0 code tree from the 1.1 code tree there have been several changes made to the code base and to where some files are stored in the release as well as on your machine.
+If you are upgrading to the 2.0 code tree from the 1.1 code tree there have been
+several changes made to the code base and to where some files are stored in the
+release as well as on your machine.
 
+1. upgrade the MySQL Asterisk database:
+mysql
+use asterisk
 \. /path/from/root/extras/upgrade_2.0.1.sql
+quit
 
+
+2. use the new installer for astguiclient-VICIDIAL files:
 perl install.pl
+
+
+3. Make sure you have MySQL cli8entlibs installed:
+Because all perl script now use DBI instead of Net::MySQL you need to make sure 
+that you have at least the MySQL client installed on all VICIDIAL servers even 
+if the MySQL server is installed on another machine. You can skip this step if 
+MySQL server is already on your VICIDIAL server:
+  Go to http://www.mysql.com/ and download the mysql package
+   - to install this directly on the command line type:
+	- cd /usr/local
+	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
+	- gunzip mysql-4.0.27.tar.gz
+	- tar xvf mysql-4.0.27.tar
+	- cd mysql-4.0.27
+	- groupadd mysql
+	- useradd -g mysql mysql
+	- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline"
+	- make
+	- make install
+   - you are done
+
+
+4. New MySQL perl modules:
+You will need to make sure that you have installed the following perl modules:
+DBI (top-level Database interface module "install DBI")
+DBD::mysql (MySQL-specific interface through DBI "force install DBD::mysql")
+
+
+5. new predictive dialing crontab entry:
+If you will be using the new predictive dialing functions you need to make sure 
+you have the keepalive for this function loaded in your crontab:
+NOTE: this only needs to be on a single server if you are in a multiple 
+VICIDIAL server setup.
+### keepalive script for VICIDIAL predictive script
+* * * * * /home/cron/ADMIN_keepalive_AST_VDadapt.pl
+
+
+6. other notes:
+- there is a new DIAL METHOD field and several other new dial-control fields 
+in campaign modification page, please take a minute to read the help 
+documentation for these new features.
+
+

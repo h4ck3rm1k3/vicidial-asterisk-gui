@@ -2275,6 +2275,9 @@ AST_CRON_mix_recordings_BASIC.pl file in it's place)
 ### keepalive script for VICIDIAL remote agents
 * * * * * /home/cron/ADMIN_keepalive_AST_VDremote_agents.pl
 
+### keepalive script for VICIDIAL predictive script
+* * * * * /home/cron/ADMIN_keepalive_AST_VDadapt.pl
+
 ### kill Hangup script for Asterisk updaters
 * * * * * /home/cron/AST_manager_kill_hung_congested.pl
 

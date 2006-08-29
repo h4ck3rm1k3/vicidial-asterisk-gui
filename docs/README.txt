@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|    Asterisk GUI client - astguiclient - twenty-fifth public release 1.1.12   |
+|    Asterisk GUI client - astguiclient - twenty-sixth public release 2.0.1    |
 |           created by astGUIclient group <astguiclient@eflo.net>              |
 |  project started 2003-10-06   http://sourceforge.net/projects/astguiclient/  |
 +------------------------------------------------------------------------------+
@@ -29,15 +29,10 @@ to put astguiclient onto.
 
  - LOAD_BALANCING.txt - Instructions for multi-server installations
 
- - TODO.txt - List of what has changed since last release including changes for future releases
-
  - LICENSE.txt - The license for this release GPLv2
 
- - install_server_files.pl - perl script to put files in the right place on the 
-server. Run as "perl install_server_files.pl"
-
- - languages.txt - translations file for web-client scripts
- - languages_admin.txt - translations fiel for admin pages
+ - install.pl - perl script to put files in the right place on the 
+server. Run as "perl install.pl"
 
  - start_asterisk_boot.pl - starts asterisk through a screen, good for system 
 boot time startups of asterisk.
@@ -711,3 +706,15 @@ UPGRADE NOTES:
  * if upgrading from older version you will need to run this query for each 
    campaign in VICIDIAL in MySQL:
    (INSERT INTO vicidial_campaign_stats (campaign_id) values('campaignname');)
+
+2.0.1 - Twenty-Sixth public release - 2006-09-XX
+- Changed all Perl script to use DBI instead of Net::MySQL
+- Completely new interactive install script with new astguiclient.conf file
+- Ability to turn off or on logging of server scripts
+- Ability to redirect AGI output to file, STDERR, both or nowhere.
+- Code and process optimization of many of the server-side scripts
+- Added a Predictive outbound dialing algorithm with many user-defined settings
+- Many other changes and bug fixes listed in the TODO Wiki webpage:
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
+UPGRADE NOTES:
+ * if upgrading from 1.1.12 you need to follow instructions in the UPGRADE doc

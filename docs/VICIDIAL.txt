@@ -3,7 +3,7 @@
 This system was initially created to fill the need of a customer service group 
 being able to call up clients efficiently and without using a predictive dialer 
 that would potentially lose calls and alienate clients. Since then we have added 
-the ability to do limited predictive dialing alongside the traditional 
+the ability to do predictive dialing alongside ratio dialing and the traditional 
 one-call-at-a-time dialing as well as the ability to take inbound calls and set
 up campaigns to do blended inbound and outbound at the same time.
 
@@ -11,6 +11,7 @@ Features:
 - Ability for an agent to call clients in succession from a database through a web-client
 - Ability to display a script for the agent to read with fields like name, address, etc. filled-in
 - Ability to set a campaign to auto-dial and send live calls to available agents
+- Ability to dial predictively in a campaign with an adaptive dialing algorithm
 - Ability to dial on a single campaign across multiple Asterisk servers, or multiple campaigns on a single server
 - All calls are logged and statuses of calls are logged as well as agent time breakdowns
 - Ability to transfer calls with customer data to a closer on the local system or a remote Asterisk server
@@ -69,8 +70,8 @@ This system is dependant on a MySQL server acting as the storage place of
 all data and settings for the system. This was done so that it would be very 
 scalable and flexible. This application draws on a lot of the core scripting 
 inside of the astGUIclient suite of applications and was built with flexibility
-in mind. We have used VICIDIAL for over nine months now on up to 70 seats at 
-once across 4 separate Asterisk servers all using the same MySQL server and 
+in mind. We have used VICIDIAL for over two years now on up to 120 seats at 
+once across 6 separate Asterisk servers all using the same MySQL server and 
 dialing on the same campaign. It is important to keep in mind that because 
 VICIDIAL uses Asterisk meetme rooms for it's dialing that the Asterisk server 
 will see an increased load as compared to a simple Zap/SIP-only calls.
@@ -110,9 +111,13 @@ Process flow of an auto-dial call:
  - The lead hopper app(AST_VDhopper.pl) that is running every minute keeps the 
 hopper for each campaign up to at least the minimum hopper lead size providing 
 there are enough leads to fill it.
- - The call center manager can either set the auto_dial_level (on the campaign 
-screen of the admin web page) to 0(zero) for no autodialing or any other choice 
-for a different number of lines-per-agent-logged-in.
+ - The predictive dialing control app(AST_VDadapt.pl) that is running constantly
+analyzes the current status of calls and agents and calculates the dial level 
+that the campaign will need to be set at for the campaign's specific settings.
+ - The call center manager can either set the dial method (on the campaign 
+screen of the admin web page) to Manual for no autodialing, Ratio for fixed 
+lines-to-agent dialing or any of the Adapt predictive dialing models to use 
+Predictive dialing.
  - As soon as an agent logs into a campaign, the client app will look at the 
 auto_dial_level setting of the campaign and determine whether 
 	 - it will insert a record into the vicidial_live_agents table(and set 
@@ -125,11 +130,11 @@ button.
 	 - it will allow normal manual dialing operation
  - The auto_dial app(AST_VDauto_dial.pl) will:
 	 - count how many agents are READY,QUEUE,INCALL with updated 
-last_update_time in the last 5 seconds 
+last_update_time in the last 2.5 seconds.
 	 - look at the campaign's auto_dial_level to determine how many calls 
 should be placed each specific campaign on each server.
 	 - update the vicidial_auto_calls records by searching for active 
-callerids in the vicidial_manager to see if they have hung up
+callerids in the vicidial_manager to see if they have hung up.
 	 - count the number of active calls that are 
 occuring(vicidial_auto_calls records with a status of SENT,RINGING or 
 LIVE)
@@ -168,8 +173,9 @@ lead_id and the uniqueid and callerID to proper values for the call]
 	 - if there are agents available[affected rows = 1](goto substep VII.)
 	 - if there are no agents available:
 		 - wait in 1 second increments and then checking substep IV.
-		 - if no agent is available for 1 minute, the call is hung up 
-and logged as ABANDN in vicidial_log under user VDAD
+		 - if no agent is available for the drop interval(usually 5 
+seconds on outbound campaigns), the call is hung up and logged as DROP in 
+vicidial_log under user VDAD
 	 - grabs the agent info from the vicidial_live_agents[conf_exten] and 
 does a redirect to the agent's meetme room.
 	 - agent's app checks the vicidial_live_agents record every second for 
