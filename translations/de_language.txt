@@ -39,7 +39,6 @@ agc|htglobalize.php|1
 BORDER|Border|
 VALUE=SUBMIT|VALUE=SUBMIT|
 TYPE=SUBMIT|TYPE=Submit|
-XFER|XFER|
 MAXLENGTH|maxlength|
 ### BEGIN translation phrases through 1.1.11 release ###
 English|Englisch|
@@ -332,6 +331,7 @@ BUILD|BAU|
 Server|Bediener|
 RECORD|SATZ|
 HANGUP|HÄNGEZUSTAND|
+>XFER|>XFER|
 PARK|PARK|
 IN-NUMBER|IN-NUMBER|
 NUMBER|ZAHL|
@@ -354,8 +354,8 @@ Recording|Aufnahme|
 Record|Aufzeichnung|
 Welcome|Willkommen|
 VOICEMAIL|VOICEMAIL|
-NEW|NEU|
-OLD|ALT|
+ NEW| NEU|
+ OLD| ALT|
 PAUSE|PAUSE|
 START|ANFANG|
 Pause|Pause|

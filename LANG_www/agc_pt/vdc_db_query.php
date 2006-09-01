@@ -1236,7 +1236,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 
 		### If CHAMADABK, change vicidial_callback record to INACTIVE
-		if (eregi("CALLBK|CBHVELHO", $dispo))
+		if (eregi("CALLBK|CBHOLD", $dispo))
 			{
 			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1372,7 +1372,7 @@ if ($ACTION == 'updateDISPO')
 	$agent_log_id = mysql_insert_id();
 
 	### CHAMADABACK ENTRY
-	if ( ($dispo_choice == 'CBHVELHO') and (strlen($CallBackDatETimE)>10) )
+	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments');";
 		if ($DB) {echo "$stmt\n";}

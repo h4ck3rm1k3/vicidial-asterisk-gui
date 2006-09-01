@@ -426,13 +426,13 @@ if ($ACTION=="RedirectVD")
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
 			if (eregi("CLOSER",$campaign))
 				{
-				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRANFERENCIA' where lead_id='$lead_id' order by start_epoch desc limit 1;";
+				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}
 			if ($auto_dial_level < 1)
 				{
-				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='TRANFERENCIA' where uniqueid='$uniqueid';";
+				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				}

@@ -1526,7 +1526,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			var manual_number = document.vicidial_form.xfernumber.value;
 			var manual_string = manual_number.toString();
 			}
-		var regXFvars = new RegExp("TRANSFERENCIA","g");
+		var regXFvars = new RegExp("XFER","g");
 		if (manual_string.match(regXFvars))
 			{
 			var donothing=1;
@@ -1582,7 +1582,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{
-			var regCXFvars = new RegExp("CTRANSFERENCIA","g");
+			var regCXFvars = new RegExp("CXFER","g");
 			var tasknum_string = tasknum.toString();
 			if (tasknum_string.match(regCXFvars))
 				{
@@ -1592,7 +1592,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
 				tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
 				}
-			var regAXFvars = new RegExp("ATRANSFERENCIA","g");
+			var regAXFvars = new RegExp("AXFER","g");
 			if (tasknum_string.match(regAXFvars))
 				{
 				var Ctasknum = tasknum_string.replace(regAXFvars, '');
@@ -1984,7 +1984,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Redirect command for live call to Manager sends phone name where call is going to
-// Covers the following types: TRANSFERENCIA, VMAIL, ENTRY, CONF, PARKING, FROMPARKING, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
+// Covers the following types: XFER, VMAIL, ENTRY, CONF, PARKING, FROMPARKING, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip) 
 		{
 		var xmlhttp=false;
@@ -2016,10 +2016,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				var queryCID = "XBvdcW" + epoch_sec + user_abb;
 				var blindxferdialstring = document.vicidial_form.xfernumber.value;
-				var regXFvars = new RegExp("TRANSFERENCIA","g");
+				var regXFvars = new RegExp("XFER","g");
 				if (blindxferdialstring.match(regXFvars))
 					{
-					var regAXFvars = new RegExp("ATRANSFERENCIA","g");
+					var regAXFvars = new RegExp("AXFER","g");
 					if (blindxferdialstring.match(regAXFvars))
 						{
 						var Ctasknum = blindxferdialstring.replace(regAXFvars, '');
@@ -2105,7 +2105,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var redirectXTRAvalue = XDchannel;
 				var redirecttype_test = document.vicidial_form.xfernumber.value;
 				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
-				var regRXFvars = new RegExp("CTRANSFERENCIA","g");
+				var regRXFvars = new RegExp("CXFER","g");
 				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
 					{var redirecttype = 'RedirectXtraCX';}
 				else
@@ -4611,7 +4611,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		//	alert(CallBackDatETimE + "|" + CallBackCommenTs);
 
-			document.vicidial_form.DispoSelection.value = 'CBHVIEJO';
+			document.vicidial_form.DispoSelection.value = 'CBHOLD';
 			hideDiv('CallBackSelectBox');
 			DispoSelect_submit();
 			}

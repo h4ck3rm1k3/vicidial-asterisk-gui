@@ -4611,7 +4611,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		//	alert(CallBackDatETimE + "|" + CallBackCommenTs);
 
-			document.vicidial_form.DispoSelection.value = 'CBHΠΑΛΑΙΟ';
+			document.vicidial_form.DispoSelection.value = 'CBHOLD';
 			hideDiv('CallBackSelectBox');
 			DispoSelect_submit();
 			}

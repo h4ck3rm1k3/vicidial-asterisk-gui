@@ -39,7 +39,6 @@ agc|htglobalize.php|1
 BORDER|Border|
 VALUE=SUBMIT|VALUE=SUBMIT|
 TYPE=SUBMIT|TYPE=Submit|
-XFER|XFER|
 MAXLENGTH|maxlength|
 ### BEGIN translation phrases through 1.1.11 release ###
 English|Αγγλικά|
@@ -330,6 +329,7 @@ BUILD|ΔΗΜΙΟΥΡΓΙΑ|
 Server|Κεντρικός υπολογιστής|
 RECORD|ΕΓΓΡΑΦΗ|
 HANGUP|ΚΛΕΙΣΙΜΟ|
+>XFER|>XFER|
 PARK|ΣΤΑΘΜΕΥΣΗ|
 IN-NUMBER|ΣΕ-ΑΡΙΘΜΟ|
 NUMBER|ΑΡΙΘΜΟΣ|
@@ -352,8 +352,8 @@ Recording|Καταγραφή|
 Record|Εγγραφή|
 Welcome|Χρήστης|
 VOICEMAIL|ΦΩΝ.ΤΑΧ.|
-NEW|ΝΕΟ|
-OLD|ΠΑΛΑΙΟ|
+ NEW| ΝΕΟ|
+ OLD| ΠΑΛΑΙΟ|
 PAUSE|ΠΑΥΣΗ|
 START|ΕΝΑΡΞΗ|
 Pause|Παύση|
