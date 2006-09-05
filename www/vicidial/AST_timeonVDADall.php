@@ -15,6 +15,7 @@
 #            - Added required user/pass to gain access to this page
 # 60626-1453 - Added display of system load to bottom (Angelito Manansala)
 # 60901-1123 - Changed display elements at the top of the screen
+# 60905-1342 - Fixed non INCALL|QUEUE timer column
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -382,7 +383,10 @@ $talking_to_print = mysql_num_rows($rslt);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =		sprintf("%-10s", $row[8]);
-		$call_time_S = ($STARTtime - $row[5]);
+		if (!eregi("INCALL|QUEUE",$row[3]))
+			{$call_time_S = ($STARTtime - $row[6]);}
+		else
+			{$call_time_S = ($STARTtime - $row[5]);}
 
 		$call_time_M = ($call_time_S / 60);
 		$call_time_M = round($call_time_M, 2);
