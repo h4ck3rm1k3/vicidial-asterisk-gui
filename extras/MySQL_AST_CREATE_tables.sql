@@ -357,6 +357,7 @@ phone_number VARCHAR(12),
 user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
+queue_seconds DECIMAL(7,2) default '0',
 index (lead_id),
 index (call_date)
 );

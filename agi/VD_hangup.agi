@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VD_hangup.agi version 0.4   *DBI-version*
+# VD_hangup.agi version 0.5   *DBI-version*
 #
 # NOTE: This script is only needed on Asterisk 1.2.X and higher systems
 # 
@@ -29,6 +29,7 @@
 # 60719-1118 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
 # 60815-1210 - added output options check from database
+# 60905-1113 - fixed Closer dropped call issue, added queue_seconds to VDCL
 #
 
 $script = 'VD_hangup.agi';
@@ -354,7 +355,7 @@ if (!$epc_countCUSTDATA)
 	$sthArows=$sthA->rows;
 	 $epc_countCUSTDATA=0;
 	 $VD_closecallid='';
-	while ($sthArows > $rec_countCUSTDATA)
+	while ($sthArows > $epc_countCUSTDATA)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$VD_start_epoch	= "$aryA[0]";
@@ -397,9 +398,14 @@ if (length($VD_closecallid) < 1)
 	if ($AGILOG) {$agi_string = "no VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
 	exit;
 	}
+if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/) 
+	{$VDCLSQL_status = "";}
+else
+	{$VDCLSQL_status = "status='DROP',queue_seconds='$VD_seconds',";}
+
 $VD_seconds = ($now_date_epoch - $VD_start_epoch);
-$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
-	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
+	if ($AGILOG) {$agi_string = "|$VDCLSQL_status|$VD_status|\n|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|";   &agi_output;}
 

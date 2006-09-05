@@ -28,3 +28,5 @@ ALTER TABLE vicidial_campaigns ADD adaptive_dl_diff_target SMALLINT(3) default '
 
 ALTER TABLE vicidial_campaign_stats ADD differential_onemin VARCHAR(20) default '0';
 ALTER TABLE vicidial_campaign_stats ADD agents_average_onemin VARCHAR(20) default '0';
+
+ALTER TABLE vicidial_closer_log ADD queue_seconds DECIMAL(7,2) default '0';

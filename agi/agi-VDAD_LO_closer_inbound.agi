@@ -464,8 +464,6 @@ if ($channel_status < 1)
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    closer log : |$affected_rows|$new_lead_id\n|$stmtA|";   &agi_output;}
 
-			$dbhA->disconnect();
-
 			if ($AGILOG) {$agi_string = "exiting VDAD app, transferring call to $VDADconf_exten";   &agi_output;}
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
@@ -482,6 +480,12 @@ if ($channel_status < 1)
 				if ($hour < 10) {$Fhour = "0$hour";}
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
+
+			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$new_lead_id' and call_date='$SQLdate';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$new_lead_id|\n|$stmtA|";   &agi_output;}
+
+			$dbhA->disconnect();
 
 				$now_date_epoch = time();
 				$now_date = "$year-$mon-$mday $hour:$min:$sec";
@@ -553,8 +557,6 @@ if ($channel_status < 1)
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    closer log : |$affected_rows|update of vcl table: $new_lead_id\n|$stmtA|";   &agi_output;}
 
-			$dbhA->disconnect();
-
 			### format the remote server dialstring to get the call to the overflow agent meetme room
 			$S='*';
 			if( $VDADserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
@@ -583,6 +585,12 @@ if ($channel_status < 1)
 				if ($hour < 10) {$Fhour = "0$hour";}
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
+
+			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$new_lead_id' and call_date='$SQLdate';";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$new_lead_id|\n|$stmtA|";   &agi_output;}
+
+			$dbhA->disconnect();
 
 				$now_date_epoch = time();
 				$now_date = "$year-$mon-$mday $hour:$min:$sec";
@@ -703,7 +711,7 @@ if ($drop_seconds < 1)
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
 
-	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where lead_id = '$new_lead_id' order by start_epoch desc limit 1;";
+	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds' where lead_id = '$new_lead_id' order by start_epoch desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$new_lead_id|\n|$stmtA|";   &agi_output;}
 
