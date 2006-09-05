@@ -243,11 +243,11 @@ $CIDlead_id = $callerid;
 $CIDlead_id = substr($CIDlead_id, 11, 9);
 $CIDlead_id = ($CIDlead_id + 0);
 
-if ($AGILOG) {$agi_string = ""+++++ VDAD START : |$CIDlead_id|$now_date|";   &agi_output;}
+if ($AGILOG) {$agi_string = "+++++ VDAD START : |$CIDlead_id|$now_date|";   &agi_output;}
 
 if ( ($channel =~ /Local/i) && ($AST_ver !~ /^1\.0\.8|^1\.0\.9/) )
 {
-if ($AGILOG) {$agi_string = ""+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
+if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
 if ($priority > 2) {sleep(1);}
 exit;
 }

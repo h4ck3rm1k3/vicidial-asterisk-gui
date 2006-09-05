@@ -256,14 +256,14 @@ $AGI->stream_file('beep');
 $pin = '123456';
 $fronter = $pin;
 
-if ($AGILOG) {$agi_string = ""+++++ INBOUND CALL VDCL STARTED : |$channel_group|$callerid-$pin|$now_date";   &agi_output;}
+if ($AGILOG) {$agi_string = "+++++ INBOUND CALL VDCL STARTED : |$channel_group|$callerid-$pin|$now_date";   &agi_output;}
 
 $VDADphone='';
 $VDADphone_code='';
 
 if ($channel =~ /Local/i)
 {
-if ($AGILOG) {$agi_string = ""+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
+if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
 exit;
 }
 
