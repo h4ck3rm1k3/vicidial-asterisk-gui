@@ -319,8 +319,6 @@ $sthArows=$sthA->rows;
 if ($sthArows > 0)
 {
 	$rec_countCUSTDATA=0;	
-	$iter=$dbhA->create_record_iterator;
-	$rec_countCUSTDATA=0;
 	while ($sthArows > $cbc)
 	{
 	@aryA = $sthA->fetchrow_array;
