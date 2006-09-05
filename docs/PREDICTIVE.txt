@@ -124,7 +124,7 @@ Default is 0. This field is not used by the MANUAL or RATIO dial methods.
 To use adaptive dialing you must have the ADMIN keepaliveAST_VDadapt.pl script 
 in your crontab running every minute:
 ### keepalive script for VICIDIAL predictive script
-* * * * * /home/cron/ADMIN_keepalive_AST_VDadapt.pl
+* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
 
 
 NOTE: With Predictive dialing the dial_level will never drop below 1.0.

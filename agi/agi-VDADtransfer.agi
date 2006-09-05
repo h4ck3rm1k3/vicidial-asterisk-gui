@@ -24,6 +24,7 @@
 #            - changed to use /etc/astguiclient.conf for configs
 # 60816-1036 - added output options check from database
 #            - changed look for agent every 0.5 second for first 4 sec on hold
+# 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
 #
 
 $script = 'agi-VDADtransfer.agi';
@@ -423,10 +424,9 @@ else
 
 if ($drop_timer < 3)
 	{
-	### sleep for 44.5 hundredths of a second
-	usleep(1*445*1000);
-
-	$drop_timer = ($drop_timer + 0.5);
+	### sleep for 23 hundredths of a second
+	usleep(1*230*1000);
+	$drop_timer = ($drop_timer + 0.25);
 	}
 else
 	{
