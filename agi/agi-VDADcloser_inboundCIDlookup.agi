@@ -189,7 +189,6 @@ if (length($ARGV[0])>1)
 		}
 	}
 }
-else
 
 $|=1;
 while(<STDIN>) {
