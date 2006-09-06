@@ -265,6 +265,55 @@ while($one_day_interval > 0)
 			$ILcount=0;
 			foreach(@input_lines)
 				{
+				##### look for special vicidial conference call event #####
+				if ( ($input_lines[$ILcount] =~ /CallerIDName: DCagcW/) && ($input_lines[$ILcount] =~ /Event: Dial|State: Up/) )
+					{
+					### BEGIN 1.2.X tree versions
+					$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
+					@command_line=split(/\n/, $input_lines[$ILcount]);
+
+					if ($input_lines[$ILcount] =~ /Event: Dial/)
+						{
+						if ($command_line[3] =~ /Destination: /i)
+							{
+							$channel = $command_line[3];
+							$channel =~ s/Destination: |\s*$//gi;
+							$callid = $command_line[5];
+							$callid =~ s/CallerIDName: |\s*$//gi;
+							   $callid =~ s/^\"//gi;   $callid =~ s/\".*$//gi;
+							$uniqueid = $command_line[6];
+							$uniqueid =~ s/SrcUniqueID: |\s*$//gi;
+							$stmtA = "UPDATE vicidial_manager set status='UPDATED', channel='$channel', uniqueid = '$uniqueid' where server_ip = '$server_ip' and callerid = '$callid'";
+							if ($channel !~ /local/i)
+								{
+								print STDERR "|$stmtA|\n";
+								my $affected_rows = $dbhA->do($stmtA);
+								if($DB){print "|$affected_rows Conference DIALs updated|\n";}
+								}
+							}
+						}
+					if ($input_lines[$ILcount] =~ /State: Up/)
+						{
+						if ($command_line[2] =~ /Channel: /i)
+							{
+							$channel = $command_line[2];
+							$channel =~ s/Channel: |\s*$//gi;
+							$callid = $command_line[5];
+							$callid =~ s/CallerIDName: |\s*$//gi;
+							   $callid =~ s/^\"//gi;   $callid =~ s/\".*$//gi;
+							$uniqueid = $command_line[6];
+							$uniqueid =~ s/SrcUniqueID: |\s*$//gi;
+							$stmtA = "UPDATE vicidial_manager set status='UPDATED', channel='$channel', uniqueid = '$uniqueid' where server_ip = '$server_ip' and callerid = '$callid' and status='SENT';";
+							print STDERR "|$stmtA|\n";
+							my $affected_rows = $dbhA->do($stmtA);
+							if($DB){print "|$affected_rows Conference DIALs updated|\n";}
+							}
+						}
+					### END 1.2.X tree versions
+
+					}
+
+				##### parse through all other important events #####
 				if ( ($input_lines[$ILcount] =~ /State: Ringing|State: Up|State: Dialing|Event: Newstate|Event: Hangup|Event: Newcallerid|Event: Shutdown/) && ($input_lines[$ILcount] !~ /ZOMBIE/) )
 					{
 					$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
@@ -479,6 +528,7 @@ while($one_day_interval > 0)
 							$channel =~ s/Channel: |\s*$//gi;
 							$callid = $command_line[5];
 							$callid =~ s/Callerid: |\s*$//gi;
+					#		$callid =~ s/CallerIDName: |\s*$//gi;
 							   $callid =~ s/^\"//gi;   $callid =~ s/\".*$//gi;
 							$uniqueid = $command_line[6];
 							$uniqueid =~ s/Uniqueid: |\s*$//gi;
@@ -490,6 +540,23 @@ while($one_day_interval > 0)
 								if($DB){print "|$affected_rows RINGINGs updated|\n";}
 								}
 							}
+					#	if ( ($command_line[2] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) ### post 2006-06-21 SVN -- Changed from CallerID to CallerIDName
+					#		{
+					#		$channel = $command_line[2];
+					#		$channel =~ s/Channel: |\s*$//gi;
+					#		$callid = $command_line[4];
+					#		$callid =~ s/CallerIDName: |\s*$//gi;
+					#		   $callid =~ s/^\"//gi;   $callid =~ s/\".*$//gi;
+					#		$uniqueid = $command_line[5];
+					#		$uniqueid =~ s/Uniqueid: |\s*$//gi;
+					#		$stmtA = "UPDATE vicidial_manager set status='UPDATED', channel='$channel', uniqueid = '$uniqueid' where server_ip = '$server_ip' and callerid = '$callid'";
+					#		if ($channel =~ /local/i)
+					#			{
+					#			print STDERR "|$stmtA|\n";
+					#			my $affected_rows = $dbhA->do($stmtA);
+					#			if($DB){print "|$affected_rows RINGINGs updated|\n";}
+					#			}
+					#		}
 						}
 		
 					}

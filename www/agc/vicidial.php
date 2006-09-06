@@ -1555,7 +1555,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			}
 		if (taskFromConf == 'YES')
-			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten);}
+			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten,'NO',taskFromConf);}
 		else
 			{basic_originate_call(manual_string,'NO','NO');}
 
@@ -1564,7 +1564,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command to manager to place a phone call
-	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait) 
+	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait,taskconfxfer) 
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1633,7 +1633,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				var originatevalue = protodial + "/" + extendial;
 				}
-			var queryCID = "DVagcW" + epoch_sec + user_abb;
+			if (taskconfxfer == 'YES')
+				{var queryCID = "DCagcW" + epoch_sec + user_abb;}
+			else
+				{var queryCID = "DVagcW" + epoch_sec + user_abb;}
 
 			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + orig_prefix + "" + dialnum + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + campaign_cid;
 			xmlhttp.open('POST', 'manager_send.php'); 
@@ -2548,7 +2551,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							XDuniqueid = MDlookResponse_array[0];
 							XDchannel = MDlookResponse_array[1];
-							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') )
+							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') && (MD_ring_secondS < 10) )
 								{
 								// bad grab of Local channel, try again
 								MD_ring_secondS++;
