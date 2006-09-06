@@ -17,6 +17,7 @@
 # 60616-0958 - Added listID override feature to force all leads into same list
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
+# 60906-1055 - added filter of non-digits in alt_phone field
 #
 
 $secX = time();
@@ -263,7 +264,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$country =				$m[16];		chomp($country);
 		$gender =				$m[17];
 		$date_of_birth =		$m[18];
-		$alt_phone =			$m[19];
+		$alt_phone =			$m[19];		chomp($alt_phone);	$alt_phone =~ s/\D//gi;
 		$email =				$m[20];
 		$security_phrase =		$m[21];
 		$comments =				$m[22];

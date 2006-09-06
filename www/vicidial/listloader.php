@@ -12,6 +12,7 @@
 # 60616-1006 - added listID override and gmt_offset lookup while loading
 # 60619-1652 - Added variable filtering to eliminate SQL injection attack threat
 # 60822-1105 - fixed for nonwritable directories
+# 60906-1059 - added filter of non-digits in alt_phone field
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 #
@@ -203,7 +204,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 				$country =				$row[16];
 				$gender =				$row[17];
 				$date_of_birth =		$row[18];
-				$alt_phone =			$row[19];
+				$alt_phone =			eregi_replace("[^0-9]", "", $row[19]);
 				$email =				$row[20];
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);
