@@ -274,6 +274,24 @@ while ($master_loop<$CLIloops)
 #	if ($DB) {print "TIME DEBUG: $master_loop   $LOCAL_GMT_OFF_STD|$LOCAL_GMT_OFF|$isdst|   GMT: $hour:$min\n";}
 
 @campaign_id=@MT; 
+@dial_status_a=@MT;
+@dial_status_b=@MT;
+@dial_status_c=@MT;
+@dial_status_d=@MT;
+@dial_status_e=@MT;
+@lead_order=@MT;
+@hopper_level=@MT;
+@auto_dial_level=@MT;
+@local_call_time=@MT;
+@lead_filter_id=@MT;
+@use_internal_dnc=@MT;
+@dial_method=@MT;
+@available_only_ratio_tally=@MT;
+@adaptive_dropped_percentage=@MT;
+@adaptive_maximum_level=@MT;
+@adaptive_latest_server_time=@MT;
+@adaptive_intensity=@MT;
+@adaptive_dl_diff_target=@MT;
 
 if ($CLIcampaign)
 	{
@@ -339,7 +357,7 @@ foreach(@campaign_id)
 		$rec_count++;
 		}
 	$sthA->finish();
-	$event_string = "|$campaign_id[$i]|$hopper_level[$i]|$hopper_ready_count|$local_call_time[$i]||";
+	$event_string = "|$campaign_id[$i]|$hopper_level[$i]|$hopper_ready_count|$local_call_time[$i]|$diff_ratio_updater|$drop_count_updater|";
 		if ($DBX) {print "$i     $event_string\n";}
 	&event_logger;	
 
@@ -379,6 +397,8 @@ foreach(@campaign_id)
 	$i++;
 	}
 
+if ($RESETdiff_ratio_updater>0) {$RESETdiff_ratio_updater=0;   $diff_ratio_updater=0;}
+if ($RESETdrop_count_updater>0) {$RESETdrop_count_updater=0;   $drop_count_updater=0;}
 $diff_ratio_updater = ($diff_ratio_updater + $CLIdelay);
 $drop_count_updater = ($drop_count_updater + $CLIdelay);
 
@@ -584,7 +604,7 @@ if ($DB) {print "     $event_string\n";}
 
 sub calculate_drops
 {
-$drop_count_updater=0;
+$RESETdrop_count_updater++;
 $VCScalls_today=0;
 $VCSdrops_today=0;
 $VCSdrops_today_pct=0;
@@ -778,7 +798,7 @@ if ($DBX) {print "$campaign_id[$i]|$VCSdrops_five_pct|$VCSdrops_today_pct\n";}
 
 sub calculate_dial_level
 {
-$diff_ratio_updater=0;
+$RESETdiff_ratio_updater++;
 $VCSINCALL=0;
 $VCSREADY=0;
 $VCSCLOSER=0;
