@@ -335,7 +335,7 @@ while($one_day_interval > 0)
 							$channel =~ s/Channel: |\s*$//gi;
 							$uniqueid = $command_line[3];
 							$uniqueid =~ s/Uniqueid: |\s*$//gi;
-							$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid'";
+							$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
 
 							print STDERR "|$stmtA|\n";
 							my $affected_rows = $dbhA->do($stmtA);
@@ -350,7 +350,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[4];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid'";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%";
 
 								print STDERR "|$stmtA|\n";
 							    my $affected_rows = $dbhA->do($stmtA);
@@ -362,7 +362,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[2];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid'";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%";
 
 								print STDERR "|$stmtA|\n";
 							    my $affected_rows = $dbhA->do($stmtA);
