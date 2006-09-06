@@ -258,7 +258,7 @@ echo "<B>LAST 50 CALLS:</B>\n";
 echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
-	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' order by uniqueid desc limit 50;";
+	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' order by call_date desc limit 50;";
 	$rslt=mysql_query($stmt, $link);
 	$logs_to_print = mysql_num_rows($rslt);
 

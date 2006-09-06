@@ -125,6 +125,7 @@
 # 60822-0512 - Changed phone number fields to be maxlength of 12
 # 60829-1531 - Made compatible with WeBRooTWritablE setting in dbconnect.php
 # 60906-1152 - Added Previous CallBack info display span
+# 60906-1715 - Allow for Local phone extension conferences
 #
 
 require("dbconnect.php");
@@ -170,8 +171,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.98';
-$build = '60906-1152';
+$version = '2.0.99';
+$build = '60906-1715';
 
 if ($force_logout)
 {

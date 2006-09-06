@@ -38,6 +38,7 @@
 # 60718-0955 - changed to use /etc/astguiclient.conf for configs
 # 60720-1142 - added keepalive to MySQL connection every 50 seconds
 # 60814-1733 - added option for no logging to file
+# 60906-1714 - added updating for special vicidial conference calls
 #
 
 # constants
