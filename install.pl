@@ -25,7 +25,7 @@ $PATHweb =		'/usr/local/apache2/htdocs';
 # default path to asterisk sounds directory: 
 $PATHsounds =	'/var/lib/asterisk/sounds';
 # default path to asterisk recordings directory: 
-$PATHmonitor =	'/var/spool/asterisk';
+$PATHmonitor =	'/var/spool/asterisk/monitor';
 # default database server variables: 
 $VARDB_server =	'localhost';
 $VARDB_database =	'asterisk';
