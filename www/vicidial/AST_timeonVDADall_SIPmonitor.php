@@ -240,7 +240,9 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			$row[5]=$row[6];
 			}
-		$extension =		sprintf("%-10s", $row[0]);
+		$extension = eregi_replace('Local/',"",$row[0]);
+		$extension =		sprintf("%-10s", $extension);
+			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 		$user =				sprintf("%-6s", $row[1]);
 		$sessionid =		sprintf("%-9s", $row[2]);
 		$status =			sprintf("%-6s", $row[3]);
