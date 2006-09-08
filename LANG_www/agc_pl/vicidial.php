@@ -124,6 +124,8 @@
 # 60821-1643 - Added no_delete_sessions option to not delete sessions
 # 60822-0512 - Changed phone number fields to be maxlength of 12
 # 60829-1531 - Made compatible with WeBRooTWritablE setting in dbconnect.php
+# 60906-1152 - Added Previous CallBack info display span
+# 60906-1715 - Allow for Local phone extension conferences
 #
 
 require("dbconnect.php");
@@ -169,8 +171,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.97';
-$build = '60829-1531';
+$version = '2.0.99';
+$build = '60906-1715';
 
 if ($force_logout)
 {
@@ -1386,6 +1388,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var no_delete_sessions = '<? echo $no_delete_sessions ?>';
 	var webform_session = '<? echo $webform_sessionname ?>';
 	var local_consult_xfers = '<? echo $local_consult_xfers ?>';
+	var CBentry_time = '';
+	var CBcallback_time = '';
+	var CBuser = '';
+	var CBcomments = '';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_pl.gif\" border=0 alt=\"Przerwa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume_pl.gif\" border=0 alt=\"Ponów\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause_pl.gif\" border=0 alt=\"Przerwa\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_pl.gif\" border=0 alt=\"Ponów\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF_pl.gif\" border=0 alt=\"Przerwa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF_pl.gif\" border=0 alt=\"Ponów\">";
@@ -1550,7 +1556,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			}
 		if (taskFromConf == 'YES')
-			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten);}
+			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten,'NO',taskFromConf);}
 		else
 			{basic_originate_call(manual_string,'NO','NO');}
 
@@ -1559,7 +1565,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command to manager to place a phone call
-	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait) 
+	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait,taskconfxfer) 
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -1628,7 +1634,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				var originatevalue = protodial + "/" + extendial;
 				}
-			var queryCID = "DVagcW" + epoch_sec + user_abb;
+			if (taskconfxfer == 'YES')
+				{var queryCID = "DCagcW" + epoch_sec + user_abb;}
+			else
+				{var queryCID = "DVagcW" + epoch_sec + user_abb;}
 
 			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + orig_prefix + "" + dialnum + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + campaign_cid;
 			xmlhttp.open('POST', 'manager_send.php'); 
@@ -2543,7 +2552,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							XDuniqueid = MDlookResponse_array[0];
 							XDchannel = MDlookResponse_array[1];
-							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') )
+							if ( (XDchannel.match(regMDL)) && (asterisk_version != '1.0.8') && (asterisk_version != '1.0.9') && (MD_ring_secondS < 10) )
 								{
 								// bad grab of Local channel, try again
 								MD_ring_secondS++;
@@ -2731,6 +2740,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						document.vicidial_form.called_count.value		= MDnextResponse_array[27];
 						previous_called_count							= MDnextResponse_array[27];
 						previous_dispo									= MDnextResponse_array[2];
+						CBentry_time									= MDnextResponse_array[28];
+						CBcallback_time									= MDnextResponse_array[29];
+						CBuser											= MDnextResponse_array[30];
+						CBcomments										= MDnextResponse_array[31];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						document.getElementById("MainStatuSSpan").innerHTML = " Dzwoni: " + document.vicidial_form.phone_number.value + " UID: " + MDnextCID + " &nbsp; " + man_status;
@@ -2796,6 +2809,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS RozmowaBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Nazwisko Call: </b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Komentarz: </b><br>" + CBcomments;
+							showDiv('CBcommentsBox');
 							}
 
 						var regWFAvars = new RegExp("\\?","ig");
@@ -3294,6 +3312,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						check_VDIC_array[30] = check_VDIC_array[30].replace(REGcommentsNL, "\n");
 						document.vicidial_form.comments.value			= check_VDIC_array[30];
 						document.vicidial_form.called_count.value		= check_VDIC_array[31];
+						CBentry_time									= check_VDIC_array[32];
+						CBcallback_time									= check_VDIC_array[33];
+						CBuser											= check_VDIC_array[34];
+						CBcomments										= check_VDIC_array[35];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						document.getElementById("MainStatuSSpan").innerHTML = " Przychodząca: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
@@ -3302,6 +3324,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS RozmowaBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Nazwisko Call: </b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Komentarz: </b><br>" + CBcomments;
+							showDiv('CBcommentsBox');
 							}
 
 						if (VDIC_data_VDIG[1].length > 0)
@@ -4045,6 +4072,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimalizuj</a>";
 				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Rozłącz się ponownie</a>";
 
+				CBcommentsBoxhide();
+
 				AgentDispoing = 0;
 
 				if (wrapup_waiting == 0)
@@ -4554,6 +4583,22 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 
 // ################################################################################
+// Hide the CBcommentsBox span upon click
+	function CBcommentsBoxhide()
+		{
+		CBentry_time = '';
+		CBcallback_time = '';
+		CBuser = '';
+		CBcomments = '';
+		document.getElementById("CBcommentsBoxA").innerHTML = "";
+		document.getElementById("CBcommentsBoxB").innerHTML = "";
+		document.getElementById("CBcommentsBoxC").innerHTML = "";
+		document.getElementById("CBcommentsBoxD").innerHTML = "";
+		hideDiv('CBcommentsBox');
+		}
+
+
+// ################################################################################
 // Populating the date field in the callback frame prior to submission
 	function CB_date_pick(taskdate)
 		{
@@ -4638,6 +4683,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (VICIDiaL_closer_login_checked==0)
 			{
 			hideDiv('NothingBox');
+			hideDiv('CBcommentsBox');
 			hideDiv('HotKeyActionBox');
 			hideDiv('HotKeyEntriesBox');
 			hideDiv('MainXfeRBox');
@@ -5237,7 +5283,7 @@ echo "</head>\n";
 <span id="CBstatusSpan">X AKTYWNE INNE TERMINY</span> <BR>
 </font></span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBacKsLisTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:36;" id="CallBacKsLisTBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> INNE TERMINY DLA AGENTA <? echo $VD_login ?>:<BR>Kliknij poniżej na Inne terminy żeby teraz zadzwonić do klienta. Jeżeli klikniesz na rekordzie by zadzwonić, rekord zostanie usunięty z listy.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
@@ -5248,7 +5294,7 @@ echo "</head>\n";
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:36;" id="NeWManuaLDiaLBox">
+<span style="position:absolute;left:0px;top:0px;z-index:37;" id="NeWManuaLDiaLBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> NOWE RĘCZNE WYBIERANIE NUMERU DLA <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Wpisz poniżej informacje o kontakcie do którego chcesz wykonać połączenie.
 	<BR>
 	<? 
@@ -5344,7 +5390,24 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:12px;z-index:24;" id="NoneInSessionBox">
+<span style="position:absolute;left:5px;top:310px;z-index:24;" id="CBcommentsBox">
+    <table border=0 bgcolor="#FFFFCC" width=620 height=70>
+	<TR bgcolor="#FFFF66">
+	<TD align=left><font class="sh_text"> Previous Callback Information: </font></td>
+	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
+	</tr><tr>
+	<TD><font class="sk_text">
+	<span id="CBcommentsBoxA"></span><BR>
+	<span id="CBcommentsBoxB"></span><BR>
+	<span id="CBcommentsBoxC"></span><BR>
+	</font></TD>
+	<TD width=320><font class="sk_text">
+	<span id="CBcommentsBoxD"></span>
+	</font></TD>
+	</TR></TABLE>
+</span>
+
+<span style="position:absolute;left:0px;top:12px;z-index:25;" id="NoneInSessionBox">
     <table border=1 bgcolor="#CCFFFF" width=600 height=500><TR><TD align=center> Nikt nie uczestniczy w Twojej sesji: <span id="NoneInSessionID"></span><BR>
 	<a href="#" onclick="NoneInSessionOK();return false;">Wróć</a>
 	<BR><BR>
@@ -5352,7 +5415,7 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:25;" id="CustomerGoneBox">
+<span style="position:absolute;left:0px;top:0px;z-index:26;" id="CustomerGoneBox">
     <table border=1 bgcolor="#CCFFFF" width=650 height=500><TR><TD align=center> Klient sie rozłączył: <span id="CustomerGoneChanneL"></span><BR>
 	<a href="#" onclick="CustomerGoneOK();return false;">Wróć</a>
 	<BR><BR>
@@ -5361,7 +5424,7 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:26;" id="WrapupBox">
+<span style="position:absolute;left:0px;top:0px;z-index:27;" id="WrapupBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Call Wrapup <span id="WrapupTimer"></span> sekundy remaining in wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
@@ -5370,23 +5433,23 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:27;" id="LogouTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:28;" id="LogouTBox">
     <table border=1 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">WYLOGUJ</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:70px;z-index:28;" id="DispoButtonHideA">
+<span style="position:absolute;left:0px;top:70px;z-index:29;" id="DispoButtonHideA">
     <table border=0 bgcolor="#CCFFCC" width=165 height=22><TR><TD align=center VALIGN=top></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:138px;z-index:29;" id="DispoButtonHideB">
+<span style="position:absolute;left:0px;top:138px;z-index:30;" id="DispoButtonHideB">
     <table border=0 bgcolor="#CCFFCC" width=165 height=250><TR><TD align=center VALIGN=top>&nbsp;</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:30;" id="DispoButtonHideC">
+<span style="position:absolute;left:0px;top:0px;z-index:31;" id="DispoButtonHideC">
     <table border=0 bgcolor="#CCFFCC" width=650 height=47><TR><TD align=center VALIGN=top>Zmiany wprowadzone w informacjach o kliencie będą zapisane tylko podczas trwania połączenia. Nie po rozłączaniu!. </TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:31;" id="DispoSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:32;" id="DispoSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> REZULTAT ROZMOWY :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Rozłącz się ponownie</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimalizuj</a></span><BR>
 	<span id="DispoSelectContent"> Koniec rozmowy, wybierz rezultat </span>
 	<input type=hidden name=DispoSelection><BR>
@@ -5400,7 +5463,7 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 </span>
 
 
-<span style="position:absolute;left:0px;top:0px;z-index:32;" id="CallBackSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:33;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> Wybierz datę oddzwonienia :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN>
 	<input type=hidden name=CallBackTimESelectioN>
@@ -5443,7 +5506,7 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:33;" id="CloserSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:34;" id="CloserSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> SELEKCJA GRUPY ZAWNĘTRZNYCH FINALIZUJĄCYCH <BR>
 	<span id="CloserSelectContent"> Selekcja grupy zawnętrznych finalizujących </span>
 	<input type=hidden name=CloserSelectList><BR>
@@ -5454,7 +5517,7 @@ Twój Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:34;" id="NothingBox">
+<span style="position:absolute;left:0px;top:0px;z-index:35;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="../agc/images/blank.gif"></BUTTON>
 	<span id="DiaLLeaDPrevieWHide">Kanał</span>
 	<span id="DiaLDiaLAltPhonEHide">Kanał</span>

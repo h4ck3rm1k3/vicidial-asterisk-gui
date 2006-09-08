@@ -7,6 +7,7 @@
 #
 # 60619-1714 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 60905-1326 - Added queue time stats
 #
 
 require("dbconnect.php");
@@ -117,7 +118,7 @@ $average_hold_seconds = round($average_hold_seconds, 0);
 $average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 
 echo "Gesamtanrufe gesetzt von dieser Kampagne:                       $TOTALcalls\n";
-echo "Durchschnittliche Anruf-Länge für alle benennt in den Sekunden: $average_hold_seconds\n";
+echo "Average Call Length for all Calls:            $average_hold_seconds seconds\n";
 
 echo "\n";
 echo "---------- DROPS\n";
@@ -136,7 +137,31 @@ $average_hold_seconds = round($average_hold_seconds, 0);
 $average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 
 echo "Gesamt-TROPFEN Anrufe:                                          $DROPcalls  $DROPpercent%\n";
-echo "Durchschnittliche Länge für TROPFEN Anrufe in den Sekunden:     $average_hold_seconds\n";
+echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
+
+echo "\n";
+echo "---------- QUEUE STATS\n";
+
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+
+$QUEUEcalls =	sprintf("%10s", $row[0]);
+$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
+$QUEUEpercent = round($QUEUEpercent, 0);
+
+$average_queue_seconds = ($row[1] / $row[0]);
+$average_queue_seconds = round($average_queue_seconds, 2);
+$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
+
+$average_total_queue_seconds = ($row[1] / $TOTALcalls);
+$average_total_queue_seconds = round($average_total_queue_seconds, 2);
+$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
+
+echo "Total Calls That entered Queue:               $QUEUEcalls  $QUEUEpercent%\n";
+echo "Average QUEUE Length for queue calls:         $average_queue_seconds seconds\n";
+echo "Average QUEUE Length across all calls:        $average_total_queue_seconds seconds\n";
 
 
 ##############################

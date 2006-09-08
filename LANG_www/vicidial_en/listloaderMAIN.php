@@ -8,7 +8,6 @@
 #
 # changes:
 # 60620-1149 - Added variable filtering to eliminate SQL injection attack threat
-# 60822-1105 - fixed for nonwritable directories
 #
 
 require("dbconnect.php");
@@ -31,7 +30,7 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $auth=$row[0];
 
-if ($WeBRooTWritablE > 0) {$fp = fopen ("./project_auth_entries.txt", "a");}
+$fp = fopen ("./project_auth_entries.txt", "a");
 $date = date("r");
 $ip = getenv("REMOTE_ADDR");
 $browser = getenv("HTTP_USER_AGENT");
@@ -60,19 +59,13 @@ $browser = getenv("HTTP_USER_AGENT");
 			echo "You do not have permissions to load leads\n";
 			exit;
 			}
-		if ($WeBRooTWritablE > 0) 
-			{
-			fwrite ($fp, "LIST_LOAD|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
-			fclose($fp);
-			}
+		fwrite ($fp, "LIST_LOAD|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
+		fclose($fp);
 		}
 	else
 		{
-		if ($WeBRooTWritablE > 0) 
-			{
-			fwrite ($fp, "LIST_LOAD|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
-			fclose($fp);
-			}
+		fwrite ($fp, "LIST_LOAD|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
+		fclose($fp);
 		}
 	}
 

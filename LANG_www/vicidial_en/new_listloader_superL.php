@@ -14,11 +14,12 @@
 # 60616-1604 - added gmt lookup for each lead
 # 60619-1651 - Added variable filtering to eliminate SQL injection attack threat
 # 60822-1121 - fixed for nonwritable directories
+# 60906-1100 - added filter of non-digits in alt_phone field
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
 $version = '2.0.1';
-$build = '60822-1121';
+$build = '60906-1100';
 
 
 require("dbconnect.php");
@@ -172,7 +173,7 @@ $admDIR = "$HTTPprotocol$server_name$script_name";
 $admDIR = eregi_replace('new_listloader_superL.php','',$admDIR);
 $admSCR = 'admin.php';
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$admDIR$admSCR?ADD=99999";
-$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+$NWE = "')\"><IMG SRC=\"../astguiclient/help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
 $secX = date("U");
 $hour = date("H");
@@ -370,7 +371,7 @@ function ParseFileName() {
 						$country_code =				$row[$country_code_field];
 						$gender =				$row[$gender_field];
 						$date_of_birth =		$row[$date_of_birth_field];
-						$alt_phone =			$row[$alt_phone_field];
+						$alt_phone =			eregi_replace("[^0-9]", "", $row[$alt_phone_field]);
 						$email =				$row[$email_field];
 						$security_phrase =		$row[$security_phrase_field];
 						$comments =				trim($row[$comments_field]);
@@ -479,7 +480,7 @@ function ParseFileName() {
 				$country_code =				$row[$country_code_field];
 				$gender =				$row[$gender_field];
 				$date_of_birth =		$row[$date_of_birth_field];
-				$alt_phone =			$row[$alt_phone_field];
+				$alt_phone =			eregi_replace("[^0-9]", "", $row[$alt_phone_field]);
 				$email =				$row[$email_field];
 				$security_phrase =		$row[$security_phrase_field];
 				$comments =				trim($row[$comments_field]);
@@ -607,7 +608,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 					$country_code =				$row[16];
 					$gender =				$row[17];
 					$date_of_birth =		$row[18];
-					$alt_phone =			$row[19];
+					$alt_phone =			eregi_replace("[^0-9]", "", $row[19]);
 					$email =				$row[20];
 					$security_phrase =		$row[21];
 					$comments =				trim($row[22]);
@@ -732,7 +733,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				$country_code =				$row[16];
 				$gender =				$row[17];
 				$date_of_birth =		$row[18];
-				$alt_phone =			$row[19];
+				$alt_phone =			eregi_replace("[^0-9]", "", $row[19]);
 				$email =				$row[20];
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);

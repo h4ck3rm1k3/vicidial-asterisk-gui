@@ -11,6 +11,7 @@
 #            - Added gmt_offset_now lookup for each lead
 # 60811-1232 - Changed to DBI
 # 60811-1329 - changed to use /etc/astguiclient.conf for configs
+# 60906-1056 - added filter of non-digits in alt_phone field
 #
 
 ### begin parsing run-time options ###
@@ -205,6 +206,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 		if ($oWkC) {$date_of_birth=$oWkC->Value; }
 		$oWkC = $oWkS->{Cells}[$iR][$xls_fields[19]];
 		if ($oWkC) {$alt_phone=$oWkC->Value; }
+		$alt_phone=~s/[^0-9]//g;
 		$oWkC = $oWkS->{Cells}[$iR][$xls_fields[20]];
 		if ($oWkC) {$email=$oWkC->Value; }
 		$oWkC = $oWkS->{Cells}[$iR][$xls_fields[21]];

@@ -14,6 +14,8 @@
 # 60619-1658 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 60626-1453 - Added display of system load to bottom (Angelito Manansala)
+# 60901-1123 - Changed display elements at the top of the screen
+# 60905-1342 - Fixed non INCALL|QUEUE timer column
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -23,20 +25,22 @@ require("dbconnect.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
-if (isset($_GET["server_ip"]))				{$server_ip=$_GET["server_ip"];}
-	elseif (isset($_POST["server_ip"]))		{$server_ip=$_POST["server_ip"];}
+if (isset($_GET["server_ip"]))			{$server_ip=$_GET["server_ip"];}
+	elseif (isset($_POST["server_ip"]))	{$server_ip=$_POST["server_ip"];}
 if (isset($_GET["reset_counter"]))				{$reset_counter=$_GET["reset_counter"];}
 	elseif (isset($_POST["reset_counter"]))		{$reset_counter=$_POST["reset_counter"];}
-if (isset($_GET["RR"]))				{$RR=$_GET["RR"];}
+if (isset($_GET["RR"]))					{$RR=$_GET["RR"];}
 	elseif (isset($_POST["RR"]))		{$RR=$_POST["RR"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
-if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
+if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
+if (isset($_GET["adastats"]))			{$adastats=$_GET["adastats"];}
+	elseif (isset($_POST["adastats"]))	{$adastats=$_POST["adastats"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 
 if (!isset($group))   {$group='';}
 
@@ -156,12 +160,13 @@ if ($reset_counter > 7)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group\">\n";
+echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats\">\n";
 echo "<TITLE>VICIDIAL: Time On VDAD Kampagne: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "VICIDIAL: Realtime Kampagne: \n";
 echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=4>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=adastats VALUE=\"$adastats\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -172,7 +177,7 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 	}
 echo "</SELECT>\n";
 echo "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB\">STOP</a> | <a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB\">GO</a>";
+echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">STOP</a> | <a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats\">GO</a>";
 echo " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">ÄNDERN Sie</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
 echo "\n\n";
 
@@ -180,18 +185,27 @@ echo "\n\n";
 if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FORM>\n"; exit;}
 else
 {
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
-$HOPlev = $row[8];
-$DIALmethod = $row[9];
-
-echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[0]&nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[1], $row[2], $row[3], $row[4], $row[5] &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>ORDER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[6] &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $row[7] &nbsp; &nbsp; </TD>";
-echo "</TR>";
+$DIALlev =		$row[0];
+$DIALstatusA =	$row[1];
+$DIALstatusB =	$row[2];
+$DIALstatusC =	$row[3];
+$DIALstatusD =	$row[4];
+$DIALstatusE =	$row[5];
+$DIALorder =	$row[6];
+$DIALfilter =	$row[7];
+$HOPlev =		$row[8];
+$DIALmethod =	$row[9];
+$maxDIALlev =	$row[10];
+$DROPmax =		$row[11];
+$targetDIFF =	$row[12];
+$ADAintense =	$row[13];
+$ADAavailonly =	$row[14];
+$TAPERtime =	$row[15];
+$CALLtime =		$row[16];
+$DIALtimeout =	$row[17];
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
@@ -214,26 +228,59 @@ if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 	}
 else {$diffpctONEMIN = '0.00';}
 
+echo "<BR><table cellpadding=0 cellspacing=0><TR>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT COLSPAN=2><font size=2><B> TIME:</B> &nbsp; </TD>";
+echo "<TD ALIGN=LEFT COLSPAN=2><font size=2> $NOW_TIME </TD>";
+echo "</TR>";
+
+if ($adastats>1)
+	{
+	echo "<TR BGCOLOR=\"#CCCCCC\">";
+	echo "<TD ALIGN=RIGHT><a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=1\"><font size=1>- min </font></a><font size=2>&nbsp; <B>MAX LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $maxDIALlev &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>TARGET DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>INTENSITY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
+	echo "</TR>";
+
+	echo "<TR BGCOLOR=\"#CCCCCC\">";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DIAL TIMEOUT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALtimeout &nbsp;</TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>TAPER TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $TAPERtime &nbsp;</TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>LOCAL TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $CALLtime &nbsp;</TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>AVAIL ONLY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAavailonly &nbsp;</TD>";
+	echo "</TR>";
+	}
+
+echo "<TR>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIALABLE LEADS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>CALLS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>AVG AGENTS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIAL METHOD:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
+echo "</TR>";
+
 echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>LEADS IN HOPPER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $VDhop &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIALABLE LEADS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=CENTER COLSPAN=2><font size=2> &nbsp; <B> TIME:</B> </TD>";
-echo "</TR>";
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CALLS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>CALLS DROPPED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY% &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=CENTER COLSPAN=2><font size=2> &nbsp; $NOW_TIME </TD>";
-echo "</TR>";
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIAL METHOD:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>AVG AGENTS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatusA, $DIALstatusB, $DIALstatusC, $DIALstatusD, $DIALstatusE &nbsp; &nbsp; </TD>";
+echo "</TR>";
+
+echo "<TR>";
+echo "<TD ALIGN=RIGHT><font size=2><B>LEADS IN HOPPER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $VDhop &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY% &nbsp; &nbsp;</TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>ORDER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALorder &nbsp; &nbsp; </TD>";
+echo "</TR>";
 
-echo "</TR></TABLE>";
+if ($adastats<2)
+	{
+	echo "<TR>";
+	echo "<TD ALIGN=LEFT COLSPAN=8><a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=2\"><font size=1>+ VIEW MORE SETTINGS</font></a></TD>";
+	echo "</TR>";
+	}
 
+echo "</TABLE>";
 
 echo "</FORM>\n\n";
 }
@@ -329,14 +376,19 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			$row[5]=$row[6];
 			}
-		$extension =		sprintf("%-10s", $row[0]);
+		$extension = eregi_replace('Local/',"",$row[0]);
+		$extension =		sprintf("%-10s", $extension);
+			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 		$user =				sprintf("%-6s", $row[1]);
 		$sessionid =		sprintf("%-9s", $row[2]);
 		$status =			sprintf("%-6s", $row[3]);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =		sprintf("%-10s", $row[8]);
-		$call_time_S = ($STARTtime - $row[5]);
+		if (!eregi("INCALL|QUEUE",$row[3]))
+			{$call_time_S = ($STARTtime - $row[6]);}
+		else
+			{$call_time_S = ($STARTtime - $row[5]);}
 
 		$call_time_M = ($call_time_S / 60);
 		$call_time_M = round($call_time_M, 2);

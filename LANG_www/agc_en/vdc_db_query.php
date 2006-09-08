@@ -108,9 +108,11 @@
 # 60623-1414 - Fixed variable filter for phone_code and fixed manual dial logic
 # 60821-1600 - Added ability to omit the phone code on vicidial lead dialing
 # 60821-1647 - Added ability to not delete sessions at logout
+# 60906-1124 - Added lookup and sending of callback data for CALLBK calls
+#
 
-$version = '2.0.36';
-$build = '60821-1647';
+$version = '2.0.37';
+$build = '60906-1124';
 
 require("dbconnect.php");
 
@@ -498,6 +500,27 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 			$called_count++;
 
+			##### if lead is a callback, grab the callback comments
+			$CBentry_time =		'';
+			$CBcallback_time =	'';
+			$CBuser =			'';
+			$CBcomments =		'';
+			if (ereg("CALLBK",$dispo))
+				{
+				$stmt="SELECT entry_time,callback_time,user,comments FROM vicidial_callbacks where lead_id='$lead_id' order by callback_id desc LIMIT 1;";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$cb_record_ct = mysql_num_rows($rslt);
+				if ($cb_record_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$CBentry_time =		trim("$row[0]");
+					$CBcallback_time =	trim("$row[1]");
+					$CBuser =			trim("$row[2]");
+					$CBcomments =		trim("$row[3]");
+					}
+				}
+
 			### flag the lead as called and change it's status to INCALL
 			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='Y', called_count='$called_count',user='$user' where lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
@@ -582,6 +605,10 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$security . "\n";
 			$LeaD_InfO .=	$comments . "\n";
 			$LeaD_InfO .=	$called_count . "\n";
+			$LeaD_InfO .=	$CBentry_time . "\n";
+			$LeaD_InfO .=	$CBcallback_time . "\n";
+			$LeaD_InfO .=	$CBuser . "\n";
+			$LeaD_InfO .=	$CBcomments . "\n";
 
 			echo $LeaD_InfO;
 
@@ -1076,6 +1103,27 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$called_count	= trim("$row[30]");
 			}
 
+		##### if lead is a callback, grab the callback comments
+		$CBentry_time =		'';
+		$CBcallback_time =	'';
+		$CBuser =			'';
+		$CBcomments =		'';
+		if (ereg("CALLBK",$dispo))
+			{
+			$stmt="SELECT entry_time,callback_time,user,comments FROM vicidial_callbacks where lead_id='$lead_id' order by callback_id desc LIMIT 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$cb_record_ct = mysql_num_rows($rslt);
+			if ($cb_record_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$CBentry_time =		trim("$row[0]");
+				$CBcallback_time =	trim("$row[1]");
+				$CBuser =			trim("$row[2]");
+				$CBcomments =		trim("$row[3]");
+				}
+			}
+
 		### update the lead status to INCALL
 		$stmt = "UPDATE vicidial_list set status='INCALL', user='$user' where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
@@ -1215,6 +1263,10 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$LeaD_InfO .=	$security . "\n";
 		$LeaD_InfO .=	$comments . "\n";
 		$LeaD_InfO .=	$called_count . "\n";
+		$LeaD_InfO .=	$CBentry_time . "\n";
+		$LeaD_InfO .=	$CBcallback_time . "\n";
+		$LeaD_InfO .=	$CBuser . "\n";
+		$LeaD_InfO .=	$CBcomments . "\n";
 
 		echo $LeaD_InfO;
 

@@ -16,6 +16,8 @@
 #			 - Added extended pause (exceeding 60 seconds -> 20 minutes) (Magma Networks LLC)
 #			 - Added Full Name Field to extract from Database (Magma Networks LLC)
 #			 - Added Barge Link (Magma Networks LLC)
+# 60731-1138 - fixed fullname formatting
+
 header ("Content-type: text/html; charset=utf-8");
 
 require("dbconnect.php");
@@ -104,9 +106,9 @@ if ($reset_counter > 7)
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group\">\n";
-echo "<TITLE>VF DIALER: Time On VDAD Kampagne: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Time On VDAD Kampagne: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "VF DIALER: Realtime Kampagne: \n";
+echo "VICIDIAL: Realtime Kampagne: \n";
 echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=4>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
@@ -238,7 +240,9 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			$row[5]=$row[6];
 			}
-		$extension =		sprintf("%-10s", $row[0]);
+		$extension[$i] = eregi_replace('Local/',"",$row[0]);
+		$extension[$i] =		sprintf("%-10s", $extension[$i]);
+			while(strlen($extension[$i])>10) {$extension[$i] = substr("$extension[$i]", 0, -1);}
 		$user =				sprintf("%-6s", $row[1]);
 		$sessionid =		sprintf("%-9s", $row[2]);
 		$status =			sprintf("%-6s", $row[3]);
@@ -319,8 +323,3 @@ $talking_to_print = mysql_num_rows($rslt);
 </PRE>
 
 </BODY></HTML>
-
-
-
-
-
