@@ -711,8 +711,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.11) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.11. These instructions are how we get 
+this writing the official release is 1.2.10) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.10. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -727,11 +727,11 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.11.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.10.tar.gz
 	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.8.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.3.tar.gz
-	- gunzip asterisk-1.2.11.tar.gz
-	- tar xvf asterisk-1.2.11.tar
+	- gunzip asterisk-1.2.10.tar.gz
+	- tar xvf asterisk-1.2.10.tar
 	- gunzip zaptel-1.2.8.tar.gz
 	- tar xvf zaptel-1.2.8.tar
 	- gunzip libpri-1.2.3.tar.gz
@@ -762,7 +762,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.11
+	- cd ../asterisk-1.2.10
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -1472,7 +1472,7 @@ package(as of this writing it is 2.0.1)
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
 	- svn checkout svn://205.201.151.21:43690/agc_2-X
-	- cd trunk
+	- cd agc_2-X/trunk/
 	- perl install.pl
    - there is one more file you need that's not included with the download 
 package, it's the conf.gsm file(this is the half-hour music file that we use 

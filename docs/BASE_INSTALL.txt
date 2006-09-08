@@ -27,11 +27,11 @@ PHASE 1: INSTALLING ASTERISK
 1. follow these command line steps:
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.11.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.10.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.8.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.3.tar.gz
-gunzip asterisk-1.2.11.tar.gz
-tar xvf asterisk-1.2.11.tar
+gunzip asterisk-1.2.10.tar.gz
+tar xvf asterisk-1.2.10.tar
 gunzip zaptel-1.2.8.tar.gz
 tar xvf zaptel-1.2.8.tar
 gunzip libpri-1.2.3.tar.gz
@@ -44,7 +44,7 @@ cd ../libpri-1.2.3
 make clean
 make
 make install
-cd ../asterisk-1.2.11
+cd ../asterisk-1.2.10
 	(1.2 tree) If you want to include Answering Machine Detection ability
 	  you will need to download app_amd.c and amd.conf and alter the 
 	  apps/Makefile to compile it properly
