@@ -47,7 +47,7 @@ you have the keepalive for this function loaded in your crontab:
 NOTE: this only needs to be on a single server if you are in a multiple 
 VICIDIAL server setup.
 ### keepalive script for VICIDIAL predictive script
-* * * * * /home/cron/ADMIN_keepalive_AST_VDadapt.pl
+* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
 
 
 6. other notes:
