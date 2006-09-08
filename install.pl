@@ -918,6 +918,8 @@ if ($NOWEB < 1)
 	`chmod -R 0755 $PATHweb/agc/`;
 	`chmod -R 0755 $PATHweb/astguiclient/`;
 	`chmod -R 0755 $PATHweb/vicidial/`;
+	`chmod 0777 $PATHweb/agc/`;
+	`chmod 0777 $PATHweb/astguiclient/`;
 	`chmod 0777 $PATHweb/vicidial/`;
 	`chmod 0777 $PATHweb/vicidial/ploticus/`;
 	`chmod 0777 $PATHweb/vicidial/agent_reports/`;
