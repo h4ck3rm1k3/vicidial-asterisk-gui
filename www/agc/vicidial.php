@@ -208,7 +208,7 @@ $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from origi
 $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 
-$TEST_all_statuses		= '1';	# TEST variable allows all statuses in dispo screen
+$TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
 # options now set in DB:
 #$alt_phone_dialing		= '1';	# allow agents to call alt phone numbers
