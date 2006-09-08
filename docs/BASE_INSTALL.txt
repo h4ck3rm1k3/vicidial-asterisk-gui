@@ -185,6 +185,10 @@ free for download at the following two sites:
 		/var/lib/asterisk/sounds/
    Then you will need to execute this command to copy it as the park file
    'cp /var/lib/asterisk/sounds/conf.gsm /var/lib/asterisk/sounds/park.gsm'
+  Here are the steps spelled out:
+	- cd /var/lib/asterisk/sounds
+	- wget http://www.freedomhones.net/conf.gsm 
+	- cp conf.gsm park.gsm
    - you are done
 
 
