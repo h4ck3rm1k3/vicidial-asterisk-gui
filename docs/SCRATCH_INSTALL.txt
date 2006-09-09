@@ -348,6 +348,7 @@ NOTE: a minimum of MySQL server 4.0.X is required
 	- chgrp -R mysql /usr/local/mysql
 	- cp support-files/my-medium.cnf /etc/my.cnf
 	- /usr/local/mysql/bin/mysqld_safe --user=mysql &
+	- ln -s /tmp/mysql.sock /var/run/mysql/mysql.sock
    - you are done
 
    ***** NOTE: if you will be using any of the DBI perl scripts: *****
