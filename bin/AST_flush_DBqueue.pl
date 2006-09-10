@@ -13,6 +13,7 @@
 # CHANGES
 # 60717-1214 - changed to DBI by Marin Blu
 # 60717-1536 - changed to use /etc/astguiclient.conf for configs
+# 60910-0238 - removed park_log query
 #
 
 $secX = time();
@@ -134,17 +135,6 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {	$affected_rows = $dbhA->do($stmtA);}
 		if (!$Q) {print " - vicidial_manager 2 hour flush\n";}
-
-	$stmtA = "update park_log set status='HUNGUP' where hangup_time is not null;";
-		if($DB){print STDERR "\n|$stmtA|\n";}
-		if (!$T) {
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthA->finish();
-				 }
-
-	if (!$Q) {print " - park_log HUNGUP flush          \n";}
-
 
         $stmtA = "optimize table vicidial_manager;";
                 if($DB){print STDERR "\n|$stmtA|\n";}
