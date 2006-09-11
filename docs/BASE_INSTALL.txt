@@ -61,10 +61,14 @@ cd ../asterisk-1.2.10
 	mv amd2.conf /etc/asterisk/amd.conf
 	cd ../
 
-	1.2 tree) apply the cli delimiter patch
+	(1.2 tree) apply the cli delimiter patch
 	wget http://www.eflo.net/files/cli_chan_concise_delimiter.patch
 	patch -p1 < ./cli_chan_concise_delimiter.patch
 		- File to patch: cli.c
+	(1.2.12) - channel.c bug fix - **THERE IS NO FIX FOR ASTERISK 1.2.11**
+	wget http://www.eflo.net/files/channel.c-42600.patch
+	patch -p1 < ./channel.c-42600.patch
+		- File to patch: channel.c
 make clean
 make
 make install
