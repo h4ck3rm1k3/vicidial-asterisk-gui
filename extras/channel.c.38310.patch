@@ -1,0 +1,22 @@
+--- ./channel.c	2006-09-11 12:05:39.000000000 -0400
++++ ./channel.c-fixed	2006-09-11 11:58:52.000000000 -0400
+@@ -45,7 +45,7 @@
+ 
+ #include "asterisk.h"
+ 
+-ASTERISK_FILE_VERSION(__FILE__, "$Revision: 38310 $")
++ASTERISK_FILE_VERSION(__FILE__, "$Revision: 37361 $")
+ 
+ #include "asterisk/pbx.h"
+ #include "asterisk/frame.h"
+@@ -2328,10 +2328,6 @@
+ 	int native;
+ 	int res;
+ 	
+-	/* if already in the desired format nothing to do here */
+-	if (*format == fmt)
+-		return 0;
+-
+ 	native = chan->nativeformats;
+ 	/* Find a translation path from the native format to one of the desired formats */
+ 	if (!direction)
