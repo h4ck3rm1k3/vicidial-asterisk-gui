@@ -15,7 +15,7 @@ quit
 perl install.pl
 
 
-3. Make sure you have MySQL cli8entlibs installed:
+3. Make sure you have MySQL clientlibs installed:
 Because all perl script now use DBI instead of Net::MySQL you need to make sure 
 that you have at least the MySQL client installed on all VICIDIAL servers even 
 if the MySQL server is installed on another machine. You can skip this step if 

@@ -712,8 +712,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.10) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.10. These instructions are how we get 
+this writing the official release is 1.2.12.1) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.12.1. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -728,13 +728,13 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.10.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.8.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.12.1.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.9.1.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.3.tar.gz
-	- gunzip asterisk-1.2.10.tar.gz
-	- tar xvf asterisk-1.2.10.tar
-	- gunzip zaptel-1.2.8.tar.gz
-	- tar xvf zaptel-1.2.8.tar
+	- gunzip asterisk-1.2.12.1.tar.gz
+	- tar xvf asterisk-1.2.12.1.tar
+	- gunzip zaptel-1.2.9.1.tar.gz
+	- tar xvf zaptel-1.2.9.1.tar
 	- gunzip libpri-1.2.3.tar.gz
 	- tar xvf libpri-1.2.3.tar
    B. if you want latest SVN_DEV version (sometimes unstable) [1.3 tree]
@@ -755,7 +755,7 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.8
+	- cd ./zaptel-1.2.9.1
 	- make clean
 	- make
 	- make install
@@ -763,7 +763,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.10
+	- cd ../asterisk-1.2.12.1
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -835,8 +835,15 @@ them:
 configure it.
 
 NOTES: If you want to install zttool diagnostics you may need the newt package installed:
-http://www.freedomphones.net/files/newt-0.51.6.tar.gz
-ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
+	- wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
+	- gunzip newt-0.51.6.tar.gz
+	- tar xvf newt-0.51.6.tar
+	- cd newt-0.51.6
+	- ./configure
+	- make
+	- make install
+	- cd ../
+	- ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
 then go to your zaptel folder and do 'make zttool' 
 
 Digium/Clone X100P EXAMPLE:
@@ -1525,7 +1532,7 @@ use asterisk;
 GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
 GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.10');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.12.1');
 
 insert into server_updater values('10.10.10.15','');
 

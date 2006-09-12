@@ -38,7 +38,7 @@ Comments: ||
 
 ############################################################  ADMIN Manual
 
-Add consultative transfer info to Capmaign modification screen info
+Add consultative transfer info to Campaign modification screen info
 
 Add note about phone_code being manditory for proper GMT offset encoding for proper time zone.
 
