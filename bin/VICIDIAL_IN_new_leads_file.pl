@@ -140,9 +140,19 @@ if (length($ARGV[0])>1)
 else
 {
 print "no command line options set\n";
+$args = "";
+$i=0;
+$forcelistid = '';
 }
 ### end parsing run-time options ###
 
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
 
 $suf = '.txt';
 $people_packages_id_update='';
@@ -185,13 +195,6 @@ foreach(@FILES)
 	open(infile, "$dir2/$source$FILES[$i]")
 			|| die "Can't open $source$FILES[$i]: $!\n";
 
-
-if (!$VARDB_port) {$VARDB_port='3306';}
-
-use DBI;	  
-
-$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
- or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
 $stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";
@@ -438,8 +441,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				{
 				### insert good deal into pending_transactions table ###
 				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','0');";
-						if($DB){print STDERR "\n|$stmtZ|\n";}
-						if (!$T) {$affected_rows = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtA|\n";
+						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
+						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
 
 				$multistmt='';
 				$multi_insert_counter=0;
@@ -479,8 +482,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				chop($multistmt);
 				### insert good deal into pending_transactions table ###
 				$stmtZ = "INSERT INTO vicidial_list values$multistmt;";
-						if($DB){print STDERR "\n|$stmtZ|\n";}
-						if (!$T) {$affected_rows = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtA|\n";
+						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
+						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
 
 				$multistmt='';
 				$multi_insert_counter=0;
