@@ -18,6 +18,8 @@
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
 # 60906-1055 - added filter of non-digits in alt_phone field
+# 60913-1236 - fixed MySQL bugs and non-debug bug
+#            - added duplicate check flag option within same list
 #
 
 $secX = time();
@@ -95,7 +97,7 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help|-h/i)
 	{
-	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-forcegmt] = forces gmt value of column after comments column\n  [-debug] = debug output\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-h] = this help screen\n\n";
+	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-forcegmt] = forces gmt value of column after comments column\n  [-debug] = debug output\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-duplicate-check] = checks for the same phone number in the same list id before inserting lead\n  [-h] = this help screen\n\n";
 	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
 	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS\n\n";
 	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS\n\n";
@@ -135,6 +137,12 @@ if (length($ARGV[0])>1)
 		}
 		else
 			{$forcelistid = '';}
+		if ($args =~ /-duplicate-check/i)
+		{
+		$dupcheck=1;
+		print "\n----- DUPLICATE CHECK -----\n\n";
+		}
+
 	}
 }
 else
@@ -146,6 +154,8 @@ $forcelistid = '';
 }
 ### end parsing run-time options ###
 
+$US = '_';
+$phone_list = '|';
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -217,8 +227,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	$c=0;	### status of 'DECLINED' counter ###
 	$d=0;	### status of 'REFERRED' counter ###
 	$e=0;	### status of 'ERROR' counter ###
-	$f=0;	### number of modified packages ###
-	$g=0;	### number of credits ###
+	$f=0;	### number of 'DUPLICATE' counter ###
 
 	$multi_insert_counter=0;
 	$multistmt='';
@@ -273,8 +282,29 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$comments =				$m[22];
 
 
-		if (length($phone_number)>8)
+		if (length($forcelistid) > 0)
 			{
+			$list_id =	$forcelistid;		# set list_id to override value
+			}
+		if ($dupcheck > 0)
+			{
+			$dup_lead=0;
+			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				@aryA = $sthA->fetchrow_array;
+				$dup_lead = $aryA[0];
+			$sthA->finish();
+			if ($dup_lead < 1)
+				{
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
+				}
+			}
+		if ( (length($phone_number)>6) && ($dup_lead < 1) )
+			{
+			$phone_list .= "$phone_number$US$list_id|";
 			# set default values
 			$entry_date =			"$pulldate0";
 			$modify_date =			"";
@@ -283,10 +313,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			$called_since_last_reset='N';
 			$gmt_offset =			'0';
 
-			if (length($forcelistid) > 0)
-				{
-				$list_id =	$forcelistid;		# set list_id to override value
-				}
 			if ($forcegmt > 0)
 				{
 				$gmt_offset =	$m[23];		# set GMT offset value to 24th field value
@@ -458,8 +484,10 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			}
 		else
 			{
-			print "BAD Home_Phone: $phone|$vendor_id";
-			$e++;
+			if ($dup_lead > 0)
+				{print "DUPLICATE: $phone|$list_id";   $f++;}
+			else
+				{print "BAD Home_Phone: $phone|$vendor_id";   $e++;}
 			}
 		
 		$a++;
@@ -501,16 +529,16 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	print "INSERTED:         $b\n";
 	print "INSERT STATEMENTS:$c\n";
 	print "ERROR:            $e\n";
-#	print "Modified PAID NS: $f\n";
-#	print "Credits:          $g\n\n";
+	if ($f > 0)
+		{print "DUPLICATES:       $f\n";}
 
 	print Sout "\nTOTALS FOR $FILEname:\n";
 	print Sout "Transactions sent:$a\n";
 	print Sout "INSERTED:         $b\n";
 	print Sout "INSERT STATEMENTS:$c\n";
 	print Sout "ERROR:            $e\n";
-#	print Sout "Modified PAID NS: $f\n";
-#	print Sout "Credits:          $g\n\n";
+	if ($f > 0)
+		{print Sout "DUPLICATES:       $f\n";}
 
 	close(infile);
 	close(Sout);
