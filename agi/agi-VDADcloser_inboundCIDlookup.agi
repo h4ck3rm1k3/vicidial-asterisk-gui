@@ -23,7 +23,7 @@
 #exten => 1234,1,Ringing                 ; call ringing
 #exten => 1234,2,Wait(1)                 ; Wait 1 second for CID delivery from PRI
 #exten => 1234,3,Answer                  ; Answer the line
-#exten => 1234,4,AGI(agi-VDADcloser_inboundCID.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
+#exten => 1234,4,AGI(agi-VDADcloser_inboundCIDlookup.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
 #exten => 1234,5,Hangup
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
@@ -310,7 +310,7 @@ while ($sthArows > $cbc)
 $sthA->finish();  
 
 $cbc=0;
-$stmtA= "SELECT lead_id from vicidial_list where list_id='$list_id' and phone_number='$phone_number' order by modify_date limit 1;"
+$stmtA= "SELECT lead_id from vicidial_list where list_id='$list_id' and phone_number='$phone_number' order by modify_date limit 1;";
 
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
