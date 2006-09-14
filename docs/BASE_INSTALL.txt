@@ -179,8 +179,8 @@ package(as of this writing it is 2.0.1)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1b2.zip
-	- unzip astguiclient_2.0.1b2.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1.zip
+	- unzip astguiclient_2.0.1.zip
 	- perl install.pl
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
