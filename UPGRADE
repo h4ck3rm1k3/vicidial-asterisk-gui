@@ -1,8 +1,8 @@
 ################ UPGRADE
 
-If you are upgrading to the 2.0 code tree from the 1.1 code tree there have been
-several changes made to the code base and to where some files are stored in the
-release as well as on your machine.
+If you are upgrading to the 2.0 code tree from the 1.1.12-3 release there have 
+been several changes made to the code base and to where some files are stored in
+the release as well as on your machine.
 
 1. upgrade the MySQL Asterisk database:
 mysql
@@ -12,6 +12,11 @@ quit
 
 
 2. use the new installer for astguiclient-VICIDIAL files:
+	NOTE: this new script is interactive with prompts. this script will
+	create the new /etc/astguiclient.conf settings file that replaces the
+	old AST_SERVER_conf.pl file that has been removed. Also, this settings
+	file is used by dbconnect.php scripts so no need to manually edit them
+
 perl install.pl
 
 
