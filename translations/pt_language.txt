@@ -414,3 +414,9 @@ September|Setembro|
 October|Outubro|
 November|Novembro|
 December|Dezembro|
+### BEGIN translation phrases for 2.0.1 release ###
+Previous Callback Information|Informação Precedente Da Rechamada|
+Last Call: |Última Chamada:|
+CallBack: |Rechamada:|
+Agent: |Agente:|
+Comments: |Comentários:|

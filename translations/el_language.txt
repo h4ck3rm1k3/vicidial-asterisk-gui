@@ -412,3 +412,9 @@ September|Σεπτέμβριος|
 October|Οκτώβριος|
 November|Νοέμβριος|
 December|Δεκέμβριος|
+### BEGIN translation phrases for 2.0.1 release ###
+Previous Callback Information|Προηγούμενες πληροφορίες επανάκλησης|
+Last Call: |Στο τέλος καλέστε:|
+CallBack: |CallBack:|
+Agent: |Πράκτορας:|
+Comments: |Σχολιάζει:|
