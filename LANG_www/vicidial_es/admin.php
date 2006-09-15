@@ -1119,7 +1119,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-dial_method">
 <BR>
-<B>Dial Method -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift(as defined by call_time selected for campaign) and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods.
+<B>Método del dial -</B> Este campo es la manera de definir cómo el marcar debe ocurrir. Si el MANUAL entonces el auto_dial_level es bloqueado en 0 a menos que se cambie el método del dial. Si COCIENTE entonces el normal marcando un número de líneas para los agentes activos. ADAPT_HARD_LIMIT marcará predictively hasta el porcentaje caído y después no permitirá marcar agresivo una vez que se alcance el límite de la gota hasta que va el porcentaje abajo otra vez. ADAPT_TAPERED permite para el excedente de funcionamiento el porcentaje caído por la mitad primer de la cambio - según lo definido por el call_time seleccionado para la campaña y consigue más terminante mientras que se enciende la cambio. ADAPT_AVERAGE intenta mantener un promedio o el porcentaje caído que no impone límites duros tan agresivamente como los otros dos métodos. Usted no puede cambiar el nivel auto del dial si usted está en cualesquiera de los métodos del dial del ADAPTAR. Solamente el sintonizador puede cambiar el nivel del dial cuando en modo que marca profético.
 
 <BR>
 <A NAME="vicidial_campaigns-auto_dial_level">
@@ -1129,32 +1129,32 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-available_only_ratio_tally">
 <BR>
-<B>Available Only Tally -</B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
+<B>Solamente cuenta disponible -</B> este campo si el sistema a Y deja haciafuera los agentes del estado de INCALL y de la COLETA al calcular elnúmero de llamadas al dial cuando no en modo de dial MANUAL. Eldefecto es N.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_dropped_percentage">
 <BR>
-<B>Drop Percentage Limit -</B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
+<B>Límite del porcentaje de la gota -</B> este campo es donde usted fijó ellímite del porcentaje de llamadas caídas que usted quisiera mientrasque usaba un método adaptante-profe'tico del dial, NO MANUAL o delCOCIENTE.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_maximum_level">
 <BR>
-<B>Maximum Adapt Dial Level -</B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Nivel del Auto-Dial if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
+<B>El máximo adapta el dial llano -</B> este campo es donde usted fijó ellímite del límite al numbr de líneas que usted quisiera marcado poragente mientras que usaba un método adaptante-profe'tico del dial, NOMANUAL o del COCIENTE. Este número puede ser más alto que el nivelauto del dial si su hardware lo apoya. El valor debe ser un númeropositivo mayor de uno y puede tener defecto 3.0 de los lugaresdecimales.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_latest_server_time">
 <BR>
-<B>Latest Server Time -</B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling.
+<B>El tiempo más último del servidor -</B> este campo es utilizadosolamente por el método del dial de ADAPT_TAPERED. Usted debe entraren la hora y el minuto que usted parará el invitar de esta campaña,2100 significaría que usted parará el marcar de esta campaña en eltiempo del servidor de los 9PM. Esto permite que el algoritmo afiladodecida a cómo agresivamente al dial cerca cuánto tiempo usted tienehasta que usted será el llamar acabado.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_intensity">
 <BR>
-<B>Adapt Intensity Modifier -</B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+<B>Adapte el modificante de la intensidad -</B> este campo se utiliza paraajustar la intensidad profética más alta o más baja. El más altoun número positivo que usted selecciona, mayor va el sintonizadoraumentará la llamada que establece el paso cuando para arriba y máslentamente va el sintonizador disminuirá la llamada que establece elpaso cuando abajo. Cuanto más bajo es el número negativo que ustedseleccionan aquí, más lentamente el sintonizador aumentará lallamada que establece el paso y más rápidamente el sintonizadorbajará la llamada que establece el paso cuando va abajo. El defectoes 0. Este campo no es utilizado por los métodos del dial del MANUALo del COCIENTE.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_dl_diff_target">
 <BR>
-<B>Dial Level Difference Target -</B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+<B>Blanco llana de la diferencia del dial -</B> este campo se utiliza paradefinir si usted desea apuntar tener un número específico de losagentes que esperan agentes de las llamadas o el esperar de llamadas.Por ejemplo si usted siempre quisiera tener en agente del promedio unolibre tomar llamadas inmediatamente usted fijaría esto a -1, si ustedquisiera apuntar siempre tener uno invita el asimiento que espera unagente que usted fijaría esto a 1. El defecto es 0. Este campo no esutilizado por los métodos del dial del MANUAL o del COCIENTE.
 
 <BR>
 <A NAME="vicidial_campaigns-next_agent_call">
@@ -1183,12 +1183,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-omit_phone_code">
 <BR>
-<B>Omit Phone Code -</B> This field allows you to leave out the phone_code field while dialing within VICIDIAL. For instance if you are dialing in the UK from the UK you would have 44 in as your phone_code field for all leads, but you just want to dial 10 digits in your dialplan extensions.conf to place calls instead of 44 then 10 digits. Default is N.
+<B>Omita el código del teléfono -</B> este campo permite que usted dejehacia fuera el campo del phone_code mientras que marca dentro deVICIDIAL. Por ejemplo si usted está marcando en el Reino Unido delReino Unido usted tendría 44 adentro como su campo del phone_codepara todos los plomos, pero usted apenas desea marcar 10 dígitos ensu extensions.conf dialplan para poner llamadas en vez de 44 entonces10 dígitos. El defecto es N.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_cid">
 <BR>
-<B>CallerID de la Campaña -</B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service(RBS) circuits. This will also work through most VOIP(SIP or IAX trunks) providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID.
+<B>Campaña CallerID -</B> este campo permite enviar de un número de encargo del callerid en las llamadas de salida. Úste es el número que demostraría para arriba en el callerid de la persona que usted está llamando. El defecto es DESCONOCIDO. Esta opción está solamente disponible si usted está utilizando PRIs - ISDN T1 o E1 - que tienen la característica de encargo del callerid se giraron. Esta característica puede también trabajar con los troncos IAX2 dependiendo de lo que admite su abastecedor. El callerID de encargo se aplica solamente a las llamadas puestas para la campaña de VICIDIAL directamente, cualquier tercer persona llama o las transferencias no enviarán el callerID de encargo. NOTA: A veces el poner DESCONOCIDO o PRIVADO en el campo rendirá enviar de su número del callerID del defecto por su portador con las llamadas. Usted puede desear probar esto y poner 0000000000 en el campo del callerid en lugar de otro si usted no desea enviarle CallerID.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_vdad_exten">
@@ -1203,7 +1203,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-campaign_recording">
 <BR>
-<B>Grabación de la campaña -</B> este menú permite que usted elija qué nivel de la grabación se permite en esta campaña. NEVER inhabilitará la grabación en el cliente. ONDEMAND es el defecto y permite que el agente comience y pare a registrar según lo necesitado. ALLCALLS comenzará la grabación en el cliente siempre que una llamada se envíe a un agente. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
+<B>Grabación de la campaña -</B> este menú permite que usted elija quénivel de la grabación se permite en esta campaña. NUNCAinhabilitará la grabación en el cliente. ONDEMAND es el defecto ypermite que el agente comience y pare a registrar según lonecesitado. ALLCALLS comenzará la grabación en el cliente siempreque una llamada se envíe a un agente. ALLFORCE comenzará lagrabación en el cliente siempre que una llamada se envíe a un agenteque no da al agente ninguna opción para parar el registrar. ParaALLCALLS y ALLFORCE hay una opción para utilizar la grabaciónretrasa para reducir en grabaciones y carga de sistema muy cortas delrecude.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_filename">
@@ -1213,7 +1213,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-allcalls_delay">
 <BR>
-<B>Recording Delay -</B> For ALLCALLS and ALLFORCE recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0.
+<B>La registración retrasa -</B> para la grabación de ALLCALLS y deALLFORCE solamente. Esta voluntad del ajuste retrasa comenzar de lagrabación en todas las llamadas para el número de los segundosespecificados en este campo. El defecto es 0.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_script">
@@ -1238,7 +1238,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> Estos cuatro campos permiten para que usted tenga dos sistemas de conferencia de la transferencia y de precolocaciones de DTMF. Cuando se carga la llamada o la campaña, la escritura de vicidial.php demostrará dos botones en el marco de la transferir-conferencia y automo'vil-poblara' el nu'mero-a-dial y los campos del enviar-dtmf cuando está presionada. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
+<B>Xfer-Conf DTMF -</B> Estos cuatro campos permiten para que usted tenga dos sistemas de conferencia de la transferencia y de precolocaciones de DTMF. Cuando se carga la llamada o la campaña, la escritura de vicidial.php demostrará dos botones en el marco de la transferir-conferencia y automo'vil-poblara' el nu'mero-a-dial y los campos del enviar-dtmf cuando está presionada. Si usted desea permitir transferencias consultivas, un fronter a unmás cercano, usted puede colocar CXFER pues uno de lasprecolocaciones del nu'mero-a-dial y del dialstring apropiado seráenviado para hacer una transferencia consultiva local, entonces lalata LEAVE-3WAY-CALL justo del agente y movimiento encendido a sullamada siguiente. Si usted desea permitir transferencias ocultas declientes a una escritura de VICIDIAL AGI para registrar o un IVR,entonces coloque AXFER en el campo del nu'mero-a-dial. Usted puedetambién especificar una extensión de encargo después del AXFER odel CXFER, por ejemplo si usted desea hacer transferencias consultivasinternas en vez de local que usted pondría CXFER90009 en el campo delnu'mero-a-dial.
 
 <BR>
 <A NAME="vicidial_campaigns-alt_number_dialing">
@@ -1293,7 +1293,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-closer_campaigns">
 <BR>
-<B>Grupos De entrada Permitidos -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound/outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
+<B>Grupos De entrada Permitidos -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound-outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
 
 
 
@@ -1385,7 +1385,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-xferconf_a_dtmf">
 <BR>
-<B>Xfer-Conf DTMF -</B> Estos cuatro campos permiten para que usted tenga dos sistemas de conferencia de la transferencia y de precolocaciones de DTMF. Cuando se carga la llamada o la campaña, la escritura de vicidial.php demostrará dos botones en el marco de la transferir-conferencia y automo'vil-poblara' el nu'mero-a-dial y los campos del enviar-dtmf cuando está presionada. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
+<B>Xfer-Conf DTMF -</B> Estos cuatro campos permiten para que usted tenga dos sistemas de conferencia de la transferencia y de precolocaciones de DTMF. Cuando se carga la llamada o la campaña, la escritura de vicidial.php demostrará dos botones en el marco de la transferir-conferencia y automo'vil-poblara' el nu'mero-a-dial y los campos del enviar-dtmf cuando está presionada. Si usted desea permitir transferencias consultivas, un fronter a unmás cercano, usted puede colocar CXFER pues uno de lasprecolocaciones del nu'mero-a-dial y del dialstring apropiado seráenviado para hacer una transferencia consultiva local, entonces lalata LEAVE-3WAY-CALL justo del agente y movimiento encendido a sullamada siguiente. Si usted desea permitir transferencias ocultas declientes a una escritura de VICIDIAL AGI para registrar o un IVR,entonces coloque AXFER en el campo del nu'mero-a-dial. Usted puedetambién especificar una extensión de encargo después del AXFER odel CXFER, por ejemplo si usted desea hacer transferencias consultivasinternas en vez de local que usted pondría CXFER90009 en el campo delnu'mero-a-dial.
 
 <BR>
 <A NAME="vicidial_inbound_groups-drop_call_seconds">
@@ -4432,13 +4432,13 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Nivel Del Hopper: </td><td align=left>
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Forzar el Reinicio del Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Método Del Dial: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Nivel del Auto-Dial: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Solamente Cuenta Disponible: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Drop Percentage Limit: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Límite Del Porcentaje De la Gota: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
 $n=100;
 while ($n>=1)
 	{
@@ -4447,11 +4447,11 @@ while ($n>=1)
 	}
 echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>El Máximo Adapta El Nivel Del Dial: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Latest Server Time: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 Solamente dígitos</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>El Tiempo Más último Del Servidor: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 Solamente dígitos</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Adapte El Modificante De la Intensidad: </td><td align=left><select size=1 name=adaptive_intensity>\n";
 $n=40;
 while ($n>=-40)
 	{
@@ -4468,7 +4468,7 @@ echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Blanco Llana De la Diferencia Del Dial: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
 $n=40;
 while ($n>=-40)
 	{
@@ -4496,7 +4496,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Tiempo de espera Del Dial: </td><td al
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Prefijo al marcar: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Omit Phone Code: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Omita El Código Del Teléfono: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>CallerID de la Campaña: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
@@ -4508,7 +4508,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Grabación De la Campaña: </td><td al
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Nombre de fichero De Rec De la Campaña: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Recording Delay: </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>La Registración Retrasa: </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
 echo "$scripts_list";
@@ -4884,11 +4884,11 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Nivel Del Hopper: </td><td align=left>
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Forzar el Reinicio del Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Método Del Dial: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Nivel del Auto-Dial: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Adapte El Modificante De la Intensidad: </td><td align=left><select size=1 name=adaptive_intensity>\n";
 $n=40;
 while ($n>=-40)
 	{

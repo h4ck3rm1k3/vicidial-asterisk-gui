@@ -1119,7 +1119,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-dial_method">
 <BR>
-<B>Dial Method -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift(as defined by call_time selected for campaign) and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods.
+<B>Μέθοδος πινάκων -</B> Αυτός ο τομέας είναι ο τρόπος να καθοριστεί πώς ο σχηματισμός πρόκειται να πραγματοποιηθεί. Εάν το ΕΓΧΕΙΡΙΔΙΟ έπειτα το auto_dial_level θα κλειδωθεί σε 0 εκτός αν τη μέθοδο πινάκων αλλάζουν. Εάν ΑΝΑΛΟΓΙΑ έπειτα ο κανονικός σχηματίζοντας διάφορες γραμμές για τους ενεργούς πράκτορες. ADAPT_HARD_LIMIT θα σχηματίσει predictively μέχρι το πεταγμένο ποσοστό και έπειτα δεν θα επιτρέψει τον επιθετικό σχηματισμό μόλις επιτευχθεί το όριο πτώσης έως ότου πηγαίνει το ποσοστό κάτω από πάλι. ADAPT_TAPERED επιτρέπει το τρέξιμο πέρα από το πεταγμένο ποσοστό στο πρώτο μισό της μετατόπισης - όπως καθορίζεται από το call_time που επιλέγεται για την εκστρατεία - και παίρνει ακριβέστερο καθώς η μετατόπιση συνεχίζεται. ADAPT_AVERAGE προσπαθεί να διατηρήσει έναν μέσο όρο ή το πεταγμένο ποσοστό που δεν επιβάλλει τα σκληρά όρια τόσο επιθετικά όσο οι άλλες δύο μέθοδοι. Δεν μπορείτε να αλλάξετε το αυτόματο επίπεδο πινάκων εάν είστε σε οποιεσδήποτε από τις ADAPT μεθόδους πινάκων. Μόνο το Dialer μπορεί να αλλάξει το επίπεδο πινάκων όταν είναι στον προφητικό τρόπο σχηματισμού.
 
 <BR>
 <A NAME="vicidial_campaigns-auto_dial_level">
@@ -1129,32 +1129,32 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-available_only_ratio_tally">
 <BR>
-<B>Available Only Tally -</B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
+<B>Διαθέσιμος μόνο έλεγχος -</B> αυτός ο τομέας εάν θέστε το Υ θααφήσει έξω τους πράκτορες θέσης INCALL και ΣΕΙΡΏΝ ΑΝΑΜΟΝΉΣκατά την υπολογισμό του αριθμού κλήσεων στον πίνακα όταν όχιστο ΧΕΙΡΩΝΑΚΤΙΚΌ τρόπο πινάκων. Η προεπιλογή είναι ν.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_dropped_percentage">
 <BR>
-<B>Drop Percentage Limit -</B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
+<B>Όριο ποσοστού πτώσης -</B> αυτός ο τομέας είναι όπου θέτετε τοόριο του ποσοστού των πεταγμένων κλήσεων που θα θέλατεχρησιμοποιώντας μια προσαρμοστικός-προφητική μέθοδο, μηΧΕΙΡΩΝΑΚΤΙΚΗ ή μια ΑΝΑΛΟΓΙΑ πινάκων.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_maximum_level">
 <BR>
-<B>Maximum Adapt Dial Level -</B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
+<B>Το μέγιστο προσαρμόζει το επίπεδο πινάκων -</B> αυτός ο τομέαςείναι όπου θέτετε το όριο του ορίου στο numbr των γραμμών πουθα θέλατε σχηματισμένο ανά πράκτορα χρησιμοποιώντας μιαπροσαρμοστικός-προφητική μέθοδο, μη ΧΕΙΡΩΝΑΚΤΙΚΗ ή μια ΑΝΑΛΟΓΙΑπινάκων. Αυτός ο αριθμός μπορεί να είναι υψηλότερος από τοαυτόματο επίπεδο πινάκων εάν το υλικό σας θα τον υποστηρίξει. Ηαξία πρέπει να είναι ένας θετικός αριθμός μεγαλύτερος από τοένα και μπορεί να έχει την προεπιλογή 3,0 δεκαδικών θέσεων.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_latest_server_time">
 <BR>
-<B>Latest Server Time -</B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling.
+<B>Πιό πρόσφατος χρόνος κεντρικών υπολογιστών -</B> αυτός ο τομέαςχρησιμοποιείται μόνο με τη μέθοδο πινάκων ADAPT_TAPERED.Πρέπει να εισαγάγετε στην ώρα και το λεπτό που θα σταματήσετεαυτήν την εκστρατεία, 2100 θα σήμαινε ότι θα σταματήσετεαυτήν την εκστρατεία στο χρόνο κεντρικών υπολογιστών 9PM.Αυτό επιτρέπει στον εκλεπτυμένο αλγόριθμο για να αποφασίσει πόσοεπιθετικά να σχηματίσει από πόσο καιρό πολύ έχετε έως ότου θαείστε τελειωμένη κλήση.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_intensity">
 <BR>
-<B>Adapt Intensity Modifier -</B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+<B>Προσαρμόστε τον τροποποιητή έντασης -</B> αυτός ο τομέαςχρησιμοποιείται για να ρυθμίσει την προφητική ένταση είτευψηλότερη είτε χαμηλότερη. Όσο υψηλότερος ένας θετικός αριθμόςεσείς επιλέγει, τόσο μεγαλύτερο το dialer θα αυξήσει τηνκλήση δίνοντας ρυθμό όταν ανεβαίνει και τόσο πιό αργό τοdialer θα μειώσει την κλήση δίνοντας ρυθμό όταν πηγαίνεικάτω. Όσο χαμηλότερος ο αρνητικός αριθμός εσείς επιλέγει εδώ,τόσο πιό αργό το dialer θα αυξήσει την κλήση δίνοντας ρυθμόκαι τόσο γρηγορότερο το dialer θα χαμηλώσει την κλήση δίνονταςρυθμό όταν πηγαίνει κάτω. Η προεπιλογή είναι 0. Αυτός οτομέας δεν χρησιμοποιείται από το ΕΓΧΕΙΡΙΔΙΟ ή την ΑΝΑΛΟΓΙΑμέθοδοι πινάκων.
 
 <BR>
 <A NAME="vicidial_campaigns-adaptive_dl_diff_target">
 <BR>
-<B>Dial Level Difference Target -</B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+<B>Στόχος διαφοράς επιπέδων πινάκων -</B> αυτός ο τομέαςχρησιμοποιείται για να καθορίσει εάν θέλετε να στοχεύσετε στηνκατοχή ενός συγκεκριμένου αριθμού πρακτόρων που περιμένουν τιςκλήσεις ή τις κλήσεις που περιμένουν τους πράκτορες.Παραδείγματος χάριν εάν θα επιθυμούσατε πάντα να έχετε κατάμέσον όρο έναν πράκτορα ελεύθερο να πάρει τις κλήσεις αμέσωςθα θέτατε αυτό σε -1, εάν θα επιθυμούσατε να στοχεύσετε πάντανα έχοντας τον έναν καλείτε τη λαβή που περιμένει έναν πράκτοραπου θα θέτατε αυτό σε 1. προεπιλογή είστε 0. Αυτός ο τομέαςδεν χρησιμοποιείται από το ΕΓΧΕΙΡΙΔΙΟ ή την ΑΝΑΛΟΓΙΑ μέθοδοιπινάκων.
 
 <BR>
 <A NAME="vicidial_campaigns-next_agent_call">
@@ -1183,12 +1183,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-omit_phone_code">
 <BR>
-<B>Omit Phone Code -</B> This field allows you to leave out the phone_code field while dialing within VICIDIAL. For instance if you are dialing in the UK from the UK you would have 44 in as your phone_code field for all leads, but you just want to dial 10 digits in your dialplan extensions.conf to place calls instead of 44 then 10 digits. Default is N.
+<B>Παραλείψτε τον τηλεφωνικό κώδικα -</B> αυτός ο τομέας επιτρέπει σεσας για να αφήσει έξω τον τομέα phone_code σχηματίζοντας μέσασε VICIDIAL. Παραδείγματος χάριν εάν σχηματίζετε στο UK απότο UK θα είχατε 44 μέσα ως τομέα phone_code σας για όλουςτους μολύβδους, αλλά θέλετε ακριβώς να σχηματίσετε 10 ψηφία σεdialplan extensions.conf σας για να τοποθετήσετε τις κλήσειςαντί 44 έπειτα 10 ψηφίων. Η προεπιλογή είναι ν.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_cid">
 <BR>
-<B>CallerID Εκστρατείας -</B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service(RBS) circuits. This will also work through most VOIP(SIP or IAX trunks) providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID.
+<B>CallerID Εκστρατείας -</B> Αυτός ο τομέας επιτρέπει την αποστολή ενός αριθμού συνήθειας callerid στις εξερχόμενες κλήσεις. Αυτό είναι ο αριθμός που θα παρουσίαζε στο callerid του προσώπου που καλείτε. Η προεπιλογή είναι ΑΓΝΩΣΤΗ. Εάν χρησιμοποιείτε το T1 ή Eί να σχηματίσει έξω αυτήν την επιλογή είναι μόνο διαθέσιμος εάν χρησιμοποιείτε PRIs - ISDN Tί ή Eί - που ανοίγουν το χαρακτηριστικό γνώρισμα συνήθειας callerid, αυτό δεν θα λειτουργήσει με την υπηρεσία ληστεύω-κομματιών - RBS - κυκλώματα. Αυτό θα λειτουργήσει επίσης μέσω του περισσότερου VOIP - ΓΟΥΛΙΑ ή κορμοί IAX - προμηθευτές που επιτρέπουν δυναμικό εξερχόμενο callerID. Η συνήθεια callerID ισχύει μόνο για τις κλήσεις που τοποθετούνται για την εκστρατεία VICIDIAL άμεσα, οποιεσδήποτε κλήσεις ή μεταφορές 3$ων συμβαλλόμενων μερών δεν θα στείλουν τη συνήθεια callerID. ΣΗΜΕΙΩΣΗ: Μερικές φορές να βάλει ΑΓΝΩΣΤΗ ή ΙΔΙΩΤΙΚΗ στον τομέα θα παραγάγει την αποστολή του αριθμού προεπιλογής σας callerID από το μεταφορέα σας με τις κλήσεις. Μπορείτε να θελήσετε να εξετάσετε αυτό και να υποβάλετε 0000000000 ο τομέας callerid αντ' αυτού εάν δεν θέλετε να σας στείλετε CallerID.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_vdad_exten">
@@ -1203,7 +1203,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-campaign_recording">
 <BR>
-<B>Ηχογράφηση εκστρατείας -</B> αυτή η επιλογή επιτρέπει να επιλέξετε το επίπεδο ηχογράφησης σε αυτήν την εκστρατεία. NEVER θα θέσει εκτός λειτουργίας την ηχογράφηση στον πελάτη. ONDEMAND είναι η προεπιλογή και επιτρέπει στον χειριστή να αρχίσει και να σταματήσει όπως απαιτείται. ALLCALLS θα αρχίσει την καταγραφή στον πελάτη όποτε μια κλήση στέλνεται σε έναν χειριστή. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
+<B>Καταγραφή εκστρατείας -</B> αυτές οι επιλογές επιτρέπουν σε σας γιανα επιλέξουν ποιο επίπεδο καταγραφής επιτρέπεται σε αυτήν τηνεκστρατεία. Δεν θα θέσει εκτός λειτουργίας ΠΟΤΕ την καταγραφήστον πελάτη.  ONDEMAND είναι η προεπιλογή και επιτρέπει στονπράκτορα για να αρχίσει και να σταματήσει όπως απαιτείται.ALLCALLS θα αρχίσει την καταγραφή στον πελάτη όποτε μια κλήσηστέλνεται σε έναν πράκτορα.  ALLFORCE θα αρχίσει την καταγραφήστον πελάτη όποτε μια κλήση στέλνεται σε έναν πράκτορα που δενδίνει στον πράκτορα καμία επιλογή να σταματήσει. Για ALLCALLSκαι ALLFORCE υπάρχει μια επιλογή να χρησιμοποιηθεί ηκαθυστέρηση καταγραφής για να περικόψει στις πολύ σύντομακαταγραφές και recude το φορτίο συστημάτων.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_filename">
@@ -1213,7 +1213,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-allcalls_delay">
 <BR>
-<B>Recording Delay -</B> For ALLCALLS and ALLFORCE recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0.
+<B>Καθυστέρηση καταγραφής -</B> για την καταγραφή ALLCALLS καιALLFORCE μόνο. Αυτή η ρύθμιση θα καθυστερήσει την έναρξη τηςκαταγραφής σε όλες τις κλήσεις για τον αριθμό δευτερολέπτων πουδιευκρινίζονται σε αυτόν τον τομέα. Η προεπιλογή είναι 0.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_script">
@@ -1238,7 +1238,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
-<B>Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
+<B>Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί. Εάν θέλετε να επιτρέψετε τις συμβουλευτικές μεταφορές, έναfronter σε έναν πιό στενό, εσείς μπορεί να τοποθετήσειCXFER καθώς ένας από τον αριθμός-$$$-ΠΊΝΑΚΑ προετοιμάζει καικατάλληλο θα σταλεί για να κάνει μια τοπική συμβουλευτικήμεταφορά, κατόπιν ο πράκτορας μπορεί ακριβώς άδεια-3ωαυ-ΚΛΉΣΗκαι να κινηθεί προς την επόμενη κλήση τους. Εάν θέλετε ναεπιτρέψετε τις τυφλές μεταφορές των πελατών σε ένα χειρόγραφοVICIDIAL AGI για την αναγραφή ή ένα IVR, κατόπιντοποθετήστε AXFER στον τομέα αριθμός-$$$-ΠΙΝΑΚΩΝ. Μπορείτεεπίσης να διευκρινίσετε μια επέκταση συνήθειας μετά από τοAXFER ή CXFER, παραδείγματος χάριν εάν θέλετε να κάνετετις εσωτερικές συμβουλευτικές μεταφορές αντί τοπικού εσείς θαέβαζε CXFER90009 στον τομέα αριθμός-$$$-ΠΙΝΑΚΩΝ.
 
 <BR>
 <A NAME="vicidial_campaigns-alt_number_dialing">
@@ -1293,7 +1293,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-closer_campaigns">
 <BR>
-<B>Εισερχόμενες ομάδες -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound/outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
+<B>Εισερχόμενες ομάδες -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound-outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
 
 
 
@@ -1385,7 +1385,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-xferconf_a_dtmf">
 <BR>
-<B>Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dialstring will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
+<B>Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί. Εάν θέλετε να επιτρέψετε τις συμβουλευτικές μεταφορές, έναfronter σε έναν πιό στενό, εσείς μπορεί να τοποθετήσειCXFER καθώς ένας από τον αριθμός-$$$-ΠΊΝΑΚΑ προετοιμάζει καικατάλληλο θα σταλεί για να κάνει μια τοπική συμβουλευτικήμεταφορά, κατόπιν ο πράκτορας μπορεί ακριβώς άδεια-3ωαυ-ΚΛΉΣΗκαι να κινηθεί προς την επόμενη κλήση τους. Εάν θέλετε ναεπιτρέψετε τις τυφλές μεταφορές των πελατών σε ένα χειρόγραφοVICIDIAL AGI για την αναγραφή ή ένα IVR, κατόπιντοποθετήστε AXFER στον τομέα αριθμός-$$$-ΠΙΝΑΚΩΝ. Μπορείτεεπίσης να διευκρινίσετε μια επέκταση συνήθειας μετά από τοAXFER ή CXFER, παραδείγματος χάριν εάν θέλετε να κάνετετις εσωτερικές συμβουλευτικές μεταφορές αντί τοπικού εσείς θαέβαζε CXFER90009 στον τομέα αριθμός-$$$-ΠΙΝΑΚΩΝ.
 
 <BR>
 <A NAME="vicidial_inbound_groups-drop_call_seconds">
@@ -1523,7 +1523,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_scripts-active">
 <BR>
-<B>Ενεργός - αυτό καθορίζει εάν αυτός ο οδηγός μπορεί να επιλεχτεί για να χρησιμοποιηθεί από μια εκστρατεία.
+<B>Ενεργός -</B> αυτό καθορίζει εάν αυτός ο οδηγός μπορεί να επιλεχτεί για να χρησιμοποιηθεί από μια εκστρατεία.
 
 
 
@@ -1569,11 +1569,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 <BR>
 <A NAME="vicidial_call_times-ct_default_start">
-<B>Προκαθορισμένοι Χρόνοι Εκκίνησης και Παύσης -</B> Αυτός είναι ο προκαθορισμένος χρόνος όπου θα επιτρέπετε οι κλήσεις εάν δεν έχει οριστεί ο χρόνος εκκίνησης της ημέρας-της-εβδομάδας. 0 είναι μεσάνυχτα. Εάν δεν θέλετε καμία κλήση θέστε αυτό το πεδίο σε 2400 και το προκαθορισμένο χρόνο Παύσης σε 2400. Για να επιτρέψετε την 24ωρη κλήση την ημέρα θέστε σε 0 τον χρόνο εκκίνησης και σε 2400 τον χρόνο παύσηςWeekday Start and Stop Times -</B> These are the custom times per day that can be set for the call time definition. same rules apply as with the Default start and stop times.
+<B>Προκαθορισμένοι Χρόνοι Εκκίνησης και Παύσης -</B> Αυτός είναι ο προκαθορισμένος χρόνος όπου θα επιτρέπετε οι κλήσεις εάν δεν έχει οριστεί ο χρόνος εκκίνησης της ημέρας-της-εβδομάδας. 0 είναι μεσάνυχτα. Εάν δεν θέλετε καμία κλήση θέστε αυτό το πεδίο σε 2400 και το προκαθορισμένο χρόνο Παύσης σε 2400. Για να επιτρέψετε την 24ωρη κλήση την ημέρα θέστε σε 0 τον χρόνο εκκίνησης και σε 2400 τον χρόνο παύσης
+.
 
 <BR>
 <A NAME="vicidial_call_times-ct_sunday_start">
-<B>Weekday Start and Stop Times -</B> These are the custom times per day that can be set for the call time definition. same rules apply as with the Default start and stop times.
+<B>Εβδομαδιαίοι Χρόνοι Εκκίνησης και Παύσης -</B> Αυτοί είναι προσαρμόσιμοι χρόνοι ανά ημέρα για τον ορισμό χρόνων κλήσεων.
 
 <BR>
 <A NAME="vicidial_call_times-ct_state_call_times">
@@ -4432,13 +4433,13 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος πινάκων: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Διαθέσιμος μόνο έλεγχος: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Drop Percentage Limit: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Όριο ποσοστού πτώσης: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
 $n=100;
 while ($n>=1)
 	{
@@ -4447,11 +4448,11 @@ while ($n>=1)
 	}
 echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Το μέγιστο προσαρμόζει το επίπεδο πινάκων: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Latest Server Time: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 μόνο αριθμοί</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Πιό πρόσφατος χρόνος κεντρικών υπολογιστών: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 μόνο αριθμοί</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Προσαρμόστε τον τροποποιητή έντασης: </td><td align=left><select size=1 name=adaptive_intensity>\n";
 $n=40;
 while ($n>=-40)
 	{
@@ -4468,7 +4469,7 @@ echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Στόχος διαφοράς επιπέδων πινάκων: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
 $n=40;
 while ($n>=-40)
 	{
@@ -4496,7 +4497,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση εκτός χρόνου: </
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Πρόθεμα Κλήσης: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Omit Phone Code: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Παραλείψτε τον τηλεφωνικό κώδικα: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Εκστρατείας: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
@@ -4508,7 +4509,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Ηχογράφηση εκστρατε�
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα αρχείου εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#B6D3FC><td align=right>Recording Delay: </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Καθυστέρηση καταγραφής: </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
 echo "$scripts_list";
@@ -4884,11 +4885,11 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=
 
 echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος πινάκων: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Προσαρμόστε τον τροποποιητή έντασης: </td><td align=left><select size=1 name=adaptive_intensity>\n";
 $n=40;
 while ($n>=-40)
 	{

@@ -113,9 +113,14 @@ if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
 $TOTALcalls =	sprintf("%10s", $row[0]);
-$average_hold_seconds = ($row[1] / $row[0]);
-$average_hold_seconds = round($average_hold_seconds, 0);
-$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+if ( ($row[0] < 1) or ($row[1] < 1) )
+	{$average_hold_seconds = '         0';}
+else
+	{
+	$average_hold_seconds = ($row[1] / $row[0]);
+	$average_hold_seconds = round($average_hold_seconds, 0);
+	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+	}
 
 echo "Συνολικά κλήσεις που τοποθετήθηκαν από την Εκστρατεία: $TOTALcalls\n";
 echo "Average Call Length for all Calls:            $average_hold_seconds seconds\n";
@@ -129,12 +134,22 @@ if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
 $DROPcalls =	sprintf("%10s", $row[0]);
-$DROPpercent = (($DROPcalls / $TOTALcalls) * 100);
-$DROPpercent = round($DROPpercent, 0);
+if ( ($DROPcalls < 1) or ($TOTALcalls < 1) )
+	{$DROPpercent = '0';}
+else
+	{
+	$DROPpercent = (($DROPcalls / $TOTALcalls) * 100);
+	$DROPpercent = round($DROPpercent, 0);
+	}
 
-$average_hold_seconds = ($row[1] / $row[0]);
-$average_hold_seconds = round($average_hold_seconds, 0);
-$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+if ( ($row[0] < 1) or ($row[1] < 1) )
+	{$average_hold_seconds = '         0';}
+else
+	{
+	$average_hold_seconds = ($row[1] / $row[0]);
+	$average_hold_seconds = round($average_hold_seconds, 0);
+	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+	}
 
 echo "Συνολικά ΕΓΚΑΤΑΛΕΙΜΕΝΕΣ κλήσεις: $DROPcalls  $DROPpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
@@ -148,16 +163,31 @@ if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
 $QUEUEcalls =	sprintf("%10s", $row[0]);
-$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
-$QUEUEpercent = round($QUEUEpercent, 0);
+if ( ($QUEUEcalls < 1) or ($TOTALcalls < 1) )
+	{$QUEUEpercent = '0';}
+else
+	{
+	$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
+	$QUEUEpercent = round($QUEUEpercent, 0);
+	}
 
-$average_queue_seconds = ($row[1] / $row[0]);
-$average_queue_seconds = round($average_queue_seconds, 2);
-$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
+if ( ($row[0] < 1) or ($row[1] < 1) )
+	{$average_queue_seconds = '         0';}
+else
+	{
+	$average_queue_seconds = ($row[1] / $row[0]);
+	$average_queue_seconds = round($average_queue_seconds, 2);
+	$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
+	}
 
-$average_total_queue_seconds = ($row[1] / $TOTALcalls);
-$average_total_queue_seconds = round($average_total_queue_seconds, 2);
-$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
+if ( ($TOTALcalls < 1) or ($row[1] < 1) )
+	{$average_total_queue_seconds = '         0';}
+else
+	{
+	$average_total_queue_seconds = ($row[1] / $TOTALcalls);
+	$average_total_queue_seconds = round($average_total_queue_seconds, 2);
+	$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
+	}
 
 echo "Total Calls That entered Queue:               $QUEUEcalls  $QUEUEpercent%\n";
 echo "Average QUEUE Length for queue calls:         $average_queue_seconds seconds\n";
@@ -288,8 +318,13 @@ while ($i <= 96)
 	$h++;
 	}
 
-$hour_multiplier = (100 / $hi_hour_count);
-#$hour_multiplier = round($hour_multiplier, 0);
+if ($hi_hour_count < 1)
+	{$hour_multiplier = 0;}
+else
+	{
+	$hour_multiplier = (100 / $hi_hour_count);
+	#$hour_multiplier = round($hour_multiplier, 0);
+	}
 
 echo "<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
 echo "ΓΡΑΦΙΚΗ ΠΑΡΑΣΤΑΣΗ ΜΕ 15ΛΕΠΤΕΣ ΑΥΞΗΣΕΙΣ ΤΩΝ ΣΥΝΟΛΙΚΩΝ ΚΛΗΣΕΩΝ ΠΟΥ ΤΟΠΟΘΕΤΟΥΝΤΑΙ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ\n";
@@ -302,8 +337,13 @@ while ($k <= 102)
 	if ($Mk >= 5) 
 		{
 		$Mk=0;
-		$scale_num=($k / $hour_multiplier);
-		$scale_num = round($scale_num, 0);
+		if ( ($k < 1) or ($hour_multiplier < 1) )
+			{$scale_num = 100;}
+		else
+			{
+			$scale_num=($k / $hour_multiplier);
+			$scale_num = round($scale_num, 0);
+			}
 		$LENscale_num = (strlen($scale_num));
 		$k = ($k + $LENscale_num);
 		$call_scale .= "$scale_num";

@@ -2809,10 +2809,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS ΚΛΗΣΗBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Επίθετο Call: </b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Σχόλια: </b><br>" + CBcomments;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Στο τέλος καλέστε:</b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack:</b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Πράκτορας:</b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Σχολιάζει:</b><br>" + CBcomments;
 							showDiv('CBcommentsBox');
 							}
 
@@ -3324,10 +3324,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS ΚΛΗΣΗBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Επίθετο Call: </b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Σχόλια: </b><br>" + CBcomments;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Στο τέλος καλέστε:</b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack:</b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Πράκτορας:</b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Σχολιάζει:</b><br>" + CBcomments;
 							showDiv('CBcommentsBox');
 							}
 
@@ -5393,7 +5393,7 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 <span style="position:absolute;left:5px;top:310px;z-index:24;" id="CBcommentsBox">
     <table border=0 bgcolor="#FFFFCC" width=620 height=70>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sh_text"> Previous Callback Information: </font></td>
+	<TD align=left><font class="sh_text"> Προηγούμενες πληροφορίες επανάκλησης: </font></td>
 	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
 	</tr><tr>
 	<TD><font class="sk_text">
@@ -5630,7 +5630,7 @@ if ( ($alt_phone_dialing) and ($auto_dial_level==0) )
 <td align=right><font class="body_text"> Παρουσίαση: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Ηλεκτρονικό ταχυδρομείο: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right valign=top><font class="body_text"> Σχόλια: </td>
+<td align=right valign=top><font class="body_text"> Σχολιάζει:</td>
 <?
 if ( ($multi_line_comments) )
 	{echo "<td align=left><font class=\"body_text\"><TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA></td>\n";}

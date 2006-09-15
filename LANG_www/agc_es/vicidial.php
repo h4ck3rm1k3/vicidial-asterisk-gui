@@ -2809,10 +2809,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS LLAMADABACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Último Call: </b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comentarios: </b><br>" + CBcomments;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Llamada Pasada:</b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>Servicio repetido:</b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agente:</b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comentarios:</b><br>" + CBcomments;
 							showDiv('CBcommentsBox');
 							}
 
@@ -3324,10 +3324,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS LLAMADABACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Último Call: </b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comentarios: </b><br>" + CBcomments;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Llamada Pasada:</b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>Servicio repetido:</b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agente:</b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comentarios:</b><br>" + CBcomments;
 							showDiv('CBcommentsBox');
 							}
 
@@ -5393,7 +5393,7 @@ Su Estado: <span id="AgentEstadoEstado"></span> <BR>Calls Dialing: <span id="Age
 <span style="position:absolute;left:5px;top:310px;z-index:24;" id="CBcommentsBox">
     <table border=0 bgcolor="#FFFFCC" width=620 height=70>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sh_text"> Previous Callback Information: </font></td>
+	<TD align=left><font class="sh_text"> Información Anterior Del Servicio repetido: </font></td>
 	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
 	</tr><tr>
 	<TD><font class="sk_text">
@@ -5630,7 +5630,7 @@ GRABACIÓN ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=right><font class="body_text"> Demostración: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right valign=top><font class="body_text"> Comentarios: </td>
+<td align=right valign=top><font class="body_text"> Comentarios:</td>
 <?
 if ( ($multi_line_comments) )
 	{echo "<td align=left><font class=\"body_text\"><TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA></td>\n";}
