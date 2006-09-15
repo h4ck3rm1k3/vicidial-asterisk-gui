@@ -55,14 +55,21 @@ VICIDIAL server setup.
 * * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
 
 
-6. all of your old crontab entries need to be changed from /home/cron to
+6. all old crontab entries and /home/cron files 
+All of your old crontab entries need to be changed from /home/cron to
 /usr/share/astguiclient if you choose the default installation path. You can
 manually set the path to /home/cron if you like though since the home path is
 now dynamic in all vicidial perl(.pl) scripts. If you do choose to use the new
 default path, you can delete everything in the /home/cron directory if you like
 
 
-7. other notes:
+7. old /etc/rc.d/rc.local entries
+Be sure to change your /etc/rc.d/rc.local entries(the commands that are run at
+system boot to start asterisk and other scripts like log rolling) and change the
+/home/cron path to the new /usr/share/astguiclient path.
+
+
+8. other notes:
 - there is a new DIAL METHOD field and several other new dial-control fields 
 in campaign modification page, please take a minute to read the help 
 documentation for these new features.
