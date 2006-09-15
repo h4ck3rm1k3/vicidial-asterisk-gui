@@ -132,9 +132,14 @@ $DROPcalls =	sprintf("%10s", $row[0]);
 $DROPpercent = (($DROPcalls / $TOTALcalls) * 100);
 $DROPpercent = round($DROPpercent, 0);
 
-$average_hold_seconds = ($row[1] / $row[0]);
-$average_hold_seconds = round($average_hold_seconds, 0);
-$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+if ( ($row[0] < 1) or ($row[1] < 1) )
+	{$average_hold_seconds = '         0';}
+else
+	{
+	$average_hold_seconds = ($row[1] / $row[0]);
+	$average_hold_seconds = round($average_hold_seconds, 0);
+	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+	}
 
 echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
