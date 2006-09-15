@@ -55,7 +55,14 @@ VICIDIAL server setup.
 * * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
 
 
-6. other notes:
+6. all of your old crontab entries need to be changed from /home/cron to
+/usr/share/astguiclient if you choose the default installation path. You can
+manually set the path to /home/cron if you like though since the home path is
+now dynamic in all vicidial perl(.pl) scripts. If you do choose to use the new
+default path, you can delete everything in the /home/cron directory if you like
+
+
+7. other notes:
 - there is a new DIAL METHOD field and several other new dial-control fields 
 in campaign modification page, please take a minute to read the help 
 documentation for these new features.
