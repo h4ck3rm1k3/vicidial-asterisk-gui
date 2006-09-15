@@ -185,7 +185,7 @@ package(as of this writing it is 2.0.1)
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- svn checkout svn://205.201.151.21:43690/agc_2-X
+	- svn checkout svn://205.201.151.21:43690/agc_2-X/trunk
 	- cd trunk
 	- perl install.pl
    - there is one more file you need that's not included with the download 
