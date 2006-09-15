@@ -27,6 +27,7 @@ Maximum Adapt Dial Level
 Latest Server Time
 Adapt Intensity Modifier
 Dial Level Difference Target
+You cannot change the Auto Dial Level if you are in any of the ADAPT dial methods. Only the Dialer can change the dial level when in predictive dialing mode
 
 ############################################################ CLIENT
 
