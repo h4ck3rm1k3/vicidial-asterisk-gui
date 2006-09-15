@@ -673,7 +673,7 @@ UPGRADE NOTES:
     LANG_agc.zip and LANG_admin.zip files and can be unzipped into your webroot
     directory. Make sure you check the dbconnect.php file in each directory.
  * if upgrading from 1.1.10 run the upgrade_1.1.11.sql script in MySQL
-   (\. astguiclientastguiclient/upgrade_1.1.11.sql)
+   (\. astguiclient/upgrade_1.1.11.sql)
 
 1.1.12 - Twenty-Fifth public release - 2006-06-22
 - Security enhancements of PHP scripts to reduce SQL-injection and other threats
@@ -706,7 +706,7 @@ UPGRADE NOTES:
    campaign in VICIDIAL in MySQL:
    (INSERT INTO vicidial_campaign_stats (campaign_id) values('campaignname');)
 
-2.0.1 - Twenty-Sixth public release - 2006-09-XX
+2.0.1 - Twenty-Sixth public release - 2006-09-15
 - Changed all Perl script to use DBI instead of Net::MySQL
 - Completely new interactive install script with new astguiclient.conf file
 - Ability to turn off or on logging of server scripts
@@ -715,6 +715,6 @@ UPGRADE NOTES:
 - Added a Predictive outbound dialing algorithm with many user-defined settings
 - Wrote new BASE_INSTALL.txt doc for simple install and added sample conf files
 - Many other changes and bug fixes listed in the TODO Wiki webpage:
-     http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.1
 UPGRADE NOTES:
  * if upgrading from 1.1.12 you need to follow instructions in the UPGRADE doc

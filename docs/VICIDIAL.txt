@@ -1,3 +1,4 @@
+# VICIDIAL.txt - description of the vicidial call center system
 # pronounced (VEE-CHEE DIAL)
 
 This system was initially created to fill the need of a customer service group 
@@ -13,7 +14,6 @@ Features:
 - Ability to set a campaign to auto-dial and send live calls to available agents
 - Ability to dial predictively in a campaign with an adaptive dialing algorithm
 - Ability to dial on a single campaign across multiple Asterisk servers, or multiple campaigns on a single server
-- All calls are logged and statuses of calls are logged as well as agent time breakdowns
 - Ability to transfer calls with customer data to a closer on the local system or a remote Asterisk server
 - Ability to open a custom web page with user data from the call per campaign
 - Ability to autodial campaigns to start with a simple IVR then direct to agent
@@ -21,25 +21,27 @@ Features:
 - Ability to send a dropped call to a voicemail box per campaign if no agent is available
 - Ability to set outbound CallerID per campaign
 - Ability to take inbound calls grabbing CallerID
-- Ability to function as an ACD for inbound and closer calls
+- Ability to function as an ACD for inbound and fronter/closer verification calls
 - Ability to have an agent take both inbound and outbound calls in one session(blended)
 - Ability for agents to log in remotely and have calls redirected to any phone number
 - Ability to start and stop recording an agent's calls at any time
 - Ability to automatically record all calls
 - Ability to call upto two other customer numbers for the same lead
-- Ability to schedule a callback with a customer as either any agent or agent specific
-- Faster dispositioning of calls with agent key-binding (HotKeys)
-- Ability to add custom call dispositions per campaign
-- Dialing with custom TimeZone restrictions including per state and per weekday
-- Dialing with Answering Machine Detection, also playing a message for AM calls
+- Ability to schedule a callback with a customer as either any-agent or agent-specific
 - Ability in Manual dial mode to preview leads before dialing
 - Ability for agents to be logged in remotely anywhere with just a phone and a web browser
-- Multiple campaigns and lead-lists are possible
-- Recycling of Busy calls at a specified interval without resetting a list
+- Faster dispositioning of calls with agent key-binding (HotKeys)
+- Definable Agent Wrapup-time per campaign
+- Ability to add custom call dispositions per campaign
 - Ability to use custom database queries in campaign dialing
+- Recycling of Busy calls at a specified interval without resetting a list
+- Dialing with custom TimeZone restrictions including per state and per day-of-the-week
+- Dialing with Answering Machine Detection, also playing a message for AM calls
+- Multiple campaigns and lead-lists are possible
 - Option of a drop timer with safe-harbor message for FTC compliance
+- Variable Drop call percentage when dialing predictively for FTC compliance
 - Internal DNC list can optionally be activated per campaign
-- Definable Wrapup-time per campaign
+- All calls are logged and statuses of calls are logged as well as agent time breakdowns
 - Load Balancing across multiple inbound or outbound Asterisk servers is possible
 - Several real-time and summary reports available
 - Real-time campaign display screens
@@ -49,10 +51,9 @@ Features:
 - Ability to set user levels and permissions for certain features
 - Ability for managers to listen-in on agent conversations
 - Ability for managers to enter conversations with agents and customers
-- Each user has their own login
 - Web-based administration
 - Client web-app and admin web pages available in English, Spanish, Greek and German
-- Client web-app web pages available in English, Spanish, Greek, German, French, Italian, Portuguese and Brazillian Portuguese
+- Client web-app web pages available in English, Spanish, Greek, German, French, Italian, Polish, Portuguese and Brazillian Portuguese
 - Admin web pages available in English, Spanish, Greek and German
 
 Required components:

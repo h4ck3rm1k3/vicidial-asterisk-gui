@@ -19,7 +19,7 @@ for each campaign. This information is gathered by the AST_VDauto_dial.pl script
 as it runs through each loop every 2.5-3.0 seconds. This data is used only for 
 Blended CLOSER campaigns doing Predictive dialing and for the timeonVDADall 
 realtime campaign reports. The data gathered in this script are all averages of 
-the last 60 seconds of agent and queue activity:
+the last 15 and 60 seconds of agent and queue activity:
 	1. The average number of agents that are logged into the campaign across 
 one minute
 	2. The average number of calls waiting to be transferred to an agent 
@@ -127,5 +127,5 @@ in your crontab running every minute:
 * * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
 
 
-NOTE: With Predictive dialing the dial_level will never drop below 1.0.
+NOTE: With Predictive dialing, the dial_level will never drop below 1.0.
 
