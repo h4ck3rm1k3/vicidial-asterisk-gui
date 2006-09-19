@@ -460,6 +460,21 @@ exten => 8320,2,Playback(conf)
 exten => 8320,3,AGI(VD_amd_post.agi,${EXTEN})
 exten => 8320,4,Hangup
 
+; use for selective CallerID hangup by area code(hard-coded)
+exten => 8352,1,AGI(agi-VDADselective_CID_hangup.agi,${EXTEN})
+exten => 8352,2,Playback(safe_harbor)
+exten => 8352,3,Hangup
+
+; prompt recording AGI script, ID is 4321
+exten => 8168,1,Answer
+exten => 8168,2,AGI(agi-record_prompts.agi)
+exten => 8168,3,Hangup
+
+; playback of recorded prompts
+exten => _851XXXXX,1,Answer
+exten => _851XXXXX,2,Playback(${EXTEN})
+exten => _851XXXXX,3,Hangup
+
 ; this is used to allow the GUI to send you directly into voicemail
 ;     don't forget to set GUI variable $voicemail_exten to this extension
 exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
@@ -478,16 +493,6 @@ exten => 8500998,1,Answer
 exten => 8500998,2,Playback(silence)
 exten => 8500998,3,AGI(agi-dtmf.agi)
 exten => 8500998,4,Hangup
-
-; prompt recording AGI script, ID is 4321
-exten => 8168,1,Answer
-exten => 8168,2,AGI(agi-record_prompts.agi)
-exten => 8168,3,Hangup
-
-; playback of recorded prompts
-exten => _851XXXXX,1,Answer
-exten => _851XXXXX,2,Playback(${EXTEN})
-exten => _851XXXXX,3,Hangup
 
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,AGI(call_log.agi,${EXTEN})

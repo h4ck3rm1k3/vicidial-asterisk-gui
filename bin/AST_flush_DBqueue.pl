@@ -134,7 +134,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	$stmtA = "delete from vicidial_manager where server_ip='$server_ip' and entry_date < '$SQLdate_NEG_1hour';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {	$affected_rows = $dbhA->do($stmtA);}
-		if (!$Q) {print " - vicidial_manager 2 hour flush\n";}
+		if (!$Q) {print " - vicidial_manager 1 hour flush\n";}
 
         $stmtA = "optimize table vicidial_manager;";
                 if($DB){print STDERR "\n|$stmtA|\n";}
