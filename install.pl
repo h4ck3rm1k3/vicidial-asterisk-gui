@@ -235,7 +235,7 @@ if (length($ARGV[0])>1)
 		{
 		@CLIDB_userARY = split(/--DB_user=/,$args);
 		@CLIDB_userARX = split(/ /,$CLIDB_userARY[1]);
-		if (length($CLIDB_userARX[0])>2)
+		if (length($CLIDB_userARX[0])>1)
 			{
 			$VARDB_user = $CLIDB_userARX[0];
 			$VARDB_user =~ s/ |\r|\n|\t//gi;
@@ -247,7 +247,7 @@ if (length($ARGV[0])>1)
 		{
 		@CLIDB_passARY = split(/--DB_pass=/,$args);
 		@CLIDB_passARX = split(/ /,$CLIDB_passARY[1]);
-		if (length($CLIDB_passARX[0])>2)
+		if (length($CLIDB_passARX[0])>1)
 			{
 			$VARDB_pass = $CLIDB_passARX[0];
 			$VARDB_pass =~ s/ |\r|\n|\t//gi;
@@ -259,7 +259,7 @@ if (length($ARGV[0])>1)
 		{
 		@CLIDB_portARY = split(/--DB_port=/,$args);
 		@CLIDB_portARX = split(/ /,$CLIDB_portARY[1]);
-		if (length($CLIDB_portARX[0])>2)
+		if (length($CLIDB_portARX[0])>1)
 			{
 			$VARDB_port = $CLIDB_portARX[0];
 			$VARDB_port =~ s/ |\r|\n|\t//gi;
@@ -747,7 +747,7 @@ else
 			print("\nDB database name or press enter for default: [$VARDB_database] ");
 			$PROMPTDB_database = <STDIN>;
 			chomp($PROMPTDB_database);
-			if (length($PROMPTDB_database)>6)
+			if (length($PROMPTDB_database)>1)
 				{
 				$PROMPTDB_database =~ s/ |\n|\r|\t|\/$//gi;
 				$VARDB_database=$PROMPTDB_database;
@@ -767,7 +767,7 @@ else
 			print("\nDB user login or press enter for default: [$VARDB_user] ");
 			$PROMPTDB_user = <STDIN>;
 			chomp($PROMPTDB_user);
-			if (length($PROMPTDB_user)>6)
+			if (length($PROMPTDB_user)>1)
 				{
 				$PROMPTDB_user =~ s/ |\n|\r|\t|\/$//gi;
 				$VARDB_user=$PROMPTDB_user;
@@ -787,7 +787,7 @@ else
 			print("\nDB user password or press enter for default: [$VARDB_pass] ");
 			$PROMPTDB_pass = <STDIN>;
 			chomp($PROMPTDB_pass);
-			if (length($PROMPTDB_pass)>6)
+			if (length($PROMPTDB_pass)>1)
 				{
 				$PROMPTDB_pass =~ s/ |\n|\r|\t|\/$//gi;
 				$VARDB_pass=$PROMPTDB_pass;
@@ -807,7 +807,7 @@ else
 			print("\nDB connection port or press enter for default: [$VARDB_port] ");
 			$PROMPTDB_port = <STDIN>;
 			chomp($PROMPTDB_port);
-			if (length($PROMPTDB_port)>6)
+			if (length($PROMPTDB_port)>1)
 				{
 				$PROMPTDB_port =~ s/ |\n|\r|\t|\/$//gi;
 				$VARDB_port=$PROMPTDB_port;
