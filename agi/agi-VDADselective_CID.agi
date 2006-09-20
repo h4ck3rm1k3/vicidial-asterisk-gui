@@ -21,6 +21,7 @@
 $script = 'agi-VDADselective_CID.agi';
 
 $AGILOG=0;
+$FD=0; # force debug for testing
 
 # CLEAR AREA CODE LISTINGS:
 # Florida: 239|305|321|352|386|407|561|689|727|754|772|786|813|836|850|861|863|904|941|954
@@ -115,15 +116,25 @@ if ($areacode !~ /$clear_area_codes/)
 	  }
 
 	### set the callerid to the ACQS value(calleridname)
-	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+	## use these two lines for Asterisk 1.2 tree
+	$newcallerid = "\"$calleridname <0000000000>\"";
+	$AGI->set_callerid($newcallerid);
+	## use these two lines for Asterisk 1.0 tree
+#	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+#	print "SET CALLERIDNAME \"$calleridname\"\n";
 	checkresult($result);
-	if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" <0000000000>";   &agi_output;}
-}
+	if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" \<0000000000\>";   &agi_output;}
 
+	if ($FD > 0) {print STDERR "callerID changed:     \"$calleridname\" \<0000000000\>\n";}
+}
+else
+{
+	if ($FD > 0) {print STDERR "callerID NOT changed: \"$calleridname\" <$callerid>\n";}
+
+}
 if ($AGILOG) {$agi_string = "AGI Variables: |$extension|$areacode|$callerid|$calleridname|";   &agi_output;}
 
 exit;
-
 
 
 
