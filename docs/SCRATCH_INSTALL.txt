@@ -314,7 +314,23 @@ help the Asterisk server, so it must have everything it needs installed locally.
 
 
 
-SUBPHASE 3.0: MySQL requirements
+SUBPHASE 3.0: install new Gnu Make
+
+A new version of the "make" compilation application replaced the 4-year-old
+version that most Linux distros(Including Slackware) use. This is only needed
+if you will be building Asterisk from the 1.4 release tree.
+
+  - wget http://mirrors.kernel.org/gnu/make/make-3.81.tar.gz
+  - gunzip make-3.81.tar.gz
+  - tar xvf make-3.81.tar
+  - cd make-3.81
+  - ./configure
+  - make
+  - make install
+
+
+
+SUBPHASE 3.1: MySQL requirements
 
 You must at least have Mysql client installed on each VICIDIAL server, but you 
 only need one database server.
@@ -361,7 +377,7 @@ NOTE: a minimum of MySQL server 4.0.X is required
 
 
 
-SUBPHASE 3.1: Installing Perl Modules
+SUBPHASE 3.2: Installing Perl Modules
 
 NOTE - you can install ActiveState http://www.activestate.com perl which may 
 improve performance, but it is not required. Here's the source for ActiveState
@@ -417,7 +433,7 @@ following modules first:   (say YES if asked to install prerequisites)
 
 
 
-SUBPHASE 3.2: Installing other utilities
+SUBPHASE 3.3: Installing other utilities
 
 Sox is an audio utility that allows you to mix audio files together at their 
 start point into one file. it is necessary for Asterisk recordings that record 
