@@ -142,7 +142,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Unzulässig Benutzername/Kennwort: |$user|$pass|\n";
+    echo "Unzulässig Benutzername/Passwort: |$user|$pass|\n";
     exit;
 	}
   else
@@ -207,7 +207,7 @@ if ($ACTION=="SysCIDOriginate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $queryCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate Befehl gesendet für Exten $exten Führung $channel auf $server_ip\n";
+	echo "Originate Befehl gesendet an Exten $exten Kanal $channel an $server_ip\n";
 	}
 }
 
@@ -222,8 +222,8 @@ if ($ACTION=="OriginateName")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "extenName $extenName muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -250,8 +250,8 @@ if ($ACTION=="OriginateNameVmail")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "extenName $extenName muß eingestellt werden\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
@@ -288,7 +288,7 @@ if ($ACTION=="Originate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate Befehl gesendet für Exten $exten Führung $channel auf $server_ip\n";
+	echo "Originate Befehl gesendet an Exten $exten Kanal $channel an $server_ip\n";
 	}
 }
 
@@ -341,7 +341,7 @@ if ($ACTION=="Hangup")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
 	{
 		$channel_live=0;
-		echo "Führung $channel ist unzulässig or queryCID $queryCID ist unzulässig, Hangup Befehl nicht eingesetzt\n";
+		echo "Kanal $channel ist unzulässig or queryCID $queryCID ist unzulässig, Hangup Befehl nicht eingesetzt\n";
 	}
 	else
 	{
@@ -371,7 +371,7 @@ if ($ACTION=="Hangup")
 			$rowx=mysql_fetch_row($rslt);
 			if ($rowx[0]==0)
 			{
-			echo "Call $CalLCID $channel ist nicht Phasen auf $call_server_ip, Checking Live Führung...\n";
+			echo "Call $CalLCID $channel ist nicht Live an $call_server_ip, Checking Live Kanal...\n";
 
 				$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension LIKE \"%$exten\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -380,7 +380,7 @@ if ($ACTION=="Hangup")
 				if ($row[0]==0)
 				{
 				$channel_live=0;
-				echo "Führung $channel ist nicht Phasen auf $call_server_ip, Hangup Befehl nicht eingesetzt $rowx[0]\n$stmt\n";
+				echo "Kanal $channel ist nicht Live an $call_server_ip, Hangup Befehl nicht eingesetzt $rowx[0]\n$stmt\n";
 				}
 				else
 				{
@@ -393,7 +393,7 @@ if ($ACTION=="Hangup")
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
-		echo "Hangup Befehl gesendet für Führung $channel auf $call_server_ip\n";
+		echo "Hangup Befehl gesendet an Kanal $channel an $call_server_ip\n";
 		}
 	}
 }
@@ -410,8 +410,8 @@ if ($ACTION=="RedirectVD")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -453,8 +453,8 @@ if ($ACTION=="RedirectToPark")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "extenName $extenName muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
@@ -478,8 +478,8 @@ if ($ACTION=="RedirectFromPark")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -501,8 +501,8 @@ if ($ACTION=="RedirectName")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "extenName $extenName muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -529,8 +529,8 @@ if ($ACTION=="RedirectNameVmail")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "extenName $extenName muß eingestellt werden\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
@@ -562,9 +562,9 @@ if ($ACTION=="RedirectXtraCX")
 		$channel_liveX=0;
 		$channel_liveY=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "ExtraFührung $extrachannel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "ExtraKanal $extrachannel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -587,7 +587,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Führung $channel ist nicht Phasen auf $call_server_ip, Redirect Befehl nicht eingesetzt\n";
+				echo "Kanal $channel ist nicht Live an $call_server_ip, Redirect Befehl nicht eingesetzt\n";
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -603,7 +603,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Führung $channel ist nicht Phasen auf $server_ip, Redirect Befehl nicht eingesetzt\n";
+				echo "Kanal $channel ist nicht Live an $server_ip, Redirect Befehl nicht eingesetzt\n";
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -647,7 +647,7 @@ if ($ACTION=="RedirectXtraCX")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "RedirectXtraCX Befehl gesendet für Führung $channel auf $call_server_ip and \nHungup $extrachannel auf $server_ip\n";
+				echo "RedirectXtraCX Befehl gesendet an Kanal $channel an $call_server_ip and \nHungup $extrachannel an $server_ip\n";
 			}
 		}
 		else
@@ -675,9 +675,9 @@ if ($ACTION=="RedirectXtra")
 			$channel_liveX=0;
 			$channel_liveY=0;
 			echo "Eine dieser Variablen ist unzulässig:\n";
-			echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-			echo "ExtraFührung $extrachannel muß als 2 Buchstaben grösser sein\n";
-			echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+			echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+			echo "ExtraKanal $extrachannel muss länger als 2 Buchstaben sein\n";
+			echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 			echo "exten $exten muß eingestellt werden\n";
 			echo "ext_context $ext_context muß eingestellt werden\n";
 			echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -701,7 +701,7 @@ if ($ACTION=="RedirectXtra")
 				else
 				{
 				$channel_liveX=0;
-				echo "Kann nicht leere Konferenz finden auf $server_ip, Redirect Befehl nicht eingesetzt\n";
+				echo "Kann keine leere Konferenz finden an $server_ip, Redirect Befehl nicht eingesetzt\n";
 				}
 			}
 
@@ -720,7 +720,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Führung $channel ist nicht Phasen auf $call_server_ip, Redirect Befehl nicht eingesetzt\n";
+					echo "Kanal $channel ist nicht Live an $call_server_ip, Redirect Befehl nicht eingesetzt\n";
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -736,7 +736,7 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Führung $channel ist nicht Phasen auf $server_ip, Redirect Befehl nicht eingesetzt\n";
+					echo "Kanal $channel ist nicht Live an $server_ip, Redirect Befehl nicht eingesetzt\n";
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -747,7 +747,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra Befehl gesendet für Führung $channel and \nExtraFührung $extrachannel\n to $exten auf $server_ip\n";
+					echo "RedirectXtra Befehl gesendet an Kanal $channel and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
 				}
 				else
 				{
@@ -771,7 +771,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra Befehl gesendet für Führung $channel auf $call_server_ip and \nExtraFührung $extrachannel\n to $exten auf $server_ip\n";
+					echo "RedirectXtra Befehl gesendet an Kanal $channel an $call_server_ip and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
 				}
 			}
 			else
@@ -795,8 +795,8 @@ if ($ACTION=="Redirect")
 	{
 		$channel_live=0;
 		echo "Eine dieser Variablen ist unzulässig:\n";
-		echo "Führung $channel muß als 2 Buchstaben grösser sein\n";
-		echo "queryCID $queryCID muß als 14 Buchstaben grösser sein\n";
+		echo "Kanal $channel muss länger als 2 Buchstaben sein\n";
+		echo "queryCID $queryCID muss länger als 14 Buchstaben sein\n";
 		echo "exten $exten muß eingestellt werden\n";
 		echo "ext_context $ext_context muß eingestellt werden\n";
 		echo "ext_priority $ext_priority muß eingestellt werden\n";
@@ -818,7 +818,7 @@ if ($ACTION=="Redirect")
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Führung $channel ist nicht Phasen auf $server_ip, Redirect Befehl nicht eingesetzt\n";
+				echo "Kanal $channel ist nicht Live an $server_ip, Redirect Befehl nicht eingesetzt\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -827,7 +827,7 @@ if ($ACTION=="Redirect")
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		echo "Redirect Befehl gesendet für Führung $channel auf $server_ip\n";
+		echo "Redirect Befehl gesendet an Kanal $channel an $server_ip\n";
 		}
 	}
 }
@@ -849,7 +849,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Führung $channel ist unzulässig or queryCID $queryCID ist unzulässig or filename: $filename ist unzulässig, $ACTION Befehl nicht eingesetzt\n";
+		echo "Kanal $channel ist unzulässig or queryCID $queryCID ist unzulässig or filename: $filename ist unzulässig, $ACTION Befehl nicht eingesetzt\n";
 	}
 	else
 	{
@@ -866,7 +866,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Führung $channel ist nicht Phasen auf $server_ip, $ACTION Befehl nicht eingesetzt\n";
+				echo "Kanal $channel ist nicht Live an $server_ip, $ACTION Befehl nicht eingesetzt\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -908,7 +908,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				}
 
 			}
-		echo "$ACTION Befehl gesendet für Führung $channel auf $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
+		echo "$ACTION Befehl gesendet an Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
 		}
 	}
 }
@@ -928,7 +928,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Führung $channel ist unzulässig or exten $exten ist unzulässig or filename: $filename ist unzulässig, $ACTION Befehl nicht eingesetzt\n";
+		echo "Kanal $channel ist unzulässig or exten $exten ist unzulässig or filename: $filename ist unzulässig, $ACTION Befehl nicht eingesetzt\n";
 	}
 	else
 	{
@@ -969,7 +969,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			$rslt=mysql_query($stmt, $link);
 			}
 
-		# find and hang up all recordings going auf in this conference # and extension = '$exten' 
+		# find and hang up all recordings going an in this conference # and extension = '$exten' 
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and channel LIKE \"%,1\";";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
@@ -992,7 +992,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION Befehl gesendet für Führung $channel auf $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n AUFNAHME DAUERT BIS 60 MINUTEN\n";
+		echo "$ACTION Befehl gesendet an Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n AUFNAHME DAUERT BIS ZU 60 MINUTEN\n";
 	}
 }
 
@@ -1009,7 +1009,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='debug') {echo "\n<!-- Indexlaufzeit: $RUNtime Sekunden -->";}
+if ($format=='debug') {echo "\n<!-- Scriptlaufzeit: $RUNtime Sekunden -->";}
 if ($format=='debug') {echo "\n</body>\n</html>\n";}
 	
 exit; 

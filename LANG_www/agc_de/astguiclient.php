@@ -105,7 +105,7 @@ if ($force_logout)
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
 	}
-    echo "Sie haben jetzt heraus geloggt. Danke\n";
+    echo "Sie haben sich abgemeldet. Danke\n";
     exit;
 }
 
@@ -143,7 +143,7 @@ $agcDIR = eregi_replace('astguiclient.php','',$agcDIR);
 	{
 	header ("Content-type: text/html; charset=utf-8");
 
-	echo "<title>astGUIclient web client: LOGON</title>\n";
+	echo "<title>astGUIclient web client: Login</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -153,18 +153,18 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> LOGON </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Benutzer-LOGON:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Benutzer Login:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=user SIZE=10 maxlength=20 VALUE=\"$user\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Benutzer-Kennwort:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Benutzer Passwort:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=pass SIZE=10 maxlength=20 VALUE=\"$pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Telefon-LOGON: </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Telefon Login: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Telefon-Kennwort:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Telefon Passwort:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=SUBMITSie VALUE=SUBMITSie></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=ÜBERNEHMEN VALUE=ÜBERNEHMEN></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BAU: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -185,7 +185,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 			$LOGfullname=$row[0];
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIVORWAHLKNOPF|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIWÄHLEN|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
 			fclose($fp);
 			}
 		}
@@ -193,7 +193,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 		{
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIVORWAHLKNOPF|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIWÄHLEN|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
 			fclose($fp);
 			}
 		}
@@ -208,7 +208,7 @@ echo "<!-- VERSION: $version     BAU: $build      ADD: $ADD-->\n";
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>astGUIclient web client: Telefon-LOGON</title>\n";
+echo "<title>astGUIclient web client: Telefon Login</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE><TR><TD></TD>\n";
@@ -220,14 +220,14 @@ echo "<INPUT TYPE=HIDDEN NAME=user VALUE=\"$user\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=pass VALUE=\"$pass\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Telefon-LOGON </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Telefon Login </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Telefon-LOGON: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Telefon Login: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Telefon-Kennwort:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Telefon Passwort:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=SUBMITSie VALUE=SUBMITSie></TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=ÜBERNEHMEN VALUE=ÜBERNEHMEN></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BAU: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
@@ -245,7 +245,7 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>astGUIclient web client: Telefon-LOGON</title>\n";
+	echo "<title>astGUIclient web client: Telefon Login</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -257,14 +257,14 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 	echo "<INPUT TYPE=HIDDEN NAME=pass VALUE=\"$pass\">\n";
 	echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Telefon-LOGON </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Telefon Login </TD>";
 	echo "</TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Traurig, Ihr Telefon-LOGON und Kennwort seien Sie nicht in diesem: <BR> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Telefon-LOGON: </TD>";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Ihr Telefon Login ist nicht aktiv, bitte versuchen sie es noch einmal: <BR> &nbsp; </TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>Telefon Login: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Telefon-Kennwort:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Telefon Passwort:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=SUBMITSie VALUE=SUBMITSie></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=ÜBERNEHMEN VALUE=ÜBERNEHMEN></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BAU: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -531,7 +531,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	?>
 
 // ################################################################################
-// ACTIVE EXTENSIONS LIST ERNEUERNSie FUNCTIONS
+// ACTIVE EXTENSIONS LIST AKTUALISIEREN FUNCTIONS
 	function refresh_activeext()
 		{
 		document.getElementById("activeext").innerHTML = Nactiveext;
@@ -622,7 +622,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// BUSY TRUNK LIST ERNEUERNSie FUNCTIONS
+// BUSY TRUNK LIST AKTUALISIEREN FUNCTIONS
 	function refresh_busytrunk()
 		{
 		document.getElementById("busytrunk").innerHTML = Nbusytrunk;
@@ -669,7 +669,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// BUSY EXTENSIONS LIST ERNEUERNSie FUNCTIONS
+// BUSY EXTENSIONS LIST AKTUALISIEREN FUNCTIONS
 	function refresh_busyext()
 		{
 		document.getElementById("busyext").innerHTML = Nbusyext;
@@ -716,7 +716,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// LIVE TRUNK LIST FOR HÄNGEZUSTAND/HIJACK MENU FUNCTIONS
+// LIVE TRUNK LIST FOR AUFLEGEN/HIJACK MENU FUNCTIONS
 	function refresh_busytrunkhangup()
 		{
 		document.getElementById("TrunkHangupContent").innerHTML = Nactiveext;
@@ -763,7 +763,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// LIVE LOCAL LIST FOR HÄNGEZUSTAND/HIJACK MENU FUNCTIONS
+// LIVE LOCAL LIST FOR AUFLEGEN/HIJACK MENU FUNCTIONS
 	function refresh_busylocalhangup()
 		{
 		document.getElementById("LocalHangupContent").innerHTML = Nactiveext;
@@ -885,7 +885,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			else
 				{
 				bsr_continue=0;
-				alert("Sie können überwachen nur Zap Führungen:\n" + listenvalue);
+				alert("Sie können nur ZAP Leitungen abhören:\n" + listenvalue);
 				}
 			}
 		if (bsr_continue == '1')
@@ -1195,7 +1195,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				{
 				recLIST = recLIST + "|" + monitorchannelvalue;
 				filename = filedate + "_" + user_abb;
-				var rec_start_html = "<a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + monitorchannelvalue + "','" + taskspan + "','" + filename + "');return false;\">Stoppen Sie Aufzeichnung";
+				var rec_start_html = "<a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + monitorchannelvalue + "','" + taskspan + "','" + filename + "');return false;\">Stoppe Aufzeichnung";
 				document.getElementById(taskspan).innerHTML = rec_start_html;
 
 			}
@@ -1257,7 +1257,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				recLIST = recLIST + "|" + taskconfrec;
 				filename = filedate + "_" + user_abb;
 				var channelrec = "Local/" + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfspan + "','" + taskconfrec + "','" + filename + "');return false;\">Stoppen Sie Aufzeichnung</a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfspan + "','" + taskconfrec + "','" + filename + "');return false;\">Stoppe Aufzeichnung</a>";
 				document.getElementById(taskconfspan).innerHTML = conf_rec_start_html;
 
 			}
@@ -1291,7 +1291,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 
 // ################################################################################
-// Check to see if user's extension is auf a call right now, if it is, format and print it
+// Check to see if user's extension is an a call right now, if it is, format and print it
 // Also grab the current server time and the status of the favorite extens
 	function check_for_live_calls()
 		{
@@ -1384,7 +1384,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=3;
 					if (live_calls > 0)
 						{
-						var live_calls_HTML = "<font face=\"Arial,Helvetica\"><B>PHASEN ERSUCHT UM DIESES TELEFON:</B></font><BR><table width=100%><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">KLIENT FÜHRUNG</td><td><font class=\"log_title\">REMOTEFÜHRUNG</td><td><font class=\"log_title\">SATZ</td><td><font class=\"log_title\">HÄNGEZUSTAND</td><td><font class=\"log_title\">XFER</td><td><font class=\"log_title\">PARK</td></tr>";
+						var live_calls_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE ANRUFE AUF IESEM TELEFON:</B></font><BR><table width=100%><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">AGENTENLEITUNG</td><td><font class=\"log_title\">AMTSLEITUNG</td><td><font class=\"log_title\">AUFNAHME</td><td><font class=\"log_title\">AUFLEGEN</td><td><font class=\"log_title\">XFER</td><td><font class=\"log_title\">PARK</td></tr>";
 						if ( (LCAcount > live_calls)  || (LCAcount < live_calls) )
 							{
 							LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]=''; 
@@ -1410,11 +1410,11 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 							var regx = new RegExp("\\|"+channelfieldBtrunk_array[1],"ig");
 							if (recLIST.match(regx)) 
-								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Stoppen Sie Aufzeichnung</span>";}
+								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Stoppe Aufzeichnung</span>";}
 							else 
 								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Aufzeichnung</span>";}
 
-							live_calls_HTML = live_calls_HTML + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldBtrunk_array[1] + "');return false;\">HÄNGEZUSTAND</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldBtrunk_array[1] + "','" + channelfieldA_array[1] + "');return false;\">XFER</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + channelfieldBtrunk_array[1] + "');return false;\">PARK</td></tr>";
+							live_calls_HTML = live_calls_HTML + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldBtrunk_array[1] + "');return false;\">AUFLEGEN</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldBtrunk_array[1] + "','" + channelfieldA_array[1] + "');return false;\">XFER</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + channelfieldBtrunk_array[1] + "');return false;\">PARK</td></tr>";
 
 							if (LCAe[ARY_ct].length < 1) 
 								{LCAe[ARY_ct] = channelfieldA_array[1];   LCAcontent_change++;  LCAalter++;}
@@ -1531,7 +1531,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (out_calls > 0)
 						{
-						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ANRUFDATE/TIME</td><td><font class=\"log_title\">ZAHL</td><td align=right><font class=\"log_title\">LÄNGE (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
+						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ANRUF DATUM/ZEIT</td><td><font class=\"log_title\">NUMMER</td><td align=right><font class=\"log_title\">LÄNGE (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < out_calls)
 							{
 							loop_ct++;
@@ -1545,7 +1545,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_out_datetime = call_array[1];
 							var call_out_number = call_array[2];
 							var call_out_length = call_array[3];
-							out_log_HTML = out_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_out_datetime + "</td><td><font class=\"log_text\">" + call_out_number + "</td><td align=right><font class=\"log_text\">" + call_out_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_out_number + "');return false;\">VORWAHLKNOPF</a></td></tr>";
+							out_log_HTML = out_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_out_datetime + "</td><td><font class=\"log_text\">" + call_out_number + "</td><td align=right><font class=\"log_text\">" + call_out_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_out_number + "');return false;\">WÄHLEN</a></td></tr>";
 					
 							}
 						out_log_HTML = out_log_HTML + "</table>";
@@ -1559,7 +1559,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (in_calls > 0)
 						{
-						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ANRUFDATE/TIME</td><td><font class=\"log_title\">IN-ZAHL</td><td COLSPAN=2><font class=\"log_title\">CALLERID</td><td align=right><font class=\"log_title\">LÄNGE</td><td><font class=\"log_title\"> </td></tr>"
+						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> ANRUF DATUM/ZEIT</td><td><font class=\"log_title\">IN-NUMMER</td><td COLSPAN=2><font class=\"log_title\">ANRUFERID</td><td align=right><font class=\"log_title\">LÄNGE</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < in_calls)
 							{
 							loop_ct++;
@@ -1575,7 +1575,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_in_idnum = call_array[3];
 							var call_in_idname = call_array[4];
 							var call_in_length = call_array[5];
-							in_log_HTML = in_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_in_datetime + "</td><td><font class=\"log_text\">" + call_in_number + "</td><td><font class=\"log_text\">" + call_in_idnum + "</td><td><font class=\"log_text\">" + call_in_idname + "</td><td align=right><font class=\"log_text\">" + call_in_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_in_idnum + "');return false;\">VORWAHLKNOPF</a></td></tr>";
+							in_log_HTML = in_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_in_datetime + "</td><td><font class=\"log_text\">" + call_in_number + "</td><td><font class=\"log_text\">" + call_in_idnum + "</td><td><font class=\"log_text\">" + call_in_idname + "</td><td align=right><font class=\"log_text\">" + call_in_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_in_idnum + "');return false;\">WÄHLEN</a></td></tr>";
 					
 							}
 						in_log_HTML = in_log_HTML + "</table>";
@@ -1634,7 +1634,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=-1;
 					if (parked_count > 0)
 						{
-						var park_HTML = "<table width=600><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHANNEL<BR>&nbsp; ANRUF ID</td><td><font class=\"log_title\">VORBEI GEPARKT<BR>&nbsp; GEPARKTE ZEIT</td><td><font class=\"log_title\">HÄNGEZUSTAND</td><td><font class=\"log_title\">XFER</td><td><font class=\"log_title\">AUFNAHME</td></tr>"
+						var park_HTML = "<table width=600><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHANNEL<BR>&nbsp; ANRUF ID</td><td><font class=\"log_title\">GEPARKT VON<BR>&nbsp; GEPARKTE ZEIT</td><td><font class=\"log_title\">AUFLEGEN</td><td><font class=\"log_title\">XFER</td><td><font class=\"log_title\">ABNEHMEN</td></tr>"
 						while (loop_ct < parked_count)
 							{
 							loop_ct++;
@@ -1650,7 +1650,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var park_call_id = park_array[1];
 							var parked_by = park_array[3];
 							var parked_time = park_array[4];
-							park_HTML = park_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + park_channel + "<BR>&nbsp; " + park_call_id + "</td><td><font class=\"log_text\">" + parked_by + "<BR>&nbsp; " + parked_time + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + park_channel + "');return false;\">HÄNGEZUSTAND</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + park_channel + "');return false;\">XFER</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + park_channel + "');return false;\">AUFNAHME</a></td></tr>";
+							park_HTML = park_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + park_channel + "<BR>&nbsp; " + park_call_id + "</td><td><font class=\"log_text\">" + parked_by + "<BR>&nbsp; " + parked_time + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + park_channel + "');return false;\">AUFLEGEN</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + park_channel + "');return false;\">XFER</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + park_channel + "');return false;\">ABNEHMEN</a></td></tr>";
 					
 							}
 						park_HTML = park_HTML + "</table>";
@@ -1762,7 +1762,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			show_reglink=1;
 			reglink = "<a href=\"#\" onclick=\"conf_register_room('" + head_conf + "');return false;\">Register</a>";
 			}
-		var conf_head_HTML = "<font class=\"sh_text\">KONFERENZ " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Registriert zu: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Tragen Sie Konferenz Ein </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">ErneuernSie </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">Aufzeichnung</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Senden Sie DTMF</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Vorwahlknopf Von Conf</A><BR></font>";
+		var conf_head_HTML = "<font class=\"sh_text\">KONFERENZ " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Registriert bei: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Konferenz betreten </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">Aktualisieren </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">Aufzeichnung</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Senden Sie DTMF</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Von Konferenz aus wählen</A><BR></font>";
 	
 		document.getElementById("ConfereNceHeaderContent").innerHTML = conf_head_HTML;
 		check_for_conf_calls(head_conf,taskrefresh);
@@ -1823,7 +1823,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						var LMAcontent_change=0;
 						var LMAcontent_match=0;
 						var conv_start=-1;
-						var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LEBEN ANRUFE IN DIESER KONFERENZ:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTEFÜHRUNG</TD><TD><font class=\"log_title\">HÄNGEZUSTAND</TD><TD><font class=\"log_title\">XFER</TD></TR>";
+						var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE ANRUFE IN DIESER KONFERENZ:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">AMTSLEITUNG</TD><TD><font class=\"log_title\">AUFLEGEN</TD><TD><font class=\"log_title\">XFER</TD></TR>";
 						if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 							{
 							LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -1839,7 +1839,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 								{var row_color = '#CCCCFF';}
 							var conv_ct = (loop_ct + conv_start);
 							var channelfieldA = conf_chan_array[conv_ct];
-							live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HÄNGEZUSTAND</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">XFER</td></tr>";
+							live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">AUFLEGEN</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">XFER</td></tr>";
 
 							if (!LMAe[ARY_ct]) 
 								{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
@@ -1925,7 +1925,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter manual dialstring and pass auf to originate call
+// filter manual dialstring and pass an to originate call
 	function SendManualDial(taskFromConf,taskconfexten)
 		{
 		if (taskFromConf == 'YES')
@@ -1958,7 +1958,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter conf_dtmf send string and pass auf to originate call
+// filter conf_dtmf send string and pass an to originate call
 	function SendConfDTMF(taskconfdtmf)
 		{
 		var dtmf_number = document.extensions_list.conf_dtmf.value;
@@ -2061,7 +2061,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Send Originate command to manager to direct user to voicemail Kasten
+// Send Originate command to manager to direct user to Voicemailbox
 	function SendCheckVoiceMail() 
 		{
 		var xmlhttp=false;
@@ -2288,7 +2288,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		var VD_favlist_ct_half = parseInt(favlistCT / 2);
 		if (VD_favlist_ct_half < 30) {VD_favlist_ct_half = 30;}
 		var favlist_sec_col = 0;
-		var favedit_HTML = "<center><table cellpadding=5 cellspacing=5 width=750><tr><td colspan=2 align=center bgcolor=\"#DDDD99\"><B>VORHANDENE VERLÄNGERUNGEN</B></td><td align=center bgcolor=\"#CCCC99\"><B> LIEBLINGE</B></td></tr><tr><td bgcolor=\"#DDDD99\" height=380 width=200 valign=top><font class=\"ss_text\"><span id=FavSelectA>";
+		var favedit_HTML = "<center><table cellpadding=5 cellspacing=5 width=750><tr><td colspan=2 align=center bgcolor=\"#DDDD99\"><B>VORHANDENE ERWEITERUNGEN</B></td><td align=center bgcolor=\"#CCCC99\"><B> FAVORITEN</B></td></tr><tr><td bgcolor=\"#DDDD99\" height=380 width=200 valign=top><font class=\"ss_text\"><span id=FavSelectA>";
 		loop_ct = 0;
 		while (loop_ct < favlistCT)
 			{
@@ -2296,7 +2296,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			var regFAVlist = new RegExp("'" + favlistEXTEN[0] + "'","ig");
 			if (favorites_listEDIT.match(regFAVlist))
 				{
-				// do not print extension, it's auf the favorites list
+				// do not print extension, it's an the favorites list
 				}
 			else
 				{
@@ -2385,7 +2385,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			hideDiv('MainPanel');
 			showDiv('LogouTBox');
 
-		document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&user=" + user + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "\">KLICKEN SIE HIER, UM INNEN WIEDER ZU LOGGEN</a>\n";
+		document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&user=" + user + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "\">KLICKEN SIE HIER, UM SICH WIEDER ANZUMELDEN</a>\n";
 
 		logout_stop_timeouts = 1;
 
@@ -2466,7 +2466,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		start_all_refresh();
 		}
 	function pause()	// Pauses the refreshing of the lists
-		{active_display=2;  display_message="  - AKTIVE ANZEIGE PAUSIERTE -";}
+		{active_display=2;  display_message="  - AKTIVE ANZEIGE IN PAUSE -";}
 	function start()	// resumes the refreshing of the lists
 		{active_display=1;  display_message='';}
 	function faster()	// lowers by 1000 milliseconds the time until the next refresh
@@ -2716,14 +2716,14 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=5 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
-<?	echo "Willkommen $LOGfullname, Ihr Telefon: $fullname - $protocol/$extension auf $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a><BR>\n"; ?>
+<?	echo "Willkommen $LOGfullname, Ihr Telefon: $fullname - $protocol/$extension an $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a><BR>\n"; ?>
 </TD></TR>
 <TR VALIGN=TOP ALIGN=LEFT>
-<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main.gif" ALT="Hauptverkleidung" WIDTH=83 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Aktive Linien Verkleidung" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Konferenz-Verkleidung" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Überprüfen Sie Voicemail" WIDTH=170 HEIGHT=30 Border=0></A></TD>
-<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Leben Anruf" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main.gif" ALT="Haupt Bedienfeld" WIDTH=83 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Aktive Leitungen Bedienfeld" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Konferenz Bedienfeld" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Checken Sie Ihre Voicemails" WIDTH=170 HEIGHT=30 Border=0></A></TD>
+<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Live Anruf" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </SPAN>
 
@@ -2732,23 +2732,23 @@ echo "</head>\n";
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:29;" id="TrunkHangupBox">
-    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> TRUNK HÄNGEZUSTAND <BR><BR>
+    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> TRUNK AUFLEGEN <BR><BR>
 	<span id="TrunkHangupContent"> Active Trunks Menu </span><BR>
-	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Hängezustand-Stamm</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Straßenräuber-Stamm</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Hören Stamm</a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busytrunkhangup_force_refresh();return false;">ErneuernSie</a> &nbsp; | &nbsp; 
+	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Amtsleitung auflegen</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Amtsleitung übernehmen</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Amtsleitung hören</a> &nbsp; | &nbsp; </span>
+	<a href="#" onclick="busytrunkhangup_force_refresh();return false;">Aktualisieren</a> &nbsp; | &nbsp; 
 	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');">Zurück zu Hauptfenster</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:28;" id="LocalHangupBox">
-    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> LOKALER HÄNGEZUSTAND <BR><BR>
+    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> LOKALES AUFLEGEN <BR><BR>
 	<span id="LocalHangupContent"> Aktives Lokales Menü </span><BR>
-	<span id="LocalHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Local');return false;">Hängezustand-Einheimischer</a> &nbsp; | &nbsp; </span>
-	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;">Straßenräuber-Einheimischer</a> &nbsp; | &nbsp; </span>
-	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;">Hören Einheimischer</a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busylocalhangup_force_refresh();return false;">ErneuernSie</a> &nbsp; | &nbsp; 
+	<span id="LocalHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Local');return false;">Lokale Leitung auflegen</a> &nbsp; | &nbsp; </span>
+	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;">Lokale Leitung übernehmen</a> &nbsp; | &nbsp; </span>
+	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;">Lokale Leitung hören</a> &nbsp; | &nbsp; </span>
+	<a href="#" onclick="busylocalhangup_force_refresh();return false;">Aktualisieren</a> &nbsp; | &nbsp; 
 	<a href="#" onclick="hideLocalHangup('LocalHangupBox');">Zurück zu Hauptfenster</a>
 	</TD></TR></TABLE>
 </span>
@@ -2756,27 +2756,27 @@ echo "</head>\n";
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> PHASENANRUF-ÜBERTRAGUNG</b> <BR>Gebracht zu werden Führung: <span id="MainXfeRChanneL">Führung</span><BR></tr>
-	<tr><td>Verlängerungen:<BR><span id="MainXfeRContent"> Verlängerungen Menü </span></td>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> LIVE ANRUF WEITERLEITEN</b> <BR>Leitung, die übergeben werden soll: <span id="MainXfeRChanneL">Kanal</span><BR></tr>
+	<tr><td>Erweiterungen:<BR><span id="MainXfeRContent"> Erweiterungen Menü </span></td>
 	<td>
 	<BR>
-	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Senden Sie zu vorgewählter Verlängerung</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Senden Sie zu vorgewähltem vmail Kasten</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Senden Sie zu dieser Zahl</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
-	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">ErneuernSie</a> <BR><BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Senden Sie an ausgewählte Erweiterung</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Senden Sie an ausgewählte Voicemalbox</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Senden Sie an diese Nummer</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
+	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">Aktualisieren</a> <BR><BR><BR>
 	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Zurück zu Hauptfenster</a> <BR><BR>
 	</TD>
-	<TD>Konferenzen:<BR><font size=1>(klicken Sie an eine Zahl unten, um zu einer Konferenz zu senden)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Senden Sie meine Führung auch<div class="scroll_list" id="MainXfeRconfContent"> Konferenz-Menü </div></td></TR></TABLE>
+	<TD>Konferenzen:<BR><font size=1>(Wählen sie eine Konferenznummer, um an diese Konferenz zu senden)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Meine Leitung auch senden<div class="scroll_list" id="MainXfeRconfContent"> Konferenz Menü </div></td></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:80px;top:12px;z-index:43;" id="LocalDialBox">
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> LOKALER Verlängerungen Vorwahlknopf</b> <BR>Telefon, das von benennt: <span id="LocalDialChanneL">Führung</span><BR></tr>
-	<tr><td>Verlängerungen:<BR><span id="LocalDialContent"> Verlängerungen Menü </span></td>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> LOKALER Anruf über Erweiterung</b> <BR>Telefon ruft an von: <span id="LocalDialChanneL">Kanal</span><BR></tr>
+	<tr><td>Erweiterungen:<BR><span id="LocalDialContent"> Erweiterungen Menü </span></td>
 	<td>
 	<BR>
-	<a href="#" onclick="mainxfer_send_originate('DiaL','','');return false;">Anruf vorgewählte Verlängerung</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_originate('VMAIL');return false;">Anruf vorgewählter vmail Kasten</a> <BR><BR>
-	<a href="#" onclick="getactiveext('LocalDialBox');return false;">ErneuernSie</a> <BR><BR><BR>
+	<a href="#" onclick="mainxfer_send_originate('DiaL','','');return false;">Ausgewählte Erweiterung für Anruf</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_originate('VMAIL');return false;">Ausgewählte Erweiterung für Voicemalbox</a> <BR><BR>
+	<a href="#" onclick="getactiveext('LocalDialBox');return false;">Aktualisieren</a> <BR><BR><BR>
 	<a href="#" onclick="hideLocalDial('LocalDialBox');">Zurück zu Hauptfenster</a> <BR><BR>
 	</TD>
 	<TD></td></TR></TABLE>
@@ -2794,19 +2794,19 @@ echo "</head>\n";
 </TD></TR>
 <tr><td><span id="busycallsspan"></span></td></tr>
 <tr><td><span id="busycallsdebug"></span></td></tr>
-<tr><td align=center><font face="Arial,Helvetica"><B>VOICEMAIL &nbsp; &nbsp; </B></font> NEU: <span id="new_vmail_span"></span> &nbsp; &nbsp; ALT: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>MANUELLER VORWAHLKNOPF &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">VORWAHLKNOPF</A></td></tr>
+<tr><td align=center><font face="Arial,Helvetica"><B>VOICEMAIL &nbsp; &nbsp; </B></font> NEU: <span id="new_vmail_span"></span> &nbsp; &nbsp; ALT: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>MANUELLER ANRUF &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">WÄHLEN</A></td></tr>
 
-<tr><td align=center><a href="#" onclick="showParkDisplay('ParkDisplayBox');return false;"><font face="Arial,Helvetica"><B>GEPARKTE ANRUFE</B></a>:  <span id="parked_calls_count">0</span> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="#" onclick="showLocalDial('LocalDialBox');return false;"><font face="Arial,Helvetica"><B>LOKALE VORWAHLKNOPF-VERLÄNGERUNGEN</a></td></tr>
+<tr><td align=center><a href="#" onclick="showParkDisplay('ParkDisplayBox');return false;"><font face="Arial,Helvetica"><B>GEPARKTE ANRUFE</B></a>:  <span id="parked_calls_count">0</span> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="#" onclick="showLocalDial('LocalDialBox');return false;"><font face="Arial,Helvetica"><B>LOKALE ANRUF ERWEITERUNG</a></td></tr>
 
 <tr><td align=center><font face="Arial,Helvetica"><B>OUTBOUND ANRUFE:</B></font></td></tr>
 <tr><td align=center><div class="scroll_log" id="outboundcallsspan"></div></td></tr>
 <tr><td align=center><font face="Arial,Helvetica"><B>INBOUND ANRUFE:</B></font></td></tr>
 <tr><td align=center><div class="scroll_log" id="inboundcallsspan"></div></td></tr>
-<tr><td align=left><font face="Arial,Helvetica" size=1>astGUIclient Netz-Klient VERSION:<? echo $version ?> BAU:<? echo $build ?></font></td></tr>
+<tr><td align=left><font face="Arial,Helvetica" size=1>astGUIclient Web-Client VERSION:<? echo $version ?> BAU:<? echo $build ?></font></td></tr>
 </TABLE>
 
 <span style="position:absolute;left:640px;top:0px;z-index:33;" id="FavoriteSBox">
-    <table border=0 bgcolor="#DDDDFF" width=200 height=400 cellpadding=2 ALIGN=TOP><TR><TD align=center><span id="FavoriteSContent"><font class="sh_text"> LIEBLINGE</font><font class="sb_text"> &nbsp; &nbsp; &nbsp; <a href="#" onclick="favorites_editor('BuilD');return false;"> redigieren sie</a></span></TD></TR>
+    <table border=0 bgcolor="#DDDDFF" width=200 height=400 cellpadding=2 ALIGN=TOP><TR><TD align=center><span id="FavoriteSContent"><font class="sh_text"> FAVORITEN</font><font class="sb_text"> &nbsp; &nbsp; &nbsp; <a href="#" onclick="favorites_editor('BuilD');return false;"> bearbeiten</a></span></TD></TR>
 <?
 	$h=0;
 	while ($favorites_count > $h)
@@ -2824,10 +2824,10 @@ echo "</head>\n";
 
 
 <span style="position:absolute;left:5px;top:5px;z-index:34;" id="FavoriteSEdiT">
-    <table border=0 bgcolor="#DDDDFF" width=800 height=450 cellpadding=2 ALIGN=TOP><TR HEIGHT=95%><TD align=center HEIGHT=95%><span id="FavoriteSEditContent"> LIEBLINGE</span></TD></TR>
+    <table border=0 bgcolor="#DDDDFF" width=800 height=450 cellpadding=2 ALIGN=TOP><TR HEIGHT=95%><TD align=center HEIGHT=95%><span id="FavoriteSEditContent"> FAVORITEN</span></TD></TR>
 	<TR><TD ALIGN=CENTER><BR> &nbsp; </TD></TR>
-	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="SubmiT_FavoritE_ChangEs();return false;">SUBMITSie Sie LIEBLINGE ÄNDERUNGEN - erfordert Logout</a></TD></TR>
-	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="hideDiv('FavoriteSEdiT');return false;">ZURÜCK ZU MAIN FENSTER - ignorieren Sie die vorgenommenen Änderungen</a></TD></TR>
+	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="SubmiT_FavoritE_ChangEs();return false;">FAVORITEN ÄNDERUNGEN ÜBERNEHMEN - erfordert Logout</a></TD></TR>
+	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="hideDiv('FavoriteSEdiT');return false;">ZURÜCK ZUM HAUPTFENSTER - Änderungen verwerfen</a></TD></TR>
 	</TABLE>
 </span>
 
@@ -2837,30 +2837,30 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:46px;z-index:20;" id="ActiveLinesPanel">
 <table border=0 BGCOLOR="#CDE0C2" width=640>
 <tr><td colspan=3>
-<a href="#" onclick="pause();return false;">PAUSE</a> | <a href="#" onclick="start();return false;">ANFANG</a> &nbsp; &nbsp; Erneuern Sie Rate: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Schneller</a> | <a href="#" onclick="slower();return false;">Langsamer</a></p>
+<a href="#" onclick="pause();return false;">PAUSE</a> | <a href="#" onclick="start();return false;">START</a> &nbsp; &nbsp; Aktualisierungsfrequenz: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Schneller</a> | <a href="#" onclick="slower();return false;">Langsamer</a></p>
 	<div id="status"><em>Initialisierung..</em></div>
 </td></tr>
-<tr><td>Aktive Verlängerungen <BR> 
-<a href="#" onclick="activeext_force_refresh();return false;">ERNEUERNSie</a> | 
+<tr><td>Aktive Erweiterung <BR> 
+<a href="#" onclick="activeext_force_refresh();return false;">AKTUALISIEREN</a> | 
 <span id="activeext_order"><a href="#" onclick="activeext_order_desc();return false;">AUFTRAG</a> | </span>
 </td>
 
-<td>Äußere Linien <BR>
-<a href="#" onclick="busytrunk_force_refresh();return false;">ERNEUERNSie</a> | 
+<td>Amtsleitungen <BR>
+<a href="#" onclick="busytrunk_force_refresh();return false;">AKTUALISIEREN</a> | 
 <span id="busytrunk_order"><a href="#" onclick="busytrunk_order_desc();return false;">AUFTRAG</a> | </span>
 </td>
 
-<td>Lokale Verlängerungen <BR>
-<a href="#" onclick="busyext_force_refresh();return false;">ERNEUERNSie</a> | 
+<td>Lokale Erweiterungen <BR>
+<a href="#" onclick="busyext_force_refresh();return false;">AKTUALISIEREN</a> | 
 <span id="busyext_order"><a href="#" onclick="busyext_order_desc();return false;">AUFTRAG</a> | </span>
 </td></tr>
 
 <tr><td VALIGN=TOP>
-	<span id="activeext"><em>Daten Gehen Hier</em></span><BR><BR>
+	<span id="activeext"><em>Daten kommen hier rein</em></span><BR><BR>
 </td><td VALIGN=TOP>
-	<span id="busytrunk"><em>Daten Gehen Hier</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Stamm-Tätigkeit</a></span>
+	<span id="busytrunk"><em>Daten kommen hier rein</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Amtsleitungs Aktion</a></span>
 </td><td VALIGN=TOP>
-	<span id="busyext"><em>Daten Gehen Hier</em></span><BR><BR><span id="LocalHangupLink"><a href="#" onclick="showLocalHangup('LocalHangupBox');return false;">Lokale Tätigkeit</a></span>
+	<span id="busyext"><em>Daten kommen hier rein</em></span><BR><BR><span id="LocalHangupLink"><a href="#" onclick="showLocalHangup('LocalHangupBox');return false;">Lokale Aktion</a></span>
 </td></tr>
 
 </table>
@@ -2872,12 +2872,12 @@ echo "</head>\n";
 <TR><TD></TD></TR></TABLE>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;color:black;" id="ConfereNcesListSpan">
-<span id="ConfereNcesListContent">Konferenz-Liste </span>
+<span id="ConfereNcesListContent">Konferenzliste </span>
 </span>
 
 <span style="position:absolute;left:140px;top:0px;z-index:32;color:black;width:500;" id="ConfereNceHeaderSpan">
 <span id="ConfereNceHeaderContent"> </span><BR>
-<span style="width:540;height:400;" id="ConfereNceDetailContent">Klicken Sie an Konferenzzimmernummer auf dem links für Info auf </span>
+<span style="width:540;height:400;" id="ConfereNceDetailContent">Klicken Sie auf die Konferenzraumnummer links, für Informationen über die Konferenz </span>
 </span>
 
 

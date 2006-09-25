@@ -269,7 +269,7 @@ $auth=$row[0];
 
 if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 {
-echo "Unzulässig Benutzername/Kennwort: |$user|$pass|\n";
+echo "Unzulässig Benutzername/Passwort: |$user|$pass|\n";
 exit;
 }
 else
@@ -304,7 +304,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BAU: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Datenbank-Frage Index";
+echo "<title>VICIDiaL Datenbank-Abfrage Script";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -322,7 +322,7 @@ if ($ACTION == 'regCLOSER')
 	if ( (strlen($closer_choice)<1) || (strlen($user)<1) )
 	{
 	$channel_live=0;
-	echo "Gruppe Wahl $closer_choice ist unzulässig\n";
+	echo "Gruppe Wählen $closer_choice ist unzulässig\n";
 	exit;
 	}
 	else
@@ -350,7 +350,7 @@ if ($ACTION == 'regCLOSER')
 		$rslt=mysql_query($stmt, $link);
 		}
 	}
-	echo "Closer In Gruppe Wahl $closer_choice ist zum Benutzer registriert worden $user\n";
+	echo "Closer In Gruppe Wählen $closer_choice ist beim Benutzer registriert worden $user\n";
 }
 
 
@@ -367,7 +367,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1)  || (strlen($ext_context)<1) )
 	{
 	$channel_live=0;
-	echo "ZUFUHRBEHÄLTER LEER\n";
+	echo "HOPPER LEER\n";
 	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context ist unzulässig\n";
 	exit;
 	}
@@ -396,7 +396,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC ZAHL\n";
+					echo "DNC NUMMER\n";
 					exit;
 					}
 				}
@@ -615,7 +615,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		}
 		else
 		{
-		echo "ZUFUHRBEHÄLTER LEER\n";
+		echo "HOPPER LEER\n";
 		}
 	}
 }
@@ -770,7 +770,7 @@ if ($stage == "start")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
-		echo "MASCHINENBORDBUCH NICHT BETRETEN\n";
+		echo "LOG NICHT EINGEGEBEN\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign ist unzulässig\n";
 		exit;
 		}
@@ -789,7 +789,7 @@ if ($stage == "start")
 			}
 		else
 			{
-			echo "MASCHINENBORDBUCH NICHT BETRETEN\n";
+			echo "LOG NICHT EINGEGEBEN\n";
 			}
 
 	#	##### insert log into call_log for manual VICIDiaL call
@@ -804,7 +804,7 @@ if ($stage == "start")
 	#		}
 	#	else
 	#		{
-	#		echo "MASCHINENBORDBUCH NICHT BETRETEN\n";
+	#		echo "LOG NICHT EINGEGEBEN\n";
 	#		}
 		}
 	}
@@ -813,7 +813,7 @@ if ($stage == "end")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) )
 		{
-		echo "MASCHINENBORDBUCH NICHT BETRETEN\n";
+		echo "LOG NICHT EINGEGEBEN\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id ist unzulässig\n";
 		exit;
 		}
@@ -877,7 +877,7 @@ if ($stage == "end")
 			}
 		else
 			{
-			echo "MASCHINENBORDBUCH NICHT BETRETEN\n\n";
+			echo "LOG NICHT EINGEGEBEN\n\n";
 			}
 		}
 
@@ -1197,7 +1197,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					}
 				}
 
-			### if web form is set then send auf to vicidial.php for override of WEB_FORM address
+			### if web form is set then send an to vicidial.php for override of WEB_FORM address
 			if (strlen($VDCL_group_web)>5) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n";}
 			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n";}
 
@@ -1298,7 +1298,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		else
 		{
 		echo "0\n";
-	#	echo "No calls in QUEUE for $user auf $server_ip\n";
+	#	echo "No calls in QUEUE for $user an $server_ip\n";
 		exit;
 		}
 	}
@@ -1329,7 +1329,7 @@ else
 
 	if ($no_delete_sessions < 1)
 		{
-		##### Remove the reservation auf the vicidial_conferences meetme room
+		##### Remove the reservation an the vicidial_conferences meetme room
 		$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -1431,7 +1431,7 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 		}
 
-	echo 'Lead ' . $lead_id . ' ist zu geändert worden ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";
+	echo 'Lead ' . $lead_id . ' wurde geändert zu ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";
 }
 
 ################################################################################
@@ -1613,7 +1613,7 @@ if ($format=='debug')
 {
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-echo "\n<!-- Indexlaufzeit: $RUNtime Sekunden -->";
+echo "\n<!-- Scriptlaufzeit: $RUNtime Sekunden -->";
 echo "\n</body>\n</html>\n";
 }
 	

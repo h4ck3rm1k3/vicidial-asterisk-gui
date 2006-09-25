@@ -86,7 +86,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Unzulässig Benutzername/Kennwort: |$user|$pass|\n";
+    echo "Unzulässig Benutzername/Passwort: |$user|$pass|\n";
     exit;
 	}
   else
@@ -121,7 +121,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BAU: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
-echo "<title>Conf Verlängerung Überprüfung";
+echo "<title>Konferenz Erweiterung überprüfen";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -195,7 +195,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$FührungA[$total_conf] = "$row[0]";
+			$KanalA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
@@ -208,7 +208,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$FührungA[$total_conf] = "$row[0]";
+			$KanalA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		}
@@ -220,8 +220,8 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		while($total_conf > $counter)
 		{
 			$counter++;
-			$countecho = "$countecho$FührungA[$counter] ~";
-		#	echo "$FührungA[$counter] ~";
+			$countecho = "$countecho$KanalA[$counter] ~";
+		#	echo "$KanalA[$counter] ~";
 		}
 
 	echo "$countecho\n";
@@ -244,7 +244,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
-		echo "Konferenz $conf_exten ist zu registriert worden $exten\n";
+		echo "Konferenz $conf_exten wurde registriert bei $exten\n";
 	}
 
 
@@ -253,7 +253,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- Indexlaufzeit: $RUNtime Sekunden -->";
+	echo "\n<!-- Scriptlaufzeit: $RUNtime Sekunden -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

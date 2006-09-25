@@ -74,7 +74,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Unzulässig Benutzername/Kennwort: |$user|$pass|\n";
+    echo "Unzulässig Benutzername/Passwort: |$user|$pass|\n";
     exit;
 	}
   else
@@ -109,7 +109,7 @@ if ($format=='debug')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BAU: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Phasenverlängerung Überprüfung";
+echo "<title>LIVE Erweiterung überprüfen";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -164,9 +164,9 @@ echo "$row[0]|";
 		{
 		$row=mysql_fetch_row($rslt);
 		echo "Conversation: $counter ~";
-		echo "FührungA: $ChanneLA[$counter] ~";
-		echo "FührungB: $ChanneLB[$counter] ~";
-		echo "FührungBtrunk: $row[0]|";
+		echo "KanalA: $ChanneLA[$counter] ~";
+		echo "KanalB: $ChanneLB[$counter] ~";
+		echo "KanalBtrunk: $row[0]|";
 		}
 		else
 		{
@@ -178,9 +178,9 @@ echo "$row[0]|";
 			{
 			$row=mysql_fetch_row($rslt);
 			echo "Conversation: $counter ~";
-			echo "FührungA: $ChanneLA[$counter] ~";
-			echo "FührungB: $ChanneLB[$counter] ~";
-			echo "FührungBtrunk: $row[0]|";
+			echo "KanalA: $ChanneLA[$counter] ~";
+			echo "KanalB: $ChanneLB[$counter] ~";
+			echo "KanalBtrunk: $row[0]|";
 			}
 			else
 			{
@@ -192,9 +192,9 @@ echo "$row[0]|";
 				{
 				$row=mysql_fetch_row($rslt);
 				echo "Conversation: $counter ~";
-				echo "FührungA: $ChanneLA[$counter] ~";
-				echo "FührungB: $ChanneLB[$counter] ~";
-				echo "FührungBtrunk: $row[0]|";
+				echo "KanalA: $ChanneLA[$counter] ~";
+				echo "KanalB: $ChanneLB[$counter] ~";
+				echo "KanalBtrunk: $row[0]|";
 				}
 				else
 				{
@@ -206,16 +206,16 @@ echo "$row[0]|";
 					{
 					$row=mysql_fetch_row($rslt);
 					echo "Conversation: $counter ~";
-					echo "FührungA: $ChanneLA[$counter] ~";
-					echo "FührungB: $ChanneLB[$counter] ~";
-					echo "FührungBtrunk: $row[0]|";
+					echo "KanalA: $ChanneLA[$counter] ~";
+					echo "KanalB: $ChanneLB[$counter] ~";
+					echo "KanalBtrunk: $row[0]|";
 					}
 					else
 					{
 					echo "Conversation: $counter ~";
-					echo "FührungA: $ChanneLA[$counter] ~";
-					echo "FührungB: $ChanneLB[$counter] ~";
-					echo "FührungBtrunk: $ChanneLA[$counter]|";
+					echo "KanalA: $ChanneLA[$counter] ~";
+					echo "KanalB: $ChanneLB[$counter] ~";
+					echo "KanalBtrunk: $ChanneLA[$counter]|";
 					}
 				}
 			}
@@ -269,7 +269,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- Indexlaufzeit: $RUNtime Sekunden -->";
+	echo "\n<!-- Scriptlaufzeit: $RUNtime Sekunden -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

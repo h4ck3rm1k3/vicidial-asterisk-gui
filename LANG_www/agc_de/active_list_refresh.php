@@ -125,7 +125,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Unzulässig Benutzername/Kennwort: |$user|$pass|\n";
+    echo "Unzulässig Benutzername/Passwort: |$user|$pass|\n";
     exit;
 	}
   else
@@ -160,11 +160,11 @@ if ($format=='table')
 echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BAU: $build    ADD: $ADD   server_ip: $server_ip-->\n";
-echo "<title>Liste Anzeige: ";
-if ($ADD==1)		{echo "Phasenverlängerungen";}
-if ($ADD==2)		{echo "Beschäftigte Verlängerungen";}
-if ($ADD==3)		{echo "Äußere Linien";}
-if ($ADD==4)		{echo "Lokale Verlängerungen";}
+echo "<title>Liste Display: ";
+if ($ADD==1)		{echo "Live Erweiterungen";}
+if ($ADD==2)		{echo "Besetzte Erweiterungen";}
+if ($ADD==3)		{echo "Amtsleitungen";}
+if ($ADD==4)		{echo "Lokale Erweiterungen";}
 if ($ADD==5)		{echo "Konferenzen";}
 if ($ADD==99999)	{echo "HILFE";}
 echo "</title>\n";
@@ -469,7 +469,7 @@ if ($ADD==5)
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='table') {echo "\n<!-- Indexlaufzeit: $RUNtime Sekunden -->";}
+if ($format=='table') {echo "\n<!-- Scriptlaufzeit: $RUNtime Sekunden -->";}
 if ($format=='table') {echo "\n</body>\n</html>\n";}
 	
 exit; 
