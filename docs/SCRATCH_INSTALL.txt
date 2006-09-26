@@ -176,11 +176,11 @@ compile the 2.4 kernel that comes with Slackware(2.4.31) start with OPTION 2:
 OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 
 1. cd /usr/src
-2. wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.17.11.tar.gz
-3. gunzip linux-2.6.17.11.tar.gz
-4. tar xvf linux-2.6.17.11.tar
+2. wget http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.18.tar.gz
+3. gunzip linux-2.6.18.tar.gz
+4. tar xvf linux-2.6.18.tar
 5. mv -f /usr/src/linux /usr/src/linux-old
-6. ln -s /usr/src/linux-2.6.17.11 /usr/src/linux
+6. ln -s /usr/src/linux-2.6.18 /usr/src/linux
 7.  make mrproper			# prep for kernel assembly
 8.  make menuconfig			# launch configuration menu app
     (this part is very dependant upon your own hardware)
@@ -196,6 +196,9 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
      Power management options (ACPI, APM)  --->
 	->ACPI (Advanced Configuration and Power Interface) Support
 	  (enable all down to Processor and thermal zone)
+     Bus options (PCI, PCMCIA, EISA, MCA, ISA)  --->
+	->[*]   PCI Express support
+	   (if using Sangoma PCI Express card)
      Networking  --->
 	Amateur Radio support  --->
 	  <*> Amateur Radio AX.25 Level 2 protocol
