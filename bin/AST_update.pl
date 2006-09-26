@@ -52,9 +52,10 @@
 # 60808-1005 - changed to use /etc/astguiclient.conf for configs
 # 60808-1500 - Fixed another bug in that caused crash with ** in extension
 # 60814-1523 - SYSLOG and SYSPERF looked up from database, dynamic settings
+# 60926-1601 - validate proper binutil locations for performance gathering
 #
 
-$build = '60814-1523';
+$build = '60926-1601';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -68,6 +69,39 @@ $MT[0]='';
 $cpuUSERprev=0;
 $cpuSYSTprev=0;
 $cpuIDLEprev=0;
+
+# find proper locations of bin utils
+
+# cat
+$bincat = "/usr/bin/cat";
+if (-e "/usr/local/bin/cat")
+	{$bincat = "/usr/local/bin/cat";}
+else
+	{
+	if (-e "/bin/cat")
+		{$bincat = "/bin/cat";}
+	}
+
+# free
+$binfree = "/usr/bin/free";
+if (-e "/usr/local/bin/free")
+	{$binfree = "/usr/local/bin/free";}
+else
+	{
+	if (-e "/bin/free")
+		{$binfree = "/bin/free";}
+	}
+
+# ps
+$binps = "/bin/ps";
+if (-e "/usr/local/bin/ps")
+	{$binps = "/usr/local/bin/ps";}
+else
+	{
+	if (-e "/usr/bin/ps")
+		{$binps = "/usr/bin/ps";}
+	}
+
 
 # DB table variables for testing
 	$parked_channels =		'parked_channels';
@@ -502,7 +536,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$cpuUSERcent=0; $cpuSYSTcent=0; $cpuIDLEcent=0;
 				### get processor usage seconds ###
 				# cpu  924841 211725 270473 6961811
-				@cpuUSE = `/usr/bin/cat /proc/stat`;
+				@cpuUSE = `$bincat /proc/stat`;
 					if ($cpuUSE[0] =~ /cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/)
 					{
 					$cpuUSER  = ($1 + $2);
@@ -524,19 +558,19 @@ if (!$telnet_port) {$telnet_port = '5038';}
 					}
 
 				### get system load ###
-				$serverLOAD = `/usr/bin/cat /proc/loadavg`;
+				$serverLOAD = `$bincat /proc/loadavg`;
 				$serverLOAD =~ s/ .*//gi;
 				$serverLOAD =~ s/\D//gi;
 
 				### get memory usage ###
-				@GRABserverMEMORY = `/usr/bin/free -m -t`;
+				@GRABserverMEMORY = `$binfree -m -t`;
 					if ($GRABserverMEMORY[1] =~ /Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+/)
 					{
 					$MEMused  = $2;
 					$MEMfree  = $3;
 					}
 				### get number of system processes ###
-				@GRABserverPROCESSES = `/bin/ps -A --no-heading`;
+				@GRABserverPROCESSES = `$binps -A --no-heading`;
 				$serverPROCESSES = $#GRABserverPROCESSES;
 
 				if ($SYSPERF_rec) {$recording_count = ($test_local_count / 2)}
