@@ -358,15 +358,15 @@ dbconnect.php files in the astguiclient, vicidial and agc directories of your
 webroot.
 
 3. Enter the astguiclient administration page:
-http://10.10.10.15/astguiclient/admin.php
+http://10.10.10.15/vicidial/admin.php
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
    - Here you will enter the login and password that you inserted into the mysql 
-database in the phones table and gave a status of ADMIN (above [gs102/test])
+database in the vicidial_users table (above [6666/1234])
    - Now that you are logged into the astGUIclient administration system we can 
 add a new phone entry for each of the sipura lines we created.
-	- click on the "ADD A NEW PHONE" link at the top and enter in the proper 
-information for each of the new phone lines. Here's what we entered for 
-spa2000:
+	- click on the "PHONES" link at the top, then the "ADD PHONE" link below
+that and enter in the proper information for each of the new phone lines. 
+Here's what we entered for spa2000:
    - Phone extension: spa2000
    - Dialplan Number: 2000
    - Voicemail Box: 2000
@@ -604,7 +604,7 @@ One more feature that the VICIDIAL web-client offers is the ability to set up
 an EXTERNAL phone extension in the astguiclient admin section so that you can 
 have agents log in to vicidial.php wherever they have access to a phone with 
 an external phone number and a web browser. To do this follow these steps:
-- "ADD A NEW PHONE" in the admin.php web page and enter whatever name you want
+- "ADD PHONE" in the admin.php web page and enter whatever name you want
 - For the dialplan number field put in the full digits that you would dial from
   the Asterisk server to get to that agent's external phone(with 91 if used)
 - For the Protocol select EXTERNAL

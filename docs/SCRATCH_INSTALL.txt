@@ -1558,6 +1558,8 @@ insert into server_updater values('10.10.10.15','');
 
 insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
 
+insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access) values('6666','1234','Admin','9','ADMIN','1','1','1');
+
 insert into conferences values('8600011','10.10.10.15','');
 insert into conferences values('8600012','10.10.10.15','');
 insert into conferences values('8600013','10.10.10.15','');
@@ -1590,16 +1592,16 @@ server, you will need to edit either the /etc/astguiclient.conf file or the
 dbconnect.php files in the astguiclient, vicidial and agc directories of your 
 webroot.
 
-3. Enter the astguiclient administration page:
-http://10.10.10.15/astguiclient/admin.php
+3. Enter the vicidial administration page:
+http://10.10.10.15/vicidial/admin.php
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
    - Here you will enter the login and password that you inserted into the mysql 
-database in the phones table and gave a status of ADMIN (subphase 6.1 [gs102/test])
+database in the vicidial_users table (subphase 6.1 [6666/1234])
    - Now that you are logged into the astGUIclient administration system we can 
 add a new phone entry for each of the sipura lines we created.
-	- click on the "ADD A NEW PHONE" link at the top and enter in the proper 
-information for each of the new phone lines. Here's what we entered for 
-spa2000:
+	- click on the "PHONES" link at the top, then the "ADD PHONE" link below
+that and enter in the proper information for each of the new phone lines. 
+Here's what we entered for spa2000:
 	   - Phone extension: spa2000
 	   - Dialplan Number: 2000
 	   - Voicemail Box: 2000
@@ -2279,8 +2281,6 @@ database in order to start setting up the vicidial dialer system for use.
    (make sure you put your IP address in place of "10.10.10.15" in the queries below)
 ######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
 
-insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access) values('6666','1234','Admin','9','ADMIN','1','1','1');
-
 insert into vicidial_conferences values('8600051','10.10.10.15','');
 insert into vicidial_conferences values('8600052','10.10.10.15','');
 insert into vicidial_conferences values('8600053','10.10.10.15','');
@@ -2519,7 +2519,7 @@ But first let's make sure that they have the right GMT offset:
 3. Enter the astguiclient administration page:
 http://10.10.10.15/vicidial/admin.php
 (use the username and password created when we entered a record into the 
-vicidial_users table in SUBPHASE 6.3, In our case this is 6666 and 1234)
+vicidial_users table in SUBPHASE 6.1, In our case this is 6666 and 1234)
 NOTE: if you click on the Logout button you must leave the user/pass empty and click OK
    - Now that you are logged into the vicidial administration system we can add 
 new user entries for each of the new users and enter new campaigns and new 
@@ -2644,7 +2644,7 @@ One more feature that the VICIDIAL web-client offers is the ability to set up
 an EXTERNAL phone extension in the astguiclient admin section so that you can 
 have agents log in to vicidial.php wherever they have access to a phone with 
 an external phone number and a web browser. To do this follow these steps:
-- "ADD A NEW PHONE" in the admin.php web page and enter whatever name you want
+- "ADD PHONE" in the admin.php web page and enter whatever name you want
 - For the dialplan number field put in the full digits that you would dial from
   the Asterisk server to get to that agent's external phone(with 91 if used)
 - For the Protocol select EXTERNAL
