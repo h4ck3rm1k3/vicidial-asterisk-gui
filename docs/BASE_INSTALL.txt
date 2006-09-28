@@ -48,6 +48,7 @@ make install
 cd ../
 ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
 make clean
+make zttool
 make
 make install
 cd ../libpri-1.2.3
