@@ -758,7 +758,9 @@ calls_onemin INT(9) UNSIGNED default '0',
 drops_onemin INT(9) UNSIGNED default '0',
 drops_onemin_pct VARCHAR(6) default '0',
 differential_onemin VARCHAR(20) default '0',
-agents_average_onemin VARCHAR(20) default '0'
+agents_average_onemin VARCHAR(20) default '0',
+trunk_shortage SMALLINT(5) UNSIGNED default '0',
+balance_trunk_fill SMALLINT(5) UNSIGNED default '0'
 );
 
  CREATE TABLE vicidial_dnc (
@@ -773,6 +775,20 @@ attempt_delay SMALLINT(5) UNSIGNED default '1800',
 attempt_maximum TINYINT(3) UNSIGNED default '32',
 active ENUM('Y','N') default 'N',
 index (campaign_id)
+);
+
+ CREATE TABLE vicidial_campaign_server_stats (
+campaign_id VARCHAR(20) PRIMARY KEY NOT NULL,
+server_ip VARCHAR(15) NOT NULL,
+update_time TIMESTAMP,
+local_trunk_shortage SMALLINT(5) UNSIGNED default '0'
+);
+
+ CREATE TABLE vicidial_server_trunks (
+server_ip VARCHAR(15) NOT NULL,
+campaign_id VARCHAR(20) NOT NULL,
+dedicated_trunks SMALLINT(5) UNSIGNED default '0',
+trunk_restriction ENUM('MAXIMUM_LIMIT','OVERFLOW_ALLOWED') default 'OVERFLOW_ALLOWED'
 );
 
 
