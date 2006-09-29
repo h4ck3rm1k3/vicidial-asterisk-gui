@@ -88,7 +88,9 @@ answer_transfer_agent VARCHAR(20) NOT NULL default '8365',
 ext_context VARCHAR(20) NOT NULL default 'default',
 sys_perf_log ENUM('Y','N') default 'N',
 vd_server_logs ENUM('Y','N') default 'Y',
-agi_output ENUM('NONE','STDERR','FILE','BOTH') default 'FILE'
+agi_output ENUM('NONE','STDERR','FILE','BOTH') default 'FILE',
+vicidial_balance_active ENUM('Y','N') default 'N',
+balance_trunks_offlimits SMALLINT(5) UNSIGNED default '0'
 );
 
 
