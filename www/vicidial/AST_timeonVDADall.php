@@ -16,6 +16,7 @@
 # 60626-1453 - Added display of system load to bottom (Angelito Manansala)
 # 60901-1123 - Changed display elements at the top of the screen
 # 60905-1342 - Fixed non INCALL|QUEUE timer column
+# 61002-1642 - Added TRUNK SHORT/FILL stats
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -212,7 +213,7 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
 
-$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct,differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
@@ -221,6 +222,7 @@ $dropsTODAY = $row[2];
 $drpctTODAY = $row[3];
 $diffONEMIN = $row[4];
 $agentsONEMIN = $row[5];
+$balanceFILL = $row[6];
 if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 	{
 	$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
@@ -228,11 +230,17 @@ if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 	}
 else {$diffpctONEMIN = '0.00';}
 
+$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$balanceSHORT = $row[0];
+
 echo "<BR><table cellpadding=0 cellspacing=0><TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT COLSPAN=2><font size=2><B> TIME:</B> &nbsp; </TD>";
-echo "<TD ALIGN=LEFT COLSPAN=2><font size=2> $NOW_TIME </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>TRUNK SHORT/FILL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B> TIME:</B> &nbsp; </TD><TD ALIGN=LEFT COLSPAN=2><font size=2> $NOW_TIME </TD>";
+echo "";
 echo "</TR>";
 
 if ($adastats>1)
