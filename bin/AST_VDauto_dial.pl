@@ -241,6 +241,8 @@ while($one_day_interval > 0)
 		@DBIPlivecalls=@MT;
 		@DBIPclosercamp=@MT;
 		@DBIPomitcode=@MT;
+		@DBIPtrunk_shortage=@MT;
+		@DBIPold_trunk_shortage=@MT;
 
 		$active_line_counter=0;
 		$user_counter=0;
@@ -308,6 +310,29 @@ while($one_day_interval > 0)
 						}
 					}
 				$user_counter++;
+				}
+
+			### check for vicidial_campaign_server_stats record, if non present then create it
+			$stmtA = "SELECT local_trunk_shortage FROM vicidial_campaign_server_stats where campaign_id='$DBIPcampaign[$user_CIPct]' and server_ip='$server_ip';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+					$DBIPold_trunk_shortage[$user_CIPct] =		"$aryA[0]";
+				$rec_count++;
+				}
+			if ($rec_count < 1)
+				{
+				$stmtA = "INSERT INTO vicidial_campaign_server_stats SET local_trunk_shortage='0', server_ip='$server_ip',campaign_id='$DBIPcampaign[$user_CIPct]';";
+				$affected_rows = $dbhA->do($stmtA);
+
+				$DBIPold_trunk_shortage[$user_CIPct]=0;
+
+				$event_string="VCSS ENTRY INSERTED: $affected_rows";
+				&event_logger;
 				}
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
@@ -403,6 +428,11 @@ while($one_day_interval > 0)
 				{
 				$MVT_msg = "MVT override: $max_vicidial_trunks";
 				$DBIPmakecalls[$user_CIPct] = ($max_vicidial_trunks - $active_line_counter);
+				$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $max_vicidial_trunks);
+				}
+			else
+				{
+				$DBIPtrunk_shortage[$user_CIPct] = 0;
 				}
 			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]) $MVT_msg";
 			&event_logger;
@@ -493,6 +523,14 @@ while($one_day_interval > 0)
 			$stmtA = "UPDATE vicidial_campaign_stats SET differential_onemin='$stat_differential', agents_average_onemin='$total_agents_avg' where campaign_id='$DBIPcampaign[$user_CIPct]';";
 			$affected_rows = $dbhA->do($stmtA);
 
+			if ( ($DBIPold_trunk_shortage[$user_CIPct] > $DBIPtrunk_shortage[$user_CIPct]) || ($DBIPold_trunk_shortage[$user_CIPct] < $DBIPtrunk_shortage[$user_CIPct]) )
+				{
+				$stmtA = "UPDATE vicidial_campaign_server_stats SET local_trunk_shortage='$DBIPtrunk_shortage[$user_CIPct]' where server_ip='$server_ip' and campaign_id='$DBIPcampaign[$user_CIPct]';";
+				$affected_rows = $dbhA->do($stmtA);
+				}
+
+			$event_string="LOCAL TRUNK SHORTAGE: $DBIPtrunk_shortage[$user_CIPct]|$DBIPold_trunk_shortage[$user_CIPct]  ($active_line_goal - $max_vicidial_trunks)";
+			&event_logger;
 
 			$user_CIPct++;
 			}
