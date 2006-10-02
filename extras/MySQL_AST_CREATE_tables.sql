@@ -761,7 +761,6 @@ drops_onemin INT(9) UNSIGNED default '0',
 drops_onemin_pct VARCHAR(6) default '0',
 differential_onemin VARCHAR(20) default '0',
 agents_average_onemin VARCHAR(20) default '0',
-trunk_shortage SMALLINT(5) UNSIGNED default '0',
 balance_trunk_fill SMALLINT(5) UNSIGNED default '0'
 );
 

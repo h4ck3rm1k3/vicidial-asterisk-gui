@@ -1,0 +1,19 @@
+############################################################  ADMIN
+
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0
+VICIDIAL Balance Dialing
+VICIDIAL Balance Offlimits
+
+############################################################ CLIENT
+
+
+
+
+############################################################  ADMIN Manual
+
+Add notes on balance dialing in Multi-server setups
+
+
+############################################################  AGENT Manual
+

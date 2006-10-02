@@ -1,5 +1,25 @@
 ################ UPGRADE
 
+NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
+
+########## UPGRADING FROM 2.0.1 TO 2.0.2 ##########
+
+1. upgrade the MySQL Asterisk database:
+mysql
+use asterisk
+\. /path/from/root/extras/upgrade_2.0.2.sql
+quit
+
+2. The astguiclient web directory has been removed and the 
+	astguiclient/admin.php functions have been merged into the 
+	vicidial/admin.php page
+
+
+
+
+
+########## UPGRADING FROM 1.1.12-3 TO 2.0.1 ##########
+
 If you are upgrading to the 2.0 code tree from the 1.1.12-3 release there have 
 been several changes made to the code base and to where some files are stored in
 the release as well as on your machine.
