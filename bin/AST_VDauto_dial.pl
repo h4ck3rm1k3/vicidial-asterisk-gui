@@ -50,6 +50,7 @@
 # 60814-1749 - added option for no logging to file
 # 60821-1546 - added option to not dial phone_code per campaign
 # 60824-1437 - added available_only_ratio_tally option
+# 61003-1353 - added restrictions for server trunks
 #
 
 
@@ -243,6 +244,9 @@ while($one_day_interval > 0)
 		@DBIPomitcode=@MT;
 		@DBIPtrunk_shortage=@MT;
 		@DBIPold_trunk_shortage=@MT;
+		@DBIPserver_trunks_limit=@MT;
+		@DBIPserver_trunks_other=@MT;
+		@DBIPserver_trunks_allowed=@MT;
 
 		$active_line_counter=0;
 		$user_counter=0;
@@ -335,6 +339,36 @@ while($one_day_interval > 0)
 				&event_logger;
 				}
 
+			$DBIPserver_trunks_limit[$user_CIPct] = '';
+			$DBIPserver_trunks_other[$user_CIPct] = 0;
+			$DBIPserver_trunks_allowed[$user_CIPct] = $max_vicidial_trunks;
+			### check for vicidial_server_trunks record
+			$stmtA = "SELECT dedicated_trunks FROM vicidial_server_trunks where campaign_id='$DBIPcampaign[$user_CIPct]' and server_ip='$server_ip' and trunk_restriction='MAXIMUM_LIMIT';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+					$DBIPserver_trunks_limit[$user_CIPct] =		"$aryA[0]";
+				$rec_count++;
+				}
+			$stmtA = "SELECT sum(dedicated_trunks) FROM vicidial_server_trunks where campaign_id!='$DBIPcampaign[$user_CIPct]' and server_ip='$server_ip';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+					$DBIPserver_trunks_other[$user_CIPct] =		"$aryA[0]";
+				$rec_count++;
+				}
+
+			$DBIPserver_trunks_allowed[$user_CIPct] = ($max_vicidial_trunks - $DBIPserver_trunks_other[$user_CIPct]);
+
+
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
 			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
@@ -423,6 +457,7 @@ while($one_day_interval > 0)
 
 			$DBIPmakecalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]);
 			$MVT_msg = '';
+			$DBIPtrunk_shortage[$user_CIPct] = 0;
 			$active_line_goal = ($active_line_counter + $DBIPmakecalls[$user_CIPct]);
 			if ($active_line_goal > $max_vicidial_trunks) 
 				{
@@ -430,13 +465,29 @@ while($one_day_interval > 0)
 				$DBIPmakecalls[$user_CIPct] = ($max_vicidial_trunks - $active_line_counter);
 				$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $max_vicidial_trunks);
 				}
+			if (length($DBIPserver_trunks_limit[$user_CIPct])>0) 
+				{
+				if ($DBIPserver_trunks_limit[$user_CIPct] < $active_line_goal)
+					{
+					$MVT_msg .= " TRUNK LIMIT override: $DBIPserver_trunks_limit[$user_CIPct]";
+					$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $DBIPserver_trunks_limit[$user_CIPct]);
+					$active_line_goal = $DBIPserver_trunks_limit[$user_CIPct];
+					$DBIPmakecalls[$user_CIPct] = ($active_line_goal - $active_line_counter);
+					}
+				}
 			else
 				{
-				$DBIPtrunk_shortage[$user_CIPct] = 0;
+				if ($DBIPserver_trunks_allowed[$user_CIPct] < $active_line_goal)
+					{
+					$MVT_msg .= " OTHER LIMIT override: $DBIPserver_trunks_allowed[$user_CIPct]";
+					$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $DBIPserver_trunks_allowed[$user_CIPct]);
+					$active_line_goal = $DBIPserver_trunks_allowed[$user_CIPct];
+					$DBIPmakecalls[$user_CIPct] = ($active_line_goal - $active_line_counter);
+					}
 				}
+
 			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]) $MVT_msg";
 			&event_logger;
-
 
 
 			### Calculate campaign-wide agent waiting and calls waiting differential
