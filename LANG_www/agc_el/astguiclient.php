@@ -2756,7 +2756,7 @@ echo "</head>\n";
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι που μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
 	<tr><td>Τηλ.συνδέσεις:<BR><span id="MainXfeRContent"> Επιλογές τηλ. συνδέσεων </span></td>
 	<td>
 	<BR>

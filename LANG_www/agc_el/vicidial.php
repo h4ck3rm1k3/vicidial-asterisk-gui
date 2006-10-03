@@ -2570,7 +2570,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("MainStatuSSpan").innerHTML = " Κλήση 3 συμβαλλόμενου μέρους: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
 
-								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall_el.gif\" border=0 alt=\"ΑΠΟΧΩΡΗΣΗ 3WAY ΚΛΗΣΗΣ\"></a>";
+								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall_el.gif\" border=0 alt=\"ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ\"></a>";
 
 								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF_el.gif\" border=0 alt=\"Κλήση με τον πελάτη\">";
 
@@ -3801,7 +3801,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.xferchannel.value = "";
 			lastxferchannel='';
 
-			document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF_el.gif\" border=0 alt=\"ΑΠΟΧΩΡΗΣΗ 3WAY ΚΛΗΣΗΣ\">";
+			document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF_el.gif\" border=0 alt=\"ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ\">";
 
 			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_el.gif\" border=0 alt=\"Κλήση με τον πελάτη\"></a>";
 
@@ -5358,7 +5358,7 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 
 	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="../agc/images/vdc_XB_dialwithcustomer_el.gif" border=0 alt="Κλήση με τον πελάτη"></a></span> 
 	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="../agc/images/vdc_XB_parkcustomerdial_el.gif" border=0 alt="Στάθμευση κλήσης πελάτη"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="../agc/images/vdc_XB_leave3waycall_OFF_el.gif" border=0 alt="ΑΠΟΧΩΡΗΣΗ 3WAY ΚΛΗΣΗΣ"></span> 
+	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="../agc/images/vdc_XB_leave3waycall_OFF_el.gif" border=0 alt="ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ"></span> 
 	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="../agc/images/vdc_XB_blindtransfer_OFF_el.gif" border=0 alt="Τυφλή μεταφορά κλήσης"></span>
 	<span STYLE="background-color: #CCCCCC" id="DialBlindVMail"><IMG SRC="../agc/images/vdc_XB_ammessage_OFF.gif" border=0 alt="Blind Transfer VMail Message"></span>
 	</font>
@@ -5425,10 +5425,10 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:27;" id="WrapupBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Τύλιγμα Κλήσης: <span id="WrapupTimer"></span> απομύνοντα δευτερόλεπτα σε τύλιγμα<BR><BR>
+    <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Αναδίπλωση Κλήσης: <span id="WrapupTimer"></span> απομύνοντα δευτερόλεπτα σε αναδίπλωση<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
-	<a href="#" onclick="WrapupFinish();return false;">Τελείωμα Τυλίγματος και προχωράει</a>
+	<a href="#" onclick="WrapupFinish();return false;">Τελείωμα Αναδίπλωσης και Συνέχεια</a>
 
 	</TD></TR></TABLE>
 </span>
@@ -5530,7 +5530,7 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι που μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
 	<tr><td>Τηλ.συνδέσεις:<BR><span id="MainXfeRContent"> Επιλογές τηλ. συνδέσεων </span></td>
 	<td>
 	<BR>

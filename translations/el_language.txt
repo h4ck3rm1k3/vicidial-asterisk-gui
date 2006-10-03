@@ -124,7 +124,7 @@ Active Local Menu|Ενεργές Τοπικές Επιλογές|
 Hangup Local|Κλείσιμο τοπικού|
 Hijack Local|Κλέψιμο τοπικού|
 Listen Local|Ακούστε τοπικό|
-Channel to be transferred|Κανάλι που μεταφέρεται|
+Channel to be transferred|Κανάλι προς μεταφέρεται|
 Extensions Menu|Επιλογές τηλ. συνδέσεων|
 Send to selected extension|Στείλε στην επιλεγμένη τηλ.σύνδεση|
 Send to selected vmail box|Στείλε στο επιλεγμένο vmail|
@@ -227,7 +227,7 @@ Grab Parked Call|Αρπαγμα σταθμευμένης κλήσης|
 Park Call|Στάθμευση Κλήσης|
 Waiting for Ring|Αναμονή για κουδούνισμα|
 Called 3rd party|Κλήση 3 συμβαλλόμενου μέρους|
-LEAVE 3-WAY CALL|ΑΠΟΧΩΡΗΣΗ 3WAY ΚΛΗΣΗΣ|
+LEAVE 3-WAY CALL|ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ|
 Dial With Customer|Κλήση με τον πελάτη|
 Park Customer Dial|Στάθμευση κλήσης πελάτη|
 Hangup Xfer Line|Κλείσιμο Γραμμής Xfer|
@@ -396,9 +396,9 @@ AVAILABLE EXTENSIONS|ΔΙΑΘΕΣΙΜΕΣ ΕΠΕΚΤΑΣΕΙΣ|
 ### END translation phrases through 1.1.11 release ###
 Search Existing Leads|Αναζήτηση Οδηγών|
 This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Η επιλογή αυτή επιτρέπει να βρει τον αριθμό στο σύστημα προτού γίνει εισαγωγή ως νέος οδηγός|
-Finish Wrapup and Move On|Τελείωμα Τυλίγματος και προχωράει|
-seconds remaining in wrapup|απομύνοντα δευτερόλεπτα σε τύλιγμα|
-Call Wrapup:|Τύλιγμα Κλήσης:|
+Finish Wrapup and Move On|Τελείωμα Αναδίπλωσης και Συνέχεια|
+seconds remaining in wrapup|απομύνοντα δευτερόλεπτα σε αναδίπλωση|
+Call Wrapup:|Αναδίπλωση Κλήσης:|
 ### months of the year for CallBack date select screen ###
 January|Φεβρουάριος|
 Frebruary|Ιανουαρίου|
