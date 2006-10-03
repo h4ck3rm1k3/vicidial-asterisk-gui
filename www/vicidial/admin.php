@@ -3737,33 +3737,50 @@ $ADD=311111111111;
 if ($ADD==221111111111)
 {
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-	$stmt="SELECT count(*) from vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+	$stmt="SELECT max_vicidial_trunks from servers where server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	if ($row[0] > 0)
-		{echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - there is already a server-trunk record for this campaign\n";}
+	$rowx=mysql_fetch_row($rslt);
+	$MAXvicidial_trunks = $rowx[0];
+	
+	$stmt="SELECT sum(dedicated_trunks) from vicidial_server_trunks where server_ip='$server_ip' and campaign_id !='$campaign_id';";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	$SUMvicidial_trunks = ($rowx[0] + $dedicated_trunks);
+	
+	if ($SUMvicidial_trunks > $MAXvicidial_trunks)
+		{
+		echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - the number of vicidial trunks is too high: $SUMvicidial_trunks / $MAXvicidial_trunks\n";
+		}
 	else
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
+		$stmt="SELECT count(*) from vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - there is already a server-trunk record for this campaign\n";}
+		else
 			{
-			 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - Please go back and look at the data you entered\n";
-			 echo "<br>campaign must be between 3 and 8 characters in length\n";
-			 echo "<br>server_ip delay must be at least 7 characters\n";
-			 echo "<br>trunks must be a digit from 0 to 9999\n";
-			}
-		 else
-			{
-			echo "<br><B>VICIDIAL SERVER TRUNK RECORD ADDED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
-
-			$stmt="INSERT INTO vicidial_server_trunks(server_ip,campaign_id,dedicated_trunks,trunk_restriction) values('$server_ip','$campaign_id','$dedicated_trunks','$trunk_restriction');";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW VICIDIAL TRUNK  |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - Please go back and look at the data you entered\n";
+				 echo "<br>campaign must be between 3 and 8 characters in length\n";
+				 echo "<br>server_ip delay must be at least 7 characters\n";
+				 echo "<br>trunks must be a digit from 0 to 9999\n";
+				}
+			 else
+				{
+				echo "<br><B>VICIDIAL SERVER TRUNK RECORD ADDED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
+
+				$stmt="INSERT INTO vicidial_server_trunks(server_ip,campaign_id,dedicated_trunks,trunk_restriction) values('$server_ip','$campaign_id','$dedicated_trunks','$trunk_restriction');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW VICIDIAL TRUNK  |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
 				}
 			}
 		}
@@ -4572,30 +4589,45 @@ $ADD=311111111111;	# go to server modification form below
 if ($ADD==421111111111)
 {
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
+	$stmt="SELECT max_vicidial_trunks from servers where server_ip='$server_ip';";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	$MAXvicidial_trunks = $rowx[0];
+	
+	$stmt="SELECT sum(dedicated_trunks) from vicidial_server_trunks where server_ip='$server_ip' and campaign_id !='$campaign_id';";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	$SUMvicidial_trunks = ($rowx[0] + $dedicated_trunks);
+	
+	if ($SUMvicidial_trunks > $MAXvicidial_trunks)
 		{
-		 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT MODIFIED - Please go back and look at the data you entered\n";
-		 echo "<br>campaign must be between 3 and 8 characters in length\n";
-		 echo "<br>server_ip delay must be at least 7 characters\n";
-		 echo "<br>trunks must be a digit from 0 to 9999\n";
+		echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - the number of vicidial trunks is too high: $SUMvicidial_trunks / $MAXvicidial_trunks\n";
 		}
-	 else
+	else
 		{
-		echo "<br><B>VICIDIAL SERVER TRUNK RECORD MODIFIED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
-
-		$stmt="UPDATE vicidial_server_trunks SET dedicated_trunks='$dedicated_trunks',trunk_restriction='$trunk_restriction' where campaign_id='$campaign_id' and server_ip='$server_ip';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY SERVER TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>campaign must be between 3 and 8 characters in length\n";
+			 echo "<br>server_ip delay must be at least 7 characters\n";
+			 echo "<br>trunks must be a digit from 0 to 9999\n";
+			}
+		 else
+			{
+			echo "<br><B>VICIDIAL SERVER TRUNK RECORD MODIFIED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
+
+			$stmt="UPDATE vicidial_server_trunks SET dedicated_trunks='$dedicated_trunks',trunk_restriction='$trunk_restriction' where campaign_id='$campaign_id' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY SERVER TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
-
 $ADD=311111111111;	# go to server modification form below
 }
 
