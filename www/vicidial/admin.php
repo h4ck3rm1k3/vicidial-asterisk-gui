@@ -451,6 +451,12 @@ if (isset($_GET["vicidial_balance_active"]))	{$vicidial_balance_active=$_GET["vi
 	elseif (isset($_POST["vicidial_balance_active"]))	{$vicidial_balance_active=$_POST["vicidial_balance_active"];}
 if (isset($_GET["balance_trunks_offlimits"]))	{$balance_trunks_offlimits=$_GET["balance_trunks_offlimits"];}
 	elseif (isset($_POST["balance_trunks_offlimits"]))	{$balance_trunks_offlimits=$_POST["balance_trunks_offlimits"];}
+if (isset($_GET["dedicated_trunks"]))	{$dedicated_trunks=$_GET["dedicated_trunks"];}
+	elseif (isset($_POST["dedicated_trunks"]))	{$dedicated_trunks=$_POST["dedicated_trunks"];}
+if (isset($_GET["trunk_restriction"]))	{$trunk_restriction=$_GET["trunk_restriction"];}
+	elseif (isset($_POST["trunk_restriction"]))	{$trunk_restriction=$_POST["trunk_restriction"];}
+
+
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -507,6 +513,7 @@ $ct_wednesday_start = ereg_replace("[^0-9]","",$ct_wednesday_start);
 $ct_wednesday_stop = ereg_replace("[^0-9]","",$ct_wednesday_stop);
 $DBX_port = ereg_replace("[^0-9]","",$DBX_port);
 $DBY_port = ereg_replace("[^0-9]","",$DBY_port);
+$dedicated_trunks = ereg_replace("[^0-9]","",$dedicated_trunks);
 $delete_call_times = ereg_replace("[^0-9]","",$delete_call_times);
 $delete_campaigns = ereg_replace("[^0-9]","",$delete_campaigns);
 $delete_filters = ereg_replace("[^0-9]","",$delete_filters);
@@ -650,6 +657,7 @@ $server_id = ereg_replace("[^-\_0-9a-zA-Z]","",$server_id);
 $stage = ereg_replace("[^-\_0-9a-zA-Z]","",$stage);
 $state_rule = ereg_replace("[^-\_0-9a-zA-Z]","",$state_rule);
 $status = ereg_replace("[^-\_0-9a-zA-Z]","",$status);
+$trunk_restriction = ereg_replace("[^-\_0-9a-zA-Z]","",$trunk_restriction);
 $user = ereg_replace("[^-\_0-9a-zA-Z]","",$user);
 $user_group = ereg_replace("[^-\_0-9a-zA-Z]","",$user_group);
 $VICIDIAL_park_on_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$VICIDIAL_park_on_filename);
@@ -777,12 +785,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60828-1115 - added adaptive_dl_diff_target and changed intensity dropdown
 # 60927-1246 - added astguiclient/admin.php functions under SERVERS tab
 # 61002-1402 - added fields for vicidial balance trunk controls
+# 61003-1123 - added functions for vicidial_server_trunks records
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.67';
-$build = '61002-1402';
+$version = '2.0.68';
+$build = '61003-1123';
 
 $STARTtime = date("U");
 
@@ -899,6 +908,7 @@ if ($ADD==211111111)	{$hh='times';		echo "New Call Time Addition";}
 if ($ADD==2111111111)	{$hh='times';		echo "New State Call Time Addition";}
 if ($ADD==21111111111)	{$hh='server';		echo "ADDING NEW PHONE";}
 if ($ADD==211111111111)	{$hh='server';		echo "ADDING NEW SERVER";}
+if ($ADD==221111111111)	{$hh='server';		echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==2111111111111)	{$hh='server';		echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='server';		echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
@@ -935,6 +945,7 @@ if ($ADD==411111111)	{$hh='times';		echo "Modify Call Time";}
 if ($ADD==4111111111)	{$hh='times';		echo "Modify State Call Time";}
 if ($ADD==41111111111)	{$hh='server';		echo "MODIFY PHONE";}
 if ($ADD==411111111111)	{$hh='server';		echo "MODIFY SERVER";}
+if ($ADD==421111111111)	{$hh='server';		echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==4111111111111)	{$hh='server';		echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='server';		echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
@@ -966,6 +977,7 @@ if ($ADD==611111111)	{$hh='times';		echo "Delete Call Time";}
 if ($ADD==6111111111)	{$hh='times';		echo "Delete State Call Time";}
 if ($ADD==61111111111)	{$hh='server';		echo "DELETE PHONE";}
 if ($ADD==611111111111)	{$hh='server';		echo "DELETE SERVER";}
+if ($ADD==621111111111)	{$hh='server';		echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==6111111111111)	{$hh='server';		echo "DELETE CONFERENCE";}
 if ($ADD==61111111111111)	{$hh='server';		echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==73)			{$hh='campaigns';	echo "Dialable Lead Count";}
@@ -1041,7 +1053,7 @@ if ( ($ADD>9) && ($ADD < 99998) )
 		}
 	}
 
-if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD==31) or ($ADD==41) or ($ADD=="4A")  or ($ADD=="4B") )
+if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD==31) or ($ADD==41) or ($ADD=="4A")  or ($ADD=="4B") or (strlen($ADD)==12) )
 	{
 	##### get server listing for dynamic pulldown
 	$stmt="SELECT server_ip,server_description from servers order by server_ip";
@@ -2379,6 +2391,13 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 
 
 
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_SERVER_TRUNKS TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_server_trunks">
+<BR>
+<B>VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting.</B>
+
 
 <BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR>
@@ -3712,6 +3731,47 @@ $ADD=311111111111;
 
 
 ######################
+# ADD=221111111111 adds the new vicidial server trunk record to the system
+######################
+
+if ($ADD==221111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - there is already a server-trunk record for this campaign\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
+			{
+			 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>campaign must be between 3 and 8 characters in length\n";
+			 echo "<br>server_ip delay must be at least 7 characters\n";
+			 echo "<br>trunks must be a digit from 0 to 9999\n";
+			}
+		 else
+			{
+			echo "<br><B>VICIDIAL SERVER TRUNK RECORD ADDED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
+
+			$stmt="INSERT INTO vicidial_server_trunks(server_ip,campaign_id,dedicated_trunks,trunk_restriction) values('$server_ip','$campaign_id','$dedicated_trunks','$trunk_restriction');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW VICIDIAL TRUNK  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=311111111111;
+}
+
+
+######################
 # ADD=2111111111111 adds new conference to the system
 ######################
 
@@ -4501,6 +4561,41 @@ if ($ADD==411111111111)
 				}
 			}
 		}
+$ADD=311111111111;	# go to server modification form below
+}
+
+
+######################
+# ADD=421111111111 modify vicidial server trunks record in the system
+######################
+
+if ($ADD==421111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) or (strlen($dedicated_trunks) < 1) or (strlen($trunk_restriction) < 1) )
+		{
+		 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT MODIFIED - Please go back and look at the data you entered\n";
+		 echo "<br>campaign must be between 3 and 8 characters in length\n";
+		 echo "<br>server_ip delay must be at least 7 characters\n";
+		 echo "<br>trunks must be a digit from 0 to 9999\n";
+		}
+	 else
+		{
+		echo "<br><B>VICIDIAL SERVER TRUNK RECORD MODIFIED: $campaign_id - $server_ip - $dedicated_trunks - $trunk_restriction</B>\n";
+
+		$stmt="UPDATE vicidial_server_trunks SET dedicated_trunks='$dedicated_trunks',trunk_restriction='$trunk_restriction' where campaign_id='$campaign_id' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY SERVER TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+
 $ADD=311111111111;	# go to server modification form below
 }
 
@@ -5403,6 +5498,40 @@ if ($ADD==611111111111)
 		echo "<br><br>\n";
 		}
 $ADD='100000000000';		# go to server list
+}
+
+
+######################
+# ADD=621111111111 delete vicidial server trunk record in the system
+######################
+
+if ($ADD==621111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) )
+		{
+		 echo "<br>VICIDIAL SERVER TRUNK RECORD NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>campaign must be between 3 and 8 characters in length\n";
+		 echo "<br>server_ip delay must be at least 7 characters\n";
+		}
+	 else
+		{
+		echo "<br><B>VICIDIAL SERVER TRUNK RECORD DELETED: $campaign_id - $server_ip</B>\n";
+
+		$stmt="DELETE FROM vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|DELETE SERVER TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+
+$ADD=311111111111;	# go to server modification form below
 }
 
 
@@ -7354,6 +7483,49 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><sele
 echo "<tr bgcolor=#B6D3FC><td align=right>AGI Output: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$row[19]</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
+
+
+### vicidial server trunk records for this server
+echo "<br><br><b>VICIDIAL TRUNKS FOR THIS SERVER: &nbsp; $NWB#vicidial_server_trunks$NWE</b><br>\n";
+echo "<TABLE width=500 cellspacing=3>\n";
+echo "<tr><td>CAMPAIGN</td><td>TRUNKS</td><td>RESTRICTION</td><td> </td><td>DELETE</td></tr>\n";
+
+	$stmt="SELECT * from vicidial_server_trunks where server_ip='$server_ip' order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$recycle_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($recycle_to_print > $o) {
+		$rowx=mysql_fetch_row($rslt);
+		$o++;
+
+	if (eregi("1$|3$|5$|7$|9$", $o))
+		{$bgcolor='bgcolor="#B9CBFD"';} 
+	else
+		{$bgcolor='bgcolor="#9BB9FB"';}
+
+	echo "<tr $bgcolor><td><font size=1>$rowx[1]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=server_ip value=\"$server_ip\">\n";
+	echo "<input type=hidden name=campaign_id value=\"$rowx[1]\">\n";
+	echo "<input type=hidden name=ADD value=421111111111></td>\n";
+	echo "<td><font size=1><input size=6 maxlength=4 name=dedicated_trunks value=\"$rowx[2]\"></td>\n";
+	echo "<td><select size=1 name=trunk_restriction><option>MAXIMUM_LIMIT</option><option>OVERFLOW_ALLOWED</option><option SELECTED>$rowx[3]</option></select></td>\n";
+	echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
+	echo "<td><font size=1><a href=\"$PHP_SELF?ADD=621111111111&campaign_id=$rowx[1]&server_ip=$server_ip\">DELETE</a></td></tr>\n";
+	}
+
+echo "</table>\n";
+
+echo "<br><b>ADD NEW SERVER VICIDIAL TRUNK RECORD</b><BR><form action=$PHP_SELF method=POST>\n";
+echo "<input type=hidden name=ADD value=221111111111>\n";
+echo "<input type=hidden name=server_ip value=\"$server_ip\">\n";
+echo "TRUNKS: <input size=6 maxlength=4 name=dedicated_trunks><BR>\n";
+echo "CAMPAIGN: <select size=1 name=campaign_id>\n";
+echo "$campaigns_list\n";
+echo "</select><BR>\n";
+echo "RESTRICTION: <select size=1 name=trunk_restriction><option>MAXIMUM_LIMIT</option><option>OVERFLOW_ALLOWED</option></select><BR>\n";
+echo "<input type=submit name=submit value=ADD><BR>\n";
+
+echo "</center></FORM><br>\n";
 
 
 ### list of phones on this server
