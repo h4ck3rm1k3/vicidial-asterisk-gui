@@ -147,8 +147,6 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
-				
-
         if (!$Q) {print " - optimize vicidial_manager          \n";}
 
 
@@ -162,8 +160,6 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}             
 					$sthA->finish();
 				 }
-				
-
         if (!$Q) {print " - optimize vicidial_live_agents          \n";}
 
 
@@ -178,8 +174,6 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					 $rec_countY++;
 					$sthA->finish();
 				 }
-				
-
         if (!$Q) {print " - optimize vicidial_auto_calls          \n";}
 
 
@@ -193,8 +187,6 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
-				
-
         if (!$Q) {print " - optimize vicidial_hopper          \n";}
 
 
