@@ -39,6 +39,17 @@ $SQLdate_NOW="$year-$mon-$mday $hour:$min:$sec";
 	if ($sec < 10) {$sec = "0$sec";}
 $SQLdate_NEG_1hour="$year-$mon-$mday $hour:$min:$sec";
 
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time()-1800);
+	$year = ($year + 1900);
+	$yy = $year; $yy =~ s/^..//gi;
+	$mon++;
+	if ($mon < 10) {$mon = "0$mon";}
+	if ($mday < 10) {$mday = "0$mday";}
+	if ($hour < 10) {$hour = "0$hour";}
+	if ($min < 10) {$min = "0$min";}
+	if ($sec < 10) {$sec = "0$sec";}
+$SQLdate_NEG_halfhour="$year-$mon-$mday $hour:$min:$sec";
+
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 {
@@ -130,11 +141,31 @@ use DBI;
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
+### Grab Server values from the database
+	$stmtA = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$DBvd_server_logs =			"$aryA[0]";
+			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
+				else {$SYSLOG = '0';}
+		 $rec_count++;
+		}
+	$sthA->finish();
 
-	$stmtA = "delete from vicidial_manager where server_ip='$server_ip' and entry_date < '$SQLdate_NEG_1hour';";
+if ($SYSLOG) 
+	{$flush_time = $SQLdate_NEG_1hour;}
+else
+	{$flush_time = $SQLdate_NEG_halfhour;}
+
+	$stmtA = "delete from vicidial_manager where server_ip='$server_ip' and entry_date < '$flush_time';";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {	$affected_rows = $dbhA->do($stmtA);}
-		if (!$Q) {print " - vicidial_manager 1 hour flush\n";}
+		if (!$Q) {print " - vicidial_manager flush\n";}
 
         $stmtA = "optimize table vicidial_manager;";
                 if($DB){print STDERR "\n|$stmtA|\n";}
