@@ -332,20 +332,6 @@ if (length($action)>1)
 	$cmd_line_j =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
 	$cmd_line_k =~	s/\%([A-Fa-f0-9]{2})/pack('C', hex($1))/seg;
 
-	$originate_command  = '';
-	$originate_command .= "Action: $action\n";
-	if (length($cmd_line_b)>3) {$originate_command .= "$cmd_line_b\n";}
-	if (length($cmd_line_c)>3) {$originate_command .= "$cmd_line_c\n";}
-	if (length($cmd_line_d)>3) {$originate_command .= "$cmd_line_d\n";}
-	if (length($cmd_line_e)>3) {$originate_command .= "$cmd_line_e\n";}
-	if (length($cmd_line_f)>3) {$originate_command .= "$cmd_line_f\n";}
-	if (length($cmd_line_g)>3) {$originate_command .= "$cmd_line_g\n";}
-	if (length($cmd_line_h)>3) {$originate_command .= "$cmd_line_h\n";}
-	if (length($cmd_line_i)>3) {$originate_command .= "$cmd_line_i\n";}
-	if (length($cmd_line_j)>3) {$originate_command .= "$cmd_line_j\n";}
-	if (length($cmd_line_k)>3) {$originate_command .= "$cmd_line_k\n";}
-	$originate_command .= "\n";
-
 	if ($DB) {print "  SYSLOG:                 $SYSLOG\n";}
 	if ($DB) {print "  PATHlogs:               $PATHlogs\n";}
 	if ($DB) {print "  telnet_host:            $telnet_host\n";}
@@ -365,13 +351,6 @@ if (length($action)>1)
 	if ($DB) {print "  cmd_line_j:             $cmd_line_j\n";}
 	if ($DB) {print "  cmd_line_k:             $cmd_line_k\n";}
 
-
-	print "$now_date|$SYSLOG|\n$originate_command";
-	$event_string = "0|$SYSLOG|";
-	$event_string .= "\n$originate_command";
-	if ( ($FULL_LOG) && ($SYSLOG) )
-		 {&full_event_logger;}
-
 	use Net::Telnet ();
 	  
 	if (!$telnet_port) {$telnet_port = '5038';}
@@ -390,6 +369,57 @@ if (length($action)>1)
 	$tn->waitfor('/Authentication accepted/');		# waitfor auth accepted
 
 	$tn->buffer_empty;
+
+	if ($cmd_line_b =~ /XXYYXXYYXXYYXX/) 
+		{
+		#	Action: Command
+		#	Command: meetme list 8600051
+		#
+		#	Response: Follows
+		#	Privilege: Command
+		#	User #: 03          261 261iax               Channel: IAX2/261iax-13    (unmonitored)
+		#	1 users in that conference.
+		#	--END COMMAND--
+		$meetme_command = "Action: Command\nCommand: meetme list $cmd_line_k\n\n";
+		print "$now_date|$SYSLOG|\n$meetme_command";
+
+		@list_meetme = $tn->cmd(String => "$meetme_command", Prompt => '/--END COMMAND-.*/');
+		foreach(@list_meetme)
+			{
+			if ($list_meetme[$m] =~ /$cmd_line_j /i)
+				{
+				$list_meetme[$m] =~ s/User \#: //gi;
+				@participants = split(/ /, $list_meetme[$m]);
+				$participant = ($participants[0] + 0);
+				}
+		#	print "$m|$participant|$cmd_line_j|$list_meetme[$m]";
+			$m++;
+			}
+		if ($participant > 0) {$cmd_line_b =~ s/XXYYXXYYXXYYXX/$participant/gi;}
+		$cmd_line_j = '';
+		$cmd_line_k = '';
+		}
+
+	$originate_command  = '';
+	$originate_command .= "Action: $action\n";
+	if (length($cmd_line_b)>3) {$originate_command .= "$cmd_line_b\n";}
+	if (length($cmd_line_c)>3) {$originate_command .= "$cmd_line_c\n";}
+	if (length($cmd_line_d)>3) {$originate_command .= "$cmd_line_d\n";}
+	if (length($cmd_line_e)>3) {$originate_command .= "$cmd_line_e\n";}
+	if (length($cmd_line_f)>3) {$originate_command .= "$cmd_line_f\n";}
+	if (length($cmd_line_g)>3) {$originate_command .= "$cmd_line_g\n";}
+	if (length($cmd_line_h)>3) {$originate_command .= "$cmd_line_h\n";}
+	if (length($cmd_line_i)>3) {$originate_command .= "$cmd_line_i\n";}
+	if (length($cmd_line_j)>3) {$originate_command .= "$cmd_line_j\n";}
+	if (length($cmd_line_k)>3) {$originate_command .= "$cmd_line_k\n";}
+	$originate_command .= "\n";
+
+
+	print "$now_date|$SYSLOG|\n$originate_command";
+	$event_string = "0|$SYSLOG|";
+	$event_string .= "\n$originate_command";
+	if ( ($FULL_LOG) && ($SYSLOG) )
+		 {&full_event_logger;}
 
 	@list_channels = $tn->cmd(String => "$originate_command", Prompt => '/.*/'); 
 

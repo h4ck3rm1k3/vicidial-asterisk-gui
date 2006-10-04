@@ -12,7 +12,7 @@
 #  - $user
 #  - $pass
 # optional variables:
-#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial')
+#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl')
 #  - $queryCID - ('CN012345678901234567',...)
 #  - $format - ('text','debug')
 #  - $channel - ('Zap/41-1','SIP/test101-1jut','IAX2/iaxy@iaxy',...)
@@ -32,6 +32,7 @@
 #  - $agent_log_id - ('123456',...)
 #  - $call_server_ip - ('10.10.10.15',...)
 #  - $CalLCID - ('VD01234567890123456',...)
+#  - $stage - ('UP','DOWN')
 # 
 
 # changes
@@ -117,6 +118,8 @@ if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
 	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
 if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
 	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
+if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -993,6 +996,35 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 
 		}
 		echo "$ACTION command sent for Channel $channel on $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n RECORDING WILL LAST UP TO 60 MINUTES\n";
+	}
+}
+
+
+
+
+
+######################
+# ACTION=VolumeControl  - raise or lower the volume of a meetme participant
+######################
+if ($ACTION=="VolumeControl")
+{
+	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($stage)<1) or (strlen($queryCID)<1) )
+	{
+		echo "Conference $exten, Stage $stage is not valid or queryCID $queryCID is not valid, Originate command not inserted\n";
+	}
+	else
+	{
+	$participant_number='XXYYXXYYXXYYXX';
+	if (eregi('DOWN',$stage)) {$vol_prefix='3';}
+	else {$vol_prefix='4';}
+	$local_DEF = 'Local/';
+	$local_AMP = '@';
+	$volume_local_channel = "$local_DEF$participant_number$vol_prefix$exten$local_AMP$ext_context";
+
+	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $volume_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+	echo "Volume command sent for Conference $exten, Stage $stage Channel $channel on $server_ip\n";
 	}
 }
 
