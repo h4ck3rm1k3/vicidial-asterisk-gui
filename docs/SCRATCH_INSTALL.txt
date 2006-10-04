@@ -798,6 +798,10 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
+		-*OPTIONAL*(1.2.12.1) apply the meetme volume control patch
+		- wget http://www.eflo.net/files/meetmeadmin_volume_control.patch
+		- patch -p1 < ./meetmeadmin_volume_control.patch
+			- File to patch: app_meetme.c.c
 		- cd ../
 
 		-(1.2 tree) apply the cli delimiter patch
@@ -808,10 +812,6 @@ with the following patch:
 		- wget http://www.eflo.net/files/channel.c-42600.patch
 		- patch -p1 < ./channel.c-42600.patch
 			- File to patch: channel.c
-		-*OPTIONAL*(1.2 tree) apply the meetme volume control patch
-		- wget http://www.eflo.net/files/meetmeadmin_volume_control.patch
-		- patch -p1 < ./meetmeadmin_volume_control.patch
-			- File to patch: app_meetme.c.c
 
 	- make clean
 	- make
