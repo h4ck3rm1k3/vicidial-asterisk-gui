@@ -38,6 +38,7 @@
 # 60718-1024 - changed to use /etc/astguiclient.conf for configs
 # 60814-1720 - added option for no logging to file
 # 60817-1244 - removed all DB calls and config file open to reduce footprint
+# 61004-1728 - added ability to parse volume control and lookup meetme IDs
 #
 
 $FULL_LOG = 1; # set to 1 for a full response log to be created in $PATHlogs/action_full.date

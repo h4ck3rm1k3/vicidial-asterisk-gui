@@ -126,6 +126,7 @@
 # 60829-1531 - Made compatible with WeBRooTWritablE setting in dbconnect.php
 # 60906-1152 - Added Previous CallBack info display span
 # 60906-1715 - Allow for Local phone extension conferences
+# 61004-1729 - Add ability to control volume per channel in "calls in this session"
 #
 
 require("dbconnect.php");
@@ -171,8 +172,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.99';
-$build = '60906-1715';
+$version = '2.0.100';
+$build = '61004-1729';
 
 if ($force_logout)
 {
@@ -1530,7 +1531,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
-					alert(xmlhttp.responseText);
+				//	alert(xmlhttp.responseText);
 					}
 				}
 			delete xmlhttp;

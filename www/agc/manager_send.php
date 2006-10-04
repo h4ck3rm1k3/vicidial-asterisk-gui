@@ -61,6 +61,7 @@
 # 60421-1413 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1158 - Added variable filters to close security holes for login form
 # 60809-1544 - Added direct transfers to leave-3ways in consultative transfers
+# 61004-1526 - Added parsing of volume control command and lookup or number
 #
 
 require("dbconnect.php");
@@ -130,8 +131,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '0.0.25';
-$build = '60809-1544';
+$version = '0.0.26';
+$build = '61004-1526';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
