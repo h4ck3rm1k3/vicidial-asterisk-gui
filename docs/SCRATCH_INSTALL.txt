@@ -808,6 +808,10 @@ with the following patch:
 		- wget http://www.eflo.net/files/channel.c-42600.patch
 		- patch -p1 < ./channel.c-42600.patch
 			- File to patch: channel.c
+		-*OPTIONAL*(1.2 tree) apply the meetme volume control patch
+		- wget http://www.eflo.net/files/meetmeadmin_volume_control.patch
+		- patch -p1 < ./meetmeadmin_volume_control.patch
+			- File to patch: app_meetme.c.c
 
 	- make clean
 	- make
@@ -1950,6 +1954,16 @@ exten => 8600029,1,Meetme,8600029|q
 entries(this is a pure addition, nothing is being modified):
 NOTE: see below these entries for app_conference instructions is used
 ######------ START extensions.conf changes for VD conf ------######
+exten => _X48600XXX,1,MeetMeAdmin(${EXTEN:2},T,${EXTEN:0:1})
+exten => _X48600XXX,2,MeetMeAdmin(${EXTEN:2},U,${EXTEN:0:1})
+exten => _X48600XXX,3,Hangup
+
+exten => _X38600XXX,1,MeetMeAdmin(${EXTEN:2},t,${EXTEN:0:1})
+exten => _X38600XXX,2,MeetMeAdmin(${EXTEN:2},u,${EXTEN:0:1})
+exten => _X38600XXX,3,Hangup
+
+exten => 8300,1,Hangup
+
 exten => 8600051,1,Meetme,8600051
 exten => 8600052,1,Meetme,8600052
 exten => 8600053,1,Meetme,8600053
