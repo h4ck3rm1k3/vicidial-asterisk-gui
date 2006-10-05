@@ -208,6 +208,7 @@ $webform_sessionname	= '1';	# set to 1 to include the session_name in webform UR
 $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
 $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
+$volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1393,6 +1394,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CBcallback_time = '';
 	var CBuser = '';
 	var CBcomments = '';
+	var volumecontrol_active = '<? echo $volumecontrol_active ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -1847,7 +1849,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var LMAcontent_match=0;
 							var conv_start=-1;
 				//			var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN THIS CONFERENCE:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">XFER</TD></TR>";
-							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
+							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
 							if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 								{
 								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -1864,8 +1866,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var conv_ct = (loop_ct + conv_start);
 								var channelfieldA = conf_chan_array[conv_ct];
 					//			live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">Hangup</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">XFER</td></tr>";
-								live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a></td></tr>";
-
+								if (volumecontrol_active!=1)
+									{
+									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
+									}
+								else
+									{
+									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a></td></tr>";
+									}
 			//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
 
 								if (channelfieldA == lastcustchannel) {custchannellive++;}
@@ -3403,7 +3411,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 	
-						if (callserverip == server_ip)
+						if (lastcustserverip == server_ip)
 						{
 							document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
 							document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
@@ -4770,6 +4778,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{clearDiv('DiaLLeaDPrevieW');}
 			if (alt_phone_dialing != 1)
 				{clearDiv('DiaLDiaLAltPhonE');}
+			if (volumecontrol_active != '1')
+				{hideDiv('VolumeControlSpan');}
 			document.vicidial_form.LeadLookuP.checked=true;
 
 			document.getElementById("sessionIDspan").innerHTML = session_id;
@@ -5386,7 +5396,7 @@ echo "</head>\n";
 
 
 
-<span style="position:absolute;left:250px;top:350px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span> 
+<span style="position:absolute;left:250px;top:352px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span> 
 </font></span>
 
 

@@ -1,32 +1,32 @@
 ############################################################  ADMIN
 
-VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting
-VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N
-VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0
-VICIDIAL SERVER TRUNK RECORD NOT ADDED
-there is already a server-trunk record for this campaign
-the number of vicidial trunks is too high
-VICIDIAL SERVER TRUNK RECORD ADDED
-VICIDIAL SERVER TRUNK RECORD NOT MODIFIED
-VICIDIAL SERVER TRUNK RECORD MODIFIED
-VICIDIAL SERVER TRUNK RECORD NOT DELETED
-VICIDIAL SERVER TRUNK RECORD DELETED
-campaign must be between 3 and 8 characters in length
-server_ip delay must be at least 7 characters
-trunks must be a digit from 0 to 9999
-VICIDIAL Balance Dialing
-VICIDIAL Balance Offlimits
-ADDING NEW SERVER VICIDIAL TRUNK RECORD
-ADD NEW SERVER VICIDIAL TRUNK RECORD
-MODIFY SERVER VICIDIAL TRUNK RECORD
-DELETE SERVER VICIDIAL TRUNK RECORD
-VICIDIAL TRUNKS FOR THIS SERVER
-RESTRICTION
-TRUNKS
+VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting||
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N||
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0||
+VICIDIAL SERVER TRUNK RECORD NOT ADDED||
+there is already a server-trunk record for this campaign||
+the number of vicidial trunks is too high||
+VICIDIAL SERVER TRUNK RECORD ADDED||
+VICIDIAL SERVER TRUNK RECORD NOT MODIFIED||
+VICIDIAL SERVER TRUNK RECORD MODIFIED||
+VICIDIAL SERVER TRUNK RECORD NOT DELETED||
+VICIDIAL SERVER TRUNK RECORD DELETED||
+campaign must be between 3 and 8 characters in length||
+server_ip delay must be at least 7 characters||
+trunks must be a digit from 0 to 9999||
+VICIDIAL Balance Dialing||
+VICIDIAL Balance Offlimits||
+ADDING NEW SERVER VICIDIAL TRUNK RECORD||
+ADD NEW SERVER VICIDIAL TRUNK RECORD||
+MODIFY SERVER VICIDIAL TRUNK RECORD||
+DELETE SERVER VICIDIAL TRUNK RECORD||
+VICIDIAL TRUNKS FOR THIS SERVER||
+RESTRICTION||
+TRUNKS||
 
 ############################################################ CLIENT
 
-
+VOLUME||
 
 
 ############################################################  ADMIN Manual
