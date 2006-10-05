@@ -2669,6 +2669,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 
+								document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + MDchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
+								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + MDchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
+
 
 								// INSERT VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
 								DialLog("start");
@@ -3400,6 +3403,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 	
+						if (callserverip == server_ip)
+						{
+							document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
+							document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
+						}
+
 						document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
 
 						if (VDCL_group_id.length > 1)
@@ -3743,7 +3752,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.getElementById("InternalCloser").innerHTML = "<IMG SRC=\"./images/vdc_XB_internalcloser_OFF.gif\" border=0 alt=\"INTERNAL CLOSER\">";
 			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"./images/vdc_XB_blindtransfer_OFF.gif\" border=0 alt=\"Dial Blind Transfer\">";
 			document.getElementById("DialBlindVMail").innerHTML = "<IMG SRC=\"./images/vdc_XB_ammessage_OFF.gif\" border=0 alt=\"Blind Transfer VMail Message\">";
-			
+			document.getElementById("VolumeUpSpan").innerHTML = "<IMG SRC=\"./images/vdc_volume_up_off.gif\" BORDER=0>";
+			document.getElementById("VolumeDownSpan").innerHTML = "<IMG SRC=\"./images/vdc_volume_down_off.gif\" BORDER=0>";
+
 			document.vicidial_form.custdatetime.value		= '';
 
 			if (auto_dial_level == 0)
@@ -5372,6 +5383,11 @@ echo "</head>\n";
 	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Go Back</a>
 	</TD></TR></TABLE>
 </span>
+
+
+
+<span style="position:absolute;left:5px;top:250px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span> 
+</font></span>
 
 
 
