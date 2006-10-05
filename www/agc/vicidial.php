@@ -5386,7 +5386,7 @@ echo "</head>\n";
 
 
 
-<span style="position:absolute;left:5px;top:250px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span> 
+<span style="position:absolute;left:250px;top:350px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span> 
 </font></span>
 
 
