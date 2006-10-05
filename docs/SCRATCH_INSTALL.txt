@@ -2595,7 +2595,7 @@ of our IAX hardphones and offers a lot of promise for road warriors who need
 a lot of options on their phone usage like conferencing and a detailed call log.
 
 To log into this app you will need a login setup in the vicidial_users table 
-with a user_level of 4 or greater as well as an entry for the phone you are 
+with a user_level of 1 or greater as well as an entry for the phone you are 
 using in the phones table. You will first get a login prompt for the vicidial
 login then you will have the phone login where you enter the Login and Password
 for that phone entry. From there the app should display and you will see the 
