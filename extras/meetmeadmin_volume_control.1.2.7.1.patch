@@ -1,5 +1,5 @@
---- app_meetme-orig.c	2006-09-11 17:47:23.000000000 -0400
-+++ app_meetme.c	2006-10-05 11:51:40.000000000 -0400
+--- asterisk-1.2.7.1/apps/app_meetme.c	2006-04-06 18:15:20.000000000 -0400
++++ asterisk-1.2.7.1-mod/apps/app_meetme.c	2006-05-10 12:31:36.000000000 -0400
 @@ -121,6 +121,16 @@
  "      'M' -- Mute conference\n"
  "      'n' -- Unmute entire conference (except admin)\n"
@@ -17,7 +17,7 @@
  "";
  
  #define CONFIG_FILE_NAME "meetme.conf"
-@@ -2095,13 +2105,12 @@
+@@ -2068,13 +2078,12 @@
  				break;
  			case 75: /* K: kick all users*/
  				user = cnf->firstuser;
@@ -34,7 +34,7 @@
  				}
  				break;
  			case 101: /* e: Eject last user*/
-@@ -2113,51 +2122,125 @@
+@@ -2086,51 +2095,125 @@
  					ast_log(LOG_NOTICE, "Not kicking last user, is an Admin!\n");
  				break;
  			case 77: /* M: Mute */ 
@@ -67,7 +67,7 @@
  					user->adminflags ^= ADMINFLAG_MUTED;
 -				} else {
 +				else
- 					ast_log(LOG_NOTICE, "Specified User not found or he muted himself!\n");
+ 					ast_log(LOG_NOTICE, "Specified User not found or he muted himself!");
 -				}
  				break;
  			case  110: /* n: Unmute all users */
@@ -75,11 +75,11 @@
 -				while(user) {
 -					if (user && (user-> adminflags & ADMINFLAG_MUTED)) {
 +				while (user) {
-+					if (user && (user-> adminflags & ADMINFLAG_MUTED)) 
++					if (user && (user-> adminflags & ADMINFLAG_MUTED))
  						user->adminflags ^= ADMINFLAG_MUTED;
 -					}
 -					if (user->nextuser) {
-+					if (user->nextuser) 
++					if (user->nextuser)
  						user = user->nextuser;
 -					} else {
 +					else
@@ -93,7 +93,7 @@
  					user->adminflags |= ADMINFLAG_KICKME;
 -				} else {
 +				else
- 					ast_log(LOG_NOTICE, "Specified User not found!\n");
+ 					ast_log(LOG_NOTICE, "Specified User not found!");
 +				break;
 +			case 118: /* v: Lower all users listen volume */
 +				user = cnf->firstuser;
@@ -113,8 +113,8 @@
 +						user = user->nextuser;
 +					else
 +						break;
-+				}
-+				break;
+ 				}
+ 				break;
 +			case 115: /* s: Lower all users speaking volume */
 +				user = cnf->firstuser;
 +				while (user) {
@@ -133,8 +133,8 @@
 +						user = user->nextuser;
 +					else
 +						break;
- 				}
- 				break;
++				}
++				break;
 +			case 82: /* R: Reset all volume levels */
 +				user = cnf->firstuser;
 +				while (user) {
