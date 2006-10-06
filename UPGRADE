@@ -17,6 +17,13 @@ quit
 3. You can now define trunks for use only by specific campaigns. See the help
 	in the server modification page under the VICIDIAL SERVER TRUNKS section.
 
+4. Agents now have the ability to control volume levels for any call in their 
+	meetme room directly from the vicidial.php page. This only works on 
+	Asterisk 1.2.7.1, 1.2.12.1 or SVN_1.2 and the meetmeadmin_volume_control.patch
+	patch must be applied as described in the SCRATCH_INSTALL. Also, a few 
+	lines must be added to the extensions.conf for this to work:
+	(_X48600XXX, _X38600XXX, 8300 [see extensions.conf.sample])
+
 
 
 ########## UPGRADING FROM 1.1.12-3 TO 2.0.1 ##########
