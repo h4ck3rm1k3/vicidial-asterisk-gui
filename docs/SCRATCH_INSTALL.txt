@@ -683,6 +683,8 @@ installation on another machine)
 		add the following lines:
 			"AddType application/x-httpd-php .php .phtml"
 			"LoadModule php4_module libexec/libphp4.so"
+			   or
+			"LoadModule php4_module modules/libphp4.so"
 		modify the index.html line and add index.php to the list
 	- /usr/local/apache2/bin/apachectl start
    - go to http://your-new-asterisk-server-ipaddress/ to see if it worked
