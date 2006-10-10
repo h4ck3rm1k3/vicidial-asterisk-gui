@@ -53,6 +53,8 @@ foreach(@conf)
 	{
 	$line = $conf[$i];
 	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
 	if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
 		{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
 	if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
@@ -67,13 +69,63 @@ foreach(@conf)
 		{$VARfastagi_log_checkfordead = $line;   $VARfastagi_log_checkfordead =~ s/.*=//gi;}
 	if ( ($line =~ /^VARfastagi_log_checkforwait/) && ($CLIVARfastagi_log_checkforwait < 1) )
 		{$VARfastagi_log_checkforwait = $line;   $VARfastagi_log_checkforwait =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 	$i++;
 	}
 
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+$SERVERLOG = 'N';
+$log_level = '0';
+
+use DBI;
+$dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+	or die "Couldn't connect to database: " . DBI->errstr;
+
+### Grab Server values from the database
+$stmtB = "SELECT vd_server_logs FROM servers where server_ip = '$VARserver_ip';";
+$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+$sthBrows=$sthB->rows;
+$rec_count=0;
+while ($sthBrows > $rec_count)
+	{
+	 @aryB = $sthB->fetchrow_array;
+		$SERVERLOG =	"$aryB[0]";
+	 $rec_count++;
+	}
+$sthB->finish();
+$dbhB->disconnect();
+
+if ($SERVERLOG =~ /Y/) 
+	{
+	$childLOGfile = "$PATHlogs/FastAGIchildLOG.$year-$mon-$mday";
+	$log_level = "4";
+	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
+	}
 
 package TEST_VDfastAGI;
 
-use DBI;
 use Net::Server;
 use Asterisk::AGI;
 use vars qw(@ISA);
@@ -161,6 +213,8 @@ sub process_request {
 		 $rec_count++;
 		}
 	$sthA->finish();
+
+
 
 
 	if ($AGILOG) 
@@ -651,18 +705,17 @@ TEST_VDfastAGI->run(
 					port=>4577,
 					user=>'root',
 					group=>'root',
-					background=>1,
 					min_servers=>$VARfastagi_log_min_servers,
 					max_servers=>$VARfastagi_log_max_servers,
 					min_spare_servers=>$VARfastagi_log_min_spare_servers,
 					max_spare_servers=>$VARfastagi_log_max_spare_servers,
 					max_requests=>$VARfastagi_log_max_requests,
 					check_for_dead=>$VARfastagi_log_checkfordead,
-					check_for_waiting=>$VARfastagi_log_checkforwait
+					check_for_waiting=>$VARfastagi_log_checkforwait,
+					log_file=>$childLOGfile,
+					log_level=>$log_level
 					);
 exit;
-
-
 
 
 
