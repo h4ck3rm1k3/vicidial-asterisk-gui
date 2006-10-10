@@ -32,6 +32,14 @@ $VARDB_database =	'asterisk';
 $VARDB_user =	'cron';
 $VARDB_pass =	'1234';
 $VARDB_port =	'3306';
+# defaults for FastAGI Server PreFork
+$VARfastagi_log_min_servers =	'3';
+$VARfastagi_log_max_servers =	'16';
+$VARfastagi_log_min_spare_servers = '2';
+$VARfastagi_log_max_spare_servers = '8';
+$VARfastagi_log_max_requests =	'1000';
+$VARfastagi_log_checkfordead =	'30';
+$VARfastagi_log_checkforwait =	'60';
 
 ############################################
 
@@ -47,6 +55,13 @@ $CLIDB_database=0;
 $CLIDB_user=0;
 $CLIDB_pass=0;
 $CLIDB_port=0;
+$CLIVARfastagi_log_min_servers=0;
+$CLIVARfastagi_log_max_servers=0;
+$CLIVARfastagi_log_min_spare_servers=0;
+$CLIVARfastagi_log_max_spare_servers=0;
+$CLIVARfastagi_log_max_requests=0;
+$CLIVARfastagi_log_checkfordead=0;
+$CLIVARfastagi_log_checkforwait=0;
 
 $COPYhome=0;
 $COPYlogs=0;
@@ -97,6 +112,13 @@ if (length($ARGV[0])>1)
 	print "  [--DB_user=cron] = define database user login at runtime\n";
 	print "  [--DB_pass=1234] = define database user password at runtime\n";
 	print "  [--DB_port=3306] = define database connection port at runtime\n";
+	print "  [--fastagi_log_min_servers=3] = define FastAGI log min servers\n";
+	print "  [--fastagi_log_max_servers=16] = define FastAGI log max servers\n";
+	print "  [--fastagi_log_min_spare_servers=2] = define FastAGI log min spare servers\n";
+	print "  [--fastagi_log_max_spare_servers=8] = define FastAGI log max spare servers\n";
+	print "  [--fastagi_log_max_requests=1000] = define FastAGI log max requests\n";
+	print "  [--fastagi_log_checkfordead=30] = define FastAGI log check-for-dead seconds\n";
+	print "  [--fastagi_log_checkforwait=60] = define FastAGI log check-for-wait seconds\n";
 	print "\n";
 
 	exit;
@@ -267,6 +289,90 @@ if (length($ARGV[0])>1)
 			print "  CLI defined DB port:        $VARDB_port\n";
 			}
 		}
+		if ($args =~ /--fastagi_log_min_servers=/i) # CLI defined fastagi min servers
+		{
+		@CLIDB_minserARY = split(/--fastagi_log_min_servers=/,$args);
+		@CLIDB_minserARX = split(/ /,$CLIDB_minserARY[1]);
+		if (length($CLIDB_minserARX[0])>1)
+			{
+			$VARfastagi_log_min_servers = $CLIDB_minserARX[0];
+			$VARfastagi_log_min_servers =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_min_servers=1;
+			print "  CLI defined log min server: $VARfastagi_log_min_servers\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_max_servers=/i) # CLI defined fastagi max servers
+		{
+		@CLIDB_maxserARY = split(/--fastagi_log_max_servers=/,$args);
+		@CLIDB_maxserARX = split(/ /,$CLIDB_maxserARY[1]);
+		if (length($CLIDB_maxserARX[0])>1)
+			{
+			$VARfastagi_log_max_servers = $CLIDB_maxserARX[0];
+			$VARfastagi_log_max_servers =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_max_servers=1;
+			print "  CLI defined log max server: $VARfastagi_log_max_servers\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_min_spare_servers=/i) # CLI defined fastagi min spare servers
+		{
+		@CLIDB_minspaARY = split(/--fastagi_log_min_spare_servers=/,$args);
+		@CLIDB_minspaARX = split(/ /,$CLIDB_minspaARY[1]);
+		if (length($CLIDB_minspaARX[0])>1)
+			{
+			$VARfastagi_log_min_spare_servers = $CLIDB_minspaARX[0];
+			$VARfastagi_log_min_spare_servers =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_min_spare_servers=1;
+			print "  CLI defined log min spare:  $VARfastagi_log_min_spare_servers\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_max_spare_servers=/i) # CLI defined fastagi max spare servers
+		{
+		@CLIDB_maxspaARY = split(/--fastagi_log_max_spare_servers=/,$args);
+		@CLIDB_maxspaARX = split(/ /,$CLIDB_maxspaARY[1]);
+		if (length($CLIDB_maxspaARX[0])>1)
+			{
+			$VARfastagi_log_max_spare_servers = $CLIDB_maxspaARX[0];
+			$VARfastagi_log_max_spare_servers =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_max_spare_servers=1;
+			print "  CLI defined log max spare:  $VARfastagi_log_max_spare_servers\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_max_requests=/i) # CLI defined fastagi max requests
+		{
+		@CLIDB_maxreqARY = split(/--fastagi_log_max_requests=/,$args);
+		@CLIDB_maxreqARX = split(/ /,$CLIDB_maxreqARY[1]);
+		if (length($CLIDB_maxreqARX[0])>1)
+			{
+			$VARfastagi_log_max_requests = $CLIDB_maxreqARX[0];
+			$VARfastagi_log_max_requests =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_max_requests=1;
+			print "  CLI defined log max request:$VARfastagi_log_max_requests\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_checkfordead=/i) # CLI defined fastagi check-for-dead seconds
+		{
+		@CLIDB_ckdeadARY = split(/--fastagi_log_checkfordead=/,$args);
+		@CLIDB_ckdeadARX = split(/ /,$CLIDB_ckdeadARY[1]);
+		if (length($CLIDB_ckdeadARX[0])>1)
+			{
+			$VARfastagi_log_checkfordead = $CLIDB_ckdeadARX[0];
+			$VARfastagi_log_checkfordead =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_checkfordead=1;
+			print "  CLI defined log ckdead sec: $VARfastagi_log_checkfordead\n";
+			}
+		}
+		if ($args =~ /--fastagi_log_checkforwait=/i) # CLI defined fastagi check-for-wait seconds
+		{
+		@CLIDB_ckwaitARY = split(/--fastagi_log_checkforwait=/,$args);
+		@CLIDB_ckwaitARX = split(/ /,$CLIDB_ckwaitARY[1]);
+		if (length($CLIDB_ckwaitARX[0])>1)
+			{
+			$VARfastagi_log_checkforwait = $CLIDB_ckwaitARX[0];
+			$VARfastagi_log_checkforwait =~ s/ |\r|\n|\t//gi;
+			$CLIfastagi_log_checkforwait=1;
+			print "  CLI defined log ckwait sec: $VARfastagi_log_checkforwait\n";
+			}
+		}
 	}
 }
 else
@@ -310,6 +416,20 @@ if (-e "$PATHconf")
 			{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
+			{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
+			{$VARfastagi_log_max_servers = $line;   $VARfastagi_log_max_servers =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_min_spare_servers/) && ($CLIVARfastagi_log_min_spare_servers < 1) )
+			{$VARfastagi_log_min_spare_servers = $line;   $VARfastagi_log_min_spare_servers =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_max_spare_servers/) && ($CLIVARfastagi_log_max_spare_servers < 1) )
+			{$VARfastagi_log_max_spare_servers = $line;   $VARfastagi_log_max_spare_servers =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_max_requests/) && ($CLIVARfastagi_log_max_requests < 1) )
+			{$VARfastagi_log_max_requests = $line;   $VARfastagi_log_max_requests =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_checkfordead/) && ($CLIVARfastagi_log_checkfordead < 1) )
+			{$VARfastagi_log_checkfordead = $line;   $VARfastagi_log_checkfordead =~ s/.*=//gi;}
+		if ( ($line =~ /^VARfastagi_log_checkforwait/) && ($CLIVARfastagi_log_checkforwait < 1) )
+			{$VARfastagi_log_checkforwait = $line;   $VARfastagi_log_checkforwait =~ s/.*=//gi;}
 		$i++;
 		}
 	}
@@ -820,6 +940,146 @@ else
 			}
 		##### END DB_port propmting and check  #####
 
+		##### BEGIN fastagi_log_min_servers propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log minimum child servers: [$VARfastagi_log_min_servers] ");
+			$PROMPTfastagi_log_min_servers = <STDIN>;
+			chomp($PROMPTfastagi_log_min_servers);
+			if (length($PROMPTfastagi_log_min_servers)>1)
+				{
+				$PROMPTfastagi_log_min_servers =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_min_servers=$PROMPTfastagi_log_min_servers;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_min_servers propmting and check  #####
+
+		##### BEGIN fastagi_log_max_servers propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log maximum child servers: [$VARfastagi_log_max_servers] ");
+			$PROMPTfastagi_log_max_servers = <STDIN>;
+			chomp($PROMPTfastagi_log_max_servers);
+			if (length($PROMPTfastagi_log_max_servers)>1)
+				{
+				$PROMPTfastagi_log_max_servers =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_max_servers=$PROMPTfastagi_log_max_servers;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_max_servers propmting and check  #####
+
+		##### BEGIN fastagi_log_min_spare_servers propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log minimum spare child servers: [$VARfastagi_log_min_spare_servers] ");
+			$PROMPTfastagi_log_min_spare_servers = <STDIN>;
+			chomp($PROMPTfastagi_log_min_spare_servers);
+			if (length($PROMPTfastagi_log_min_spare_servers)>1)
+				{
+				$PROMPTfastagi_log_min_spare_servers =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_min_spare_servers=$PROMPTfastagi_log_min_spare_servers;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_min_spare_servers propmting and check  #####
+
+		##### BEGIN fastagi_log_max_spare_servers propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log maximum spare child servers: [$VARfastagi_log_max_spare_servers] ");
+			$PROMPTfastagi_log_max_spare_servers = <STDIN>;
+			chomp($PROMPTfastagi_log_max_spare_servers);
+			if (length($PROMPTfastagi_log_max_spare_servers)>1)
+				{
+				$PROMPTfastagi_log_max_spare_servers =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_max_spare_servers=$PROMPTfastagi_log_max_spare_servers;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_max_spare_servers propmting and check  #####
+
+		##### BEGIN fastagi_log_max_requests propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log maximum requests per child server: [$VARfastagi_log_max_requests] ");
+			$PROMPTfastagi_log_max_requests = <STDIN>;
+			chomp($PROMPTfastagi_log_max_requests);
+			if (length($PROMPTfastagi_log_max_requests)>1)
+				{
+				$PROMPTfastagi_log_max_requests =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_max_requests=$PROMPTfastagi_log_max_requests;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_max_requests propmting and check  #####
+
+		##### BEGIN fastagi_log_checkfordead propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log check-for-dead seconds: [$VARfastagi_log_checkfordead] ");
+			$PROMPTfastagi_log_checkfordead = <STDIN>;
+			chomp($PROMPTfastagi_log_checkfordead);
+			if (length($PROMPTfastagi_log_checkfordead)>1)
+				{
+				$PROMPTfastagi_log_checkfordead =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_checkfordead=$PROMPTfastagi_log_checkfordead;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_checkfordead propmting and check  #####
+
+		##### BEGIN fastagi_log_checkforwait propmting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFastAGI log check-for-wait seconds: [$VARfastagi_log_checkforwait] ");
+			$PROMPTfastagi_log_checkforwait = <STDIN>;
+			chomp($PROMPTfastagi_log_checkforwait);
+			if (length($PROMPTfastagi_log_checkforwait)>1)
+				{
+				$PROMPTfastagi_log_checkforwait =~ s/ |\n|\r|\t|\/$//gi;
+				$VARfastagi_log_checkforwait=$PROMPTfastagi_log_checkforwait;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END fastagi_log_checkforwait propmting and check  #####
+
 
 		print "\n";
 		print "  defined home path:      $PATHhome\n";
@@ -834,6 +1094,13 @@ else
 		print "  defined DB_user:        $VARDB_user\n";
 		print "  defined DB_pass:        $VARDB_pass\n";
 		print "  defined DB_port:        $VARDB_port\n";
+		print "  defined fastagi_log_min_servers:       $VARfastagi_log_min_servers\n";
+		print "  defined fastagi_log_max_servers:       $VARfastagi_log_max_servers\n";
+		print "  defined fastagi_log_min_spare_servers: $VARfastagi_log_min_spare_servers\n";
+		print "  defined fastagi_log_max_spare_servers: $VARfastagi_log_max_spare_servers\n";
+		print "  defined fastagi_log_max_requests:      $VARfastagi_log_max_requests\n";
+		print "  defined fastagi_log_checkfordead:      $VARfastagi_log_checkfordead\n";
+		print "  defined fastagi_log_checkforwait:      $VARfastagi_log_checkforwait\n";
 		print "\n";
 
 		print("Are these settings correct?(y/n): [y] ");
@@ -865,7 +1132,15 @@ print conf "VARDB_database => $VARDB_database\n";
 print conf "VARDB_user => $VARDB_user\n";
 print conf "VARDB_pass => $VARDB_pass\n";
 print conf "VARDB_port => $VARDB_port\n";
+print conf "VARfastagi_log_min_servers => $VARfastagi_log_min_servers\n";
+print conf "VARfastagi_log_max_servers => $VARfastagi_log_max_servers\n";
+print conf "VARfastagi_log_min_spare_servers => $VARfastagi_log_min_spare_servers\n";
+print conf "VARfastagi_log_max_spare_servers => $VARfastagi_log_max_spare_servers\n";
+print conf "VARfastagi_log_max_requests => $VARfastagi_log_max_requests\n";
+print conf "VARfastagi_log_checkfordead => $VARfastagi_log_checkfordead\n";
+print conf "VARfastagi_log_checkforwait => $VARfastagi_log_checkforwait\n";
 close(conf);
+
 
 
 print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
