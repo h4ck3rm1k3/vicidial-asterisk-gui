@@ -1193,7 +1193,7 @@ print conf "VARDB_user => $VARDB_user\n";
 print conf "VARDB_pass => $VARDB_pass\n";
 print conf "VARDB_port => $VARDB_port\n";
 print conf "\n";
-print conf "# Numeric list of the astGUIclient processes to be kept running\n";
+print conf "# Alpha-Numeric list of the astGUIclient processes to be kept running\n";
 print conf "# (value should be listing of characters with no spaces: 123456)\n";
 print conf "#  X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
 print conf "#  1 - AST_update\n";
