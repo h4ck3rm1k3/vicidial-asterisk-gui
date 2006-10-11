@@ -101,20 +101,37 @@ $runningAST_VDauto_dial=0;
 $runningAST_VDremote_agents=0;
 $runningAST_VDadapt=0;
 $runningFastAGI_log=0;
-$launchAST_update=0;
-$launchAST_send=0;
-$launchAST_listen=0;
-$launchAST_VDauto_dial=0;
-$launchAST_VDremote_agents=0;
-$launchAST_VDadapt=0;
-$launchFastAGI_log=0;
 
-if ($VARactive_keepalives =~ /1/) {$AST_update=1;}
-if ($VARactive_keepalives =~ /2/) {$AST_send_listen=1;}
-if ($VARactive_keepalives =~ /3/) {$AST_VDauto_dial=1;}
-if ($VARactive_keepalives =~ /4/) {$AST_VDremote_agents=1;}
-if ($VARactive_keepalives =~ /5/) {$AST_VDadapt=1;}
-if ($VARactive_keepalives =~ /6/) {$FastAGI_log=1;}
+if ($VARactive_keepalives =~ /1/) 
+	{
+	$AST_update=1;
+	if ($DB) {print "AST_update set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /2/) 
+	{
+	$AST_send_listen=1;
+	if ($DB) {print "AST_send_listen set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /3/) 
+	{
+	$AST_VDauto_dial=1;
+	if ($DB) {print "AST_VDauto_dial set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /4/) 
+	{
+	$AST_VDremote_agents=1;
+	if ($DB) {print "AST_VDremote_agents set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /5/) 
+	{
+	$AST_VDadapt=1;
+	if ($DB) {print "AST_VDadapt set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /6/) 
+	{
+	$FastAGI_log=1;
+	if ($DB) {print "FastAGI_log set to keepalive\n";}
+	}
 
 $REGhome = $PATHhome;
 $REGhome =~ s/\//\\\//gi;
@@ -207,12 +224,13 @@ foreach (@psoutput)
 		chomp($psoutput[$i]);
 	if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 	@psline = split(/\/usr\/bin\/perl /,$psoutput[$i]);
+	$psoutput[$i] =~ s/^ *//gi;
 	$psoutput[$i] =~ s/ .*|\n|\r|\t| //gi;
-	$listen_pid[$runningAST_listen] = $psoutput[$i];
 
 	if ($psline[1] =~ /AST_manager_li/) 
 		{
-		if ($DB) {print "AST_listen RUNNING:              |$psline[1]|\n";}
+		$listen_pid[$runningAST_listen] = $psoutput[$i];
+		if ($DB) {print "AST_listen RUNNING:              |$psline[1]|$listen_pid[$runningAST_listen]|\n";}
 		$runningAST_listen++;
 		}
 

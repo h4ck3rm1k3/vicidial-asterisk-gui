@@ -2409,20 +2409,8 @@ AST_CRON_mix_recordings_BASIC.pl file in it's place)
 ### recording mixing for Asterisk run every 5 minutes
 1,6,11,16,21,26,31,36,41,46,51,56 * * * 1,2,3,4,5,6 /usr/share/astguiclient/AST_CRON_mix_recordings_BASIC.pl
 
-### keepalive script for Asterisk updaters
-* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_update.pl
-
-### keepalive script for Asterisk manager queue system
-* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_send_listen.pl
-
-### keepalive script for Asterisk VICIDIAL autodial system
-* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDautodial.pl
-
-### keepalive script for VICIDIAL remote agents
-* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDremote_agents.pl
-
-### keepalive script for VICIDIAL predictive script
-* * * * * /usr/share/astguiclient/ADMIN_keepalive_AST_VDadapt.pl
+### keepalive script for astguiclient processes
+* * * * * /usr/share/astguiclient/ADMIN_keepalive_ALL.pl
 
 ### kill Hangup script for Asterisk updaters
 * * * * * /usr/share/astguiclient/AST_manager_kill_hung_congested.pl

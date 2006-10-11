@@ -131,11 +131,12 @@ foreach (@psoutput)
 		chomp($psoutput[$i]);
 	if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 	@psline = split(/\/usr\/bin\/perl /,$psoutput[$i]);
+	$psoutput[$i] =~ s/^ *//gi;
 	$psoutput[$i] =~ s/ .*|\n|\r|\t| //gi;
-	$listen_pid[$running_listen] = $psoutput[$i];
 
 	if ($psline[1] =~ /AST_manager_li/) 
 		{
+		$listen_pid[$running_listen] = $psoutput[$i];
 		if ($DB) {print "LISTEN RUNNING: |$psline[1]|$psoutput[$i]|\n";}
 		$running_listen++;
 		}

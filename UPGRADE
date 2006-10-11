@@ -5,17 +5,18 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 ########## UPGRADING FROM 2.0.1 TO 2.0.2 ##########
 
 1. upgrade the MySQL Asterisk database:
-mysql
-use asterisk
-\. /path/from/root/extras/upgrade_2.0.2.sql
-quit
+	mysql
+	use asterisk
+	\. /path/from/root/extras/upgrade_2.0.2.sql
+	quit
 
 2. The astguiclient web directory has been removed and the 
 	astguiclient/admin.php functions have been merged into the 
 	vicidial/admin.php page
 
 3. You can now define trunks for use only by specific campaigns. See the help
-	in the server modification page under the VICIDIAL SERVER TRUNKS section.
+	in the vicidial/admin.php server modification page under the 
+	VICIDIAL SERVER TRUNKS section.
 
 4. Agents now have the ability to control volume levels for any call in their 
 	meetme room directly from the vicidial.php page. This only works on 
@@ -24,7 +25,23 @@ quit
 	lines must be added to the extensions.conf for this to work:
 	(_X48600XXX, _X38600XXX, 8300 [see extensions.conf.sample])
 
-5. Experimental FastAGI replacement for call_log and VD_hangup AGI scripts
+5. Multiple ADMIN_keepalive scripts have been replaced with a single script
+	ADMIN_keepalive_ALL.pl
+	Remove all other ADMIN keepalive entries in your crontab and replace
+	with this one:
+	### keepalive script for astguiclient processes
+	* * * * * /usr/share/astguiclient/ADMIN_keepalive_ALL.pl
+
+6. /etc/astguiclient.conf has new variables for new functionality including:
+	- FastAGI_log server settings
+	- new ADMIN_keepalive_ALL process settings
+	and comments are added to the astguiclient.conf file
+
+7. Experimental FastAGI replacement for call_log and VD_hangup AGI scripts:
+	FastAGI_log.pl
+	If you want to use it, read the comments at the top of the script
+
+
 
 
 
@@ -35,10 +52,10 @@ been several changes made to the code base and to where some files are stored in
 the release as well as on your machine.
 
 1. upgrade the MySQL Asterisk database:
-mysql
-use asterisk
-\. /path/from/root/extras/upgrade_2.0.1.sql
-quit
+	mysql
+	use asterisk
+	\. /path/from/root/extras/upgrade_2.0.1.sql
+	quit
 
 
 2. use the new installer for astguiclient-VICIDIAL files:
@@ -47,7 +64,7 @@ quit
 	old AST_SERVER_conf.pl file that has been removed. Also, this settings
 	file is used by dbconnect.php scripts so no need to manually edit them
 
-perl install.pl
+	perl install.pl
 
 
 3. Make sure you have MySQL clientlibs installed:
