@@ -24,6 +24,8 @@ quit
 	lines must be added to the extensions.conf for this to work:
 	(_X48600XXX, _X38600XXX, 8300 [see extensions.conf.sample])
 
+5. Experimental FastAGI replacement for call_log and VD_hangup AGI scripts
+
 
 
 ########## UPGRADING FROM 1.1.12-3 TO 2.0.1 ##########

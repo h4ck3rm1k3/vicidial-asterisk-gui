@@ -32,6 +32,8 @@ $VARDB_database =	'asterisk';
 $VARDB_user =	'cron';
 $VARDB_pass =	'1234';
 $VARDB_port =	'3306';
+# default keepalive processes: 
+$VARactive_keepalives =		'123456';
 # defaults for FastAGI Server PreFork
 $VARfastagi_log_min_servers =	'3';
 $VARfastagi_log_max_servers =	'16';
@@ -55,6 +57,7 @@ $CLIDB_database=0;
 $CLIDB_user=0;
 $CLIDB_pass=0;
 $CLIDB_port=0;
+$CLIVARactive_keepalives=0;
 $CLIVARfastagi_log_min_servers=0;
 $CLIVARfastagi_log_max_servers=0;
 $CLIVARfastagi_log_min_spare_servers=0;
@@ -112,6 +115,14 @@ if (length($ARGV[0])>1)
 	print "  [--DB_user=cron] = define database user login at runtime\n";
 	print "  [--DB_pass=1234] = define database user password at runtime\n";
 	print "  [--DB_port=3306] = define database connection port at runtime\n";
+	print "  [--active_keepalives=123456] = define processes to keepalive\n";
+	print "     X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
+	print "     1 - AST_update\n";
+	print "     2 - AST_send_listen\n";
+	print "     3 - AST_VDauto_dial\n";
+	print "     4 - AST_VDremote_agents\n";
+	print "     5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
+	print "     6 - FastAGI_log\n";
 	print "  [--fastagi_log_min_servers=3] = define FastAGI log min servers\n";
 	print "  [--fastagi_log_max_servers=16] = define FastAGI log max servers\n";
 	print "  [--fastagi_log_min_spare_servers=2] = define FastAGI log min spare servers\n";
@@ -289,6 +300,18 @@ if (length($ARGV[0])>1)
 			print "  CLI defined DB port:        $VARDB_port\n";
 			}
 		}
+		if ($args =~ /--active_keepalives=/i) # CLI defined keepalive processes
+		{
+		@CLIkeepaliveARY = split(/--active_keepalives=/,$args);
+		@CLIkeepaliveARX = split(/ /,$CLIkeepaliveARY[1]);
+		if (length($CLIkeepaliveARX[0])>1)
+			{
+			$VARactive_keepalives = $CLIkeepaliveARX[0];
+			$VARactive_keepalives =~ s/ |\r|\n|\t//gi;
+			$CLIactive_keepalives=1;
+			print "  CLI active keepalive procs: $VARactive_keepalives\n";
+			}
+		}
 		if ($args =~ /--fastagi_log_min_servers=/i) # CLI defined fastagi min servers
 		{
 		@CLIDB_minserARY = split(/--fastagi_log_min_servers=/,$args);
@@ -416,6 +439,8 @@ if (-e "$PATHconf")
 			{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
+			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
 			{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
@@ -801,7 +826,7 @@ else
 			}
 		##### END asterisk monitor directory prompting and existence check #####
 
-		##### BEGIN server_ip propmting and check #####
+		##### BEGIN server_ip prompting and check #####
 		if (length($VARserver_ip)<7)
 			{	
 			### get best guess of IP address from ifconfig output ###
@@ -833,10 +858,10 @@ else
 				$continue='YES';
 				}
 			}
-		##### END server_ip propmting and check  #####
+		##### END server_ip prompting and check  #####
 
 
-		##### BEGIN DB_server propmting and check #####
+		##### BEGIN DB_server prompting and check #####
 		if (length($VARDB_server)<7)
 			{	
 			$VARDB_server = 'localhost';
@@ -858,9 +883,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END DB_server propmting and check  #####
+		##### END DB_server prompting and check  #####
 
-		##### BEGIN DB_database propmting and check #####
+		##### BEGIN DB_database prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -878,9 +903,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END DB_database propmting and check  #####
+		##### END DB_database prompting and check  #####
 
-		##### BEGIN DB_user propmting and check #####
+		##### BEGIN DB_user prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -898,9 +923,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END DB_user propmting and check  #####
+		##### END DB_user prompting and check  #####
 
-		##### BEGIN DB_pass propmting and check #####
+		##### BEGIN DB_pass prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -918,9 +943,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END DB_pass propmting and check  #####
+		##### END DB_pass prompting and check  #####
 
-		##### BEGIN DB_port propmting and check #####
+		##### BEGIN DB_port prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -938,9 +963,38 @@ else
 				$continue='YES';
 				}
 			}
-		##### END DB_port propmting and check  #####
+		##### END DB_port prompting and check  #####
 
-		##### BEGIN fastagi_log_min_servers propmting and check #####
+		##### BEGIN active_keepalives prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print "\nNumeric list of the astGUIclient processes to be kept running\n";
+			print "(value should be listing of characters with no spaces: 123456)\n";
+			print " X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
+			print " 1 - AST_update\n";
+			print " 2 - AST_send_listen\n";
+			print " 3 - AST_VDauto_dial\n";
+			print " 4 - AST_VDremote_agents\n";
+			print " 5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
+			print " 6 - FastAGI_log\n";
+			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
+			$PROMPTactive_keepalives = <STDIN>;
+			chomp($PROMPTactive_keepalives);
+			if (length($PROMPTactive_keepalives)>1)
+				{
+				$PROMPTactive_keepalives =~ s/ |\n|\r|\t|\/$//gi;
+				$VARactive_keepalives=$PROMPTactive_keepalives;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END active_keepalives prompting and check  #####
+
+		##### BEGIN fastagi_log_min_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -958,9 +1012,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_min_servers propmting and check  #####
+		##### END fastagi_log_min_servers prompting and check  #####
 
-		##### BEGIN fastagi_log_max_servers propmting and check #####
+		##### BEGIN fastagi_log_max_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -978,9 +1032,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_max_servers propmting and check  #####
+		##### END fastagi_log_max_servers prompting and check  #####
 
-		##### BEGIN fastagi_log_min_spare_servers propmting and check #####
+		##### BEGIN fastagi_log_min_spare_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -998,9 +1052,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_min_spare_servers propmting and check  #####
+		##### END fastagi_log_min_spare_servers prompting and check  #####
 
-		##### BEGIN fastagi_log_max_spare_servers propmting and check #####
+		##### BEGIN fastagi_log_max_spare_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -1018,9 +1072,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_max_spare_servers propmting and check  #####
+		##### END fastagi_log_max_spare_servers prompting and check  #####
 
-		##### BEGIN fastagi_log_max_requests propmting and check #####
+		##### BEGIN fastagi_log_max_requests prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -1038,9 +1092,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_max_requests propmting and check  #####
+		##### END fastagi_log_max_requests prompting and check  #####
 
-		##### BEGIN fastagi_log_checkfordead propmting and check #####
+		##### BEGIN fastagi_log_checkfordead prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -1058,9 +1112,9 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_checkfordead propmting and check  #####
+		##### END fastagi_log_checkfordead prompting and check  #####
 
-		##### BEGIN fastagi_log_checkforwait propmting and check #####
+		##### BEGIN fastagi_log_checkforwait prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
 			{
@@ -1078,22 +1132,23 @@ else
 				$continue='YES';
 				}
 			}
-		##### END fastagi_log_checkforwait propmting and check  #####
+		##### END fastagi_log_checkforwait prompting and check  #####
 
 
 		print "\n";
-		print "  defined home path:      $PATHhome\n";
-		print "  defined logs path:      $PATHlogs\n";
-		print "  defined agi-bin path:   $PATHagi\n";
-		print "  defined webroot path:   $PATHweb\n";
-		print "  defined sounds path:    $PATHsounds\n";
-		print "  defined monitor path:   $PATHmonitor\n";
-		print "  defined server_ip:      $VARserver_ip\n";
-		print "  defined DB_server:      $VARDB_server\n";
-		print "  defined DB_database:    $VARDB_database\n";
-		print "  defined DB_user:        $VARDB_user\n";
-		print "  defined DB_pass:        $VARDB_pass\n";
-		print "  defined DB_port:        $VARDB_port\n";
+		print "  defined home path:        $PATHhome\n";
+		print "  defined logs path:        $PATHlogs\n";
+		print "  defined agi-bin path:     $PATHagi\n";
+		print "  defined webroot path:     $PATHweb\n";
+		print "  defined sounds path:      $PATHsounds\n";
+		print "  defined monitor path:     $PATHmonitor\n";
+		print "  defined server_ip:        $VARserver_ip\n";
+		print "  defined DB_server:        $VARDB_server\n";
+		print "  defined DB_database:      $VARDB_database\n";
+		print "  defined DB_user:          $VARDB_user\n";
+		print "  defined DB_pass:          $VARDB_pass\n";
+		print "  defined DB_port:          $VARDB_port\n";
+		print "  defined active_keepalives $VARactive_keepalives\n";
 		print "  defined fastagi_log_min_servers:       $VARfastagi_log_min_servers\n";
 		print "  defined fastagi_log_max_servers:       $VARfastagi_log_max_servers\n";
 		print "  defined fastagi_log_min_spare_servers: $VARfastagi_log_min_spare_servers\n";
@@ -1120,18 +1175,36 @@ print conf "# astguiclient.conf - configuration elements for the astguiclient pa
 print conf "# this is the astguiclient configuration file \n";
 print conf "# all comments will be lost if you run install.pl again\n";
 print conf "\n";
+print conf "# Paths used by astGUIclient\n";
 print conf "PATHhome => $PATHhome\n";
 print conf "PATHlogs => $PATHlogs\n";
 print conf "PATHagi => $PATHagi\n";
 print conf "PATHweb => $PATHweb\n";
 print conf "PATHsounds => $PATHsounds\n";
-print conf "PATHmonitor => $PATHmonitor\n\n";
+print conf "PATHmonitor => $PATHmonitor\n";
+print conf "\n";
+print conf "# The IP address of this machine\n";
 print conf "VARserver_ip => $VARserver_ip\n";
+print conf "\n";
+print conf "# Database connection information\n";
 print conf "VARDB_server => $VARDB_server\n";
 print conf "VARDB_database => $VARDB_database\n";
 print conf "VARDB_user => $VARDB_user\n";
 print conf "VARDB_pass => $VARDB_pass\n";
 print conf "VARDB_port => $VARDB_port\n";
+print conf "\n";
+print conf "# Numeric list of the astGUIclient processes to be kept running\n";
+print conf "# (value should be listing of characters with no spaces: 123456)\n";
+print conf "#  X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
+print conf "#  1 - AST_update\n";
+print conf "#  2 - AST_send_listen\n";
+print conf "#  3 - AST_VDauto_dial\n";
+print conf "#  4 - AST_VDremote_agents\n";
+print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
+print conf "#  6 - FastAGI_log\n";
+print conf "VARactive_keepalives => $VARactive_keepalives\n";
+print conf "\n";
+print conf "# Settings for FastAGI logging server\n";
 print conf "VARfastagi_log_min_servers => $VARfastagi_log_min_servers\n";
 print conf "VARfastagi_log_max_servers => $VARfastagi_log_max_servers\n";
 print conf "VARfastagi_log_min_spare_servers => $VARfastagi_log_min_spare_servers\n";
@@ -1140,7 +1213,6 @@ print conf "VARfastagi_log_max_requests => $VARfastagi_log_max_requests\n";
 print conf "VARfastagi_log_checkfordead => $VARfastagi_log_checkfordead\n";
 print conf "VARfastagi_log_checkforwait => $VARfastagi_log_checkforwait\n";
 close(conf);
-
 
 
 print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
