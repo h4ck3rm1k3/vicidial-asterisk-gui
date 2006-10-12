@@ -84,7 +84,9 @@ print "no command line options set\n";
 # constants
 $US='__';
 $MT[0]='';
-
+$local_DEF = 'Local/';
+$conf_silent_prefix = '7';
+$local_AMP = '@';
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -140,7 +142,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ### Grab Server values from the database
-	$stmtA = "SELECT vd_server_logs,local_gmt FROM servers where server_ip = '$VARserver_ip';";
+	$stmtA = "SELECT vd_server_logs,local_gmt,ext_context FROM servers where server_ip = '$VARserver_ip';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -149,7 +151,8 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		{
 		 @aryA = $sthA->fetchrow_array;
 			$DBvd_server_logs =			"$aryA[0]";
-			$DBSERVER_GMT		=		"$aryA[1]";
+			$DBSERVER_GMT =				"$aryA[1]";
+			$ext_context =				"$aryA[2]";
 			if ($DBvd_server_logs =~ /Y/)	{$SYSLOG = '1';}
 				else {$SYSLOG = '0';}
 			if (length($DBSERVER_GMT)>0)	{$SERVER_GMT = $DBSERVER_GMT;}
@@ -264,6 +267,7 @@ while($one_day_interval > 0)
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
+		$TESTrun=0;
 		$rec_count=0;
 		while ($sthArows > $rec_count)
 			{
@@ -283,6 +287,11 @@ while($one_day_interval > 0)
 					$DBremote_server_ip[$user_counter] =	"$server_ip";
 					$DBremote_campaign[$user_counter] =		"$campaign_id";
 					$DBremote_conf_exten[$user_counter] =	"$conf_exten";
+						if ($conf_exten =~ /999999999999/)
+							{
+							$TESTrun++;
+							$DBremote_conf_exten[$user_counter] = ($user_counter + 8600051);
+							}
 					$DBremote_closer[$user_counter] =		"$closer_campaigns";
 					$DBremote_random[$user_counter] =		"$random";
 					
@@ -382,6 +391,13 @@ while($one_day_interval > 0)
 						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','');";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
+						if ($TESTrun > 0)
+							{
+							$SIqueryCID = "T$CIDdate$DBremote_conf_exten[$h]";
+							$stmt="INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $local_DEF$DBremote_conf_exten[$h]$local_AMP$ext_context','Context: $ext_context','Exten: 999999999999','Priority: 1','Callerid: $SIqueryCID','','','','','');";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print STDERR "   TESTrun CALL PLACED: 999999999999 $DBremote_conf_exten[$h] $DBremote_user[$h] NEW INSERT: |$affected_rows|\n";}
+							}
 						}
 					}
 				}
