@@ -761,8 +761,8 @@ with the following patch:
 	- tar xvf libpri-1.2.3.tar
    B. if you want latest SVN_1.2 version (release tree with new patches)
 	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
-	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
-	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
+	- svn checkout http://svn.digium.com/svn/zaptel/branches/1.2 zaptel-1.2
+	- svn checkout http://svn.digium.com/svn/libpri/branches/1.2 libpri-1.2
    C. if you want latest SVN_DEV version (not recommended) [1.5 tree]
 	- svn checkout http://svn.digium.com/svn/asterisk/trunk asterisk
 	- svn checkout http://svn.digium.com/svn/zaptel/trunk zaptel
