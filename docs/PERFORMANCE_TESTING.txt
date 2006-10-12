@@ -1,0 +1,10 @@
+PERFORMANCE TESTING OF A VICIDIAL SERVER			2006-10-12
+
+This document goes over the setup of a VICIDIAL/Asterisk server that you are testing, and the control Asterisk server that will be taking the calls from the serer being tested.
+
+It is very difficult to realistically performance test a VICIDIAL server not in production because of the randomness of call center operations.
+
+How this process works is that multiple remote agents are activated and calls are placed from the server being tested to control server that will take those calls and send various signals and play various audio files so that the randomness of outbound dialing is simulated.
+
+
+
