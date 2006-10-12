@@ -1572,6 +1572,16 @@ insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer
 
 insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access) values('6666','1234','Admin','9','ADMIN','1','1','1');
 
+insert into conferences values('8600001','10.10.10.15','');
+insert into conferences values('8600002','10.10.10.15','');
+insert into conferences values('8600003','10.10.10.15','');
+insert into conferences values('8600004','10.10.10.15','');
+insert into conferences values('8600005','10.10.10.15','');
+insert into conferences values('8600006','10.10.10.15','');
+insert into conferences values('8600007','10.10.10.15','');
+insert into conferences values('8600008','10.10.10.15','');
+insert into conferences values('8600009','10.10.10.15','');
+insert into conferences values('8600010','10.10.10.15','');
 insert into conferences values('8600011','10.10.10.15','');
 insert into conferences values('8600012','10.10.10.15','');
 insert into conferences values('8600013','10.10.10.15','');
@@ -1859,6 +1869,16 @@ meetme.conf:
    - here is how our sample meetme.conf file changes for adding conference 
 entries (this is a pure addition, nothing is being modified):
 ######------ START meetme.conf additions for conferences ------######
+conf => 8600001
+conf => 8600002
+conf => 8600003
+conf => 8600004
+conf => 8600005
+conf => 8600006
+conf => 8600007
+conf => 8600008
+conf => 8600009
+conf => 8600010
 conf => 8600011
 conf => 8600012
 conf => 8600013
@@ -1928,6 +1948,106 @@ conf => 8600097
 conf => 8600098
 conf => 8600099
 conf => 8600100
+conf => 8600101
+conf => 8600102
+conf => 8600103
+conf => 8600104
+conf => 8600105
+conf => 8600106
+conf => 8600107
+conf => 8600108
+conf => 8600109
+conf => 8600110
+conf => 8600111
+conf => 8600112
+conf => 8600113
+conf => 8600114
+conf => 8600115
+conf => 8600116
+conf => 8600117
+conf => 8600118
+conf => 8600119
+conf => 8600120
+conf => 8600121
+conf => 8600122
+conf => 8600123
+conf => 8600124
+conf => 8600125
+conf => 8600126
+conf => 8600127
+conf => 8600128
+conf => 8600129
+conf => 8600130
+conf => 8600131
+conf => 8600132
+conf => 8600133
+conf => 8600134
+conf => 8600135
+conf => 8600136
+conf => 8600137
+conf => 8600138
+conf => 8600139
+conf => 8600140
+conf => 8600141
+conf => 8600142
+conf => 8600143
+conf => 8600144
+conf => 8600145
+conf => 8600146
+conf => 8600147
+conf => 8600148
+conf => 8600149
+conf => 8600150
+conf => 8600151
+conf => 8600152
+conf => 8600153
+conf => 8600154
+conf => 8600155
+conf => 8600156
+conf => 8600157
+conf => 8600158
+conf => 8600159
+conf => 8600160
+conf => 8600161
+conf => 8600162
+conf => 8600163
+conf => 8600164
+conf => 8600165
+conf => 8600166
+conf => 8600167
+conf => 8600168
+conf => 8600169
+conf => 8600170
+conf => 8600171
+conf => 8600172
+conf => 8600173
+conf => 8600174
+conf => 8600175
+conf => 8600176
+conf => 8600177
+conf => 8600178
+conf => 8600179
+conf => 8600180
+conf => 8600181
+conf => 8600182
+conf => 8600183
+conf => 8600184
+conf => 8600185
+conf => 8600186
+conf => 8600187
+conf => 8600188
+conf => 8600189
+conf => 8600190
+conf => 8600191
+conf => 8600192
+conf => 8600193
+conf => 8600194
+conf => 8600195
+conf => 8600196
+conf => 8600197
+conf => 8600198
+conf => 8600199
+conf => 8600200
 ######------ END meetme.conf additions for conferences ------######
 
 
@@ -1935,6 +2055,16 @@ conf => 8600100
    - here is how our sample dialplan changes for adding conference entries (this 
 is a pure addition, nothing is being modified):
 ######------ START extensions.conf additions for agc conferences ------######
+exten => 8600001,1,Meetme,8600001|q
+exten => 8600002,1,Meetme,8600002|q
+exten => 8600003,1,Meetme,8600003|q
+exten => 8600004,1,Meetme,8600004|q
+exten => 8600005,1,Meetme,8600005|q
+exten => 8600006,1,Meetme,8600006|q
+exten => 8600007,1,Meetme,8600007|q
+exten => 8600008,1,Meetme,8600008|q
+exten => 8600009,1,Meetme,8600009|q
+exten => 8600010,1,Meetme,8600010|q
 exten => 8600011,1,Meetme,8600011|q
 exten => 8600012,1,Meetme,8600012|q
 exten => 8600013,1,Meetme,8600013|q
@@ -2020,108 +2150,111 @@ exten => 8600097,1,Meetme,8600097
 exten => 8600098,1,Meetme,8600098
 exten => 8600099,1,Meetme,8600099
 exten => 8600100,1,Meetme,8600100
+exten => 8600101,1,Meetme,8600101
+exten => 8600102,1,Meetme,8600102
+exten => 8600103,1,Meetme,8600103
+exten => 8600104,1,Meetme,8600104
+exten => 8600105,1,Meetme,8600105
+exten => 8600106,1,Meetme,8600106
+exten => 8600107,1,Meetme,8600107
+exten => 8600108,1,Meetme,8600108
+exten => 8600109,1,Meetme,8600109
+exten => 8600110,1,Meetme,8600110
+exten => 8600111,1,Meetme,8600111
+exten => 8600112,1,Meetme,8600112
+exten => 8600113,1,Meetme,8600113
+exten => 8600114,1,Meetme,8600114
+exten => 8600115,1,Meetme,8600115
+exten => 8600116,1,Meetme,8600116
+exten => 8600117,1,Meetme,8600117
+exten => 8600118,1,Meetme,8600118
+exten => 8600119,1,Meetme,8600119
+exten => 8600120,1,Meetme,8600120
+exten => 8600121,1,Meetme,8600121
+exten => 8600122,1,Meetme,8600122
+exten => 8600123,1,Meetme,8600123
+exten => 8600124,1,Meetme,8600124
+exten => 8600125,1,Meetme,8600125
+exten => 8600126,1,Meetme,8600126
+exten => 8600127,1,Meetme,8600127
+exten => 8600128,1,Meetme,8600128
+exten => 8600129,1,Meetme,8600129
+exten => 8600130,1,Meetme,8600130
+exten => 8600131,1,Meetme,8600131
+exten => 8600132,1,Meetme,8600132
+exten => 8600133,1,Meetme,8600133
+exten => 8600134,1,Meetme,8600134
+exten => 8600135,1,Meetme,8600135
+exten => 8600136,1,Meetme,8600136
+exten => 8600137,1,Meetme,8600137
+exten => 8600138,1,Meetme,8600138
+exten => 8600139,1,Meetme,8600139
+exten => 8600140,1,Meetme,8600140
+exten => 8600141,1,Meetme,8600141
+exten => 8600142,1,Meetme,8600142
+exten => 8600143,1,Meetme,8600143
+exten => 8600144,1,Meetme,8600144
+exten => 8600145,1,Meetme,8600145
+exten => 8600146,1,Meetme,8600146
+exten => 8600147,1,Meetme,8600147
+exten => 8600148,1,Meetme,8600148
+exten => 8600149,1,Meetme,8600149
+exten => 8600150,1,Meetme,8600150
+exten => 8600151,1,Meetme,8600151
+exten => 8600152,1,Meetme,8600152
+exten => 8600153,1,Meetme,8600153
+exten => 8600154,1,Meetme,8600154
+exten => 8600155,1,Meetme,8600155
+exten => 8600156,1,Meetme,8600156
+exten => 8600157,1,Meetme,8600157
+exten => 8600158,1,Meetme,8600158
+exten => 8600159,1,Meetme,8600159
+exten => 8600160,1,Meetme,8600160
+exten => 8600161,1,Meetme,8600161
+exten => 8600162,1,Meetme,8600162
+exten => 8600163,1,Meetme,8600163
+exten => 8600164,1,Meetme,8600164
+exten => 8600165,1,Meetme,8600165
+exten => 8600166,1,Meetme,8600166
+exten => 8600167,1,Meetme,8600167
+exten => 8600168,1,Meetme,8600168
+exten => 8600169,1,Meetme,8600169
+exten => 8600170,1,Meetme,8600170
+exten => 8600171,1,Meetme,8600171
+exten => 8600172,1,Meetme,8600172
+exten => 8600173,1,Meetme,8600173
+exten => 8600174,1,Meetme,8600174
+exten => 8600175,1,Meetme,8600175
+exten => 8600176,1,Meetme,8600176
+exten => 8600177,1,Meetme,8600177
+exten => 8600178,1,Meetme,8600178
+exten => 8600179,1,Meetme,8600179
+exten => 8600180,1,Meetme,8600180
+exten => 8600181,1,Meetme,8600181
+exten => 8600182,1,Meetme,8600182
+exten => 8600183,1,Meetme,8600183
+exten => 8600184,1,Meetme,8600184
+exten => 8600185,1,Meetme,8600185
+exten => 8600186,1,Meetme,8600186
+exten => 8600187,1,Meetme,8600187
+exten => 8600188,1,Meetme,8600188
+exten => 8600189,1,Meetme,8600189
+exten => 8600190,1,Meetme,8600190
+exten => 8600191,1,Meetme,8600191
+exten => 8600192,1,Meetme,8600192
+exten => 8600193,1,Meetme,8600193
+exten => 8600194,1,Meetme,8600194
+exten => 8600195,1,Meetme,8600195
+exten => 8600196,1,Meetme,8600196
+exten => 8600197,1,Meetme,8600197
+exten => 8600198,1,Meetme,8600198
+exten => 8600199,1,Meetme,8600199
+exten => 8600200,1,Meetme,8600200
 ; quiet entry and leaving conferences for VICIDIAL
-exten => 78600051,1,Meetme,8600051|q
-exten => 78600052,1,Meetme,8600052|q
-exten => 78600053,1,Meetme,8600053|q
-exten => 78600054,1,Meetme,8600054|q
-exten => 78600055,1,Meetme,8600055|q
-exten => 78600056,1,Meetme,8600056|q
-exten => 78600057,1,Meetme,8600057|q
-exten => 78600058,1,Meetme,8600058|q
-exten => 78600059,1,Meetme,8600059|q
-exten => 78600060,1,Meetme,8600060|q
-exten => 78600061,1,Meetme,8600061|q
-exten => 78600062,1,Meetme,8600062|q
-exten => 78600063,1,Meetme,8600063|q
-exten => 78600064,1,Meetme,8600064|q
-exten => 78600065,1,Meetme,8600065|q
-exten => 78600066,1,Meetme,8600066|q
-exten => 78600067,1,Meetme,8600067|q
-exten => 78600068,1,Meetme,8600068|q
-exten => 78600069,1,Meetme,8600069|q
-exten => 78600070,1,Meetme,8600070|q
-exten => 78600071,1,Meetme,8600071|q
-exten => 78600072,1,Meetme,8600072|q
-exten => 78600073,1,Meetme,8600073|q
-exten => 78600074,1,Meetme,8600074|q
-exten => 78600075,1,Meetme,8600075|q
-exten => 78600076,1,Meetme,8600076|q
-exten => 78600077,1,Meetme,8600077|q
-exten => 78600078,1,Meetme,8600078|q
-exten => 78600079,1,Meetme,8600079|q
-exten => 78600080,1,Meetme,8600080|q
-exten => 78600081,1,Meetme,8600081|q
-exten => 78600082,1,Meetme,8600082|q
-exten => 78600083,1,Meetme,8600083|q
-exten => 78600084,1,Meetme,8600084|q
-exten => 78600085,1,Meetme,8600085|q
-exten => 78600086,1,Meetme,8600086|q
-exten => 78600087,1,Meetme,8600087|q
-exten => 78600088,1,Meetme,8600088|q
-exten => 78600089,1,Meetme,8600089|q
-exten => 78600090,1,Meetme,8600090|q
-exten => 78600091,1,Meetme,8600091|q
-exten => 78600092,1,Meetme,8600092|q
-exten => 78600093,1,Meetme,8600093|q
-exten => 78600094,1,Meetme,8600094|q
-exten => 78600095,1,Meetme,8600095|q
-exten => 78600096,1,Meetme,8600096|q
-exten => 78600097,1,Meetme,8600097|q
-exten => 78600098,1,Meetme,8600098|q
-exten => 78600099,1,Meetme,8600099|q
-exten => 78600100,1,Meetme,8600100|q
+exten => _78600XXX,1,Meetme,${EXTEN:1}|q
 ; quiet monitor extensions for meetme rooms (for room managers)
-exten => 68600051,1,Meetme,8600051|mq
-exten => 68600052,1,Meetme,8600052|mq
-exten => 68600053,1,Meetme,8600053|mq
-exten => 68600054,1,Meetme,8600054|mq
-exten => 68600055,1,Meetme,8600055|mq
-exten => 68600056,1,Meetme,8600056|mq
-exten => 68600057,1,Meetme,8600057|mq
-exten => 68600058,1,Meetme,8600058|mq
-exten => 68600059,1,Meetme,8600059|mq
-exten => 68600060,1,Meetme,8600060|mq
-exten => 68600061,1,Meetme,8600061|mq
-exten => 68600062,1,Meetme,8600062|mq
-exten => 68600063,1,Meetme,8600063|mq
-exten => 68600064,1,Meetme,8600064|mq
-exten => 68600065,1,Meetme,8600065|mq
-exten => 68600066,1,Meetme,8600066|mq
-exten => 68600067,1,Meetme,8600067|mq
-exten => 68600068,1,Meetme,8600068|mq
-exten => 68600069,1,Meetme,8600069|mq
-exten => 68600070,1,Meetme,8600070|mq
-exten => 68600071,1,Meetme,8600071|mq
-exten => 68600072,1,Meetme,8600072|mq
-exten => 68600073,1,Meetme,8600073|mq
-exten => 68600074,1,Meetme,8600074|mq
-exten => 68600075,1,Meetme,8600075|mq
-exten => 68600076,1,Meetme,8600076|mq
-exten => 68600077,1,Meetme,8600077|mq
-exten => 68600078,1,Meetme,8600078|mq
-exten => 68600079,1,Meetme,8600079|mq
-exten => 68600080,1,Meetme,8600080|mq
-exten => 68600081,1,Meetme,8600081|mq
-exten => 68600082,1,Meetme,8600082|mq
-exten => 68600083,1,Meetme,8600083|mq
-exten => 68600084,1,Meetme,8600084|mq
-exten => 68600085,1,Meetme,8600085|mq
-exten => 68600086,1,Meetme,8600086|mq
-exten => 68600087,1,Meetme,8600087|mq
-exten => 68600088,1,Meetme,8600088|mq
-exten => 68600089,1,Meetme,8600089|mq
-exten => 68600090,1,Meetme,8600090|mq
-exten => 68600091,1,Meetme,8600091|mq
-exten => 68600092,1,Meetme,8600092|mq
-exten => 68600093,1,Meetme,8600093|mq
-exten => 68600094,1,Meetme,8600094|mq
-exten => 68600095,1,Meetme,8600095|mq
-exten => 68600096,1,Meetme,8600096|mq
-exten => 68600097,1,Meetme,8600097|mq
-exten => 68600098,1,Meetme,8600098|mq
-exten => 68600099,1,Meetme,8600099|mq
-exten => 68600100,1,Meetme,8600100|mq
+exten => _68600XXX,1,Meetme,${EXTEN:1}|mq
+
 ######------ END extensions.conf changes for VD conf ------######
 
 NOTE: If you want to use app_conference instead of meetme and you already have 
@@ -2351,6 +2484,106 @@ insert into vicidial_conferences values('8600097','10.10.10.15','');
 insert into vicidial_conferences values('8600098','10.10.10.15','');
 insert into vicidial_conferences values('8600099','10.10.10.15','');
 insert into vicidial_conferences values('8600100','10.10.10.15','');
+insert into vicidial_conferences values('8600101','10.10.10.15','');
+insert into vicidial_conferences values('8600102','10.10.10.15','');
+insert into vicidial_conferences values('8600103','10.10.10.15','');
+insert into vicidial_conferences values('8600104','10.10.10.15','');
+insert into vicidial_conferences values('8600105','10.10.10.15','');
+insert into vicidial_conferences values('8600106','10.10.10.15','');
+insert into vicidial_conferences values('8600107','10.10.10.15','');
+insert into vicidial_conferences values('8600108','10.10.10.15','');
+insert into vicidial_conferences values('8600109','10.10.10.15','');
+insert into vicidial_conferences values('8600110','10.10.10.15','');
+insert into vicidial_conferences values('8600111','10.10.10.15','');
+insert into vicidial_conferences values('8600112','10.10.10.15','');
+insert into vicidial_conferences values('8600113','10.10.10.15','');
+insert into vicidial_conferences values('8600114','10.10.10.15','');
+insert into vicidial_conferences values('8600115','10.10.10.15','');
+insert into vicidial_conferences values('8600116','10.10.10.15','');
+insert into vicidial_conferences values('8600117','10.10.10.15','');
+insert into vicidial_conferences values('8600118','10.10.10.15','');
+insert into vicidial_conferences values('8600119','10.10.10.15','');
+insert into vicidial_conferences values('8600120','10.10.10.15','');
+insert into vicidial_conferences values('8600121','10.10.10.15','');
+insert into vicidial_conferences values('8600122','10.10.10.15','');
+insert into vicidial_conferences values('8600123','10.10.10.15','');
+insert into vicidial_conferences values('8600124','10.10.10.15','');
+insert into vicidial_conferences values('8600125','10.10.10.15','');
+insert into vicidial_conferences values('8600126','10.10.10.15','');
+insert into vicidial_conferences values('8600127','10.10.10.15','');
+insert into vicidial_conferences values('8600128','10.10.10.15','');
+insert into vicidial_conferences values('8600129','10.10.10.15','');
+insert into vicidial_conferences values('8600130','10.10.10.15','');
+insert into vicidial_conferences values('8600131','10.10.10.15','');
+insert into vicidial_conferences values('8600132','10.10.10.15','');
+insert into vicidial_conferences values('8600133','10.10.10.15','');
+insert into vicidial_conferences values('8600134','10.10.10.15','');
+insert into vicidial_conferences values('8600135','10.10.10.15','');
+insert into vicidial_conferences values('8600136','10.10.10.15','');
+insert into vicidial_conferences values('8600137','10.10.10.15','');
+insert into vicidial_conferences values('8600138','10.10.10.15','');
+insert into vicidial_conferences values('8600139','10.10.10.15','');
+insert into vicidial_conferences values('8600140','10.10.10.15','');
+insert into vicidial_conferences values('8600141','10.10.10.15','');
+insert into vicidial_conferences values('8600142','10.10.10.15','');
+insert into vicidial_conferences values('8600143','10.10.10.15','');
+insert into vicidial_conferences values('8600144','10.10.10.15','');
+insert into vicidial_conferences values('8600145','10.10.10.15','');
+insert into vicidial_conferences values('8600146','10.10.10.15','');
+insert into vicidial_conferences values('8600147','10.10.10.15','');
+insert into vicidial_conferences values('8600148','10.10.10.15','');
+insert into vicidial_conferences values('8600149','10.10.10.15','');
+insert into vicidial_conferences values('8600150','10.10.10.15','');
+insert into vicidial_conferences values('8600151','10.10.10.15','');
+insert into vicidial_conferences values('8600152','10.10.10.15','');
+insert into vicidial_conferences values('8600153','10.10.10.15','');
+insert into vicidial_conferences values('8600154','10.10.10.15','');
+insert into vicidial_conferences values('8600155','10.10.10.15','');
+insert into vicidial_conferences values('8600156','10.10.10.15','');
+insert into vicidial_conferences values('8600157','10.10.10.15','');
+insert into vicidial_conferences values('8600158','10.10.10.15','');
+insert into vicidial_conferences values('8600159','10.10.10.15','');
+insert into vicidial_conferences values('8600160','10.10.10.15','');
+insert into vicidial_conferences values('8600161','10.10.10.15','');
+insert into vicidial_conferences values('8600162','10.10.10.15','');
+insert into vicidial_conferences values('8600163','10.10.10.15','');
+insert into vicidial_conferences values('8600164','10.10.10.15','');
+insert into vicidial_conferences values('8600165','10.10.10.15','');
+insert into vicidial_conferences values('8600166','10.10.10.15','');
+insert into vicidial_conferences values('8600167','10.10.10.15','');
+insert into vicidial_conferences values('8600168','10.10.10.15','');
+insert into vicidial_conferences values('8600169','10.10.10.15','');
+insert into vicidial_conferences values('8600170','10.10.10.15','');
+insert into vicidial_conferences values('8600171','10.10.10.15','');
+insert into vicidial_conferences values('8600172','10.10.10.15','');
+insert into vicidial_conferences values('8600173','10.10.10.15','');
+insert into vicidial_conferences values('8600174','10.10.10.15','');
+insert into vicidial_conferences values('8600175','10.10.10.15','');
+insert into vicidial_conferences values('8600176','10.10.10.15','');
+insert into vicidial_conferences values('8600177','10.10.10.15','');
+insert into vicidial_conferences values('8600178','10.10.10.15','');
+insert into vicidial_conferences values('8600179','10.10.10.15','');
+insert into vicidial_conferences values('8600180','10.10.10.15','');
+insert into vicidial_conferences values('8600181','10.10.10.15','');
+insert into vicidial_conferences values('8600182','10.10.10.15','');
+insert into vicidial_conferences values('8600183','10.10.10.15','');
+insert into vicidial_conferences values('8600184','10.10.10.15','');
+insert into vicidial_conferences values('8600185','10.10.10.15','');
+insert into vicidial_conferences values('8600186','10.10.10.15','');
+insert into vicidial_conferences values('8600187','10.10.10.15','');
+insert into vicidial_conferences values('8600188','10.10.10.15','');
+insert into vicidial_conferences values('8600189','10.10.10.15','');
+insert into vicidial_conferences values('8600190','10.10.10.15','');
+insert into vicidial_conferences values('8600191','10.10.10.15','');
+insert into vicidial_conferences values('8600192','10.10.10.15','');
+insert into vicidial_conferences values('8600193','10.10.10.15','');
+insert into vicidial_conferences values('8600194','10.10.10.15','');
+insert into vicidial_conferences values('8600195','10.10.10.15','');
+insert into vicidial_conferences values('8600196','10.10.10.15','');
+insert into vicidial_conferences values('8600197','10.10.10.15','');
+insert into vicidial_conferences values('8600198','10.10.10.15','');
+insert into vicidial_conferences values('8600199','10.10.10.15','');
+insert into vicidial_conferences values('8600200','10.10.10.15','');
 
 ######------ END Mysql data entry ------######
 

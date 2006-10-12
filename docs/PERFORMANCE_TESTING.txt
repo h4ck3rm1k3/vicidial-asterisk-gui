@@ -4,7 +4,61 @@ This document goes over the setup of a VICIDIAL/Asterisk server that you are tes
 
 It is very difficult to realistically performance test a VICIDIAL server not in production because of the randomness of call center operations.
 
-How this process works is that multiple remote agents are activated and calls are placed from the server being tested to control server that will take those calls and send various signals and play various audio files so that the randomness of outbound dialing is simulated.
+How this process works is that multiple remote agents are activated and calls are placed from the server being tested to a control server that will take those calls and send various signals and play various audio files so that the randomness of outbound dialing is simulated.
+
+The test server and the control server(s) need to be connected through either crossover T1 cables, SIP trunks or IAX trunks.
+
+For this test below we will be attempting to simulate agents logging in over SIP phones to meetme rooms on the test server. The agent connections will actually be a six(6) hour loop of on-hold-music to simulate voice(the conf.gsm file). This will be on one of the control servers so simulate true SIP phone agent connections to meetme rooms on the test server.
+
+In the control server you will need the following in your extensions.conf:
+
+exten => _999XXXXXX1,1,Answer
+exten => _999XXXXXX1,2,Wait(2)
+exten => _999XXXXXX1,3,Playback(beep)
+exten => _999XXXXXX1,4,Hangup
+
+exten => _999XXXXXX2,1,Wait(8)
+exten => _999XXXXXX2,2,Answer
+exten => _999XXXXXX2,3,Playback(conf)
+exten => _999XXXXXX2,4,Hangup
+
+exten => _999XXXXXX3,1,Hangup
+
+exten => _999XXXXXX4,1,Congestion
+
+exten => _999XXXXXX5,1,Wait(60)
+exten => _999XXXXXX5,2,Hangup
+
+exten => _999XXXXXX6,1,Wait(10)
+exten => _999XXXXXX6,2,Answer
+exten => _999XXXXXX6,3,Playback(demo-instruct)
+exten => _999XXXXXX6,4,Hangup
+
+exten => _999XXXXXX7,1,Wait(12)
+exten => _999XXXXXX7,2,Answer
+exten => _999XXXXXX7,3,Playback(demo-instruct)
+exten => _999XXXXXX7,4,Hangup
+
+exten => _999XXXXXX8,1,Busy
+
+exten => _999XXXXXX9,1,Wait(6)
+exten => _999XXXXXX9,2,Answer
+exten => _999XXXXXX9,3,Playback(demo-abouttotry)
+exten => _999XXXXXX9,4,Hangup
+
+exten => _999XXXXXX0,1,Wait(16)
+exten => _999XXXXXX0,2,Answer
+exten => _999XXXXXX0,3,Playback(vm-goodbye)
+exten => _999XXXXXX0,4,Hangup
 
 
+In the test server you will need the following in your extensions.conf:
 
+[globals]
+TESTTRUNK = Zap/g2
+
+[default]
+;exten => _91999NXXXXXX,1,AGI(call_log.agi)
+exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => _91999NXXXXXX,2,Dial(${TESTTRUNK}/${EXTEN:2},,tTo)
+exten => _91999NXXXXXX,3,Hangup
