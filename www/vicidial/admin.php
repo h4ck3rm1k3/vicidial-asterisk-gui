@@ -4004,14 +4004,14 @@ if ($ADD==41)
 			{
 			echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
 			echo "<br> - Wait 1 minute before dialing next number\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status='READY';";
+			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG RESET TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|campaign_name='$campaign_name'|\n");
+				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
@@ -4141,14 +4141,14 @@ if ($ADD==44)
 			{
 			echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
 			echo "<br> - Wait 1 minute before dialing next number\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status='READY';";
+			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG HOPPER RESET TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|campaign_name='$campaign_name'|\n");
+				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
