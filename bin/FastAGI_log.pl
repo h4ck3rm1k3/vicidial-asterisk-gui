@@ -279,6 +279,7 @@ sub process_request {
 			$HVcauses=1;
 			@ARGV_vars = split(/-----/, $request);
 			$PRI = $ARGV_vars[0];
+			$PRI =~ s/.*--HVcauses--//gi;
 			$DEBUG = $ARGV_vars[1];
 			$hangup_cause = $ARGV_vars[2];
 			$dialstatus = $ARGV_vars[3];
@@ -352,7 +353,7 @@ sub process_request {
 	if ($process =~ /^call_log/)
 		{
 		### call start stage
-		if ($stage == 'START')
+		if ($stage =~ /START/)
 			{
 			if ($AGILOG) {$agi_string = "+++++ CALL LOG START : $now_date";   &agi_output;}
 
