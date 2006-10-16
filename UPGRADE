@@ -41,6 +41,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	FastAGI_log.pl
 	If you want to use it, read the comments at the top of the script
 
+8. Fix for unregistered SIP trunks (thanks to Chris Doyle):
+	look at the bottom of the docs/conf_examples/extensions.conf.sample
+	file for examples of what to put in your extensions.conf file to get
+	VICIDIAL auto dialing to work with non-registered SIP trunks. remember 
+	to put sip-silence.gsm in your /var/lib/asterisk/sounds/ directory.
+
 
 
 

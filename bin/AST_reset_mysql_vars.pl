@@ -105,6 +105,11 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query: |$stmtA|\n";
 	print " - vicidial_campaign_server_stats delete\n";
 
+	$stmtA = "DELETE from vicidial_hopper where user LIKE \"%_$server_ip\";";
+			if($DB){print STDERR "\n|$stmtA|\n";}
+	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query: |$stmtA|\n";
+	print " - vicidial_hopper delete\n";
+
 	$dbhA->disconnect();
 
 

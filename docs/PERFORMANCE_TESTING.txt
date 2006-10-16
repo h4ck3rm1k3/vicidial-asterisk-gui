@@ -31,10 +31,10 @@ exten => _999XXXXXX1,2,Wait(2)
 exten => _999XXXXXX1,3,Playback(beep)
 exten => _999XXXXXX1,4,Hangup
 
-exten => _999XXXX[0-1][0-1]2,1,Wait(8)
-exten => _999XXXX[0-1][0-1]2,2,Answer
-exten => _999XXXX[0-1][0-1]2,3,Playback(conf)
-exten => _999XXXX[0-1][0-1]2,4,Hangup
+exten => _999XXXX112,1,Wait(8)
+exten => _999XXXX112,2,Answer
+exten => _999XXXX112,3,Playback(conf)
+exten => _999XXXX112,4,Hangup
 
 exten => _999XXXXXX2,1,Wait(8)
 exten => _999XXXXXX2,2,Answer
@@ -68,7 +68,7 @@ exten => _999XXXXXX9,2,Answer
 exten => _999XXXXXX9,3,Playback(demo-abouttotry)
 exten => _999XXXXXX9,4,Hangup
 
-exten => _999XXXXXX0,1,Wait(16)
+exten => _999XXXXXX0,1,Wait(5)
 exten => _999XXXXXX0,2,Answer
 exten => _999XXXXXX0,3,Playback(vm-goodbye)
 exten => _999XXXXXX0,4,Hangup
