@@ -33,8 +33,9 @@ exten => _999XXXXXX1,4,Hangup
 
 exten => _999XXXX112,1,Wait(8)
 exten => _999XXXX112,2,Answer
-exten => _999XXXX112,3,Playback(conf)
-exten => _999XXXX112,4,Hangup
+exten => _999XXXX112,3,Playback(demo-instruct)
+exten => _999XXXX112,4,Playback(demo-instruct)
+exten => _999XXXX112,5,Hangup
 
 exten => _999XXXXXX2,1,Wait(8)
 exten => _999XXXXXX2,2,Answer

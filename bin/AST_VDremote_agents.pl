@@ -260,6 +260,8 @@ while($one_day_interval > 0)
 		@VD_uniqueid=@MT;
 		@VD_callerid=@MT;
 		@VD_random=@MT;
+		@autocallexists=@MT;
+		@calllogfinished=@MT;
 	###############################################################################
 	###### first grab all of the ACTIVE remote agents information from the database
 	###############################################################################
@@ -409,7 +411,7 @@ while($one_day_interval > 0)
 	###### fourth validate that the calls that the vicidial_live_agents are on are not dead
 	###### and if they are wipe out the values and set the agent record back to READY
 	###############################################################################
-		$stmtA = "SELECT user,extension,status,uniqueid,callerid FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
+		$stmtA = "SELECT user,extension,status,uniqueid,callerid,lead_id FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -423,6 +425,7 @@ while($one_day_interval > 0)
 			$VDstatus =				"$aryA[2]";
 			$VDuniqueid =			"$aryA[3]";
 			$VDcallerid =			"$aryA[4]";
+			$VDlead_id =			"$aryA[5]";
 			$VDrandom = int( rand(9999999)) + 10000000;
 
 			$VD_user[$z] =			"$VDuser";
@@ -430,8 +433,9 @@ while($one_day_interval > 0)
 			$VD_status[$z] =		"$VDstatus";
 			$VD_uniqueid[$z] =		"$VDuniqueid";
 			$VD_callerid[$z] =		"$VDcallerid";
+			$VD_lead_id[$z] =		"$VDlead_id";
 			$VD_random[$z] =		"$VDrandom";
-				
+
 			$z++;				
 			$rec_count++;
 			}
@@ -469,6 +473,32 @@ while($one_day_interval > 0)
 					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
 					}
 				}
+	### possible future active call checker
+	#		else
+	#			{
+	#			$stmtA = "SELECT count(*) FROM call_log where caller_code='$VD_callerid[$z]' and server_ip='$server_ip' and end_epoch > 10;";
+	#			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	#			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	#			$sthArows=$sthA->rows;
+	#			$rec_count=0;
+	#			while ($sthArows > $rec_count)
+	#				{
+	#				@aryA = $sthA->fetchrow_array;
+	#				$calllogfinished[$z] =	"$aryA[0]";
+	#				$rec_count++;
+	#				}
+	#			$sthA->finish();
+	#			if ($calllogfinished[$z] > 1)
+	#				{
+	#				$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
+	#				$affected_rows = $dbhA->do($stmtA);
+	#				if ($DB) {print STDERR "$VD_user[$z] AGENT READY UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_callerid[$z]|$VD_user[$z]|\n";}
+
+	#				$stmtA = "DELETE from vicidial_auto_calls where callerid='$VD_callerid[$z]' and server_ip='$server_ip';";
+	#				$affected_rows = $dbhA->do($stmtA);
+	#				if ($DB) {print STDERR "$VD_user[$z] VAC DELETE: $affected_rows|$VD_callerid[$z]|\n";}
+	#				}
+	#			}
 
 			$z++;
 			}
