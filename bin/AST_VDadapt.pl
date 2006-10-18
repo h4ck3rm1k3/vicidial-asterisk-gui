@@ -366,7 +366,8 @@ foreach(@campaign_id)
 	if ($hopper_ready_count>0)
 		{
 		### BEGIN - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
-		$vicidial_log = 'vicidial_log';
+		$vicidial_log = 'vicidial_log FORCE INDEX (call_date) ';
+	#	$vicidial_log = 'vicidial_log';
 		$differential_onemin[$i]=0;
 		$agents_average_onemin[$i]=0;
 
