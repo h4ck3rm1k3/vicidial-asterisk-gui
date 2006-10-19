@@ -113,16 +113,16 @@ else
 if ($shift == 'AM') 
 	{
 	$query_date_BEGIN = "$query_date 08:45:00";   
-	$query_date_END = "$query_date 15:32:00";
+	$query_date_END = "$query_date 15:30:00";
 	$time_BEGIN = "08:45:00";   
-	$time_END = "15:15:00";
+	$time_END = "15:30:00";
 	}
 if ($shift == 'PM') 
 	{
-	$query_date_BEGIN = "$query_date 15:32:00";   
+	$query_date_BEGIN = "$query_date 15:30:00";   
 	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:15:00";   
-	$time_END = "23:15:00";
+	$time_BEGIN = "15:30:00";   
+	$time_END = "23:30:00";
 	}
 
 echo "VICIDIAL: Server Performance                             $NOW_TIME\n";
