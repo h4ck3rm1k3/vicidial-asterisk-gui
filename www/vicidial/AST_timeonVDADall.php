@@ -4,6 +4,8 @@
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
+#
+# STOP=4000, SLOW=40, GO=4 seconds refresh interval
 # 
 # changes:
 # 50406-0920 - Added Paused agents < 1 min (Chris Doyle)
@@ -18,6 +20,7 @@
 # 60905-1342 - Fixed non INCALL|QUEUE timer column
 # 61002-1642 - Added TRUNK SHORT/FILL stats
 # 61101-1318 - Added SIP and IAX Listen and Barge links option
+# 61101-1647 - Added Usergroup column and user name option as well as sorting
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -35,6 +38,8 @@ if (isset($_GET["RR"]))					{$RR=$_GET["RR"];}
 	elseif (isset($_POST["RR"]))		{$RR=$_POST["RR"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
+if (isset($_GET["usergroup"]))			{$usergroup=$_GET["usergroup"];}
+	elseif (isset($_POST["usergroup"]))	{$usergroup=$_POST["usergroup"];}
 if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 if (isset($_GET["adastats"]))			{$adastats=$_GET["adastats"];}
@@ -47,9 +52,21 @@ if (isset($_GET["SIPmonitorLINK"]))				{$SIPmonitorLINK=$_GET["SIPmonitorLINK"];
 	elseif (isset($_POST["SIPmonitorLINK"]))	{$SIPmonitorLINK=$_POST["SIPmonitorLINK"];}
 if (isset($_GET["IAXmonitorLINK"]))				{$IAXmonitorLINK=$_GET["IAXmonitorLINK"];}
 	elseif (isset($_POST["IAXmonitorLINK"]))	{$IAXmonitorLINK=$_POST["IAXmonitorLINK"];}
+if (isset($_GET["UGdisplay"]))			{$UGdisplay=$_GET["UGdisplay"];}
+	elseif (isset($_POST["UGdisplay"]))	{$UGdisplay=$_POST["UGdisplay"];}
+if (isset($_GET["UidORname"]))			{$UidORname=$_GET["UidORname"];}
+	elseif (isset($_POST["UidORname"]))	{$UidORname=$_POST["UidORname"];}
+if (isset($_GET["orderby"]))			{$orderby=$_GET["orderby"];}
+	elseif (isset($_POST["orderby"]))	{$orderby=$_POST["orderby"];}
 
 
-if (!isset($group))   {$group='';}
+
+if (!isset($RR))			{$gRRroup=4;}
+if (!isset($group))			{$group='';}
+if (!isset($usergroup))		{$usergroup='';}
+if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
+if (!isset($UidORname))		{$UidORname=0;}	# 0=id, 1=name
+if (!isset($orderby))		{$orderby='timeup';}
 
 function get_server_load($windows = false) {
 $os = strtolower(PHP_OS);
@@ -128,6 +145,19 @@ while ($i < $groups_to_print)
 	$i++;
 	}
 
+$stmt="select * from vicidial_user_groups;";
+$rslt=mysql_query($stmt, $link);
+if (!isset($DB))   {$DB=0;}
+if ($DB) {echo "$stmt\n";}
+$usergroups_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $usergroups_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$usergroups[$i] =$row[0];
+	$i++;
+	}
+
 if (!isset($RR))   {$RR=40;}
 
 $NFB = '<b><font size=6 face="courier">';
@@ -147,37 +177,48 @@ if ($reset_counter > 7)
 <HEAD>
 <STYLE type="text/css">
 <!--
-   .green {color: white; background-color: green}
-   .red {color: white; background-color: red}
-   .blue {color: white; background-color: blue}
-   .purple {color: white; background-color: purple}
-   .yellow {color: black; background-color: yellow}
-   .orange {color: black; background-color: orange}
+	.green {color: white; background-color: green}
+	.red {color: white; background-color: red}
+	.lightblue {color: black; background-color: #ADD8E6}
+	.blue {color: white; background-color: blue}
+	.midnightblue {color: white; background-color: #191970}
+	.purple {color: white; background-color: purple}
+	.violet {color: black; background-color: #EE82EE} 
+	.thistle {color: black; background-color: #D8BFD8} 
+	.olive {color: white; background-color: #808000}
+	.yellow {color: black; background-color: yellow}
+	.khaki {color: black; background-color: #F0E68C}
+	.orange {color: black; background-color: orange}
 
-   .r1 {color: black; background-color: #FFCCCC}
-   .r2 {color: black; background-color: #FF9999}
-   .r3 {color: black; background-color: #FF6666}
-   .r4 {color: white; background-color: #FF0000}
-   .b1 {color: black; background-color: #CCCCFF}
-   .b2 {color: black; background-color: #9999FF}
-   .b3 {color: black; background-color: #6666FF}
-   .b4 {color: white; background-color: #0000FF}
+	.r1 {color: black; background-color: #FFCCCC}
+	.r2 {color: black; background-color: #FF9999}
+	.r3 {color: black; background-color: #FF6666}
+	.r4 {color: white; background-color: #FF0000}
+	.b1 {color: black; background-color: #CCCCFF}
+	.b2 {color: black; background-color: #9999FF}
+	.b3 {color: black; background-color: #6666FF}
+	.b4 {color: white; background-color: #0000FF}
 -->
  </STYLE>
 
 <? 
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK\">\n";
+echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby\">\n";
 echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "VICIDIAL: Realtime Campaign: \n";
-echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=4>\n";
+echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=\"$RR\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=adastats VALUE=\"$adastats\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=SIPmonitorLINK VALUE=\"$SIPmonitorLINK\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=IAXmonitorLINK VALUE=\"$IAXmonitorLINK\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=usergroup VALUE=\"$usergroup\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=UGdisplay VALUE=\"$UGdisplay\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=UidORname VALUE=\"$UidORname\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=orderby VALUE=\"$orderby\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
+echo "<option value=\"XXXX-ALL-ACTIVE-XXXX\">ALL ACTIVE</option>\n";
 	$o=0;
 	while ($groups_to_print > $o)
 	{
@@ -186,8 +227,23 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 		$o++;
 	}
 echo "</SELECT>\n";
+if ($UGdisplay > 0)
+	{
+	echo "<SELECT SIZE=1 NAME=usergroup>\n";
+	echo "<option value=\"\">ALL USER GROUPS</option>\n";
+		$o=0;
+		while ($usergroups_to_print > $o)
+		{
+			if ($usergroups[$o] == $usergroup) {echo "<option selected value=\"$usergroups[$o]\">$usergroups[$o]</option>\n";}
+			  else {echo "<option value=\"$usergroups[$o]\">$usergroups[$o]</option>\n";}
+			$o++;
+		}
+	echo "</SELECT>\n";
+	}
 echo "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats\">STOP</a> | <a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">SLOW</a> | <a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats\">GO</a>";
+echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby\">STOP</a> | ";
+echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby\">SLOW</a> | ";
+echo "<a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby\">GO</a>";
 echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
 echo "\n\n";
 
@@ -196,6 +252,10 @@ if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FO
 else
 {
 $stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+	{
+	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout) from vicidial_campaigns;";
+	}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -218,11 +278,19 @@ $CALLtime =		$row[16];
 $DIALtimeout =	$row[17];
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+	{
+	$stmt="select count(*) from vicidial_hopper;";
+	}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
 
 $stmt="select dialable_leads,calls_today,drops_today,drops_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+	{
+	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill) from vicidial_campaign_stats;";
+	}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
@@ -240,6 +308,10 @@ if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 else {$diffpctONEMIN = '0.00';}
 
 $stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+	{
+	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
+	}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $balanceSHORT = $row[0];
@@ -248,7 +320,7 @@ echo "<BR><table cellpadding=0 cellspacing=0><TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>TRUNK SHORT/FILL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B> TIME:</B> &nbsp; </TD><TD ALIGN=LEFT COLSPAN=2><font size=2> $NOW_TIME </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B> TIME:</B> &nbsp; </TD><TD ALIGN=LEFT><font size=2> $NOW_TIME </TD>";
 echo "";
 echo "</TR>";
 
@@ -290,13 +362,31 @@ echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>
 echo "<TD ALIGN=RIGHT><font size=2><B>ORDER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALorder &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
+echo "<TR>";
+echo "<TD ALIGN=LEFT COLSPAN=8>";
+
 if ($adastats<2)
 	{
-	echo "<TR>";
-	echo "<TD ALIGN=LEFT COLSPAN=8><a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=2\"><font size=1>+ VIEW MORE SETTINGS</font></a></TD>";
-	echo "</TR>";
+	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby\"><font size=1>+ VIEW MORE SETTINGS</font></a>";
 	}
-
+if ($UGdisplay>0)
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=0&UidORname=$UidORname&orderby=$orderby\"><font size=1>HIDE USER GROUP</font></a>";
+	}
+else
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=1&UidORname=$UidORname&orderby=$orderby\"><font size=1>VIEW USER GROUP</font></a>";
+	}
+if ($UidORname>0)
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=0&orderby=$orderby\"><font size=1>SHOW AGENT ID</font></a>";
+	}
+else
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=1&orderby=$orderby\"><font size=1>SHOW AGENT NAME</font></a>";
+	}
+echo "</TD>";
+echo "</TR>";
 echo "</TABLE>";
 
 echo "</FORM>\n\n";
@@ -316,7 +406,12 @@ if (eregi("CLOSER",$group))
 	$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (campaign_id='" . mysql_real_escape_string($group) . "' and call_type='OUT') );";
 	}
 else
-	{$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') and campaign_id='" . mysql_real_escape_string($group) . "';";}
+	{
+	if ($group=='XXXX-ALL-ACTIVE-XXXX') {$groupSQL = '';}
+	else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";}
+
+	$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') $groupSQL;";
+	}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $parked_to_print = mysql_num_rows($rslt);
@@ -374,21 +469,68 @@ $agent_total=0;
 $Aecho = '';
 $Aecho .= "VICIDIAL: Agents Time On Calls Campaign: $group                      $NOW_TIME\n\n";
 
-if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
+
+if ($UGdisplay > 0)
 	{
-	$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
-	$Aecho .= "| STATION    | USER   | SESSIONID        | BARGE | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
-	$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+	if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
+		{
+		$Aline  = "+------------|------------+--------------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "$Aline";
+		$Aecho .= "| STATION    | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=userup\">USER</a>       | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=groupup\">USER GROUP</a>   | SESSIONID        | BARGE | STATUS | SERVER IP       | CALL SERVER IP  | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup\">MM:SS</a>   | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup\">CAMPAIGN</a>   |\n";
+		$Aecho .= "$Aline";
+		}
+	else
+		{
+		$Aline  = "+------------|------------+--------------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "$Aline";
+		$Aecho .= "| STATION    | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=userup\">USER</a>       | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=groupup\">USER GROUP</a>   | SESSIONID | STATUS | SERVER IP       | CALL SERVER IP  | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup\">MM:SS</a>   | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup\">CAMPAIGN</a>   |\n";
+		$Aecho .= "$Aline";
+		}
 	}
 else
 	{
-	$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
-	$Aecho .= "| STATION    | USER   | SESSIONID | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
-	$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+	if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
+		{
+		$Aline  = "+------------|------------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "$Aline";
+		$Aecho .= "| STATION    | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=userup\">USER</a>       | SESSIONID        | BARGE | STATUS | SERVER IP       | CALL SERVER IP  | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup\">MM:SS</a>   | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup\">CAMPAIGN</a>   |\n";
+		$Aecho .= "$Aline";
+		}
+	else
+		{
+		$Aline  = "+------------|------------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+		$Aecho .= "$Aline";
+		$Aecho .= "| STATION    | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=userup\">USER</a>       | SESSIONID | STATUS | SERVER IP       | CALL SERVER IP  | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup\">MM:SS</a>   | <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup\">CAMPAIGN</a>   |\n";
+		$Aecho .= "$Aline";
+		}
 	}
 
+if ($orderby=='timeup') {$orderSQL='status,last_call_time';}
+if ($orderby=='timedown') {$orderSQL='status desc,last_call_time desc';}
+if ($orderby=='campaignup') {$orderSQL='campaign_id,status,last_call_time';}
+if ($orderby=='campaigndown') {$orderSQL='campaign_id desc,status desc,last_call_time desc';}
+if ($orderby=='groupup') {$orderSQL='user_group,status,last_call_time';}
+if ($orderby=='groupdown') {$orderSQL='user_group desc,status desc,last_call_time desc';}
+if ($UidORname > 0)
+	{
+	if ($orderby=='userup') {$orderSQL='full_name,status,last_call_time';}
+	if ($orderby=='userdown') {$orderSQL='full_name desc,status desc,last_call_time desc';}
+	}
+else
+	{
+	if ($orderby=='userup') {$orderSQL='vicidial_live_agents.user';}
+	if ($orderby=='userdown') {$orderSQL='vicidial_live_agents.user desc';}
+	}
 
-$stmt="select extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents where campaign_id='" . mysql_real_escape_string($group) . "' order by status,last_call_time;";
+if ($group=='XXXX-ALL-ACTIVE-XXXX') {$groupSQL = '';}
+else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";}
+if (strlen($usergroup)<1) {$usergroupSQL = '';}
+else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
+
+$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
+
+#$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and campaign_id='" . mysql_real_escape_string($group) . "' order by $orderSQL;";
+
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);
@@ -406,13 +548,25 @@ $talking_to_print = mysql_num_rows($rslt);
 		$extension = eregi_replace('Local/',"",$row[0]);
 		$extension =		sprintf("%-10s", $extension);
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
-		$user =				sprintf("%-6s", $row[1]);
+		$Luser =			$row[1];
+		$user =				sprintf("%-10s", $row[1]);
 		$Lsessionid =		$row[2];
 		$sessionid =		sprintf("%-9s", $row[2]);
+		$Lstatus =			$row[3];
 		$status =			sprintf("%-6s", $row[3]);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
 		$campaign_id =		sprintf("%-10s", $row[8]);
+		if ($UGdisplay > 0)
+			{
+			$user_group =		sprintf("%-12s", $row[9]);
+				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
+			}
+		if ($UidORname > 0)
+			{
+			$user =		sprintf("%-10s", $row[10]);
+				while(strlen($user)>10) {$user = substr("$user", 0, -1);}
+			}
 		if (!eregi("INCALL|QUEUE",$row[3]))
 			{$call_time_S = ($STARTtime - $row[6]);}
 		else
@@ -428,21 +582,37 @@ $talking_to_print = mysql_num_rows($rslt);
 		$call_time_MS = "$call_time_M_int:$call_time_SEC";
 		$call_time_MS =		sprintf("%7s", $call_time_MS);
 		$G = '';		$EG = '';
-		if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
-#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+		if ($Lstatus=='INCALL')
+			{
+			if ($call_time_S >= 10) {$G='<SPAN class="thistle"><B>'; $EG='</B></SPAN>';}
+			if ($call_time_M_int >= 1) {$G='<SPAN class="violet"><B>'; $EG='</B></SPAN>';}
+			if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+	#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+			}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 5) 
+			if ($call_time_M_int >= 30) 
 				{$i++; continue;} 
 			else
-				{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>'; $agent_paused++;  $agent_total++;}
+				{
+				$agent_paused++;  $agent_total++;
+				$G=''; $EG='';
+				if ($call_time_S >= 10) {$G='<SPAN class="khaki"><B>'; $EG='</B></SPAN>';}
+				if ($call_time_M_int >= 1) {$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>';}
+				if ($call_time_M_int >= 5) {$G='<SPAN class="olive"><B>'; $EG='</B></SPAN>';}
+				}
 			}
 #		if ( (strlen($row[7])> 4) and ($row[7] != "$row[4]") )
 #				{$G='<SPAN class="orange"><B>'; $EG='</B></SPAN>';}
 
 		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) ) {$agent_incall++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$agent_ready++;  $agent_total++;}
-		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
+		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) 
+			{
+			$G='<SPAN class="lightblue"><B>'; $EG='</B></SPAN>';
+			if ($call_time_M_int >= 1) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
+			if ($call_time_M_int >= 5) {$G='<SPAN class="midnightblue"><B>'; $EG='</B></SPAN>';}
+			}
 
 		$L='';
 		$R='';
@@ -451,27 +621,29 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:$Lsessionid@$server_ip\">BARGE</a>";}
 		if ($IAXmonitorLINK>1) {$R=" | <a href=\"iax:$Lsessionid@$server_ip\">BARGE</a>";}
 
+		if ($UGdisplay > 0)	{$UGD = " $G$user_group$EG |";}
+		else	{$UGD = "";}
+
 		$agentcount++;
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$sessionid$EG$L$R | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}
 
-		if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
-			{
-			$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
-			}
-		else
-			{
-			$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
-			}
+		$Aecho .= "$Aline";
 		$Aecho .= "  $agentcount agents logged in on all servers\n";
 		$Aecho .= "  System Load Average: $load_ave\n\n";
 
-		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Paused agents</B>\n";
 	#	$Aecho .= "  <SPAN class=\"orange\"><B>          </SPAN> - Balanced call</B>\n";
-		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - Agent waiting for call</B>\n";
-		$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - Over 5 minutes on call</B>\n";
+		$Aecho .= "  <SPAN class=\"lightblue\"><B>          </SPAN> - Agent waiting for call</B>\n";
+		$Aecho .= "  <SPAN class=\"blue\"><B>          </SPAN> - Agent waiting for call > 1 minute</B>\n";
+		$Aecho .= "  <SPAN class=\"midnightblue\"><B>          </SPAN> - Agent waiting for call > 5 minutes</B>\n";
+		$Aecho .= "  <SPAN class=\"thistle\"><B>          </SPAN> - Agent on call > 10 seconds</B>\n";
+		$Aecho .= "  <SPAN class=\"violet\"><B>          </SPAN> - Agent on call > 1 minute</B>\n";
+		$Aecho .= "  <SPAN class=\"purple\"><B>          </SPAN> - Agent on call > 5 minutes</B>\n";
+		$Aecho .= "  <SPAN class=\"khaki\"><B>          </SPAN> - Agent Paused > 10 seconds</B>\n";
+		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Agent Paused > 1 minute</B>\n";
+		$Aecho .= "  <SPAN class=\"olive\"><B>          </SPAN> - Agent Paused > 5 minutes</B>\n";
 
 		if ($agent_ready > 0) {$B='<FONT class="b1">'; $BG='</FONT>';}
 		if ($agent_ready > 4) {$B='<FONT class="b2">'; $BG='</FONT>';}
