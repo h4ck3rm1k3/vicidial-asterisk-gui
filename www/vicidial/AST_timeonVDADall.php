@@ -17,6 +17,7 @@
 # 60901-1123 - Changed display elements at the top of the screen
 # 60905-1342 - Fixed non INCALL|QUEUE timer column
 # 61002-1642 - Added TRUNK SHORT/FILL stats
+# 61101-1318 - Added SIP and IAX Listen and Barge links option
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -42,6 +43,11 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["SIPmonitorLINK"]))				{$SIPmonitorLINK=$_GET["SIPmonitorLINK"];}
+	elseif (isset($_POST["SIPmonitorLINK"]))	{$SIPmonitorLINK=$_POST["SIPmonitorLINK"];}
+if (isset($_GET["IAXmonitorLINK"]))				{$IAXmonitorLINK=$_GET["IAXmonitorLINK"];}
+	elseif (isset($_POST["IAXmonitorLINK"]))	{$IAXmonitorLINK=$_POST["IAXmonitorLINK"];}
+
 
 if (!isset($group))   {$group='';}
 
@@ -160,14 +166,17 @@ if ($reset_counter > 7)
  </STYLE>
 
 <? 
+
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats\">\n";
+echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK\">\n";
 echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "VICIDIAL: Realtime Campaign: \n";
 echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=4>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=adastats VALUE=\"$adastats\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=SIPmonitorLINK VALUE=\"$SIPmonitorLINK\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=IAXmonitorLINK VALUE=\"$IAXmonitorLINK\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -178,8 +187,8 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 	}
 echo "</SELECT>\n";
 echo "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">STOP</a> | <a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats\">GO</a>";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
+echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats\">STOP</a> | <a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">SLOW</a> | <a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats\">GO</a>";
+echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
 echo "\n\n";
 
 
@@ -364,9 +373,19 @@ $agent_total=0;
 
 $Aecho = '';
 $Aecho .= "VICIDIAL: Agents Time On Calls Campaign: $group                      $NOW_TIME\n\n";
-$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
-$Aecho .= "| STATION    | USER   | SESSIONID | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
-$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+
+if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
+	{
+	$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+	$Aecho .= "| STATION    | USER   | SESSIONID        | BARGE | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
+	$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+	}
+else
+	{
+	$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+	$Aecho .= "| STATION    | USER   | SESSIONID | STATUS | SERVER IP       | CALL SERVER IP  | MM:SS   | CAMPAIGN   |\n";
+	$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+	}
 
 
 $stmt="select extension,user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id from vicidial_live_agents where campaign_id='" . mysql_real_escape_string($group) . "' order by status,last_call_time;";
@@ -388,6 +407,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		$extension =		sprintf("%-10s", $extension);
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 		$user =				sprintf("%-6s", $row[1]);
+		$Lsessionid =		$row[2];
 		$sessionid =		sprintf("%-9s", $row[2]);
 		$status =			sprintf("%-6s", $row[3]);
 		$server_ip =		sprintf("%-15s", $row[4]);
@@ -424,13 +444,27 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$agent_ready++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
 
+		$L='';
+		$R='';
+		if ($SIPmonitorLINK>0) {$L=" <a href=\"sip:6$Lsessionid@$server_ip\">LISTEN</a>";   $R=' |      ';}
+		if ($IAXmonitorLINK>0) {$L=" <a href=\"iax:6$Lsessionid@$server_ip\">LISTEN</a>";   $R=' |      ';}
+		if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:$Lsessionid@$server_ip\">BARGE</a>";}
+		if ($IAXmonitorLINK>1) {$R=" | <a href=\"iax:$Lsessionid@$server_ip\">BARGE</a>";}
+
 		$agentcount++;
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$sessionid$EG | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$user\" target=\"_blank\">$G$user$EG</a> | $G$sessionid$EG$L$R | $G$status$EG | $G$server_ip$EG | $G$call_server_ip$EG | $G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}
 
-		$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+		if ( ($SIPmonitorLINK>0) or ($IAXmonitorLINK>0) ) 
+			{
+			$Aecho .= "+------------|--------+------------------+-------+--------+-----------------+-----------------+---------+------------+\n";
+			}
+		else
+			{
+			$Aecho .= "+------------|--------+-----------+--------+-----------------+-----------------+---------+------------+\n";
+			}
 		$Aecho .= "  $agentcount agents logged in on all servers\n";
 		$Aecho .= "  System Load Average: $load_ave\n\n";
 

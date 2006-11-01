@@ -80,7 +80,7 @@ cd ../asterisk-1.2.12.1
 	wget http://www.eflo.net/files/cli_chan_concise_delimiter.patch
 	patch -p1 < ./cli_chan_concise_delimiter.patch
 		- File to patch: cli.c
-	(1.2.12 only) - channel.c bug fix - **THERE IS NO FIX FOR ASTERISK 1.2.11**
+	(1.2.12 only, not for 1.2.12.1) - channel.c bug fix - **THERE IS NO FIX FOR ASTERISK 1.2.11**
 	wget http://www.eflo.net/files/channel.c-42600.patch
 	patch -p1 < ./channel.c-42600.patch
 		- File to patch: channel.c
@@ -234,7 +234,7 @@ GRANT SELECT,INSERT,UPDATE,DELETE on asterisk.* TO cron@localhost IDENTIFIED BY 
 
 use asterisk;
 
-\. /usr/src/astguiclient/MySQL_AST_CREATE_tables.sql
+\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
 
