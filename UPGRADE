@@ -33,19 +33,33 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	* * * * * /usr/share/astguiclient/ADMIN_keepalive_ALL.pl
 
 6. /etc/astguiclient.conf has new variables for new functionality including:
-	- FastAGI_log server settings
 	- new ADMIN_keepalive_ALL process settings
+	- FastAGI_log server settings
 	and comments are added to the astguiclient.conf file
 
 7. Experimental FastAGI replacement for call_log and VD_hangup AGI scripts:
 	FastAGI_log.pl
 	If you want to use it, read the comments at the top of the script
+	Look at the docs/conf_examples/extensions.conf.sample file for examples
+	of how to use this new feature in your dialplan
 
 8. Fix for unregistered SIP trunks (thanks to Chris Doyle):
 	look at the bottom of the docs/conf_examples/extensions.conf.sample
 	file for examples of what to put in your extensions.conf file to get
 	VICIDIAL auto dialing to work with non-registered SIP trunks. remember 
 	to put sip-silence.gsm in your /var/lib/asterisk/sounds/ directory.
+
+9. Added new campaign summary screen and reformatted the timeonVDADall report:
+	A summary screen with all of the call information for every active 
+	campaign for the day. reformatted campaign Realtime report with new
+	colors and other display options.
+
+10. Added new script to change the server_ip entries when a machine changes IPs
+	The ADMIN_update_server_ip.pl script can be used to update your server's
+	IP address within all vicidial database tables and config files from
+	this one script. This can even be run in the crontab if you are on
+	a DHCP service and need to modify your IP address often
+
 
 
 

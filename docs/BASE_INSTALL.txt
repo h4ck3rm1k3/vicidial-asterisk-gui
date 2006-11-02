@@ -184,17 +184,18 @@ There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
 package(as of this writing it is 2.0.1)
    - for 2.0.X release:
-	- mkdir /usr/src/astguiclient
-	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1.zip
-	- unzip astguiclient_2.0.1.zip
-	- perl install.pl
+	mkdir /usr/src/astguiclient
+	cd /usr/src/astguiclient
+	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1.zip
+	unzip astguiclient_2.0.1.zip
+	perl install.pl
    - for SVN 2.0 trunk:
-	- mkdir /usr/src/astguiclient
-	- cd /usr/src/astguiclient
-	- svn checkout svn://205.201.151.21:43690/agc_2-X/trunk
-	- cd trunk
-	- perl install.pl
+	mkdir /usr/src/astguiclient
+	cd /usr/src/astguiclient
+	svn checkout svn://205.201.151.21:43690/agc_2-X/trunk
+	cd trunk
+	perl install.pl
+	    select to do interactive setup and customize to your server
    - there is one more file you need that's not included with the download 
 package, it's the conf.gsm file(this is the half-hour music file that we use 
 to put people on hold). I have a free classical music file that is available 
@@ -206,9 +207,9 @@ free for download at the following two sites:
    Then you will need to execute this command to copy it as the park file
    'cp /var/lib/asterisk/sounds/conf.gsm /var/lib/asterisk/sounds/park.gsm'
   Here are the steps spelled out:
-	- cd /var/lib/asterisk/sounds
-	- wget http://www.freedomphones.net/conf.gsm 
-	- cp conf.gsm park.gsm
+	cd /var/lib/asterisk/sounds
+	wget http://www.freedomphones.net/conf.gsm 
+	cp conf.gsm park.gsm
    - you are done
 
 

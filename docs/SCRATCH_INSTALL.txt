@@ -547,7 +547,7 @@ the time is the same on our client computers and our servers.
 		If you get compilation errors here try 4.1.2:
 	  - wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.1.2.tar.gz
 	- gunzip ntp-4.2.2p3.tar.gz
-	- tar xvf ntp-4.2.2p3.tar.gz
+	- tar xvf ntp-4.2.2p3.tar
 	- cd ntp-4.2.2p3
 	- ./configure
 	- make
@@ -1518,6 +1518,7 @@ package(as of this writing it is 2.0.1)
 	- svn checkout svn://205.201.151.21:43690/agc_2-X
 	- cd agc_2-X/trunk/
 	- perl install.pl
+	    select to do interactive setup and customize to your server
    - there is one more file you need that's not included with the download 
 package, it's the conf.gsm file(this is the half-hour music file that we use 
 to put people on hold). I have a free classical music file that is available 

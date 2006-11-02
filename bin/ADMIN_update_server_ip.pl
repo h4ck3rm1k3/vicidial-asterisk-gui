@@ -153,6 +153,8 @@ if (-e "$PATHconf")
 			{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
+			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
 			{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
@@ -279,18 +281,36 @@ print conf "# astguiclient.conf - configuration elements for the astguiclient pa
 print conf "# this is the astguiclient configuration file \n";
 print conf "# all comments will be lost if you run install.pl again\n";
 print conf "\n";
+print conf "# Paths used by astGUIclient\n";
 print conf "PATHhome => $PATHhome\n";
 print conf "PATHlogs => $PATHlogs\n";
 print conf "PATHagi => $PATHagi\n";
 print conf "PATHweb => $PATHweb\n";
 print conf "PATHsounds => $PATHsounds\n";
 print conf "PATHmonitor => $PATHmonitor\n\n";
+print conf "\n";
+print conf "# The IP address of this machine\n";
 print conf "VARserver_ip => $VARserver_ip\n";
+print conf "\n";
+print conf "# Database connection information\n";
 print conf "VARDB_server => $VARDB_server\n";
 print conf "VARDB_database => $VARDB_database\n";
 print conf "VARDB_user => $VARDB_user\n";
 print conf "VARDB_pass => $VARDB_pass\n";
 print conf "VARDB_port => $VARDB_port\n";
+print conf "\n";
+print conf "# Alpha-Numeric list of the astGUIclient processes to be kept running\n";
+print conf "# (value should be listing of characters with no spaces: 123456)\n";
+print conf "#  X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
+print conf "#  1 - AST_update\n";
+print conf "#  2 - AST_send_listen\n";
+print conf "#  3 - AST_VDauto_dial\n";
+print conf "#  4 - AST_VDremote_agents\n";
+print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
+print conf "#  6 - FastAGI_log\n";
+print conf "VARactive_keepalives => $VARactive_keepalives\n";
+print conf "\n";
+print conf "# Settings for FastAGI logging server\n";
 print conf "VARfastagi_log_min_servers => $VARfastagi_log_min_servers\n";
 print conf "VARfastagi_log_max_servers => $VARfastagi_log_max_servers\n";
 print conf "VARfastagi_log_min_spare_servers => $VARfastagi_log_min_spare_servers\n";
