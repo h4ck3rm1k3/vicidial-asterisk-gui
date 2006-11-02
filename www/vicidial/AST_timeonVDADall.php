@@ -33,8 +33,6 @@ $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["server_ip"]))			{$server_ip=$_GET["server_ip"];}
 	elseif (isset($_POST["server_ip"]))	{$server_ip=$_POST["server_ip"];}
-if (isset($_GET["reset_counter"]))				{$reset_counter=$_GET["reset_counter"];}
-	elseif (isset($_POST["reset_counter"]))		{$reset_counter=$_POST["reset_counter"];}
 if (isset($_GET["RR"]))					{$RR=$_GET["RR"];}
 	elseif (isset($_POST["RR"]))		{$RR=$_POST["RR"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
@@ -162,18 +160,11 @@ while ($i < $usergroups_to_print)
 	$i++;
 	}
 
-if (!isset($RR))   {$RR=40;}
+if (!isset($RR))   {$RR=4;}
 
 $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
-$reset_counter++;
-
-if (!isset($reset_counter))   {$reset_counter=0;}
-if ($reset_counter > 7)
-	{
-	$reset_counter=0;
-	}
 
 ?>
 
@@ -211,7 +202,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">\n";
 echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "VICIDIAL: Realtime Campaign: \n";
+echo "VICIDIAL Campaign: \n";
 echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=\"$RR\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=adastats VALUE=\"$adastats\">\n";
@@ -249,7 +240,9 @@ echo "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\"
 echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">STOP</a> | ";
 echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">SLOW</a> | ";
 echo "<a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">GO</a>";
-echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
+echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | \n";
+echo "<a href=\"./AST_timeonVDADallSUMMARY.php?group=$group&RR=$RR&DB=$DB&adastats=$adastats\">SUMMARY</a> | \n";
+echo "<a href=\"./server_stats.php\">REPORTS</a> </FONT>\n";
 echo "\n\n";
 
 
