@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_LB_closer_inbound.agi version 0.5   *DBI-version*
+# agi-VDAD_LB_closer_inboundCID.agi version 0.5   *DBI-version*
 # 
 # runs when a call comes in from an inbound call. This script will 
 # send the calls out to the closers that are logged in.
@@ -9,7 +9,7 @@
 # if there are no available agents on any server, it will check every second until an agent becomes available,
 # if at the end of 360 seconds it has not found an agent it will hangup the call and mark it as dropped
 #
-# This version asks for a 4-digit pin number to be entered and passed on as the fronter value to the closer
+# This version looks for the callerID from the telco
 #
 # You need to put lines similar to those below in your extensions.conf file:
 # 
@@ -23,7 +23,7 @@
 #
 # ;inbound VICIDIAL calls:
 #exten => 1234,1,Answer                  ; Answer the line
-#exten => 1234,2,AGI(agi-VDAD_LO_closer_inbound.agi,CL_GALLERIA-----7274515134-----Closer-----park----------999-----1)
+#exten => 1234,2,AGI(agi-VDAD_LB_closer_inboundCID.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
 #exten => 1234,3,Hangup
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
@@ -37,7 +37,7 @@
 # 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
 #
 
-$script = 'agi-VDAD_LB_closer_inbound.agi';
+$script = 'agi-VDAD_LB_closer_inboundCID.agi';
 
 $DROP_TIME = 360;	### number of seconds to wait until you drop a waiting call
 
@@ -254,7 +254,7 @@ if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$typ
 
 $AGI->stream_file('beep');
 
-&enter_pin_number;
+if (length($pin) < 1) {$pin='VDAD';}
 
 $fronter = $pin;
 
@@ -631,81 +631,6 @@ if ($drop_seconds < 1)
 $dbhA->disconnect();
 
 exit;
-
-sub enter_pin_number
-{
-# please enter the pin number followed by the pound key
-# please enter your 4 digit pin number
-
-$digit='';
-undef $digit;
-$interrupt_digit='';
-undef $interrupt_digit;
-
-$interrupt_digit = $AGI->stream_file('four_digit_id','123456789');   
-
-	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
-
-$digits_being_entered=1;
-$totalDTMF='';
-if ($interrupt_digit > 1)
-	{
-	if ($interrupt_digit == 48) {$interrupt_digit=0;}
-	if ($interrupt_digit == 49) {$interrupt_digit=1;}
-	if ($interrupt_digit == 50) {$interrupt_digit=2;}
-	if ($interrupt_digit == 51) {$interrupt_digit=3;}
-	if ($interrupt_digit == 52) {$interrupt_digit=4;}
-	if ($interrupt_digit == 53) {$interrupt_digit=5;}
-	if ($interrupt_digit == 54) {$interrupt_digit=6;}
-	if ($interrupt_digit == 55) {$interrupt_digit=7;}
-	if ($interrupt_digit == 56) {$interrupt_digit=8;}
-	if ($interrupt_digit == 57) {$interrupt_digit=9;}
-	
-	$totalDTMF=$interrupt_digit;
-	}
-
-$digit_loop_counter=0;
-#while ( ($digits_being_entered) && ($digit_loop_counter < 20) )
-#	{
-#	$digit = chr($AGI->wait_for_digit('30000'));  # wait 30 seconds for input or until the pound key is pressed
-#	if ($digit =~ /\d/)
-#		{
-#		$totalDTMF = "$totalDTMF$digit";
-#		print STDERR "digit |$digit|     TotalDTMF |$totalDTMF|\n";
-#		$AGI->say_digits("$digit");
-#		undef $digit;
-#		}
-#	else
-#		{
-#		$digits_being_entered=0;
-#		}
-#	
-#	$digit_loop_counter++;
-#	}
-
-while ( ($digit_loop_counter < 4) )
-	{
-	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input or until the pound key is pressed
-	if ($digit =~ /\d/)
-		{
-		$totalDTMF = "$totalDTMF$digit";
-		if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
-#		$AGI->say_digits("$digit");
-		undef $digit;
-		}
-	else
-		{
-		$digit_loop_counter=4;
-		}
-	
-	$digit_loop_counter++;
-	}
-
-$totalDTMF =~ s/\D//gi;
-$pin = $totalDTMF;
-if ($totalDTMF) {if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}}
-}
-
 
 
 
