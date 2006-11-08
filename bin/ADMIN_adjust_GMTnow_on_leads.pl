@@ -412,6 +412,21 @@ sub USACAN_dstcalc {
 #                                     and 9:00 UTC in October
 #     OUTPUT: 
 #                       INTEGER       1 = DST, 0 = not DST
+#
+# S  M  T  W  T  F  S
+# 1  2  3  4  5  6  7
+# 8  9 10 11 12 13 14
+#15 16 17 18 19 20 21
+#22 23 24 25 26 27 28
+#29 30 31
+# 
+# S  M  T  W  T  F  S
+#    1  2  3  4  5  6
+# 7  8  9 10 11 12 13
+#14 15 16 17 18 19 20
+#21 22 23 24 25 26 27
+#28 29 30 31
+# 
 #**********************************************************************
 
 	$USACAN_DST=0;
@@ -540,6 +555,7 @@ sub NA_dstcalc {
 
 sub GBR_dstcalc {
 #**********************************************************************
+# LSM-LSO
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on last Sunday in March and last Sunday in October at 1 am.
@@ -607,6 +623,7 @@ sub GBR_dstcalc {
 
 sub AUS_dstcalc {
 #**********************************************************************
+# LSO-LSM
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on last Sunday in October and last Sunday in March at 1 am.
@@ -675,6 +692,7 @@ sub AUS_dstcalc {
 
 sub AUST_dstcalc {
 #**********************************************************************
+# FSO-LSM
 #   TASMANIA ONLY
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
@@ -742,6 +760,7 @@ sub AUST_dstcalc {
 
 sub NZL_dstcalc {
 #**********************************************************************
+# FSO-TSM
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on first Sunday in October and third Sunday in March at 1 am.
@@ -780,9 +799,9 @@ sub NZL_dstcalc {
 	    $NZL_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
-	if ($dd < 15) {
-	    $NZL_DST=1;   return 1;
-	} elsif ($dd >= ($dow+1)) {
+	if ($dd > 21) {
+	    $NZL_DST=0;   return 0;
+	} elsif ($dd < ($dow+15)) {
 	    if ($timezone) {
 		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
 		    $NZL_DST=0;   return 0;
