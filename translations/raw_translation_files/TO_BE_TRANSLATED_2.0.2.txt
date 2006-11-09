@@ -23,6 +23,12 @@ DELETE SERVER VICIDIAL TRUNK RECORD||
 VICIDIAL TRUNKS FOR THIS SERVER||
 RESTRICTION||
 TRUNKS||
+Emergency VDAC Jam Clear||
+VDAC NOT CLEARED FOR CAMPAIGN||
+LAST VDAC RECORD CLEARED FOR CAMPAIGN||
+VDAC CLEAR CONFIRMATION||
+Click here to delete the oldest LIVE record in VDAC for||
+
 
 ############################################################ CLIENT
 

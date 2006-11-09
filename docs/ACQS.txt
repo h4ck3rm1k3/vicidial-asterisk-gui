@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|      Asterisk GUI client - astguiclient - fourth public release 0.9.2        |
+|      Asterisk GUI client - astguiclient                                      |
 |             Description of the Asterisk Central Queue System                 |
 |    created by Matt Florell <mattf@vicimarketing.com> <info@eflo.net>         |
 |  project started 2003-10-06   http://sourceforge.net/projects/astguiclient/  |
@@ -12,8 +12,10 @@ work with Asterisk.
 
 Scripts that are involved with the ACQS backend are:
 
- - AST_SERVER_conf.pl - file where you define your variables for the server apps
-   + Must be present in the /home/cron/ directory
+ - AST_SERVER_conf.pl - <depricated>
+
+ - /etc/astguiclient.conf - file where you define your variables for the server apps
+   + Must be present and configured through the install.pl script
 
  - AST_manager_listen.pl - listener for the Asterisk Central Queue System (ACQS)
    + Must be present in the /home/cron/ directory
