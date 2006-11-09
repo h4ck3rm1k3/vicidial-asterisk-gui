@@ -786,12 +786,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60927-1246 - added astguiclient/admin.php functions under SERVERS tab
 # 61002-1402 - added fields for vicidial balance trunk controls
 # 61003-1123 - added functions for vicidial_server_trunks records
+# 61109-1022 - added Emergency VDAC Jam Clear function to Campaign Detail screen
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.68';
-$build = '61003-1123';
+$version = '2.0.69';
+$build = '61109-1022';
 
 $STARTtime = date("U");
 
@@ -951,6 +952,7 @@ if ($ADD==41111111111111)	{$hh='server';		echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	echo "Logout Agents";}
+if ($ADD==53)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==511)			{$hh='lists';		echo "Delete List";}
 if ($ADD==5111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==51111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -966,6 +968,7 @@ if ($ADD==51111111111111)	{$hh='server';		echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
 if ($ADD==61)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==62)			{$hh='campaigns';	echo "Logout Agents";}
+if ($ADD==63)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==65)			{$hh='campaigns';	echo "Delete Lead Recycle";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
@@ -4765,6 +4768,28 @@ $ADD='31';		# go to campaign modification below
 }
 
 ######################
+# ADD=53 confirmation before Emergency VDAC Jam Clear - deletes oldest LIVE vicidial_auto_call record
+######################
+
+if ($ADD==53)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>VDAC NOT CLEARED FOR CAMPAIGN - Please go back and look at the data you entered\n";
+		 echo "<br>Campaign_id be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>VDAC CLEAR CONFIRMATION: $campaign_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=63&campaign_id=$campaign_id&CoNfIrM=YES\">Click here to delete the oldest LIVE record in VDAC for $campaign_id</a><br><br><br>\n";
+		}
+
+$ADD='31';		# go to campaign modification below
+}
+
+######################
 # ADD=511 confirmation before deletion of list
 ######################
 
@@ -5110,7 +5135,7 @@ $ADD='10';		# go to campaigns list
 }
 
 ######################
-# ADD=62 Logout all agents fro a campaign
+# ADD=62 Logout all agents from a campaign
 ######################
 
 if ($ADD==62)
@@ -5135,6 +5160,39 @@ if ($ADD==62)
 			fclose($fp);
 			}
 		echo "<br><B>AGENT LOGOUT COMPLETED: $campaign_id</B>\n";
+		echo "<br><br>\n";
+		}
+
+$ADD='31';		# go to campaign modification below
+}
+
+
+######################
+# ADD=63 Emergency VDAC Jam Clear
+######################
+
+if ($ADD==63)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>VDAC NOT CLEARED FOR CAMPAIGN - Please go back and look at the data you entered\n";
+		 echo "<br>Campaign_id be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="DELETE from vicidial_auto_calls where status='LIVE' and campaign_id='$campaign_id' order by call_time limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|EMERGENCY VDAC CLEAR|$PHP_AUTH_USER|$ip|campaign_id='$campaign_id'|\n");
+			fclose($fp);
+			}
+		echo "<br><B>LAST VDAC RECORD CLEARED FOR CAMPAIGN: $campaign_id</B>\n";
 		echo "<br><br>\n";
 		}
 
@@ -6263,6 +6321,7 @@ echo "<input type=submit name=submit value=ADD><BR>\n";
 echo "</center></FORM><br>\n";
 
 echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">LOG ALL AGENTS OUT OF THIS CAMPAIGN</a><BR><BR>\n";
+echo "<a href=\"$PHP_SELF?ADD=53&campaign_id=$campaign_id\">EMERGENCY VDAC CLEAR FOR THIS CAMPAIGN</a><BR><BR>\n";
 
 if ($LOGdelete_campaigns > 0)
 	{
