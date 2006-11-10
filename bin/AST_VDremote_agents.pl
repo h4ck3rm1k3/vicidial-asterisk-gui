@@ -27,6 +27,9 @@
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
 # 60814-1726 - added option for no logging to file
+# 60814-1726 - added option for no logging to file
+# 61012-1025 - added performance testing options
+# 61110-1443 - added user_level from vicidial_user record into vicidial_live_agents
 #
 
 ### begin parsing run-time options ###
@@ -246,6 +249,8 @@ while($one_day_interval > 0)
 
 		$user_counter=0;
 		$DELusers='';
+		@DBuser_start=@MT;
+		@DBuser_level=@MT;
 		@DBremote_user=@MT;
 		@DBremote_server_ip=@MT;
 		@DBremote_campaign=@MT;
@@ -285,6 +290,7 @@ while($one_day_interval > 0)
 					{
 					$random = int( rand(9999999)) + 10000000;
 					$user_id = ($user_start + $y);
+					$DBuser_start[$user_counter] =			"$user_start";
 					$DBremote_user[$user_counter] =			"$user_id";
 					$DBremote_server_ip[$user_counter] =	"$server_ip";
 					$DBremote_campaign[$user_counter] =		"$campaign_id";
@@ -390,7 +396,22 @@ while($one_day_interval > 0)
 					### no records exist so insert a new one
 					else
 						{
-						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','');";
+						# grab the user_level of the agent
+						$DBuser_level[$h]='1';
+						$stmtA = "SELECT user_level FROM vicidial_users where user='$DBuser_start[$h]';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$DBuser_level[$h] =	"$aryA[0]";
+							$rec_count++;
+							}
+						$sthA->finish();
+
+						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid,user_level) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','','$DBuser_level[$h]');";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
 						if ($TESTrun > 0)
