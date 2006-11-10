@@ -41,6 +41,7 @@
 # 60814-1720 - added option for no logging to file
 # 60822-1527 - added campaign_stats and logging options for adaptive dialing
 # 60925-1330 - fixed recycling leads issues
+# 61110-1513 - changed Xth NEW to fill to hopper_level with standard if not enough NEW
 #
 
 # constants
@@ -1118,6 +1119,7 @@ foreach(@campaign_id)
 					if ($DB_show_offset) {print "LEAD_ADD: $aryA[2] $aryA[3] $aryA[4]\n";}
 					$NEW_rec_countLEADS++;
 					}
+				$OTHER_level = ($hopper_level[$i] - $NEW_rec_countLEADS);
 				$sthA->finish();
 				}
 
