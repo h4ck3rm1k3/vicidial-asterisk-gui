@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|    Asterisk GUI client - astguiclient - twenty-sixth public release 2.0.1    |
+|   Asterisk GUI client - astguiclient - twenty-seventh public release 2.0.2   |
 |           created by astGUIclient group <astguiclient@eflo.net>              |
 |  project started 2003-10-06   http://sourceforge.net/projects/astguiclient/  |
 +------------------------------------------------------------------------------+
@@ -9,6 +9,8 @@ This suite of programs is designed to work with the Asterisk Open-source PBX
 server side applications necessary for the features of the GUI application to 
 work with Asterisk. The client-side GUI apps are available now as web pages 
 running AJAX scripted web pages(Firefox recommended)
+
+End-user Manuals for Agents and Managers are available from http://www.eflo.net
 
  ***** Description, Notes and Changelog below *****
 
@@ -39,10 +41,6 @@ boot time startups of asterisk.
 
 - MySQL_AST_CREATE_tables.sql - used to create tables for astguiclient and 
 vicidial in your MySQL database
-
- - astLEADLOADER.pl - client perl/Tk GUI for loading leads into the vicidial_list
-   + same application run specs as the AST_WINphoneAPP above
-   ### SOON TO BE DEPRICATED AND UNSUPPORTED ### see the web lead loader
 
  - ADMIN_area_code_populate.pl - run once to update phone codes to database
 
@@ -175,15 +173,6 @@ vicidial in your MySQL database
  - phone_codes_GMT.txt - file that contains all GMT offsets
    + used by ADMIN_adjust_GMTnow_on_leads.pl script
    + has over 1,000 entries for various areacode/country/GMT combinations
-
- - ASTGUICLIENT Web admin pages - administration for ASTGUICLIENT
-   + must be installed on machine with PHP and MySQL enabled
-   + must be able to read/write/update to asterisk MySQL database
-   + welcome.php - just a welcome page
-   + admin.php - all admin functions for ASTGUICLIENT database
-   + user_stats.php - look at live user stats
-   + remote_inbound.php - custom script to grab parked inbound calls remotely
-   + inbound_popup.php - from remote_inbound page
 
  - astGUIclient web-client pages - web-only client app in agc folder
    + must be installed on machine with PHP and MySQL enabled
@@ -718,3 +707,16 @@ UPGRADE NOTES:
      http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.1
 UPGRADE NOTES:
  * if upgrading from 1.1.12 you need to follow instructions in the UPGRADE doc
+
+2.0.2 - Twenty-Seventh public release - 2006-1X-XX
+- Added optional FastAGI replacement for call_log and VDhangup scripts
+- Added new USA-Canada Daylight Savings time scheme and DST for Brazil
+- astguiclient/admin.php removed and merged into vicidial/admin.php
+- Ability for agent to alter volume levels of participants
+- Keepalives consolidated into single script
+- New all-active-campaigns realtime summary screen
+- New script added to make it easier to change IP address of servers in VICIDIAL
+- Many other changes and bug fixes listed in the TODO Wiki webpage:
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.2
+UPGRADE NOTES:
+ * if upgrading from 2.0.1 you need to follow instructions in the UPGRADE doc

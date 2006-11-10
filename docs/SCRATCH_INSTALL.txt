@@ -1,8 +1,10 @@
-Asterisk/astguiclient install from scratch.    v.2.0.1               2006-09-15
+Asterisk/astguiclient install from scratch.    v.2.0.2               2006-1X-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
 read the REQUIREMENTS.txt for a minimum requirements list. ***
+
+End-user Manuals for Agents and Managers are available from http://www.eflo.net
 
 
 This document is meant to be a very in-depth step-by-step explanation of 
@@ -2988,3 +2990,5 @@ Also, check out our weblog: http://astguiclient.blogspot.com/
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
 read the REQUIREMENTS.txt for a minimum requirements list. ***
+
+End-user Manuals for Agents and Managers are available from http://www.eflo.net

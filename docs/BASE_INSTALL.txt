@@ -1,10 +1,12 @@
-Asterisk/astguiclient install from existing server.    v.2.0.1        2006-09-15
+Asterisk/astguiclient install from existing server.    v.2.0.2        2006-1X-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 
 This document is meant to be more of an overview of a VICIDIAL/astGUIclient 
 installation. If you are looking for more detail or are having problems with 
 installation please read the SCRATCH_INSTALL.txt document.
+
+End-user Manuals for Agents and Managers are available from http://www.eflo.net
 
 REQUIREMENTS:
 - root access on the server you want to install asGUIclient/VICIDIAL on to.
@@ -769,3 +771,5 @@ Also, check out our weblog: http://astguiclient.blogspot.com/
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
 read the REQUIREMENTS.txt for a minimum requirements list. ***
+
+End-user Manuals for Agents and Managers are available from http://www.eflo.net
