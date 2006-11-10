@@ -4775,6 +4775,8 @@ $ADD='31';		# go to campaign modification below
 
 if ($ADD==53)
 {
+	if (eregi('IN',$stage))
+		{$group_id=$campaign_id;}
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	 if (strlen($campaign_id) < 2)
@@ -4785,10 +4787,14 @@ if ($ADD==53)
 	 else
 		{
 		echo "<br><B>VDAC CLEAR CONFIRMATION: $campaign_id</B>\n";
-		echo "<br><br><a href=\"$PHP_SELF?ADD=63&campaign_id=$campaign_id&CoNfIrM=YES\">Click here to delete the oldest LIVE record in VDAC for $campaign_id</a><br><br><br>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=63&campaign_id=$campaign_id&CoNfIrM=YES&&stage=$stage\">Click here to delete the oldest LIVE record in VDAC for $campaign_id</a><br><br><br>\n";
 		}
 
-$ADD='31';		# go to campaign modification below
+# go to campaign modification below
+if (eregi('IN',$stage))
+	{$ADD='3111';}
+else
+	{$ADD='31';}	
 }
 
 ######################
@@ -5175,6 +5181,8 @@ $ADD='31';		# go to campaign modification below
 
 if ($ADD==63)
 {
+	if (eregi('IN',$stage))
+		{$group_id=$campaign_id;}
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	 if (strlen($campaign_id) < 2)
@@ -5198,7 +5206,11 @@ if ($ADD==63)
 		echo "<br><br>\n";
 		}
 
-$ADD='31';		# go to campaign modification below
+# go to campaign modification below
+if (eregi('IN',$stage))
+	{$ADD='3111';}
+else
+	{$ADD='31';}	
 }
 
 
@@ -6986,6 +6998,7 @@ echo "<center><b>\n";
 
 if ($LOGdelete_ingroups > 0)
 	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=53&campaign_id=$group_id&stage=IN\">EMERGENCY VDAC CLEAR FOR THIS IN-GROUP</a><BR><BR>\n";
 	echo "<br><br><a href=\"$PHP_SELF?ADD=5111&group_id=$group_id\">DELETE THIS IN-GROUP</a>\n";
 	}
 
