@@ -35,9 +35,11 @@ Click here to delete the oldest LIVE record in VDAC for||
 VOLUME||
 
 
-############################################################  ADMIN Manual
+############################################################  MANAGER Manual
 
 Add notes on balance dialing in Multi-server setups
+CLOSER must be RATIO dial method and dial level of 1
+more information on resetting the list once you have caled through it in the tutorials
 
 
 ############################################################  AGENT Manual

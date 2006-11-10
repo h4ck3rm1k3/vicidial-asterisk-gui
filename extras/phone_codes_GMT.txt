@@ -824,7 +824,7 @@ code	country	areacode	state	GMT	DST	DST_RANGE	GEOGRAPHIC DESCRIPTION
 52	MEX	999		-6	Y	FSA-LSO	Mérida, Yuc.z 
 53	CUB	*		-5	N		Cuba
 54	ARG	*		-3	N		Argentina
-55	BRA	*		-3	Y	LSO-FSM	Brazil
+55	BRA	*		-3	Y	TSO-LSF	Brazil
 56	CHL	*		-4	Y	SSO-SSM	Chile
 57	COL	*		-5	N		Columbia
 58	VEN	*		-4	N		Venezuela

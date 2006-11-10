@@ -16,6 +16,7 @@
 # 60717-1045 - changed to DBI by Marin Blu
 # 60717-1531 - changed to use /etc/astguiclient.conf for configuration
 # 61108-1320 - added new DST schemes for USA/Canada change and changes in other countries
+# 61110-1204 - added new DST scheme for Brazil
 #
 
 $MT[0]='';
@@ -330,6 +331,14 @@ foreach (@phone_codes)
 					&NZL_dstcalc;
 					if ($DBX) {print "     DST: $NZL_DST\n";}
 					if ($NZL_DST) {$area_GMT++;}
+					$AC_processed++;
+					}
+				if ( (!$AC_processed) && ($area_GMT_method =~ /TSO-LSF/) )
+					{
+					if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+					&BZL_dstcalc;
+					if ($DBX) {print "     DST: $BZL_DST\n";}
+					if ($BZL_DST) {$area_GMT++;}
 					$AC_processed++;
 					}
 				if (!$AC_processed)
@@ -732,7 +741,7 @@ sub AUST_dstcalc {
 	    $AUST_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
-	if ($dd > 7) {
+	if ($dd >= 8) {
 	    $AUST_DST=1;   return 1;
 	} elsif ($dd >= ($dow+1)) {
 	    if ($timezone) {
@@ -799,9 +808,9 @@ sub NZL_dstcalc {
 	    $NZL_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
-	if ($dd > 21) {
-	    $NZL_DST=0;   return 0;
-	} elsif ($dd < ($dow+15)) {
+	if ($dd >= 8) {
+	    $NZL_DST=1;   return 1;
+	} elsif ($dd >= ($dow+1)) {
 	    if ($timezone) {
 		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
 		    $NZL_DST=0;   return 0;
@@ -820,3 +829,72 @@ sub NZL_dstcalc {
 	}
     } # end of month checks
 } # end of subroutine dstcalc
+
+
+
+
+sub BZL_dstcalc {
+#**********************************************************************
+# LSO-LSF
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect. Brazil
+#     Based on Third Sunday October to Last Sunday February at 1 am.
+#**********************************************************************
+    
+	$BZL_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 2 || $mm > 10) {
+	$BZL_DST=1;   return 1;
+    } elsif ($mm >= 3 && $mm <= 9) {
+	$BZL_DST=0;   return 0;
+    } elsif ($mm == 2) {
+	if ($dd < 22) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $BZL_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 22) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $BZL_DST=1;   return 1;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
