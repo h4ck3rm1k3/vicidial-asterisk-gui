@@ -536,6 +536,14 @@ exten => 8500998,3,AGI(agi-dtmf.agi)
 exten => 8500998,4,Hangup
 
 ;#### VDAD STANDARD TRANSFER ENTRIES ####
+; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
+exten => 8364,1,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8364,1,AGI(call_log.agi,${EXTEN})
+exten => 8364,2,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,5,Hangup
+
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => 8365,1,AGI(call_log.agi,${EXTEN})
@@ -589,6 +597,14 @@ exten => 8372,5,Hangup
 ;#### VDAD SIP UNREGISTERED TRANSFER ENTRIES ####
 ;#### Use these entries IN PLACE OF the entries above if you are using SIP trunks
 ;#### and are not registering your provider in sip.conf
+;; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
+;exten => 8364,1,Playback(sip-silence)
+;exten => 8364,2,AGI(agi://127.0.0.1:4577/call_log)
+;;exten => 8364,2,AGI(call_log.agi,${EXTEN})
+;exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+;exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+;exten => 8364,5,Hangup
+;
 ;; VICIDIAL_auto_dialer transfer script:
 ;exten => 8365,1,Playback(sip-silence)
 ;exten => 8365,2,AGI(agi://127.0.0.1:4577/call_log)

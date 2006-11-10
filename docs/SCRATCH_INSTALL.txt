@@ -2369,6 +2369,13 @@ exten => _851XXXXX,2,Playback(${EXTEN})
 exten => _851XXXXX,3,Hangup
 
 #### VDAD STANDARD TRANSFER ENTRIES ####
+; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
+exten => 8364,1,Playback(sip-silence)
+exten => 8364,2,AGI(call_log.agi,${EXTEN})
+exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,5,Hangup
+
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,AGI(call_log.agi,${EXTEN})
 exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
