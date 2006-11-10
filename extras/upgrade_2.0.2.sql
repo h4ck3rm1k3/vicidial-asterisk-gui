@@ -18,8 +18,7 @@ index (campaign_id),
 index (server_ip)
 );
 
-
-
-
 ALTER TABLE servers ADD vicidial_balance_active ENUM('Y','N') default 'N';
 ALTER TABLE servers ADD balance_trunks_offlimits SMALLINT(5) UNSIGNED default '0';
+
+DELETE from vicidial_phone_codes;
