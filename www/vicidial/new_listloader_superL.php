@@ -15,11 +15,12 @@
 # 60619-1651 - Added variable filtering to eliminate SQL injection attack threat
 # 60822-1121 - fixed for nonwritable directories
 # 60906-1100 - added filter of non-digits in alt_phone field
+# 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.1';
-$build = '60906-1100';
+$version = '2.0.2';
+$build = '61110-1222';
 
 
 require("dbconnect.php");
@@ -368,7 +369,7 @@ function ParseFileName() {
 						$state =				$row[$state_field];
 						$province =				$row[$province_field];
 						$postal_code =			$row[$postal_code_field];
-						$country_code =				$row[$country_code_field];
+						$country_code =			$row[$country_code_field];
 						$gender =				$row[$gender_field];
 						$date_of_birth =		$row[$date_of_birth_field];
 						$alt_phone =			eregi_replace("[^0-9]", "", $row[$alt_phone_field]);
@@ -477,7 +478,7 @@ function ParseFileName() {
 				$state =				$row[$state_field];
 				$province =				$row[$province_field];
 				$postal_code =			$row[$postal_code_field];
-				$country_code =				$row[$country_code_field];
+				$country_code =			$row[$country_code_field];
 				$gender =				$row[$gender_field];
 				$date_of_birth =		$row[$date_of_birth_field];
 				$alt_phone =			eregi_replace("[^0-9]", "", $row[$alt_phone_field]);
@@ -605,7 +606,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 					$state =				$row[13];
 					$province =				$row[14];
 					$postal_code =			$row[15];
-					$country_code =				$row[16];
+					$country_code =			$row[16];
 					$gender =				$row[17];
 					$date_of_birth =		$row[18];
 					$alt_phone =			eregi_replace("[^0-9]", "", $row[19]);
@@ -730,7 +731,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				$state =				$row[13];
 				$province =				$row[14];
 				$postal_code =			$row[15];
-				$country_code =				$row[16];
+				$country_code =			$row[16];
 				$gender =				$row[17];
 				$date_of_birth =		$row[18];
 				$alt_phone =			eregi_replace("[^0-9]", "", $row[19]);
@@ -1086,14 +1087,14 @@ $AC_localtime = mktime(($Shour + $AC_GMT_diff), $Smin, $Ssec, $Smon, $Smday, $Sy
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 
 $AC_processed=0;
-if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
+if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	{
-	if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+	if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
 	#**********************************************************************
-	# FSA-LSO
+	# SSM-FSN
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in April and last Sunday in October at 2 am.
+	#     Based on Second Sunday March to First Sunday November at 2 am.
 	#     INPUTS:
 	#       mm              INTEGER       Month.
 	#       dd              INTEGER       Day of the month.
@@ -1107,6 +1108,89 @@ if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 	#                                     and 9:00 UTC in October
 	#     OUTPUT: 
 	#                       INTEGER       1 = DST, 0 = not DST
+	#
+	# S  M  T  W  T  F  S
+	# 1  2  3  4  5  6  7
+	# 8  9 10 11 12 13 14
+	#15 16 17 18 19 20 21
+	#22 23 24 25 26 27 28
+	#29 30 31
+	# 
+	# S  M  T  W  T  F  S
+	#    1  2  3  4  5  6
+	# 7  8  9 10 11 12 13
+	#14 15 16 17 18 19 20
+	#21 22 23 24 25 26 27
+	#28 29 30 31
+	# 
+	#**********************************************************************
+
+		$USACAN_DST=0;
+		$mm = $mon;
+		$dd = $mday;
+		$ns = $dsec;
+		$dow= $wday;
+
+		if ($mm < 3 || $mm > 11) {
+		$USACAN_DST=0;   
+		} elseif ($mm >= 4 and $mm <= 10) {
+		$USACAN_DST=1;   
+		} elseif ($mm == 3) {
+		if ($dd > 13) {
+			$USACAN_DST=1;   
+		} elseif ($dd >= ($dow+8)) {
+			if ($timezone) {
+			if ($dow == 0 and $ns < (7200+$timezone*3600)) {
+				$USACAN_DST=0;   
+			} else {
+				$USACAN_DST=1;   
+			}
+			} else {
+			if ($dow == 0 and $ns < 7200) {
+				$USACAN_DST=0;   
+			} else {
+				$USACAN_DST=1;   
+			}
+			}
+		} else {
+			$USACAN_DST=0;   
+		}
+		} elseif ($mm == 11) {
+		if ($dd > 7) {
+			$USACAN_DST=0;   
+		} elseif ($dd < ($dow+1)) {
+			$USACAN_DST=1;   
+		} elseif ($dow == 0) {
+			if ($timezone) { # UTC calculations
+			if ($ns < (7200+($timezone-1)*3600)) {
+				$USACAN_DST=1;   
+			} else {
+				$USACAN_DST=0;   
+			}
+			} else { # local time calculations
+			if ($ns < 7200) {
+				$USACAN_DST=1;   
+			} else {
+				$USACAN_DST=0;   
+			}
+			}
+		} else {
+			$USACAN_DST=0;   
+		}
+		} # end of month checks
+	if ($DBX) {print "     DST: $USACAN_DST\n";}
+	if ($USACAN_DST) {$gmt_offset++;}
+	$AC_processed++;
+	}
+
+if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
+	{
+	if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+	#**********************************************************************
+	# FSA-LSO
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#       Standard time is in effect.
+	#     Based on first Sunday in April and last Sunday in October at 2 am.
 	#**********************************************************************
 		
 		$USA_DST=0;
@@ -1438,6 +1522,77 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 	if ($NZL_DST) {$gmt_offset++;}
 	$AC_processed++;
 	}
+
+if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
+	{
+	if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+	#**********************************************************************
+	# TSO-LSF
+	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+	#       Standard time is in effect. Brazil
+	#     Based on Third Sunday October to Last Sunday February at 1 am.
+	#**********************************************************************
+		
+		$BZL_DST=0;
+		$mm = $mon;
+		$dd = $mday;
+		$ns = $dsec;
+		$dow= $wday;
+
+		if ($mm < 2 || $mm > 10) {
+		$BZL_DST=1;   
+		} elseif ($mm >= 3 and $mm <= 9) {
+		$BZL_DST=0;   
+		} elseif ($mm == 2) {
+		if ($dd < 22) {
+			$BZL_DST=1;   
+		} elseif ($dd < ($dow+22)) {
+			$BZL_DST=1;   
+		} elseif ($dow == 0) {
+			if ($timezone) { # UTC calculations
+			if ($ns < (3600+($timezone-1)*3600)) {
+				$BZL_DST=1;   
+			} else {
+				$BZL_DST=0;   
+			}
+			} else { # local time calculations
+			if ($ns < 3600) {
+				$BZL_DST=1;   
+			} else {
+				$BZL_DST=0;   
+			}
+			}
+		} else {
+			$BZL_DST=0;   
+		}
+		} elseif ($mm == 10) {
+		if ($dd < 22) {
+			$BZL_DST=0;   
+		} elseif ($dd < ($dow+22)) {
+			$BZL_DST=0;   
+		} elseif ($dow == 0) {
+			if ($timezone) { # UTC calculations
+			if ($ns < (3600+($timezone-1)*3600)) {
+				$BZL_DST=0;   
+			} else {
+				$BZL_DST=1;   
+			}
+			} else { # local time calculations
+			if ($ns < 3600) {
+				$BZL_DST=0;   
+			} else {
+				$BZL_DST=1;   
+			}
+			}
+		} else {
+			$BZL_DST=1;   
+		}
+		} # end of month checks
+	if ($DBX) {print "     DST: $BZL_DST\n";}
+	if ($BZL_DST) {$gmt_offset++;}
+	$AC_processed++;
+	}
+
 if (!$AC_processed)
 	{
 	if ($DBX) {print "     No DST Method Found\n";}

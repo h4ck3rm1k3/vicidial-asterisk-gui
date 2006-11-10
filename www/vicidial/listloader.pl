@@ -13,6 +13,7 @@
 # 60811-1329 - changed to use /etc/astguiclient.conf for configs
 # 60822-1121 - fixed for nonwritable directories
 # 60906-1058 - added filter of non-digits in alt_phone field
+# 61110-1229 - added new USA-Canada DST scheme and Brazil DST scheme
 #
 
 ### begin parsing run-time options ###
@@ -317,12 +318,21 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 				$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 				
 				$AC_processed=0;
+
+				if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
+					{
+					if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+					&USACAN_dstcalc;
+					if ($DBX) {print "     DST: $USACAN_DST\n";}
+					if ($USACAN_DST) {$area_GMT++;}
+					$AC_processed++;
+					}
 				if ( (!$AC_processed) && ($dst_range =~ /FSA-LSO/) )
 					{
 					if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
-					&USA_dstcalc;
-					if ($DBX) {print "     DST: $USA_DST\n";}
-					if ($USA_DST) {$gmt_offset++;}
+					&NA_dstcalc;
+					if ($DBX) {print "     DST: $NA_DST\n";}
+					if ($NA_DST) {$area_GMT++;}
 					$AC_processed++;
 					}
 				if ( (!$AC_processed) && ($dst_range =~ /LSM-LSO/) )
@@ -355,6 +365,14 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 					&NZL_dstcalc;
 					if ($DBX) {print "     DST: $NZL_DST\n";}
 					if ($NZL_DST) {$gmt_offset++;}
+					$AC_processed++;
+					}
+				if ( (!$AC_processed) && ($dst_range =~ /TSO-LSF/) )
+					{
+					if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+					&BZL_dstcalc;
+					if ($DBX) {print "     DST: $BZL_DST\n";}
+					if ($BZL_DST) {$area_GMT++;}
 					$AC_processed++;
 					}
 				if (!$AC_processed)
@@ -406,12 +424,12 @@ exit;
 
 
 
-sub USA_dstcalc {
+sub USACAN_dstcalc {
 #**********************************************************************
-# FSA-LSO
+# SSM-FSN
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
-#     Based on first Sunday in April and last Sunday in October at 2 am.
+#     Based on Second Sunday March to First Sunday November at 2 am.
 #     INPUTS:
 #       mm              INTEGER       Month.
 #       dd              INTEGER       Day of the month.
@@ -425,59 +443,140 @@ sub USA_dstcalc {
 #                                     and 9:00 UTC in October
 #     OUTPUT: 
 #                       INTEGER       1 = DST, 0 = not DST
+#
+# S  M  T  W  T  F  S
+# 1  2  3  4  5  6  7
+# 8  9 10 11 12 13 14
+#15 16 17 18 19 20 21
+#22 23 24 25 26 27 28
+#29 30 31
+# 
+# S  M  T  W  T  F  S
+#    1  2  3  4  5  6
+# 7  8  9 10 11 12 13
+#14 15 16 17 18 19 20
+#21 22 23 24 25 26 27
+#28 29 30 31
+# 
+#**********************************************************************
+
+	$USACAN_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 3 || $mm > 11) {
+	$USACAN_DST=0;   return 0;
+    } elsif ($mm >= 4 && $mm <= 10) {
+	$USACAN_DST=1;   return 1;
+    } elsif ($mm == 3) {
+	if ($dd > 13) {
+	    $USACAN_DST=1;   return 1;
+	} elsif ($dd >= ($dow+8)) {
+	    if ($timezone) {
+		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
+		    $USACAN_DST=0;   return 0;
+		} else {
+		    $USACAN_DST=1;   return 1;
+		}
+	    } else {
+		if ($dow == 0 && $ns < 7200) {
+		    $USACAN_DST=0;   return 0;
+		} else {
+		    $USACAN_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $USACAN_DST=0;   return 0;
+	}
+    } elsif ($mm == 11) {
+	if ($dd > 7) {
+	    $USACAN_DST=0;   return 0;
+	} elsif ($dd < ($dow+1)) {
+	    $USACAN_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (7200+($timezone-1)*3600)) {
+		    $USACAN_DST=1;   return 1;
+		} else {
+		    $USACAN_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 7200) {
+		    $USACAN_DST=1;   return 1;
+		} else {
+		    $USACAN_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $USACAN_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub NA_dstcalc {
+#**********************************************************************
+# FSA-LSO
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect.
+#     Based on first Sunday in April and last Sunday in October at 2 am.
 #**********************************************************************
     
-	$USA_DST=0;
+	$NA_DST=0;
 	$mm = $mon;
 	$dd = $mday;
 	$ns = $dsec;
 	$dow= $wday;
 
     if ($mm < 4 || $mm > 10) {
-	$USA_DST=0;   return 0;
+	$NA_DST=0;   return 0;
     } elsif ($mm >= 5 && $mm <= 9) {
-	$USA_DST=1;   return 1;
+	$NA_DST=1;   return 1;
     } elsif ($mm == 4) {
 	if ($dd > 7) {
-	    $USA_DST=1;   return 1;
+	    $NA_DST=1;   return 1;
 	} elsif ($dd >= ($dow+1)) {
 	    if ($timezone) {
 		if ($dow == 0 && $ns < (7200+$timezone*3600)) {
-		    $USA_DST=0;   return 0;
+		    $NA_DST=0;   return 0;
 		} else {
-		    $USA_DST=1;   return 1;
+		    $NA_DST=1;   return 1;
 		}
 	    } else {
 		if ($dow == 0 && $ns < 7200) {
-		    $USA_DST=0;   return 0;
+		    $NA_DST=0;   return 0;
 		} else {
-		    $USA_DST=1;   return 1;
+		    $NA_DST=1;   return 1;
 		}
 	    }
 	} else {
-	    $USA_DST=0;   return 0;
+	    $NA_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
 	if ($dd < 25) {
-	    $USA_DST=1;   return 1;
+	    $NA_DST=1;   return 1;
 	} elsif ($dd < ($dow+25)) {
-	    $USA_DST=1;   return 1;
+	    $NA_DST=1;   return 1;
 	} elsif ($dow == 0) {
 	    if ($timezone) { # UTC calculations
 		if ($ns < (7200+($timezone-1)*3600)) {
-		    $USA_DST=1;   return 1;
+		    $NA_DST=1;   return 1;
 		} else {
-		    $USA_DST=0;   return 0;
+		    $NA_DST=0;   return 0;
 		}
 	    } else { # local time calculations
 		if ($ns < 7200) {
-		    $USA_DST=1;   return 1;
+		    $NA_DST=1;   return 1;
 		} else {
-		    $USA_DST=0;   return 0;
+		    $NA_DST=0;   return 0;
 		}
 	    }
 	} else {
-	    $USA_DST=0;   return 0;
+	    $NA_DST=0;   return 0;
 	}
     } # end of month checks
 } # end of subroutine dstcalc
@@ -487,6 +586,7 @@ sub USA_dstcalc {
 
 sub GBR_dstcalc {
 #**********************************************************************
+# LSM-LSO
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on last Sunday in March and last Sunday in October at 1 am.
@@ -554,6 +654,7 @@ sub GBR_dstcalc {
 
 sub AUS_dstcalc {
 #**********************************************************************
+# LSO-LSM
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on last Sunday in October and last Sunday in March at 1 am.
@@ -622,6 +723,7 @@ sub AUS_dstcalc {
 
 sub AUST_dstcalc {
 #**********************************************************************
+# FSO-LSM
 #   TASMANIA ONLY
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
@@ -661,7 +763,7 @@ sub AUST_dstcalc {
 	    $AUST_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
-	if ($dd > 7) {
+	if ($dd >= 8) {
 	    $AUST_DST=1;   return 1;
 	} elsif ($dd >= ($dow+1)) {
 	    if ($timezone) {
@@ -689,6 +791,7 @@ sub AUST_dstcalc {
 
 sub NZL_dstcalc {
 #**********************************************************************
+# FSO-TSM
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect.
 #     Based on first Sunday in October and third Sunday in March at 1 am.
@@ -727,7 +830,7 @@ sub NZL_dstcalc {
 	    $NZL_DST=0;   return 0;
 	}
     } elsif ($mm == 10) {
-	if ($dd > 7) {
+	if ($dd >= 8) {
 	    $NZL_DST=1;   return 1;
 	} elsif ($dd >= ($dow+1)) {
 	    if ($timezone) {
@@ -745,6 +848,74 @@ sub NZL_dstcalc {
 	    }
 	} else {
 	    $NZL_DST=0;   return 0;
+	}
+    } # end of month checks
+} # end of subroutine dstcalc
+
+
+
+
+sub BZL_dstcalc {
+#**********************************************************************
+# TSO-LSF
+#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+#       Standard time is in effect. Brazil
+#     Based on Third Sunday October to Last Sunday February at 1 am.
+#**********************************************************************
+    
+	$BZL_DST=0;
+	$mm = $mon;
+	$dd = $mday;
+	$ns = $dsec;
+	$dow= $wday;
+
+    if ($mm < 2 || $mm > 10) {
+	$BZL_DST=1;   return 1;
+    } elsif ($mm >= 3 && $mm <= 9) {
+	$BZL_DST=0;   return 0;
+    } elsif ($mm == 2) {
+	if ($dd < 22) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=1;   return 1;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=1;   return 1;
+		} else {
+		    $BZL_DST=0;   return 0;
+		}
+	    }
+	} else {
+	    $BZL_DST=0;   return 0;
+	}
+    } elsif ($mm == 10) {
+	if ($dd < 22) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dd < ($dow+22)) {
+	    $BZL_DST=0;   return 0;
+	} elsif ($dow == 0) {
+	    if ($timezone) { # UTC calculations
+		if ($ns < (3600+($timezone-1)*3600)) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    } else { # local time calculations
+		if ($ns < 3600) {
+		    $BZL_DST=0;   return 0;
+		} else {
+		    $BZL_DST=1;   return 1;
+		}
+	    }
+	} else {
+	    $BZL_DST=1;   return 1;
 	}
     } # end of month checks
 } # end of subroutine dstcalc

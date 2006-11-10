@@ -835,7 +835,7 @@ sub NZL_dstcalc {
 
 sub BZL_dstcalc {
 #**********************************************************************
-# LSO-LSF
+# TSO-LSF
 #     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 #       Standard time is in effect. Brazil
 #     Based on Third Sunday October to Last Sunday February at 1 am.
