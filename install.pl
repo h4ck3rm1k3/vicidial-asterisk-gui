@@ -981,7 +981,7 @@ else
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
-			if (length($PROMPTactive_keepalives)>1)
+			if (length($PROMPTactive_keepalives)>0)
 				{
 				$PROMPTactive_keepalives =~ s/ |\n|\r|\t|\/$//gi;
 				$VARactive_keepalives=$PROMPTactive_keepalives;
@@ -1001,7 +1001,7 @@ else
 			print("\nFastAGI log minimum child servers: [$VARfastagi_log_min_servers] ");
 			$PROMPTfastagi_log_min_servers = <STDIN>;
 			chomp($PROMPTfastagi_log_min_servers);
-			if (length($PROMPTfastagi_log_min_servers)>1)
+			if (length($PROMPTfastagi_log_min_servers)>0)
 				{
 				$PROMPTfastagi_log_min_servers =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_min_servers=$PROMPTfastagi_log_min_servers;
@@ -1021,7 +1021,7 @@ else
 			print("\nFastAGI log maximum child servers: [$VARfastagi_log_max_servers] ");
 			$PROMPTfastagi_log_max_servers = <STDIN>;
 			chomp($PROMPTfastagi_log_max_servers);
-			if (length($PROMPTfastagi_log_max_servers)>1)
+			if (length($PROMPTfastagi_log_max_servers)>0)
 				{
 				$PROMPTfastagi_log_max_servers =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_max_servers=$PROMPTfastagi_log_max_servers;
@@ -1041,7 +1041,7 @@ else
 			print("\nFastAGI log minimum spare child servers: [$VARfastagi_log_min_spare_servers] ");
 			$PROMPTfastagi_log_min_spare_servers = <STDIN>;
 			chomp($PROMPTfastagi_log_min_spare_servers);
-			if (length($PROMPTfastagi_log_min_spare_servers)>1)
+			if (length($PROMPTfastagi_log_min_spare_servers)>0)
 				{
 				$PROMPTfastagi_log_min_spare_servers =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_min_spare_servers=$PROMPTfastagi_log_min_spare_servers;
@@ -1061,7 +1061,7 @@ else
 			print("\nFastAGI log maximum spare child servers: [$VARfastagi_log_max_spare_servers] ");
 			$PROMPTfastagi_log_max_spare_servers = <STDIN>;
 			chomp($PROMPTfastagi_log_max_spare_servers);
-			if (length($PROMPTfastagi_log_max_spare_servers)>1)
+			if (length($PROMPTfastagi_log_max_spare_servers)>0)
 				{
 				$PROMPTfastagi_log_max_spare_servers =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_max_spare_servers=$PROMPTfastagi_log_max_spare_servers;
@@ -1081,7 +1081,7 @@ else
 			print("\nFastAGI log maximum requests per child server: [$VARfastagi_log_max_requests] ");
 			$PROMPTfastagi_log_max_requests = <STDIN>;
 			chomp($PROMPTfastagi_log_max_requests);
-			if (length($PROMPTfastagi_log_max_requests)>1)
+			if (length($PROMPTfastagi_log_max_requests)>0)
 				{
 				$PROMPTfastagi_log_max_requests =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_max_requests=$PROMPTfastagi_log_max_requests;
@@ -1101,7 +1101,7 @@ else
 			print("\nFastAGI log check-for-dead seconds: [$VARfastagi_log_checkfordead] ");
 			$PROMPTfastagi_log_checkfordead = <STDIN>;
 			chomp($PROMPTfastagi_log_checkfordead);
-			if (length($PROMPTfastagi_log_checkfordead)>1)
+			if (length($PROMPTfastagi_log_checkfordead)>0)
 				{
 				$PROMPTfastagi_log_checkfordead =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_checkfordead=$PROMPTfastagi_log_checkfordead;
@@ -1121,7 +1121,7 @@ else
 			print("\nFastAGI log check-for-wait seconds: [$VARfastagi_log_checkforwait] ");
 			$PROMPTfastagi_log_checkforwait = <STDIN>;
 			chomp($PROMPTfastagi_log_checkforwait);
-			if (length($PROMPTfastagi_log_checkforwait)>1)
+			if (length($PROMPTfastagi_log_checkforwait)>0)
 				{
 				$PROMPTfastagi_log_checkforwait =~ s/ |\n|\r|\t|\/$//gi;
 				$VARfastagi_log_checkforwait=$PROMPTfastagi_log_checkforwait;
