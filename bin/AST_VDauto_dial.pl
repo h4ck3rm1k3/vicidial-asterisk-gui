@@ -106,6 +106,7 @@ $US='__';
 $MT[0]='';
 $RECcount=''; ### leave blank for no REC count
 $RECprefix='7'; ### leave blank for no REC prefix
+$useJAMdebugFILE='1'; ### leave blank for no Jam call debug file writing
 
 
 # default path to astguiclient configuration file:
@@ -154,6 +155,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 	&get_time_now;	# update time/date variables
 
 if (!$VDADLOGfile) {$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";}
+if (!$JAMdebugFILE) {$JAMdebugFILE = "$PATHlogs/vdad-JAM.$year-$mon-$mday";}
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
 use DBI;
@@ -948,6 +950,36 @@ while($one_day_interval > 0)
 		 &event_logger;
 
 
+		### For debugging purposes, try to grab Jammed calls and log them to jam logfile
+		if ($useJAMdebugFILE)
+			{
+			$stmtA = "SELECT * FROM vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE')";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$JAMrec_count=0;
+			while ($sthArows > $JAMrec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$jam_string = "$JAMrec_count|$BDtsSQLdate|     |$aryA[0]|$aryA[1]|$aryA[2]|$aryA[3]|$aryA[4]|$aryA[5]|$aryA[6]|$aryA[7]|$aryA[8]|$aryA[9]|$aryA[10]|$aryA[11]|$aryA[12]|$aryA[13]|$aryA[14]|";
+				 &jam_event_logger;
+				$JAMrec_count++;
+				}
+			$sthA->finish();
+			}
+
+		### delete call records that are LIVE and not updated for over 10 seconds
+		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE');";
+		$affected_rows = $dbhA->do($stmtA);
+
+		$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+		 &event_logger;
+
+		if ($affected_rows > 0)
+			{
+			$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+			 &jam_event_logger;
+			}
 
 
 
@@ -1181,3 +1213,19 @@ if ($SYSLOG)
 	}
 $event_string='';
 }
+
+sub jam_event_logger
+{
+if ($DB) {print "$now_date|$jam_string|\n";}
+if ($useJAMdebugFILE)
+	{
+	### open the log file for writing ###
+	open(Jout, ">>$JAMdebugFILE")
+			|| die "Can't open $JAMdebugFILE: $!\n";
+	print Jout "$now_date|$jam_string|\n";
+	close(Jout);
+	}
+$jam_string='';
+}
+
+
