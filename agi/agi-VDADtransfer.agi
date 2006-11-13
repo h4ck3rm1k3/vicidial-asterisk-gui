@@ -255,7 +255,7 @@ exit;
 
 
 ### Grab call parameters from vicidial_auto_calls table
-$stmtA = "UPDATE vicidial_auto_calls set uniqueid='$unique_id', channel='$channel',status='LIVE' where callerid='$callerid' order by call_time desc limit 1;";
+$stmtA = "UPDATE vicidial_auto_calls set uniqueid='$unique_id', channel='$channel',status='LIVE',stage='LIVE-0' where callerid='$callerid' order by call_time desc limit 1;";
 $affected_rows = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
 if ($affected_rows > 0)
@@ -382,7 +382,7 @@ if ($rec_countWAIT < 1)
 			}
 		$sthA->finish();
 
-		$stmtA = "UPDATE vicidial_auto_calls set status='XFER' where callerid='$callerid';";
+		$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD XFER : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
 
@@ -435,6 +435,11 @@ else
 
 	$drop_timer++;
 	}
+
+$stmtA = "UPDATE vicidial_auto_calls set stage='LIVE-$drop_timer' where callerid='$callerid';";
+$affected_rows = $dbhA->do($stmtA);
+#if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
+
 }
 
 

@@ -22,3 +22,9 @@ ALTER TABLE servers ADD vicidial_balance_active ENUM('Y','N') default 'N';
 ALTER TABLE servers ADD balance_trunks_offlimits SMALLINT(5) UNSIGNED default '0';
 
 DELETE from vicidial_phone_codes;
+
+
+ALTER TABLE vicidial_auto_calls ADD stage VARCHAR(20) default 'START';
+ALTER TABLE vicidial_auto_calls ADD last_update_time TIMESTAMP;
+ALTER TABLE vicidial_auto_calls ADD index (last_update_time);
+

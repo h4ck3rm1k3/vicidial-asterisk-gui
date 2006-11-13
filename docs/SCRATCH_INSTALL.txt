@@ -732,6 +732,28 @@ this loaded on your system.
 	- make install
 
 
+mtop is a great utility for real-time monitoring of mysql and the queries that
+are running in it.
+*OPTIONAL*
+ 14. Go to http://mtop.sourceforge.net to download the most recent version
+   - to install this directly on the command line type:
+	- cd /usr/local
+	- wget http://superb-east.dl.sourceforge.net/sourceforge/mtop/mtop-0.6.6.tar.gz
+	- gunzip mtop-0.6.6.tar.gz
+	- tar xvf mtop-0.6.6.tar
+	- cd mtop-0.6.6
+	- cpan 
+		- install Curses
+		- install Getopt::Long
+		- install Net::Domain
+		- quit
+	- perl Makefile.PL
+	- make
+	- make install
+	- /usr/local/bin/mtop --dbuser=root --seconds=3
+
+
+
 
 PHASE 4: INSTALLING ASTERISK
 

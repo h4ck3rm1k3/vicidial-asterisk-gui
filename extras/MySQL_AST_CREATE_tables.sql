@@ -320,9 +320,12 @@ phone_code VARCHAR(10),
 phone_number VARCHAR(12),
 call_time DATETIME,
 call_type ENUM('IN','OUT') default 'OUT',
+stage VARCHAR(20) default 'START',
+last_update_time TIMESTAMP,
 index (uniqueid),
 index (callerid),
-index (call_time)
+index (call_time),
+index (last_update_time)
 );
 
  CREATE TABLE vicidial_log (
