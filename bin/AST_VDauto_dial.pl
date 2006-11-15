@@ -51,6 +51,8 @@
 # 60821-1546 - added option to not dial phone_code per campaign
 # 60824-1437 - added available_only_ratio_tally option
 # 61003-1353 - added restrictions for server trunks
+# 61113-1625 - added code for clearing VDAC LIVE jams
+# 61115-1725 - added OUTBALANCE to call calculation for call_type for balance dialing
 #
 
 
@@ -441,9 +443,9 @@ while($one_day_interval > 0)
 				   }
 				  else {$DBIPclosercamp[$user_CIPct]=''}
 				
-				$campaign_query = "( (call_type='IN' and campaign_id IN($DBIPclosercamp[$user_CIPct])) or (campaign_id='$DBIPcampaign[$user_CIPct]' and call_type='OUT') )";
+				$campaign_query = "( (call_type='IN' and campaign_id IN($DBIPclosercamp[$user_CIPct])) or (campaign_id='$DBIPcampaign[$user_CIPct]' and call_type IN('OUT','OUTBALANCE')) )";
 				}
-			else {$campaign_query = "(campaign_id='$DBIPcampaign[$user_CIPct]' and call_type='OUT')";}
+			else {$campaign_query = "(campaign_id='$DBIPcampaign[$user_CIPct]' and call_type IN('OUT','OUTBALANCE'))";}
 			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where $campaign_query and server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

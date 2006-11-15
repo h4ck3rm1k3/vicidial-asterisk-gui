@@ -28,3 +28,4 @@ ALTER TABLE vicidial_auto_calls ADD stage VARCHAR(20) default 'START';
 ALTER TABLE vicidial_auto_calls ADD last_update_time TIMESTAMP;
 ALTER TABLE vicidial_auto_calls ADD index (last_update_time);
 
+ALTER TABLE vicidial_auto_calls MODIFY call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT';
