@@ -1,5 +1,5 @@
 <? 
-### AST_timeonVDAD_closer.php
+### AST_timeonVDAD.php
 ### 
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
