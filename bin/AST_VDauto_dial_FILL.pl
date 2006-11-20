@@ -174,7 +174,7 @@ while($one_day_interval > 0)
 	{
 		&get_time_now;
 
-		$VDADLOGfile = "$PATHlogs/vdautodial.$year-$mon-$mday";
+		$VDADLOGfile = "$PATHlogs/vdautodial_FILL.$year-$mon-$mday";
 
 	###############################################################################
 	###### first figure out how many calls should be placed for each campaign per server
@@ -183,6 +183,7 @@ while($one_day_interval > 0)
 		@DBfill_shortage=@MT;
 		@DBfill_tally=@MT;
 		@DBfill_needed=@MT;
+		@DBfill_current_balance=@MT;
 		@DBlive_campaign=@MT;
 		@DBlive_conf_exten=@MT;
 		@DBlive_status=@MT;
@@ -264,6 +265,7 @@ while($one_day_interval > 0)
 				$DB_balance_fill=0;
 				$VAC_balance_fill=0;
 				$AVAIL_balance_servers=0;
+				$DBfill_tally[$camp_CIPct]=0;
 
 				### grab the dial_level and multiply by active agents to get your goalcalls
 				$DBIPadlevel[$camp_CIPct]=0;
@@ -313,6 +315,8 @@ while($one_day_interval > 0)
 					$rec_count++;
 					}
 				$sthA->finish();
+				$DBfill_current_balance[$camp_CIPct] = "$VAC_balance_fill";
+
 				$event_string="               CAMPAIGN: $DBfill_campaign[$camp_CIPct]\n";
 				$event_string.="DB_balance_fill: $DB_balance_fill   VAC_balance_fill: $VAC_balance_fill\n";
 
@@ -430,6 +434,19 @@ while($one_day_interval > 0)
 						$VAC_server_camp=0;
 						$VAC_server_NONcamp=0;
 
+						$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DB_camp_server_server_ip[$server_CIPct]' and campaign_id='$DBfill_campaign[$camp_CIPct]' and call_type='OUTBALANCE';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VAC_server_BALcamp =	"$aryA[0]";
+							$rec_count++;
+							}
+						$sthA->finish();
+
 						$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DB_camp_server_server_ip[$server_CIPct]' and campaign_id='$DBfill_campaign[$camp_CIPct]';";
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -456,21 +473,22 @@ while($one_day_interval > 0)
 							}
 						$sthA->finish();
 
-						if($DB) {print "VAC CALLS: |$VAC_server_camp|$VAC_server_NONcamp|\n";}
+						if($DB) {print "VAC CALLS: |$VAC_server_camp|$VAC_server_NONcamp|$VAC_server_BALcamp|\n";}
+						if($DB) {print "SETTINGS:  |$DB_camp_server_dedicated_trunks[$server_CIPct]|$DB_camp_server_max_vicidial_trunks[$server_CIPct]|$DB_camp_server_balance_trunks_offlimits[$server_CIPct]||\n";}
 
 						if ($DB_camp_server_trunk_restriction[$server_CIPct] =~ /MAXIMUM_LIMIT/)
 							{
 							$DB_camp_server_available[$server_CIPct] = $DB_camp_server_dedicated_trunks[$server_CIPct];
-							$DB_camp_server_available[$server_CIPct] = ($DB_camp_server_available[$server_CIPct] - $VAC_server_camp);
 							}
 						else
 							{
 							$DB_camp_server_available[$server_CIPct] = ( ($DB_camp_server_max_vicidial_trunks[$server_CIPct] - $DB_camp_server_balance_trunks_offlimits[$server_CIPct]) -  $DB_NONcamp_server_dedicated_trunks[$server_CIPct]);
-							$DB_camp_server_available[$server_CIPct] = ($DB_camp_server_available[$server_CIPct] - $VAC_server_camp);
 							}
 						$temp_tally = ($DBfill_needed[$camp_CIPct] - $DBfill_tally[$camp_CIPct]);
 						$temp_avail = ( ($DB_camp_server_max_vicidial_trunks[$server_CIPct] - $VAC_server_camp) -  $VAC_server_NONcamp);
+						$DB_camp_server_available[$server_CIPct] = ($DB_camp_server_available[$server_CIPct] - $VAC_server_BALcamp);
 
+						if($DB) {print "TEMPVALS:  |$temp_tally|$temp_avail|$DB_camp_server_available[$server_CIPct]||\n";}
 						if ($DB_camp_server_available[$server_CIPct] >= $temp_tally)
 							{$DB_camp_server_trunks_to_dial[$server_CIPct] = $temp_tally;}
 						else
@@ -484,7 +502,6 @@ while($one_day_interval > 0)
 						$event_string="     Server: $DB_camp_server_server_ip[$server_CIPct]   AVAIL: $DB_camp_server_available[$server_CIPct]   DIAL: $DB_camp_server_trunks_to_dial[$server_CIPct]";
 						$event_string.="     Campaign Dial Fill tally: $DBfill_tally[$camp_CIPct]/$DBfill_needed[$camp_CIPct]";
 						&event_logger;
-
 
 
 
@@ -661,7 +678,9 @@ while($one_day_interval > 0)
 					&event_logger;
 					}
 
-				$stmtA = "UPDATE vicidial_campaign_stats SET balance_trunk_fill='$DBfill_tally[$camp_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]';";
+				$temp_balance_total = ($DBfill_current_balance[$camp_CIPct] + $DBfill_tally[$camp_CIPct]);
+				if ($DB) {print "CURRENT FILL: $temp_balance_total = ($DBfill_current_balance[$camp_CIPct] + $DBfill_tally[$camp_CIPct])\n";}
+				$stmtA = "UPDATE vicidial_campaign_stats SET balance_trunk_fill='$temp_balance_total' where campaign_id='$DBfill_campaign[$camp_CIPct]';";
 				$affected_rows = $dbhA->do($stmtA);
 
 				$camp_CIPct++;
@@ -683,7 +702,7 @@ while($one_day_interval > 0)
 
 
 # so far we have a check of balance servers, a check of shortage servers and we begin traversing the campaigns array
-exit;
+#exit;
 
 
 
@@ -750,7 +769,7 @@ exit;
 				}
 			$sthA->finish();
 
-			$event_string = "|     updating server parameters $max_vicidial_trunks|$answer_transfer_agent|$SERVER_GMT|$ext_context|";
+			$event_string = "|     updating server parameters $max_vicidial_trunks|$answer_transfer_agent|$SERVER_GMT|$ext_context|$DBvd_server_logs|$SYSLOG|";
 			&event_logger;
 			&get_time_now;
 			}
