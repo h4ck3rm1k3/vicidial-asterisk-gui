@@ -180,6 +180,8 @@ while($one_day_interval > 0)
 	###############################################################################
 		@DBfill_campaign=@MT;
 		@DBfill_shortage=@MT;
+		@DBfill_tally=@MT;
+		@DBfill_needed=@MT;
 		@DBlive_campaign=@MT;
 		@DBlive_conf_exten=@MT;
 		@DBlive_status=@MT;
@@ -286,7 +288,12 @@ while($one_day_interval > 0)
 					$rec_count++;
 					}
 				$sthA->finish();
-				$event_string="DB_balance_fill: $DB_balance_fill   VAC_balance_fill: $VAC_balance_fill\n";
+				$event_string="               CAMPAIGN: $DBfill_campaign[$camp_CIPct]\n";
+				$event_string.="DB_balance_fill: $DB_balance_fill   VAC_balance_fill: $VAC_balance_fill\n";
+
+				$DBfill_needed[$camp_CIPct] = ($DBfill_shortage[$camp_CIPct] - $VAC_balance_fill);
+				$event_string.="Additional Balance Calls Needed For This Campaign: $DBfill_needed[$camp_CIPct]\n";
+
 
 				##### Get a listing of the servers in the campaign that have shortages of trunks
 				$full_servers='|';
@@ -327,20 +334,20 @@ while($one_day_interval > 0)
 				##################################################################################
 				if ($AVAIL_balance_servers > 0)
 					{
+					$event_string="Balance Servers available: $AVAIL_balance_servers";
+					&event_logger;
+
 					$DB_camp_servers=0;
 					@DB_camp_server_server_ip=@MT;
 					@DB_camp_server_max_vicidial_trunks=@MT;
 					@DB_camp_server_balance_trunks_offlimits=@MT;
 					@DB_camp_server_dedicated_trunks=@MT;
 					@DB_camp_server_trunk_restriction=@MT;
-					$DB_NONcamp_servers=0;
-					@DB_NONcamp_server_server_ip=@MT;
-					@DB_NONcamp_server_max_vicidial_trunks=@MT;
-					@DB_NONcamp_server_balance_trunks_offlimits=@MT;
 					@DB_NONcamp_server_dedicated_trunks=@MT;
-					@DB_NONcamp_server_trunk_restriction=@MT;
+					@DB_camp_server_available=@MT;
+					@DB_camp_server_trunks_to_dial=@MT;
 					##### Get the trunk settings for the campaign across all servers
-					$stmtA = "SELECT servers.server_ip,max_vicidial_trunks,balance_trunks_offlimits,dedicated_trunks,trunk_restriction FROM servers,vicidial_server_trunks where vicidial_balance_active = 'Y' and servers.server_ip NOT IN($full_serversSQL) and campaign_id='$DBfill_campaign[$camp_CIPct]' and servers.server_ip=vicidial_server_trunks.server_ip order by servers.server_ip;";
+					$stmtA = "SELECT server_ip,max_vicidial_trunks,balance_trunks_offlimits FROM servers where vicidial_balance_active = 'Y' and server_ip NOT IN($full_serversSQL) order by server_ip;";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
@@ -351,38 +358,112 @@ while($one_day_interval > 0)
 						$DB_camp_server_server_ip[$DB_camp_servers] =					"$aryA[0]";
 						$DB_camp_server_max_vicidial_trunks[$DB_camp_servers] =			"$aryA[1]";
 						$DB_camp_server_balance_trunks_offlimits[$DB_camp_servers] =	"$aryA[2]";
-						$DB_camp_server_dedicated_trunks[$DB_camp_servers] =			"$aryA[3]";
-						$DB_camp_server_trunk_restriction[$DB_camp_servers] =			"$aryA[4]";
 						$DB_camp_servers++;
 						$rec_count++;
 						}
 					$sthA->finish();
 
-					##### Get the trunk settings for other campaigns across all servers
-					$stmtA = "SELECT servers.server_ip,max_vicidial_trunks,balance_trunks_offlimits,dedicated_trunks,trunk_restriction FROM servers,vicidial_server_trunks where vicidial_balance_active = 'Y' and servers.server_ip NOT IN($full_serversSQL) and campaign_id NOT IN('$DBfill_campaign[$camp_CIPct]') and servers.server_ip=vicidial_server_trunks.server_ip order by servers.server_ip;";
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+
+					##################################################################################
+					##### LOOP THROUGH SERVERS, CALCULATE TRUNKS FOR EACH FOR THIS CAMPAIGN
+					##################################################################################
+					$server_CIPct = 0;
+					foreach(@DB_camp_server_server_ip)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$DB_NONcamp_server_server_ip[$DB_NONcamp_servers] =					"$aryA[0]";
-						$DB_NONcamp_server_max_vicidial_trunks[$DB_NONcamp_servers] =		"$aryA[1]";
-						$DB_NONcamp_server_balance_trunks_offlimits[$DB_NONcamp_servers] =	"$aryA[2]";
-						$DB_NONcamp_server_dedicated_trunks[$DB_NONcamp_servers] =			"$aryA[3]";
-						$DB_NONcamp_server_trunk_restriction[$DB_NONcamp_servers] =			"$aryA[4]";
-						$DB_NONcamp_servers++;
-						$rec_count++;
-						}
-					$sthA->finish();
+						$DB_camp_server_dedicated_trunks[$server_CIPct]=0;
+						$DB_camp_server_trunk_restriction[$server_CIPct]=0;
+						$DB_NONcamp_server_dedicated_trunks[$server_CIPct]=0;
+						##### Get the campaign-specific trunk settings for the campaign on this server
+						$stmtA = "SELECT dedicated_trunks,trunk_restriction FROM vicidial_server_trunks where server_ip='$DB_camp_server_server_ip[$server_CIPct]' and campaign_id='$DBfill_campaign[$camp_CIPct]';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$DB_camp_server_dedicated_trunks[$server_CIPct] =	"$aryA[0]";
+							$DB_camp_server_trunk_restriction[$server_CIPct] =	"$aryA[1]";
+							$rec_count++;
+							}
+						$sthA->finish();
 
+						##### Get the campaign-specific dedicated trunks count for other campaigns on this server
+						$stmtA = "SELECT sum(dedicated_trunks) FROM vicidial_server_trunks where server_ip='$DB_camp_server_server_ip[$server_CIPct]' and campaign_id NOT IN('$DBfill_campaign[$camp_CIPct]');";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$DB_NONcamp_server_dedicated_trunks[$server_CIPct] =	"$aryA[0]";
+							$rec_count++;
+							}
+						$sthA->finish();
 
+						if ($DB_camp_server_trunk_restriction[$server_CIPct] =~ /MAXIMUM_LIMIT/)
+							{
+							$DB_camp_server_available[$server_CIPct] = $DB_camp_server_dedicated_trunks[$server_CIPct];
+							}
+						else
+							{
+							$DB_camp_server_available[$server_CIPct] = ( ($DB_camp_server_max_vicidial_trunks[$server_CIPct] - $DB_camp_server_balance_trunks_offlimits[$server_CIPct]) -  $DB_NONcamp_server_dedicated_trunks[$server_CIPct]);
+							}
+						$temp_tally = ($DBfill_needed[$camp_CIPct] - $DBfill_tally[$camp_CIPct]);
 
+						if ($DB_camp_server_available[$server_CIPct] >= $temp_tally)
+							{
+							$DB_camp_server_trunks_to_dial[$server_CIPct] = $temp_tally;
+							$DBfill_tally[$camp_CIPct] = ($DBfill_tally[$camp_CIPct] + $temp_tally);
+							}
+						else
+							{
+							$DB_camp_server_trunks_to_dial[$server_CIPct] = $DB_camp_server_available[$server_CIPct];
+							$DBfill_tally[$camp_CIPct] = ($DBfill_tally[$camp_CIPct] + $DB_camp_server_trunks_to_dial[$server_CIPct]);
+							}
+						
+						$event_string="     Server: $DB_camp_server_server_ip[$server_CIPct]   AVAIL: $DB_camp_server_available[$server_CIPct]   DIAL: $DB_camp_server_trunks_to_dial[$server_CIPct]";
+						$event_string.="     Campaign Dial Fill tally: $DBfill_tally[$camp_CIPct]/$DBfill_needed[$camp_CIPct]";
+						&event_logger;
 
 # so far we have a check of balance servers, a check of shortage servers and we begin traversing the campaigns array
 exit;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						$server_CIPct++;
+						}
+
+					}
+				else
+					{
+					$event_string.="No Balance Servers available that do not have a shortage";
+					&event_logger;
+					}
+
+				$camp_CIPct++;
+				}
+
+			}
+		else
+			{
+			$event_string.="No Balance Servers available or No Shortages";
+			&event_logger;
+			}
 
 
 
