@@ -63,7 +63,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	this one script. This can even be run in the crontab if you are on
 	a DHCP service and need to modify your IP address often
 
-
+11. Added new script to allow for dial-out-only(no agents on the server) 
+	VICIDIAL servers as well as balance dialing where a server with 
+	available trunk lines can dial lines for another server that does not
+	have enough lines to dial for it's dial_level. AST_VDauto_dial_FILL.pl
+	script is only for multi-server systems and is started from new 
+	ADMIN_keepalive_ALL.pl script with option 7 in astguiclient.conf
 
 
 

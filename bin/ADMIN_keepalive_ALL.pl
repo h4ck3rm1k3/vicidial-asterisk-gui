@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# ADMIN_keepalive_ALL.pl   version  0.1
+# ADMIN_keepalive_ALL.pl   version  0.2
 #
 # Designed to keep the astGUIclient processes alive and check every minute
 # Replaces all other ADMIN_keepalive scripts
@@ -10,6 +10,7 @@
 #
 #
 # 61011-1348 - first build
+# 61120-2011 - added option 7 for AST_VDauto_dial_FILL.pl
 #
 
 $DB=0; # Debug flag
@@ -81,6 +82,7 @@ foreach(@conf)
 #	4 - AST_VDremote_agents\n";
 #	5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 #	6 - FastAGI_log\n";
+#	7 - AST_VDauto_dial_FILL\n";
 
 if ($VARactive_keepalives =~ /X/)
 	{
@@ -94,6 +96,7 @@ $AST_VDauto_dial=0;
 $AST_VDremote_agents=0;
 $AST_VDadapt=0;
 $FastAGI_log=0;
+$AST_VDauto_dial_FILL=0;
 $runningAST_update=0;
 $runningAST_send=0;
 $runningAST_listen=0;
@@ -101,6 +104,7 @@ $runningAST_VDauto_dial=0;
 $runningAST_VDremote_agents=0;
 $runningAST_VDadapt=0;
 $runningFastAGI_log=0;
+$runningAST_VDauto_dial_FILL=0;
 
 if ($VARactive_keepalives =~ /1/) 
 	{
@@ -131,6 +135,11 @@ if ($VARactive_keepalives =~ /6/)
 	{
 	$FastAGI_log=1;
 	if ($DB) {print "FastAGI_log set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /7/) 
+	{
+	$AST_VDauto_dial_FILL=1;
+	if ($DB) {print "AST_VDauto_dial_FILL set to keepalive\n";}
 	}
 
 $REGhome = $PATHhome;
@@ -193,6 +202,11 @@ if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 		{
 		$runningFastAGI_log++;
 		if ($DB) {print "FastAGI_log RUNNING:             |$psline[1]|\n";}
+		}
+	if ($psline[1] =~ /$REGhome\/AST_VDauto_dial_FILL\.pl/) 
+		{
+		$runningAST_VDauto_dial_FILL++;
+		if ($DB) {print "AST_VDauto_dial_FILL RUNNING:    |$psline[1]|\n";}
 		}
 $i++;
 }
@@ -261,7 +275,8 @@ if (
 	( ($AST_VDauto_dial > 0) && ($runningAST_VDauto_dial < 1) ) ||
 	( ($AST_VDremote_agents > 0) && ($runningAST_VDremote_agents < 1) ) ||
 	( ($AST_VDadapt > 0) && ($runningAST_VDadapt < 1) ) ||
-	( ($FastAGI_log > 0) && ($runningFastAGI_log < 1) )
+	( ($FastAGI_log > 0) && ($runningFastAGI_log < 1) ) ||
+	( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) )
    )
 {
 
@@ -317,7 +332,11 @@ foreach (@psoutput2)
 		$runningFastAGI_log++;
 		if ($DB) {print "FastAGI_log RUNNING:             |$psline[1]|\n";}
 		}
-
+	if ($psline[1] =~ /$REGhome\/AST_VDauto_dial_FILL\.pl/) 
+		{
+		$runningAST_VDauto_dial_FILL++;
+		if ($DB) {print "AST_VDauto_dial_FILL RUNNING:    |$psline[1]|\n";}
+		}
 	$i++;
 	}
 
@@ -363,6 +382,12 @@ if ( ($FastAGI_log > 0) && ($runningFastAGI_log < 1) )
 	if ($DB) {print "starting FastAGI_log...\n";}
 	# add a '-L' to the command below to activate logging
 	`/usr/bin/screen -d -m -S ASTfastlog $PATHhome/FastAGI_log.pl --debug`;
+	}
+if ( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) )
+	{ 
+	if ($DB) {print "starting AST_VDauto_dial_FILL...\n";}
+	# add a '-L' to the command below to activate logging
+	`/usr/bin/screen -d -m -S ASTVDautoFILL $PATHhome/AST_VDauto_dial_FILL.pl`;
 	}
 }
 

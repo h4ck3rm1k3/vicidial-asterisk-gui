@@ -8,6 +8,9 @@ The primary reason to do load balancing, or clustering of multiple VICIDIAL serv
 
 Another reason for load balancing is the ability to use cheaper hardware on the server side. It is much cheaper and more fault-tolerant to buy four P4 2.0GHz 1U servers for $800 a piece than it is to buy a single 4U quad Xeon 3.2GHz server. The four 1U servers will have more total capacity, can be easily scaled and if one fails you've only lost 25% of capacity instead of everything. This philosophy has serverd our call center very well over the last two years.
 
+As of release 2.0.2, a new script(AST_VDauto_dial_FILL.pl) allows for dial-out-only(no agents on the server) VICIDIAL servers as well as balance dialing where a server with available trunk lines can dial lines for another server that does not have enough lines to dial for it's dial_level. AST_VDauto_dial_FILL.pl script is only for multi-server systems and is started from new ADMIN_keepalive_ALL.pl script with option 7 in astguiclient.conf.
+
+
 
 How do I set up load balancing on my two server VICIDIAL setup?
 
@@ -21,8 +24,8 @@ NOTE: In a multi-server setup you may want to have your database and web server 
 	- AST_cleanup_agent_log.pl
 	- ADMIN_adjust_GMTnow_on_leads.pl
 	- AST_DB_optimize.pl
-	- ADMIN_keepalive_AST_VDadapt.pl
 	- AST_VDadapt.pl
+	- AST_VDauto_dial_FILL.pl
 
 
 2. The two servers need to be registered to each other as IAX2 friends:
@@ -131,6 +134,6 @@ If you have any questions or problems please post to the astguiclient-users list
 - AST_cleanup_agent_log.pl
 - ADMIN_adjust_GMTnow_on_leads.pl
 - AST_DB_optimize.pl
-- ADMIN_keepalive_AST_VDadapt.pl
 - AST_VDadapt.pl
+- AST_VDauto_dial_FILL.pl
 

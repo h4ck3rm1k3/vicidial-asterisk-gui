@@ -308,6 +308,7 @@ print conf "#  3 - AST_VDauto_dial\n";
 print conf "#  4 - AST_VDremote_agents\n";
 print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 print conf "#  6 - FastAGI_log\n";
+print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# Settings for FastAGI logging server\n";

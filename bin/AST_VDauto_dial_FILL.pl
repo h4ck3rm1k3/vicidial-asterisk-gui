@@ -6,10 +6,17 @@
 # Places auto_dial calls on the VICIDIAL dialer system across all servers only 
 # for campaigns that have a shortfall in number of lines dialed.
 #
+# Script needs to be started by ADMIN_keepalive_ALL.pl script (option 7)
+#
+# Not for use in systems with only one Asterisk/VICIDIAL server
+#
+# Should only be run on one server in a multi-server Asterisk/VICIDIAL cluster
+#
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 61115-1246 - First build, framework setup, non-functional
+# 61120-2008 - second alpha version, functional and tested in production
 #
 
 
@@ -646,7 +653,7 @@ while($one_day_interval > 0)
 												$affected_rows = $dbhA->do($stmtA);
 
 											### sleep for a tenth of a second to not flood the server with new calls
-											usleep(1*100*1000);
+											usleep(1*25*1000);
 
 											}
 										}

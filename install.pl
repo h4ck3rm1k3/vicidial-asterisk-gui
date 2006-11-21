@@ -123,6 +123,7 @@ if (length($ARGV[0])>1)
 	print "     4 - AST_VDremote_agents\n";
 	print "     5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 	print "     6 - FastAGI_log\n";
+	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 	print "  [--fastagi_log_min_servers=3] = define FastAGI log min servers\n";
 	print "  [--fastagi_log_max_servers=16] = define FastAGI log max servers\n";
 	print "  [--fastagi_log_min_spare_servers=2] = define FastAGI log min spare servers\n";
@@ -978,6 +979,7 @@ else
 			print " 4 - AST_VDremote_agents\n";
 			print " 5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 			print " 6 - FastAGI_log\n";
+			print " 7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
@@ -1202,6 +1204,7 @@ print conf "#  3 - AST_VDauto_dial\n";
 print conf "#  4 - AST_VDremote_agents\n";
 print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 print conf "#  6 - FastAGI_log\n";
+print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# Settings for FastAGI logging server\n";
