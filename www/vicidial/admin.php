@@ -711,6 +711,8 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
+
+### VARIABLES not filtered at all ###
 # $script_text
 
 ##### END VARIABLE FILTERING FOR SECURITY #####
@@ -791,12 +793,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 61109-1022 - added Emergency VDAC Jam Clear function to Campaign Detail screen
 # 61110-1502 - add ability to select NONE in dial statuses, new list_id must not be < 100
 # 61122-1228 - added user group campaign restrictions
+# 61122-1535 - changed script_text to unfiltered and added more variables to SCRIPTS
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.71';
-$build = '61122-1228';
+$version = '2.0.72';
+$build = '61122-1535';
 
 $STARTtime = date("U");
 
@@ -1900,7 +1903,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 <BR>
 <A NAME="vicidial_scripts-script_text">
-<B>Script Text -</B> This is where you place the content of a Vicidial Script. Minimum of 2 characters. You can have customer information be auto-populated in this script using "--A--field--B--" where field is one of the following fieldnames: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments. For example, this sentence would print the persons name in it----<BR><BR>  Hello, can I speak with --A--first_name--B-- --A--last_name--B-- please? Well hello --A--title--B-- --A--last_name--B-- how are you today?<BR><BR> This would read----<BR><BR>Hello, can I speak with John Doe please? Well hello Mr. Doe how are you today?
+<B>Script Text -</B> This is where you place the content of a Vicidial Script. Minimum of 2 characters. You can have customer information be auto-populated in this script using "--A--field--B--" where field is one of the following fieldnames: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, lead_id, campaign, phone_login, group, channel_group, SQLdate, epoch, uniqueid, customer_zap_channel, server_ip, SIPexten, session_id. For example, this sentence would print the persons name in it----<BR><BR>  Hello, can I speak with --A--first_name--B-- --A--last_name--B-- please? Well hello --A--title--B-- --A--last_name--B-- how are you today?<BR><BR> This would read----<BR><BR>Hello, can I speak with John Doe please? Well hello Mr. Doe how are you today?<BR><BR> You can also use an iframe to load a separate window within the SCRIPT tab, here is an example with prepopulated variables:
+
+<DIV style="height:200px;width:400px;background:white;overflow:scroll;font-size:12px;font-family:sans-serif;" id=iframe_example>
+&#60;iframe src="http://astguiclient.sf.net/test_VICIDIAL_output.php?lead_id=--A--lead_id--B--&#38;vendor_id=--A--vendor_lead_code--B--&#38;list_id=--A--list_id--B--&#38;gmt_offset_now=--A--gmt_offset_now--B--&#38;phone_code=--A--phone_code--B--&#38;phone_number=--A--phone_number--B--&#38;title=--A--title--B--&#38;first_name=--A--first_name--B--&#38;middle_initial=--A--middle_initial--B--&#38;last_name=--A--last_name--B--&#38;address1=--A--address1--B--&#38;address2=--A--address2--B--&#38;address3=--A--address3--B--&#38;city=--A--city--B--&#38;state=--A--state--B--&#38;province=--A--province--B--&#38;postal_code=--A--postal_code--B--&#38;country_code=--A--country_code--B--&#38;gender=--A--gender--B--&#38;date_of_birth=--A--date_of_birth--B--&#38;alt_phone=--A--alt_phone--B--&#38;email=--A--email--B--&#38;security_phrase=--A--security_phrase--B--&#38;comments=--A--comments--B--&#38;user=--A--user--B--&#38;campaign=--A--campaign--B--&#38;phone_login=--A--phone_login--B--&#38;fronter=--A--fronter--B--&#38;closer=--A--user--B--&#38;group=--A--group--B--&#38;channel_group=--A--group--B--&#38;SQLdate=--A--SQLdate--B--&#38;epoch=--A--epoch--B--&#38;uniqueid=--A--uniqueid--B--&#38;customer_zap_channel=--A--customer_zap_channel--B--&#38;server_ip=--A--server_ip--B--&#38;SIPexten=--A--SIPexten--B--&#38;session_id=--A--session_id--B--&#38;phone=--A--phone--B--" style="width:460;height:290;background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame" width="460" height="290"&#62;
+&#60;/iframe&#62;
+</DIV>
 
 <BR>
 <A NAME="vicidial_scripts-active">
@@ -2592,6 +2600,18 @@ if ($ADD==7111111)
 	$comments = 'COMMENTS FIELD';
 	$RGfullname = 'JOE AGENT';
 	$RGuser = '6666';
+	$RGlead_id = '1234';
+	$RGcampaign = 'TESTCAMP';
+	$RGphone_login = 'gs102';
+	$RGgroup = 'TESTCAMP';
+	$RGchannel_group = 'TESTCAMP';
+	$RGSQLdate = date("Y-m-d H:i:s");
+	$RGepoch = date("U");
+	$RGuniqueid = '1163095830.4136';
+	$RGcustomer_zap_channel = 'Zap/1-1';
+	$RGserver_ip = '10.10.10.15';
+	$RGSIPexten = 'SIP/gs102';
+	$RGsession_id = '8600051';
 
 echo "</title>\n";
 echo "</head>\n";
@@ -2628,7 +2648,20 @@ $script_text = eregi_replace('--A--email--B--',"$email",$script_text);
 $script_text = eregi_replace('--A--security_phrase--B--',"$security_phrase",$script_text);
 $script_text = eregi_replace('--A--comments--B--',"$comments",$script_text);
 $script_text = eregi_replace('--A--fullname--B--',"$RGfullname",$script_text);
+$script_text = eregi_replace('--A--fronter--B--',"$RGuser",$script_text);
 $script_text = eregi_replace('--A--user--B--',"$RGuser",$script_text);
+$script_text = eregi_replace('--A--lead_id--B--',"$RGlead_id",$script_text);
+$script_text = eregi_replace('--A--campaign--B--',"$RGcampaign",$script_text);
+$script_text = eregi_replace('--A--phone_login--B--',"$RGphone_login",$script_text);
+$script_text = eregi_replace('--A--group--B--',"$RGgroup",$script_text);
+$script_text = eregi_replace('--A--channel_group--B--',"$RGchannel_group",$script_text);
+$script_text = eregi_replace('--A--SQLdate--B--',"$RGSQLdate",$script_text);
+$script_text = eregi_replace('--A--epoch--B--',"$RGepoch",$script_text);
+$script_text = eregi_replace('--A--uniqueid--B--',"$RGuniqueid",$script_text);
+$script_text = eregi_replace('--A--customer_zap_channel--B--',"$RGcustomer_zap_channel",$script_text);
+$script_text = eregi_replace('--A--server_ip--B--',"$RGserver_ip",$script_text);
+$script_text = eregi_replace('--A--SIPexten--B--',"$RGSIPexten",$script_text);
+$script_text = eregi_replace('--A--session_id--B--',"$RGsession_id",$script_text);
 $script_text = eregi_replace("\n","<BR>",$script_text);
 
 
@@ -3618,7 +3651,7 @@ if ($ADD==2111111)
 			 }
 		 else
 			{
-			$stmt="INSERT INTO vicidial_scripts values('$script_id','$script_name','$script_comments','" . mysql_real_escape_string($script_text) . "','$active');";
+			$stmt="INSERT INTO vicidial_scripts values('$script_id','$script_name','$script_comments','$script_text','$active');";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>SCRIPT ADDED: $script_id</B>\n";
@@ -4439,6 +4472,8 @@ $ADD=311111;	# go to user group modification form below
 
 if ($ADD==4111111)
 {
+	echo "<!-- $script_text -->\n";
+	echo "<!--" . mysql_real_escape_string($script_text) . " -->\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	 if ( (strlen($script_id) < 2) or (strlen($script_name) < 2) or (strlen($script_text) < 2) )
@@ -4448,7 +4483,7 @@ if ($ADD==4111111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_scripts set script_name='$script_name', script_comments='$script_comments', script_text='" . mysql_real_escape_string($script_text) . "', active='$active' where script_id='$script_id';";
+		$stmt="UPDATE vicidial_scripts set script_name='$script_name', script_comments='$script_comments', script_text='$script_text', active='$active' where script_id='$script_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>SCRIPT MODIFIED</B>\n";

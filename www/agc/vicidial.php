@@ -128,6 +128,7 @@
 # 60906-1715 - Allow for Local phone extension conferences
 # 61004-1729 - Add ability to control volume per channel in "calls in this session"
 # 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
+# 61122-1523 - Added more SCRIPT variables
 #
 
 require("dbconnect.php");
@@ -173,8 +174,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.101';
-$build = '61122-1341';
+$version = '2.0.102';
+$build = '61122-1523';
 
 if ($force_logout)
 {
@@ -1309,6 +1310,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var user_abb = '<? echo $user_abb ?>';
 	var pass = '<? echo $VD_pass ?>';
 	var campaign = '<? echo $VD_campaign ?>';
+	var group = '<? echo $VD_campaign ?>';
 	var VICIDiaL_web_form_address_enc = '<? echo $VICIDiaL_web_form_address_enc ?>';
 	var VICIDiaL_web_form_address = '<? echo $VICIDiaL_web_form_address ?>';
 	var VDIC_web_form_address = '<? echo $VICIDiaL_web_form_address ?>';
@@ -4597,6 +4599,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var RGfullname = new RegExp("--A--fullname--B--","g");
 		var RGfronter = new RegExp("--A--fronter--B--","g");
 		var RGuser = new RegExp("--A--user--B--","g");
+		var RGlead_id = new RegExp("--A--lead_id--B--","g");
+		var RGcampaign = new RegExp("--A--campaign--B--","g");
+		var RGphone_login = new RegExp("--A--phone_login--B--","g");
+		var RGgroup = new RegExp("--A--group--B--","g");
+		var RGchannel_group = new RegExp("--A--channel_group--B--","g");
+		var RGSQLdate = new RegExp("--A--SQLdate--B--","g");
+		var RGepoch = new RegExp("--A--epoch--B--","g");
+		var RGuniqueid = new RegExp("--A--uniqueid--B--","g");
+		var RGcustomer_zap_channel = new RegExp("--A--customer_zap_channel--B--","g");
+		var RGserver_ip = new RegExp("--A--server_ip--B--","g");
+		var RGSIPexten = new RegExp("--A--SIPexten--B--","g");
+		var RGsession_id = new RegExp("--A--session_id--B--","g");
 		var RGnl = new RegExp("\n","g");
 
 		encoded = encoded.replace(RGvendor_lead_code, document.vicidial_form.vendor_lead_code.value);
@@ -4627,6 +4641,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		encoded = encoded.replace(RGfullname, LOGfullname);
 		encoded = encoded.replace(RGfronter, fronter);
 		encoded = encoded.replace(RGuser, user);
+		encoded = encoded.replace(RGlead_id, document.vicidial_form.lead_id.value);
+		encoded = encoded.replace(RGcampaign, campaign);
+		encoded = encoded.replace(RGphone_login, phone_login);
+		encoded = encoded.replace(RGgroup, group);
+		encoded = encoded.replace(RGchannel_group, group);
+		encoded = encoded.replace(RGSQLdate, SQLdate);
+		encoded = encoded.replace(RGepoch, UnixTime);
+		encoded = encoded.replace(RGuniqueid, document.vicidial_form.uniqueid.value);
+		encoded = encoded.replace(RGcustomer_zap_channel, lastcustchannel);
+		encoded = encoded.replace(RGserver_ip, server_ip);
+		encoded = encoded.replace(RGSIPexten, extension);
+		encoded = encoded.replace(RGsession_id, session_id);
 		}
 	   while (i < encoded.length) {
 		   var ch = encoded.charAt(i);
