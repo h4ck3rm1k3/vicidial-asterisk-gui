@@ -829,20 +829,16 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
-		-*OPTIONAL*(1.2.12.1) apply the meetme volume control patch
+		-*OPTIONAL*(1.2.12.1 or 1.2.14) apply the meetme volume control patch
 		- wget http://www.eflo.net/files/meetmeadmin_volume_control.patch
 		- patch -p1 < ./meetmeadmin_volume_control.patch
-			- File to patch: app_meetme.c.c
+			- File to patch: app_meetme.c
 		- cd ../
 
 		-(1.2 tree) apply the cli delimiter patch
 		- wget http://www.eflo.net/files/cli_chan_concise_delimiter.patch
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
-		-(1.2.12) - channel.c bug fix - **THERE IS NO FIX FOR ASTERISK 1.2.11**
-		- wget http://www.eflo.net/files/channel.c-42600.patch
-		- patch -p1 < ./channel.c-42600.patch
-			- File to patch: channel.c
 
 	- make clean
 	- make
@@ -1597,6 +1593,8 @@ insert into server_updater values('10.10.10.15','');
 insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
 
 insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access) values('6666','1234','Admin','9','ADMIN','1','1','1');
+
+insert into vicidial_user_groups (user_group,group_name,allowed_campaigns) values('ADMIN','Administrators',' -ALL-CAMPAIGNS- - -');
 
 insert into conferences values('8600001','10.10.10.15','');
 insert into conferences values('8600002','10.10.10.15','');

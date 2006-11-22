@@ -127,6 +127,7 @@
 # 60906-1152 - Added Previous CallBack info display span
 # 60906-1715 - Allow for Local phone extension conferences
 # 61004-1729 - Add ability to control volume per channel in "calls in this session"
+# 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
 #
 
 require("dbconnect.php");
@@ -172,8 +173,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.100';
-$build = '61004-1729';
+$version = '2.0.101';
+$build = '61122-1341';
 
 if ($force_logout)
 {
@@ -442,7 +443,7 @@ $VDloginDISPLAY=0;
 		$login=strtoupper($VD_login);
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
-		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group from vicidial_users where user='$VD_login' and pass='$VD_pass'";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$LOGfullname=$row[0];
@@ -455,6 +456,7 @@ $VDloginDISPLAY=0;
 		$VU_vicidial_recording=$row[7];
 		$VU_vicidial_transfers=$row[8];
 		$VU_closer_default_blended=$row[9];
+		$VU_user_group=$row[10];
 		if ($WeBRooTWritablE > 0)
 			{
 			fwrite ($fp, "vdweb|GOOD|$date|$VD_login|$VD_pass|$ip|$browser|$LOGfullname|\n");
@@ -463,6 +465,34 @@ $VDloginDISPLAY=0;
 		$user_abb = "$VD_login$VD_login$VD_login$VD_login";
 		while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 			{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
+
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$LOGallowed_campaigns		=$row[0];
+
+		if ( (!eregi("$VD_campaign",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) )
+			{
+			echo "<title>VICIDIAL web client: VICIDIAL Campaign Login</title>\n";
+			echo "</head>\n";
+			echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
+			echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
+			echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
+			echo "</TR></TABLE>\n";
+			echo "<B>Sorry, you are not allowed to login to this campaign: $VD_campaign</B>\n";
+			echo "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
+			echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
+			echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
+			echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
+			echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 MAXLENGTH=20 VALUE=\"$VD_login\">\n<br>";
+			echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"><br>\n";
+			echo "Campaign: $camp_form_code<br>\n";
+			echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
+			echo "</FORM>\n\n";
+			echo "</body>\n\n";
+			echo "</html>\n\n";
+			exit;
+			}
 
 		##### check to see that the campaign is active
 		$stmt="SELECT count(*) FROM vicidial_campaigns where campaign_id='$VD_campaign' and active='Y';";

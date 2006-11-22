@@ -70,6 +70,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	script is only for multi-server systems and is started from new 
 	ADMIN_keepalive_ALL.pl script with option 7 in astguiclient.conf
 
+12. Added the ability to restrict agent logins by user group to a specific set
+	of campaigns. This is definable in the USER GROUPS section of admin.php
+
 
 
 

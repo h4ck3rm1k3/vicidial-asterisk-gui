@@ -455,6 +455,8 @@ if (isset($_GET["dedicated_trunks"]))	{$dedicated_trunks=$_GET["dedicated_trunks
 	elseif (isset($_POST["dedicated_trunks"]))	{$dedicated_trunks=$_POST["dedicated_trunks"];}
 if (isset($_GET["trunk_restriction"]))	{$trunk_restriction=$_GET["trunk_restriction"];}
 	elseif (isset($_POST["trunk_restriction"]))	{$trunk_restriction=$_POST["trunk_restriction"];}
+if (isset($_GET["campaigns"]))	{$campaigns=$_GET["campaigns"];}
+	elseif (isset($_POST["campaigns"]))	{$campaigns=$_POST["campaigns"];}
 
 
 
@@ -788,12 +790,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 61003-1123 - added functions for vicidial_server_trunks records
 # 61109-1022 - added Emergency VDAC Jam Clear function to Campaign Detail screen
 # 61110-1502 - add ability to select NONE in dial statuses, new list_id must not be < 100
+# 61122-1228 - added user group campaign restrictions
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.70';
-$build = '61110-1502';
+$version = '2.0.71';
+$build = '61122-1228';
 
 $STARTtime = date("U");
 
@@ -835,11 +838,12 @@ $browser = getenv("HTTP_USER_AGENT");
 		{
 		$office_no=strtoupper($PHP_AUTH_USER);
 		$password=strtoupper($PHP_AUTH_PW);
-			$stmt="SELECT * from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW'";
+			$stmt="SELECT * from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW';";
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname				=$row[3];
 			$LOGuser_level				=$row[4];
+			$LOGuser_group				=$row[5];
 			$LOGdelete_users			=$row[8];
 			$LOGdelete_user_groups		=$row[9];
 			$LOGdelete_lists			=$row[10];
@@ -855,6 +859,11 @@ $browser = getenv("HTTP_USER_AGENT");
 			$LOGalter_agent_interface	=$row[30];
 			$LOGdelete_call_times		=$row[32];
 			$LOGmodify_call_times		=$row[33];
+
+			$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$LOGallowed_campaigns		=$row[0];
 
 		if ($WeBRooTWritablE > 0)
 			{
@@ -914,6 +923,7 @@ if ($ADD==221111111111)	{$hh='server';		echo "ADDING NEW SERVER VICIDIAL TRUNK R
 if ($ADD==2111111111111)	{$hh='server';		echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='server';		echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
+if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			{$hh='campaigns';	echo "Modify Campaign";}
 if ($ADD==34)			{$hh='campaigns';	echo "Modify Campaign - Basic View";}
 if ($ADD==311)			{$hh='lists';		echo "Modify List";}
@@ -1087,7 +1097,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD=
 		$o++;
 		}
 
-	##### get inbound groups listing for checkboxes
+	##### BEGIN get inbound groups listing for checkboxes #####
 	if ($ADD==31)
 	{
 	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
@@ -1146,6 +1156,67 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD=
 		}
 	if (strlen($groups_value)>2) {$groups_value .= " -";}
 	}
+	##### END get inbound groups listing for checkboxes #####
+
+
+	##### BEGIN get campaigns listing for checkboxes #####
+	if ( ($ADD==211111) or ($ADD==311111) or ($ADD==411111) or ($ADD==511111) or ($ADD==611111) )
+	{
+		if ( ($ADD==211111) or ($ADD==311111) or ($ADD==511111) or ($ADD==611111) )
+		{
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$allowed_campaigns =	$row[0];
+		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
+		$campaigns = explode(" ", $allowed_campaigns);
+		echo "<!--  $allowed_campaigns -->";
+		}
+
+	$campaigns_value='';
+	$campaigns_list='<B><input type="checkbox" name="campaigns[]" value="-ALL-CAMPAIGNS-"';
+		$p=0;
+		while ($p<100)
+			{
+			if (eregi('ALL-CAMPAIGNS',$campaigns[$p])) 
+				{
+				$campaigns_list.=" CHECKED";
+				$campaigns_value .= " -ALL-CAMPAIGNS- -";
+				}
+			$p++;
+			}
+	$campaigns_list.="> ALL-CAMPAIGNS - USERS CAN VIEW ANY CAMPAIGN</B><BR>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$campaign_id_value = $rowx[0];
+		$campaign_name_value = $rowx[1];
+		$campaigns_list .= "<input type=\"checkbox\" name=\"campaigns[]\" value=\"$campaign_id_value\"";
+		$p=0;
+		while ($p<100)
+			{
+			if ($campaign_id_value == $campaigns[$p]) 
+				{
+				echo "<!--  X $p|$campaign_id_value|$campaigns[$p]| -->";
+				$campaigns_list .= " CHECKED";
+				$campaigns_value .= " $campaign_id_value";
+				}
+			echo "<!--  O $p|$campaign_id_value|$campaigns[$p]| -->";
+			$p++;
+			}
+		$campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
+		$o++;
+		}
+	if (strlen($campaigns_value)>2) {$campaigns_value .= " -";}
+	}
+	##### END get campaigns listing for checkboxes #####
+
 
 	if ( (strlen($ADD)==11) or (strlen($ADD)>12) )
 	{
@@ -1802,6 +1873,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_user_groups-group_name">
 <BR>
 <B>Group Name -</B> This is the description of the vicidial user group max of 40 characters.
+
+<BR>
+<A NAME="vicidial_user_groups-allowed_campaigns">
+<BR>
+<B>Allowed Campaigns -</B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system.
 
 
 
@@ -3504,16 +3580,16 @@ if ($ADD==211111)
 			 }
 		 else
 			{
-			$stmt="INSERT INTO vicidial_user_groups values('$user_group','$group_name');";
+			$stmt="INSERT INTO vicidial_user_groups(user_group,group_name,allowed_campaigns) values('$user_group','$group_name','-ALL-CAMPAIGNS-');";
 			$rslt=mysql_query($stmt, $link);
 
-			echo "<br><B>USER GROUP ADDED: $user_start</B>\n";
+			echo "<br><B>USER GROUP ADDED: $user_group</B>\n";
 
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|'$user_group','$group_name'|\n");
+				fwrite ($fp, "$date|ADD A NEW USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
@@ -4340,7 +4416,7 @@ if ($ADD==411111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name' where user_group='$OLDuser_group';";
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
@@ -4349,7 +4425,7 @@ if ($ADD==411111)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name' where user_group='$OLDuser_group'|\n");
+			fwrite ($fp, "$date|MODIFY USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		}
@@ -5865,8 +5941,13 @@ else
 
 if ( ($LOGcampaign_detail < 1) and ($ADD==31) ) {$ADD=34;}	# send to Basic if not allowed
 
+if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
+
 if ($ADD==31)
 {
+
+
 	if ($stage=='show_dialable')
 	{
 		$stmt="UPDATE vicidial_campaigns set display_dialable_count='Y' where campaign_id='$campaign_id';";
@@ -6354,6 +6435,9 @@ if ($LOGdelete_campaigns > 0)
 # ADD=34 modify campaign info in the system - Basic View
 ######################
 
+if ( ($ADD==34) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
+
 if ($ADD==34)
 {
 	if ($stage=='show_dialable')
@@ -6577,6 +6661,19 @@ if ($LOGdelete_campaigns > 0)
 
 
 }
+
+
+######################
+# ADD=31 campaign not allowed
+######################
+
+if ($ADD==30)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+echo "You do not have permission to view campaign $campaign_id\n";
+}
+
 
 
 ######################
@@ -7080,6 +7177,9 @@ echo "<input type=hidden name=OLDuser_group value=\"$user_group\">\n";
 echo "<center><TABLE width=600 cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20 value=\"$user_group\"> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: </td><td align=left>\n";
+echo "$campaigns_list";
+echo "$NWB#vicidial_user_groups-allowed_campaigns$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
 

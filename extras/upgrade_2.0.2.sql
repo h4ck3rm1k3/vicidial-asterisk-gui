@@ -29,3 +29,8 @@ ALTER TABLE vicidial_auto_calls ADD last_update_time TIMESTAMP;
 ALTER TABLE vicidial_auto_calls ADD index (last_update_time);
 
 ALTER TABLE vicidial_auto_calls MODIFY call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT';
+
+ALTER TABLE vicidial_user_groups ADD allowed_campaigns TEXT;
+
+UPDATE vicidial_user_groups SET allowed_campaigns=' -ALL-CAMPAIGNS- - -';
+

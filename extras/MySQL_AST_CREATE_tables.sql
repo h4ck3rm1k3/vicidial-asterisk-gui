@@ -431,7 +431,8 @@ index (user)
 
  CREATE TABLE vicidial_user_groups (
 user_group VARCHAR(20) NOT NULL,
-group_name VARCHAR(40) NOT NULL
+group_name VARCHAR(40) NOT NULL,
+allowed_campaigns TEXT
 );
 
  CREATE TABLE vicidial_campaigns (
