@@ -12,6 +12,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	/usr/share/astguiclient/ADMIN_area_code_populate.pl
 		The Daylight Savings Time scheme for the USA and Canada has been
 		updated for the 2007 changes. Also, Brazil DST has been added.
+		Another addition on this topic is the addition of USA zipcode
+		GMT offset list that allows for more accurate timezone lookups.
 
 2. The astguiclient web directory has been removed and the 
 	astguiclient/admin.php functions have been merged into the 
