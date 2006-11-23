@@ -395,13 +395,13 @@ foreach (@phone_codes)
 						
 					if (!$rec_countW)
 						{
-						if ($DB) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $area_code   $area_GMT\n";}
+						if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $area_code   $area_GMT\n";}
 						$ei++;
 						}
 					else
 						{
 						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
-						if($DB){print STDERR "\n|$stmtA|\n";}
+						if($DBX){print STDERR "\n|$stmtA|\n";}
 						if (!$T) 
 							{
 							$affected_rows = $dbhA->do($stmtA);
@@ -556,13 +556,13 @@ foreach (@phone_codes)
 							
 						if (!$rec_countW)
 							{
-							if ($DB) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $postal_code   $area_GMT\n";}
+							if ($DBX) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $postal_code   $area_GMT\n";}
 							$ei++;
 							}
 						else
 							{
 							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
-							if($DB){print STDERR "\n|$stmtA|\n";}
+							if($DBX){print STDERR "\n|$stmtA|\n";}
 							if (!$T) 
 								{
 								$affected_rows = $dbhA->do($stmtA);
@@ -597,6 +597,8 @@ $dbhA->disconnect();
 if($DB){print "Postal Updates:    $postal_updated_count\n";}
 if($DB){print "Area Code Updates: $area_updated_count\n";}
 if($DB){print "\nDONE\n";}
+$secy = time();		$secz = ($secy - $secX);		$minz = ($secz/60);		# calculate script runtime so far
+print "\n     - process runtime      ($secz sec) ($minz minutes)\n";
 
 exit;
 
