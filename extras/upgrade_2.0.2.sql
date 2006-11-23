@@ -34,3 +34,10 @@ ALTER TABLE vicidial_user_groups ADD allowed_campaigns TEXT;
 
 UPDATE vicidial_user_groups SET allowed_campaigns=' -ALL-CAMPAIGNS- - -';
 
+ CREATE TABLE vicidial_postal_codes (
+postal_code VARCHAR(10) NOT NULL,
+state VARCHAR(4),
+GMT_offset VARCHAR(5),
+DST enum('Y','N'),
+country CHAR(3)
+);

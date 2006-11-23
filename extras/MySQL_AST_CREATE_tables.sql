@@ -800,6 +800,15 @@ index (campaign_id),
 index (server_ip)
 );
 
+ CREATE TABLE vicidial_postal_codes (
+postal_code VARCHAR(10) NOT NULL,
+state VARCHAR(4),
+GMT_offset VARCHAR(5),
+DST enum('Y','N'),
+country CHAR(3)
+);
+
+
 
 
 INSERT INTO vicidial_call_times SET call_time_id='24hours',call_time_name='default 24 hours calling',ct_default_start='0',ct_default_stop='2400';
