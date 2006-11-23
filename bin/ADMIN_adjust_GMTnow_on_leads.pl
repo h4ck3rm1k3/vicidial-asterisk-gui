@@ -243,7 +243,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	{
 	 @aryA = $sthA->fetchrow_array;
 		
-		$postalfile[$rec_countT] = "$aryA[0]\t$aryA[1]\t$aryA[2]\t$aryA[3]\t$aryA[4]\t$aryA[5]\t$aryA[6]\n";
+		$postalfile[$rec_countT] = "$aryA[0]\t$aryA[1]\t$aryA[2]\t$aryA[3]\t$aryA[4]\t$aryA[5]\t$aryA[6]";
 		$rec_countT++;
 	}
 
@@ -297,7 +297,7 @@ foreach (@phone_codes)
 			
 			if (!$rec_countZ)
 				{
-				if ($DB) {print "   IGNORING: $codefile[$e]\n";}
+			#	if ($DB) {print "   IGNORING: $codefile[$e]\n";}
 				$ei++;
 				}
 			else
@@ -414,7 +414,7 @@ foreach (@phone_codes)
 			}
 		else
 			{
-			if ($DBX) {print "   IGNORING: $codefile[$e]\n";}
+		#	if ($DBX) {print "   IGNORING: $codefile[$e]\n";}
 			$ei++;
 			}
 		$e++;
@@ -430,7 +430,7 @@ foreach (@phone_codes)
 		foreach (@postalfile)
 			{
 			chomp($postalfile[$e]);
-			if ($postalfile[$e] =~ /\t$match_code\n$/)
+			if ($postalfile[$e] =~ /\t$match_code$/)
 				{
 					@m = split(/\t/, $postalfile[$e]);
 					$postal_code = $m[0];
@@ -453,7 +453,7 @@ foreach (@phone_codes)
 				
 				if (!$rec_countZ)
 					{
-					if ($DB) {print "   IGNORING: $postalfile[$e]\n";}
+			#		if ($DB) {print "   IGNORING: $postalfile[$e]\n";}
 					$ei++;
 					}
 				else
@@ -570,7 +570,7 @@ foreach (@phone_codes)
 				}
 			else
 				{
-				if ($DBX) {print "   IGNORING: $postalfile[$e]\n";}
+		#		if ($DBX) {print "   IGNORING: $postalfile[$e]\n";}
 				$ei++;
 				}
 			$e++;
