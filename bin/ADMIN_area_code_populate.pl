@@ -122,7 +122,9 @@ foreach (@zipfile)
 	$row[1] =~ s/\r|\n|\t| $//gi;
 	$row[2] =~ s/\r|\n|\t| $//gi;
 	$row[3] =~ s/\r|\n|\t| $//gi;
-	$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', 'USA'), ";
+	if ($row[3] =~ /Y/i) {$DST_range = 'SSM-FSN';}
+	else {$DST_range = '';}
+	$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$DST_range', 'USA', '1'), ";
 	if ($pc =~ /00$/) 
 	{
 		chop($ins_stmt);

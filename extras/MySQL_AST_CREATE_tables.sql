@@ -805,9 +805,10 @@ postal_code VARCHAR(10) NOT NULL,
 state VARCHAR(4),
 GMT_offset VARCHAR(5),
 DST enum('Y','N'),
-country CHAR(3)
+DST_range VARCHAR(8),
+country CHAR(3),
+country_code SMALLINT(5) UNSIGNED
 );
-
 
 
 

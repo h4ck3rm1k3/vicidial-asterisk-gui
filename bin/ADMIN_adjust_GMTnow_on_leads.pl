@@ -33,13 +33,24 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [--debug] = debugging messages\n\n";
+	print "allowed run time options:\n";
+	print "  [-q] = quiet\n";
+	print "  [-t] = test\n";
+	print "  [--debug] = debugging messages\n";
+	print "  [--debugX] = Super debugging messages\n";
+	print "  [--no-postal-lookup] = Do not use postal codes for timezone lookup\n";
+	print "\n";
 	}
 	else
 	{
 		if ($args =~ /-q/i)
 		{
 		$q=1;   $Q=1;
+		}
+		if ($args =~ /-t|--test/i)
+		{
+		$T=1; $TEST=1;
+		print "\n-----TESTING -----\n\n";
 		}
 		if ($args =~ /--debug/i)
 		{
@@ -51,10 +62,10 @@ if (length($ARGV[0])>1)
 		$DBX=1;
 		print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
 		}
-		if ($args =~ /-t|--test/i)
+		if ($args =~ /--no-postal-lookup/i)
 		{
-		$T=1; $TEST=1;
-		print "\n-----TESTING -----\n\n";
+		$NOPOST=1;
+		print "\n----- NO POSTAL LOOKUP -----\n\n";
 		}
 	}
 }
@@ -202,6 +213,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	if ($DB) {print " - Unique Country dial codes found: $rec_countY\n";}
 
 
+	##### Put all country/are code records into an array for speed
 	$stmtA = "select * from vicidial_phone_codes;";
 	if($DBX){print STDERR "\n|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -217,8 +229,26 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$codefile[$rec_countZ] = "$aryA[0]\t$aryA[1]\t$aryA[2]\t$aryA[3]\t$aryA[4]\t$aryA[5]\t$aryA[6]\t$aryA[7]\n";
 		$rec_countZ++;
 	}
+
+	##### Put all postal code records into an array for speed
+	$stmtA = "select * from vicidial_postal_codes;";
+	if($DBX){print STDERR "\n|$stmtA|\n";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+    $sthArows=$sthA->rows;
+    $rec_countT=0;
+    @postalfile=@MT;
+    
+    while ($sthArows > $rec_countT)
+	{
+	 @aryA = $sthA->fetchrow_array;
+		
+		$postalfile[$rec_countT] = "$aryA[0]\t$aryA[1]\t$aryA[2]\t$aryA[3]\t$aryA[4]\t$aryA[5]\t$aryA[6]\n";
+		$rec_countT++;
+	}
+
     $sthA->finish();
-	if ($DB) {print " - GMT phone codes records: $rec_countZ\n";}
+	if ($DB) {print " - GMT postal codes records: $rec_countT\n";}
 
 $ep=0; $ei=0; $ee=0;
 $d=0;
@@ -229,6 +259,7 @@ foreach (@phone_codes)
 
 	if ($DB) {print "\nRUNNING LOOP FOR COUNTRY CODE: $match_code\n";}
 
+	##### BEGIN RUN LOOP FOR EACH COUNTRY CODE/AREA CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
 	$e=0;
 	foreach (@codefile)
 		{
@@ -388,7 +419,164 @@ foreach (@phone_codes)
 			}
 		$e++;
 		}
-	
+	##### END RUN LOOP FOR EACH COUNTRY CODE/AREA CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
+
+
+	if (!$NOPOST)
+		{
+		##### BEGIN RUN LOOP FOR EACH POSTAL CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
+		if ($DB) {print "POSTAL CODE RUN START...\n";}
+		$e=0;
+		foreach (@postalfile)
+			{
+			chomp($postalfile[$e]);
+			if ($postalfile[$e] =~ /\t$match_code\n$/)
+				{
+					@m = split(/\t/, $postalfile[$e]);
+					$postal_code = $m[0];
+					$postal_state = $m[1];
+					$area_GMT = $m[2];		$area_GMT =~ s/\+//gi;	$area_GMT = ($area_GMT + 0);
+					$area_GMT_method = $m[4];
+					$AC_match = " and postal_code LIKE \"$postal_code%\"";
+					if ($DBX) {print "PROCESSING THIS LINE: $postalfile[$e]\n";}
+					
+					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match;";
+					if($DBX){print STDERR "\n|$stmtA|\n";}
+					
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_countZ=0;
+					@aryA = $sthA->fetchrow_array;
+					$rec_countZ = $aryA[0];
+					$sthA->finish();
+				
+				if (!$rec_countZ)
+					{
+					if ($DB) {print "   IGNORING: $postalfile[$e]\n";}
+					$ei++;
+					}
+				else
+					{
+						$AC_GMT_diff = ($area_GMT - $LOCAL_GMT_OFF_STD);
+						$AC_localtime = ($secX + (3600 * $AC_GMT_diff));
+					($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($AC_localtime);
+					$year = ($year + 1900);
+					$mon++;
+					if ($mon < 10) {$mon = "0$mon";}
+					if ($mday < 10) {$mday = "0$mday";}
+					if ($hour < 10) {$hour = "0$hour";}
+					if ($min < 10) {$min = "0$min";}
+					if ($sec < 10) {$sec = "0$sec";}
+					$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
+					
+					$AC_processed=0;
+
+					if ( (!$AC_processed) && ($area_GMT_method =~ /SSM-FSN/) )
+						{
+						if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+						&USACAN_dstcalc;
+						if ($DBX) {print "     DST: $USACAN_DST\n";}
+						if ($USACAN_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /FSA-LSO/) )
+						{
+						if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+						&NA_dstcalc;
+						if ($DBX) {print "     DST: $NA_DST\n";}
+						if ($NA_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /LSM-LSO/) )
+						{
+						if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
+						&GBR_dstcalc;
+						if ($DBX) {print "     DST: $GBR_DST\n";}
+						if ($GBR_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /LSO-LSM/) )
+						{
+						if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
+						&AUS_dstcalc;
+						if ($DBX) {print "     DST: $AUS_DST\n";}
+						if ($AUS_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /FSO-LSM/) )
+						{
+						if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
+						&AUST_dstcalc;
+						if ($DBX) {print "     DST: $AUST_DST\n";}
+						if ($AUST_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /FSO-TSM/) )
+						{
+						if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
+						&NZL_dstcalc;
+						if ($DBX) {print "     DST: $NZL_DST\n";}
+						if ($NZL_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if ( (!$AC_processed) && ($area_GMT_method =~ /TSO-LSF/) )
+						{
+						if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+						&BZL_dstcalc;
+						if ($DBX) {print "     DST: $BZL_DST\n";}
+						if ($BZL_DST) {$area_GMT++;}
+						$AC_processed++;
+						}
+					if (!$AC_processed)
+						{
+						if ($DBX) {print "     No DST Method Found\n";}
+						if ($DBX) {print "     DST: 0\n";}
+						$AC_processed++;
+						}
+
+
+					if ($AC_processed)
+						{
+						$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							$rec_countW=0;
+							@aryA = $sthA->fetchrow_array;
+							$rec_countW = $aryA[0];
+						$sthA->finish();
+							
+						if (!$rec_countW)
+							{
+							if ($DB) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $area_code   $area_GMT\n";}
+							$ei++;
+							}
+						else
+							{
+							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+							if($DB){print STDERR "\n|$stmtA|\n";}
+							if (!$T) {$affected_rows = $dbhA->do($stmtA); }
+							$Prec_countW = sprintf("%8s", $rec_countW);
+							if ($DB) {print " $Prec_countW records in $match_code_ORIG  $postal_code   updated to $area_GMT\n";}
+							$ee++;
+					#		sleep(1);
+							}
+						}
+					}
+				
+				$ep++;
+				}
+			else
+				{
+				if ($DBX) {print "   IGNORING: $postalfile[$e]\n";}
+				$ei++;
+				}
+			$e++;
+			}
+		##### END RUN LOOP FOR EACH POSTAL CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
+		}
 	$d++;
 	}
 
