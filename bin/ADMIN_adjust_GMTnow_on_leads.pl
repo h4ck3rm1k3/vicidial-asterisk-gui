@@ -261,6 +261,7 @@ foreach (@phone_codes)
 
 	##### BEGIN RUN LOOP FOR EACH COUNTRY CODE/AREA CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
 	$e=0;
+	$area_updated_count=0;
 	foreach (@codefile)
 		{
 		chomp($codefile[$e]);
@@ -401,7 +402,11 @@ foreach (@phone_codes)
 						{
 						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
 						if($DB){print STDERR "\n|$stmtA|\n";}
-						if (!$T) {$affected_rows = $dbhA->do($stmtA); }
+						if (!$T) 
+							{
+							$affected_rows = $dbhA->do($stmtA);
+							$area_updated_count = ($area_updated_count + $affected_rows);
+							}
 						$Prec_countW = sprintf("%8s", $rec_countW);
 						if ($DB) {print " $Prec_countW records in $match_code_ORIG  $area_code   updated to $area_GMT\n";}
 						$ee++;
@@ -426,6 +431,7 @@ foreach (@phone_codes)
 		{
 		##### BEGIN RUN LOOP FOR EACH POSTAL CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
 		if ($DB) {print "POSTAL CODE RUN START...\n";}
+		$postal_updated_count=0;
 		$e=0;
 		foreach (@postalfile)
 			{
@@ -550,14 +556,18 @@ foreach (@phone_codes)
 							
 						if (!$rec_countW)
 							{
-							if ($DB) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $area_code   $area_GMT\n";}
+							if ($DB) {print "   ALL GMT ALREADY CORRECT FOR : $match_code_ORIG  $postal_code   $area_GMT\n";}
 							$ei++;
 							}
 						else
 							{
 							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
 							if($DB){print STDERR "\n|$stmtA|\n";}
-							if (!$T) {$affected_rows = $dbhA->do($stmtA); }
+							if (!$T) 
+								{
+								$affected_rows = $dbhA->do($stmtA);
+								$postal_updated_count = ($postal_updated_count + $affected_rows);
+								}
 							$Prec_countW = sprintf("%8s", $rec_countW);
 							if ($DB) {print " $Prec_countW records in $match_code_ORIG  $postal_code   updated to $area_GMT\n";}
 							$ee++;
@@ -584,6 +594,8 @@ foreach (@phone_codes)
 
 $dbhA->disconnect();
 
+if($DB){print "Postal Updates:    $postal_updated_count\n";}
+if($DB){print "Area Code Updates: $area_updated_count\n";}
 if($DB){print "\nDONE\n";}
 
 exit;

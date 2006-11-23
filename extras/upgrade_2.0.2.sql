@@ -43,3 +43,5 @@ DST_range VARCHAR(8),
 country CHAR(3),
 country_code SMALLINT(5) UNSIGNED
 );
+
+ALTER TABLE vicidial_list ADD index (postal_code);

@@ -267,7 +267,8 @@ index (phone_number),
 index (list_id),
 index (called_since_last_reset),
 index (status),
-index (gmt_offset_now)
+index (gmt_offset_now),
+index (postal_code)
 );
 
  CREATE TABLE vicidial_hopper (
