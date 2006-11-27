@@ -18,6 +18,7 @@ REQUIREMENTS:
 - GNU screen 3.9.15 or greater must be installed
 - ntp must be installed and syncd to same time source as any other servers
 - Perl5 with several CPAN modules(Time::HiRes, DBI, DBD::mysql, Net::Telnet, Net::Server etc)
+- asterisk-perl 0.08, do NOT use the 0.09 version, it does not work with VICIDIAL
 - MySQL server or mysqlclientlibs, must be version 4.0.X or higher
 - If you will be installing Asterisk 1.4 releases you need Gnu Make 3.81
 

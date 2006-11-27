@@ -427,6 +427,7 @@ following modules first:   (say YES if asked to install prerequisites)
 - then quit cpan, you are done
 5. Go to http://asterisk.gnuinter.net/ and download the asterisk-perl module
 (backup link: http://www.freedomphones.net/files/asterisk-perl-0.08.tar.gz)
+NOTE: Do NOT use the 0.09 version, it does not work with VICIDIAL
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://asterisk.gnuinter.net/files/asterisk-perl-0.08.tar.gz
