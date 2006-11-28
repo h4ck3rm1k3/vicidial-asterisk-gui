@@ -348,6 +348,7 @@ while($one_day_interval > 0)
 					}
 				$sthA->finish();
 				chop($full_serversSQL);
+				if (length($full_serversSQL)<6) {$full_serversSQL="''";}
 				$event_string.="SERVERS WITH TRUNK FULL for $DBfill_campaign[$camp_CIPct]: $full_servers |$full_serversSQL|";
 				&event_logger;
 
