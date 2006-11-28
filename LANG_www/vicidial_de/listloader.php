@@ -13,12 +13,14 @@
 # 60619-1652 - Added variable filtering to eliminate SQL injection attack threat
 # 60822-1105 - fixed for nonwritable directories
 # 60906-1059 - added filter of non-digits in alt_phone field
+# 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
+# 61128-1046 - added postal code GMT lookup and duplicate check options
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 #
 
-$version = '2.0.1';
-$build = '60822-1105';
+$version = '2.0.2';
+$build = '61128-1046';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -35,6 +37,10 @@ $list_id_override=$_GET["list_id_override"];	if (!$list_id_override) {$list_id_o
 	$list_id_override = (preg_replace("/\D/","",$list_id_override));
 $submit=$_GET["submit"];						if (!$submit) {$submit=$_POST["submit"];}
 $SUBMIT=$_GET["SUBMIT"];						if (!$SUBMIT) {$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["dupcheck"]))				{$dupcheck=$_GET["dupcheck"];}
+	elseif (isset($_POST["dupcheck"]))		{$dupcheck=$_POST["dupcheck"];}
+if (isset($_GET["postalgmt"]))				{$postalgmt=$_GET["postalgmt"];}
+	elseif (isset($_POST["postalgmt"]))		{$postalgmt=$_POST["postalgmt"];}
 
 
 #$DB=1;
@@ -112,9 +118,9 @@ echo "<!-- SEED TIME  $secX:   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT VERSE
 function openNewWindow(url) {
   window.open (url,"",'width=500,height=300,scrollbars=yes,menubar=yes,address=yes');
 }
-function ShowProgress(good, bad, total) {
+function ShowProgress(good, bad, total, dup, post) {
 	parent.lead_count.document.open();
-	parent.lead_count.document.write('<html><body><table border=0 width=200 cellpadding=10 cellspacing=0 align=center valign=top><tr bgcolor="#000000"><th colspan=2><font face="arial, helvetica" size=3 color=white>Gegenwärtiger Akte Status:</font></th></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Good:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+good+'</B></font></td></tr><tr bgcolor="#990000"><td align=right><font face="arial, helvetica" size=2 color=white><B>Bad:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+bad+'</B></font></td></tr><tr bgcolor="#000099"><td align=right><font face="arial, helvetica" size=2 color=white><B>Total:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+total+'</B></font></td></tr></table><body></html>');
+	parent.lead_count.document.write('<html><body><table border=0 width=200 cellpadding=10 cellspacing=0 align=center valign=top><tr bgcolor="#000000"><th colspan=2><font face="arial, helvetica" size=3 color=white>Gegenwärtiger Akte Status:</font></th></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Good:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+good+'</B></font></td></tr><tr bgcolor="#990000"><td align=right><font face="arial, helvetica" size=2 color=white><B>Bad:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+bad+'</B></font></td></tr><tr bgcolor="#000099"><td align=right><font face="arial, helvetica" size=2 color=white><B>Total:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+total+'</B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B> &nbsp; </B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B> &nbsp; </B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Duplicate:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+dup+'</B></font></td></tr><tr bgcolor="#009900"><td align=right><font face="arial, helvetica" size=2 color=white><B>Postal Match:</B></font></td><td align=left><font face="arial, helvetica" size=2 color=white><B>'+post+'</B></font></td></tr></table><body></html>');
 	parent.lead_count.document.close();
 }
 </script>
@@ -129,6 +135,14 @@ function ShowProgress(good, bad, total) {
   <tr>
 	<td align=right width="25%"><font face="arial, helvetica" size=2>Liste Identifikation Override: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="" name='list_id_override' size=10 maxlength=8> (nur Zahlen or leave blank for values in the file)</td>
+  </tr>
+  <tr>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Duplicate Check: </font></td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck><option selected value="NONE">NO DUPLICATE CHECK</option><option value="DUP">CHECK FOR DUPLICATES BY PHONE IN LISTE IDENTIFIKATION</option></select></td>
+  </tr>
+  <tr>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Timezone Lookup: </font></td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=postalgmt><option selected value="AREA">COUNTRY CODE AND AREA CODE ONLY</option><option value="POSTAL">POSTAL CODE FIRST</option></select></td>
   </tr>
   <tr>
 	<td align=center><input type=submit value="SUBMIT" name='submit_file'></td>
@@ -168,7 +182,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 	if (count($field_check)>=5) {
 		flush();
 		$file=fopen("$lead_file", "r");
-		$total=0; $good=0; $bad=0;
+		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 		print "<center><font face='arial, helvetica' size=3 color='#009900'><B>Verarbeitung$delim_name-delimited file... ($tab_count|$pipe_count)\n";
 
 	if (strlen($list_id_override)>0) 
@@ -209,81 +223,125 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 				$security_phrase =		$row[21];
 				$comments =				trim($row[22]);
 
-				if (strlen($phone_number)>6) 
+				if (strlen($list_id_override)>0) 
 					{
+				#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+					$list_id = $list_id_override;
+					}
+
+				##### Check for duplicate phone numbers in vicidial_list table #####
+				if (eregi("DUP",$dupcheck))
+					{
+					$dup_lead=0;
+					$stmt="select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
+					$rslt=mysql_query($stmt, $link);
+					$pc_recs = mysql_num_rows($rslt);
+					if ($pc_recs > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$dup_lead =			$row[0];
+						}
+					if ($dup_lead < 1)
+						{
+						if (eregi("$phone_number$US$list_id",$phone_list))
+							{$dup_lead++; $dup++;}
+						}
+					}
+
+				if ( (strlen($phone_number)>6) and ($dup_lead<1) )
+					{
+					$US='_';
 					$entry_date =			"$pulldate";
 					$modify_date =			"";
 					$status =				"NEW";
 					$user =					"";
 					$gmt_offset =			'0';
 					$called_since_last_reset='N';
+					$phone_list .= "$phone_number$US$list_id|";
 
-					if (strlen($list_id_override)>0) 
+					$postalgmt_found=0;
+					if ( (eregi("POSTAL",$postalgmt)) && (strlen($postal_code)>4) )
 						{
-					#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
-						$list_id = $list_id_override;
-						}
-
-					$PC_processed=0;
-					### UNITED STATES ###
-					if ($phone_code =='1')
-						{
-						$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-						$rslt=mysql_query($stmt, $link);
-						$pc_recs = mysql_num_rows($rslt);
-						if ($pc_recs > 0)
+						if (preg_match('/^1$/', $phone_code))
 							{
-							$row=mysql_fetch_row($rslt);
-							$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
-							$dst =			$row[5];
-							$dst_range =	$row[6];
-							$PC_processed++;
+							$stmt="select * from vicidial_postal_codes where country_code='$phone_code' and postal_code LIKE \"$postal_code%\";";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$gmt_offset =	$row[2];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
+								$dst =			$row[3];
+								$dst_range =	$row[4];
+								$PC_processed++;
+								$postalgmt_found++;
+								$post++;
+								}
 							}
 						}
-					### MEXICO ###
-					if ($phone_code =='52')
+					if ($postalgmt_found < 1)
 						{
-						$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-						$rslt=mysql_query($stmt, $link);
-						$pc_recs = mysql_num_rows($rslt);
-						if ($pc_recs > 0)
+						$PC_processed=0;
+						### UNITED STATES ###
+						if ($phone_code =='1')
 							{
-							$row=mysql_fetch_row($rslt);
-							$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
-							$dst =			$row[5];
-							$dst_range =	$row[6];
-							$PC_processed++;
+							$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
+								$dst =			$row[5];
+								$dst_range =	$row[6];
+								$PC_processed++;
+								}
 							}
-						}
-					### AUSTRALIA ###
-					if ($phone_code =='61')
-						{
-						$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
-						$rslt=mysql_query($stmt, $link);
-						$pc_recs = mysql_num_rows($rslt);
-						if ($pc_recs > 0)
+						### MEXICO ###
+						if ($phone_code =='52')
 							{
-							$row=mysql_fetch_row($rslt);
-							$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
-							$dst =			$row[5];
-							$dst_range =	$row[6];
-							$PC_processed++;
+							$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
+								$dst =			$row[5];
+								$dst_range =	$row[6];
+								$PC_processed++;
+								}
 							}
-						}
-					### ALL OTHER COUNTRY CODES ###
-					if (!$PC_processed)
-						{
-						$PC_processed++;
-						$stmt="select * from vicidial_phone_codes where country_code='$phone_code';";
-						$rslt=mysql_query($stmt, $link);
-						$pc_recs = mysql_num_rows($rslt);
-						if ($pc_recs > 0)
+						### AUSTRALIA ###
+						if ($phone_code =='61')
 							{
-							$row=mysql_fetch_row($rslt);
-							$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
-							$dst =			$row[5];
-							$dst_range =	$row[6];
+							$stmt="select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
+								$dst =			$row[5];
+								$dst_range =	$row[6];
+								$PC_processed++;
+								}
+							}
+						### ALL OTHER COUNTRY CODES ###
+						if (!$PC_processed)
+							{
 							$PC_processed++;
+							$stmt="select * from vicidial_phone_codes where country_code='$phone_code';";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$gmt_offset =	$row[4];	 $gmt_offset = eregi_replace("\+","",$gmt_offset);
+								$dst =			$row[5];
+								$dst_range =	$row[6];
+								$PC_processed++;
+								}
 							}
 						}
 
@@ -300,14 +358,14 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 					$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 					
 					$AC_processed=0;
-					if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
+					if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 						{
-						if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+						if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
 						#**********************************************************************
-						# FSA-LSO
+						# SSM-FSN
 						#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 						#       Standard time is in effect.
-						#     Based on first Sunday in April and last Sunday in October at 2 am.
+						#     Based on Second Sunday March to First Sunday November at 2 am.
 						#     INPUTS:
 						#       mm              INTEGER       Month.
 						#       dd              INTEGER       Day of the month.
@@ -321,64 +379,147 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 						#                                     and 9:00 UTC in October
 						#     OUTPUT: 
 						#                       INTEGER       1 = DST, 0 = not DST
+						#
+						# S  M  T  W  T  F  S
+						# 1  2  3  4  5  6  7
+						# 8  9 10 11 12 13 14
+						#15 16 17 18 19 20 21
+						#22 23 24 25 26 27 28
+						#29 30 31
+						# 
+						# S  M  T  W  T  F  S
+						#    1  2  3  4  5  6
+						# 7  8  9 10 11 12 13
+						#14 15 16 17 18 19 20
+						#21 22 23 24 25 26 27
+						#28 29 30 31
+						# 
+						#**********************************************************************
+
+							$USACAN_DST=0;
+							$mm = $mon;
+							$dd = $mday;
+							$ns = $dsec;
+							$dow= $wday;
+
+							if ($mm < 3 || $mm > 11) {
+							$USACAN_DST=0;   
+							} elseif ($mm >= 4 and $mm <= 10) {
+							$USACAN_DST=1;   
+							} elseif ($mm == 3) {
+							if ($dd > 13) {
+								$USACAN_DST=1;   
+							} elseif ($dd >= ($dow+8)) {
+								if ($timezone) {
+								if ($dow == 0 and $ns < (7200+$timezone*3600)) {
+									$USACAN_DST=0;   
+								} else {
+									$USACAN_DST=1;   
+								}
+								} else {
+								if ($dow == 0 and $ns < 7200) {
+									$USACAN_DST=0;   
+								} else {
+									$USACAN_DST=1;   
+								}
+								}
+							} else {
+								$USACAN_DST=0;   
+							}
+							} elseif ($mm == 11) {
+							if ($dd > 7) {
+								$USACAN_DST=0;   
+							} elseif ($dd < ($dow+1)) {
+								$USACAN_DST=1;   
+							} elseif ($dow == 0) {
+								if ($timezone) { # UTC calculations
+								if ($ns < (7200+($timezone-1)*3600)) {
+									$USACAN_DST=1;   
+								} else {
+									$USACAN_DST=0;   
+								}
+								} else { # lokale Zeit calculations
+								if ($ns < 7200) {
+									$USACAN_DST=1;   
+								} else {
+									$USACAN_DST=0;   
+								}
+								}
+							} else {
+								$USACAN_DST=0;   
+							}
+							} # end of month checks
+						if ($DBX) {print "     DST: $USACAN_DST\n";}
+						if ($USACAN_DST) {$gmt_offset++;}
+						$AC_processed++;
+						}
+
+					if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
+						{
+						if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+						#**********************************************************************
+						# FSA-LSO
+						#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+						#       Standard time is in effect.
+						#     Based on first Sunday in April and last Sunday in October at 2 am.
 						#**********************************************************************
 							
-							$USA_DST=0;
+							$NA_DST=0;
 							$mm = $mon;
 							$dd = $mday;
 							$ns = $dsec;
 							$dow= $wday;
 
 							if ($mm < 4 || $mm > 10) {
-							$USA_DST=0;
+							$NA_DST=0;
 							} elseif ($mm >= 5 and $mm <= 9) {
-							$USA_DST=1;
+							$NA_DST=1;
 							} elseif ($mm == 4) {
 							if ($dd > 7) {
-								$USA_DST=1;
+								$NA_DST=1;
 							} elseif ($dd >= ($dow+1)) {
 								if ($timezone) {
 								if ($dow == 0 and $ns < (7200+$timezone*3600)) {
-									$USA_DST=0;
+									$NA_DST=0;
 								} else {
-									$USA_DST=1;
+									$NA_DST=1;
 								}
 								} else {
 								if ($dow == 0 and $ns < 7200) {
-									$USA_DST=0;
+									$NA_DST=0;
 								} else {
-									$USA_DST=1;
+									$NA_DST=1;
 								}
 								}
 							} else {
-								$USA_DST=0;
+								$NA_DST=0;
 							}
 							} elseif ($mm == 10) {
 							if ($dd < 25) {
-								$USA_DST=1;
+								$NA_DST=1;
 							} elseif ($dd < ($dow+25)) {
-								$USA_DST=1;
+								$NA_DST=1;
 							} elseif ($dow == 0) {
 								if ($timezone) { # UTC calculations
 								if ($ns < (7200+($timezone-1)*3600)) {
-									$USA_DST=1;
+									$NA_DST=1;
 								} else {
-									$USA_DST=0;
+									$NA_DST=0;
 								}
 								} else { # lokale Zeit calculations
 								if ($ns < 7200) {
-									$USA_DST=1;
+									$NA_DST=1;
 								} else {
-									$USA_DST=0;
+									$NA_DST=0;
 								}
 								}
 							} else {
-								$USA_DST=0;
+								$NA_DST=0;
 							}
 							} # end of month checks
 
-						if ($DBX) {print "     DST: $USA_DST\n";}
-						if ($USA_DST) {$gmt_offset++;}
+						if ($DBX) {print "     DST: $NA_DST\n";}
+						if ($NA_DST) {$gmt_offset++;}
 						$AC_processed++;
 						}
 
@@ -652,6 +793,77 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 						if ($NZL_DST) {$gmt_offset++;}
 						$AC_processed++;
 						}
+
+					if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
+						{
+						if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+						#**********************************************************************
+						# TSO-LSF
+						#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
+						#       Standard time is in effect. Brazil
+						#     Based on Third Sunday October to Last Sunday February at 1 am.
+						#**********************************************************************
+							
+							$BZL_DST=0;
+							$mm = $mon;
+							$dd = $mday;
+							$ns = $dsec;
+							$dow= $wday;
+
+							if ($mm < 2 || $mm > 10) {
+							$BZL_DST=1;   
+							} elseif ($mm >= 3 and $mm <= 9) {
+							$BZL_DST=0;   
+							} elseif ($mm == 2) {
+							if ($dd < 22) {
+								$BZL_DST=1;   
+							} elseif ($dd < ($dow+22)) {
+								$BZL_DST=1;   
+							} elseif ($dow == 0) {
+								if ($timezone) { # UTC calculations
+								if ($ns < (3600+($timezone-1)*3600)) {
+									$BZL_DST=1;   
+								} else {
+									$BZL_DST=0;   
+								}
+								} else { # lokale Zeit calculations
+								if ($ns < 3600) {
+									$BZL_DST=1;   
+								} else {
+									$BZL_DST=0;   
+								}
+								}
+							} else {
+								$BZL_DST=0;   
+							}
+							} elseif ($mm == 10) {
+							if ($dd < 22) {
+								$BZL_DST=0;   
+							} elseif ($dd < ($dow+22)) {
+								$BZL_DST=0;   
+							} elseif ($dow == 0) {
+								if ($timezone) { # UTC calculations
+								if ($ns < (3600+($timezone-1)*3600)) {
+									$BZL_DST=0;   
+								} else {
+									$BZL_DST=1;   
+								}
+								} else { # lokale Zeit calculations
+								if ($ns < 3600) {
+									$BZL_DST=0;   
+								} else {
+									$BZL_DST=1;   
+								}
+								}
+							} else {
+								$BZL_DST=1;   
+							}
+							} # end of month checks
+						if ($DBX) {print "     DST: $BZL_DST\n";}
+						if ($BZL_DST) {$gmt_offset++;}
+						$AC_processed++;
+						}
+
 					if (!$AC_processed)
 						{
 						if ($DBX) {print "     No DST Method Found\n";}
@@ -662,7 +874,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 
 					if ($multi_insert_counter > 8) {
 						### insert good deal into pending_transactions table ###
-						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
+						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
 						$rslt=mysql_query($stmtZ, $link);
 							if ($WeBRooTWritablE > 0)
 								{fwrite($stmt_file, $stmtZ."\r\n");}
@@ -670,18 +882,21 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 						$multi_insert_counter=0;
 
 					} else {
-						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
+						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
 						$multi_insert_counter++;
 					}
 
 					$good++;
-				} else {
-					if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]|</font><b>\n";}
+				} 
+			else 
+				{
+					if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
-				if ($total%100==0) {
-					print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total)</script>";
+			if ($total%100==0) 
+				{
+					print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total, $dup, $post)</script>";
 					usleep(1000);
 					flush();
 				}
@@ -694,7 +909,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 				{fwrite($stmt_file, $stmtZ."\r\n");}
 		}
 
-		print "<BR><BR>Done</B> GOOD: $good &nbsp; &nbsp; &nbsp; BAD: $bad &nbsp; &nbsp; &nbsp; TOTAL: $total</font></center>";
+		print "<BR><BR>Done</B> GOOD: $good &nbsp; &nbsp; &nbsp; BAD: $bad &nbsp; &nbsp; &nbsp; TOTAL: $total<BR>DUPLICATE: $dup &nbsp; &nbsp; &nbsp; POSTAL MATCH: $post</font></center>";
 
 	} else {
 		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>STÖRUNG: Die Akte hat nicht die erforderliche Zahl vonauffängt, um sie zu verarbeiten.</B></font></center>";

@@ -418,3 +418,5 @@ Last Call: |Στο τέλος καλέστε:|
 CallBack: |CallBack:|
 Agent: |Πράκτορας:|
 Comments: |Σχολιάζει:|
+### BEGIN translation phrases for 2.0.2 release ###
+VOLUME|ΌΓΚΟΣ|

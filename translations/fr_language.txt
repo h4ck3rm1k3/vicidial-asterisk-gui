@@ -420,3 +420,5 @@ Last Call: |Dernier Appel :|
 CallBack: |Rappel de service :|
 Agent: |Agent :|
 Comments: |Commentaires :|
+### BEGIN translation phrases for 2.0.2 release ###
+VOLUME|VOLUME|

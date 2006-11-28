@@ -1158,12 +1158,12 @@ register to if you plan on using G729 as your codec: iax-g729.binfone.com
 	TRUNKBINFONE=IAX2/1112223333:PASSWORD@iax.binfone.com	; IAX trunk interface
 
 	[default]
-	exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 	[incoming]
-	exten => 1112223333,1,AGI(call_log.agi,${EXTEN})
+	exten => 1112223333,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
 	exten => 1112223333,2,Dial(sip/gs102,55,o)
 	exten => 1112223333,3,Hangup
 
@@ -1351,12 +1351,12 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 ######------ END extensions.conf example ------######
 
 ### OPTIONAL IAX trunk extensions entries for long distance dialing over IAX
-	exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 ### OPTIONAL SIP trunk extensions entries for long distance dialing over SIP
-	exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
@@ -1700,19 +1700,18 @@ effected extension groups are show):
 
 ##### This 'h' exten is VERY important for VICIDIAL usage, 
 ##### you will have problems if it is not in your dialplan!
-;exten => h,1,AGI(call_log.agi,${EXTEN}) ; use regular AGI for older versions
-exten => h,1,DeadAGI(call_log.agi,${EXTEN}) ; DeadAGI is new
-exten => h,2,DeadAGI(VD_hangup.agi,PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log)
+exten => h,2,DeadAGI(agi://127.0.0.1:4577/VD_hangup--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
 
 ; Extension 3429 - Inbound 800 number (1-800-555-3429)
 exten => _**3429,1,Ringing
-exten => _**3429,2,AGI(call_log.agi,${EXTEN})
+exten => _**3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _**3429,3,Answer
 exten => _**3429,4,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _**3429,5,Voicemail,u2000           
 ; Extension 3429 - with ANI [callerID]
 exten => _*NXXNXXXXXX*3429,1,Ringing
-exten => _*NXXNXXXXXX*3429,2,AGI(call_log.agi,${EXTEN})
+exten => _*NXXNXXXXXX*3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000           
@@ -1720,52 +1719,52 @@ exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
 ; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
 exten => 7275551212,1,Ringing
 exten => 7275551212,2,Wait(1)
-exten => 7275551212,3,AGI(call_logCID.agi,${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
+exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
 exten => 7275551212,4,Answer
 exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001|30|to
 exten => 7275551212,6,Voicemail,u2000
 
 ; dial a long distance outbound number to the UK
-exten => _901144XXXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _901144XXXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _901144XXXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},55,tTo)
 exten => _901144XXXXXXXXXX,3,Hangup
 
 ; dial a long distance outbound number to Australia
-exten => _901161XXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _901161XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
 exten => _901161XXXXXXXXX,3,Hangup
 
 ; dial an 800 outbound number
-exten => _91800NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91800NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91800NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _91800NXXXXXX,3,Hangup
-exten => _91888NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91888NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91888NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _91888NXXXXXX,3,Hangup
-exten => _91877NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91877NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91877NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _91877NXXXXXX,3,Hangup
-exten => _91866NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91866NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91866NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _91866NXXXXXX,3,Hangup
 
 ; dial a local 727 outbound number with area code
-exten => _9727NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9727NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,tTo)
 exten => _9727NXXXXXX,3,Hangup
 
 ; dial a local 813 outbound number with area code
-exten => _9813NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9813NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _9813NXXXXXX,3,Hangup
 
 ; dial a long distance outbound number
-exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
 exten => _91NXXNXXXXXX,3,Hangup
 
 ; dial a local outbound number (modified because of only LD T1)
-exten => _9NXXXXXX,1,AGI(call_log.agi,${EXTEN})
+exten => _9NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,tTo)
 exten => _9NXXXXXX,3,Hangup
 
@@ -1785,14 +1784,14 @@ entries(only effected extension groups are show):
 
 ; Extension 3429 - Inbound 800 number (1-800-555-3429)
 exten => _**3429,1,Ringing
-exten => _**3429,2,AGI(call_log.agi,${EXTEN})
+exten => _**3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _**3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
 exten => _**3429,4,Answer
 exten => _**3429,5,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _**3429,6,Voicemail,u2000
 ; Extension 3429 - with ANI [callerID]
 exten => _*NXXNXXXXXX*3429,1,Ringing
-exten => _*NXXNXXXXXX*3429,2,AGI(call_log.agi,${EXTEN})
+exten => _*NXXNXXXXXX*3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
 exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
@@ -2394,41 +2393,41 @@ exten => _851XXXXX,3,Hangup
 #### VDAD STANDARD TRANSFER ENTRIES ####
 ; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
 exten => 8364,1,Playback(sip-silence)
-exten => 8364,2,AGI(call_log.agi,${EXTEN})
+exten => 8364,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
 exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
 exten => 8364,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script:
-exten => 8365,1,AGI(call_log.agi,${EXTEN})
+exten => 8365,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
 exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
 exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
 exten => 8365,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
-exten => 8366,1,AGI(call_log.agi,${EXTEN})
+exten => 8366,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8366,2,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 exten => 8366,3,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 exten => 8366,4,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 exten => 8366,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
-exten => 8367,1,AGI(call_log.agi,${EXTEN})
+exten => 8367,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8367,2,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
 exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
 exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
 exten => 8367,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balanced:
-exten => 8368,1,AGI(call_log.agi,${EXTEN})
+exten => 8368,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8368,2,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8368,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
-exten => 8369,1,AGI(call_log.agi,${EXTEN})
+exten => 8369,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8369,2,AMD(3500|1500|300|5000|120|50|5|256)
 exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
 exten => 8369,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
@@ -2437,7 +2436,7 @@ exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8369,7,Hangup
 
 ; VICIDIAL auto-dial reminder script
-exten => 8372,1,AGI(call_log.agi,${EXTEN})
+exten => 8372,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8372,2,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
@@ -2448,35 +2447,35 @@ exten => 8372,5,Hangup
 #### and are not registering your provider in sip.conf
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,Playback(sip-silence)
-exten => 8365,2,AGI(call_log.agi,${EXTEN})
+exten => 8365,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
 exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
 exten => 8365,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
 exten => 8366,1,Playback(sip-silence)
-exten => 8366,2,AGI(call_log.agi,${EXTEN})
+exten => 8366,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8366,3,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 exten => 8366,4,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 exten => 8366,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
 exten => 8367,1,Playback(sip-silence)
-exten => 8367,2,AGI(call_log.agi,${EXTEN})
+exten => 8367,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
 exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
 exten => 8367,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balanced:
 exten => 8368,1,Playback(sip-silence)
-exten => 8368,2,AGI(call_log.agi,${EXTEN})
+exten => 8368,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8368,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 exten => 8369,1,Playback(sip-silence)
-exten => 8369,2,AGI(call_log.agi,${EXTEN})
+exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8369,3,AMD(3500|1500|300|5000|120|50|5|256)
 exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
 exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
@@ -2485,7 +2484,7 @@ exten => 8369,7,Hangup
 
 ; VICIDIAL auto-dial reminder script
 exten => 8372,1,Playback(sip-silence)
-exten => 8372,2,AGI(call_log.agi,${EXTEN})
+exten => 8372,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,5,Hangup

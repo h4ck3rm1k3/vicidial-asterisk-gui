@@ -8,12 +8,6 @@
 ***LANGUAGES***
 en-English|es-Español|
 ***FILES***
-astguiclient|admin.php|0
-astguiclient|remote_inbound.php|0
-astguiclient|phone_stats.php|0
-astguiclient|inbound_popup.php|0
-astguiclient|AST_inboundEXTstats.php|0
-astguiclient|dbconnect.php|1
 vicidial|admin.php|0
 vicidial|dbconnect.php|1
 vicidial|AST_VICIDIAL_hopperlist.php|0
@@ -31,7 +25,9 @@ vicidial|listloaderMAIN.php|0
 vicidial|new_listloader_superL.php|0
 vicidial|count.htm|1
 vicidial|help.gif|1
-astguiclient|help.gif|1
+vicidial|listloader.pl|1
+vicidial|listloader_rowdisplay.pl|1
+vicidial|listloader_super.pl|1
 vicidial|user_stats.php|0
 vicidial|remote_dispo.php|0
 vicidial|group_hourly_stats.php|0
@@ -43,7 +39,9 @@ vicidial|AST_agent_performance_detail.php|0
 vicidial|AST_agent_performance.php|0
 vicidial|AST_server_performance.php|0
 vicidial|AST_admin_log_display.php|0
-vicidial|AST_timeonVDADall_SIPmonitor.php|0
+vicidial|AST_timeonVDADallSUMMARY.php|0
+vicidial|inbound_popup.php|0
+vicidial|AST_inboundEXTstats.php|0
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|Border|
@@ -1092,3 +1090,36 @@ Maximum Adapt Dial Level|El Máximo Adapta El Nivel Del Dial|
 Latest Server Time|El Tiempo Más último Del Servidor|
 Adapt Intensity Modifier|Adapte El Modificante De la Intensidad|
 Dial Level Difference Target|Blanco Llana De la Diferencia Del Dial|
+### START translations for 2.0.2 release ###
+VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting|Los troncos del servidor de VICIDIAL permiten que usted restrinja laslíneas salientes que se utilizan en este servidor para la campañaque marca sobre una base de la por-campaña. Usted tiene la opciónpara reservar un número de las líneas específico que se utilizaránpor solamente una campaña así como permitir que esa campañafuncione sobre sus líneas reservadas en cualesquiera líneas siguensiendo abiertas, según lo en las líneas totales usadas por vicidialen este servidor es de largo menos que fijar de los troncos delmáximo VICIDIAL. No tener cualesquiera de estos expedientespermitirá la campaña que marca la línea primero para tener tantaslíneas mientras que puede conseguir bajo fijar de los troncos delmáximo VICIDIAL|
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N|El marcar del balance de VICIDIAL - fijar este campo a Y permitiráque el servidor ponga las llamadas del balance para las campañas enVICIDIAL para poder resolver el nivel definido del dial incluso si nohay agentes registrados en esa campaña en este servidor. El defectoes N|
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0|Balance Offlimits de VICIDIAL - este ajuste define el número detroncos para no permitir el balance de VICIDIAL que marca parautilizar. Por ejemplo si usted tiene 40 troncos y offlimits vicidialmáximos del balance se fijan a 10 que usted podrá solamenteutilizar 30 líneas interurbanas para marcar del balance de VICIDIAL.El defecto es 0|
+Allowed Campaigns -<\/B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system|Campañas permitidas - ésta es una lista seleccionable de lascampañas a las cuales los miembros de este grupo de usuario puedenabrirse una sesión. La opción de ALL-CAMPAIGNS permite que losusuarios en este grupo consideren y se abran una sesión a cualquiercampaña en el sistema|
+VICIDIAL SERVER TRUNK RECORD NOT ADDED|EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL NO AGREGADO|
+there is already a server-trunk record for this campaign|hay ya un expediente del servidor-tronco para esta campaña|
+the number of vicidial trunks is too high|el número de troncos vicidial es demasiado alto|
+VICIDIAL SERVER TRUNK RECORD ADDED|EL EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL AGREGÓ|
+VICIDIAL SERVER TRUNK RECORD NOT MODIFIED|EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL NO MODIFICADO|
+VICIDIAL SERVER TRUNK RECORD MODIFIED|EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL MODIFICADO|
+VICIDIAL SERVER TRUNK RECORD NOT DELETED|EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL NO SUPRIMIDO|
+VICIDIAL SERVER TRUNK RECORD DELETED|EXPEDIENTE DEL TRONCO DEL SERVIDOR DE VICIDIAL SUPRIMIDO|
+campaign must be between 3 and 8 characters in length|la campaña debe estar entre 3 y 8 caracteres en longitud|
+server_ip delay must be at least 7 characters|el server_ip retrasa debe ser por lo menos 7 caracteres|
+trunks must be a digit from 0 to 9999|los troncos deben ser un dígito a partir de la 0 a 9999|
+VICIDIAL Balance Dialing|El Marcar Del Balance de VICIDIAL|
+VICIDIAL Balance Offlimits|Balance Offlimits de VICIDIAL|
+ADDING NEW SERVER VICIDIAL TRUNK RECORD|ADICIÓN DEL NUEVO EXPEDIENTE DEL TRONCO DEL SERVIDOR VICIDIAL|
+ADD NEW SERVER VICIDIAL TRUNK RECORD|AGREGUE EL NUEVO EXPEDIENTE DEL TRONCO DEL SERVIDOR VICIDIAL|
+MODIFY SERVER VICIDIAL TRUNK RECORD|MODIFIQUE EL EXPEDIENTE DEL TRONCO DEL SERVIDOR VICIDIAL|
+DELETE SERVER VICIDIAL TRUNK RECORD|EXPEDIENTE DEL TRONCO DEL SERVIDOR VICIDIAL DE LA CANCELACIÓN|
+VICIDIAL TRUNKS FOR THIS SERVER|TRONCOS DE VICIDIAL PARA ESTE SERVIDOR|
+RESTRICTION|RESTRICCIÓN|
+TRUNKS|TRONCOS|
+Emergency VDAC Jam Clear|Claro Del Atasco De la Emergencia VDAC|
+VDAC NOT CLEARED FOR CAMPAIGN|VDAC NO DESPEJÓ PARA LA CAMPAÑA|
+LAST VDAC RECORD CLEARED FOR CAMPAIGN|DE REGISTRO PASADO DE VDAC DESPEJADA PARA LA CAMPAÑA|
+VDAC CLEAR CONFIRMATION|CONFIRMACIÓN CLARA DE VDAC|
+Click here to delete the oldest LIVE record in VDAC for|Chasque aquí para suprimir el más viejo VIVEN expediente en VDACpara|
+Allowed Campaigns|Campañas Permitidas|
+USERS CAN VIEW ANY CAMPAIGN|LOS USUARIOS PUEDEN VISIÓN CUALQUIER CAMPAÑA|
+Campaign Not Allowed|Campaña No permitida|

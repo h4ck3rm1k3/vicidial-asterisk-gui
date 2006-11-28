@@ -24,9 +24,15 @@ if (length($ARGV[0])>1)
 	if ($args =~ /--help|-h/i)
 	{
 	print "allowed run time options:\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-h] = this help screen\n\n";
+
+	exit;
 	}
 	else
 	{
+		if ($args =~ /-duplicate-check/i)
+			{$dupcheck=1;}
+		if ($args =~ /-postal-code-gmt/i)
+			{$postalgmt=1;}
 		if ($args =~ /--lead-file=/i)
 		{
 		@data_in = split(/--lead-file=/,$args);

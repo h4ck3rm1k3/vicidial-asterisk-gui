@@ -187,11 +187,16 @@ echo "Longitud media para las Llamadas sin Respuesta en segundos:       $average
 ##############################
 #########  USER STATS
 
+$TOTagents=0;
+$TOTcalls=0;
+$TOTtime=0;
+$TOTavg=0;
+
 echo "\n";
-echo "---------- ESTADÍSTICAS DEL USUARIO\n";
-echo "+--------------------------+------------+--------+--------+\n";
-echo "| USUARIO                  | CALLS      | TIME M | AVRG M |\n";
-echo "+--------------------------+------------+--------+--------+\n";
+echo "---------- AGENTE STATS\n";
+echo "+--------------------------+------------+----------+--------+\n";
+echo "| AGENTE                    | CALLS      | TIME M   | AVRG M |\n";
+echo "+--------------------------+------------+----------+--------+\n";
 
 $stmt="select vicidial_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_log.user=vicidial_users.user group by vicidial_log.user;";
 $rslt=mysql_query($stmt, $link);
@@ -201,6 +206,9 @@ $i=0;
 while ($i < $users_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
+
+	$TOTcalls = ($TOTcalls + $row[2]);
+	$TOTtime = ($TOTtime + $row[3]);
 
 	$user =			sprintf("%-6s", $row[0]);
 	$full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
@@ -228,12 +236,59 @@ while ($i < $users_to_print)
 	$USERavgTALK_MS = "$USERavgTALK_M_int:$USERavgTALK_S";
 	$USERavgTALK_MS =		sprintf("%6s", $USERavgTALK_MS);
 
-	echo "| $user - $full_name | $USERcalls | $USERtotTALK_MS | $USERavgTALK_MS |\n";
+	echo "| $user - $full_name | $USERcalls |   $USERtotTALK_MS | $USERavgTALK_MS |\n";
 
 	$i++;
 	}
 
-echo "+--------------------------+------------+--------+--------+\n";
+$TOTavg = ($TOTtime / $TOTcalls);
+$TOTavg = round($TOTavg, 0);
+$TOTavg_M = ($TOTavg / 60);
+$TOTavg_M = round($TOTavg_M, 2);
+$TOTavg_M_int = intval("$TOTavg_M");
+$TOTavg_S = ($TOTavg_M - $TOTavg_M_int);
+$TOTavg_S = ($TOTavg_S * 60);
+$TOTavg_S = round($TOTavg_S, 0);
+if ($TOTavg_S < 10) {$TOTavg_S = "0$TOTavg_S";}
+$TOTavg_MS = "$TOTavg_M_int:$TOTavg_S";
+$TOTavg =		sprintf("%6s", $TOTavg_MS);
+
+$TOTtime_M = ($TOTtime / 60);
+$TOTtime_M = round($TOTtime_M, 2);
+$TOTtime_M_int = intval("$TOTtime_M");
+$TOTtime_S = ($TOTtime_M - $TOTtime_M_int);
+$TOTtime_S = ($TOTtime_S * 60);
+$TOTtime_S = round($TOTtime_S, 0);
+if ($TOTtime_S < 10) {$TOTtime_S = "0$TOTtime_S";}
+$TOTtime_MS = "$TOTtime_M_int:$TOTtime_S";
+$TOTtime =		sprintf("%6s", $TOTtime_MS);
+
+$TOTagents =		sprintf("%10s", $i);
+$TOTcalls =			sprintf("%10s", $TOTcalls);
+$TOTtime =			sprintf("%8s", $TOTtime);
+$TOTavg =			sprintf("%6s", $TOTavg);
+
+$stmt="select avg(wait_sec) from vicidial_agent_log where event_time >= '$query_date 00:00:01' and event_time <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+
+$AVGwait = $row[0];
+$AVGwait_M = ($AVGwait / 60);
+$AVGwait_M = round($AVGwait_M, 2);
+$AVGwait_M_int = intval("$AVGwait_M");
+$AVGwait_S = ($AVGwait_M - $AVGwait_M_int);
+$AVGwait_S = ($AVGwait_S * 60);
+$AVGwait_S = round($AVGwait_S, 0);
+if ($AVGwait_S < 10) {$AVGwait_S = "0$AVGwait_S";}
+$AVGwait_MS = "$AVGwait_M_int:$AVGwait_S";
+$AVGwait =		sprintf("%6s", $AVGwait_MS);
+
+echo "+--------------------------+------------+----------+--------+\n";
+echo "| TOTAL Agents: $TOTagents | $TOTcalls | $TOTtime | $TOTavg |\n";
+echo "+--------------------------+------------+----------+--------+\n";
+echo "| Average Wait time between calls                    $AVGwait |\n";
+echo "+-----------------------------------------------------------+\n";
 
 ##############################
 #########  TIME STATS
@@ -327,7 +382,7 @@ while ($k <= 102)
 	if ($Mk >= 5) 
 		{
 		$Mk=0;
-		if ( ($k < 1) or ($hour_multiplier < 1) )
+		if ( ($k < 1) or ($hour_multiplier <= 0) )
 			{$scale_num = 100;}
 		else
 			{
@@ -440,6 +495,9 @@ echo "+------+------------------------------------------------------------------
 
 
 
+$ENDtime = date("U");
+$RUNtime = ($ENDtime - $STARTtime);
+echo "\nRun Time: $RUNtime seconds\n";
 
 }
 

@@ -8,12 +8,6 @@
 ***LANGUAGES***
 en-English|el-Ελληνικά|
 ***FILES***
-astguiclient|admin.php|0
-astguiclient|remote_inbound.php|0
-astguiclient|phone_stats.php|0
-astguiclient|inbound_popup.php|0
-astguiclient|AST_inboundEXTstats.php|0
-astguiclient|dbconnect.php|1
 vicidial|admin.php|0
 vicidial|dbconnect.php|1
 vicidial|AST_VICIDIAL_hopperlist.php|0
@@ -24,12 +18,16 @@ vicidial|AST_VDADstats.php|0
 vicidial|AST_timeonVDAD.php|0
 vicidial|AST_timeonVDAD_closer.php|0
 vicidial|AST_timeonVDADall.php|0
+vicidial|AST_timeoncall.php|0
+vicidial|AST_timeonpark.php|0
 vicidial|listloader.php|0
 vicidial|listloaderMAIN.php|0
 vicidial|new_listloader_superL.php|0
 vicidial|count.htm|1
 vicidial|help.gif|1
-astguiclient|help.gif|1
+vicidial|listloader.pl|1
+vicidial|listloader_rowdisplay.pl|1
+vicidial|listloader_super.pl|1
 vicidial|user_stats.php|0
 vicidial|remote_dispo.php|0
 vicidial|group_hourly_stats.php|0
@@ -41,6 +39,9 @@ vicidial|AST_agent_performance_detail.php|0
 vicidial|AST_agent_performance.php|0
 vicidial|AST_server_performance.php|0
 vicidial|AST_admin_log_display.php|0
+vicidial|AST_timeonVDADallSUMMARY.php|0
+vicidial|inbound_popup.php|0
+vicidial|AST_inboundEXTstats.php|0
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|Border|
@@ -1092,3 +1093,36 @@ Maximum Adapt Dial Level|Το μέγιστο προσαρμόζει το επί�
 Latest Server Time|Πιό πρόσφατος χρόνος κεντρικών υπολογιστών|
 Adapt Intensity Modifier|Προσαρμόστε τον τροποποιητή έντασης|
 Dial Level Difference Target|Στόχος διαφοράς επιπέδων πινάκων|
+### START translations for 2.0.2 release ###
+VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting|VICIDIAL οι κορμοί κεντρικών υπολογιστών επιτρέπουν σε σας γιανα περιορίσουν τις εξερχόμενες γραμμές που χρησιμοποιούνται σεαυτόν τον κεντρικό υπολογιστή για το σχηματισμό εκστρατείας σεμια βάση ανά-εκστρατείας. Έχετε την επιλογή να διατηρήσετε ένανσυγκεκριμένο αριθμό γραμμών που χρησιμοποιούνται από μόνο μιαεκστρατεία καθώς επίσης και επιτρέποντας ότι εκστρατεία πουκάνει πέρα από τις διατηρημένες γραμμές του ο,τιδήποτε γραμμέςπαραμένουν ανοικτές, όπως πολύ στις συνολικές γραμμές πουχρησιμοποιούνται από vicidial σε αυτόν τον κεντρικό υπολογιστήείναι λιγότερο από η ανώτατη ρύθμιση κορμών VICIDIAL. Ηκατοχή οποιωνδήποτε από αυτά τα αρχεία θα επιτρέψει τηνεκστρατεία που σχηματίζει τη γραμμή για να έχει πρώτα τόσεςγραμμές όσες και μπορεί να πάρει κάτω από την ανώτατη ρύθμισηκορμών VICIDIAL|
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N|VICIDIAL σχηματισμός ισορροπίας - που θέτει αυτόν τον τομέαστο Υ θα επιτρέψει στον κεντρικό υπολογιστή για να τοποθετήσει τιςκλήσεις ισορροπίας για τις εκστρατείες σε VICIDIAL έτσι ώστετο καθορισμένο επίπεδο πινάκων μπορεί να συναντηθεί ακόμα κι ανδεν υπάρχει κανένας πράκτορας που συνδέεται με εκείνη τηνεκστρατεία σε αυτόν τον κεντρικό υπολογιστή. Η προεπιλογή είναιν|
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0|VICIDIAL ισορροπία Offlimits - αυτή η ρύθμιση καθορίζει τοναριθμό κορμών για να μην επιτρέψει το σχηματισμό ισορροπίαςVICIDIAL στη χρήση. Παραδείγματος χάριν εάν να έχοντας 40ανώτατους vicidial κορμούς και η ισορροπία offlimits τίθεται10 θα είστε σε θέση μόνο να χρησιμοποιήσετε 30 γραμμές κορμώνγια το σχηματισμό ισορροπίας VICIDIAL. Η προεπιλογή είναι 0|
+Allowed Campaigns -<\/B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system|Εκστρατείες - αυτό είναι ένας επιλέξιμος κατάλογος εκστρατειώνστον οποίο τα μέλη αυτής της ομάδας χρηστών μπορούν νασυνδεθούν. Η επιλογή όλος-ΕΚΣΤΡΑΤΕΙΩΝ επιτρέπει στους χρήστες σεαυτήν την ομάδα για να δει και να συνδεθεί σε οποιαδήποτεεκστρατεία στο σύστημα|
+VICIDIAL SERVER TRUNK RECORD NOT ADDED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΠΡΟΣΤΙΘΕΜΕΝΟ|
+there is already a server-trunk record for this campaign|υπάρχει ήδη ένα αρχείο υπολογιστής-κορμών για αυτήν τηνεκστρατεία|
+the number of vicidial trunks is too high|ο αριθμός vicidial κορμών είναι πάρα πολύ υψηλός|
+VICIDIAL SERVER TRUNK RECORD ADDED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΠΡΟΣΤΙΘΕΜΕΝΟ|
+VICIDIAL SERVER TRUNK RECORD NOT MODIFIED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ|
+VICIDIAL SERVER TRUNK RECORD MODIFIED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ|
+VICIDIAL SERVER TRUNK RECORD NOT DELETED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ|
+VICIDIAL SERVER TRUNK RECORD DELETED|VICIDIAL ΑΡΧΕΙΟ ΚΟΡΜΩΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ|
+campaign must be between 3 and 8 characters in length|η εκστρατεία πρέπει να είναι μεταξύ 3 και 8 χαρακτήρων στο μήκος|
+server_ip delay must be at least 7 characters|server_ip η καθυστέρηση πρέπει να είναι τουλάχιστον 7χαρακτήρες|
+trunks must be a digit from 0 to 9999|οι κορμοί πρέπει να είναι ένα ψηφίο από 0 έως 9999|
+VICIDIAL Balance Dialing|VICIDIAL σχηματισμός ισορροπίας|
+VICIDIAL Balance Offlimits|VICIDIAL ισορροπία Offlimits|
+ADDING NEW SERVER VICIDIAL TRUNK RECORD|ΠΡΟΣΘΗΚΗ ΤΟΥ ΝΕΟΥ ΑΡΧΕΊΟΥ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
+ADD NEW SERVER VICIDIAL TRUNK RECORD|ΠΡΟΣΘΕΣΤΕ ΤΟ ΝΕΟ ΑΡΧΕΊΟ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
+MODIFY SERVER VICIDIAL TRUNK RECORD|ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΟ ΑΡΧΕΊΟ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
+DELETE SERVER VICIDIAL TRUNK RECORD|ΔΙΑΓΡΑΨΤΕ ΤΟ ΑΡΧΕΊΟ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
+VICIDIAL TRUNKS FOR THIS SERVER|VICIDIAL ΚΟΡΜΟΙ ΓΙΑ ΑΥΤΟΝ ΤΟΝ ΚΕΝΤΡΙΚΟ ΥΠΟΛΟΓΙΣΤΉ|
+RESTRICTION|ΠΕΡΙΟΡΙΣΜΟΣ|
+TRUNKS|ΚΟΡΜΟΙ|
+Emergency VDAC Jam Clear|Μαρμελάδα έκτακτης ανάγκης VDAC σαφής|
+VDAC NOT CLEARED FOR CAMPAIGN|VDAC ΠΟΥ ΔΕΝ ΚΑΘΑΡΊΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ|
+LAST VDAC RECORD CLEARED FOR CAMPAIGN|ΤΕΛΕΥΤΑΙΟ ΑΡΧΕΊΟ VDAC ΠΟΥ ΚΑΘΑΡΊΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ|
+VDAC CLEAR CONFIRMATION|ΣΑΦΉΣ ΕΠΙΒΕΒΑΊΩΣΗ VDAC|
+Click here to delete the oldest LIVE record in VDAC for|Χτυπήστε εδώ για να διαγράψετε το παλαιότερο ΖΩΝΤΑΝΟ αρχείο σεVDAC για|
+Allowed Campaigns|Εκστρατείες|
+USERS CAN VIEW ANY CAMPAIGN|ΟΙ ΧΡΗΣΤΕΣ ΜΠΟΡΟΥΝ ΝΑ ΔΟΥΝ ΟΠΟΙΑΔΗΠΟΤΕ ΕΚΣΤΡΑΤΕΙΑ|
+Campaign Not Allowed|Που δεν επιτρέπεται εκστρατεία|

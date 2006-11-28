@@ -15,8 +15,8 @@ if (isset($_GET["reset_counter"]))				{$reset_counter=$_GET["reset_counter"];}
 	elseif (isset($_POST["reset_counter"]))		{$reset_counter=$_POST["reset_counter"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
-if (isset($_GET["ΥΠΟΒΑΛΛΩ"]))				{$ΥΠΟΒΑΛΛΩ=$_GET["ΥΠΟΒΑΛΛΩ"];}
-	elseif (isset($_POST["ΥΠΟΒΑΛΛΩ"]))		{$ΥΠΟΒΑΛΛΩ=$_POST["ΥΠΟΒΑΛΛΩ"];}
+if (isset($_GET["ΕΠΙΒΕΒΑΙΩΣΗ"]))				{$ΕΠΙΒΕΒΑΙΩΣΗ=$_GET["ΕΠΙΒΕΒΑΙΩΣΗ"];}
+	elseif (isset($_POST["ΕΠΙΒΕΒΑΙΩΣΗ"]))		{$ΕΠΙΒΕΒΑΙΩΣΗ=$_POST["ΕΠΙΒΕΒΑΙΩΣΗ"];}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
@@ -62,7 +62,7 @@ if ($reset_counter > 7)
  </STYLE>
 
 <? 
-echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
+echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB&reset_counter=$reset_counter\">\n";
 echo "<TITLE>VICIDIAL: Time On Park</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<PRE><FONT SIZE=3>\n\n";
@@ -185,7 +185,7 @@ $talking_to_print = mysql_num_rows($rslt);
 	{
 	echo "**************************************************************************************\n";
 	echo "**************************************************************************************\n";
-	echo "********************************* ΚΑΝΕΝΑΣ ΧΡΗΣΤΗΣ ΣΕ ΚΛΗΣΕΙΣ*********************************\n";
+	echo "********************************* ΚΑΝΕΝΑΣ ΧΕΙΡΙΣΤΗΣ ΣΕ ΚΛΗΣΕΙΣ*********************************\n";
 	echo "**************************************************************************************\n";
 	echo "**************************************************************************************\n";
 	}

@@ -7,6 +7,7 @@
 #
 # 60620-1037 - Added Link back to Admin section
 #            - Added required user/pass to gain access to this page
+# 61101-1331 - Added SIP/IAX listen/barge links
 #
 
 require("dbconnect.php");
@@ -61,7 +62,7 @@ while ($i < $servers_to_print)
 <FONT SIZE=4><B>VICIDIAL: Bediener-Notfall and Reports</B></font> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 <a href="./admin.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ZURÜCK ZU ADMIN</FONT></a><BR><BR>
 <UL>
-<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> | <a href="AST_timeonVDADall_SIPmonitor.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Höre auf SIP Version</a></FONT>
+<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
 <LI><a href="AST_parkstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>PARK-REPORT</a></FONT>
 <LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD REPORT</a></FONT>
 <LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>GENAUERER REPORT</a></FONT>
@@ -85,7 +86,7 @@ while ($i < $servers_to_print)
 	echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
 	echo "<TD><a href=\"AST_timeoncall.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
 	echo "<TD><a href=\"AST_timeonpark.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
-	echo "<TD><a href=\"AST_timeonVDAD_closer.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+	echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
 	echo "</TR>\n";
 	$o++;
 	}

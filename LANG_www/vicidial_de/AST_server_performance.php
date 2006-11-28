@@ -43,7 +43,8 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 	}
 
 # path from root to where ploticus files will be stored
-$DOCroot = "$WeBServeRRooT/vicidial/ploticus/";
+$PLOTroot = "vicidial/ploticus";
+$DOCroot = "$WeBServeRRooT/$PLOTroot/";
 
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -113,16 +114,16 @@ else
 if ($shift == 'AM') 
 	{
 	$query_date_BEGIN = "$query_date 08:45:00";   
-	$query_date_END = "$query_date 15:32:00";
+	$query_date_END = "$query_date 15:30:00";
 	$time_BEGIN = "08:45:00";   
-	$time_END = "15:15:00";
+	$time_END = "15:55:00";
 	}
 if ($shift == 'PM') 
 	{
-	$query_date_BEGIN = "$query_date 15:32:00";   
+	$query_date_BEGIN = "$query_date 15:30:00";   
 	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:15:00";   
-	$time_END = "23:15:00";
+	$time_BEGIN = "15:30:00";   
+	$time_END = "23:55:00";
 	}
 
 echo "VICIDIAL: Server Performance                             $NOW_TIME\n";
@@ -296,7 +297,7 @@ sleep(1);
 
 echo "</PRE>\n";
 echo "\n";
-echo "<IMG SRC=\"./ploticus/$PNGfile\">\n";
+echo "<IMG SRC=\"/$PLOTroot/$PNGfile\">\n";
 
 
 echo "<!-- /usr/local/bin/pl -png $DOCroot/$HTMfile -o $DOCroot/$PNGfile -->";

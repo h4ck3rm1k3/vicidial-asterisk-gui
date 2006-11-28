@@ -8,12 +8,6 @@
 ***LANGUAGES***
 en-English|de-Deutsch|
 ***FILES***
-astguiclient|admin.php|0
-astguiclient|remote_inbound.php|0
-astguiclient|phone_stats.php|0
-astguiclient|inbound_popup.php|0
-astguiclient|AST_inboundEXTstats.php|0
-astguiclient|dbconnect.php|1
 vicidial|admin.php|0
 vicidial|dbconnect.php|1
 vicidial|AST_VICIDIAL_hopperlist.php|0
@@ -31,7 +25,9 @@ vicidial|listloaderMAIN.php|0
 vicidial|new_listloader_superL.php|0
 vicidial|count.htm|1
 vicidial|help.gif|1
-astguiclient|help.gif|1
+vicidial|listloader.pl|1
+vicidial|listloader_rowdisplay.pl|1
+vicidial|listloader_super.pl|1
 vicidial|user_stats.php|0
 vicidial|remote_dispo.php|0
 vicidial|group_hourly_stats.php|0
@@ -43,7 +39,9 @@ vicidial|AST_agent_performance_detail.php|0
 vicidial|AST_agent_performance.php|0
 vicidial|AST_server_performance.php|0
 vicidial|AST_admin_log_display.php|0
-vicidial|AST_timeonVDADall_SIPmonitor.php|0
+vicidial|AST_timeonVDADallSUMMARY.php|0
+vicidial|inbound_popup.php|0
+vicidial|AST_inboundEXTstats.php|0
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|Border|
@@ -1084,3 +1082,36 @@ Maximum Adapt Dial Level|Maximum Paßt Vorwahlknopf-Niveau An|
 Latest Server Time|Neueste Bediener-Zeit|
 Adapt Intensity Modifier|Passen Sie Intensität Modifizierfaktor An|
 Dial Level Difference Target|Vorwahlknopf-Waagerecht ausgerichtetes Unterschied-Ziel|
+### START translations for 2.0.2 release ###
+VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting|VICIDIAL Bediener-Stämme erlaubt Ihnen, die gehenden Leitungeneinzuschränken, die auf diesem Bediener für die Kampagne benutztwerden, die auf einer Prokampagne Grundlage wählt. Sie haben dieWahl, zum einer spezifischen Zeilenzahl durch nur eine Kampagneverwendet zu werden aufzuheben,, sowie das Lassen dieser Kampagneüber seine reservierten Linien laufen in was Linien geöffnetbleiben, wie, lang an den Gruppenzeilen, die durch vicidial auf diesemBediener benutzt werden, sind kleiner als die Maximum VICIDIALStammeinstellung. Erlaubt Haben nicht irgendwelche dieserAufzeichnungen die Kampagne, die die Linie zuerst wählt, um da vieleLinien zu haben, während sie unter der Maximum VICIDIAL erhalten kannStammeinstellung|
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N|VICIDIAL Balance Wählen - dieses einstellend, fangen Sie zuY läßt den Bediener Balance Anrufe für Kampagnen in VICIDIAL legenauf, damit das definierte Vorwahlknopfniveau getroffen werden kann,selbst wenn es keine Mittel gibt, die in diese Kampagne auf diesemBediener geloggt werden. Rückstellung ist N|
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0|VICIDIAL Balance Offlimits - diese Einstellung definiert die ZahlStämmen, um die VICIDIAL Balance nicht zu erlauben, die wählt, um zuverwenden. Z.B. wenn Sie haben, wird 40 maximale vicidial Stämme undBalance offlimits bis 10 eingestellt, die Sie nur in der LageSIND, 30Hauptluftlinien für VICIDIAL Balance das Wählen zu benutzen.Rückstellung ist 0|
+Allowed Campaigns -<\/B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system|Erlaubte Kampagnen - dieses ist eine auswählbare Liste der Kampagnen,zu denen Mitglieder dieser Benutzergruppe innen protokollieren könnenin. Die ALL-CAMPAIGNS Wahl erlaubt den Benutzern in dieser Gruppe, injeder möglicher Kampagne auf dem System innen zu sehen und zuprotokollieren|
+VICIDIAL SERVER TRUNK RECORD NOT ADDED|VICIDIAL BEDIENER-STAMM-SATZ NICHT ADDIERT|
+there is already a server-trunk record for this campaign|es gibt bereits eine Bediener-Stamm Aufzeichnung für diese Kampagne|
+the number of vicidial trunks is too high|die Zahl vicidial Stämmen ist zu hoch|
+VICIDIAL SERVER TRUNK RECORD ADDED|VICIDIAL BEDIENER-STAMM-SATZ ADDIERT|
+VICIDIAL SERVER TRUNK RECORD NOT MODIFIED|VICIDIAL BEDIENER-STAMM-SATZ NICHT GEÄNDERT|
+VICIDIAL SERVER TRUNK RECORD MODIFIED|VICIDIAL BEDIENER-STAMM-SATZ ÄNDERTE|
+VICIDIAL SERVER TRUNK RECORD NOT DELETED|VICIDIAL BEDIENER-STAMM-SATZ NICHT GELÖSCHT|
+VICIDIAL SERVER TRUNK RECORD DELETED|VICIDIAL BEDIENER-STAMM-SATZ GELÖSCHT|
+campaign must be between 3 and 8 characters in length|Kampagne muß zwischen 3 und 8 Buchstaben lang sein|
+server_ip delay must be at least 7 characters|server_ip verzögert muß mindestens 7 Buchstaben sein|
+trunks must be a digit from 0 to 9999|Stämme müssen eine Stelle von 0 bis 9999 sein|
+VICIDIAL Balance Dialing|VICIDIAL Balance Wählen|
+VICIDIAL Balance Offlimits|VICIDIAL Balance Offlimits|
+ADDING NEW SERVER VICIDIAL TRUNK RECORD|ADDIEREN DES NEUEN STAMM-SATZES DES BEDIENER-VICIDIAL|
+ADD NEW SERVER VICIDIAL TRUNK RECORD|ADDIEREN SIE NEUEN STAMM-SATZ DES BEDIENER-VICIDIAL|
+MODIFY SERVER VICIDIAL TRUNK RECORD|ÄNDERN SIE STAMM-SATZ DES BEDIENER-VICIDIAL|
+DELETE SERVER VICIDIAL TRUNK RECORD|STAMM-SATZ DES LÖSCHUNG-BEDIENER-VICIDIAL|
+VICIDIAL TRUNKS FOR THIS SERVER|VICIDIAL STÄMME FÜR DIESEN BEDIENER|
+RESTRICTION|BESCHRÄNKUNG|
+TRUNKS|STÄMME|
+Emergency VDAC Jam Clear|Dringlichkeits-VDAC Stau-Freier Raum|
+VDAC NOT CLEARED FOR CAMPAIGN|VDAC NICHT LÖSCHTE FÜR KAMPAGNE|
+LAST VDAC RECORD CLEARED FOR CAMPAIGN|LETZTES VDAC SATZ GELÖSCHT FÜR KAMPAGNE|
+VDAC CLEAR CONFIRMATION|VDAC AUSLÖSEBESTÄTIGUNG|
+Click here to delete the oldest LIVE record in VDAC for|Klicken Sie hier, um das älteste zu löschen LEBEN Aufzeichnung inVDAC für|
+Allowed Campaigns|Erlaubte Kampagnen|
+USERS CAN VIEW ANY CAMPAIGN|BENUTZER KÖNNEN JEDE MÖGLICHE KAMPAGNE ANSEHEN|
+Campaign Not Allowed|Kampagne Nicht Erlaubt|

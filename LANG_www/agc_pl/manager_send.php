@@ -12,7 +12,7 @@
 #  - $user
 #  - $pass
 # optional variables:
-#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial')
+#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl')
 #  - $queryCID - ('CN012345678901234567',...)
 #  - $format - ('text','debug')
 #  - $channel - ('Zap/41-1','SIP/test101-1jut','IAX2/iaxy@iaxy',...)
@@ -32,6 +32,7 @@
 #  - $agent_log_id - ('123456',...)
 #  - $call_server_ip - ('10.10.10.15',...)
 #  - $CalLCID - ('VD01234567890123456',...)
+#  - $stage - ('UP','DOWN')
 # 
 
 # changes
@@ -60,6 +61,7 @@
 # 60421-1413 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1158 - Added variable filters to close security holes for login form
 # 60809-1544 - Added direct transfers to leave-3ways in consultative transfers
+# 61004-1526 - Added parsing of volume control command and lookup or number
 #
 
 require("dbconnect.php");
@@ -117,6 +119,8 @@ if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}
 	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
 if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
 	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
+if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -127,8 +131,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '0.0.25';
-$build = '60809-1544';
+$version = '0.0.26';
+$build = '61004-1526';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -993,6 +997,35 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 
 		}
 		echo "$ACTION komenda wysłana do Kanał $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n NAGRYWANIE BĘDZIE TRWAĆ MAKSYMALNIE 60 MINUT\n";
+	}
+}
+
+
+
+
+
+######################
+# ACTION=VolumeControl  - raise or lower the volume of a meetme participant
+######################
+if ($ACTION=="VolumeControl")
+{
+	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($stage)<1) or (strlen($queryCID)<1) )
+	{
+		echo "Konferencja $exten, Stage $stage nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
+	}
+	else
+	{
+	$participant_number='XXYYXXYYXXYYXX';
+	if (eregi('DOWN',$stage)) {$vol_prefix='3';}
+	else {$vol_prefix='4';}
+	$local_DEF = 'Local/';
+	$local_AMP = '@';
+	$volume_local_channel = "$local_DEF$participant_number$vol_prefix$exten$local_AMP$ext_context";
+
+	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $volume_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+	echo "Volume komenda wysłana do Konferencja $exten, Stage $stage Kanał $channel na $server_ip\n";
 	}
 }
 

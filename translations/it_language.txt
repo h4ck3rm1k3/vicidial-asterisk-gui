@@ -420,3 +420,5 @@ Last Call: |Ultima Chiamata:|
 CallBack: |Chiamata ripetuta:|
 Agent: |Agente:|
 Comments: |Osservazioni:|
+### BEGIN translation phrases for 2.0.2 release ###
+VOLUME|VOLUME|

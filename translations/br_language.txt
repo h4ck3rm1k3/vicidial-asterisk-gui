@@ -418,3 +418,5 @@ Last Call: |Última Chamada:|
 CallBack: |Rechamada:|
 Agent: |Agente:|
 Comments: |Comentários:|
+### BEGIN translation phrases for 2.0.2 release ###
+VOLUME|VOLUME|

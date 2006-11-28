@@ -126,7 +126,7 @@ echo "+------+-----------+------------+-------+--------+-------+--------+\n";
 echo "|      | LEAD_ID   | PHONE NUM  | STATE | STATUS | COUNT | GMT    |\n";
 echo "+------+-----------+------------+-------+--------+-------+--------+\n";
 
-$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by hopper_id limit 2000;";
+$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by hopper_id limit 2000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -142,8 +142,10 @@ while ($i < $users_to_print)
 	$status =		sprintf("%-6s", $row[3]);
 	$count =		sprintf("%-5s", $row[4]);
 	$gmt =			sprintf("%-6s", $row[5]);
+	$hopper_id =	sprintf("%-6s", $row[6]);
 
-	echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt |\n";
+if ($DB) {echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt | $hopper_id |\n";}
+else {echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt |\n";}
 
 	$i++;
 	}
