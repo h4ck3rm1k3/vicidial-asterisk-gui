@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VICIDIAL_IN_new_leads_file.pl version 0.4   *DBI-version*
+# VICIDIAL_IN_new_leads_file.pl version 0.5   *DBI-version*
 #
 # DESCRIPTION:
 # script lets you insert leads into the vicidial_list table from a TAB-delimited
@@ -21,6 +21,7 @@
 # 60913-1236 - fixed MySQL bugs and non-debug bug
 #            - added duplicate check flag option within same list
 # 61127-1132 - Added new DST methods
+# 61128-1037 - Added postal codes GMT lookup option
 #
 
 $secX = time();
@@ -105,11 +106,14 @@ if (length($ARGV[0])>1)
 	print "  [--debug] = debug output\n";
 	print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
 	print "  [--duplicate-check] = checks for the same phone number in the same list id before inserting lead\n";
+	print "  [--postal-code-gmt] = checks for the time zone based on the postal code given where available\n";
 	print "  [-h] = this help screen\n\n";
 	print "\n";
 	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
 	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS\n\n";
 	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS\n\n";
+
+	exit;
 	}
 	else
 	{
@@ -151,7 +155,11 @@ if (length($ARGV[0])>1)
 		$dupcheck=1;
 		print "\n----- DUPLICATE CHECK -----\n\n";
 		}
-
+		if ($args =~ /-postal-code-gmt/i)
+		{
+		$postalgmt=1;
+		print "\n----- POSTAL CODE TIMEZONE -----\n\n";
+		}
 	}
 }
 else
@@ -328,86 +336,114 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				}
 			else
 				{
-				$PC_processed=0;
-				### UNITED STATES ###
-				if ($phone_code =~ /^1$/)
+				$postalgmt_found=0;
+				if ( ($postalgmt > 0) && (length($postal_code)>4) )
 					{
-					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-						if($DBX){print STDERR "\n|$stmtA|\n";}
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+					if ($phone_code =~ /^1$/)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-						$dst =			$aryA[5];
-						$dst_range =	$aryA[6];
-						$PC_processed++;
-						$rec_count++;
+						$stmtA = "select * from vicidial_postal_codes where country_code='$phone_code' and postal_code LIKE \"$postal_code%\";";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$gmt_offset =	$aryA[2];  $gmt_offset =~ s/\+| //gi;
+							$dst =			$aryA[3];
+							$dst_range =	$aryA[4];
+							$PC_processed++;
+							$rec_count++;
+							$postalgmt_found++;
+							if ($DBX) {print "     Postal GMT record found for $postal_code: |$gmt_offset|$dst|$dst_range|\n";}
+							}
+						$sthA->finish();
 						}
-					$sthA->finish();
 					}
-				### MEXICO ###
-				if ($phone_code =~ /^52$/)
+				if ($postalgmt_found < 1)
 					{
-					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-						if($DBX){print STDERR "\n|$stmtA|\n";}
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+					$PC_processed=0;
+					### UNITED STATES ###
+					if ($phone_code =~ /^1$/)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-						$dst =			$aryA[5];
-						$dst_range =	$aryA[6];
-						$PC_processed++;
-						$rec_count++;
+						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+							$dst =			$aryA[5];
+							$dst_range =	$aryA[6];
+							$PC_processed++;
+							$rec_count++;
+							}
+						$sthA->finish();
 						}
-					$sthA->finish();
-					}
-				### AUSTRALIA ###
-				if ($phone_code =~ /^61$/)
-					{
-					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
-						if($DBX){print STDERR "\n|$stmtA|\n";}
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+					### MEXICO ###
+					if ($phone_code =~ /^52$/)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-						$dst =			$aryA[5];
-						$dst_range =	$aryA[6];
-						$PC_processed++;
-						$rec_count++;
+						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+							$dst =			$aryA[5];
+							$dst_range =	$aryA[6];
+							$PC_processed++;
+							$rec_count++;
+							}
+						$sthA->finish();
 						}
-					$sthA->finish();
-					}
-				### ALL OTHER COUNTRY CODES ###
-				if (!$PC_processed)
-					{
-					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code';";
-						if($DBX){print STDERR "\n|$stmtA|\n";}
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+					### AUSTRALIA ###
+					if ($phone_code =~ /^61$/)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-						$dst =			$aryA[5];
-						$dst_range =	$aryA[6];
-						$PC_processed++;
-						$rec_count++;
+						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+							$dst =			$aryA[5];
+							$dst_range =	$aryA[6];
+							$PC_processed++;
+							$rec_count++;
+							}
+						$sthA->finish();
 						}
-					$sthA->finish();
+					### ALL OTHER COUNTRY CODES ###
+					if (!$PC_processed)
+						{
+						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code';";
+							if($DBX){print STDERR "\n|$stmtA|\n";}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+							$dst =			$aryA[5];
+							$dst_range =	$aryA[6];
+							$PC_processed++;
+							$rec_count++;
+							}
+						$sthA->finish();
+						}
 					}
 
 				### Find out if DST to raise the gmt offset ###

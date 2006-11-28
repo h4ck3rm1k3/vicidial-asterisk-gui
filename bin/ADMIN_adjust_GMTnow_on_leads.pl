@@ -17,6 +17,7 @@
 # 60717-1531 - changed to use /etc/astguiclient.conf for configuration
 # 61108-1320 - added new DST schemes for USA/Canada change and changes in other countries
 # 61110-1204 - added new DST scheme for Brazil
+# 61128-1034 - added postal code GMT lookup option
 #
 
 $MT[0]='';
@@ -38,8 +39,10 @@ if (length($ARGV[0])>1)
 	print "  [-t] = test\n";
 	print "  [--debug] = debugging messages\n";
 	print "  [--debugX] = Super debugging messages\n";
-	print "  [--no-postal-lookup] = Do not use postal codes for timezone lookup\n";
+	print "  [--postal-code-gmt] = Attempt postal codes lookup for timezones\n";
 	print "\n";
+
+	exit;
 	}
 	else
 	{
@@ -62,10 +65,10 @@ if (length($ARGV[0])>1)
 		$DBX=1;
 		print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
 		}
-		if ($args =~ /--no-postal-lookup/i)
+		if ($args =~ /--postal-code-gmt/i)
 		{
-		$NOPOST=1;
-		print "\n----- NO POSTAL LOOKUP -----\n\n";
+		$searchPOST=1;
+		print "\n----- DO POSTAL CODE LOOKUP -----\n\n";
 		}
 	}
 }
@@ -427,7 +430,7 @@ foreach (@phone_codes)
 	##### END RUN LOOP FOR EACH COUNTRY CODE/AREA CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
 
 
-	if (!$NOPOST)
+	if ($searchPOST > 0)
 		{
 		##### BEGIN RUN LOOP FOR EACH POSTAL CODE RECORD THAT IS INSIDE THIS COUNTRY CODE #####
 		if ($DB) {print "POSTAL CODE RUN START...\n";}
