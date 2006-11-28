@@ -14,6 +14,7 @@
 # 60822-1121 - fixed for nonwritable directories
 # 60906-1058 - added filter of non-digits in alt_phone field
 # 61110-1229 - added new USA-Canada DST scheme and Brazil DST scheme
+# 61128-1215 - added postal code GMT lookup and duplicate check options
 #
 
 ### begin parsing run-time options ###
@@ -29,9 +30,15 @@ if (length($ARGV[0])>1)
 	if ($args =~ /--help|-h/i)
 	{
 	print "allowed run time options:\n  [-forcelistid=1234] = overrides the listID given in the file with the 1234\n  [-h] = this help screen\n\n";
+
+	exit;
 	}
 	else
 	{
+		if ($args =~ /-duplicate-check/i)
+			{$dupcheck=1;}
+		if ($args =~ /-postal-code-gmt/i)
+			{$postalgmt=1;}
 		if ($args =~ /--forcelistid=/i)
 		{
 		@data_in = split(/--forcelistid=/,$args);
@@ -216,12 +223,56 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 		if ($oWkC) {$comments=$oWkC->Value; }
 		$comments=~s/^\s*(.*?)\s*$/$1/;
 
-		if (length($phone_number)>6) {
-			if (length($forcelistid) > 0)
+		if (length($forcelistid) > 0)
+			{
+			$list_id =	$forcelistid;		# set list_id to override value
+			}
+		if ($dupcheck > 0)
+			{
+			$dup_lead=0;
+			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				@aryA = $sthA->fetchrow_array;
+				$dup_lead = $aryA[0];
+			$sthA->finish();
+			if ($dup_lead < 1)
 				{
-				$list_id =	$forcelistid;		# set list_id to override value
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
 				}
-
+			}
+		if ( (length($phone_number)>6) && ($dup_lead < 1) )
+			{
+			$phone_list .= "$phone_number$US$list_id|";
+			$postalgmt_found=0;
+			if ( ($postalgmt > 0) && (length($postal_code)>4) )
+				{
+				if ($phone_code =~ /^1$/)
+					{
+					$stmtA = "select * from vicidial_postal_codes where country_code='$phone_code' and postal_code LIKE \"$postal_code%\";";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[2];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[3];
+						$dst_range =	$aryA[4];
+						$PC_processed++;
+						$rec_count++;
+						$postalgmt_found++;
+						if ($DBX) {print "     Postal GMT record found for $postal_code: |$gmt_offset|$dst|$dst_range|\n";}
+						}
+					$sthA->finish();
+					}
+				}
+			if ($postalgmt_found < 1)
+				{
 				$PC_processed=0;
 				### UNITED STATES ###
 				if ($phone_code =~ /^1$/)
@@ -303,6 +354,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 						}
 					$sthA->finish();
 					}
+				}
 
 				### Find out if DST to raise the gmt offset ###
 				$AC_GMT_diff = ($gmt_offset - $LOCAL_GMT_OFF_STD);
