@@ -577,6 +577,11 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$stmt = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$server_ip','$campaign','INCALL','$lead_id','$MqueryCID','$phone_code','$phone_number','$NOW_TIME','OUT')";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
+
+				### update the agent status to INCALL in vicidial_live_agents
+				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id' where user='$user' and server_ip='$server_ip';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 
 			$comments = eregi_replace("\r",'',$comments);
@@ -707,6 +712,11 @@ if ($ACTION == 'manDiaLonly')
 		$rslt=mysql_query($stmt, $link);
 
 		$stmt = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$server_ip','$campaign','INCALL','$lead_id','$MqueryCID','$phone_code','$phone_number','$NOW_TIME','OUT')";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		### update the agent status to INCALL in vicidial_live_agents
+		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME' where user='$user' and server_ip='$server_ip';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
