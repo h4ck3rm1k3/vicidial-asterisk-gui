@@ -109,10 +109,11 @@
 # 60821-1600 - Added ability to omit the phone code on vicidial lead dialing
 # 60821-1647 - Added ability to not delete sessions at logout
 # 60906-1124 - Added lookup and sending of callback data for CALLBK calls
+# 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
 #
 
-$version = '2.0.37';
-$build = '60906-1124';
+$version = '2.0.38';
+$build = '61128-2229';
 
 require("dbconnect.php");
 
@@ -572,6 +573,15 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
+
+				$stmt = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$server_ip','$campaign','XFER','$lead_id','$MqueryCID','$phone_code','$phone_number','$NOW_TIME','OUT')";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+
+				### update the agent status to INCALL in vicidial_live_agents
+				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id' where user='$user' and server_ip='$server_ip';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 
 			$comments = eregi_replace("\r",'',$comments);
@@ -701,6 +711,15 @@ if ($ACTION == 'manDiaLonly')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
+		$stmt = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$server_ip','$campaign','XFER','$lead_id','$MqueryCID','$phone_code','$phone_number','$NOW_TIME','OUT')";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		### update the agent status to INCALL in vicidial_live_agents
+		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id' where user='$user' and server_ip='$server_ip';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "$MqueryCID\n";
 	}
 }
@@ -792,6 +811,10 @@ if ($stage == "start")
 			echo "NOTATION NON ENTRÉE\n";
 			}
 
+		$stmt = "UPDATE vicidial_auto_calls SET uniqueid='$uniqueid' where lead_id='$lead_id';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
 	#	##### insert log into call_log for manual VICIDiaL call
 	#	$stmt = "INSERT INTO call_log (uniqueid,channel,server_ip,extension,number_dialed,caller_code,start_time,start_epoch) values('$uniqueid','$channel','$server_ip','$exten','$phone_code$phone_number','MD $user $lead_id','$NOW_TIME','$StarTtime')";
 	#	if ($DB) {echo "$stmt\n";}
@@ -857,6 +880,16 @@ if ($stage == "end")
 			{
 			### delete call record from  vicidial_auto_calls
 			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',lead_id='',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME' where user='$user' and server_ip='$server_ip';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		else
+			{
+			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 

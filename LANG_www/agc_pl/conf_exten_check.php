@@ -32,6 +32,7 @@
 # 60410-1424 - Added ability to grab calls-being-placed and agent status
 # 60421-1405 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1201 - Added variable filters to close security holes for login form
+# 61128-2255 - Added update for manual dial vicidial_live_agents
 #
 
 require("dbconnect.php");
@@ -68,8 +69,8 @@ if (!isset($format))   {$format="text";}
 if (!isset($ACTION))   {$ACTION="refresh";}
 if (!isset($client))   {$client="agc";}
 
-$version = '0.0.9';
-$build = '60619-1201';
+$version = '0.0.10';
+$build = '61128-2255';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -150,8 +151,6 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-
-
 				if ($campagentstdisp == 'YES')
 					{
 					### grab the status of this agent to display
@@ -179,6 +178,12 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				{
 				$Astatus='N';
 				$RingCalls='N';
+
+				### update the vicidial_live_agents every second with a new random number so it is shown to be alive
+				$stmt="UPDATE vicidial_live_agents set random_id='$random' where user='$user' and server_ip='$server_ip';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+
 				}
 
 			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Status: ' . $Astatus . '|CampCalls: ' . $RingCalls . "|\n";

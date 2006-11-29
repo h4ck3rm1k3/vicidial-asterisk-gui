@@ -129,6 +129,7 @@
 # 61004-1729 - Add ability to control volume per channel in "calls in this session"
 # 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
 # 61122-1523 - Added more SCRIPT variables
+# 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
 #
 
 require("dbconnect.php");
@@ -174,8 +175,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.102';
-$build = '61122-1523';
+$version = '2.0.103';
+$build = '61128-2229';
 
 if ($force_logout)
 {
@@ -969,8 +970,11 @@ else
 			{
 			print "<!-- A campanha está definida com discagem manual: $auto_dial_level -->\n";
 
-
-
+			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$user_level');";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$affected_rows = mysql_affected_rows($link);
+			print "<!-- nova gravação de agente do vicidial inserida: |$affected_rows| -->\n";
 			}
 		}
 	else
