@@ -1207,11 +1207,11 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD=
 			{
 			if ($campaign_id_value == $campaigns[$p]) 
 				{
-				echo "<!--  X $p|$campaign_id_value|$campaigns[$p]| -->";
+			#	echo "<!--  X $p|$campaign_id_value|$campaigns[$p]| -->";
 				$campaigns_list .= " CHECKED";
 				$campaigns_value .= " $campaign_id_value";
 				}
-			echo "<!--  O $p|$campaign_id_value|$campaigns[$p]| -->";
+		#	echo "<!--  O $p|$campaign_id_value|$campaigns[$p]| -->";
 			$p++;
 			}
 		$campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
@@ -6326,6 +6326,7 @@ else
 echo "This campaign has $hopper_leads leads in the dial hopper<br><br>\n";
 echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Click here to see what leads are in the hopper right now</a><br><br>\n";
 echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Click here to see all CallBack Holds in this campaign</a><BR><BR>\n";
+echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
 echo "</b></center>\n";
 
 
@@ -6683,6 +6684,7 @@ else
 echo "This campaign has $hopper_leads leads in the dial hopper<br><br>\n";
 echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Click here to see what leads are in the hopper right now</a><br><br>\n";
 echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Click here to see all CallBack Holds in this campaign</a><BR><BR>\n";
+echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
 echo "</b></center>\n";
 
 echo "<br>\n";
@@ -7126,6 +7128,8 @@ echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUB
 echo "</TABLE></center>\n";
 
 echo "</table></center><br>\n";
+
+echo "<a href=\"./AST_CLOSERstats.php?group=$group_id\">Click here to see a report for this campaign</a><BR><BR>\n";
 
 echo "<center><b>\n";
 
@@ -7740,7 +7744,7 @@ echo "</TABLE></center></form>\n";
 ### vicidial server trunk records for this server
 echo "<br><br><b>VICIDIAL TRUNKS FOR THIS SERVER: &nbsp; $NWB#vicidial_server_trunks$NWE</b><br>\n";
 echo "<TABLE width=500 cellspacing=3>\n";
-echo "<tr><td>CAMPAIGN</td><td>TRUNKS</td><td>RESTRICTION</td><td> </td><td>DELETE</td></tr>\n";
+echo "<tr><td> CAMPAIGN</td><td> TRUNKS </td><td> RESTRICTION </td><td> </td><td> DELETE </td></tr>\n";
 
 	$stmt="SELECT * from vicidial_server_trunks where server_ip='$server_ip' order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
@@ -8098,7 +8102,7 @@ if ($ADD==82)
 {
 echo "<TABLE><TR><TD>\n";
 echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white>CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td></tr>\n";
+echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white> CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td></tr>\n";
 
 	$o=0;
 	while ($cb_to_print > $o) {

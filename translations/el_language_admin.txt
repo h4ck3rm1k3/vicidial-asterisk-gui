@@ -870,6 +870,7 @@ TOTAL CALLS |ΣΥΝΟΛΙΚΕΣ ΚΛΗΣΕΙΣ|
 LOGIN/LOGOUT TIME| ΧΡΟΝΟΣ ΣYΝΔΕΣΗΣ/ΑΠΟΣΥΝΔΕΣΗΣ|
 >EVENT <| >ΣΥΜΒΑΝ<|
 > CAMPAIGN<|>ΕΚΣΤΡΑΤΕΙΑ<|
+CAMPAIGN: |ΕΚΣΤΡΑΤΕΙΑ: |
 LAST 50 CALLS|Τελευταίες 50 Κλήσεις|
 VICIDIAL REMOTE: Call Disposition|Απομακρυσμένο: Τερματισμός Κλήσης|
 Call has been dispositioned|Η κλήση έχει τερματίσει|
@@ -919,7 +920,7 @@ VERSION|ΕΚΔΟΣΗ|
 BUILD|ΔΗΜΙΟΥΡΓΙΑ|
 REPORTS|ΑΝΑΦΟΡΕΣ|
 USERS|ΧΡΗΣΤΕΣ|
-CAMPAIGNS|ΕΚΣΤΡΑΤΕΙΕΣ|
+ CAMPAIGNS| ΕΚΣΤΡΑΤΕΙΕΣ|
 LISTS|ΛΙΣΤΕΣ|
 SCRIPTS|ΒΟΗΘΟΙ|
 FILTERS|ΦΙΛΤΡΑ|
@@ -1116,8 +1117,8 @@ ADD NEW SERVER VICIDIAL TRUNK RECORD|ΠΡΟΣΘΕΣΤΕ ΤΟ ΝΕΟ ΑΡΧΕΊΟ
 MODIFY SERVER VICIDIAL TRUNK RECORD|ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΟ ΑΡΧΕΊΟ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
 DELETE SERVER VICIDIAL TRUNK RECORD|ΔΙΑΓΡΑΨΤΕ ΤΟ ΑΡΧΕΊΟ ΚΟΡΜΏΝ ΚΕΝΤΡΙΚΩΝ ΥΠΟΛΟΓΙΣΤΏΝ VICIDIAL|
 VICIDIAL TRUNKS FOR THIS SERVER|VICIDIAL ΚΟΡΜΟΙ ΓΙΑ ΑΥΤΟΝ ΤΟΝ ΚΕΝΤΡΙΚΟ ΥΠΟΛΟΓΙΣΤΉ|
-RESTRICTION|ΠΕΡΙΟΡΙΣΜΟΣ|
-TRUNKS|ΚΟΡΜΟΙ|
+ RESTRICTION | ΠΕΡΙΟΡΙΣΜΟΣ |
+ TRUNKS | ΚΟΡΜΟΙ |
 Emergency VDAC Jam Clear|Μαρμελάδα έκτακτης ανάγκης VDAC σαφής|
 VDAC NOT CLEARED FOR CAMPAIGN|VDAC ΠΟΥ ΔΕΝ ΚΑΘΑΡΊΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ|
 LAST VDAC RECORD CLEARED FOR CAMPAIGN|ΤΕΛΕΥΤΑΙΟ ΑΡΧΕΊΟ VDAC ΠΟΥ ΚΑΘΑΡΊΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ|
