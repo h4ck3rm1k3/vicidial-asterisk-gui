@@ -130,6 +130,7 @@
 # 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
 # 61122-1523 - Added more SCRIPT variables
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
+# 61130-1617 - Added lead_id to MonitorConf for recording_log
 #
 
 require("dbconnect.php");
@@ -175,8 +176,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.103';
-$build = '61128-2229';
+$version = '2.0.104';
+$build = '61130-1617';
 
 if ($force_logout)
 {
@@ -2047,7 +2048,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 					}
 				}
-			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
+			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&lead_id=" + document.vicidial_form.lead_id.value + "&ext_priority=1";
 			xmlhttp.open('POST', 'manager_send.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(confmonitor_query); 

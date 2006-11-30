@@ -138,7 +138,9 @@ length_in_sec INT(10),
 length_in_min DOUBLE(8,2),
 filename VARCHAR(50),
 location VARCHAR(255),
-index (filename)
+lead_id INT(9) UNSIGNED,
+index (filename),
+index(lead_id)
 );
 
  CREATE TABLE live_inbound (

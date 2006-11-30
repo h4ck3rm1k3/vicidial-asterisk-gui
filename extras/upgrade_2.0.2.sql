@@ -45,3 +45,6 @@ country_code SMALLINT(5) UNSIGNED
 );
 
 ALTER TABLE vicidial_list ADD index (postal_code);
+
+ALTER TABLE recording_log ADD lead_id INT(9) UNSIGNED;
+ALTER TABLE recording_log ADD index (lead_id);
