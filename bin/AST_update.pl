@@ -53,9 +53,10 @@
 # 60808-1500 - Fixed another bug in that caused crash with ** in extension
 # 60814-1523 - SYSLOG and SYSPERF looked up from database, dynamic settings
 # 60926-1601 - validate proper binutil locations for performance gathering
+# 61130-1008 - defaults show_channels_12_format to 1 for non 1.0 version Asterisk
 #
 
-$build = '60926-1601';
+$build = '61130-1008';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -262,8 +263,9 @@ while ($sthArows > $rec_count)
 	}
 $sthA->finish();
 
-	if ($AST_ver =~ /^1\.2|^CVS|^SVN/i) {$show_channels_12_format = 1;}
-	else {$show_channels_12_format = 0;}
+	if ($AST_ver =~ /^1\.0/i) {$show_channels_12_format = 0;}
+	else {$show_channels_12_format = 1;}
+	print STDERR "SHOW CHANNELS format: $show_channels_12_format\n";
 
 ##### LOOK FOR ZAP CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 	print STDERR "LOOKING FOR Zap clients assigned to this server:\n";
