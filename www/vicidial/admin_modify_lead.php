@@ -103,6 +103,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 # 60421-1459 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60609-1112 - Added DNC list addition if status changed to DNC
 # 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
+# 61130-1639 - Added recording_log lookup and list for this lead_id
 #
 
 $STARTtime = date("U");
@@ -420,7 +421,8 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 	$logs_to_print = mysql_num_rows($rslt);
 
 	$u=0;
-	while ($logs_to_print > $u) {
+	while ($logs_to_print > $u) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $u))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -436,10 +438,44 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 			echo "<td align=right><font size=2> $row[1] </td></tr>\n";
 
 		$u++;
-	}
+		}
 
 
 echo "</TABLE></center>\n";
+echo "<BR><BR>\n";
+
+echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
+echo "<TABLE width=700 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=left><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td></tr>\n";
+
+	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 50;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	while ($logs_to_print > $u) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor>";
+			echo "<td align=left><font size=2> $row[12] </td>";
+			echo "<td align=left><font size=2> $row[4] </td>\n";
+			echo "<td align=left><font size=2> $row[8] </td>\n";
+			echo "<td align=left><font size=2> $row[0] </td>\n";
+			echo "<td align=right><font size=2> $row[10] </td>\n";
+			echo "<td align=right><font size=2> $row[11] </td>\n";
+			echo "</tr>\n";
+
+		$u++;
+		}
+
+
+echo "</TABLE></center>\n";
+
 
 
 
