@@ -7,6 +7,7 @@
 # CHANGES
 #
 # 60620-1025 - Added variable filtering to eliminate SQL injection attack threat
+# 61201-1114 - Added lead_id and user to recording_log entry
 #
 
 require("dbconnect.php");
@@ -259,7 +260,7 @@ if ($parked_count > 0)
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
-	$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id) values('$channel','" . mysql_real_escape_string($server_ip) . "','SIP/" . mysql_real_escape_string($SIPexten) . "','$NOW_TIME','$STARTtime','" . mysql_real_escape_string($filename) . "','$lead_id')";
+	$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('$channel','" . mysql_real_escape_string($server_ip) . "','SIP/" . mysql_real_escape_string($SIPexten) . "','$NOW_TIME','$STARTtime','" . mysql_real_escape_string($filename) . "','$lead_id','$user')";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 

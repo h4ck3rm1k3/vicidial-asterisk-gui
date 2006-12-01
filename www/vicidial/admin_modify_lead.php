@@ -104,6 +104,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 # 60609-1112 - Added DNC list addition if status changed to DNC
 # 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
 # 61130-1639 - Added recording_log lookup and list for this lead_id
+# 61201-1136 - Added recording_log user(TSR) display and link
 #
 
 $STARTtime = date("U");
@@ -414,9 +415,9 @@ echo "<center>\n";
 
 echo "<B>CALLS TO THIS LEAD:</B>\n";
 echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
-	$stmt="select * from vicidial_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by uniqueid desc limit 50;";
+	$stmt="select * from vicidial_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by uniqueid desc limit 500;";
 	$rslt=mysql_query($stmt, $link);
 	$logs_to_print = mysql_num_rows($rslt);
 
@@ -429,7 +430,10 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=2>$row[4]</td>";
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td><font size=2>$row[4]</td>";
 			echo "<td align=left><font size=2> $row[7]</td>\n";
 			echo "<td align=left><font size=2> $row[8]</td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[11]</A> </td>\n";
@@ -437,7 +441,6 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 			echo "<td align=right><font size=2> $row[2] </td>\n";
 			echo "<td align=right><font size=2> $row[1] </td></tr>\n";
 
-		$u++;
 		}
 
 
@@ -445,10 +448,10 @@ echo "</TABLE></center>\n";
 echo "<BR><BR>\n";
 
 echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
-echo "<TABLE width=700 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=left><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td></tr>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td><td align=left><font size=2>TSR</td></tr>\n";
 
-	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 50;";
+	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
 	$rslt=mysql_query($stmt, $link);
 	$logs_to_print = mysql_num_rows($rslt);
 
@@ -461,16 +464,18 @@ echo "<tr><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td>
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
+			$u++;
 			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
 			echo "<td align=left><font size=2> $row[12] </td>";
 			echo "<td align=left><font size=2> $row[4] </td>\n";
 			echo "<td align=left><font size=2> $row[8] </td>\n";
 			echo "<td align=left><font size=2> $row[0] </td>\n";
-			echo "<td align=right><font size=2> $row[10] </td>\n";
-			echo "<td align=right><font size=2> $row[11] </td>\n";
+			echo "<td align=center><font size=2> $row[10] </td>\n";
+			echo "<td align=left><font size=2> $row[11] </td>\n";
+			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
 			echo "</tr>\n";
 
-		$u++;
 		}
 
 

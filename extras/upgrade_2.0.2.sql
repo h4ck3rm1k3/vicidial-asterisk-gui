@@ -48,3 +48,5 @@ ALTER TABLE vicidial_list ADD index (postal_code);
 
 ALTER TABLE recording_log ADD lead_id INT(9) UNSIGNED;
 ALTER TABLE recording_log ADD index (lead_id);
+ALTER TABLE recording_log ADD user VARCHAR(20);
+ALTER TABLE recording_log ADD index (user);
