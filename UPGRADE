@@ -50,7 +50,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 	NOTE: the scripts to be kept alive are to be defined in the astguiclient.conf file
 
-7. Experimental FastAGI replacement for call_log and VD_hangup AGI scripts:
+7. FastAGI replacement for call_log and VD_hangup AGI scripts:
 	FastAGI_log.pl - requires cpan module Net::Server to run
 	If you want to use it, read the comments at the top of the script
 	Look at the docs/conf_examples/extensions.conf.sample file for examples
@@ -84,6 +84,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 12. Added the ability to restrict agent logins by user group to a specific set
 	of campaigns. This is definable in the USER GROUPS section of admin.php
+
+13. Added lead_id and user fields to the recording_log, along with cross-
+	reference links in several admin web pages for these.
 
 
 
