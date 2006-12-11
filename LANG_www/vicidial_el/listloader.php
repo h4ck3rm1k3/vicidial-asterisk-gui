@@ -146,7 +146,7 @@ function ShowProgress(good, bad, total, dup, post) {
   </tr>
   <tr>
 	<td align=center><input type=submit value="ΕΠΙΒΕΒΑΙΩΣΗ" name='submit_file'></td>
-	<td align=center><input type=button onClick="javascript:document.location='listloader.php'" value="ΞΕΚΙΝΑ" name='reload_page'></td>
+	<td align=center><input type=button onClick="javascript:document.location='listloader.php'" value="ΞΕΚΙΝΑ ΠΑΛΙ" name='reload_page'></td>
   </tr>
   <tr><td colspan=2><font size=1><a href="new_listloader_superL.php" target="_parent">ΕΠΙΛΕΞΤΕ ΕΔΩ ΓΙΑ ΝΑ ΠΑΤΕ ΣΤΟΝ ΠΡΟΗΓΜΕΝΟ ΕΙΣΑΓΩΓΕΑ ΟΔΗΓΩΝ (BETA ΕΚΔΟΣΗ)</a> &nbsp; &nbsp; <a href="admin.php" target="_parent">ΠΙΣΩ ΣΤΗ ΔΙΑΧΕΙΡΙΣΗ</a></font></td></tr>
 </table>

@@ -72,7 +72,7 @@ while ($i < $servers_to_print)
 </UL>
 
 <PRE><TABLE Border=1>
-<TR><TD>SERVER</TD><TD>ΠΕΡΙΓΡΑΦΗ</TD><TD>IP ADDRESS</TD><TD>ΕΝΕΡΓΑ</TD><TD>VDAD time</TD><TD>VDcall time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
+<TR><TD>SERVER</TD><TD>ΠΕΡΙΓΡΑΦΗ</TD><TD>IP ADDRESS</TD><TD>ΕΝΕΡΓΟ</TD><TD>VDAD time</TD><TD>VDcall time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
 <? 
 
 	$o=0;

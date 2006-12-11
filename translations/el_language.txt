@@ -98,13 +98,13 @@ vdc_XB_seconds.gif|vdc_XB_seconds_el.gif|
 vdc_tab_script.gif|vdc_tab_script.gif|
 You have now logged out. Thank you|Έχετε αποσυνδεθεί. Σας ευχαριστούμε|
 astGUIclient web-client VERSION|ΈΚΔΟΣΗ astGUIclient|
-astGUIclient web client|astGUIclient web client|
-VICIDIAL web client|VICIDIAL web client|
+astGUIclient web client|χειριστής astGUIclient|
+VICIDIAL web client|χειριστής VICIDIAL|
 VICIDIAL web-client version|Έκδοση VICIDIAL|
 You can only monitor Zap channels|Μπορείτε μόνο να ελέγξετε τα κανάλια Zap|
 Stop Record|Τερματισμός Ηχογράφησης|
 you are logged into this phone|συνδεμένος με το τηλ|
-Back to Main Window|Επιστροφή|
+Back to Main Window|Επιστροφή στο Βασικό Παράθυρο|
 LIVE CALLS ON THIS PHONE|ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΥΤΟ ΤΟ ΤΗΛΕΦΩΝΟ|
 LIVE CALLS IN THIS CONFERENCE|ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΥΤΗΝ ΤΗΝ ΔΙΑΣΚΕΨΗ|
 LIVE CALL TRANSFER|ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ|
@@ -117,14 +117,14 @@ Active Lines Panel|Πίνακας Ενεργών Γραμμών|
 Conferences Panel|Πίνακας διασκέψεων|
 Check Voicemail|Ελεγχος Φωνητικού ταχυδρομείου|
 Live Call|Ενεργή κλήση|
-Hangup Trunk|Κλείσιμο Trunk|
-Hijack Trunk|Κλέψιμο Trunk|
-Listen Trunk|Ακούστε Trunk|
+Hangup Trunk|Κλείσιμο Κορμού|
+Hijack Trunk|Κλέψιμο Κορμού|
+Listen Trunk|Ακούστε Κορμό|
 Active Local Menu|Ενεργές Τοπικές Επιλογές|
 Hangup Local|Κλείσιμο τοπικού|
 Hijack Local|Κλέψιμο τοπικού|
 Listen Local|Ακούστε τοπικό|
-Channel to be transferred|Κανάλι προς μεταφέρεται|
+Channel to be transferred|Κανάλι προς μεταφορά|
 Extensions Menu|Επιλογές τηλ. συνδέσεων|
 Send to selected extension|Στείλε στην επιλεγμένη τηλ.σύνδεση|
 Send to selected vmail box|Στείλε στο επιλεγμένο vmail|
@@ -148,12 +148,12 @@ PARKED BY|ΣΤΑΘΜΕΥΜΕΝΕΣ ΑΠΟ|
 PARKED TIME|ΧΡΟΝΟΣ ΣΤΑΘΜΕΥΣΗΣ|
 Registered to|Συμμετέχεις|
 Enter Conference|Συμμετοχή|
-Dial From Conf|Κλήση από συνδιάσκ|
+Dial From Conf|Κλήση από συνψη|
 Active Extensions|Ενεργές τηλ. συνδέσεις|
 Outside Lines|Εξωτερικές γραμμές|
 Local Extensions|Τοπικές τηλ. συνδέσεις|
 Data Goes Here|Τα δεδομένα πηγαίνουν εδώ|
-Trunk Action|Κίνηση Trunk|
+Trunk Action|Κίνηση Κορμού|
 Local Action|Τοπική Κίνηση|
 Conferences List|Κατάλογος διασκέψεων|
 Click on a conference room number on the left for info on that conference|Επιλέξτε έναν αριθμό δωματίου συνδιάσκεψης στα αριστερά για τις πληροφορίες σε εκείνη την συνδιάσκεψη|
@@ -171,7 +171,7 @@ LIVE INBOUND CALL|ΕΝΕΡΓΗ ΕΙΣΕΡΧΟΜΕΝΗ ΚΛΗΣΗ|
 Number Dialed|Αριθμός που καλέσατε|
 SEND TO MY VOICEMAIL|ΣΤΕΙΛΕ ΣΤΟ ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ ΜΟΥ|
 Live Extension Check|Ελεγχος ενεργής τηλ.σύνδεσης|
-Manager Send|Ο διευθυντής στέλνει|
+Manager Send|Ο διαχτής στέλνει|
 command not inserted|εντολή που δεν έγινε εισαγωγή|
 command sent for|εντολή που στέλνεται για|
 One of these variables|Μία από αυτές τις μεταβλητές|
@@ -208,7 +208,7 @@ CAMPAIGN DEFAULT PARKING|ΠΡΟΕΠΙΛΟΓΗ ΧΩΡΟΥ ΣΤΑΘΜΕΥΣΗΣ Ε
 CAMPAIGN CUSTOM WEB FORM|ΠΡΟΣΑΡΜΟΣΜΕΝΗ ΙΣΤΟΣΕΛΙΔΑ ΕΚΣΤΡΑΤΕΙΑΣ|
 CAMPAIGN DEFAULT WEB FORM|ΠΡΟΕΠΙΛΟΓΗ ΙΣΤΟΣΕΛΙΔΑΣ ΕΚΣΤΡΑΤΕΙΑΣ|
 CAMPAIGN ALLOWS CLOSERS|Η ΕΚΣΤΡΑΤΕΙΑ ΕΠΙΤΡΕΠΕΙ CLOSERS|
-CAMPAIGN ALLOWS NO CLOSERS|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΕΠΙΤΡΕΠΕΙ ΚΑΝΕΝΑ CLOSERS|
+CAMPAIGN ALLOWS NO CLOSERS|Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΕΠΙΤΡΕΠΕΙ CLOSERS|
 USING PREVIOUS MEETME ROOM|ΧΡΗΣΙΜΟΠΟΙΗΣΗ ΠΡΟΗΓΟΥΜΕΝΟΥ ΔΩΜΑΤΙΟΥ MEETME|
 USING NEW MEETME ROOM|ΧΡΗΣΙΜΟΠΟΙΗΣΗ ΝΕΟΥ ΔΩΜΑΤΟΥ MEETME|
 old QUEUE and INCALL reverted list|παλιά ΣΕΙΡΑ ΑΝΑΜΟΝΗΣ και σε-κλήση κλήσεις επαναστρέφουν την Λίστα|
@@ -226,13 +226,13 @@ Transfer number must have more than 1 digit|Ο αριθμός σε μεταφο�
 Grab Parked Call|Αρπαγμα σταθμευμένης κλήσης|
 Park Call|Στάθμευση Κλήσης|
 Waiting for Ring|Αναμονή για κουδούνισμα|
-Called 3rd party|Κλήση 3 συμβαλλόμενου μέρους|
+Called 3rd party|Κλήση 3ου συμβαλλόμενου μέρους|
 LEAVE 3-WAY CALL|ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ|
 Dial With Customer|Κλήση με τον πελάτη|
 Park Customer Dial|Στάθμευση κλήσης πελάτη|
 Hangup Xfer Line|Κλείσιμο Γραμμής Xfer|
 Hangup Both Lines|Κλείσιμο και τις δύο γραμμές|
-Hangup Customer|΄Κλείσιμο Πελάτη|
+Hangup Customer|Κλείσιμο Πελάτη|
 Transfer - Conference|Μεταφορά - διάσκεψη|
 LOCAL CLOSER|ΤΟΠΙΚΟΣ CLOSER|
 INTERNAL CLOSER|ΕΣΩΤΕΡΙΚΟΣ CLOSER|
@@ -385,7 +385,7 @@ MAIN PHONE|ΚΥΡΙΟ ΤΗΛΕΦΩΝΟ|
 ALT PHONE|ΕΝΑΛΛΑΚΤΙΚΟ ΤΗΛΕΦΩΝΟ|
 ADDRESS3|3ΔΙΕΥΘΥΝΣΗ|
 FINISH LEAD|ΤΕΛΕΙΩΣΤΕ|
-Dial Alt Phone Number|Κλήση εναλλακτικού αριθμού τηλεφώνου|
+Dial Alt Phone Number|Κλήση εναλκού αριθμού|
 Phone|Τηλ|
 DIAL|ΚΛΗΣΗ|
 SUBMIT FAVORITES CHANGES - requires logout|ΥΠΟΒΑΛΤΕ τις ΑΛΛΑΓΕΣ ΣΥΜΠΑΘΕΙΩΝ - απαιτεί την αποσύνδεση|
@@ -419,4 +419,4 @@ CallBack: |CallBack:|
 Agent: |Πράκτορας:|
 Comments: |Σχολιάζει:|
 ### BEGIN translation phrases for 2.0.2 release ###
-VOLUME|ΌΓΚΟΣ|
+VOLUME|ΟΓΚΟΣ|

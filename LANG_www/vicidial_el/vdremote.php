@@ -278,7 +278,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρήστη Ξεκινά: </td><td
 echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Γραμμών: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3 value=\"$number_of_lines\"> (μόνο αριθμοί)</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left>$row[3]</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εξωτερική Τηλ. Σύνδεση: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20 value=\"$conf_exten\"> (number dialed to reach agents [i.e. 913125551212])</td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option SELECTED>ΕΝΕΡΓΑ</option><option>INACTIVE</option><option SELECTED>$status</option></select></td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option SELECTED>ΕΝΕΡΓΟ</option><option>INACTIVE</option><option SELECTED>$status</option></select></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left>$campaign_id</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες Ομάδες: </td><td align=left>\n";
 echo "$groups_list";
@@ -336,7 +336,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρήστη Ξεκινά: </td><td
 echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Γραμμών: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3 value=\"$number_of_lines\"> (μόνο αριθμοί)</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left>$row[3]</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εξωτερική Τηλ. Σύνδεση: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20 value=\"$conf_exten\"> (number dialed to reach agents [i.e. 913125551212])</td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option SELECTED>ΕΝΕΡΓΑ</option><option>INACTIVE</option><option SELECTED>$status</option></select></td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option SELECTED>ΕΝΕΡΓΟ</option><option>INACTIVE</option><option SELECTED>$status</option></select></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left>$campaign_id</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες Ομάδες: </td><td align=left>\n";
 echo "$groups_list";
@@ -446,7 +446,7 @@ if ($ADD==61111)
 			else
 			{
 			echo "**************************************************************************************\n";
-			echo "********************************* ΚΑΝΕΝΑΣ ΧΕΙΡΙΣΤΗΣ ΣΕ ΚΛΗΣΕΙΣ*********************************\n";
+			echo "********************************* ΚΑΝΕΝΑΣ ΧΕΙΡ. ΣΕ ΚΛΗΣΕΙΣ *********************************\n";
 			echo "**************************************************************************************\n";
 			}
 		}

@@ -459,7 +459,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		}
 	else
 	{
-	echo "ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΝΑΜΟΝΗ\n";
+	echo "ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΝΑΜΟΝΗ \n";
 	}
 
 
@@ -693,7 +693,7 @@ $talking_to_print = mysql_num_rows($rslt);
 	}
 	else
 	{
-	echo " ΚΑΝΕΝΑΣ ΧΕΙΡΙΣΤΗΣ ΣΕ ΚΛΗΣΕΙΣ\n";
+	echo " ΚΑΝΕΝΑΣ ΧΕΙΡ. ΣΕ ΚΛΗΣΕΙΣ \n";
 	}
 
 ?>

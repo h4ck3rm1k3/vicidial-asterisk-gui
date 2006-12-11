@@ -143,7 +143,7 @@ $agcDIR = eregi_replace('astguiclient.php','',$agcDIR);
 	{
 	header ("Content-type: text/html; charset=utf-8");
 
-	echo "<title>astGUIclient web client: Σύνδεση</title>\n";
+	echo "<title>χειριστής astGUIclient: Σύνδεση</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -208,7 +208,7 @@ echo "<!-- ΕΚΔΟΣΗ: $version     ΔΗΜΙΟΥΡΓΙΑ: $build      ADD: $AD
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>astGUIclient web client: Σύνδεση Τηλεφώνου</title>\n";
+echo "<title>χειριστής astGUIclient: Σύνδεση Τηλεφώνου</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE><TR><TD></TD>\n";
@@ -245,7 +245,7 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>astGUIclient web client: Σύνδεση Τηλεφώνου</title>\n";
+	echo "<title>χειριστής astGUIclient: Σύνδεση Τηλεφώνου</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
@@ -274,7 +274,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 	}
 else
 	{
-	echo "<title>astGUIclient web client</title>\n";
+	echo "<title>χειριστής astGUIclient</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -1762,7 +1762,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			show_reglink=1;
 			reglink = "<a href=\"#\" onclick=\"conf_register_room('" + head_conf + "');return false;\">Register</a>";
 			}
-		var conf_head_HTML = "<font class=\"sh_text\">ΣΥΝΔΙΑΣΚΕΨΗ " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Συμμετέχεις: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Συμμετοχή </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">Ανανέωση </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">Εγγραφή</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Στείλε DTMF</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Κλήση από συνδιάσκ</A><BR></font>";
+		var conf_head_HTML = "<font class=\"sh_text\">ΣΥΝΔΙΑΣΚΕΨΗ " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Συμμετέχεις: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Συμμετοχή </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">Ανανέωση </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">Εγγραφή</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Στείλε DTMF</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Κλήση από συνψη</A><BR></font>";
 	
 		document.getElementById("ConfereNceHeaderContent").innerHTML = conf_head_HTML;
 		check_for_conf_calls(head_conf,taskrefresh);
@@ -2734,11 +2734,11 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:12px;z-index:29;" id="TrunkHangupBox">
     <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> TRUNK ΚΛΕΙΣΙΜΟ <BR><BR>
 	<span id="TrunkHangupContent"> Active Trunks Menu </span><BR>
-	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Κλείσιμο Trunk</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Κλέψιμο Trunk</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Ακούστε Trunk</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Κλείσιμο Κορμού</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Κλέψιμο Κορμού</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Ακούστε Κορμό</a> &nbsp; | &nbsp; </span>
 	<a href="#" onclick="busytrunkhangup_force_refresh();return false;">Ανανέωση</a> &nbsp; | &nbsp; 
-	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');">Επιστροφή</a>
+	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');">Επιστροφή στο Βασικό Παράθυρο</a>
 	</TD></TR></TABLE>
 </span>
 
@@ -2749,14 +2749,14 @@ echo "</head>\n";
 	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;">Κλέψιμο τοπικού</a> &nbsp; | &nbsp; </span>
 	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;">Ακούστε τοπικό</a> &nbsp; | &nbsp; </span>
 	<a href="#" onclick="busylocalhangup_force_refresh();return false;">Ανανέωση</a> &nbsp; | &nbsp; 
-	<a href="#" onclick="hideLocalHangup('LocalHangupBox');">Επιστροφή</a>
+	<a href="#" onclick="hideLocalHangup('LocalHangupBox');">Επιστροφή στο Βασικό Παράθυρο</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφορά: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
 	<tr><td>Τηλ.συνδέσεις:<BR><span id="MainXfeRContent"> Επιλογές τηλ. συνδέσεων </span></td>
 	<td>
 	<BR>
@@ -2764,7 +2764,7 @@ echo "</head>\n";
 	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Στείλε στο επιλεγμένο vmail</a> <BR><BR>
 	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Στείλε σε αυτόν τον αριθμό</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
 	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">Ανανέωση</a> <BR><BR><BR>
-	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Επιστροφή</a> <BR><BR>
+	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Επιστροφή στο Βασικό Παράθυρο</a> <BR><BR>
 	</TD>
 	<TD>Διασκέψεις:<BR><font size=1>(επιλέξτε έναν αριθμό κατωτέρω που θα σταλεί σε μια διάσκεψη)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Στείλε το κανάλι μου επίσης<div class="scroll_list" id="MainXfeRconfContent"> Επιλογές διασκέψεων </div></td></TR></TABLE>
 </span>
@@ -2777,14 +2777,14 @@ echo "</head>\n";
 	<a href="#" onclick="mainxfer_send_originate('DiaL','','');return false;">Επιλεγμένη κλήση τηλ. σύνδεσης</a> <BR><BR>
 	<a href="#" onclick="mainxfer_send_originate('VMAIL');return false;">Επιλεγμένη κλήση vmail</a> <BR><BR>
 	<a href="#" onclick="getactiveext('LocalDialBox');return false;">Ανανέωση</a> <BR><BR><BR>
-	<a href="#" onclick="hideLocalDial('LocalDialBox');">Επιστροφή</a> <BR><BR>
+	<a href="#" onclick="hideLocalDial('LocalDialBox');">Επιστροφή στο Βασικό Παράθυρο</a> <BR><BR>
 	</TD>
 	<TD></td></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:40px;top:12px;z-index:41;" id="ParkDisplayBox">
     <table border=0 bgcolor="#FFFFCC" width=640 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΣΤΑΘΜ.ΚΛΗΣΕΙΣ:</b> <div class="scroll_park" id="ParkDisplayContents"></div>
-	<a href="#" onclick="hideParkDisplay('ParkDisplayBox');">Επιστροφή</a> <BR><BR>
+	<a href="#" onclick="hideParkDisplay('ParkDisplayBox');">Επιστροφή στο Βασικό Παράθυρο</a> <BR><BR>
 	</td></TR></TABLE>
 </span>
 
@@ -2858,7 +2858,7 @@ echo "</head>\n";
 <tr><td VALIGN=TOP>
 	<span id="activeext"><em>Τα δεδομένα πηγαίνουν εδώ</em></span><BR><BR>
 </td><td VALIGN=TOP>
-	<span id="busytrunk"><em>Τα δεδομένα πηγαίνουν εδώ</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Κίνηση Trunk</a></span>
+	<span id="busytrunk"><em>Τα δεδομένα πηγαίνουν εδώ</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Κίνηση Κορμού</a></span>
 </td><td VALIGN=TOP>
 	<span id="busyext"><em>Τα δεδομένα πηγαίνουν εδώ</em></span><BR><BR><span id="LocalHangupLink"><a href="#" onclick="showLocalHangup('LocalHangupBox');return false;">Τοπική Κίνηση</a></span>
 </td></tr>

@@ -311,7 +311,7 @@ function ParseFileName() {
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=postalgmt><option selected value="AREA">COUNTRY CODE AND AREA CODE ONLY</option><option value="POSTAL">POSTAL CODE FIRST</option></select></td>
   </tr>
 <tr>
-	<td align=center colspan=2><input type=submit value="ΕΠΙΒΕΒΑΙΩΣΗ" name='submit_file'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick="javascript:document.location='new_listloader_superL.php'" value="ΞΕΚΙΝΑ" name='reload_page'></td>
+	<td align=center colspan=2><input type=submit value="ΕΠΙΒΕΒΑΙΩΣΗ" name='submit_file'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick="javascript:document.location='new_listloader_superL.php'" value="ΞΕΚΙΝΑ ΠΑΛΙ" name='reload_page'></td>
   </tr>
   <tr><td colspan=2><font size=1><a href="listloaderMAIN.php" target="_parent">ΕΠΙΛΕΞΤΕ ΕΔΩ ΓΙΑ ΝΑ ΠΑΤΕ ΣΤΟ ΒΑΣΙΚΟ ΕΙΣΑΓΩΓΕΑ ΟΔΗΓΩΝ </a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php" target="_parent">ΠΙΣΩ ΣΤΗ ΔΙΑΧΕΙΡΙΣΗ</a></font></td></tr>
   <tr><td colspan=2><font size=1>ΠΡΟΗΓΜΕΝΟΣ ΕΙΣΑΓΩΓΕΑΣ ΛΙΣΤΩΝ- &nbsp; &nbsp; ΕΚΔΟΣΗ: <?=$version ?> &nbsp; &nbsp; ΔΗΜΙΟΥΡΓΙΑ: <?=$build ?></td></tr>
@@ -1097,7 +1097,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 			print "  <input type=hidden name=postalgmt value=\"$postalgmt\">\r\n";
 			print "  <input type=hidden name=lead_file value=\"$lead_file\">\r\n";
 			print "  <input type=hidden name=list_id_override value=\"$list_id_override\">\r\n";
-			print "    <th colspan=2><input type=submit name='OK_to_process' value='ΟΚ ΓΙΑ ΕΠΕΞΕΡΓΑΣΙΑ'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick=\"javascript:document.location='new_listloader_superL.php'\" value=\"ΞΕΚΙΝΑ\" name='reload_page'></th>\r\n";
+			print "    <th colspan=2><input type=submit name='OK_to_process' value='ΟΚ ΓΙΑ ΕΠΕΞΕΡΓΑΣΙΑ'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick=\"javascript:document.location='new_listloader_superL.php'\" value=\"ΞΕΚΙΝΑ ΠΑΛΙ\" name='reload_page'></th>\r\n";
 			print "  </tr>\r\n";
 			print "</table>\r\n";
 	# }

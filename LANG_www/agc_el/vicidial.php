@@ -130,6 +130,7 @@
 # 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
 # 61122-1523 - Added more SCRIPT variables
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
+# 61130-1617 - Added lead_id to MonitorConf for recording_log
 #
 
 require("dbconnect.php");
@@ -175,8 +176,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.103';
-$build = '61128-2229';
+$version = '2.0.104';
+$build = '61130-1617';
 
 if ($force_logout)
 {
@@ -283,7 +284,7 @@ $camp_form_code = "<INPUT TYPE=TEXT NAME=VD_campaign SIZE=10 maxlength=20 VALUE=
 
 if ($relogin == 'YES')
 {
-echo "<title>VICIΚΛΗΣΗ web client: Επανασύνδεση</title>\n";
+echo "<title>χειριστής VICIΚΛΗΣΗ: Επανασύνδεση</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -319,7 +320,7 @@ if ($user_login_first == 1)
 {
 	if ( (strlen($VD_login)<1) or (strlen($VD_pass)<1) or (strlen($VD_campaign)<1) )
 	{
-	echo "<title>VICIΚΛΗΣΗ web client: Σύνδεση εκστρατείας</title>\n";
+	echo "<title>χειριστής VICIΚΛΗΣΗ: Σύνδεση εκστρατείας</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -360,7 +361,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		$phone_login=$row[0];
 		$phone_pass=$row[1];
 
-		echo "<title>VICIΚΛΗΣΗ web client: Σύνδεση</title>\n";
+		echo "<title>χειριστής VICIΚΛΗΣΗ: Σύνδεση</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -397,7 +398,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>VICIΚΛΗΣΗ web client:  Σύνδεση Τηλεφώνου</title>\n";
+echo "<title>χειριστής VICIΚΛΗΣΗ:  Σύνδεση Τηλεφώνου</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -475,7 +476,7 @@ $VDloginDISPLAY=0;
 
 		if ( (!eregi("$VD_campaign",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) )
 			{
-			echo "<title>VICIΚΛΗΣΗ web client: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
+			echo "<title>χειριστής VICIΚΛΗΣΗ: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
 			echo "</head>\n";
 			echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 			echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -672,7 +673,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	}
 	if ($VDloginDISPLAY)
 	{
-	echo "<title>VICIΚΛΗΣΗ web client: Σύνδεση εκστρατείας</title>\n";
+	echo "<title>χειριστής VICIΚΛΗΣΗ: Σύνδεση εκστρατείας</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -711,7 +712,7 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>VICIΚΛΗΣΗ web client: Σύνδεση Τηλεφώνου Error</title>\n";
+	echo "<title>χειριστής VICIΚΛΗΣΗ: Σύνδεση Τηλεφώνου Error</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -741,7 +742,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	}
 else
 	{
-	echo "<title>VICIΚΛΗΣΗ web client</title>\n";
+	echo "<title>χειριστής VICIΚΛΗΣΗ</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -857,7 +858,7 @@ else
 	else
 		{
 		$VICIDiaL_allow_closers = 0;
-		print "<!-- Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΕΠΙΤΡΕΠΕΙ ΚΑΝΕΝΑ CLOSERS: |$VICIDiaL_allow_closers| -->\n";
+		print "<!-- Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΕΠΙΤΡΕΠΕΙ CLOSERS: |$VICIDiaL_allow_closers| -->\n";
 		}
 
 
@@ -979,7 +980,7 @@ else
 		}
 	else
 		{
-		echo "<title>VICIΚΛΗΣΗ web client: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
+		echo "<title>χειριστής VICIΚΛΗΣΗ: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -1001,7 +1002,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		}
 	if (strlen($session_id) < 1)
 		{
-		echo "<title>VICIΚΛΗΣΗ web client: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
+		echo "<title>χειριστής VICIΚΛΗΣΗ: VICIΚΛΗΣΗ Σύνδεση εκστρατείας</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
@@ -1885,7 +1886,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var LMAcontent_match=0;
 							var conv_start=-1;
 				//			var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΕ ΑΥΤΗΝ ΤΗΝ ΔΙΑΣΚΕΨΗ:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">ΑΠΟΜΑΚΡΟ ΚΑΝΑΛΙ</TD><TD><font class=\"log_title\">ΚΛΕΙΣΙΜΟ</TD><TD><font class=\"log_title\">XFER</TD></TR>";
-							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΤΗ ΣΥΝΟΔΟ ΣΑΣ:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">ΑΠΟΜΑΚΡΟ ΚΑΝΑΛΙ</TD><TD><font class=\"log_title\">ΚΛΕΙΣΙΜΟ</TD><TD><font class=\"log_title\">ΌΓΚΟΣ</TD></TR>";
+							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>ΕΝΕΡΓΕΣ ΚΛΗΣΕΙΣ ΣΤΗ ΣΥΝΟΔΟ ΣΑΣ:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">ΑΠΟΜΑΚΡΟ ΚΑΝΑΛΙ</TD><TD><font class=\"log_title\">ΚΛΕΙΣΙΜΟ</TD><TD><font class=\"log_title\">ΟΓΚΟΣ</TD></TR>";
 							if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 								{
 								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -2047,7 +2048,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 					}
 				}
-			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
+			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&lead_id=" + document.vicidial_form.lead_id.value + "&ext_priority=1";
 			xmlhttp.open('POST', 'manager_send.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(confmonitor_query); 
@@ -2292,7 +2293,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					reselect_alt_dial = 1;
 					alt_dial_active = 1;
-					var man_status = "Κλήση εναλλακτικού αριθμού τηλεφώνου: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">ΚΥΡΙΟ ΤΗΛΕΦΩΝΟ</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTΤηλE')\"><font class=\"preview_text\">ΕΝΑΛΛΑΚΤΙΚΟ ΤΗΛΕΦΩΝΟ</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">3ΔΙΕΥΘΥΝΣΗ</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">ΤΕΛΕΙΩΣΤΕ</font></a>"; 
+					var man_status = "Κλήση εναλκού αριθμού: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">ΚΥΡΙΟ ΤΗΛΕΦΩΝΟ</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTΤηλE')\"><font class=\"preview_text\">ΕΝΑΛΛΑΚΤΙΚΟ ΤΗΛΕΦΩΝΟ</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">3ΔΙΕΥΘΥΝΣΗ</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">ΤΕΛΕΙΩΣΤΕ</font></a>"; 
 					document.getElementById("MainStatuSSpan").innerHTML = man_status;
 					}
 				}
@@ -2658,7 +2659,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								XD_live_call_secondS = 0;
 								MD_channel_look=0;
 
-								document.getElementById("MainStatuSSpan").innerHTML = " Κλήση 3 συμβαλλόμενου μέρους: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
+								document.getElementById("MainStatuSSpan").innerHTML = " Κλήση 3ου συμβαλλόμενου μέρους: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
 
 								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall_el.gif\" border=0 alt=\"ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ\"></a>";
 
@@ -2701,7 +2702,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_el.gif\" border=0 alt=\"Στάθμευση Κλήσης\"></a>";
 
-								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"΄Κλείσιμο Πελάτη\"></a>";
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"Κλείσιμο Πελάτη\"></a>";
 
 								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_el.gif\" border=0 alt=\"Μεταφορά - διάσκεψη\"></a>";
 
@@ -2923,7 +2924,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							MD_channel_look=1;
 							custchannellive=1;
 
-							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"΄Κλείσιμο Πελάτη\"></a>";
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"Κλείσιμο Πελάτη\"></a>";
 
 							if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
@@ -3129,7 +3130,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("MainStatuSSpan").innerHTML = " Σε Κλήση: " + manDiaLonly_num + " UID: " + MDnextCID + " &nbsp; Αναμονή για κουδούνισμα...";
 
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"΄Κλείσιμο Πελάτη\"></a>";
+						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"Κλείσιμο Πελάτη\"></a>";
 
 						if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
@@ -3435,7 +3436,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall_el.gif\" border=0 alt=\"Στάθμευση Κλήσης\"></a>";
 
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"΄Κλείσιμο Πελάτη\"></a>";
+						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_el.gif\" border=0 alt=\"Κλείσιμο Πελάτη\"></a>";
 
 						document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf_el.gif\" border=0 alt=\"Μεταφορά - διάσκεψη\"></a>";
 
@@ -3790,7 +3791,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_webform_OFF_el.gif\" border=0 alt=\"Σελίδα Διαδικτύου\">";
 			document.getElementById("ParkControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_parkcall_OFF_el.gif\" border=0 alt=\"Στάθμευση Κλήσης\">";
-			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF_el.gif\" border=0 alt=\"΄Κλείσιμο Πελάτη\">";
+			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF_el.gif\" border=0 alt=\"Κλείσιμο Πελάτη\">";
 			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_transferconf_OFF_el.gif\" border=0 alt=\"Μεταφορά - διάσκεψη\">";
 			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_localcloser_OFF_el.gif\" border=0 alt=\"ΤΟΠΙΚΟΣ CLOSER\">";
 			document.getElementById("InternalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_internalcloser_OFF_el.gif\" border=0 alt=\"ΕΣΩΤΕΡΙΚΟΣ CLOSER\">";
@@ -5662,7 +5663,7 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφέρεται: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ΜΕΤΑΦΟΡΑ ΕΝΕΡΓΗΣ ΚΛΗΣΗΣ</b> <BR>Κανάλι προς μεταφορά: <span id="MainXfeRChanneL">Κανάλι</span><BR></tr>
 	<tr><td>Τηλ.συνδέσεις:<BR><span id="MainXfeRContent"> Επιλογές τηλ. συνδέσεων </span></td>
 	<td>
 	<BR>
@@ -5670,7 +5671,7 @@ Your Κατάσταση: <span id="AgentΚατάστασηΚατάσταση"></
 	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Στείλε στο επιλεγμένο vmail</a> <BR><BR>
 	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Στείλε σε αυτόν τον αριθμό</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
 	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">ΑΝΑΝΕΩΣΗ</a> <BR><BR><BR>
-	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Επιστροφή</a> <BR><BR>
+	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Επιστροφή στο Βασικό Παράθυρο</a> <BR><BR>
 	</TD>
 	<TD>Διασκέψεις:<BR><font size=1>(επιλέξτε έναν αριθμό κατωτέρω που θα σταλεί σε μια διάσκεψη)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Στείλε το κανάλι μου επίσης<div class="scroll_list" id="MainXfeRconfContent"> Επιλογές διασκέψεων </div></td></TR></TABLE>
 </span>
@@ -5719,7 +5720,7 @@ if ( ($alt_phone_dialing) and ($auto_dial_level==0) )
 <span STYLE="background-color: #CCCCCC" id="ParkControl"><IMG SRC="../agc/images/vdc_LB_parkcall_OFF_el.gif" border=0 alt="Στάθμευση Κλήσης"></span><BR>
 <span STYLE="background-color: #CCCCCC" id="XferControl"><IMG SRC="../agc/images/vdc_LB_transferconf_OFF_el.gif" border=0 alt="Μεταφορά - διάσκεψη"></span><BR>
 <span id="SpacerSpanC"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF_el.gif" border=0 alt="΄Κλείσιμο Πελάτη"></span><BR>
+<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF_el.gif" border=0 alt="Κλείσιμο Πελάτη"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="../agc/images/vdc_LB_senddtmf_el.gif" border=0 alt="Στείλε DTMF"></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></span><BR>
 </center>

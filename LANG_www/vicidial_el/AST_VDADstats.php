@@ -155,7 +155,7 @@ echo "Συνολικά ΕΓΚΑΤΑΛΕΙΜΕΝΕΣ κλήσεις: $DROPcalls  
 echo "Μέσος όρος σε δευτερόλεπτα για ΕΓΚΑΤΑΕΙΜΕΝΕΣ κλήσεις: $average_hold_seconds\n";
 
 echo "\n";
-echo "---------- ΜΗ ΑΠΑΝΤΗΜΕΝΕΣ ΑΥΤΟΜΑΤΕΣ ΚΛΗΣΕΙΣ\n";
+echo "---------- ΜΗ ΑΠΑΝΤ ΑΥΤ ΚΛΗΣΕΙΣ\n";
 
 $stmt="select count(*),sum(length_in_sec) from vicidial_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='NA' and (length_in_sec <= 60 or length_in_sec is null);";
 $rslt=mysql_query($stmt, $link);
@@ -294,7 +294,7 @@ echo "+-----------------------------------------------------------+\n";
 #########  TIME STATS
 
 echo "\n";
-echo "---------- ΣΤΑΤΙΣΤΙΚΑ ΧΡΟΝΟΥ\n";
+echo "---------- ΣΤΑΤ.ΧΡΟΝ.\n";
 
 echo "<FONT SIZE=0>\n";
 
