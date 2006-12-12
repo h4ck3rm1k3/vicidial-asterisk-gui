@@ -521,7 +521,7 @@ if ($drop_seconds < 1)
 	{
 	$drop_seconds = $DROP_TIME;
 
-	if ($safe_harbor_message=='Y')
+	if ($safe_harbor_message =~ /Y/)
 		{
 		$DROPexten = "$safe_harbor_exten";
 		}

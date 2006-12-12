@@ -556,7 +556,7 @@ if ($drop_seconds < 1)
 	{
 	$drop_seconds = $DROP_TIME;
 
-	if ($drop_message=='Y')
+	if ($drop_message =~ /Y/)
 		{
 		$DROPexten = "$drop_exten";
 		}
