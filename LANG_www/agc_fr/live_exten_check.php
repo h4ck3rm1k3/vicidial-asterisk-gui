@@ -74,7 +74,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+    echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
     exit;
 	}
   else
@@ -82,7 +82,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -94,7 +94,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+			echo "Invalide session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -108,8 +108,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Contrôle De phase De Prolongation";
+echo "<!-- VERSION: $version     BUILD: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
+echo "<title>Vérification De l'extension";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -131,7 +131,7 @@ echo "$row[0]|";
 	if ( (strlen($exten)<1) or (strlen($protocol)<3) )
 	{
 	$channel_live=0;
-	echo "Exten $exten est inadmissible ou protocole $protocol est inadmissible\n";
+	echo "Exten $exten est invalide ou protocole $protocol est invalide\n";
 	exit;
 	}
 	else
@@ -164,9 +164,9 @@ echo "$row[0]|";
 		{
 		$row=mysql_fetch_row($rslt);
 		echo "Conversation: $counter ~";
-		echo "LaMancheA: $ChanneLA[$counter] ~";
-		echo "LaMancheB: $ChanneLB[$counter] ~";
-		echo "LaMancheBtrunk: $row[0]|";
+		echo "CanalA: $ChanneLA[$counter] ~";
+		echo "CanalB: $ChanneLB[$counter] ~";
+		echo "CanalBtrunk: $row[0]|";
 		}
 		else
 		{
@@ -178,9 +178,9 @@ echo "$row[0]|";
 			{
 			$row=mysql_fetch_row($rslt);
 			echo "Conversation: $counter ~";
-			echo "LaMancheA: $ChanneLA[$counter] ~";
-			echo "LaMancheB: $ChanneLB[$counter] ~";
-			echo "LaMancheBtrunk: $row[0]|";
+			echo "CanalA: $ChanneLA[$counter] ~";
+			echo "CanalB: $ChanneLB[$counter] ~";
+			echo "CanalBtrunk: $row[0]|";
 			}
 			else
 			{
@@ -192,9 +192,9 @@ echo "$row[0]|";
 				{
 				$row=mysql_fetch_row($rslt);
 				echo "Conversation: $counter ~";
-				echo "LaMancheA: $ChanneLA[$counter] ~";
-				echo "LaMancheB: $ChanneLB[$counter] ~";
-				echo "LaMancheBtrunk: $row[0]|";
+				echo "CanalA: $ChanneLA[$counter] ~";
+				echo "CanalB: $ChanneLB[$counter] ~";
+				echo "CanalBtrunk: $row[0]|";
 				}
 				else
 				{
@@ -206,16 +206,16 @@ echo "$row[0]|";
 					{
 					$row=mysql_fetch_row($rslt);
 					echo "Conversation: $counter ~";
-					echo "LaMancheA: $ChanneLA[$counter] ~";
-					echo "LaMancheB: $ChanneLB[$counter] ~";
-					echo "LaMancheBtrunk: $row[0]|";
+					echo "CanalA: $ChanneLA[$counter] ~";
+					echo "CanalB: $ChanneLB[$counter] ~";
+					echo "CanalBtrunk: $row[0]|";
 					}
 					else
 					{
 					echo "Conversation: $counter ~";
-					echo "LaMancheA: $ChanneLA[$counter] ~";
-					echo "LaMancheB: $ChanneLB[$counter] ~";
-					echo "LaMancheBtrunk: $ChanneLA[$counter]|";
+					echo "CanalA: $ChanneLA[$counter] ~";
+					echo "CanalB: $ChanneLB[$counter] ~";
+					echo "CanalBtrunk: $ChanneLA[$counter]|";
 					}
 				}
 			}
@@ -269,7 +269,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";
+	echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

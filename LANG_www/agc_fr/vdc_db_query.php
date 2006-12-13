@@ -270,7 +270,7 @@ $auth=$row[0];
 
 if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 {
-echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
 exit;
 }
 else
@@ -278,7 +278,7 @@ else
 
 if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 	{
-	echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+	echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 	exit;
 	}
 else
@@ -290,7 +290,7 @@ else
 	$SNauth=$row[0];
 	  if($SNauth==0)
 		{
-		echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+		echo "Invalide session_name: |$session_name|$server_ip|\n";
 		exit;
 		}
 	  else
@@ -304,8 +304,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Manuscrit De Question De Base de données";
+echo "<!-- VERSION: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
+echo "<title>VICIDiaL Script De Requète à la Base de données";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -323,7 +323,7 @@ if ($ACTION == 'regCLOSER')
 	if ( (strlen($closer_choice)<1) || (strlen($user)<1) )
 	{
 	$channel_live=0;
-	echo "Choix De Groupe $closer_choice est inadmissible\n";
+	echo "Selection De Groupe $closer_choice est invalide\n";
 	exit;
 	}
 	else
@@ -351,7 +351,7 @@ if ($ACTION == 'regCLOSER')
 		$rslt=mysql_query($stmt, $link);
 		}
 	}
-	echo "Closer In Choix De Groupe $closer_choice a été enregistré à l'utilisateur $user\n";
+	echo "Closer In Selection De Groupe $closer_choice a été attribué à l'utilisateur $user\n";
 }
 
 
@@ -368,8 +368,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1)  || (strlen($ext_context)<1) )
 	{
 	$channel_live=0;
-	echo "DISTRIBUTEUR VIDE\n";
-	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est inadmissible\n";
+	echo "LISTE D'APPEL VIDE\n";
+	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
 	exit;
 	}
 	else
@@ -625,7 +625,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		}
 		else
 		{
-		echo "DISTRIBUTEUR VIDE\n";
+		echo "LISTE D'APPEL VIDE\n";
 		}
 	}
 }
@@ -644,7 +644,7 @@ if ($ACTION == 'manDiaLskip')
 	{
 		$channel_live=0;
 		echo "LEAD NOT REVERTED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est inadmissible\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
 		exit;
 	}
 	else
@@ -674,7 +674,7 @@ if ($ACTION == 'manDiaLonly')
 	{
 		$channel_live=0;
 		echo " APPEL NOT PLACED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est inadmissible\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
 		exit;
 	}
 	else
@@ -736,7 +736,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 if (strlen($MDnextCID)<18)
 	{
 	echo "NO\n";
-	echo "MDnextCID $MDnextCID est inadmissible\n";
+	echo "MDnextCID $MDnextCID est invalide\n";
 	exit;
 	}
 else
@@ -790,7 +790,7 @@ if ($stage == "start")
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
 		echo "NOTATION NON ENTRÉE\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign est inadmissible\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign est invalide\n";
 		exit;
 		}
 	else
@@ -837,7 +837,7 @@ if ($stage == "end")
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) )
 		{
 		echo "NOTATION NON ENTRÉE\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id est inadmissible\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id est invalide\n";
 		exit;
 		}
 	else
@@ -1031,8 +1031,8 @@ if ($ACTION == 'VDADREcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagne $campaign est inadmissible\n";
-	echo "lead_id $lead_id est inadmissible\n";
+	echo "Campagne $campaign est invalide\n";
+	echo "lead_id $lead_id est invalide\n";
 	exit;
 	}
 	else
@@ -1072,7 +1072,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagne $campaign est inadmissible\n";
+	echo "Campagne $campaign est invalide\n";
 	exit;
 	}
 	else
@@ -1349,7 +1349,7 @@ if ($ACTION == 'userLOGout')
 if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	{
 	echo "NO\n";
-	echo "campaign $campaign or conf_exten $conf_exten est inadmissible\n";
+	echo "campaign $campaign or conf_exten $conf_exten est invalide\n";
 	exit;
 	}
 else
@@ -1410,7 +1410,7 @@ if ($ACTION == 'updateDISPO')
 	$row='';   $rowx='';
 	if ( (strlen($dispo_choice)<1) || (strlen($lead_id)<1) )
 	{
-	echo "Dispo Choice $dispo or lead_id $lead_id est inadmissible\n";
+	echo "Dispo Choice $dispo or lead_id $lead_id est invalide\n";
 	exit;
 	}
 	else
@@ -1477,7 +1477,7 @@ if ($ACTION == 'updateLEAD')
 	$row='';   $rowx='';
 	if ( (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
-	echo "phone_number $phone_number or lead_id $lead_id est inadmissible\n";
+	echo "phone_number $phone_number or lead_id $lead_id est invalide\n";
 	exit;
 	}
 	else
@@ -1509,7 +1509,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	$row='';   $rowx='';
 	if ( (strlen($stage)<2) || (strlen($server_ip)<1) )
 	{
-	echo "stage $stage est inadmissible\n";
+	echo "stage $stage est invalide\n";
 	exit;
 	}
 	else
@@ -1547,7 +1547,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		}
 	}
-	echo 'Agent ' . $user . ' est maintenant dans le statut ' . $stage . "\n";
+	echo 'Agent ' . $user . ' le statut actuel est ' . $stage . "\n";
 }
 
 
@@ -1560,7 +1560,7 @@ if ($ACTION == 'UpdatEFavoritEs')
 	$channel_live=1;
 	if ( (strlen($favorites_list)<1) || (strlen($user)<1) || (strlen($exten)<1) )
 	{
-	echo "favorites list $favorites_list est inadmissible\n";
+	echo "favorites list $favorites_list est invalide\n";
 	exit;
 	}
 	else
@@ -1646,7 +1646,7 @@ if ($format=='debug')
 {
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";
+echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
 echo "\n</body>\n</html>\n";
 }
 	

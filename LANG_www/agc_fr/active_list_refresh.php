@@ -125,7 +125,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+    echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
     exit;
 	}
   else
@@ -133,7 +133,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -145,7 +145,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+			echo "Invalide session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -159,12 +159,12 @@ if ($format=='table')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    ADD: $ADD   server_ip: $server_ip-->\n";
-echo "<title>Affichage De Liste: ";
-if ($ADD==1)		{echo "Prolongements De phase";}
-if ($ADD==2)		{echo "Prolongements Occupés";}
+echo "<!-- VERSION: $version     BUILD: $build    ADD: $ADD   server_ip: $server_ip-->\n";
+echo "<title>Mode Liste: ";
+if ($ADD==1)		{echo "Extensions en cours d'appel";}
+if ($ADD==2)		{echo "Extensions Occupées";}
 if ($ADD==3)		{echo "Lignes Extérieures";}
-if ($ADD==4)		{echo "Prolongements Locaux";}
+if ($ADD==4)		{echo "Extensions Locales";}
 if ($ADD==5)		{echo "Conférences";}
 if ($ADD==99999)	{echo "AIDE";}
 echo "</title>\n";
@@ -469,7 +469,7 @@ if ($ADD==5)
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='table') {echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";}
+if ($format=='table') {echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";}
 if ($format=='table') {echo "\n</body>\n</html>\n";}
 	
 exit; 

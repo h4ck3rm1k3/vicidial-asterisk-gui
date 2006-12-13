@@ -87,7 +87,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+    echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
     exit;
 	}
   else
@@ -95,7 +95,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -107,7 +107,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+			echo "Invalide session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -121,8 +121,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
-echo "<title>Contrôle De Prolongation De Conf";
+echo "<!-- VERSION: $version     BUILD: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
+echo "<title>Vérification de l'extension de la Conférence";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -136,7 +136,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if (strlen($conf_exten)<1)
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten est inadmissible\n";
+		echo "Conf Exten $conf_exten est invalide\n";
 		exit;
 		}
 		else
@@ -200,7 +200,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$LaMancheA[$total_conf] = "$row[0]";
+			$CanalA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
@@ -213,7 +213,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$LaMancheA[$total_conf] = "$row[0]";
+			$CanalA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		}
@@ -225,8 +225,8 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		while($total_conf > $counter)
 		{
 			$counter++;
-			$countecho = "$countecho$LaMancheA[$counter] ~";
-		#	echo "$LaMancheA[$counter] ~";
+			$countecho = "$countecho$CanalA[$counter] ~";
+		#	echo "$CanalA[$counter] ~";
 		}
 
 	echo "$countecho\n";
@@ -240,7 +240,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if ( (strlen($conf_exten)<1) || (strlen($exten)<1) )
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten est inadmissible or Exten $exten est inadmissible\n";
+		echo "Conf Exten $conf_exten est invalide or Exten $exten est invalide\n";
 		exit;
 		}
 		else
@@ -249,7 +249,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
-		echo "Conférence $conf_exten a été enregistré à $exten\n";
+		echo "Conférence $conf_exten a été attribué à $exten\n";
 	}
 
 
@@ -258,7 +258,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";
+	echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

@@ -61,7 +61,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+    echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
     exit;
 	}
   else
@@ -69,7 +69,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -81,7 +81,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+			echo "Invalide session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -95,8 +95,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
-echo "<title>Contrôle De Voicemail";
+echo "<!-- VERSION: $version     BUILD: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
+echo "<title>Consultation de la Boite Vocale";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -107,7 +107,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if (strlen($vmail_box)<1)
 	{
 	$channel_live=0;
-	echo "boîte de voicemail $vmail_box est inadmissible\n";
+	echo "boîte vocale $vmail_box est invalide\n";
 	exit;
 	}
 	else
@@ -131,7 +131,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";
+	echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

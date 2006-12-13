@@ -85,7 +85,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Inadmissible Utilisateurname/Mot de passe: |$user|$pass|\n";
+    echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
     exit;
 	}
   else
@@ -93,7 +93,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Inadmissible server_ip: |$server_ip|  or  Inadmissible session_name: |$session_name|\n";
+		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -105,7 +105,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Inadmissible session_name: |$session_name|$server_ip|\n";
+			echo "Invalide session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -124,7 +124,7 @@ while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     CONSTRUCTION: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
 	<script language="Javascript">	
 		var server_ip = '<? echo $server_ip ?>';
@@ -250,11 +250,11 @@ echo "<!-- VERSION: $version     CONSTRUCTION: $build    UNIQUEID: $uniqueid   s
 	</script>
 
 <?
-echo "<title>APPEL D'ARRIVÉE DE PHASE";
+echo "<title>APPEL ENTRANT EN COURS";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=\"#CCC2E0\" marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onload=\"link_timeout();\">\n";
-echo "<CENTER><H2>APPEL D'ARRIVÉE DE PHASE</H2>\n";
+echo "<CENTER><H2>APPEL ENTRANT EN COURS</H2>\n";
 echo "<B>$NOW_TIME</B><BR><BR>\n";
 }
 
@@ -265,7 +265,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 	if (strlen($uniqueid)<9)
 	{
 	$channel_live=0;
-	echo "Uniqueid $uniqueid est inadmissible\n";
+	echo "Uniqueid $uniqueid est invalide\n";
 	exit;
 	}
 	else
@@ -281,8 +281,8 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 #		Zap/73|"V.I.C.I. MARKET" <7275338730>|2005-04-28 14:01:21|7274514936|Inbound direct to Matt|||||
 		if ($format=='debug') {echo "\n<!-- $row[0]|$row[1]|$row[2]|$row[3]|$row[4]|$row[5]|$row[6]|$row[7]|$row[8]|$row[9]|$row[10]|$row[11]|$row[12]|$row[13]| -->";}
 		echo "<table width=95% cellpadding=1 cellspacing=3>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>LaManche: </td><td align=left>$row[1]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>CallerID: </td><td align=left>$row[3]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Canal: </td><td align=left>$row[1]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Appelant: </td><td align=left>$row[3]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n";
 
 		$phone = eregi_replace(".*\<","",$row[3]);
@@ -304,7 +304,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 			$local_web_callerID_QUERY_STRING.="&callerID_prefix=$NXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_last4=$XXXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_Time=$row[6]";
-			$local_web_callerID_QUERY_STRING.="&callerID_LaManche=$row[1]";
+			$local_web_callerID_QUERY_STRING.="&callerID_Canal=$row[1]";
 			$local_web_callerID_QUERY_STRING.="&callerID_uniqueID=$row[0]";
 			$local_web_callerID_QUERY_STRING.="&callerID_phone_ext=$row[5]";
 			$local_web_callerID_QUERY_STRING.="&callerID_server_ip=$row[2]";
@@ -321,8 +321,8 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Numéro Composé: </td><td align=left>$row[8]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Notes: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
-		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">DÉCROCHEMENT</a> - \n";
-		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">ENVOYEZ À MON VOICEMAIL</a>\n";
+		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">RACCROCHER</a> - \n";
+		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">ENVOYEZ VERS MA BOITE VOCALE</a>\n";
 		echo "</span></td></tr>\n";
 		echo "</table>\n";
 
@@ -342,7 +342,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- temps d'exécution de manuscrit: $RUNtime secondes -->";
+	echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
 	echo "\n</body>\n</html>\n";
 	}
 	
