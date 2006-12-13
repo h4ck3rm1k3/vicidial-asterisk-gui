@@ -167,8 +167,8 @@ $browser = getenv("HTTP_USER_AGENT");
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER><FONT FACE="Courier" COLOR=BLACK SIZE=3>
-
 <? 
+echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead record modification<BR>\n";
 
 if ($end_call > 0)
 {
