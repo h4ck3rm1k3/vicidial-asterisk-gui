@@ -91,6 +91,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 13. Added lead_id and user fields to the recording_log, along with cross-
 	reference links in several admin web pages for these.
 
+14. Changed Drop percentage to be out of Answered calls for FTC compliance.
+
 
 
 
