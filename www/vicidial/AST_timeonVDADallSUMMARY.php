@@ -9,6 +9,7 @@
 # 
 # changes:
 # 61102-1616 - first build
+# 61215-1131 - added answered calls and drop percent taken from answered calls
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -155,7 +156,7 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
 
-$stmt="select dialable_leads,calls_today,drops_today,drops_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
@@ -165,6 +166,7 @@ $drpctTODAY = $row[3];
 $diffONEMIN = $row[4];
 $agentsONEMIN = $row[5];
 $balanceFILL = $row[6];
+$answersTODAY = $row[7];
 if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 	{
 	$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
@@ -211,7 +213,7 @@ echo "</TR>";
 
 echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CALLS DROPPED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ANSWERED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatusA, $DIALstatusB, $DIALstatusC, $DIALstatusD, $DIALstatusE &nbsp; &nbsp; </TD>";
 echo "</TR>";

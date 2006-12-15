@@ -14,6 +14,7 @@
 #            - alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
 # 60828-1149 - add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
 # 60919-1243 - changed variables to use arrays for all campaign-specific values
+# 61215-1110 - added answered calls stats and use drops as percentage of answered for today
 #
 
 # constants
@@ -608,18 +609,24 @@ sub calculate_drops
 {
 $RESETdrop_count_updater++;
 $VCScalls_today[$i]=0;
+$VCSanswers_today[$i]=0;
 $VCSdrops_today[$i]=0;
 $VCSdrops_today_pct[$i]=0;
+$VCSdrops_answers_today_pct[$i]=0;
 $VCScalls_hour[$i]=0;
+$VCSanswers_hour[$i]=0;
 $VCSdrops_hour[$i]=0;
 $VCSdrops_hour_pct[$i]=0;
 $VCScalls_halfhour[$i]=0;
+$VCSanswers_halfhour[$i]=0;
 $VCSdrops_halfhour[$i]=0;
 $VCSdrops_halfhour_pct[$i]=0;
 $VCScalls_five[$i]=0;
+$VCSanswers_five[$i]=0;
 $VCSdrops_five[$i]=0;
 $VCSdrops_five_pct[$i]=0;
 $VCScalls_one[$i]=0;
+$VCSanswers_one[$i]=0;
 $VCSdrops_one[$i]=0;
 $VCSdrops_one_pct[$i]=0;
 
@@ -638,6 +645,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 if ($VCScalls_one[$i] > 0)
 	{
+	# LAST MINUTE ANSWERS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status NOT IN('NA','B');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_one[$i] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# LAST MINUTE DROPS
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status IN('DROP','XDROP');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -672,6 +693,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 if ($VCScalls_today[$i] > 0)
 	{
+	# TODAY ANSWERS
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status NOT IN('NA','B');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_today[$i] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# TODAY DROPS
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -684,7 +719,10 @@ if ($VCScalls_today[$i] > 0)
 		if ($VCSdrops_today[$i] > 0)
 			{
 			$VCSdrops_today_pct[$i] = ( ($VCSdrops_today[$i] / $VCScalls_today[$i]) * 100 );
-			$VCSdrops_today_pct[$i] = sprintf("%.2f", $VCSdrops_today_pct[$i]);	
+			$VCSdrops_today_pct[$i] = sprintf("%.2f", $VCSdrops_today_pct[$i]);
+			if ($VCSanswers_today[$i] < 1) {$VCSanswers_today[$i] = 1;}
+			$VCSdrops_answers_today_pct[$i] = ( ($VCSdrops_today[$i] / $VCSanswers_today[$i]) * 100 );
+			$VCSdrops_answers_today_pct[$i] = sprintf("%.2f", $VCSdrops_answers_today_pct[$i]);
 			}
 		$rec_count++;
 		}
@@ -706,6 +744,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 if ($VCScalls_hour[$i] > 0)
 	{
+	# ANSWERS LAST HOUR
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status NOT IN('NA','B');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_hour[$i] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# DROP LAST HOUR
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN('DROP','XDROP');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -740,6 +792,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 if ($VCScalls_halfhour[$i] > 0)
 	{
+	# ANSWERS HALFHOUR
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status NOT IN('NA','B');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_halfhour[$i] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# DROPS HALFHOUR
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN('DROP','XDROP');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -774,6 +840,20 @@ while ($sthArows > $rec_count)
 $sthA->finish();
 if ($VCScalls_five[$i] > 0)
 	{
+	# ANSWERS FIVEMINUTE
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status NOT IN('NA','B');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_five[$i] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# DROPS FIVEMINUTE
 	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN('DROP','XDROP');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -840,7 +920,7 @@ $VCSagents_active[$i] = ($VCSINCALL[$i] + $VCSREADY[$i] + $VCSCLOSER[$i]);
 if ($campaign_id[$i] =~ /CLOSER/)
 	{
 	# GET AVERAGES FROM THIS CAMPAIGN
-	$stmtA = "SELECT differential_onemin[$i],agents_average_onemin[$i] from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
+	$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -861,7 +941,7 @@ else
 	}
 
 ## UPDATE STATS FOR CAMPAIGN
-$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]' where campaign_id='$campaign_id[$i]';";
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]' where campaign_id='$campaign_id[$i]';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
 
@@ -936,10 +1016,11 @@ if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($f
 		}
 	$adaptive_string .= "DROP STATS-\n";
 	$adaptive_string .= "   TODAY DROPS:     $VCScalls_today[$i]   $VCSdrops_today[$i]   $VCSdrops_today_pct[$i]%\n";
-	$adaptive_string .= "   ONE HOUR DROPS:  $VCScalls_hour[$i]   $VCSdrops_hour[$i]   $VCSdrops_hour_pct[$i]%\n";
-	$adaptive_string .= "   HALF HOUR DROPS: $VCScalls_halfhour[$i]   $VCSdrops_halfhour[$i]   $VCSdrops_halfhour_pct[$i]%\n";
-	$adaptive_string .= "   FIVE MIN DROPS:  $VCScalls_five[$i]   $VCSdrops_five[$i]   $VCSdrops_five_pct[$i]%\n";
-	$adaptive_string .= "   ONE MIN DROPS:   $VCScalls_one[$i]   $VCSdrops_one[$i]   $VCSdrops_one_pct[$i]%\n";
+	$adaptive_string .= "     ANSWER DROPS:     $VCSanswers_today[$i]   $VCSdrops_answers_today_pct[$i]%\n";
+	$adaptive_string .= "   ONE HOUR DROPS:  $VCScalls_hour[$i]/$VCSanswers_hour[$i]   $VCSdrops_hour[$i]   $VCSdrops_hour_pct[$i]%\n";
+	$adaptive_string .= "   HALF HOUR DROPS: $VCScalls_halfhour[$i]/$VCSanswers_halfhour[$i]   $VCSdrops_halfhour[$i]   $VCSdrops_halfhour_pct[$i]%\n";
+	$adaptive_string .= "   FIVE MIN DROPS:  $VCScalls_five[$i]/$VCSanswers_five[$i]   $VCSdrops_five[$i]   $VCSdrops_five_pct[$i]%\n";
+	$adaptive_string .= "   ONE MIN DROPS:   $VCScalls_one[$i]/$VCSanswers_one[$i]   $VCSdrops_one[$i]   $VCSdrops_one_pct[$i]%\n";
 
 	### DROP PERCENTAGE RULES TO LOWER DIAL_LEVEL ###
 	if ( ($VCScalls_one[$i] > 20) && ($VCSdrops_one_pct[$i] > 50) )
@@ -947,7 +1028,7 @@ if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($f
 		$intensity_dial_level[$i] = ($intensity_dial_level[$i] / 2);
 		$adaptive_string .= "      DROP RATE OVER 50% FOR LAST MINUTE! CUTTING DIAL LEVEL TO: $intensity_dial_level[$i]\n";
 		}
-	if ( ($VCScalls_today[$i] > 50) && ($VCSdrops_today_pct[$i] > $adaptive_dropped_percentage[$i]) )
+	if ( ($VCScalls_today[$i] > 50) && ($VCSdrops_answers_today_pct[$i] > $adaptive_dropped_percentage[$i]) )
 		{
 		if ($dial_method[$i] =~ /ADAPT_HARD_LIMIT/) 
 			{

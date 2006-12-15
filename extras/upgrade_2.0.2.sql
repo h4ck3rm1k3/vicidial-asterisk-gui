@@ -50,3 +50,10 @@ ALTER TABLE recording_log ADD lead_id INT(9) UNSIGNED;
 ALTER TABLE recording_log ADD index (lead_id);
 ALTER TABLE recording_log ADD user VARCHAR(20);
 ALTER TABLE recording_log ADD index (user);
+
+ALTER TABLE vicidial_campaign_stats ADD answers_today INT(9) UNSIGNED default '0' AFTER calls_today;
+ALTER TABLE vicidial_campaign_stats ADD drops_answers_today_pct VARCHAR(6) default '0' AFTER drops_today_pct;
+ALTER TABLE vicidial_campaign_stats ADD answers_hour INT(9) UNSIGNED default '0' AFTER calls_hour;
+ALTER TABLE vicidial_campaign_stats ADD answers_halfhour INT(9) UNSIGNED default '0' AFTER calls_halfhour;
+ALTER TABLE vicidial_campaign_stats ADD answers_fivemin INT(9) UNSIGNED default '0' AFTER calls_fivemin;
+ALTER TABLE vicidial_campaign_stats ADD answers_onemin INT(9) UNSIGNED default '0' AFTER calls_onemin;
