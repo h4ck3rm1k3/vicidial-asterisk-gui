@@ -18,6 +18,7 @@
 # 61108-1320 - added new DST schemes for USA/Canada change and changes in other countries
 # 61110-1204 - added new DST scheme for Brazil
 # 61128-1034 - added postal code GMT lookup option
+# 61219-1106 - fixed updating for NULL gmt_offset records
 #
 
 $MT[0]='';
@@ -386,7 +387,7 @@ foreach (@phone_codes)
 
 				if ($AC_processed)
 					{
-					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -403,7 +404,7 @@ foreach (@phone_codes)
 						}
 					else
 						{
-						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
 						if (!$T) 
 							{
@@ -547,7 +548,7 @@ foreach (@phone_codes)
 
 					if ($AC_processed)
 						{
-						$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+						$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
 							if($DBX){print STDERR "\n|$stmtA|\n";}
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -564,7 +565,7 @@ foreach (@phone_codes)
 							}
 						else
 							{
-							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and gmt_offset_now != '$area_GMT';";
+							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
 							if($DBX){print STDERR "\n|$stmtA|\n";}
 							if (!$T) 
 								{
