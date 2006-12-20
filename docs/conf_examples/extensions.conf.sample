@@ -324,6 +324,9 @@ exten => _X48600XXX,2,Hangup
 exten => _X38600XXX,1,MeetMeAdmin(${EXTEN:2},t,${EXTEN:0:1})
 exten => _X38600XXX,2,Hangup
 
+exten => _55558600XXX,1,MeetMeAdmin(${EXTEN:4},K)
+exten => _55558600XXX,2,Hangup
+
 exten => 8300,1,Hangup
 
 ; VICIDIAL conferences
@@ -481,6 +484,12 @@ exten => 8600200,1,Meetme,8600200
 exten => _78600XXX,1,Meetme,${EXTEN:1}|q
 ; quiet monitor extensions for meetme rooms (for room managers)
 exten => _68600XXX,1,Meetme,${EXTEN:1}|mq
+
+; voicelab exten
+exten => _86009XX,1,Meetme,${EXTEN}|mq
+; voicelab exten moderator
+exten => _986009XX,1,Meetme,${EXTEN:1}
+
 
 
 ; park channel for client GUI parking, hangup after 30 minutes
