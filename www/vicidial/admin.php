@@ -2576,7 +2576,7 @@ exit;
 if ($ADD==7111111)
 {
 	##### TEST VARIABLES #####
-	$vendor_lead_code = 'VENDORLEADCODE';
+	$vendor_lead_code = 'VENDOR:LEAD;CODE';
 	$list_id = 'LISTID';
 	$gmt_offset_now = 'GMTOFFSET';
 	$phone_code = '1';
@@ -2624,6 +2624,47 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $script_name =		$row[1];
 $script_text =		$row[3];
+
+if (eregi("iframe src",$script_text))
+	{
+	$vendor_lead_code = eregi_replace(' ','+',$vendor_lead_code);
+	$list_id = eregi_replace(' ','+',$list_id);
+	$gmt_offset_now = eregi_replace(' ','+',$gmt_offset_now);
+	$phone_code = eregi_replace(' ','+',$phone_code);
+	$phone_number = eregi_replace(' ','+',$phone_number);
+	$title = eregi_replace(' ','+',$title);
+	$first_name = eregi_replace(' ','+',$first_name);
+	$middle_initial = eregi_replace(' ','+',$middle_initial);
+	$last_name = eregi_replace(' ','+',$last_name);
+	$address1 = eregi_replace(' ','+',$address1);
+	$address2 = eregi_replace(' ','+',$address2);
+	$address3 = eregi_replace(' ','+',$address2);
+	$city = eregi_replace(' ','+',$city);
+	$state = eregi_replace(' ','+',$state);
+	$province = eregi_replace(' ','+',$province);
+	$postal_code = eregi_replace(' ','+',$postal_code);
+	$country_code = eregi_replace(' ','+',$country_code);
+	$gender = eregi_replace(' ','+',$gender);
+	$date_of_birth = eregi_replace(' ','+',$date_of_birth);
+	$alt_phone = eregi_replace(' ','+',$alt_phone);
+	$email = eregi_replace(' ','+',$email);
+	$security_phrase = eregi_replace(' ','+',$security_phrase);
+	$comments = eregi_replace(' ','+',$comments);
+	$RGfullname = eregi_replace(' ','+',$RGfullname);
+	$RGuser = eregi_replace(' ','+',$RGuser);
+	$RGlead_id = eregi_replace(' ','+',$RGlead_id);
+	$RGcampaign = eregi_replace(' ','+',$RGcampaign);
+	$RGphone_login = eregi_replace(' ','+',$RGphone_login);
+	$RGgroup = eregi_replace(' ','+',$RGgroup);
+	$RGchannel_group = eregi_replace(' ','+',$RGchannel_group);
+	$RGSQLdate = eregi_replace(' ','+',$RGSQLdate);
+	$RGepoch = eregi_replace(' ','+',$RGepoch);
+	$RGuniqueid = eregi_replace(' ','+',$RGuniqueid);
+	$RGcustomer_zap_channel = eregi_replace(' ','+',$RGcustomer_zap_channel);
+	$RGserver_ip = eregi_replace(' ','+',$RGserver_ip);
+	$RGSIPexten = eregi_replace(' ','+',$RGSIPexten);
+	$RGsession_id = eregi_replace(' ','+',$RGsession_id);
+	}
 
 $script_text = eregi_replace('--A--vendor_lead_code--B--',"$vendor_lead_code",$script_text);
 $script_text = eregi_replace('--A--list_id--B--',"$list_id",$script_text);

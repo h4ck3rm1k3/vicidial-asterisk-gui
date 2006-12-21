@@ -4569,14 +4569,101 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // decode the scripttext and scriptname so that it can be didsplayed
 	function URLDecode(encodedvar,scriptformat)
 	{
-	   // Replace %ZZ with equivalent character
-	   // Put [ERR] in output if %ZZ is invalid.
-	   var HEXCHAR = "0123456789ABCDEFabcdef"; 
-	   var encoded = encodedvar;
-	   decoded = '';
-	   var i = 0;
+   // Replace %ZZ with equivalent character
+   // Put [ERR] in output if %ZZ is invalid.
+	var HEXCHAR = "0123456789ABCDEFabcdef"; 
+	var encoded = encodedvar;
+	decoded = '';
+	var i = 0;
+	var RGnl = new RegExp("\n","g");
+	var RGplus = new RegExp(" ","g");
+	var RGiframe = new RegExp("iframe","gi");
+
 	   if (scriptformat == 'YES')
 		{
+		var SCvendor_lead_code = document.vicidial_form.vendor_lead_code.value;
+		var SCsource_id = "";
+		var SClist_id = document.vicidial_form.list_id.value;
+		var SCgmt_offset_now = document.vicidial_form.gmt_offset_now.value;
+		var SCcalled_since_last_reset = "";
+		var SCphone_code = document.vicidial_form.phone_code.value;
+		var SCphone_number = document.vicidial_form.phone_number.value;
+		var SCtitle = document.vicidial_form.title.value;
+		var SCfirst_name = document.vicidial_form.first_name.value;
+		var SCmiddle_initial = document.vicidial_form.middle_initial.value;
+		var SClast_name = document.vicidial_form.last_name.value;
+		var SCaddress1 = document.vicidial_form.address1.value;
+		var SCaddress2 = document.vicidial_form.address2.value;
+		var SCaddress3 = document.vicidial_form.address3.value;
+		var SCcity = document.vicidial_form.city.value;
+		var SCstate = document.vicidial_form.state.value;
+		var SCprovince = document.vicidial_form.province.value;
+		var SCpostal_code = document.vicidial_form.postal_code.value;
+		var SCcountry_code = document.vicidial_form.country_code.value;
+		var SCgender = document.vicidial_form.gender.value;
+		var SCdate_of_birth = document.vicidial_form.date_of_birth.value;
+		var SCalt_phone = document.vicidial_form.alt_phone.value;
+		var SCemail = document.vicidial_form.email.value;
+		var SCsecurity_phrase = document.vicidial_form.security_phrase.value;
+		var SCcomments = document.vicidial_form.comments.value;
+		var SCfullname = LOGfullname;
+		var SCfronter = fronter;
+		var SCuser = user;
+		var SClead_id = document.vicidial_form.lead_id.value;
+		var SCcampaign = campaign;
+		var SCphone_login = phone_login;
+		var SCgroup = group;
+		var SCchannel_group = group;
+		var SCSQLdate = SQLdate;
+		var SCepoch = UnixTime;
+		var SCuniqueid = document.vicidial_form.uniqueid.value;
+		var SCcustomer_zap_channel = lastcustchannel;
+		var SCserver_ip = server_ip;
+		var SCSIPexten = extension;
+		var SCsession_id = session_id;
+
+		if (encoded.match(RGiframe))
+			{
+			SCvendor_lead_code = SCvendor_lead_code.replace(RGplus,'+');
+			SCsource_id = SCsource_id.replace(RGplus,'+');
+			SClist_id = SClist_id.replace(RGplus,'+');
+			SCgmt_offset_now = SCgmt_offset_now.replace(RGplus,'+');
+			SCcalled_since_last_reset = SCcalled_since_last_reset.replace(RGplus,'+');
+			SCphone_code = SCphone_code.replace(RGplus,'+');
+			SCphone_number = SCphone_number.replace(RGplus,'+');
+			SCtitle = SCtitle.replace(RGplus,'+');
+			SCfirst_name = SCfirst_name.replace(RGplus,'+');
+			SCmiddle_initial = SCmiddle_initial.replace(RGplus,'+');
+			SClast_name = SClast_name.replace(RGplus,'+');
+			SCaddress1 = SCaddress1.replace(RGplus,'+');
+			SCaddress2 = SCaddress2.replace(RGplus,'+');
+			SCaddress3 = SCaddress3.replace(RGplus,'+');
+			SCcity = SCcity.replace(RGplus,'+');
+			SCstate = SCstate.replace(RGplus,'+');
+			SCprovince = SCprovince.replace(RGplus,'+');
+			SCpostal_code = SCpostal_code.replace(RGplus,'+');
+			SCcountry_code = SCcountry_code.replace(RGplus,'+');
+			SCgender = SCgender.replace(RGplus,'+');
+			SCdate_of_birth = SCdate_of_birth.replace(RGplus,'+');
+			SCalt_phone = SCalt_phone.replace(RGplus,'+');
+			SCemail = SCemail.replace(RGplus,'+');
+			SCsecurity_phrase = SCsecurity_phrase.replace(RGplus,'+');
+			SCcomments = SCcomments.replace(RGplus,'+');
+			SCfullname = SCfullname.replace(RGplus,'+');
+			SCfronter = SCfronter.replace(RGplus,'+');
+			SCuser = SCuser.replace(RGplus,'+');
+			SClead_id = SClead_id.replace(RGplus,'+');
+			SCcampaign = SCcampaign.replace(RGplus,'+');
+			SCphone_login = SCphone_login.replace(RGplus,'+');
+			SCgroup = SCgroup.replace(RGplus,'+');
+			SCchannel_group = SCchannel_group.replace(RGplus,'+');
+			SCSQLdate = SCSQLdate.replace(RGplus,'+');
+			SCuniqueid = SCuniqueid.replace(RGplus,'+');
+			SCcustomer_zap_channel = SCcustomer_zap_channel.replace(RGplus,'+');
+			SCserver_ip = SCserver_ip.replace(RGplus,'+');
+			SCSIPexten = SCSIPexten.replace(RGplus,'+');
+			}
+
 		var RGvendor_lead_code = new RegExp("--A--vendor_lead_code--B--","g");
 		var RGsource_id = new RegExp("--A--source_id--B--","g");
 		var RGlist_id = new RegExp("--A--list_id--B--","g");
@@ -4617,48 +4704,47 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var RGserver_ip = new RegExp("--A--server_ip--B--","g");
 		var RGSIPexten = new RegExp("--A--SIPexten--B--","g");
 		var RGsession_id = new RegExp("--A--session_id--B--","g");
-		var RGnl = new RegExp("\n","g");
 
-		encoded = encoded.replace(RGvendor_lead_code, document.vicidial_form.vendor_lead_code.value);
-		encoded = encoded.replace(RGsource_id, "");
-		encoded = encoded.replace(RGlist_id, document.vicidial_form.list_id.value);
-		encoded = encoded.replace(RGgmt_offset_now, document.vicidial_form.gmt_offset_now.value);
-		encoded = encoded.replace(RGcalled_since_last_reset, "");
-		encoded = encoded.replace(RGphone_code, document.vicidial_form.phone_code.value);
-		encoded = encoded.replace(RGphone_number, document.vicidial_form.phone_number.value);
-		encoded = encoded.replace(RGtitle, document.vicidial_form.title.value);
-		encoded = encoded.replace(RGfirst_name, document.vicidial_form.first_name.value);
-		encoded = encoded.replace(RGmiddle_initial, document.vicidial_form.middle_initial.value);
-		encoded = encoded.replace(RGlast_name, document.vicidial_form.last_name.value);
-		encoded = encoded.replace(RGaddress1, document.vicidial_form.address1.value);
-		encoded = encoded.replace(RGaddress2, document.vicidial_form.address2.value);
-		encoded = encoded.replace(RGaddress3, document.vicidial_form.address3.value);
-		encoded = encoded.replace(RGcity, document.vicidial_form.city.value);
-		encoded = encoded.replace(RGstate, document.vicidial_form.state.value);
-		encoded = encoded.replace(RGprovince, document.vicidial_form.province.value);
-		encoded = encoded.replace(RGpostal_code, document.vicidial_form.postal_code.value);
-		encoded = encoded.replace(RGcountry_code, document.vicidial_form.country_code.value);
-		encoded = encoded.replace(RGgender, document.vicidial_form.gender.value);
-		encoded = encoded.replace(RGdate_of_birth, document.vicidial_form.date_of_birth.value);
-		encoded = encoded.replace(RGalt_phone, document.vicidial_form.alt_phone.value);
-		encoded = encoded.replace(RGemail, document.vicidial_form.email.value);
-		encoded = encoded.replace(RGsecurity_phrase, document.vicidial_form.security_phrase.value);
-		encoded = encoded.replace(RGcomments, document.vicidial_form.comments.value);
-		encoded = encoded.replace(RGfullname, LOGfullname);
-		encoded = encoded.replace(RGfronter, fronter);
-		encoded = encoded.replace(RGuser, user);
-		encoded = encoded.replace(RGlead_id, document.vicidial_form.lead_id.value);
-		encoded = encoded.replace(RGcampaign, campaign);
-		encoded = encoded.replace(RGphone_login, phone_login);
-		encoded = encoded.replace(RGgroup, group);
-		encoded = encoded.replace(RGchannel_group, group);
-		encoded = encoded.replace(RGSQLdate, SQLdate);
-		encoded = encoded.replace(RGepoch, UnixTime);
-		encoded = encoded.replace(RGuniqueid, document.vicidial_form.uniqueid.value);
-		encoded = encoded.replace(RGcustomer_zap_channel, lastcustchannel);
-		encoded = encoded.replace(RGserver_ip, server_ip);
-		encoded = encoded.replace(RGSIPexten, extension);
-		encoded = encoded.replace(RGsession_id, session_id);
+		encoded = encoded.replace(RGvendor_lead_code, SCvendor_lead_code);
+		encoded = encoded.replace(RGsource_id, SCsource_id);
+		encoded = encoded.replace(RGlist_id, SClist_id);
+		encoded = encoded.replace(RGgmt_offset_now, SCgmt_offset_now);
+		encoded = encoded.replace(RGcalled_since_last_reset, SCcalled_since_last_reset);
+		encoded = encoded.replace(RGphone_code, SCphone_code);
+		encoded = encoded.replace(RGphone_number, SCphone_number);
+		encoded = encoded.replace(RGtitle, SCtitle);
+		encoded = encoded.replace(RGfirst_name, SCfirst_name);
+		encoded = encoded.replace(RGmiddle_initial, SCmiddle_initial);
+		encoded = encoded.replace(RGlast_name, SClast_name);
+		encoded = encoded.replace(RGaddress1, SCaddress1);
+		encoded = encoded.replace(RGaddress2, SCaddress2);
+		encoded = encoded.replace(RGaddress3, SCaddress3);
+		encoded = encoded.replace(RGcity, SCcity);
+		encoded = encoded.replace(RGstate, SCstate);
+		encoded = encoded.replace(RGprovince, SCprovince);
+		encoded = encoded.replace(RGpostal_code, SCpostal_code);
+		encoded = encoded.replace(RGcountry_code, SCcountry_code);
+		encoded = encoded.replace(RGgender, SCgender);
+		encoded = encoded.replace(RGdate_of_birth, SCdate_of_birth);
+		encoded = encoded.replace(RGalt_phone, SCalt_phone);
+		encoded = encoded.replace(RGemail, SCemail);
+		encoded = encoded.replace(RGsecurity_phrase, SCsecurity_phrase);
+		encoded = encoded.replace(RGcomments, SCcomments);
+		encoded = encoded.replace(RGfullname, SCfullname);
+		encoded = encoded.replace(RGfronter, SCfronter);
+		encoded = encoded.replace(RGuser, SCuser);
+		encoded = encoded.replace(RGlead_id, SClead_id);
+		encoded = encoded.replace(RGcampaign, SCcampaign);
+		encoded = encoded.replace(RGphone_login, SCphone_login);
+		encoded = encoded.replace(RGgroup, SCgroup);
+		encoded = encoded.replace(RGchannel_group, SCchannel_group);
+		encoded = encoded.replace(RGSQLdate, SCSQLdate);
+		encoded = encoded.replace(RGepoch, SCepoch);
+		encoded = encoded.replace(RGuniqueid, SCuniqueid);
+		encoded = encoded.replace(RGcustomer_zap_channel, SCcustomer_zap_channel);
+		encoded = encoded.replace(RGserver_ip, SCserver_ip);
+		encoded = encoded.replace(RGSIPexten, SCSIPexten);
+		encoded = encoded.replace(RGsession_id, SCsession_id);
 		}
 	   while (i < encoded.length) {
 		   var ch = encoded.charAt(i);
@@ -5727,7 +5813,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 </center>
 </font>
 </td>
-<td width=480 align=left valign=top>
+<td width=600 align=left valign=top>
 <input type=hidden name=lead_id value="">
 <input type=hidden name=list_id value="">
 <input type=hidden name=called_count value="">
