@@ -130,6 +130,8 @@
 # 61122-1341 - Added vicidial_user_groups allowed_campaigns restrictions
 # 61122-1523 - Added more SCRIPT variables
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
+# 61130-1617 - Added lead_id to MonitorConf for recording_log
+# 61221-1212 - Changed width to 760 to better fit 800x600 screens, widened SCRIPT
 #
 
 require("dbconnect.php");
@@ -175,8 +177,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.103';
-$build = '61128-2229';
+$version = '2.0.105';
+$build = '61221-1212';
 
 if ($force_logout)
 {
@@ -2047,7 +2049,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 					}
 				}
-			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
+			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&lead_id=" + document.vicidial_form.lead_id.value + "&ext_priority=1";
 			xmlhttp.open('POST', 'manager_send.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(confmonitor_query); 
@@ -4567,14 +4569,101 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // decode the scripttext and scriptname so that it can be didsplayed
 	function URLDecode(encodedvar,scriptformat)
 	{
-	   // Replace %ZZ with equivalent character
-	   // Put [ERR] in output if %ZZ is invalid.
-	   var HEXCHAR = "0123456789ABCDEFabcdef"; 
-	   var encoded = encodedvar;
-	   decoded = '';
-	   var i = 0;
+   // Replace %ZZ with equivalent character
+   // Put [ERR] in output if %ZZ is invalid.
+	var HEXCHAR = "0123456789ABCDEFabcdef"; 
+	var encoded = encodedvar;
+	decoded = '';
+	var i = 0;
+	var RGnl = new RegExp("\n","g");
+	var RGplus = new RegExp(" ","g");
+	var RGiframe = new RegExp("iframe","gi");
+
 	   if (scriptformat == 'YES')
 		{
+		var SCvendor_lead_code = document.vicidial_form.vendor_lead_code.value;
+		var SCsource_id = "";
+		var SClist_id = document.vicidial_form.list_id.value;
+		var SCgmt_offset_now = document.vicidial_form.gmt_offset_now.value;
+		var SCcalled_since_last_reset = "";
+		var SCphone_code = document.vicidial_form.phone_code.value;
+		var SCphone_number = document.vicidial_form.phone_number.value;
+		var SCtitle = document.vicidial_form.title.value;
+		var SCfirst_name = document.vicidial_form.first_name.value;
+		var SCmiddle_initial = document.vicidial_form.middle_initial.value;
+		var SClast_name = document.vicidial_form.last_name.value;
+		var SCaddress1 = document.vicidial_form.address1.value;
+		var SCaddress2 = document.vicidial_form.address2.value;
+		var SCaddress3 = document.vicidial_form.address3.value;
+		var SCcity = document.vicidial_form.city.value;
+		var SCstate = document.vicidial_form.state.value;
+		var SCprovince = document.vicidial_form.province.value;
+		var SCpostal_code = document.vicidial_form.postal_code.value;
+		var SCcountry_code = document.vicidial_form.country_code.value;
+		var SCgender = document.vicidial_form.gender.value;
+		var SCdate_of_birth = document.vicidial_form.date_of_birth.value;
+		var SCalt_phone = document.vicidial_form.alt_phone.value;
+		var SCemail = document.vicidial_form.email.value;
+		var SCsecurity_phrase = document.vicidial_form.security_phrase.value;
+		var SCcomments = document.vicidial_form.comments.value;
+		var SCfullname = LOGfullname;
+		var SCfronter = fronter;
+		var SCuser = user;
+		var SClead_id = document.vicidial_form.lead_id.value;
+		var SCcampaign = campaign;
+		var SCphone_login = phone_login;
+		var SCgroup = group;
+		var SCchannel_group = group;
+		var SCSQLdate = SQLdate;
+		var SCepoch = UnixTime;
+		var SCuniqueid = document.vicidial_form.uniqueid.value;
+		var SCcustomer_zap_channel = lastcustchannel;
+		var SCserver_ip = server_ip;
+		var SCSIPexten = extension;
+		var SCsession_id = session_id;
+
+		if (encoded.match(RGiframe))
+			{
+			SCvendor_lead_code = SCvendor_lead_code.replace(RGplus,'+');
+			SCsource_id = SCsource_id.replace(RGplus,'+');
+			SClist_id = SClist_id.replace(RGplus,'+');
+			SCgmt_offset_now = SCgmt_offset_now.replace(RGplus,'+');
+			SCcalled_since_last_reset = SCcalled_since_last_reset.replace(RGplus,'+');
+			SCphone_code = SCphone_code.replace(RGplus,'+');
+			SCphone_number = SCphone_number.replace(RGplus,'+');
+			SCtitle = SCtitle.replace(RGplus,'+');
+			SCfirst_name = SCfirst_name.replace(RGplus,'+');
+			SCmiddle_initial = SCmiddle_initial.replace(RGplus,'+');
+			SClast_name = SClast_name.replace(RGplus,'+');
+			SCaddress1 = SCaddress1.replace(RGplus,'+');
+			SCaddress2 = SCaddress2.replace(RGplus,'+');
+			SCaddress3 = SCaddress3.replace(RGplus,'+');
+			SCcity = SCcity.replace(RGplus,'+');
+			SCstate = SCstate.replace(RGplus,'+');
+			SCprovince = SCprovince.replace(RGplus,'+');
+			SCpostal_code = SCpostal_code.replace(RGplus,'+');
+			SCcountry_code = SCcountry_code.replace(RGplus,'+');
+			SCgender = SCgender.replace(RGplus,'+');
+			SCdate_of_birth = SCdate_of_birth.replace(RGplus,'+');
+			SCalt_phone = SCalt_phone.replace(RGplus,'+');
+			SCemail = SCemail.replace(RGplus,'+');
+			SCsecurity_phrase = SCsecurity_phrase.replace(RGplus,'+');
+			SCcomments = SCcomments.replace(RGplus,'+');
+			SCfullname = SCfullname.replace(RGplus,'+');
+			SCfronter = SCfronter.replace(RGplus,'+');
+			SCuser = SCuser.replace(RGplus,'+');
+			SClead_id = SClead_id.replace(RGplus,'+');
+			SCcampaign = SCcampaign.replace(RGplus,'+');
+			SCphone_login = SCphone_login.replace(RGplus,'+');
+			SCgroup = SCgroup.replace(RGplus,'+');
+			SCchannel_group = SCchannel_group.replace(RGplus,'+');
+			SCSQLdate = SCSQLdate.replace(RGplus,'+');
+			SCuniqueid = SCuniqueid.replace(RGplus,'+');
+			SCcustomer_zap_channel = SCcustomer_zap_channel.replace(RGplus,'+');
+			SCserver_ip = SCserver_ip.replace(RGplus,'+');
+			SCSIPexten = SCSIPexten.replace(RGplus,'+');
+			}
+
 		var RGvendor_lead_code = new RegExp("--A--vendor_lead_code--B--","g");
 		var RGsource_id = new RegExp("--A--source_id--B--","g");
 		var RGlist_id = new RegExp("--A--list_id--B--","g");
@@ -4615,48 +4704,47 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var RGserver_ip = new RegExp("--A--server_ip--B--","g");
 		var RGSIPexten = new RegExp("--A--SIPexten--B--","g");
 		var RGsession_id = new RegExp("--A--session_id--B--","g");
-		var RGnl = new RegExp("\n","g");
 
-		encoded = encoded.replace(RGvendor_lead_code, document.vicidial_form.vendor_lead_code.value);
-		encoded = encoded.replace(RGsource_id, "");
-		encoded = encoded.replace(RGlist_id, document.vicidial_form.list_id.value);
-		encoded = encoded.replace(RGgmt_offset_now, document.vicidial_form.gmt_offset_now.value);
-		encoded = encoded.replace(RGcalled_since_last_reset, "");
-		encoded = encoded.replace(RGphone_code, document.vicidial_form.phone_code.value);
-		encoded = encoded.replace(RGphone_number, document.vicidial_form.phone_number.value);
-		encoded = encoded.replace(RGtitle, document.vicidial_form.title.value);
-		encoded = encoded.replace(RGfirst_name, document.vicidial_form.first_name.value);
-		encoded = encoded.replace(RGmiddle_initial, document.vicidial_form.middle_initial.value);
-		encoded = encoded.replace(RGlast_name, document.vicidial_form.last_name.value);
-		encoded = encoded.replace(RGaddress1, document.vicidial_form.address1.value);
-		encoded = encoded.replace(RGaddress2, document.vicidial_form.address2.value);
-		encoded = encoded.replace(RGaddress3, document.vicidial_form.address3.value);
-		encoded = encoded.replace(RGcity, document.vicidial_form.city.value);
-		encoded = encoded.replace(RGstate, document.vicidial_form.state.value);
-		encoded = encoded.replace(RGprovince, document.vicidial_form.province.value);
-		encoded = encoded.replace(RGpostal_code, document.vicidial_form.postal_code.value);
-		encoded = encoded.replace(RGcountry_code, document.vicidial_form.country_code.value);
-		encoded = encoded.replace(RGgender, document.vicidial_form.gender.value);
-		encoded = encoded.replace(RGdate_of_birth, document.vicidial_form.date_of_birth.value);
-		encoded = encoded.replace(RGalt_phone, document.vicidial_form.alt_phone.value);
-		encoded = encoded.replace(RGemail, document.vicidial_form.email.value);
-		encoded = encoded.replace(RGsecurity_phrase, document.vicidial_form.security_phrase.value);
-		encoded = encoded.replace(RGcomments, document.vicidial_form.comments.value);
-		encoded = encoded.replace(RGfullname, LOGfullname);
-		encoded = encoded.replace(RGfronter, fronter);
-		encoded = encoded.replace(RGuser, user);
-		encoded = encoded.replace(RGlead_id, document.vicidial_form.lead_id.value);
-		encoded = encoded.replace(RGcampaign, campaign);
-		encoded = encoded.replace(RGphone_login, phone_login);
-		encoded = encoded.replace(RGgroup, group);
-		encoded = encoded.replace(RGchannel_group, group);
-		encoded = encoded.replace(RGSQLdate, SQLdate);
-		encoded = encoded.replace(RGepoch, UnixTime);
-		encoded = encoded.replace(RGuniqueid, document.vicidial_form.uniqueid.value);
-		encoded = encoded.replace(RGcustomer_zap_channel, lastcustchannel);
-		encoded = encoded.replace(RGserver_ip, server_ip);
-		encoded = encoded.replace(RGSIPexten, extension);
-		encoded = encoded.replace(RGsession_id, session_id);
+		encoded = encoded.replace(RGvendor_lead_code, SCvendor_lead_code);
+		encoded = encoded.replace(RGsource_id, SCsource_id);
+		encoded = encoded.replace(RGlist_id, SClist_id);
+		encoded = encoded.replace(RGgmt_offset_now, SCgmt_offset_now);
+		encoded = encoded.replace(RGcalled_since_last_reset, SCcalled_since_last_reset);
+		encoded = encoded.replace(RGphone_code, SCphone_code);
+		encoded = encoded.replace(RGphone_number, SCphone_number);
+		encoded = encoded.replace(RGtitle, SCtitle);
+		encoded = encoded.replace(RGfirst_name, SCfirst_name);
+		encoded = encoded.replace(RGmiddle_initial, SCmiddle_initial);
+		encoded = encoded.replace(RGlast_name, SClast_name);
+		encoded = encoded.replace(RGaddress1, SCaddress1);
+		encoded = encoded.replace(RGaddress2, SCaddress2);
+		encoded = encoded.replace(RGaddress3, SCaddress3);
+		encoded = encoded.replace(RGcity, SCcity);
+		encoded = encoded.replace(RGstate, SCstate);
+		encoded = encoded.replace(RGprovince, SCprovince);
+		encoded = encoded.replace(RGpostal_code, SCpostal_code);
+		encoded = encoded.replace(RGcountry_code, SCcountry_code);
+		encoded = encoded.replace(RGgender, SCgender);
+		encoded = encoded.replace(RGdate_of_birth, SCdate_of_birth);
+		encoded = encoded.replace(RGalt_phone, SCalt_phone);
+		encoded = encoded.replace(RGemail, SCemail);
+		encoded = encoded.replace(RGsecurity_phrase, SCsecurity_phrase);
+		encoded = encoded.replace(RGcomments, SCcomments);
+		encoded = encoded.replace(RGfullname, SCfullname);
+		encoded = encoded.replace(RGfronter, SCfronter);
+		encoded = encoded.replace(RGuser, SCuser);
+		encoded = encoded.replace(RGlead_id, SClead_id);
+		encoded = encoded.replace(RGcampaign, SCcampaign);
+		encoded = encoded.replace(RGphone_login, SCphone_login);
+		encoded = encoded.replace(RGgroup, SCgroup);
+		encoded = encoded.replace(RGchannel_group, SCchannel_group);
+		encoded = encoded.replace(RGSQLdate, SCSQLdate);
+		encoded = encoded.replace(RGepoch, SCepoch);
+		encoded = encoded.replace(RGuniqueid, SCuniqueid);
+		encoded = encoded.replace(RGcustomer_zap_channel, SCcustomer_zap_channel);
+		encoded = encoded.replace(RGserver_ip, SCserver_ip);
+		encoded = encoded.replace(RGSIPexten, SCSIPexten);
+		encoded = encoded.replace(RGsession_id, SCsession_id);
 		}
 	   while (i < encoded.length) {
 		   var ch = encoded.charAt(i);
@@ -5350,7 +5438,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	div.scroll_callback {height: 300px; width: 620px; overflow: scroll;}
 	div.scroll_park {height: 400px; width: 620px; overflow: scroll;}
 	div.scroll_list {height: 400px; width: 140px; overflow: scroll;}
-	div.scroll_script {height: 331px; width: 480px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
+	div.scroll_script {height: 331px; width: 600px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
    .body_text {font-size: 13px;  font-family: sans-serif;}
    .preview_text {font-size: 13px;  font-family: sans-serif; background: #CCFFCC}
    .preview_text_red {font-size: 13px;  font-family: sans-serif; background: #FFCCCC}
@@ -5377,7 +5465,7 @@ echo "</head>\n";
 <BODY onload="begin_all_refresh();">
 <FORM name=vicidial_form>
 <span style="position:absolute;left:0px;top:0px;z-index:2;" id="Header">
-<TABLE Border=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=640 MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
+<TABLE Border=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=760 MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=3 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
@@ -5387,11 +5475,11 @@ echo "</head>\n";
 </SPAN>
 
 <span style="position:absolute;left:0px;top:13px;z-index:1;" id="Tabs">
-    <table border=0 bgcolor="#FFFFFF" width=640 height=30>
+    <table border=0 bgcolor="#FFFFFF" width=760 height=30>
 <TR VALIGN=TOP ALIGN=LEFT>
 <TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="../agc/images/vdc_tab_vicidial.gif" ALT="VICIDISCAR" WIDTH=115 HEIGHT=30 Border=0></A></TD>
 <TD ALIGN=LEFT WIDTH=105><A HREF="#" onclick="ScriptPanelToFront();"><IMG SRC="../agc/images/vdc_tab_script.gif" ALT="SCRIPT" WIDTH=105 HEIGHT=30 Border=0></A></TD>
-<TD WIDTH=309 VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp;ID da sessão: <span id=sessionIDspan></span></TD>
+<TD WIDTH=431 VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp;ID da sessão: <span id=sessionIDspan></span></TD>
 <TD WIDTH=109><IMG SRC="../agc/images/agc_live_call_OFF_ptbr.gif" NAME=livecall ALT="Chamadas Ativas" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </span>
@@ -5399,7 +5487,7 @@ echo "</head>\n";
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:3;" id="Bem vindoBoxA">
-    <table border=0 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="Bem vindoBoxAt">VICIDISCAR</span></TD></TR></TABLE>
+    <table border=0 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="Bem vindoBoxAt">VICIDISCAR</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:300px;top:365px;z-index:13;" id="ManuaLDiaLButtons"><font class="body_text">
@@ -5411,7 +5499,7 @@ echo "</head>\n";
 </font></span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="CallBacKsLisTBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> AGENDAMENTOS POR AGENTE <? echo $VD_login ?>:<BR>Clique em um dos contatos abaixo para ligar. Se você clicar em um contatos abaixo o mesmo será removido da lista de Agendamentos.
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> AGENDAMENTOS POR AGENTE <? echo $VD_login ?>:<BR>Clique em um dos contatos abaixo para ligar. Se você clicar em um contatos abaixo o mesmo será removido da lista de Agendamentos.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
 	<BR> &nbsp; 
@@ -5422,7 +5510,7 @@ echo "</head>\n";
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:37;" id="NeWManuaLDiaLBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> NOVA DISCAGEM MANUAL PARA <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Digite abaixo a informação do novo contato que você deseja ligar.
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> NOVA DISCAGEM MANUAL PARA <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Digite abaixo a informação do novo contato que você deseja ligar.
 	<BR>
 	<? 
 	if (eregi("X",dial_prefix))
@@ -5456,18 +5544,18 @@ echo "</head>\n";
 
 
 
-<span style="position:absolute;left:250px;top:352px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="../agc/images/vdc_volume_up_off.gif" Border=0></span><BR><span id="VolumeDownSpan"><IMG SRC="../agc/images/vdc_volume_down_off.gif" Border=0></span> 
+<span style="position:absolute;left:5px;top:352px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="../agc/images/vdc_volume_up_off.gif" Border=0></span><BR><span id="VolumeDownSpan"><IMG SRC="../agc/images/vdc_volume_down_off.gif" Border=0></span>
 </font></span>
 
 
 
-<span style="position:absolute;left:5px;top:350px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
+<span style="position:absolute;left:35px;top:350px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
 Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="AgentStatusCalls"></span> 
 </font></span>
 
 
 <span style="position:absolute;left:5px;top:310px;z-index:21;" id="TransferMain">
-	<table bgcolor="#CCCCFF" width=630><tr>
+	<table bgcolor="#CCCCFF" width=750><tr>
 	<td align=left>
 	<font class="body_text">
 	 <IMG SRC="../agc/images/vdc_XB_header_ptbr.gif" border=0 alt="Transferir a conferência"><BR>
@@ -5499,7 +5587,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:5px;top:310px;z-index:22;" id="HotKeyActionBox">
-    <table border=0 bgcolor="#FFDD99" width=620 height=70>
+    <table border=0 bgcolor="#FFDD99" width=740 height=70>
 	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Status da ligação definida como: </font><BR><BR><CENTER>
 	<font class="sd_text"><span id="HotKeyDispo"> - </span></font></CENTER>
 	</TD>
@@ -5507,7 +5595,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyEntriesBox">
-    <table border=0 bgcolor="#FFDD99" width=620 height=70>
+    <table border=0 bgcolor="#FFDD99" width=740 height=70>
 	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Atalhos para os status: </font></td><td colspan=2>
 	<font class="body_small">Quanto ativo apenas pressione a tecla do teclado referente ao status desejado. A ligação será desligada e salva com o status definido automaticamemente:</font></td></tr><tr>
 	<TD width=200><font class="sk_text">
@@ -5523,7 +5611,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:5px;top:310px;z-index:24;" id="CBcommentsBox">
-    <table border=0 bgcolor="#FFFFCC" width=620 height=70>
+    <table border=0 bgcolor="#FFFFCC" width=740 height=70>
 	<TR bgcolor="#FFFF66">
 	<TD align=left><font class="sh_text"> Informação Precedente Da Rechamada: </font></td>
 	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
@@ -5540,7 +5628,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:25;" id="NoneInSessionBox">
-    <table border=1 bgcolor="#CCFFFF" width=600 height=500><TR><TD align=center> Não existe ninguem na sua sessão: <span id="NoneInSessionID"></span><BR>
+    <table border=1 bgcolor="#CCFFFF" width=720 height=500><TR><TD align=center> Não existe ninguem na sua sessão: <span id="NoneInSessionID"></span><BR>
 	<a href="#" onclick="NoneInSessionOK();return false;">Voltar</a>
 	<BR><BR>
 	<a href="#" onclick="NoneInSessionCalL();return false;">Ligar novamente para o agente</a>
@@ -5548,7 +5636,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:26;" id="CustomerGoneBox">
-    <table border=1 bgcolor="#CCFFFF" width=650 height=500><TR><TD align=center> O cliente desligou: <span id="CustomerGoneChanneL"></span><BR>
+    <table border=1 bgcolor="#CCFFFF" width=770 height=500><TR><TD align=center> O cliente desligou: <span id="CustomerGoneChanneL"></span><BR>
 	<a href="#" onclick="CustomerGoneOK();return false;">Voltar</a>
 	<BR><BR>
 	<a href="#" onclick="CustomerGoneHangup();return false;">Finalize e coloque o status da ligação</a>
@@ -5557,7 +5645,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:27;" id="WrapupBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=550><TR><TD align=center> Chamada Wrapup: <span id="WrapupTimer"></span> segundos restantes no wrapup<BR><BR>
+    <table border=1 bgcolor="#CCFFCC" width=770 height=550><TR><TD align=center> Chamada Wrapup: <span id="WrapupTimer"></span> segundos restantes no wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
 	<a href="#" onclick="WrapupFinish();return false;">Revestimento Wrapup e movimento sobre</a>
@@ -5566,7 +5654,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:28;" id="LogouTBox">
-    <table border=1 bgcolor="#FFFFFF" width=650 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">SAIR</span></TD></TR></TABLE>
+    <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">SAIR</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:70px;z-index:29;" id="DispoButtonHideA">
@@ -5578,11 +5666,11 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;" id="DispoButtonHideC">
-    <table border=0 bgcolor="#CCFFCC" width=650 height=47><TR><TD align=center VALIGN=top>Qualquer alteração feita nesta página não será salva. Você deve mudar as informações do cliente antes de desligar a ligação. </TD></TR></TABLE>
+    <table border=0 bgcolor="#CCFFCC" width=770 height=47><TR><TD align=center VALIGN=top>Qualquer alteração feita nesta página não será salva. Você deve mudar as informações do cliente antes de desligar a ligação. </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:32;" id="DispoSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> SELEÇÃO DE STATUS :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Desligue novamente</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimizar</a></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELEÇÃO DE STATUS :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Desligue novamente</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimizar</a></span><BR>
 	<span id="DispoSelectContent"> Fim da seleção de status </span>
 	<input type=hidden name=DispoSelection><BR>
 	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUSAR DISCAGEM DO AGENTE <BR>
@@ -5596,7 +5684,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:33;" id="CallBackSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> Selecione uma data para o retorno :<span id="CallBackDatE"></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Selecione uma data para o retorno :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN>
 	<input type=hidden name=CallBackTimESelectioN>
 	<span id="CallBackDatEPrinT">Selecione uma data abaixo</span> &nbsp;
@@ -5639,7 +5727,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:34;" id="CloserSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=650 height=460><TR><TD align=center VALIGN=top> SELECAO DO GRUPO DE ENTRADA DO CLOSER <BR>
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELECAO DO GRUPO DE ENTRADA DO CLOSER <BR>
 	<span id="CloserSelectContent"> Seleção do grupo de entrada do closer </span>
 	<input type=hidden name=CloserSelectList><BR>
 	<input type=checkbox name=CloserSelectBlended size=1 value="0"> LIGACAO MISTURADA(ligações externas ativadas) <BR>
@@ -5662,7 +5750,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> TRANSFERIR CHAMADAS ATIVAS</b> <BR>Canal a ser transferido: <span id="MainXfeRChanneL">Canal</span><BR></tr>
+    <table border=0 bgcolor="#FFFFCC" width=720 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> TRANSFERIR CHAMADAS ATIVAS</b> <BR>Canal a ser transferido: <span id="MainXfeRChanneL">Canal</span><BR></tr>
 	<tr><td>Extensões:<BR><span id="MainXfeRContent"> Extensões do Menu </span></td>
 	<td>
 	<BR>
@@ -5678,7 +5766,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 
 <span style="position:absolute;left:154px;top:65px;z-index:15;" id="ScriptPanel">
-    <table border=0 bgcolor="#FFE7D0" width=486 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDISCAR SCRIPT</div></font></TD></TR></TABLE>
+    <table border=0 bgcolor="#FFE7D0" width=606 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDISCAR SCRIPT</div></font></TD></TR></TABLE>
 </span>
 
 
@@ -5688,7 +5776,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 <!-- BEGIN *********   Here is the main VICIDISCAR display panel -->
 <span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
-<TABLE border=0 BGCOLOR="#E0C2D6" width=640 id="MainTable">
+<TABLE border=0 BGCOLOR="#E0C2D6" width=760 id="MainTable">
 <TR><TD colspan=3><font class="body_text"> STATUS: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
 <tr><td width=150 align=left valign=top>
@@ -5725,7 +5813,7 @@ ID da gravação: <font class="body_small"><span id="RecorDID"></span></font><BR
 </center>
 </font>
 </td>
-<td width=480 align=left valign=top>
+<td width=600 align=left valign=top>
 <input type=hidden name=lead_id value="">
 <input type=hidden name=list_id value="">
 <input type=hidden name=called_count value="">

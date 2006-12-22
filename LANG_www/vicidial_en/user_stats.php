@@ -6,6 +6,7 @@
 # CHANGES
 #
 # 60619-1743 - Added variable filtering to eliminate SQL injection attack threat
+# 61201-1136 - Added recordings display and changed calls to time range with 10000 limit
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -92,7 +93,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -254,11 +255,11 @@ echo "<br><br>\n";
 
 echo "<center>\n";
 
-echo "<B>LAST 50 CALLS:</B>\n";
+echo "<B>CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
-	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' order by uniqueid desc limit 50;";
+	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
 	$rslt=mysql_query($stmt, $link);
 	$logs_to_print = mysql_num_rows($rslt);
 
@@ -270,7 +271,10 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=2>$row[4]</td>";
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td><font size=2>$row[4]</td>";
 			echo "<td align=left><font size=2> $row[7]</td>\n";
 			echo "<td align=left><font size=2> $row[8]</td>\n";
 			echo "<td align=left><font size=2> $row[10] </td>\n";
@@ -278,12 +282,45 @@ echo "<tr><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td
 			echo "<td align=right><font size=2> $row[2] </td>\n";
 			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td></tr>\n";
 
-		$u++;
 	}
 
 
 echo "</TABLE></center>\n";
 
+
+
+echo "<B>RECORDINGS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td></tr>\n";
+
+	$stmt="select * from recording_log where user='" . mysql_real_escape_string($user) . "' and start_time >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and start_time <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by recording_id desc limit 10000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	while ($logs_to_print > $u) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td align=left><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[12]\" target=\"_blank\">$row[12]</A> </td>";
+			echo "<td align=left><font size=2> $row[4] </td>\n";
+			echo "<td align=left><font size=2> $row[8] </td>\n";
+			echo "<td align=left><font size=2> $row[0] </td>\n";
+			echo "<td align=center><font size=2> $row[10] </td>\n";
+			echo "<td align=right><font size=2> $row[11] </td>\n";
+			echo "</tr>\n";
+
+		}
+
+
+echo "</TABLE></center>\n";
 
 $ENDtime = date("U");
 

@@ -7,6 +7,7 @@
 #
 # 60619-1718 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 61215-1139 - Added drop percentage of answered and round-2 decimal
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -119,7 +120,7 @@ if ( ($row[0] < 1) or ($row[1] < 1) )
 else
 	{
 	$average_hold_seconds = ($row[1] / $row[0]);
-	$average_hold_seconds = round($average_hold_seconds, 0);
+	$average_hold_seconds = round($average_hold_seconds, 2);
 	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 	}
 echo "Gesamtanrufe gesetzt von dieser Kampagne:                       $TOTALcalls\n";
@@ -132,32 +133,49 @@ $stmt="select count(*),sum(length_in_sec) from vicidial_log where call_date >= '
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
-
 $DROPcalls =	sprintf("%10s", $row[0]);
+$DROPcallsRAW =	$row[0];
+$DROPseconds =	$row[1];
+
+$stmt="select count(*) from vicidial_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status NOT IN('NA','B');";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+$ANSWERcalls =	$row[0];
+
 if ( ($DROPcalls < 1) or ($TOTALcalls < 1) )
 	{$DROPpercent = '0';}
 else
 	{
-	$DROPpercent = (($DROPcalls / $TOTALcalls) * 100);
-	$DROPpercent = round($DROPpercent, 0);
+	$DROPpercent = (($DROPcallsRAW / $TOTALcalls) * 100);
+	$DROPpercent = round($DROPpercent, 2);
 	}
 
-if ( ($row[0] < 1) or ($row[1] < 1) )
+if ( ($DROPcalls < 1) or ($ANSWERcalls < 1) )
+	{$DROPANSWERpercent = '0';}
+else
+	{
+	$DROPANSWERpercent = (($DROPcallsRAW / $ANSWERcalls) * 100);
+	$DROPANSWERpercent = round($DROPANSWERpercent, 2);
+	}
+
+if ( ($DROPseconds < 1) or ($DROPcallsRAW < 1) )
 	{$average_hold_seconds = '         0';}
 else
 	{
-	$average_hold_seconds = ($row[1] / $row[0]);
-	$average_hold_seconds = round($average_hold_seconds, 0);
+	$average_hold_seconds = ($DROPseconds / $DROPcallsRAW);
+	$average_hold_seconds = round($average_hold_seconds, 2);
 	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 	}
 
 echo "Gesamt-TROPFEN Anrufe:                                          $DROPcalls  $DROPpercent%\n";
+echo "Percent of DROP Calls taken out of Answers:   $DROPcalls / $ANSWERcalls  $DROPANSWERpercent%\n";
 echo "Durchschnittliche Länge für TROPFEN Anrufe in den Sekunden:     $average_hold_seconds\n";
 
 echo "\n";
 echo "----------AUTO-DIAL KEINE ANTWORTEN\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='NA' and (length_in_sec <= 60 or length_in_sec is null);";
+$stmt="select count(*),sum(length_in_sec) from vicidial_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status IN('NA','B') and (length_in_sec <= 60 or length_in_sec is null);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -168,7 +186,7 @@ if ( ($NAcalls < 1) or ($TOTALcalls < 1) )
 else
 	{
 	$NApercent = (($NAcalls / $TOTALcalls) * 100);
-	$NApercent = round($NApercent, 0);
+	$NApercent = round($NApercent, 2);
 	}
 
 if ( ($row[0] < 1) or ($row[1] < 1) )
@@ -176,11 +194,11 @@ if ( ($row[0] < 1) or ($row[1] < 1) )
 else
 	{
 	$average_na_seconds = ($row[1] / $row[0]);
-	$average_na_seconds = round($average_na_seconds, 0);
+	$average_na_seconds = round($average_na_seconds, 2);
 	$average_na_seconds =	sprintf("%10s", $average_na_seconds);
 	}
 
-echo "Gesamt-Na benennt - beschäftigt, Trennung, BTvoicemail:         $NAcalls  $NApercent%\n";
+echo "Total NA calls -Busy,Disconnect,RingNoAnswer: $NAcalls  $NApercent%\n";
 echo "Durchschnittliche Anruf-Länge für Na benennt in den Sekunden:   $average_na_seconds\n";
 
 

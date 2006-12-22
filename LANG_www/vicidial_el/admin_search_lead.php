@@ -98,8 +98,9 @@ $browser = getenv("HTTP_USER_AGENT");
 <title>Ψάξιμο Καθοδήγησης</title>
 </head>
 <body bgcolor=white>
-
 <? 
+echo "<a href=\"./admin.php?ADD=100\">ΔΙΑΧΕΙΡΙΣΗ</a>: Lead search<BR>\n";
+
 
 if ( (!$vendor_id) and (!$phone)  and (!$lead_id) ) 
 	{

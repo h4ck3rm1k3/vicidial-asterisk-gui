@@ -111,7 +111,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ: Ομαδοποιημένα Ωριαία Στατιστικά <? echo $group ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php?ADD=100000\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ</a>: Ομαδοποιημένα Ωριαία Στατιστικά <? echo $group ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -160,7 +160,7 @@ echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
 
 echo "<br><center>\n";
 
-echo "<B>ΜΕΤΡΗΣΗ ΩΡΩΝ TSR: $group | $status | $date_with_hour | $date_no_hour</B>\n";
+echo "<B>ΜΕΤΡΗΣΗ ΩΡΩΝ TSR: <a href=\"./admin.php?ADD=3111&group_id=$group\">$group</a> | $status | $date_with_hour | $date_no_hour</B>\n";
 
 echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>TSR </td><td align=left><font size=2>ID </td><td align=right><font size=2> &nbsp; $status</td><td align=right><font size=2> &nbsp; ΣΥΝΟΛΙΚΕΣ ΚΛΗΣΕΙΣ</td><td align=right><font size=2> &nbsp; $status DAY</td><td align=right><font size=2> &nbsp; &nbsp; </td></tr>\n";

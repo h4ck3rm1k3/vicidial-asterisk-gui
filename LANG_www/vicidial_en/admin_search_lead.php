@@ -98,8 +98,9 @@ $browser = getenv("HTTP_USER_AGENT");
 <title>Lead Lookup</title>
 </head>
 <body bgcolor=white>
-
 <? 
+echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search<BR>\n";
+
 
 if ( (!$vendor_id) and (!$phone)  and (!$lead_id) ) 
 	{

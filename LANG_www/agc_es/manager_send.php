@@ -62,6 +62,8 @@
 # 60619-1158 - Added variable filters to close security holes for login form
 # 60809-1544 - Added direct transfers to leave-3ways in consultative transfers
 # 61004-1526 - Added parsing of volume control command and lookup or number
+# 61130-1617 - Added lead_id to MonitorConf for recording_log
+# 61201-1115 - Added user to MonitorConf for recording_log
 #
 
 require("dbconnect.php");
@@ -131,8 +133,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '0.0.26';
-$build = '61004-1526';
+$version = '2.0.27';
+$build = '61130-1617';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -881,7 +883,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 
 		if ($ACTION=="Monitor")
 			{
-			$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename')";
+			$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename','$lead_id','$user')";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -943,7 +945,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename')";
+		$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename','$lead_id','$user')";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
