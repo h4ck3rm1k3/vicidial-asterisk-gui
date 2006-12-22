@@ -87,7 +87,8 @@ cd ../asterisk-1.2.14
 make clean
 make
 make install
-make samples		# this makes sample conf files
+make samples		# this makes sample conf files (only use for new installs)
+
 	- (1.2 tree) EXPERIMENTAL!!! If you want to use app_conference
 	instead of meetme for VICIDIAL then follow these instructions
 	cd /usr/src/asterisk
@@ -181,12 +182,12 @@ VICIDIAL components to the system.
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.1)
+package(as of this writing it is 2.0.2)
    - for 2.0.X release:
 	mkdir /usr/src/astguiclient
 	cd /usr/src/astguiclient
-	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.1.zip
-	unzip astguiclient_2.0.1.zip
+	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.2.zip
+	unzip astguiclient_2.0.2.zip
 	perl install.pl
    - for SVN 2.0 trunk:
 	mkdir /usr/src/astguiclient

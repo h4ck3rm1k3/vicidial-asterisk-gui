@@ -12,8 +12,6 @@ work with Asterisk.
 
 Scripts that are involved with the ACQS backend are:
 
- - AST_SERVER_conf.pl - <depricated>
-
  - /etc/astguiclient.conf - file where you define your variables for the server apps
    + Must be present and configured through the install.pl script
 
@@ -29,7 +27,7 @@ Scripts that are involved with the ACQS backend are:
    + Must be present in the /home/cron/ directory
    + Requires Net::Telnet, Net::MySQL perl Modules
 
- - ADMIN_keepalive_AST_send_listen.pl - checks to see that ACQS is running
+ - ADMIN_keepalive_ALL.pl - checks to see that ACQS is running
    + Must put entry for this script in the cron as "* * * * * /path/script"
 
  - ADMIN_restart_roll_logs.pl - rolls logs over datestamp upon restart
@@ -91,6 +89,5 @@ been up and running reliably on two separate Asterisk servers. Since we
 implemented ACQS we haven't had a single deadlock on either of these servers.
 If anyone has suggestions/praises/criticisms I would love to hear them.
 
-To use, install the scripts listed above and set the $QUEUE_ACTION_enabled 
-variable in the client's libs/AST_VICI_conf.pl configuration file to 1
+To use, follow the instructions in the docs/SCRATCH_INSTALL.txt document.
 

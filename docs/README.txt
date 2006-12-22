@@ -7,191 +7,23 @@
 This suite of programs is designed to work with the Asterisk Open-source PBX
 (http://www.asterisk.org) as a cross-platform GUI client and the supporting 
 server side applications necessary for the features of the GUI application to 
-work with Asterisk. The client-side GUI apps are available now as web pages 
-running AJAX scripted web pages(Firefox recommended)
+work with Asterisk. The client-side GUI apps are available as web pages running
+AJAX scripted web pages(Firefox recommended)
 
 End-user Manuals for Agents and Managers are available from http://www.eflo.net
 
  ***** Description, Notes and Changelog below *****
 
 Included in this distribution of the Asterisk GUI client are:
-
- - README.txt - this file
-
- - SCRATCH_INSTALL.txt - detailed instructions of how to fully install Asterisk 
-with astguiclient from scratch. Also you could use this doc to install from 
-PHASE 6 of the document if you have an existing Asterisk installation you want 
-to put astguiclient onto.
-
- - ACQS.txt - Readme file describing the Asterisk Central Queue System
-
- - VICIDIAL.txt - Readme file describing the VICIDIAL auto-dialing system
-
- - REQUIREMENTS.txt - Basic requirements for running astGUIclient/VICIDIAL
-
- - LOAD_BALANCING.txt - Instructions for multi-server installations
-
- - LICENSE.txt - The license for this release GPLv2
-
- - install.pl - perl script to put files in the right place on the 
-server. Run as "perl install.pl"
-
- - start_asterisk_boot.pl - starts asterisk through a screen, good for system 
-boot time startups of asterisk.
-
-- MySQL_AST_CREATE_tables.sql - used to create tables for astguiclient and 
-vicidial in your MySQL database
-
- - ADMIN_area_code_populate.pl - run once to update phone codes to database
-
- - AST_VICI_conf.pl - file where you define your variables for the client app
-   + Must be present in one of the libs_path folders
-
- - AST_update.pl - command line DB updater
-   + Ideally is run on the Asterisk server locally
-   + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
-
- - AST_vm_update.pl - command line DB voicemail count updater
-   + Ideally is run on the Asterisk server locally
-   + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
-   + place in the cron as "* * * * * /path/to/script"
-
-- AST_conf_update.pl - command line DB conference room reg validator
-   + Ideally is run on the Asterisk server locally
-   + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
-   + place in the cron as "* * * * * /path/to/script"
-
- - ADMIN_keepalive_AST_update.pl - checks to see that updater is running
-   + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - AST_CRON_mix_recordings.pl - command line recording mixer to be put in cron
-   + Runs under UNIX CLI in the cron of the Asterisk Server
-   + Requires perl (Net::FTP and Net::Ping optional if FTPing to archive server)
-
- - AST_manager_listen.pl - listener for the Asterisk Central Queue System (ACQS)
-   + Must be present in the astguiclient directory
-   + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
-
- - AST_manager_send.pl - send-spawn for the ACQS
-   + Must be present in the astguiclient directory
-   + Requires Net::Telnet, Net::MySQL and Time::HiRes perl Modules
-
- - AST_send_action_child.pl - blind-send for the ACQS
-   + Must be present in the astguiclient directory
-   + Requires Net::Telnet, Net::MySQL perl Modules
-
- - ADMIN_keepalive_AST_send_listen.pl - checks to see that ACQS is running
-   + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - AST_manager_kill_hung_congested.pl - kills CONGEST Local/ channels
-   + To be used with VICIDIAL
-   + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - ADMIN_listener_restart.pl - automatically restart ACQS 
-   + Assumes installation in astguiclient
-
- - ADMIN_restart_roll_logs.pl - rolls logs over datestamp upon restart
-   + put this script in your machine's startup routine
-
- - AST_reset_mysql_vars.pl - resets MySQL tables 
-   + To be used with VICIDIAL
-   + put this script in your machine's startup routine
-
- - AST_flush_DBqueue.pl - streamlines DB on heavy volume VICIDIAL systems
-   + To be used with VICIDIAL
-   + put this script in the cron at a regular interval(once an hour or so)
-
- - AST_cleanup_agent_log.pl - cleans up agent log times in VICIDIAL systems
-   + To be used with VICIDIAL
-   + put this script in the cron at a regular interval(once an hour or so)
-
-- The following AGI scripts:
-   + Run on the Asterisk Server
-   + Must be present in the /var/lib/asterisk/agi-bin/ directory
-   + Require perl and Net::MySQL to run
- - call_log.agi - AGI/perl program for call logging
- - call_logCID.agi - AGI/perl program for call logging receiving CallerID
- - call_inbound.agi - AGI/perl program for CallerID popup info (OPTIONAL)
- - agi-dtmf.agi - AGI/perl program that plays DTMF tines for conferences
-    + Requires DTMF sounds to be copied to /var/lib/asterisk/sounds/
- - agi-VDADtransfer.agi - AGI/perl program that transfers calls to VICIDIAL reps
- - agi-VDAD_LO_transfer.agi - transfers calls to VICIDIAL reps Load Balance Overflow
- - agi-VDAD_LB_transfer.agi - transfers calls to VICIDIAL reps Load Balanced
- - agi-VDADcloser.agi - AGI/perl program that takes calls from VICIDIAL reps
-   + Allows calls from internal or over Zap crossover or IAX from another server
- - agi-VDAD_LO_closer.agi - calls from VICIDIAL front to CLOSERS Balance Overflow
- - agi-VDAD_LB_closer.agi - calls from VICIDIAL front to CLOSERS Load Balanced
- - agi-VDADcloser_inboundANI.agi - AGI/perl that takes calls from outside lines
-   + like agi-VDADcloser.agi except grabs ANI from robbed-bit T1 channel inbound
- - agi-VDADcloser_inboundCID.agi - AGI/perl that takes calls from outside lines
-   + like agi-VDADcloser.agi except grabs CID from T1-PRI channel inbound
- - agi-VDADcloser_inboundCIDlookup.agi - AGI/perl that takes calls from outside lines
-   + like agi-VDADcloser.agi except looks up CID in DB to display info
- - agi-VDADcloser_inbound.agi - AGI/perl that takes calls from outside lines
-   + like agi-VDADcloser.agi except grabs 4-digit entered code as fronter #
- - agi-VDAD_LO_closer_inbound.agi - Load-balance-overflow version
- - agi-VDAD_LB_closer_inbound.agi - Load-balance version
- - agi-VDADcloser_PHONE.agi - AGI/perl that takes calls from outside lines
-   + like agi-VDADcloser.agi except attempts to lookup the info from PHONE provided
- - park_CID.agi - AGI/perl program to place the callID in the park entry
- - call_park_I.agi and call_park_L.agi - AGI/perl script for handling inbound
-   + Used in conjunction with VICIDIAL closers
-
- - AST_VDauto_dial.pl - script to automatically call leads for VICIDIAL
-   + To be used with VICIDIAL
-   + kept running with the associated keepalive script in the cron
-
- - AST_VDremote_agents.pl - script to keep remote agents logged in
-   + To be used with VICIDIAL
-   + kept running with the associated keepalive script in the cron
-
- - AST_VDhopper.pl - script to keep leads in the VICIDIAL hopper
-   + To be used with VICIDIAL
-   + recommended to put into cron as "* * * * * /path/to/script"
-
- - AST_VDadapt.pl - controls predictive dialing call pacing
-   + Must be present in the astguiclient directory
-
- - ADMIN_keepalive_AST_VDautodial.pl - checks to see that VDAD is running
-   + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - ADMIN_keepalive_AST_VDremote_agents.pl - keeps remote agents logged in
-   + Must put entry for this script in the cron as "* * * * * /path/to/script"
-
- - VICIDIAL_IN_new_leads_file.pl - script to load lead files into VICIDIAL
-   + To be used with VICIDIAL
-
- - AST_DB_optimize.pl - optimizes many heavily-used tables in the asterisk DB
-   + recommended to put into cron as "2 1 * * * /path/to/script"
-
- - ADMIN_adjust_GMTnow_on_leads.pl - adjusts the current GMT offset for leads
-   + recommended to put into cron as "3 1 * * * /path/to/script"
-   + should be run immediately after loading in new leads
-   + follows daylight saving rules for several countries including:
-	USA, Canada, Mexico, UK, Ireland, Australia, New Zealand, etc...
-
- - phone_codes_GMT.txt - file that contains all GMT offsets
-   + used by ADMIN_adjust_GMTnow_on_leads.pl script
-   + has over 1,000 entries for various areacode/country/GMT combinations
-
- - astGUIclient web-client pages - web-only client app in agc folder
-   + must be installed on machine with PHP and MySQL enabled
-   + must be able to read/write/update to asterisk MySQL database
-   + astguiclient.php - the client app
-   + vicidial.php - the VICIDIAL web-client app
-   + dbconnect.php - must set to database
-   + all other scripts are for use by the astguiclient.php script internally
-
- - VICIDIAL Web admin pages - administration for VICIDIAL campaigns
-   + must be installed on machine with PHP and MySQL enabled
-   + must be able to read/write/update to asterisk MySQL database
-   + welcome.php - just a welcome page
-   + admin.php - all admin functions for VICIDIAL
-   + user_stats.php - look at live user stats
-   + record_conf_1_hour.php - record a VICIDIAL conference for 1 hour
-   + closer.php - where closers log in to grab calls sent from fronters
-   + closer_popup.php - from closer page, sends call to closers phone
-   + closer_dispo.php - from closer_popup, allows dispositioning of call
+- agi/ - the Asterisk agi-bin files needed for astguiclient
+- bin/ - the astGUIclient server-side perl script applications
+- docs/ - astGUIclient installation and other documentation
+- docs/conf_examples/ - example Asterisk conf files for astGUIclient
+- extras/ - data files, sql files and other extra files needed for astGUIclient
+- LANG_www/ - astGUIclient admin and user web pages translated into other languages
+- sounds/ - Asterisk sounds needed by astGUIclient
+- translations/ - UTF8 language translation files for other language versions
+- www/ - the pages and scripts of the user and admin astGUIclient web interface
 
 
 DESCRIPTION:
@@ -199,7 +31,7 @@ This program was designed as a GUI client for the Asterisk PBX with Zaptel
 trunks or IAX or SIP VOIP trunks and SIP/IAX/Zap hard or softphones or devices
 as extensions, it could be adapted to other functions, but it was designed for 
 Zap/IAX/SIP users. The client programs are web-based and will run on most 
-modern web browsers
+modern web browsers.
 
 
 TO BE ADDED:
@@ -708,14 +540,16 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 1.1.12 you need to follow instructions in the UPGRADE doc
 
-2.0.2 - Twenty-Seventh public release - 2006-1X-XX
-- Added optional FastAGI replacement for call_log and VDhangup scripts
+2.0.2 - Twenty-Seventh public release - 2006-12-22
+- Added FastAGI replacement for call_log and VDhangup scripts
 - Added new USA-Canada Daylight Savings time scheme and DST for Brazil
 - astguiclient/admin.php removed and merged into vicidial/admin.php
 - Ability for agent to alter volume levels of participants
 - Keepalives consolidated into single script
 - New all-active-campaigns realtime summary screen
 - New script added to make it easier to change IP address of servers in VICIDIAL
+- Added ability to reserver trunk lines for specific VICIDIAL campaigns
+- Added ability for balance dialing and dialing-only servers in VICIDIAL
 - Many other changes and bug fixes listed in the TODO Wiki webpage:
      http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.2
 UPGRADE NOTES:

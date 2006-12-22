@@ -93,6 +93,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 14. Changed Drop percentage to be out of Answered calls for FTC compliance.
 
+15. Tested new asterisk-perl module (0.09) and found that it is NOT compatible.
+	Please make sure you use asterisk-perl-0.08 ONLY.
+
+
 
 
 

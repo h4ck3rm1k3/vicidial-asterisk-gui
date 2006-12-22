@@ -48,11 +48,10 @@ Features:
 - 3rd party conferencing(with DTMF macros and number presets)
 - 3rd party blind call transfer
 - 3rd party conferencing with agent drop-off
-- Ability to set user levels and permissions for certain features
+- Ability to set user levels and permissions for certain features and campaigns
 - Ability for managers to listen-in on agent conversations
 - Ability for managers to enter conversations with agents and customers
 - Web-based administration
-- Client web-app and admin web pages available in English, Spanish, Greek and German
 - Client web-app web pages available in English, Spanish, Greek, German, French, Italian, Polish, Portuguese and Brazillian Portuguese
 - Admin web pages available in English, Spanish, Greek and German
 

@@ -90,7 +90,8 @@ dial mode. Default is N.
 
 Drop Percentage Limit - This field is where you set the limit of the percentage 
 of dropped calls you would like while using an adaptive-predictive dial method, 
-not MANUAL or RATIO.
+not MANUAL or RATIO. Dropped calls percentage is measured out of the total 
+number of Answered calls for the campaign for the day.
 
 Maximum Adapt Dial Level - This field is where you set the limit of the limit to 
 the numbr of lines you would like dialed per agent while using an 

@@ -3,7 +3,7 @@ recommended that you read the SCRATCH_INSTALL doc for more information on
 installing the package properly.
 
 Requirements for installing astGUIclient/VICIDIAL on an Asterisk server:
-- Asterisk 1.2.12.1 recommended but will work with older versions
+- Asterisk 1.2.14 recommended but will work with most older Asterisk versions
 - Zap trunks(T1/E1 or PSTN lines), IAX2 trunks or SIP trunks required
 - If using VOIP trunks and VICIDIAL auto-dial, you must have trunks registered
 - You must have a zaptel timer like a PSTN/T1/E1 card or ztdummy
@@ -18,6 +18,7 @@ Requirements for installing astGUIclient/VICIDIAL on an Asterisk server:
 - GNU screen 3.9.15 or greater must be installed
 - ntp must be installed and syncd to same time source as any other servers
 - Perl5 with several CPAN modules(Time::HiRes, DBD::mysql, Net::Telnet, etc)
+- asterisk-per-0.08 perl module required (0.09 version does NOT work)
 - Access to MySQL server and mysqlclientlibs, must be version 4.0.X or higher
 - Access to Apache/PHP webserver
 - Several entries in the crontab for interval-running scripts and keepalives
