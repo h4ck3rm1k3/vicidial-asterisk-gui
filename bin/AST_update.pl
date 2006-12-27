@@ -53,10 +53,11 @@
 # 60808-1500 - Fixed another bug in that caused crash with ** in extension
 # 60814-1523 - SYSLOG and SYSPERF looked up from database, dynamic settings
 # 60926-1601 - validate proper binutil locations for performance gathering
-# 61130-1008 - defaults show_channels_12_format to 1 for non 1.0 version Asterisk
+# 61130-1008 - defaults show_channels_format to 1 for non 1.0 version Asterisk
+# 61227-1659 - added "core show channels concise" for Asterisk 1.4 compatibility
 #
 
-$build = '61130-1008';
+$build = '61227-1659';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -263,9 +264,10 @@ while ($sthArows > $rec_count)
 	}
 $sthA->finish();
 
-	if ($AST_ver =~ /^1\.0/i) {$show_channels_12_format = 0;}
-	else {$show_channels_12_format = 1;}
-	print STDERR "SHOW CHANNELS format: $show_channels_12_format\n";
+	$show_channels_format = 1;
+	if ($AST_ver =~ /^1\.0/i) {$show_channels_format = 0;}
+	if ($AST_ver =~ /^1\.4/i) {$show_channels_format = 2;}
+	print STDERR "SHOW CHANNELS format: $show_channels_format\n";
 
 ##### LOOK FOR ZAP CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 	print STDERR "LOOKING FOR Zap clients assigned to this server:\n";
@@ -389,13 +391,17 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 	   
 	$t->buffer_empty;
-	if (!$show_channels_12_format)
+	if ($show_channels_format < 1)
 		{
 		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels\n\n", Prompt => '/--END COMMAND-.*/'); 
 		}
-	else
+	if ($show_channels_format == 1)
 		{
 		@list_channels = $t->cmd(String => "Action: Command\nCommand: show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
+		}
+	if ($show_channels_format > 1)
+		{
+		@list_channels = $t->cmd(String => "Action: Command\nCommand: core show channels concise\n\n", Prompt => '/--END COMMAND-.*/'); 
 		}
 
 	##### TEST CHANNELS ZAP/IAX2/Local TO SEE IF THERE WAS A LARGE HICCUP IN OUTPUT FROM PREVIOUS OUTPUT
@@ -412,7 +418,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 		$test_channels[$s] =~ s/Congestion\s+\(Empty\)/ SIP\/CONGEST/gi;
 		$test_channels[$s] =~ s/\(Outgoing Line\)|\(None\)/SIP\/ring/gi;
 		$test_channels[$s] =~ s/\(Empty\)/SIP\/internal/gi;
-		if (!$show_channels_12_format)
+		if (!$show_channels_format)
 			{
 			$test_channels[$s] =~ s/^\s*|\s*$//gi;
 			$test_channels[$s] =~ s/\(.*\)//gi;
@@ -439,7 +445,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				{
 				$channel = $1;
 				$extension = $2;
-				if ($show_channels_12_format)
+				if ($show_channels_format)
 					{$extension =~ s/^.*\(|\).*$//gi;}
 				$extension =~ s/^SIP\/|-\S+$//gi;
 				$extension =~ s/\|.*//gi;
@@ -701,7 +707,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 		{
 		@list_chan_12 = split(/:/, $list_channels[2]);
 		}
-	if( ($DB) && ($show_channels_12_format) ) {print "concise: $#list_chan_12\n";}
+	if( ($DB) && ($show_channels_format) ) {print "concise: $#list_chan_12\n";}
 	if ( ( ( ($list_channels[1] =~ /State Appl\./) or ($list_channels[2] =~ /State Appl\.|Application\(Data\)/) or ($list_channels[3] =~ /State Appl\.|Application\(Data\)/) ) || ($#list_chan_12 > 8) ) && (!$UD_bad_grab) )
 		{
 
@@ -718,7 +724,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 				$list_channels[$c] =~ s/Congestion\s+\(Empty\)/ SIP\/CONGEST/gi;
 				$list_channels[$c] =~ s/\(Outgoing Line\)|\(None\)/SIP\/ring/gi;
 				$list_channels[$c] =~ s/\(Empty\)/SIP\/internal/gi;
-				if (!$show_channels_12_format)
+				if (!$show_channels_format)
 					{
 					$list_channels[$c] =~ s/^\s*|\s*$//gi;
 					$list_channels[$c] =~ s/\(.*\)//gi;
@@ -750,7 +756,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 					$channel = $1;
 					$extension = $2;
 					$channel_data = $extension;
-					if ($show_channels_12_format)
+					if ($show_channels_format)
 						{
 						$extension =~ s/^.*\(|\).*$//gi;
 						#### new data in 1.2 for future use
@@ -915,7 +921,7 @@ if (!$telnet_port) {$telnet_port = '5038';}
 
 	else
 		{
-		if ( ($list_channels[1] !~ /Privilege: Command/) && ($show_channels_12_format) )
+		if ( ($list_channels[1] !~ /Privilege: Command/) && ($show_channels_format) )
 			{
 			$bad_grabber_counter++;
 			if($DB){print STDERR "\nbad grab, trying again\n";}
