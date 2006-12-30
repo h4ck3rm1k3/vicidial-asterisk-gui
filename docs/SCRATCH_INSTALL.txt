@@ -362,6 +362,8 @@ NOTE: a minimum of MySQL server 4.0.X is required
 	- "./configure --prefix=/usr/local/mysql --enable-large-files --enable-shared=yes --with-readline"
 	   **** If only MySQL client is needed for DBD::mysql then use this:
 		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline"
+	   **** If using version 5 tree MySQL client then use this:
+		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline --enable-thread-safe-client"
 	- make
 	- make install
 	- scripts/mysql_install_db
@@ -371,6 +373,13 @@ NOTE: a minimum of MySQL server 4.0.X is required
 	- cp support-files/my-medium.cnf /etc/my.cnf
 	- /usr/local/mysql/bin/mysqld_safe --user=mysql &
 	- ln -s /tmp/mysql.sock /var/run/mysql/mysql.sock
+	   **** For some systems you may need to add the mysql/bin directory to your PATH:
+		- PATH=$PATH:$HOME/bin:/usr/local/mysql/bin/
+		- export PATH
+	   **** you may also want to add those two lines to your /root/.bash_profile file
+	   **** For Mysql 5 tree only, you also may need to copy the libmysqlclient.so file to libs
+		- cp /usr/local/mysql-5.0.27/libmysql/.libs/libmysqlclient.so /usr/lib/
+		- cp /usr/local/mysql-5.0.27/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
    - you are done
 
    ***** NOTE: if you will be using any of the DBI perl scripts: *****
