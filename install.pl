@@ -1228,10 +1228,10 @@ if ($WEBONLY < 1)
 	`chmod -R 0766 $PATHhome/LEADS_IN`;
 
 	print "Creating $PATHmonitor directories...\n";
-	`mkdir $PATHmonitor/monitor`;
-	`mkdir $PATHmonitor/monitor/ORIG`;
-	`mkdir $PATHmonitor/monitor/DONE`;
-	`chmod -R 0766 $PATHmonitor/monitor`;
+	`mkdir $PATHmonitor`;
+	`mkdir $PATHmonitor/ORIG`;
+	`mkdir $PATHmonitor/DONE`;
+	`chmod -R 0766 $PATHmonitor`;
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;
