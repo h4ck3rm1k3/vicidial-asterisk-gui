@@ -8284,8 +8284,8 @@ echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 	}
