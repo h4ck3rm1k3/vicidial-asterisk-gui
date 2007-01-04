@@ -198,9 +198,11 @@ else
 }
 
 
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name - \n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name\n";
 
-echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo " - <a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo " - <a href=\"./user_stats.php?user=$user\">User Stats</a>\n";
+echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
 
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
