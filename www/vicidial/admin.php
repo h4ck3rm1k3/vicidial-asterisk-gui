@@ -7,6 +7,9 @@
 
 require("dbconnect.php");
 
+$page_width='750';
+$section_width='700';
+
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
@@ -455,8 +458,10 @@ if (isset($_GET["dedicated_trunks"]))	{$dedicated_trunks=$_GET["dedicated_trunks
 	elseif (isset($_POST["dedicated_trunks"]))	{$dedicated_trunks=$_POST["dedicated_trunks"];}
 if (isset($_GET["trunk_restriction"]))	{$trunk_restriction=$_GET["trunk_restriction"];}
 	elseif (isset($_POST["trunk_restriction"]))	{$trunk_restriction=$_POST["trunk_restriction"];}
-if (isset($_GET["campaigns"]))	{$campaigns=$_GET["campaigns"];}
-	elseif (isset($_POST["campaigns"]))	{$campaigns=$_POST["campaigns"];}
+if (isset($_GET["campaigns"]))						{$campaigns=$_GET["campaigns"];}
+	elseif (isset($_POST["campaigns"]))				{$campaigns=$_POST["campaigns"];}
+if (isset($_GET["dial_level_override"]))			{$dial_level_override=$_GET["dial_level_override"];}
+	elseif (isset($_POST["dial_level_override"]))	{$dial_level_override=$_POST["dial_level_override"];}
 
 
 
@@ -795,12 +800,14 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 61122-1228 - added user group campaign restrictions
 # 61122-1535 - changed script_text to unfiltered and added more variables to SCRIPTS
 # 61129-1028 - Added headers to Users and Phones with clickable order-by titles
+# 70108-1405 - Added ADAPT OVERRIDE to allow for forced dial_level changes in ADAPT dial methods
+#            - Screen width definable at top of script, merged server_stats into this script
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.73';
-$build = '61129-1028';
+$version = '2.0.74';
+$build = '70108-1405';
 
 $STARTtime = date("U");
 
@@ -1022,6 +1029,7 @@ if ($ADD==551)			{$hh='users';		echo "SEARCH PHONES";}
 if ($ADD==66)			{$hh='users';		echo "Search Results";}
 if ($ADD==661)			{$hh='users';		echo "SEARCH PHONES RESULTS";}
 if ($ADD==99999)		{$hh='users';		echo "HELP";}
+if ($ADD==999999)		{$hh='reports';		echo "REPORTS";}
 
 if ( ($ADD>9) && ($ADD < 99998) )
 	{
@@ -1505,7 +1513,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-auto_dial_level">
 <BR>
-<B>Auto Dial Level -</B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow.
+<B>Auto Dial Level -</B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow. The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.
 
 <BR>
 <A NAME="vicidial_campaigns-available_only_ratio_tally">
@@ -2744,6 +2752,8 @@ if ($hh=='times') {$times_hh='bgcolor ="#99FF33"'; $times_fc='BLACK';} # hard te
 	else {$times_hh=''; $times_fc='WHITE';}
 if ($hh=='server') {$server_hh='bgcolor ="#FF99FF"'; $server_fc='BLACK';} # pink
 	else {$server_hh=''; $server_fc='WHITE';}
+if ($hh=='reports') {$reports_hh='bgcolor ="#FFFF99"'; $reports_fc='BLACK';} # yellow
+	else {$reports_hh=''; $reports_fc='WHITE';}
 
 ?>
 </title>
@@ -2758,7 +2768,7 @@ function openNewWindow(url) {
 echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 ?>
 <CENTER>
-<TABLE WIDTH=650 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 <TR BGCOLOR=#000000>
 <TD ALIGN=CENTER <?=$users_hh?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc?> SIZE=1><B> USERS </a></TD>
@@ -2771,7 +2781,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 <TD ALIGN=CENTER <?=$usergroups_hh?>><a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc?> SIZE=1><B> USER GROUPS </a></TD>
 <TD ALIGN=CENTER <?=$remoteagent_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc?> SIZE=1><B> REMOTE AGENTS </a></TD>
 <TD ALIGN=CENTER <?=$server_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc?> SIZE=1><B> PHONES </a></TD>
-<TD ALIGN=CENTER <?=$reports_hh?>><a href="server_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1><B> REPORTS </a></TD>
+<TD ALIGN=CENTER <?=$reports_hh?>><a href="<? echo $PHP_SELF ?>?ADD=999999"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$reports_fc?> SIZE=1><B> REPORTS </a></TD>
 </TR>
 
 
@@ -2815,7 +2825,7 @@ if (strlen($server_hh) > 1) {
 	?>
 <TR BGCOLOR=#FF99FF><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>PHONES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD PHONE</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SERVERS</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD SERVER</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>CONFERENCES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD CONFERENCE</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>VD CONFERENCES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD VD CONFERENCE</a></TD></TR>
 <? 
-	
+
 ### Do nothing if admin has no permissions
 if($LOGast_admin_access < 1) 
 	{
@@ -2827,7 +2837,7 @@ if($LOGast_admin_access < 1)
 } 
 if (strlen($reports_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFCC99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; </TD></TR>
+<TR BGCOLOR=#FFFF99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; </TD></TR>
 <? } ?>
 
 
@@ -2858,7 +2868,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW USER<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=2>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
@@ -2905,7 +2915,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW CAMPAIGN<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=21>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
@@ -2939,7 +2949,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW LIST<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=211>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (digits only)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
@@ -3000,7 +3010,7 @@ if (strlen($phone_number) > 2)
 
 echo "<br>ADD A NUMBER TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=121>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Phone Number: </td><td align=left><input type=text name=phone_number size=14 maxlength=12> (digits only)$NWB#vicidial_list-dnc$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
@@ -3019,7 +3029,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=2111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group Color: </td><td align=left><input type=text name=group_color size=7 maxlength=7>$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
@@ -3049,7 +3059,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW REMOTE AGENTS<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=21111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User ID Start: </td><td align=left><input type=text name=user_start size=6 maxlength=6> (numbers only, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Number of Lines: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3> (numbers only)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
@@ -3081,7 +3091,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW USERS GROUP<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=211111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
@@ -3101,7 +3111,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW SCRIPT<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=2111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Script Comments: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
@@ -3124,7 +3134,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW FILTER<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=21111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Filter ID: </td><td align=left><input type=text name=lead_filter_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Filter Name: </td><td align=left><input type=text name=lead_filter_name size=30 maxlength=30> (short description of the filter)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Filter Comments: </td><td align=left><input type=text name=lead_filter_comments size=50 maxlength=255> $NWB#vicidial_lead_filters-lead_filter_comments$NWE</td></tr>\n";
@@ -3145,7 +3155,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW CALL TIME<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=211111111>\n";
-echo "<center><TABLE width=620 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Comments: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
@@ -3167,7 +3177,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD NEW STATE CALL TIME<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=2111111111>\n";
-echo "<center><TABLE width=620 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left><input type=text name=state_call_time_state size=4 maxlength=2> (no spaces or punctuation)$NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
@@ -3190,9 +3200,9 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW PHONE<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=21111111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Phone extension: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20 value=\"$row[1]\"> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
@@ -3230,7 +3240,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW SERVER<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=211111111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10>$NWB#servers-server_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255>$NWB#servers-server_description$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15>$NWB#servers-server_ip$NWE</td></tr>\n";
@@ -3252,7 +3262,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW CONFERENCE<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=2111111111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
@@ -3275,7 +3285,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>ADD A NEW VICIDIAL CONFERENCE<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=21111111111111>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
@@ -4131,25 +4141,32 @@ if ($ADD==41)
 		{
 		echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
 
-		if ($dial_method == 'RATIO')
+		if ($dial_method == 'MANUAL') 
 			{
-			if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
-			$adlSQL = "auto_dial_level='$auto_dial_level',";
+			$auto_dial_level='0';
+			$adlSQL = "auto_dial_level='0',";
 			}
 		else
 			{
-			if ($dial_method == 'MANUAL') 
+			if ($dial_level_override > 0)
 				{
-				$auto_dial_level='0';
-				$adlSQL = "auto_dial_level='0',";
+				$adlSQL = "auto_dial_level='$auto_dial_level',";
 				}
 			else
 				{
-				$adlSQL = "";
-				if ($auto_dial_level < 1) 
+				if ($dial_method == 'RATIO')
 					{
-					$auto_dial_level = "1.0";
+					if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
 					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					}
+				else
+					{
+					$adlSQL = "";
+					if ($auto_dial_level < 1) 
+						{
+						$auto_dial_level = "1.0";
+						$adlSQL = "auto_dial_level='$auto_dial_level',";
+						}
 					}
 				}
 			}
@@ -5929,7 +5946,7 @@ else
 			{echo "<input type=hidden name=ADD value=4>\n";}
 		}
 	echo "<input type=hidden name=user value=\"$row[1]\">\n";
-	echo "<center><TABLE width=600 cellspacing=3>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><b>$row[1]</b>$NWB#vicidial_users-user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10 value=\"$row[2]\">$NWB#vicidial_users-pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=30 maxlength=30 value=\"$row[3]\">$NWB#vicidial_users-full_name$NWE</td></tr>\n";
@@ -6095,7 +6112,7 @@ echo "<a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\">Realtime Scree
 echo "<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=41>\n";
 echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
@@ -6174,7 +6191,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
-echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ADAPT OVERRIDE</td></tr>\n";
 
 echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
 
@@ -6563,7 +6580,7 @@ echo "<a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\">Realtime Scree
 echo "<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=44>\n";
 echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
@@ -6799,7 +6816,7 @@ echo "<br>MODIFY A LISTS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=411>\n";
 echo "<input type=hidden name=list_id value=\"$row[0]\">\n";
 echo "<input type=hidden name=old_campaign_id value=\"$row[2]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20 value=\"$row[1]\">$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Campaign</a>: </td><td align=left><select size=1 name=campaign_id>\n";
@@ -7133,7 +7150,7 @@ echo "<TABLE><TR><TD>\n";
 echo "<br>MODIFY A GROUPS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=4111>\n";
 echo "<input type=hidden name=group_id value=\"$row[0]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30 value=\"$row[1]\">$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group Color: </td><td align=left bgcolor=\"$row[2]\"><input type=text name=group_color size=7 maxlength=7 value=\"$row[2]\">$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
@@ -7207,7 +7224,7 @@ echo "<TABLE><TR><TD>\n";
 echo "<br>MODIFY A REMOTE AGENTS ENTRY: $row[0]<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=41111>\n";
 echo "<input type=hidden name=remote_agent_id value=\"$row[0]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User ID Start: </td><td align=left><input type=text name=user_start size=6 maxlength=6 value=\"$user_start\"> (numbers only, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Number of Lines: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3 value=\"$number_of_lines\"> (numbers only)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
@@ -7255,7 +7272,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 echo "<br>MODIFY A USERS GROUP ENTRY<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=411111>\n";
 echo "<input type=hidden name=OLDuser_group value=\"$user_group\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20 value=\"$user_group\"> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: </td><td align=left>\n";
@@ -7653,7 +7670,7 @@ echo "<br>MODIFY A PHONE RECORD: $row[1]<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=41111111111>\n";
 echo "<input type=hidden name=old_extension value=\"$row[0]\">\n";
 echo "<input type=hidden name=old_server_ip value=\"$row[5]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Phone extension: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"$row[0]\">$NWB#phones-extension$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20 value=\"$row[1]\"> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
@@ -7755,7 +7772,7 @@ echo "<br>MODIFY A SERVER RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=411111111111>\n";
 echo "<input type=hidden name=old_server_id value=\"$server_id\">\n";
 echo "<input type=hidden name=old_server_ip value=\"$row[2]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10 value=\"$row[0]\">$NWB#servers-server_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255 value=\"$row[1]\">$NWB#servers-server_description$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15 value=\"$row[2]\">$NWB#servers-server_ip$NWE</td></tr>\n";
@@ -7947,7 +7964,7 @@ echo "<br>MODIFY A CONFERENCE RECORD: $row[0]<form action=$PHP_SELF method=POST>
 echo "<input type=hidden name=ADD value=4111111111111>\n";
 echo "<input type=hidden name=old_conf_exten value=\"$row[0]\">\n";
 echo "<input type=hidden name=old_server_ip value=\"$row[1]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Conference: </td><td align=left><input type=text name=conf_exten size=10 maxlength=7 value=\"$row[0]\">$NWB#conferences-conf_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111111&server_ip=$row[1]\">Server IP</a>: </td><td align=left><select size=1 name=server_ip>\n";
 
@@ -7985,7 +8002,7 @@ echo "<br>MODIFY A VICIDIAL CONFERENCE RECORD: $row[0]<form action=$PHP_SELF met
 echo "<input type=hidden name=ADD value=41111111111111>\n";
 echo "<input type=hidden name=old_conf_exten value=\"$row[0]\">\n";
 echo "<input type=hidden name=old_server_ip value=\"$row[1]\">\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Conference: </td><td align=left><input type=text name=conf_exten size=10 maxlength=7 value=\"$row[0]\">$NWB#conferences-conf_exten$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111111&server_ip=$row[1]\">Server IP</a>: </td><td align=left><select size=1 name=server_ip>\n";
 
@@ -8020,7 +8037,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>SEARCH FOR A USER<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=66>\n";
-echo "<center><TABLE width=600 cellspacing=3>\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=20></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=30 maxlength=30></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User Level: </td><td align=left><select size=1 name=user_level><option selected>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></td></tr>\n";
@@ -8066,7 +8083,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>SEARCH RESULTS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8142,7 +8159,7 @@ $ADD='82';
 if ($ADD==82)
 {
 echo "<TABLE><TR><TD>\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white> CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td></tr>\n";
 
 	$o=0;
@@ -8202,7 +8219,7 @@ if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPli
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>USER LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 echo "<tr bgcolor=black>";
 echo "<td><a href=\"$PHP_SELF?ADD=0&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
 echo "<td><a href=\"$PHP_SELF?ADD=0&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
@@ -8238,7 +8255,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>CAMPAIGN LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8273,7 +8290,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>LIST LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8284,8 +8301,8 @@ echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td>";
-		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
+		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 	}
@@ -8308,7 +8325,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>INBOUND GROUP LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8343,7 +8360,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>REMOTE AGENTS LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8379,7 +8396,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>USER GROUPS LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8411,7 +8428,7 @@ echo "<TABLE><TR><TD>\n";
 	$people_to_print = mysql_num_rows($rslt);
 
 echo "<br>SCRIPTS LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($people_to_print > $o) {
@@ -8444,7 +8461,7 @@ echo "<TABLE><TR><TD>\n";
 	$filters_to_print = mysql_num_rows($rslt);
 
 echo "<br>LEAD FILTER LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($filters_to_print > $o) {
@@ -8477,7 +8494,7 @@ echo "<TABLE><TR><TD>\n";
 	$filters_to_print = mysql_num_rows($rslt);
 
 echo "<br>CALL TIME LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($filters_to_print > $o) {
@@ -8511,7 +8528,7 @@ echo "<TABLE><TR><TD>\n";
 	$filters_to_print = mysql_num_rows($rslt);
 
 echo "<br>STATE CALL TIME LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($filters_to_print > $o) {
@@ -8558,7 +8575,7 @@ if (eregi("STATUSDOWN",$stage)) {$SQLorder='order by status desc';   $STATUSlink
 	$phones_to_print = mysql_num_rows($rslt);
 
 echo "<br>PHONE LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 echo "<tr bgcolor=black>";
 echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$EXTENlink\"><font size=1 color=white><B>EXTEN</B></a></td>";
 echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$PROTOlink\"><font size=1 color=white><B>PROTO</B></a></td>";
@@ -8597,7 +8614,7 @@ echo "<TABLE><TR><TD>\n";
 	$phones_to_print = mysql_num_rows($rslt);
 
 echo "<br>SERVER LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($phones_to_print > $o) {
@@ -8630,7 +8647,7 @@ echo "<TABLE><TR><TD>\n";
 	$phones_to_print = mysql_num_rows($rslt);
 
 echo "<br>CONFERENCE LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($phones_to_print > $o) {
@@ -8662,7 +8679,7 @@ echo "<TABLE><TR><TD>\n";
 	$phones_to_print = mysql_num_rows($rslt);
 
 echo "<br>CONFERENCE LISTINGS:\n";
-echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 
 	$o=0;
 	while ($phones_to_print > $o) {
@@ -8680,6 +8697,75 @@ echo "<center><TABLE width=600 cellspacing=0 cellpadding=1>\n";
 
 echo "</TABLE></center>\n";
 }
+
+######################
+# ADD=999999 display reports section
+######################
+if ($ADD==999999)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_conferences order by conf_exten";
+	$rslt=mysql_query($stmt, $link);
+	$phones_to_print = mysql_num_rows($rslt);
+
+$stmt="select * from servers;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$servers_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $servers_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$server_id[$i] =			$row[0];
+	$server_description[$i] =	$row[1];
+	$server_ip[$i] =			$row[2];
+	$active[$i] =				$row[3];
+	$i++;
+	}
+?>
+
+<HTML>
+<HEAD>
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>VICIDIAL: Server Stats and Reports</TITLE></HEAD><BODY BGCOLOR=WHITE>
+<FONT SIZE=4><B>VICIDIAL: Server Stats and Reports</B></font><BR><BR>
+<UL>
+<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
+<LI><a href="AST_parkstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>PARK REPORT</a></FONT>
+<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD REPORT</a></FONT>
+<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>CLOSER REPORT</a></FONT>
+<LI><a href="AST_agent_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE</a></FONT>
+<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>
+<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
+</UL>
+
+<PRE><TABLE BORDER=1 CELLPADDING=0 cellspacing=0>
+<TR><TD>SERVER</TD><TD>DESCRIPTION</TD><TD>IP ADDRESS</TD><TD>ACTIVE</TD><TD>VDAD time</TD><TD>VDcall time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
+<? 
+
+	$o=0;
+	while ($servers_to_print > $o)
+	{
+	echo "<TR>\n";
+	echo "<TD>$server_id[$o]</TD>\n";
+	echo "<TD>$server_description[$o]</TD>\n";
+	echo "<TD>$server_ip[$o]</TD>\n";
+	echo "<TD>$active[$o]</TD>\n";
+	echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+	echo "<TD><a href=\"AST_timeoncall.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+	echo "<TD><a href=\"AST_timeonpark.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+	echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
+	echo "</TR>\n";
+	$o++;
+	}
+
+echo "</TABLE>\n";
+
+}
+
 
 
 
