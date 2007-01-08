@@ -1,0 +1,14 @@
+############################################################  ADMIN
+
+ADAPT OVERRIDE||
+The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.||
+
+############################################################ CLIENT
+
+
+
+############################################################  MANAGER Manual
+
+
+############################################################  AGENT Manual
+

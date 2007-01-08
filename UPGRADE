@@ -1,6 +1,31 @@
 ################ UPGRADE
 
+NOTE: Upgrading from 2.0.1 to 2.0.2 is in the middle section
 NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
+
+########## UPGRADING FROM 2.0.2 TO 2.0.3 ##########
+
+1. install new files:
+	perl ./install.pl
+	NOTES: If you have customized any scripts in the bin or agi folders, 
+	then make sure you back them up before running the install.pl script. 
+	This script will replace existing files in the astguiclient installation.
+
+2. upgrade the MySQL asterisk database:
+	mysql
+	use asterisk
+	\. /path/from/root/extras/upgrade_2.0.3.sql <nothing changed yet>
+	quit
+
+3. The server_stats.php has been merged into the vicidial/admin.php page
+
+4. Width of the admin.php screen now definable by variables at top of script.
+
+5. Dial Override checkbox added to force dial_level changes in ADAPT modes
+
+
+
+
 
 ########## UPGRADING FROM 2.0.1 TO 2.0.2 ##########
 
