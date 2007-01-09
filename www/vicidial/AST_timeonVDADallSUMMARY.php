@@ -115,7 +115,7 @@ else
 	{
 	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=1\"><font size=1>- VIEW LESS SETTINGS</font></a>";
 	}
-echo " &nbsp; &nbsp; &nbsp; <a href=\"./server_stats.php\">REPORTS</a>";
+echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=999999\">REPORTS</a>";
 echo "<BR><BR>\n\n";
 
 $k=0;

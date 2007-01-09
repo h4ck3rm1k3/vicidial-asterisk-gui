@@ -89,7 +89,7 @@ echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB
 echo "<TITLE>VICIDIAL: Time On Park</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<PRE><FONT SIZE=3>\n\n";
 
-echo "VICIDIAL: Time On Park         $NOW_TIME    <a href=\"./server_stats.php\">REPORTS</a>\n\n";
+echo "VICIDIAL: Time On Park         $NOW_TIME    <a href=\"./admin.php?ADD=999999\">REPORTS</a>\n\n";
 echo "+------------+-----------------+---------------------+---------+\n";
 echo "| CHANNEL    | GROUP           | START TIME          | MINUTES |\n";
 echo "+------------+-----------------+---------------------+---------+\n";
