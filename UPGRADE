@@ -23,6 +23,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 5. Dial Override checkbox added to force dial_level changes in ADAPT modes
 
+6. Behaviour of HotKeys in manual dial mode has changed to automatically go on 
+	to the next lead when a HotKey is pressed.
+
+7. It is now possible for agents to dial alternate phone numbers using only
+	HotKeys if ALTPH2 and/or ADDR3 are added to a campaign's hotkeys.
+
 
 
 
