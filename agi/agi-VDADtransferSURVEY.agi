@@ -127,6 +127,7 @@ $tsSQLdate = "$year$mon$mday$hour$min$sec";
 $SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 $SQLdateBEGIN = $SQLdate;
 
+$secX = time();
 $BDtarget = ($secX - 5);
 ($Bsec,$Bmin,$Bhour,$Bmday,$Bmon,$Byear,$Bwday,$Byday,$Bisdst) = localtime($BDtarget);
 $Byear = ($Byear + 1900);
@@ -315,7 +316,7 @@ if ($affected_rows > 0)
 	$sthA->finish();
 
 	### Grab campaign values from the database
-	$stmtA = "SELECT drop_call_seconds,safe_harbor_message,safe_harbor_exten FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
+	$stmtA = "SELECT drop_call_seconds,safe_harbor_message,safe_harbor_exten,concurrent_transfers FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -326,6 +327,7 @@ if ($affected_rows > 0)
 		$DBdrop_call_seconds	= "$aryA[0]";
 		$DBsafe_harbor_message	= "$aryA[1]";
 		$DBsafe_harbor_exten	= "$aryA[2]";
+		$DBconcurrent_transfers	= "$aryA[3]";
 		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
 		if ($DBsafe_harbor_message)	{$safe_harbor_message = $DBsafe_harbor_message;}
 		if ($DBsafe_harbor_exten)	{$safe_harbor_exten = $DBsafe_harbor_exten;}
@@ -396,7 +398,29 @@ while ($sthArows > $rec_count)
 	 $rec_count++;
 	}
 $sthA->finish();
-if ($rec_countWAIT < 1)
+if ($DBconcurrent_transfers =~ /AUTO/)
+	{
+	$active_agents=1;
+	$stmtA = "SELECT count(*) FROM vicidial_live_agents where server_ip='$VARserver_ip' and campaign_id = '$VDADcampaign' and last_update_time > '$BDtsSQLdate';";
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	 $rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$active_agents		= "$aryA[0]";
+		 $rec_count++;
+		}
+	
+	$DBconcurrent_transfers = ($active_agents / 10);
+	$DBconcurrent_transfers = sprintf("%.0f", $DBconcurrent_transfers);	
+	$DBconcurrent_transfers++;
+	if ($AGILOG) {$agi_string = "|CONCURRENT TRANSFERS AUTO SETTING: $DBconcurrent_transfers ($active_agents)|";   &agi_output;}
+	}
+$sthA->finish();
+if ($rec_countWAIT < $DBconcurrent_transfers)
 	{
 	$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$CIDlead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status = 'READY' and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 	$affected_rows = $dbhA->do($stmtA);

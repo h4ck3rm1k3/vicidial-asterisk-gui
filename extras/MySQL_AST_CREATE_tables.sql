@@ -493,7 +493,8 @@ adaptive_dropped_percentage SMALLINT(3) default '3',
 adaptive_maximum_level VARCHAR(6) default '3.0',
 adaptive_latest_server_time VARCHAR(4) default '2100',
 adaptive_intensity VARCHAR(6) default '0',
-adaptive_dl_diff_target SMALLINT(3) default '0'
+adaptive_dl_diff_target SMALLINT(3) default '0',
+concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO'
 );
 
  CREATE TABLE vicidial_lists (
