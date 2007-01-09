@@ -132,6 +132,7 @@
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
 # 61130-1617 - Added lead_id to MonitorConf for recording_log
 # 61221-1212 - Changed width to 760 to better fit 800x600 screens, widened SCRIPT
+# 70109-1128 - Fixed wrapup timer bug
 #
 
 require("dbconnect.php");
@@ -177,8 +178,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.105';
-$build = '61221-1212';
+$version = '2.0.106';
+$build = '70109-1128';
 
 if ($force_logout)
 {
@@ -4962,6 +4963,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (wrapup_seconds > 0)	
 					{
 					showDiv('WrapupBox');
+					document.getElementById("WrapupTimer").innerHTML = wrapup_seconds;
 					wrapup_waiting=1;
 					}
 				CustomerData_update();
@@ -4994,39 +4996,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if ( (custchannellive < -30) && (lastcustchannel.length > 3) ) {CustomerChanneLGone();}
 			if ( (custchannellive < -10) && (lastcustchannel.length > 3) ) {ReChecKCustoMerChaN();}
 			if ( (nochannelinsession > 16) && (check_n > 15) ) {NoneInSession();}
-			if (wrapup_seconds > 0)	
-				{
-				document.getElementById("WrapupTimer").innerHTML = (wrapup_seconds - wrapup_counter);
-				wrapup_counter++;
-				if ( (wrapup_counter > wrapup_seconds) && (document.getElementById("WrapupBox").style.visibility == 'visible') )
-					{
-					wrapup_waiting=0;
-					hideDiv('WrapupBox');
-					if (document.vicidial_form.DispoSelectStop.checked==true)
-						{
-						if (auto_dial_level != '0')
-							{
-							AutoDialWaiting = 0;
-							AutoDial_ReSume_PauSe("VDADpause","NO");
-					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
-							}
-						VICIDiaL_pause_calling = 1;
-						if (dispo_check_all_pause != '1')
-							{
-							document.vicidial_form.DispoSelectStop.checked=false;
-							}
-						}
-					else
-						{
-						if (auto_dial_level != '0')
-							{
-							AutoDialWaiting = 1;
-							AutoDial_ReSume_PauSe("VDADready","NO");
-					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
-							}
-						}
-					}
-				}
 			if (WaitingForNextStep==0)
 				{
 				// check for live channels in conference room and get current datetime
@@ -5107,6 +5076,39 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						{
 					//	parked_calls_display_refresh();
 					}
+					}
+				if (wrapup_seconds > 0)	
+					{
+					document.getElementById("WrapupTimer").innerHTML = (wrapup_seconds - wrapup_counter);
+					wrapup_counter++;
+					if ( (wrapup_counter > wrapup_seconds) && (document.getElementById("WrapupBox").style.visibility == 'visible') )
+						{
+						wrapup_waiting=0;
+						hideDiv('WrapupBox');
+						if (document.vicidial_form.DispoSelectStop.checked==true)
+							{
+							if (auto_dial_level != '0')
+								{
+								AutoDialWaiting = 0;
+								AutoDial_ReSume_PauSe("VDADpause","NO");
+						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+								}
+							VICIDiaL_pause_calling = 1;
+							if (dispo_check_all_pause != '1')
+								{
+								document.vicidial_form.DispoSelectStop.checked=false;
+								}
+							}
+						else
+							{
+							if (auto_dial_level != '0')
+								{
+								AutoDialWaiting = 1;
+								AutoDial_ReSume_PauSe("VDADready","NO");
+						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
+								}
+							}
+						}
 					}
 				}
 			}
