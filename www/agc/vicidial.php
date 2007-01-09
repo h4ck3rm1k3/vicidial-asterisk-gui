@@ -133,6 +133,8 @@
 # 61130-1617 - Added lead_id to MonitorConf for recording_log
 # 61221-1212 - Changed width to 760 to better fit 800x600 screens, widened SCRIPT
 # 70109-1128 - Fixed wrapup timer bug
+# 70109-1635 - Added option for HotKeys automatically dialing next number in manual mode
+#            - Added option for alternate number dialing with hotkeys
 #
 
 require("dbconnect.php");
@@ -178,8 +180,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.106';
-$build = '70109-1128';
+$version = '2.0.107';
+$build = '70109-1635';
 
 if ($force_logout)
 {
@@ -1434,6 +1436,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CBuser = '';
 	var CBcomments = '';
 	var volumecontrol_active = '<? echo $volumecontrol_active ?>';
+	var manual_auto_hotkey = 0;
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -3671,7 +3674,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Hangup command for customer call connected to the conference now to Manager
-	function dialedcall_send_hangup(dispowindow) 
+	function dialedcall_send_hangup(dispowindow,hotkeysused,altdispo) 
 		{
 		var form_cust_channel = document.vicidial_form.callchannel.value;
 		var form_cust_serverip = document.vicidial_form.callserverip.value;
@@ -3809,10 +3812,36 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (document.vicidial_form.DiaLAltPhonE.checked==true)
 					{
 					reselect_alt_dial = 1;
+					if (altdispo == 'ALTPH2')
+						{
+						ManualDialOnly('ALTPhoneE');
+						}
+					else
+						{
+						if (altdispo == 'ADDR3')
+							{
+							ManualDialOnly('AddresS3');
+							}
+						else
+							{
+							if (hotkeysused == 'YES')
+								{
+								reselect_alt_dial = 0;
+								manual_auto_hotkey = 1;
+								}
+							}
+						}
 					}
 				else
 					{
-					document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+					if (hotkeysused == 'YES')
+						{
+						manual_auto_hotkey = 1;
+						}
+					else
+						{
+						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+						}
 					reselect_alt_dial = 0;
 					}
 				}
@@ -3821,6 +3850,27 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (document.vicidial_form.DiaLAltPhonE.checked==true)
 					{
 					reselect_alt_dial = 1;
+					if (altdispo == 'ALTPH2')
+						{
+						ManualDialOnly('ALTPhoneE');
+						}
+					else
+						{
+						if (altdispo == 'ADDR3')
+							{
+							ManualDialOnly('AddresS3');
+							}
+						else
+							{
+							if (hotkeysused == 'YES')
+								{
+								document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
+								document.getElementById("MainStatuSSpan").innerHTML = '';
+								document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+								reselect_alt_dial = 0;
+								}
+							}
+						}
 					}
 				else
 					{
@@ -4204,6 +4254,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							AutoDial_ReSume_PauSe("VDADready","NO");
 					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
 							}
+						else
+							{
+							// trigger HotKeys manual dial automatically go to next lead
+							if (manual_auto_hotkey == '1')
+								{
+								manual_auto_hotkey = 0;
+								ManualDialNext('','','','','');
+								}
+							}
 						}
 					}
 				}
@@ -4537,14 +4596,24 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.vicidial_form.inert_button.focus();
 				document.vicidial_form.inert_button.blur();
 				CustomerData_update();
-				HKdispo_display = 4;
-				HKfinish=1;
 				var HKdispo_ary = HKdispo.split(" ----- ");
-				document.getElementById("HotKeyDispo").innerHTML = HKdispo_ary[0] + " - " + HKdispo_ary[1];
-				showDiv('HotKeyActionBox');
-				hideDiv('HotKeyEntriesBox');
-				document.vicidial_form.DispoSelection.value = HKdispo_ary[0];
-				dialedcall_send_hangup('NO');
+				if ( (HKdispo_ary[0] == 'ALTPH2') || (HKdispo_ary[0] == 'ADDR3') )
+					{
+					if (document.vicidial_form.DiaLAltPhonE.checked==true)
+						{
+						dialedcall_send_hangup('NO', 'YES', HKdispo_ary[0]);
+						}
+					}
+				else
+					{
+					HKdispo_display = 4;
+					HKfinish=1;
+					document.getElementById("HotKeyDispo").innerHTML = HKdispo_ary[0] + " - " + HKdispo_ary[1];
+					showDiv('HotKeyActionBox');
+					hideDiv('HotKeyEntriesBox');
+					document.vicidial_form.DispoSelection.value = HKdispo_ary[0];
+					dialedcall_send_hangup('NO', 'YES', HKdispo_ary[0]);
+					}
 			//	DispoSelect_submit();
 			//	AutoDialWaiting = 1;
 			//	AutoDial_ReSume_PauSe("VDADready");

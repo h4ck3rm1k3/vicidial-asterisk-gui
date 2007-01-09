@@ -802,12 +802,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 61129-1028 - Added headers to Users and Phones with clickable order-by titles
 # 70108-1405 - Added ADAPT OVERRIDE to allow for forced dial_level changes in ADAPT dial methods
 #            - Screen width definable at top of script, merged server_stats into this script
+# 70109-1638 - Added ALTPH2 and ADDR3 hotkey options for alt number dialing with HotKeys
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.74';
-$build = '70108-1405';
+$version = '2.0.75';
+$build = '70109-1638';
 
 $STARTtime = date("U");
 
@@ -1858,7 +1859,8 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>VICIDIAL_CAMPAIGN_HOTKEYS TABLE</FONT></B><BR><BR>
 <A NAME="vicidial_campaign_hotkeys">
 <BR>
-<B>Through the use of custom campaign hotkeys, agents that use the vicidial web-client can hangup and disposition calls just by pressing a single key on their keyboard.</B>
+<B>Through the use of custom campaign hotkeys, agents that use the vicidial web-client can hangup and disposition calls just by pressing a single key on their keyboard.</B> There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hangup their call, stay on the same lead, and dial another contact number from that lead. 
+
 
 
 
@@ -6466,6 +6468,8 @@ echo "<option>9</option>\n";
 echo "</select> &nbsp; \n";
 echo "Status: <select size=1 name=HKstatus>\n";
 echo "$HKstatuses_list\n";
+echo "<option value=\"ALTPH2-----Alternate Phone Hot Dial\">ALTPH2 - Alternate Phone Hot Dial</option>\n";
+echo "<option value=\"ADDR3-----Address3 Hot Dial\">ADDR3 - Address3 Hot Dial</option>\n";
 echo "</select> &nbsp; \n";
 echo "<input type=submit name=submit value=ADD><BR>\n";
 echo "</form><BR>\n";
