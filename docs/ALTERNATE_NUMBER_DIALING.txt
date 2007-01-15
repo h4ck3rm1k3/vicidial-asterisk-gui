@@ -1,0 +1,44 @@
+ALTERNATE NUMBER DIALING Summary and Overview                         2007-01-15
+
+*** ALTERNATE NUMBER DIALING IN AUTODIAL MODE WILL BE ADDED IN THE 2.0.3 RELEASE ***
+
+This document will outline the methods used to automatically dial the alt_phone and/or address3 fields containing phone numbers for a lead while in Auto-dial modes(RATIO or ADAPT*). This feature does not function for leads dialed with the MANUAL dial_method.
+
+If you will be using automatic alt number dialing, it is strongly recommended that you filter your alternate numbers to be the proper length, and remove any non-numeric characters from those fields.
+
+
+
+First, a new field in vicidial_campaigns was needed to tell the dialer that it should look for contact numbers in the alt_phone and/or address3 fields if a call to a regular number results in a no-contact(NA/B/DC/N)
+
+ALTER TABLE vicidial_campaigns ADD auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE';
+
+
+Second, a new field in vicidial_auto_calls was needed to tell the dialer that when this call is terminated as no-contact(NA/B/DC/N), it needs to try dialing the next alternate number(s). This field is populated accordingly: 
+- If the main phone_number is currently being dialed, the alt_dial field will be MAIN
+- If the alt_phone is being dialed, ALT
+- If the address3 field is being dialed, ADDR3
+- If the campaign has AUTO_ALT_DIAL set to NONE or the alt numbers are invalid, then this field will also be set to NONE
+This tells the scripts handling the call termination what needs to be done with the call status and what number(if any) it should place in the hopper next.
+
+ALTER TABLE vicidial_auto_calls ADD alt_dial ENUM('NONE','MAIN','ALT','ADDR3') default 'NONE';
+
+
+
+
+
+STEPS OF AN AUTO-ALT-DIAL CALL:
+
+1. When a call to a lead's main phone_number is placed by AST_VDauto_dial.pl or AST_VDauto_dial_FILL.pl and the auto_alt_dial field is NOT set to NONE, a flag will be set in the vicidial_auto_calls field as MAIN to note that this lead needs to be called again under it's alternate number(s) if it is terminated under a no-connect status(NA/B/DC/N).
+
+2. What happens when one of these calls is terminated:
+	2a. If the call has an alt_dial value of MAIN or ALT and went to an agent and was defined as no-contact(NA/B/DC/N) then the vdc_db_query.php script will immediately place that lead back into the vicidial_hopper to be dialed under it's alternate phone number or addr3.
+
+	2b. If call has an alt_dial value of MAIN or ALT and was terminated as no-contact by no-answer(NA/B/DC) then the VDhangup process will immediately place that lead back into the vicidial_hopper to be dialed under it's alternate phone number.
+
+3. When the alt_phone is dialed of the same lead, the alt_dial flag in vicidial_auto_calls will be set to ALT, then repeat step 2
+
+4. When the address3 field is dialed from the same lead, the alt_dial flag is set to ADDR3
+
+5. When a call is terminated in auto-dial mode and the number dialed was not the main phone_number, the status will not be changed in the vicidial_list table unless the status is a connect status and it came from an agent.
+
+
