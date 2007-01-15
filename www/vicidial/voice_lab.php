@@ -1,12 +1,16 @@
 <?
 ### voice_lab.php
 ### 
+### This script is designed to broadcast a recorded message or allow a person to
+### speak to all agents logged into a VICIDIAL campaign.
+### 
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 #
 # CHANGES
 #
 # 61220-1050 - First Build
+# 70115-1246 - Added ability to define an exten to play
 #
 
 require("dbconnect.php");
@@ -16,18 +20,22 @@ $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["server_ip"]))				{$server_ip=$_GET["server_ip"];}
 	elseif (isset($_POST["server_ip"]))		{$server_ip=$_POST["server_ip"];}
+if (isset($_GET["message"]))				{$message=$_GET["message"];}
+	elseif (isset($_POST["message"]))		{$message=$_POST["message"];}
 if (isset($_GET["session_id"]))				{$session_id=$_GET["session_id"];}
 	elseif (isset($_POST["session_id"]))	{$session_id=$_POST["session_id"];}
 if (isset($_GET["campaign_id"]))			{$campaign_id=$_GET["campaign_id"];}
 	elseif (isset($_POST["campaign_id"]))	{$campaign_id=$_POST["campaign_id"];}
-if (isset($_GET["NEW_VOICE_LAB"]))				{$NEW_VOICE_LAB=$_GET["NEW_VOICE_LAB"];}
-	elseif (isset($_POST["NEW_VOICE_LAB"]))		{$NEW_VOICE_LAB=$_POST["NEW_VOICE_LAB"];}
+if (isset($_GET["NEW_VOICE_LAB"]))			{$NEW_VOICE_LAB=$_GET["NEW_VOICE_LAB"];}
+	elseif (isset($_POST["NEW_VOICE_LAB"]))	{$NEW_VOICE_LAB=$_POST["NEW_VOICE_LAB"];}
 if (isset($_GET["KILL_VOICE_LAB"]))				{$KILL_VOICE_LAB=$_GET["KILL_VOICE_LAB"];}
 	elseif (isset($_POST["KILL_VOICE_LAB"]))	{$KILL_VOICE_LAB=$_POST["KILL_VOICE_LAB"];}
+if (isset($_GET["PLAY_MESSAGE"]))			{$PLAY_MESSAGE=$_GET["PLAY_MESSAGE"];}
+	elseif (isset($_POST["PLAY_MESSAGE"]))	{$PLAY_MESSAGE=$_POST["PLAY_MESSAGE"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -134,8 +142,16 @@ if ($NEW_VOICE_LAB > 0)
 {
 	if ( (strlen($server_ip) > 6) && (strlen($session_id) > 6) && (strlen($campaign_id) > 2) )
 	{
-	echo "<br><br><br>TO START YOUR VOICE LAB, DIAL 9$session_id ON YOUR PHONE NOW<br><br><br>\n";
+	echo "<br><br><br>TO START YOUR VOICE LAB, DIAL 9$session_id ON YOUR PHONE NOW<br>\n";
 
+	echo "<br>or, you can enter an extension that you want played below<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=PLAY_MESSAGE value=2>\n";
+	echo "<input type=hidden name=session_id value=8600900>\n";
+	echo "<input type=hidden name=server_ip value=$server_ip>\n";
+	echo "<input type=hidden name=campaign_id value=$campaign_id>\n";
+	echo "Message Extension<input type=text name=message>\n";
+	echo "<input type=submit name=submit value='PLAY THIS MESSAGE'>\n";
+	echo "</form><BR><BR><BR>\n";
 	
 	$S='*';
 	$D_s_ip = explode('.', $server_ip);
@@ -205,27 +221,68 @@ if ($NEW_VOICE_LAB > 0)
 }
 else
 {
-echo "<br>Start a Voice Lab Session: 8600900<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=NEW_VOICE_LAB value=2>\n";
-echo "<input type=hidden name=session_id value=8600900>\n";
-echo "Your Server: <select size=1 name=server_ip>$servers_list</select>\n";
-echo "<BR>\n";
-echo "Campaign: <select size=1 name=campaign_id>$campaigns_list</select>";
-echo "<BR>\n";
-echo "<input type=submit name=submit value=submit>\n";
-echo "</form><BR><BR><BR>\n";
+	if ($PLAY_MESSAGE > 0)
+	{
+		if ( (strlen($server_ip) > 6) && (strlen($session_id) > 6) && (strlen($campaign_id) > 2) && (strlen($message) > 0) )
+		{
+		echo "<br><br><br>TO START YOUR VOICE LAB, DIAL 9$session_id ON YOUR PHONE NOW<br>\n";
+
+		echo "<br>or, you can enter an extension that you want played below<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=PLAY_MESSAGE value=2>\n";
+		echo "<input type=hidden name=session_id value=8600900>\n";
+		echo "<input type=hidden name=server_ip value=$server_ip>\n";
+		echo "<input type=hidden name=campaign_id value=$campaign_id>\n";
+		echo "Message Extension<input type=text name=message>\n";
+		echo "<input type=submit name=submit value='PLAY THIS MESSAGE'>\n";
+		echo "</form><BR><BR><BR>\n";
+		
+		$nn='99';
+		$n='9';
+
+		$stmt="INSERT INTO vicidial_manager values('','','$MYSQL_datetime','NEW','N','$server_ip','','Originate','VL$FILE_datetime$nn','Channel: $local_DEF$n$session_id$local_AMP$ext_context','Context: $ext_context','Exten: $message','Priority: 1','Callerid: VL$FILE_datetime$nn','','','','','')";
+		echo "|$stmt|\n<BR><BR>\n";
+		$rslt=mysql_query($stmt, $link);
+
+		echo "MESSAGE $message played at session $session_id on server $server_ip\n";
+
+		echo "<br>Kill a Voice Lab Session: 8600900<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=KILL_VOICE_LAB value=2>\n";
+		echo "<input type=hidden name=session_id value=8600900>\n";
+		echo "<input type=hidden name=server_ip value=$server_ip>\n";
+		echo "<input type=hidden name=campaign_id value=$campaign_id>\n";
+		echo "<input type=submit name=submit value='KILL THIS VOICE LAB'>\n";
+		echo "</form><BR><BR><BR>\n";
+		}
+		else
+		{
+		echo "ERROR!!!!    Not all info entered properly\n<BR><BR>\n";
+		echo "|$server_ip| |$session_id| |$campaign_id|\n<BR><BR>\n";
+		echo "<a href=\"$PHP_SELF\">Back to main voicelab screen</a>\n<BR><BR>\n";
+		}
+	}
+else
+	{
+	echo "<br>Start a Voice Lab Session: 8600900<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=NEW_VOICE_LAB value=2>\n";
+	echo "<input type=hidden name=session_id value=8600900>\n";
+	echo "Your Server: <select size=1 name=server_ip>$servers_list</select>\n";
+	echo "<BR>\n";
+	echo "Campaign: <select size=1 name=campaign_id>$campaigns_list</select>";
+	echo "<BR>\n";
+	echo "<input type=submit name=submit value=submit>\n";
+	echo "</form><BR><BR><BR>\n";
 
 
-echo "<br>Kill a Voice Lab Session: 8600900<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=KILL_VOICE_LAB value=2>\n";
-echo "<input type=hidden name=session_id value=8600900>\n";
-echo "Your Server: <select size=1 name=server_ip>$servers_list</select>\n";
-echo "<BR>\n";
-echo "Campaign: <select size=1 name=campaign_id>$campaigns_list</select>";
-echo "<BR>\n";
-echo "<input type=submit name=submit value=submit>\n";
-echo "</form><BR><BR><BR>\n";
-
+	echo "<br>Kill a Voice Lab Session: 8600900<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=KILL_VOICE_LAB value=2>\n";
+	echo "<input type=hidden name=session_id value=8600900>\n";
+	echo "Your Server: <select size=1 name=server_ip>$servers_list</select>\n";
+	echo "<BR>\n";
+	echo "Campaign: <select size=1 name=campaign_id>$campaigns_list</select>";
+	echo "<BR>\n";
+	echo "<input type=submit name=submit value=submit>\n";
+	echo "</form><BR><BR><BR>\n";
+	}
 }
 
 
