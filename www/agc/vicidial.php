@@ -135,6 +135,7 @@
 # 70109-1128 - Fixed wrapup timer bug
 # 70109-1635 - Added option for HotKeys automatically dialing next number in manual mode
 #            - Added option for alternate number dialing with hotkeys
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 require("dbconnect.php");
@@ -175,7 +176,7 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 	$phone_pass=ereg_replace("[^0-9a-zA-Z]","",$phone_pass);
 	$VD_login=ereg_replace("[^0-9a-zA-Z]","",$VD_login);
 	$VD_pass=ereg_replace("[^0-9a-zA-Z]","",$VD_pass);
-	$VD_campaign=ereg_replace("[^0-9a-zA-Z]","",$VD_campaign);
+	$VD_campaign=ereg_replace("[^0-9a-zA-Z_]","",$VD_campaign);
 
 
 $forever_stop=0;
@@ -631,7 +632,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the inbound groups to choose from if campaign contains CLOSER
 			$VARingroups="''";
-			if (eregi("CLOSER", $VD_campaign))
+			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign))
 				{
 				$VARingroups='';
 				$stmt="select group_id from vicidial_inbound_groups where active = 'Y' and group_id IN($closer_campaigns) order by group_id limit 20;";
@@ -884,7 +885,7 @@ else
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
-	if ( (eregi("CLOSER", $VD_campaign)) || ($campaign_leads_to_call > 0) )
+	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) )
 		{
 		### insert an entry into the user log for the login event
 		$stmt = "INSERT INTO vicidial_user_log values('','$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE')";
@@ -966,7 +967,7 @@ else
 			$affected_rows = mysql_affected_rows($link);
 			print "<!-- new vicidial_live_agents record inserted: |$affected_rows| -->\n";
 
-			if (eregi("CLOSER", $VD_campaign))
+			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign))
 				{
 				print "<!-- code to trigger window to pick closer groups goes here -->\n";
 				}

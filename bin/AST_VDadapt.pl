@@ -15,6 +15,7 @@
 # 60828-1149 - add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
 # 60919-1243 - changed variables to use arrays for all campaign-specific values
 # 61215-1110 - added answered calls stats and use drops as percentage of answered for today
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 # constants
@@ -373,7 +374,7 @@ foreach(@campaign_id)
 		$agents_average_onemin[$i]=0;
 
 		### Grab the count of agents and lines
-		if ($campaign_id[$i] !~ /CLOSER/)
+		if ($campaign_id[$i] !~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
 			{
 			&count_agents_lines;
 			}
@@ -917,7 +918,7 @@ $VCSagents_active[$i] = ($VCSINCALL[$i] + $VCSREADY[$i] + $VCSCLOSER[$i]);
 
 ### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
 
-if ($campaign_id[$i] =~ /CLOSER/)
+if ($campaign_id[$i] =~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
 	{
 	# GET AVERAGES FROM THIS CAMPAIGN
 	$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";

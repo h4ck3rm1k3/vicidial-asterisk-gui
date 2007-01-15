@@ -110,6 +110,7 @@
 # 60821-1647 - Added ability to not delete sessions at logout
 # 60906-1124 - Added lookup and sending of callback data for CALLBK calls
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 $version = '2.0.38';
@@ -844,7 +845,7 @@ if ($stage == "end")
 		{
 		if ($start_epoch < 1000)
 			{
-			if (eregi("CLOSER",$campaign))
+			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 				{
 				##### look for the channel in the UPDATED vicidial_manager record of the call initiation
 				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user';";
@@ -870,7 +871,7 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
-		if (eregi("CLOSER",$campaign))
+		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 			{
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec',status='DONE' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
@@ -1167,7 +1168,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
-		if (eregi("CLOSER",$campaign))
+		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 			{
 			### update the vicidial_closer_log user to INCALL
 			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL' where lead_id='$lead_id' order by closecallid desc limit 1;";

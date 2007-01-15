@@ -23,6 +23,7 @@
 # 61101-1647 - Added Usergroup column and user name option as well as sorting
 # 61102-1155 - made display of columns more modular, added ability to hide server info
 # 61215-1131 - added answered calls and drop percent taken from answered calls
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -402,7 +403,7 @@ echo "</FORM>\n\n";
 ###################################################################################
 ###### OUTBOUND CALLS
 ###################################################################################
-if (eregi("CLOSER",$group))
+if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 	$rslt=mysql_query($stmt, $link);
@@ -451,7 +452,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		if ($out_live > 9) {$F='<FONT class="r3">'; $FG='</FONT>';}
 		if ($out_live > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 
-		if (eregi("CLOSER",$group))
+		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 			{echo "$NFB$out_total$NFE current active calls&nbsp; &nbsp; &nbsp; \n";}
 		else
 			{echo "$NFB$out_total$NFE calls being placed &nbsp; &nbsp; &nbsp; \n";}

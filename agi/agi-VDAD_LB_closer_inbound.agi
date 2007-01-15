@@ -35,6 +35,7 @@
 # 60821-1021 - added output options check from database
 #            - changed look for agent every 0.5 second for first 4 sec on hold
 # 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 $script = 'agi-VDAD_LB_closer_inbound.agi';
@@ -426,13 +427,13 @@ if ($channel_status < 1)
 	
 	if ($rec_countWAIT < 1)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id LIKE \"%CLOSER%\" and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 		my $affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
 		if ($affected_rows > 0)
 			{
 			$cbc=0;	
-			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id LIKE \"%CLOSER%\" and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

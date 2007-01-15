@@ -806,6 +806,7 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 #            - Screen width definable at top of script, merged server_stats into this script
 # 70109-1638 - Added ALTPH2 and ADDR3 hotkey options for alt number dialing with HotKeys
 # 70109-1716 - Added concurrent_transfers option to vicidial_campaigns
+# 70115-1152 - Aded (CLOSER|BLEND|INBND|_C$|_B$|_I$) options for CLOSER-type campaigns
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
@@ -6317,7 +6318,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Wrapup Message: </td><td align=left><i
 echo "<tr bgcolor=#B6D3FC><td align=right>Use Internal DNC List: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
 
 
-if (eregi("CLOSER", $campaign_id))
+if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $campaign_id))
 	{
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Inbound Groups: <BR>";
 	echo " $NWB#vicidial_campaigns-closer_campaigns$NWE</td><td align=left>\n";

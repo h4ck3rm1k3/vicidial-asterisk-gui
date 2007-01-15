@@ -53,6 +53,7 @@
 # 61003-1353 - added restrictions for server trunks
 # 61113-1625 - added code for clearing VDAC LIVE jams
 # 61115-1725 - added OUTBALANCE to call calculation for call_type for balance dialing
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 
@@ -433,7 +434,7 @@ while($one_day_interval > 0)
 			### see how many calls are alrady active per campaign per server and 
 			### subtract that number from goalcalls to determine how many new 
 			### calls need to be placed in this loop
-			if ($DBIPcampaign[$user_CIPct] =~ /CLOSER/)
+			if ($DBIPcampaign[$user_CIPct] =~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
 			   {
 				if (length($DBIPclosercamp[$user_CIPct]) > 2)
 				   {
