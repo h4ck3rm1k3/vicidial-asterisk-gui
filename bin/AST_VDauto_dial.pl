@@ -54,7 +54,8 @@
 # 61113-1625 - added code for clearing VDAC LIVE jams
 # 61115-1725 - added OUTBALANCE to call calculation for call_type for balance dialing
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
-#
+# 70115-1635 - added auto-alt-dial functionality
+# 
 
 
 ### begin parsing run-time options ###
@@ -247,6 +248,7 @@ while($one_day_interval > 0)
 		@DBIPlivecalls=@MT;
 		@DBIPclosercamp=@MT;
 		@DBIPomitcode=@MT;
+		@DBIPautoaltdial=@MT;
 		@DBIPtrunk_shortage=@MT;
 		@DBIPold_trunk_shortage=@MT;
 		@DBIPserver_trunks_limit=@MT;
@@ -376,7 +378,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -402,6 +404,7 @@ while($one_day_interval > 0)
 							$DBIPcount[$user_CIPct] = $DBIPACTIVEcount[$user_CIPct];
 							$active_only=1;
 							}
+					$DBIPautoaltdial[$user_CIPct] =	"$aryA[10]";
 				$rec_count++;
 				}
 			$sthA->finish();
@@ -616,7 +619,7 @@ while($one_day_interval > 0)
 					$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
 						while ($call_CMPIPct < $UDaffected_rows)
 						{
-						$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' LIMIT 1";
+						$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' LIMIT 1";
 						print "|$stmtA|\n";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -627,6 +630,7 @@ while($one_day_interval > 0)
 								{
 								@aryA = $sthA->fetchrow_array;
 									$lead_id =		"$aryA[0]";
+									$alt_dial =		"$aryA[1]";
 								$rec_count++;
 								}
 							$sthA->finish();
@@ -662,6 +666,8 @@ while($one_day_interval > 0)
 									$called_since_last_reset =	"$aryA[9]";
 									$phone_code	=				"$aryA[10]";
 									$phone_number =				"$aryA[11]";
+									$address3 =					"$aryA[18]";
+									$alt_phone =				"$aryA[26]";
 									$called_count =				"$aryA[30]";
 
 									$rec_countCUSTDATA++;
@@ -685,7 +691,24 @@ while($one_day_interval > 0)
 									}
 								else {$CSLR = 'Y';}
 
-								$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
+								if ( ($alt_dial =~ /ALT|ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT|ADDR/) )
+									{
+									if ( ($alt_dial =~ /ALT/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT/) )
+										{
+										$alt_phone =~ s/\D//gi;
+										$phone_number = $alt_phone;
+										}
+									if ( ($alt_dial =~ /ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ADDR3/) )
+										{
+										$address3 =~ s/\D//gi;
+										$phone_number = $address3;
+										}
+									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',user='VDAD' where lead_id='$lead_id'";
+									}
+								else
+									{
+									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
+									}
 								$affected_rows = $dbhA->do($stmtA);
 
 								$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
@@ -729,11 +752,11 @@ while($one_day_interval > 0)
 									$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DBIPaddress[$user_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
 									$affected_rows = $dbhA->do($stmtA);
 
-									$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|";
+									$event_string = "|     number call dialed|$DBIPcampaign[$user_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|$alt_dial|";
 									 &event_logger;
 
 								### insert a SENT record to the vicidial_auto_calls table 
-									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT')";
+									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial')";
 									$affected_rows = $dbhA->do($stmtA);
 
 								### sleep for a tenth of a second to not flood the server with new calls

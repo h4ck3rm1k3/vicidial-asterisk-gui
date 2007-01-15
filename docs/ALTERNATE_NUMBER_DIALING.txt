@@ -13,7 +13,7 @@ First, a new field in vicidial_campaigns was needed to tell the dialer that it s
 ALTER TABLE vicidial_campaigns ADD auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE';
 
 
-Second, a new field in vicidial_auto_calls was needed to tell the dialer that when this call is terminated as no-contact(NA/B/DC/N), it needs to try dialing the next alternate number(s). This field is populated accordingly: 
+Second, a new field in vicidial_auto_calls and vicidial_hopper tables was needed to tell the dialer that when this call is terminated as no-contact(NA/B/DC/N), it needs to try dialing the next alternate number(s). This field is populated accordingly: 
 - If the main phone_number is currently being dialed, the alt_dial field will be MAIN
 - If the alt_phone is being dialed, ALT
 - If the address3 field is being dialed, ADDR3
@@ -21,7 +21,12 @@ Second, a new field in vicidial_auto_calls was needed to tell the dialer that wh
 This tells the scripts handling the call termination what needs to be done with the call status and what number(if any) it should place in the hopper next.
 
 ALTER TABLE vicidial_auto_calls ADD alt_dial ENUM('NONE','MAIN','ALT','ADDR3') default 'NONE';
+ALTER TABLE vicidial_hopper ADD alt_dial ENUM('NONE','ALT','ADDR3') default 'NONE';
 
+
+Third, because of how the insertion into the hopper of the next attempt has to work when the call is answered by an agent we need to modify the status field in the vicidial_hopper to allow for a HOLD status that can be made READY once the lead is dispositioned:
+
+ALTER TABLE vicidial_hopper MODIFY status ENUM('READY','QUEUE','INCALL','DONE','HOLD') default 'READY';
 
 
 

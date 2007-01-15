@@ -279,11 +279,12 @@ index (postal_code)
 hopper_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY UNIQUE NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 campaign_id VARCHAR(8),			
-status ENUM('READY','QUEUE','INCALL','DONE') default 'READY',
+status ENUM('READY','QUEUE','INCALL','DONE','HOLD') default 'READY',
 user VARCHAR(20),			
 list_id BIGINT(14) UNSIGNED NOT NULL,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 state VARCHAR(2) default '',
+alt_dial ENUM('NONE','ALT','ADDR3') default 'NONE',
 index (lead_id)
 );
 
@@ -327,6 +328,7 @@ call_time DATETIME,
 call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT',
 stage VARCHAR(20) default 'START',
 last_update_time TIMESTAMP,
+alt_dial ENUM('NONE','MAIN','ALT','ADDR3') default 'NONE',
 index (uniqueid),
 index (callerid),
 index (call_time),
@@ -494,7 +496,8 @@ adaptive_maximum_level VARCHAR(6) default '3.0',
 adaptive_latest_server_time VARCHAR(4) default '2100',
 adaptive_intensity VARCHAR(6) default '0',
 adaptive_dl_diff_target SMALLINT(3) default '0',
-concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO'
+concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
+auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE'
 );
 
  CREATE TABLE vicidial_lists (

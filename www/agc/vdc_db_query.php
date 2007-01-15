@@ -110,11 +110,12 @@
 # 60821-1647 - Added ability to not delete sessions at logout
 # 60906-1124 - Added lookup and sending of callback data for CALLBK calls
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
-# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70115-1733 - Added alt_dial functionality in auto-dial modes
 #
 
-$version = '2.0.38';
-$build = '61128-2229';
+$version = '2.0.39';
+$build = '70115-1733';
 
 require("dbconnect.php");
 
@@ -376,7 +377,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 	else
 	{
 	### check if this is a callback, if it is, skip the grabbing of a new lead and mark the callback as INACTIVE
-	if ( (strlen($callback_id)>0) && (strlen($lead_id)>0) )
+	if ( (strlen($callback_id)>0) and (strlen($lead_id)>0) )
 		{
 		$affected_rows=1;
 		$CBleadIDset=1;
@@ -879,6 +880,79 @@ if ($stage == "end")
 			}
 		if ($auto_dial_level > 0)
 			{
+			### check to see if campaign has alt_dial enabled
+			$stmt="SELECT auto_alt_dial FROM vicidial_campaigns where campaign_id='$campaign';";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$VAC_mancall_ct = mysql_num_rows($rslt);
+			if ($VAC_mancall_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$auto_alt_dial =$row[0];
+				}
+			else {$auto_alt_dial = 'NONE';}
+			if (eregi("(ALT_ONLY|ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial))
+				{
+				### check to see if lead should be alt_dialed
+				$stmt="SELECT alt_dial FROM vicidial_auto_calls where lead_id='$lead_id';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$VAC_mancall_ct = mysql_num_rows($rslt);
+				if ($VAC_mancall_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$alt_dial =$row[0];
+					}
+				else {$alt_dial = 'NONE';}
+
+				if ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("(ALT_ONLY|ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
+					{
+					$stmt="SELECT alt_phone,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VAC_mancall_ct = mysql_num_rows($rslt);
+					if ($VAC_mancall_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$alt_phone =		$row[0];
+						$alt_phone = eregi_replace("[^0-9]","",$alt_phone);
+						$gmt_offset_now =	$row[1];
+						$state =			$row[2];
+						}
+					else {$alt_phone = '';}
+					if (strlen($alt_phone)>5)
+						{
+						### insert record into vicidial_hopper for address3 call attempt
+						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ALT',user='';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
+					}
+				if ( (eregi("(ALT)",$alt_dial)) and (eregi("(ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
+					{
+					$stmt="SELECT address3,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VAC_mancall_ct = mysql_num_rows($rslt);
+					if ($VAC_mancall_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$address3 =			$row[0];
+						$address3 = eregi_replace("[^0-9]","",$address3);
+						$gmt_offset_now =	$row[1];
+						$state =			$row[2];
+						}
+					else {$address3 = '';}
+					if (strlen($address3)>5)
+						{
+						### insert record into vicidial_hopper for address3 call attempt
+						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ADDR3',user='';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
+					}
+				}
+
 			### delete call record from  vicidial_auto_calls
 			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
@@ -1463,6 +1537,20 @@ if ($ACTION == 'updateDISPO')
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
+		}
+	if ( ($auto_dial_level > 0) and ( ($dispo_choice=='N') or ($dispo_choice=='B') or ($dispo_choice=='DC') ) )
+		{
+		$stmt = "select count(*) from vicidial_hopper where lead_id='$lead_id' and status='HOLD';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+
+		if ($row[0] > 0)
+			{
+			$stmt="UPDATE vicidial_hopper set status='READY' where lead_id='$lead_id' and status='HOLD' limit 1;";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			}
 		}
 
 	echo 'Lead ' . $lead_id . ' has been changed to ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";

@@ -5,6 +5,8 @@ The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the
 There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hangup their call, stay on the same lead, and dial another contact number from that lead.||
 Concurrent Transfers||
 Concurrent Transfers -<\/B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method||
+Auto Alt-Number Dialing -<\/B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method||
+Auto Alt-Number Dialing||
 
 ############################################################ CLIENT
 
