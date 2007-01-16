@@ -497,7 +497,8 @@ adaptive_latest_server_time VARCHAR(4) default '2100',
 adaptive_intensity VARCHAR(6) default '0',
 adaptive_dl_diff_target SMALLINT(3) default '0',
 concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
-auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE'
+auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE',
+auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -'
 );
 
  CREATE TABLE vicidial_lists (

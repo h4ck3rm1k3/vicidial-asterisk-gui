@@ -8,7 +8,7 @@ If you will be using automatic alt number dialing, it is strongly recommended th
 
 
 
-First, a new field in vicidial_campaigns was needed to tell the dialer that it should look for contact numbers in the alt_phone and/or address3 fields if a call to a regular number results in a no-contact(NA/B/DC/N)
+First, a new field in vicidial_campaigns was needed to tell the dialer that it should look for contact numbers in the alt_phone and/or address3 fields if a call to a regular number results in a no-contact(NA/B/DC/N)[defined in the auto_alt_dial_statuses field in the vicidial_campaigns table].
 
 ALTER TABLE vicidial_campaigns ADD auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE';
 
@@ -27,6 +27,11 @@ ALTER TABLE vicidial_hopper ADD alt_dial ENUM('NONE','ALT','ADDR3') default 'NON
 Third, because of how the insertion into the hopper of the next attempt has to work when the call is answered by an agent we need to modify the status field in the vicidial_hopper to allow for a HOLD status that can be made READY once the lead is dispositioned:
 
 ALTER TABLE vicidial_hopper MODIFY status ENUM('READY','QUEUE','INCALL','DONE','HOLD') default 'READY';
+
+
+Fourth, so that the no-answer statuses can be definable, we need to add a new field to vicidial_campaigns to hold the statuses and allow the admin.php interface to be able to modify them.
+
+ALTER TABLE vicidial_campaigns ADD auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -';
 
 
 

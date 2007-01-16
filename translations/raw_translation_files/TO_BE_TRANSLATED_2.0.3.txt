@@ -7,6 +7,17 @@ Concurrent Transfers||
 Concurrent Transfers -<\/B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method||
 Auto Alt-Number Dialing -<\/B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method||
 Auto Alt-Number Dialing||
+VICIDIAL AUTO ALT DIAL STATUSES||
+If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set||
+AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN||
+ADD NEW AUTO ALT NUMBER DIALING STATUS||
+AUTO ALT DIAL STATUS NOT ADDED||
+there is already an entry for this campaign with this status||
+AUTO ALT DIAL STATUS ADDED||
+AUTO ALT DIAL STATUS NOT DELETED||
+AUTO ALT DIAL STATUS DELETED||
+this auto alt dial status is not in this campaign||
+
 
 ############################################################ CLIENT
 

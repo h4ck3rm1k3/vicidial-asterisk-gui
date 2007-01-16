@@ -811,12 +811,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70109-1716 - Added concurrent_transfers option to vicidial_campaigns
 # 70115-1152 - Aded (CLOSER|BLEND|INBND|_C$|_B$|_I$) options for CLOSER-type campaigns
 # 70115-1532 - Added auto_alt_dial field to campaign screen for auto-dialing of alt numbers
+# 70116-1200 - Added auto_alt_dial_status functionality to campaign screen
 # 
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.77';
-$build = '70115-1532';
+$version = '2.0.78';
+$build = '70116-1200';
 
 $STARTtime = date("U");
 
@@ -1889,6 +1890,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_lead_recycle">
 <BR>
 <B>Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links. This feature only works in auto-dial mode, where dial level is greater than 0.</B>
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL AUTO ALT DIAL STATUSES</FONT></B><BR><BR>
+<A NAME="vicidial_auto_alt_dial_statuses">
+<BR>
+<B>If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set.</B>
 
 
 
@@ -3536,6 +3548,52 @@ if ($ADD==25)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
 				fwrite ($fp, "$date|ADD A NEW LEAD RECYCLE    |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=31;
+}
+
+
+######################
+# ADD=26 adds the new auto alt dial status to the campaign
+######################
+
+if ($ADD==26)
+{
+	$status = eregi_replace("-----.*",'',$status);
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>AUTO ALT DIAL STATUS NOT ADDED - there is already an entry for this campaign with this status\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+			{
+			 echo "<br>AUTO ALT DIAL STATUS NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>status must be between 1 and 6 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>AUTO ALT DIAL STATUS ADDED: $campaign_id - $status</B>\n";
+
+			$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+
+			if (strlen($row[0])<2) {$row[0] = ' -';}
+			$auto_alt_dial_statuses = " $status$row[0]";
+			$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A AUTO-ALT-DIAL STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
@@ -5438,6 +5496,52 @@ if ($ADD==65)
 $ADD=31;	# go to campaign modification form below
 }
 
+
+######################
+# ADD=66 delete auto alt dial status from the campaign
+######################
+
+if ($ADD==66)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] < 1)
+		{echo "<br>AUTO ALT DIAL STATUS NOT DELETED - this auto alt dial status is not in this campaign\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+			{
+			 echo "<br>AUTO ALT DIAL STATUS NOT DELETED - Please go back and look at the data you entered\n";
+			 echo "<br>status must be between 1 and 6 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>AUTO ALT DIAL STATUS DELETED: $campaign_id - $status</B>\n";
+
+			$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+
+			$auto_alt_dial_statuses = eregi_replace(" $status","",$row[0]);
+			$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE AUTALTDIALSTTUS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+
+$ADD=31;	# go to campaign modification form below
+}
+
+
 ######################
 # ADD=611 delete list record and all leads within it
 ######################
@@ -6127,6 +6231,7 @@ echo "<TABLE><TR><TD>\n";
 	$adaptive_dl_diff_target = $row[52];
 	$concurrent_transfers = $row[53];
 	$auto_alt_dial = $row[54];
+	$auto_alt_dial_statuses = $row[55];
 
 echo "<br>MODIFY A CAMPAIGNS RECORD: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Basic View</a>";
 echo " | Detail View</a> | ";
@@ -6541,8 +6646,47 @@ echo "Attempt Delay: <input size=7 maxlength=5 name=attempt_delay>\n";
 echo "Attempt Maximum: <input size=5 maxlength=3 name=attempt_maximum>\n";
 echo "<input type=submit name=submit value=ADD><BR>\n";
 
+echo "</FORM><br>\n";
+
+
+
+echo "<br><br><b>AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_auto_alt_dial_statuses$NWE</b><br>\n";
+echo "<TABLE width=500 cellspacing=3>\n";
+echo "<tr><td>STATUSES</td><td>DELETE</td></tr>\n";
+
+$auto_alt_dial_statuses = preg_replace("/ -$/","",$auto_alt_dial_statuses);
+$AADstatuses = explode(" ", $auto_alt_dial_statuses);
+$AADs_to_print = (count($AADstatuses) -1);
+
+$o=0;
+while ($AADs_to_print > $o) 
+	{
+	if (eregi("1$|3$|5$|7$|9$", $o))
+		{$bgcolor='bgcolor="#B9CBFD"';} 
+	else
+		{$bgcolor='bgcolor="#9BB9FB"';}
+	$o++;
+
+	echo "<tr $bgcolor><td><font size=1>$AADstatuses[$o]</td>\n";
+	echo "<td><font size=1><a href=\"$PHP_SELF?ADD=66&campaign_id=$campaign_id&status=$AADstatuses[$o]\">DELETE</a></td></tr>\n";
+	}
+
+echo "</table>\n";
+
+echo "<br>ADD NEW AUTO ALT NUMBER DIALING STATUS<BR><form action=$PHP_SELF method=POST>\n";
+echo "<input type=hidden name=ADD value=26>\n";
+echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+echo "Status: <select size=1 name=status>\n";
+echo "$LRstatuses_list\n";
+echo "</select> &nbsp; \n";
+echo "<input type=submit name=submit value=ADD><BR>\n";
+
 echo "</center></FORM><br>\n";
 
+
+
+
+echo "<BR><BR>\n";
 echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">LOG ALL AGENTS OUT OF THIS CAMPAIGN</a><BR><BR>\n";
 echo "<a href=\"$PHP_SELF?ADD=53&campaign_id=$campaign_id\">EMERGENCY VDAC CLEAR FOR THIS CAMPAIGN</a><BR><BR>\n";
 
