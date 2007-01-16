@@ -1538,7 +1538,12 @@ if ($ACTION == 'updateDISPO')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		}
-	if ( ($auto_dial_level > 0) and ( ($dispo_choice=='N') or ($dispo_choice=='B') or ($dispo_choice=='DC') ) )
+
+	$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaign';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+
+	if ( ($auto_dial_level > 0) and (ereg(" $dispo_choice ",$row[0])) )
 		{
 		$stmt = "select count(*) from vicidial_hopper where lead_id='$lead_id' and status='HOLD';";
 		if ($DB) {echo "$stmt\n";}
@@ -1551,6 +1556,12 @@ if ($ACTION == 'updateDISPO')
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
+		}
+	else
+		{
+		$stmt="DELETE from vicidial_hopper where lead_id='$lead_id' and status='HOLD';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
 		}
 
 	echo 'Lead ' . $lead_id . ' has been changed to ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";
