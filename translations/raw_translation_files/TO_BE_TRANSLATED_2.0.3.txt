@@ -17,6 +17,8 @@ AUTO ALT DIAL STATUS ADDED||
 AUTO ALT DIAL STATUS NOT DELETED||
 AUTO ALT DIAL STATUS DELETED||
 this auto alt dial status is not in this campaign||
+New Auto Alt Dial Status||
+Delete Auto Alt Dial Status||
 
 
 ############################################################ CLIENT

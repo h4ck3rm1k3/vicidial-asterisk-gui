@@ -30,6 +30,7 @@
 #
 # CHANGES
 # 61010-1007 - First test build
+# 70116-1619 - Added Auto Alt Dial code
 #
 
 
@@ -566,7 +567,8 @@ sub process_request {
 		{
 
 			########## FIND AND DELETE vicidial_auto_calls ##########
-			$stmtA = "SELECT lead_id,callerid FROM vicidial_auto_calls where uniqueid = '$uniqueid' limit 1;";
+			$VD_alt_dial = 'NONE';
+			$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial FROM vicidial_auto_calls where uniqueid = '$uniqueid' limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -575,8 +577,10 @@ sub process_request {
 			while ($sthArows > $rec_countCUSTDATA)
 				{
 				@aryA = $sthA->fetchrow_array;
-				$VD_lead_id	= "$aryA[0]";
-				$VD_callerid	= "$aryA[1]";
+				$VD_lead_id	=		"$aryA[0]";
+				$VD_callerid	=	"$aryA[1]";
+				$VD_campaign_id	=	"$aryA[2]";
+				$VD_alt_dial	=	"$aryA[3]";
 				 $rec_countCUSTDATA++;
 				}
 			$sthA->finish();
@@ -692,6 +696,89 @@ sub process_request {
 					}
 				}
 			}
+
+
+		##### BEGIN AUTO ALT PHONE DIAL SECTION #####
+		### check to see if campaign has alt_dial enabled
+		$VD_auto_alt_dial = 'NONE';
+		$VD_auto_alt_dial_statuses='';
+		$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses FROM vicidial_campaigns where campaign_id='$VD_campaign_id';";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		 $epc_countCAMPDATA=0;
+		while ($sthArows > $epc_countCAMPDATA)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VD_auto_alt_dial	=			"$aryA[0]";
+			$VD_auto_alt_dial_statuses	=	"$aryA[1]";
+			 $epc_countCAMPDATA++;
+			}
+		$sthA->finish();
+		if ($VD_auto_alt_dial_statuses =~ / $VD_status | $VDL_status /)
+			{
+			if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3)/) && ($VD_alt_dial =~ /NONE|MAIN/) )
+				{
+				$VD_alt_phone='';
+				$stmtA="SELECT alt_phone,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$VD_lead_id';";
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				 $epc_countCAMPDATA=0;
+				while ($sthArows > $epc_countCAMPDATA)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VD_alt_phone =			"$aryA[0]";
+					$VD_alt_phone =~ s/\D//gi;
+					$VD_gmt_offset_now =	"$aryA[1]";
+					$VD_state =				"$aryA[2]";
+					$VD_list_id =			"$aryA[3]";
+					 $epc_countCAMPDATA++;
+					}
+				$sthA->finish();
+				if (length($VD_alt_phone)>5)
+					{
+					$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+					}
+				}
+			if ( ( ($VD_auto_alt_dial =~ /(ADDR3_ONLY)/) && ($VD_alt_dial =~ /NONE|MAIN/) ) || ( ($VD_auto_alt_dial =~ /(ALT_AND_ADDR3)/) && ($VD_alt_dial =~ /ALT/) ) )
+				{
+				$VD_address3='';
+				$stmtA="SELECT address3,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$VD_lead_id';";
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				 $epc_countCAMPDATA=0;
+				while ($sthArows > $epc_countCAMPDATA)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VD_address3 =			"$aryA[0]";
+					$VD_address3 =~ s/\D//gi;
+					$VD_gmt_offset_now =	"$aryA[1]";
+					$VD_state =				"$aryA[2]";
+					$VD_list_id =			"$aryA[3]";
+					 $epc_countCAMPDATA++;
+					}
+				$sthA->finish();
+				if (length($VD_address3)>5)
+					{
+					$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+					}
+				}
+			}
+		##### END AUTO ALT PHONE DIAL SECTION #####
+
+
+
+
+
 		$dbhA->disconnect();
 		}
 	###################################################################

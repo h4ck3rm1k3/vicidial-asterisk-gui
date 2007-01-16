@@ -905,7 +905,7 @@ if ($stage == "end")
 					}
 				else {$alt_dial = 'NONE';}
 
-				if ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("(ALT_ONLY|ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
+				if ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("(ALT_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
 					{
 					$stmt="SELECT alt_phone,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
 					$rslt=mysql_query($stmt, $link);
@@ -928,7 +928,7 @@ if ($stage == "end")
 						$rslt=mysql_query($stmt, $link);
 						}
 					}
-				if ( (eregi("(ALT)",$alt_dial)) and (eregi("(ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
+				if ( ( (eregi("(ALT)",$alt_dial)) and (eregi("ALT_AND_ADDR3",$auto_alt_dial)) ) or ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("ADDR3_ONLY",$auto_alt_dial)) ) )
 					{
 					$stmt="SELECT address3,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
 					$rslt=mysql_query($stmt, $link);

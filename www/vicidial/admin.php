@@ -930,6 +930,7 @@ if ($ADD==21)			{$hh='campaigns';	echo "New Campaign Addition";}
 if ($ADD==22)			{$hh='campaigns';	echo "New Campaign Status Addition";}
 if ($ADD==23)			{$hh='campaigns';	echo "New Campaign HotKey Addition";}
 if ($ADD==25)			{$hh='campaigns';	echo "New Campaign Lead Recycle Addition";}
+if ($ADD==26)			{$hh='campaigns';	echo "New Auto Alt Dial Status";}
 if ($ADD==211)			{$hh='lists';		echo "New List Addition";}
 if ($ADD==2111)			{$hh='ingroups';	echo "New In-Group Addition";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
@@ -1002,6 +1003,7 @@ if ($ADD==61)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==62)			{$hh='campaigns';	echo "Logout Agents";}
 if ($ADD==63)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==65)			{$hh='campaigns';	echo "Delete Lead Recycle";}
+if ($ADD==66)			{$hh='campaigns';	echo "Delete Auto Alt Dial Status";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -1034,9 +1036,9 @@ if ($ADD==10000000000)	{$hh='server';		echo "PHONE LIST";}
 if ($ADD==100000000000)	{$hh='server';		echo "SERVER LIST";}
 if ($ADD==1000000000000)	{$hh='server';		echo "CONFERENCE LIST";}
 if ($ADD==10000000000000)	{$hh='server';		echo "VICIDIAL CONFERENCE LIST";}
-if ($ADD==55)			{$hh='users';		echo "Search Form";}
+if ($ADD==550)			{$hh='users';		echo "Search Form";}
 if ($ADD==551)			{$hh='users';		echo "SEARCH PHONES";}
-if ($ADD==66)			{$hh='users';		echo "Search Results";}
+if ($ADD==660)			{$hh='users';		echo "Search Results";}
 if ($ADD==661)			{$hh='users';		echo "SEARCH PHONES RESULTS";}
 if ($ADD==99999)		{$hh='users';		echo "HELP";}
 if ($ADD==999999)		{$hh='reports';		echo "REPORTS";}
@@ -2819,7 +2821,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 
 <? if (strlen($users_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFFF99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LIST USERS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD A NEW USER</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=55"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SEARCH FOR A USER</a></TD></TR>
+<TR BGCOLOR=#FFFF99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LIST USERS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD A NEW USER</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SEARCH FOR A USER</a></TD></TR>
 <? } 
 if (strlen($campaigns_hh) > 1) { 
 	?>
@@ -8199,16 +8201,16 @@ if ($LOGast_delete_phones > 0)
 
 
 ######################
-# ADD=55 search form
+# ADD=550 search form
 ######################
 
-if ($ADD==55)
+if ($ADD==550)
 {
 echo "<TABLE><TR><TD>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>SEARCH FOR A USER<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=ADD value=66>\n";
+echo "<input type=hidden name=ADD value=660>\n";
 echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=20></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=30 maxlength=30></td></tr>\n";
@@ -8233,10 +8235,10 @@ echo "</TABLE></center>\n";
 }
 
 ######################
-# ADD=66 user search results
+# ADD=660 user search results
 ######################
 
-if ($ADD==66)
+if ($ADD==660)
 {
 echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";

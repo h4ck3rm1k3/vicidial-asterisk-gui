@@ -37,8 +37,8 @@
 # 50620-1349 - Added custom vdad transfer AGI extension per campaign
 # 50810-1610 - Added database server variable definitions lookup
 # 50810-1630 - Added max_vicidial_trunks server limiter on active lines
-# 50812-0957 - corrected max_trunks logic, added update of server every 25 sec
-# 60120-1522 - corrected time error for hour variable, caused agi problems
+# 50812-0957 - Corrected max_trunks logic, added update of server every 25 sec
+# 60120-1522 - Corrected time error for hour variable, caused agi problems
 # 60427-1223 - Fixed Blended in/out CLOSER campaign issue
 # 60608-1134 - Altered vac table field of call_type for IN OUT distinction
 # 60612-1324 - Altered dead call section to accept BUSY detection from VD_hangup
@@ -46,15 +46,16 @@
 # 60614-1142 - Added code to work with recycled leads, multi called_since_last_reset values
 #            - Removed gmt lead validation because it is already done by VDhopper
 # 60807-1438 - Changed to DBI
-#            - changed to use /etc/astguiclient.conf for configs
-# 60814-1749 - added option for no logging to file
-# 60821-1546 - added option to not dial phone_code per campaign
-# 60824-1437 - added available_only_ratio_tally option
-# 61003-1353 - added restrictions for server trunks
-# 61113-1625 - added code for clearing VDAC LIVE jams
-# 61115-1725 - added OUTBALANCE to call calculation for call_type for balance dialing
-# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
-# 70115-1635 - added auto-alt-dial functionality
+#            - Changed to use /etc/astguiclient.conf for configs
+# 60814-1749 - Added option for no logging to file
+# 60821-1546 - Added option to not dial phone_code per campaign
+# 60824-1437 - Added available_only_ratio_tally option
+# 61003-1353 - Added restrictions for server trunks
+# 61113-1625 - Added code for clearing VDAC LIVE jams
+# 61115-1725 - Added OUTBALANCE to call calculation for call_type for balance dialing
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70115-1635 - Added initial auto-alt-dial functionality
+# 70116-1619 - Added VDAD Ring-No-Answer Auto Alt Dial code
 # 
 
 
@@ -854,7 +855,7 @@ while($one_day_interval > 0)
 					{
 					$CLlead_id=''; $auto_call_id=''; $CLstatus=''; $CLcampaign_id=''; $CLphone_number=''; $CLphone_code='';
 
-					$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code FROM vicidial_auto_calls where callerid='$KLcallerid[$kill_vac]'";
+					$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial FROM vicidial_auto_calls where callerid='$KLcallerid[$kill_vac]'";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
@@ -869,6 +870,7 @@ while($one_day_interval > 0)
 							$CLstatus		= "$aryA[3]";
 							$CLcampaign_id	= "$aryA[4]";
 							$CLphone_code	= "$aryA[5]";
+							$CLalt_dial		= "$aryA[6]";
 						$rec_count++;
 						}
 					$sthA->finish();
@@ -912,6 +914,87 @@ while($one_day_interval > 0)
 
 						$event_string = "|     dead call vla agent PAUSED $affected_rows|$CLlead_id|$CLphone_number|$CLstatus|";
 						 &event_logger;
+
+						##### BEGIN AUTO ALT PHONE DIAL SECTION #####
+						### check to see if campaign has alt_dial enabled
+						$VD_auto_alt_dial = 'NONE';
+						$VD_auto_alt_dial_statuses='';
+						$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses FROM vicidial_campaigns where campaign_id='$CLcampaign_id';";
+							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						 $epc_countCAMPDATA=0;
+						while ($sthArows > $epc_countCAMPDATA)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VD_auto_alt_dial	=			"$aryA[0]";
+							$VD_auto_alt_dial_statuses	=	"$aryA[1]";
+							 $epc_countCAMPDATA++;
+							}
+						$sthA->finish();
+						if ($VD_auto_alt_dial_statuses =~ / $CLnew_status /)
+							{
+							if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3)/) && ($CLalt_dial =~ /NONE|MAIN/) )
+								{
+								$VD_alt_phone='';
+								$stmtA="SELECT alt_phone,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$CLlead_id';";
+									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								 $epc_countCAMPDATA=0;
+								while ($sthArows > $epc_countCAMPDATA)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$VD_alt_phone =			"$aryA[0]";
+									$VD_alt_phone =~ s/\D//gi;
+									$VD_gmt_offset_now =	"$aryA[1]";
+									$VD_state =				"$aryA[2]";
+									$VD_list_id =			"$aryA[3]";
+									 $epc_countCAMPDATA++;
+									}
+								$sthA->finish();
+								if (length($VD_alt_phone)>5)
+									{
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='';";
+									$affected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+									}
+								}
+							if ( ( ($VD_auto_alt_dial =~ /(ADDR3_ONLY)/) && ($CLalt_dial =~ /NONE|MAIN/) ) || ( ($VD_auto_alt_dial =~ /(ALT_AND_ADDR3)/) && ($CLalt_dial =~ /ALT/) ) )
+								{
+								$VD_address3='';
+								$stmtA="SELECT address3,gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$CLlead_id';";
+									if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+								$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+								$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+								$sthArows=$sthA->rows;
+								 $epc_countCAMPDATA=0;
+								while ($sthArows > $epc_countCAMPDATA)
+									{
+									@aryA = $sthA->fetchrow_array;
+									$VD_address3 =			"$aryA[0]";
+									$VD_address3 =~ s/\D//gi;
+									$VD_gmt_offset_now =	"$aryA[1]";
+									$VD_state =				"$aryA[2]";
+									$VD_list_id =			"$aryA[3]";
+									 $epc_countCAMPDATA++;
+									}
+								$sthA->finish();
+								if (length($VD_address3)>5)
+									{
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='';";
+									$affected_rows = $dbhA->do($stmtA);
+									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
+									}
+								}
+							}
+						##### END AUTO ALT PHONE DIAL SECTION #####
+
+
+
+
 						}
 					else
 						{

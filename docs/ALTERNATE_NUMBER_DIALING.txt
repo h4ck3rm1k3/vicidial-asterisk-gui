@@ -1,6 +1,6 @@
 ALTERNATE NUMBER DIALING Summary and Overview                         2007-01-15
 
-*** ALTERNATE NUMBER DIALING IN AUTODIAL MODE WILL BE ADDED IN THE 2.0.3 RELEASE ***
+*** ALTERNATE NUMBER DIALING IN AUTODIAL MODE HAS BEEN ADDED IN THE 2.0.3 RELEASE ***
 
 This document will outline the methods used to automatically dial the alt_phone and/or address3 fields containing phone numbers for a lead while in Auto-dial modes(RATIO or ADAPT*). This feature does not function for leads dialed with the MANUAL dial_method.
 

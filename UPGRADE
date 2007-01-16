@@ -32,8 +32,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 8. You can now use BLEND/INBND/*_C/*_B/*_I to define a campaign a a CLOSER 
 	campaign capable of taking inbound calls.
 
-9. IN PROCESS- Adding ability to dial alternate numbers per lead in auto-dial
-	mode.
+9. In Auto-dialing campaigns(RATIO and ADAPT) you can now configure the dialer 
+	to dial up to two alternate numbers per lead automatically
+
 
 
 
