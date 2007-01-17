@@ -14,14 +14,16 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 2. upgrade the MySQL asterisk database:
 	mysql
 	use asterisk
-	\. /path/from/root/extras/upgrade_2.0.3.sql <nothing changed yet>
+	\. /path/from/root/extras/upgrade_2.0.3.sql
 	quit
 
 3. The server_stats.php has been merged into the vicidial/admin.php page
 
-4. Width of the admin.php screen now definable by variables at top of script.
+4. Width of the admin.php screen, and the color and size of the headers are all
+	now definable by variables at top of the admin.php script.
 
-5. Dial Override checkbox added to force dial_level changes in ADAPT modes
+5. Dial Override checkbox added to the campaign modification screen of admin.php
+	to force manual dial_level changes in ADAPT dialing modes.
 
 6. Behaviour of HotKeys in manual dial mode has changed to automatically go on 
 	to the next lead when a HotKey is pressed.
@@ -33,7 +35,20 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	campaign capable of taking inbound calls.
 
 9. In Auto-dialing campaigns(RATIO and ADAPT) you can now configure the dialer 
-	to dial up to two alternate numbers per lead automatically
+	to dial up to two alternate numbers per lead automatically, as well as 
+	defining the statuses that you want to do this for. More info about
+	this feature in the ALTERNATE_NUMBER_DIALING.txt doc.
+
+10. Added ability to send multiple concurrent transfers at once to agents in 
+	outbound campaigns. This will greatly benefit larger VICIDIAL 
+	installations by decreasing the time it takes for a call to get	to an 
+	agent once answered after a large queue backup. This is defaulted to 
+	AUTO, but can be forced to a set number. This is the Concurrent 
+	Transfers option in the Campaign Modification page.
+
+11. New optimized code for AST_manager_send.pl and AST_send_action_child.pl. 
+	Thanks to Lott Caskey for the code contribution
+
 
 
 

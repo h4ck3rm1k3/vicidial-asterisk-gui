@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|   Asterisk GUI client - astguiclient - twenty-seventh public release 2.0.2   |
+|   Asterisk GUI client - astguiclient - twenty-seventh public release 2.0.3   |
 |           created by astGUIclient group <astguiclient@eflo.net>              |
 |  project started 2003-10-06   http://sourceforge.net/projects/astguiclient/  |
 +------------------------------------------------------------------------------+
@@ -554,3 +554,14 @@ UPGRADE NOTES:
      http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.2
 UPGRADE NOTES:
  * if upgrading from 2.0.1 you need to follow instructions in the UPGRADE doc
+
+2.0.3 - Twenty-Eighth public release - 2007-01-XX
+- Added optimized manager sending scripts
+- Made several changes to admin.php and made it more customizable
+- Made changes to HotKeys to allow for manual auto dial and auto alt number dial
+- Added ability to dial alternate lead phone numbers in auto-dial modes
+- Added ability to send more calls to agents at once helping large installations
+- Many other changes and bug fixes listed in the TODO Wiki webpage:
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
+UPGRADE NOTES:
+ * if upgrading from 2.0.2 you need to follow instructions in the UPGRADE doc
