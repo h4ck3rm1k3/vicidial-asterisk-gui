@@ -19,6 +19,54 @@ AUTO ALT DIAL STATUS DELETED||
 this auto alt dial status is not in this campaign||
 New Auto Alt Dial Status||
 Delete Auto Alt Dial Status||
+ Users ||
+ Campaigns ||
+ Lists ||
+ Scripts ||
+ Filters ||
+ In-Groups ||
+ User Groups ||
+ Remote Agents ||
+ Admin ||
+ Reports ||
+ List Users ||
+ Add A New User ||
+ Search For A User ||
+ Add Campaign ||
+ List Campaigns ||
+ Realtime Campaigns Summary ||
+ Show Lists ||
+ Add New List ||
+ Search For A Lead ||
+ Add Number To DNC ||
+ Load New Leads ||
+ Add Script ||
+ View Scripts ||
+ Add Filter ||
+ View Filters ||
+ Show In-Groups ||
+ Add New In-Group ||
+ Add User Group ||
+ List User Groups ||
+ Group Hourly Report ||
+ Show Remote Agents ||
+ Add New Remote Agents ||
+ Call Times ||
+ Phones ||
+ Conferences ||
+ Servers ||
+ Show Call Times ||
+ Add New Call Time ||
+ Show State Call Times ||
+ Add New State Call Time ||
+ List Phones ||
+ Add New Phone ||
+ List Conferences ||
+ Add New Conference ||
+ List VICIDIAL Conferences ||
+ Add New VICIDIAL Conference ||
+ List Servers ||
+ Add New Server ||
 
 
 ############################################################ CLIENT

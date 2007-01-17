@@ -9,6 +9,48 @@ require("dbconnect.php");
 
 $page_width='750';
 $section_width='700';
+$header_font_size='3';
+$subheader_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$campaigns_color =	'#FFCC99';
+$lists_color =		'#FFCCCC';
+$ingroups_color =	'#CC99FF';
+$remoteagent_color ='#CCFFCC';
+$usergroups_color =	'#CCFFFF';
+$scripts_color =	'#99FFCC';
+$filters_color =	'#CCCCCC';
+$admin_color =		'#FF99FF';
+$reports_color =	'#99FF33';
+#$users_color =		'#FFFF99';
+#$campaigns_color =	'#FFFF99';
+#$lists_color =		'#FFFF99';
+#$ingroups_color =	'#FFFF99';
+#$remoteagent_color ='#FFFF99';
+#$usergroups_color =	'#FFFF99';
+#$scripts_color =	'#FFFF99';
+#$filters_color =	'#FFFF99';
+#$admin_color =		'#FFFF99';
+#$reports_color =	'#FFFF99';
+	$times_color =		'#CCCC00';
+	$phones_color =		'#CCCC00';
+	$conference_color =	'#CCCC00';
+	$server_color =		'#CCCC00';
+$users_font =		'BLACK';
+$campaigns_font =	'BLACK';
+$lists_font =		'BLACK';
+$ingroups_font =	'BLACK';
+$remoteagent_font =	'BLACK';
+$usergroups_font =	'BLACK';
+$scripts_font =		'BLACK';
+$filters_font =		'BLACK';
+$admin_font =		'BLACK';
+$reports_font =		'BLACK';
+	$times_font =		'BLACK';
+	$phones_font =		'BLACK';
+	$conference_font =	'BLACK';
+	$server_font =		'BLACK';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -812,12 +854,14 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70115-1152 - Aded (CLOSER|BLEND|INBND|_C$|_B$|_I$) options for CLOSER-type campaigns
 # 70115-1532 - Added auto_alt_dial field to campaign screen for auto-dialing of alt numbers
 # 70116-1200 - Added auto_alt_dial_status functionality to campaign screen
-# 
+# 70117-1235 - Added header formatting variables at top of script
+#            - Moved Call Times and Phones/Server functions to Admin section
+#
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.78';
-$build = '70116-1200';
+$version = '2.0.79';
+$build = '70117-1235';
 
 $STARTtime = date("U");
 
@@ -919,12 +963,12 @@ if ($ADD==11111)		{$hh='remoteagent';	echo "Add New Remote Agents";}
 if ($ADD==111111)		{$hh='usergroups';	echo "Add New Users Group";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Add New Script";}
 if ($ADD==11111111)		{$hh='filters';		echo "Add New Filter";}
-if ($ADD==111111111)	{$hh='times';		echo "Add New Call Time";}
-if ($ADD==1111111111)	{$hh='times';		echo "Add New State Call Time";}
-if ($ADD==11111111111)	{$hh='server';		echo "ADD NEW PHONE";}
-if ($ADD==111111111111)	{$hh='server';		echo "ADD NEW SERVER";}
-if ($ADD==1111111111111)	{$hh='server';		echo "ADD NEW CONFERENCE";}
-if ($ADD==11111111111111)	{$hh='server';		echo "ADD NEW VICIDIAL CONFERENCE";}
+if ($ADD==111111111)	{$hh='admin';	$sh='times';	echo "Add New Call Time";}
+if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Add New State Call Time";}
+if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
+if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
+if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
+if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
 if ($ADD==2)			{$hh='users';		echo "New User Addition";}
 if ($ADD==21)			{$hh='campaigns';	echo "New Campaign Addition";}
 if ($ADD==22)			{$hh='campaigns';	echo "New Campaign Status Addition";}
@@ -937,13 +981,13 @@ if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
 if ($ADD==211111)		{$hh='usergroups';	echo "New Users Group Addition";}
 if ($ADD==2111111)		{$hh='scripts';		echo "New Script Addition";}
 if ($ADD==21111111)		{$hh='filters';		echo "New Filter Addition";}
-if ($ADD==211111111)	{$hh='times';		echo "New Call Time Addition";}
-if ($ADD==2111111111)	{$hh='times';		echo "New State Call Time Addition";}
-if ($ADD==21111111111)	{$hh='server';		echo "ADDING NEW PHONE";}
-if ($ADD==211111111111)	{$hh='server';		echo "ADDING NEW SERVER";}
-if ($ADD==221111111111)	{$hh='server';		echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==2111111111111)	{$hh='server';		echo "ADDING NEW CONFERENCE";}
-if ($ADD==21111111111111)	{$hh='server';		echo "ADDING NEW VICIDIAL CONFERENCE";}
+if ($ADD==211111111)	{$hh='admin';	$sh='times';	echo "New Call Time Addition";}
+if ($ADD==2111111111)	{$hh='admin';	$sh='times';	echo "New State Call Time Addition";}
+if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE";}
+if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
+if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
+if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			{$hh='campaigns';	echo "Modify Campaign";}
@@ -954,13 +998,13 @@ if ($ADD==31111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
 if ($ADD==311111)		{$hh='usergroups';	echo "Modify Users Groups";}
 if ($ADD==3111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==31111111)		{$hh='filters';		echo "Modify Filter";}
-if ($ADD==311111111)	{$hh='times';		echo "Modify Call Time";}
-if ($ADD==321111111)	{$hh='times';		echo "Modify Call Time State Definitions List";}
-if ($ADD==3111111111)	{$hh='times';		echo "Modify State Call Time";}
-if ($ADD==31111111111)	{$hh='server';		echo "MODIFY PHONE";}
-if ($ADD==311111111111)	{$hh='server';		echo "MODIFY SERVER";}
-if ($ADD==3111111111111)	{$hh='server';		echo "MODIFY CONFERENCE";}
-if ($ADD==31111111111111)	{$hh='server';		echo "MODIFY VICIDIAL CONFERENCE";}
+if ($ADD==311111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
+if ($ADD==321111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time State Definitions List";}
+if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
+if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
+if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
+if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
+if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD=="4A")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Modify User";}
@@ -975,13 +1019,13 @@ if ($ADD==41111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
 if ($ADD==411111)		{$hh='usergroups';	echo "Modify Users Groups";}
 if ($ADD==4111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==41111111)		{$hh='filters';		echo "Modify Filter";}
-if ($ADD==411111111)	{$hh='times';		echo "Modify Call Time";}
-if ($ADD==4111111111)	{$hh='times';		echo "Modify State Call Time";}
-if ($ADD==41111111111)	{$hh='server';		echo "MODIFY PHONE";}
-if ($ADD==411111111111)	{$hh='server';		echo "MODIFY SERVER";}
-if ($ADD==421111111111)	{$hh='server';		echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==4111111111111)	{$hh='server';		echo "MODIFY CONFERENCE";}
-if ($ADD==41111111111111)	{$hh='server';		echo "MODIFY VICIDIAL CONFERENCE";}
+if ($ADD==411111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
+if ($ADD==4111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
+if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
+if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
+if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
+if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	echo "Logout Agents";}
@@ -992,12 +1036,12 @@ if ($ADD==51111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
 if ($ADD==511111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==5111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==51111111)		{$hh='filters';		echo "Delete Filter";}
-if ($ADD==511111111)	{$hh='times';		echo "Delete Call Time";}
-if ($ADD==5111111111)	{$hh='times';		echo "Delete State Call Time";}
-if ($ADD==51111111111)	{$hh='server';		echo "DELETE PHONE";}
-if ($ADD==511111111111)	{$hh='server';		echo "DELETE SERVER";}
-if ($ADD==5111111111111)	{$hh='server';		echo "DELETE CONFERENCE";}
-if ($ADD==51111111111111)	{$hh='server';		echo "DELETE VICIDIAL CONFERENCE";}
+if ($ADD==511111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
+if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
+if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
+if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
+if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
 if ($ADD==61)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==62)			{$hh='campaigns';	echo "Logout Agents";}
@@ -1010,13 +1054,13 @@ if ($ADD==61111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
 if ($ADD==611111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==6111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==61111111)		{$hh='filters';		echo "Delete Filter";}
-if ($ADD==611111111)	{$hh='times';		echo "Delete Call Time";}
-if ($ADD==6111111111)	{$hh='times';		echo "Delete State Call Time";}
-if ($ADD==61111111111)	{$hh='server';		echo "DELETE PHONE";}
-if ($ADD==611111111111)	{$hh='server';		echo "DELETE SERVER";}
-if ($ADD==621111111111)	{$hh='server';		echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==6111111111111)	{$hh='server';		echo "DELETE CONFERENCE";}
-if ($ADD==61111111111111)	{$hh='server';		echo "DELETE VICIDIAL CONFERENCE";}
+if ($ADD==611111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
+if ($ADD==6111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
+if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
+if ($ADD==61111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==73)			{$hh='campaigns';	echo "Dialable Lead Count";}
 if ($ADD==7111111)		{$hh='scripts';		echo "Preview Script";}
 if ($ADD==0)			{$hh='users';		echo "Users List";}
@@ -1030,12 +1074,12 @@ if ($ADD==10000)		{$hh='remoteagent';	echo "Remote Agents";}
 if ($ADD==100000)		{$hh='usergroups';	echo "User Groups";}
 if ($ADD==1000000)		{$hh='scripts';		echo "Scripts";}
 if ($ADD==10000000)		{$hh='filters';		echo "Filters";}
-if ($ADD==100000000)	{$hh='times';		echo "Call Times";}
-if ($ADD==1000000000)	{$hh='times';		echo "State Call Times";}
-if ($ADD==10000000000)	{$hh='server';		echo "PHONE LIST";}
-if ($ADD==100000000000)	{$hh='server';		echo "SERVER LIST";}
-if ($ADD==1000000000000)	{$hh='server';		echo "CONFERENCE LIST";}
-if ($ADD==10000000000000)	{$hh='server';		echo "VICIDIAL CONFERENCE LIST";}
+if ($ADD==100000000)	{$hh='admin';	$sh='times';	echo "Call Times";}
+if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "State Call Times";}
+if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "PHONE LIST";}
+if ($ADD==100000000000)	{$hh='admin';	$sh='server';	echo "SERVER LIST";}
+if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo "CONFERENCE LIST";}
+if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo "VICIDIAL CONFERENCE LIST";}
 if ($ADD==550)			{$hh='users';		echo "Search Form";}
 if ($ADD==551)			{$hh='users';		echo "SEARCH PHONES";}
 if ($ADD==660)			{$hh='users';		echo "Search Results";}
@@ -2766,28 +2810,36 @@ exit;
 
 
 ######################### HTML HEADER BEGIN #######################################
-if ($hh=='users') {$users_hh='bgcolor ="#FFFF99"'; $users_fc='BLACK';}	# yellow
-	else {$users_hh=''; $users_fc='WHITE';}
-if ($hh=='campaigns') {$campaigns_hh='bgcolor ="#FFCC99"'; $campaigns_fc='BLACK';}	# orange
-	else {$campaigns_hh=''; $campaigns_fc='WHITE';}
-if ($hh=='lists') {$lists_hh='bgcolor ="#FFCCCC"'; $lists_fc='BLACK';}	# red
-	else {$lists_hh=''; $lists_fc='WHITE';}
-if ($hh=='ingroups') {$ingroups_hh='bgcolor ="#CC99FF"'; $ingroups_fc='BLACK';} # purple
-	else {$ingroups_hh=''; $ingroups_fc='WHITE';}
-if ($hh=='remoteagent') {$remoteagent_hh='bgcolor ="#CCFFCC"'; $remoteagent_fc='BLACK';}	# green
-	else {$remoteagent_hh=''; $remoteagent_fc='WHITE';}
-if ($hh=='usergroups') {$usergroups_hh='bgcolor ="#CCFFFF"'; $usergroups_fc='BLACK';}	# cyan
-	else {$usergroups_hh=''; $usergroups_fc='WHITE';}
-if ($hh=='scripts') {$scripts_hh='bgcolor ="#99FFCC"'; $scripts_fc='BLACK';}	# light teal
-	else {$scripts_hh=''; $scripts_fc='WHITE';}
-if ($hh=='filters') {$filters_hh='bgcolor ="#CCCCCC"'; $filters_fc='BLACK';} # grey
-	else {$filters_hh=''; $filters_fc='WHITE';}
-if ($hh=='times') {$times_hh='bgcolor ="#99FF33"'; $times_fc='BLACK';} # hard teal
-	else {$times_hh=''; $times_fc='WHITE';}
-if ($hh=='server') {$server_hh='bgcolor ="#FF99FF"'; $server_fc='BLACK';} # pink
-	else {$server_hh=''; $server_fc='WHITE';}
-if ($hh=='reports') {$reports_hh='bgcolor ="#FFFF99"'; $reports_fc='BLACK';} # yellow
-	else {$reports_hh=''; $reports_fc='WHITE';}
+if ($hh=='users') 
+	{$users_hh="bgcolor =\"$users_color\""; $users_fc="$users_font"; $users_bold="$header_selected_bold";}
+	else {$users_hh=''; $users_fc='WHITE'; $users_bold="$header_nonselected_bold";}
+if ($hh=='campaigns') 
+	{$campaigns_hh="bgcolor=\"$campaigns_color\""; $campaigns_fc="$campaigns_font"; $campaigns_bold="$header_selected_bold";}
+	else {$campaigns_hh=''; $campaigns_fc='WHITE'; $campaigns_bold="$header_nonselected_bold";}
+if ($hh=='lists') 
+	{$lists_hh="bgcolor=\"$lists_color\""; $lists_fc="$lists_font"; $lists_bold="$header_selected_bold";}
+	else {$lists_hh=''; $lists_fc='WHITE'; $lists_bold="$header_nonselected_bold";}
+if ($hh=='ingroups') 
+	{$ingroups_hh="bgcolor=\"$ingroups_color\""; $ingroups_fc="$ingroups_font"; $ingroups_bold="$header_selected_bold";}
+	else {$ingroups_hh=''; $ingroups_fc='WHITE'; $ingroups_bold="$header_nonselected_bold";}
+if ($hh=='remoteagent') 
+	{$remoteagent_hh="bgcolor=\"$remoteagent_color\""; $remoteagent_fc="$remoteagent_font"; $remoteagent_bold="$header_selected_bold";}
+	else {$remoteagent_hh=''; $remoteagent_fc='WHITE'; $remoteagent_bold="$header_nonselected_bold";}
+if ($hh=='usergroups') 
+	{$usergroups_hh="bgcolor=\"$usergroups_color\""; $usergroups_fc="$usergroups_font"; $usergroups_bold="$header_selected_bold";}
+	else {$usergroups_hh=''; $usergroups_fc='WHITE'; $usergroups_bold="$header_nonselected_bold";}
+if ($hh=='scripts') 
+	{$scripts_hh="bgcolor=\"$scripts_color\""; $scripts_fc="$scripts_font"; $scripts_bold="$header_selected_bold";}
+	else {$scripts_hh=''; $scripts_fc='WHITE'; $scripts_bold="$header_nonselected_bold";}
+if ($hh=='filters') 
+	{$filters_hh="bgcolor=\"$filters_color\""; $filters_fc="$filters_font"; $filters_bold="$header_selected_bold";}
+	else {$filters_hh=''; $filters_fc='WHITE'; $filters_bold="$header_nonselected_bold";}
+if ($hh=='admin') 
+	{$admin_hh="bgcolor=\"$admin_color\""; $admin_fc="$admin_font"; $admin_bold="$header_selected_bold";}
+	else {$admin_hh=''; $admin_fc='WHITE'; $admin_bold="$header_nonselected_bold";}
+if ($hh=='reports') 
+	{$reports_hh="bgcolor=\"$reports_color\""; $reports_fc="$reports_font"; $reports_bold="$header_selected_bold";}
+	else {$reports_hh=''; $reports_fc='WHITE'; $reports_bold="$header_nonselected_bold";}
 
 ?>
 </title>
@@ -2804,61 +2856,86 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 <CENTER>
 <TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
-<TR BGCOLOR=#000000>
-<TD ALIGN=CENTER <?=$users_hh?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc?> SIZE=1><B> USERS </a></TD>
-<TD ALIGN=CENTER <?=$campaigns_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc?> SIZE=1><B> CAMPAIGNS </a></TD>
-<TD ALIGN=CENTER <?=$lists_hh?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc?> SIZE=1><B> LISTS </a></TD>
-<TD ALIGN=CENTER <?=$scripts_hh?>><a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$scripts_fc?> SIZE=1><B> SCRIPTS </a></TD>
-<TD ALIGN=CENTER <?=$filters_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc?> SIZE=1><B> FILTERS </a></TD>
-<TD ALIGN=CENTER <?=$ingroups_hh?>><a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$ingroups_fc?> SIZE=1><B> IN-GROUPS </a></TD>
-<TD ALIGN=CENTER <?=$times_hh?>><a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$times_fc?> SIZE=1><B> CALL TIMES </a></TD>
-<TD ALIGN=CENTER <?=$usergroups_hh?>><a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc?> SIZE=1><B> USER GROUPS </a></TD>
-<TD ALIGN=CENTER <?=$remoteagent_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc?> SIZE=1><B> REMOTE AGENTS </a></TD>
-<TD ALIGN=CENTER <?=$server_hh?>><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc?> SIZE=1><B> PHONES </a></TD>
-<TD ALIGN=CENTER <?=$reports_hh?>><a href="<? echo $PHP_SELF ?>?ADD=999999"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$reports_fc?> SIZE=1><B> REPORTS </a></TD>
+<TR BGCOLOR=#015B91>
+<TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Users </a></TD>
+<TD ALIGN=CENTER <?=$campaigns_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc ?> SIZE=<?=$header_font_size ?>><?=$campaigns_bold ?> Campaigns </a></TD>
+<TD ALIGN=CENTER <?=$lists_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?> Lists </a></TD>
+<TD ALIGN=CENTER <?=$scripts_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$scripts_fc ?> SIZE=<?=$header_font_size ?>><?=$scripts_bold ?> Scripts </a></TD>
+<TD ALIGN=CENTER <?=$filters_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc ?> SIZE=<?=$header_font_size ?>><?=$filters_bold ?> Filters </a></TD>
+<TD ALIGN=CENTER <?=$ingroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$ingroups_fc ?> SIZE=<?=$header_font_size ?>><?=$ingroups_bold ?> In-Groups </a></TD>
+<TD ALIGN=CENTER <?=$usergroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc ?> SIZE=<?=$header_font_size ?>><?=$usergroups_bold ?> User Groups </a></TD>
+<TD ALIGN=CENTER <?=$remoteagent_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc ?> SIZE=<?=$header_font_size ?>><?=$remoteagent_bold ?> Remote Agents </a></TD>
+<TD ALIGN=CENTER <?=$admin_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$admin_fc ?> SIZE=<?=$header_font_size ?>><?=$admin_bold ?> Admin </a></TD>
+<TD ALIGN=CENTER <?=$reports_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=999999"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$reports_fc ?> SIZE=<?=$header_font_size ?>><?=$reports_bold ?> Reports </a></TD>
 </TR>
-
 
 <? if (strlen($users_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFFF99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LIST USERS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD A NEW USER</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SEARCH FOR A USER</a></TD></TR>
+<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List Users </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a></TD></TR>
 <? } 
 if (strlen($campaigns_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFCC99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD CAMPAIGN</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LIST CAMPAIGNS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>REALTIME CAMPAIGNS SUMMARY</a></TD></TR>
+<TR BGCOLOR=<?=$campaigns_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Realtime Campaigns Summary </a></TD></TR>
 <? } 
 if (strlen($lists_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFCCCC><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SHOW LISTS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NEW LIST</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SEARCH FOR A LEAD</a> | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NUMBER TO DNC</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./listloaderMAIN.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LOAD NEW LEADS</a></TD></TR>
+<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Lists </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New List </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A Lead </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Number To DNC </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./listloaderMAIN.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Load New Leads </a></TD></TR>
 <? } 
 if (strlen($scripts_hh) > 1) { 
 	?>
-<TR BGCOLOR=#99FFCC><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD SCRIPT</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>VIEW SCRIPTS</a></TD></TR>
+<TR BGCOLOR=<?=$scripts_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Script </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> View Scripts </a></TD></TR>
 <? } 
 if (strlen($filters_hh) > 1) { 
 	?>
-<TR BGCOLOR=#CCCCCC><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD FILTER</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>VIEW FILTERS</a></TD></TR>
+<TR BGCOLOR=<?=$filters_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Filter </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> View Filters </a></TD></TR>
 <? } 
 if (strlen($ingroups_hh) > 1) { 
 	?>
-<TR BGCOLOR=#CC99FF><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SHOW IN-GROUPS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NEW IN-GROUP</a></TD></TR>
-<? } 
-if (strlen($times_hh) > 1) { 
-	?>
-<TR BGCOLOR=#99FF33><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SHOW CALL TIMES</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NEW CALL TIME</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SHOW STATE CALL TIMES</a> &nbsp; &nbsp; |  &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NEW STATE CALL TIME</a> &nbsp; </TD></TR>
+<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show In-Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New In-Group </a></TD></TR>
 <? } 
 if (strlen($usergroups_hh) > 1) { 
 	?>
-<TR BGCOLOR=#CCFFFF><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD USER GROUP</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>LIST USER GROUPS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>GROUP HOURLY</a></TD></TR>
+<TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add User Group </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List User Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Group Hourly Report </a></TD></TR>
 <? } 
 if (strlen($remoteagent_hh) > 1) { 
 	?>
-<TR BGCOLOR=#CCFFCC><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SHOW REMOTE AGENTS</a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD NEW REMOTE AGENTS</a></TD></TR>
+<TR BGCOLOR=<?=$remoteagent_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Remote Agents </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Remote Agents </a></TD></TR>
 <? } 
-if (strlen($server_hh) > 1) { 
+
+if (strlen($admin_hh) > 1) { 
+	if ($sh=='times') {$times_sh="bgcolor=\"$times_color\""; $times_fc="$times_font";} # hard teal
+		else {$times_sh=''; $times_fc='BLACK';}
+	if ($sh=='phones') {$phones_sh="bgcolor=\"$server_color\""; $phones_fc="$phones_font";} # pink
+		else {$phones_sh=''; $phones_fc='BLACK';}
+	if ($sh=='server') {$server_sh="bgcolor=\"$server_color\""; $server_fc="$server_font";} # pink
+		else {$server_sh=''; $server_fc='BLACK';}
+	if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
+		else {$conference_sh=''; $conference_fc='BLACK';}
+
 	?>
-<TR BGCOLOR=#FF99FF><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>PHONES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD PHONE</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>SERVERS</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD SERVER</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>CONFERENCES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD CONFERENCE</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>VD CONFERENCES</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1>ADD VD CONFERENCE</a></TD></TR>
-<? 
+<TR BGCOLOR=<?=$admin_color ?>>
+<TD ALIGN=LEFT <?=$times_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$times_fc ?> SIZE=<?=$header_font_size ?>> Call Times </a></TD>
+<TD ALIGN=LEFT <?=$phones_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Phones </a></TD>
+<TD ALIGN=LEFT <?=$conference_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Conferences </a></TD>
+<TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=4><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Servers </a></TD>
+</TR>
+	<?
+	if (strlen($times_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$times_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Call Times </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Call Time </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show State Call Times </a> &nbsp; &nbsp; |  &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New State Call Time </a> &nbsp; </TD></TR>
+		<? } 
+	if (strlen($phones_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$phones_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List Phones </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Phone </a></TD></TR>
+		<? }
+	if (strlen($conference_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$conference_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List Conferences </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Conference </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List VICIDIAL Conferences </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New VICIDIAL Conference </a></TD></TR>
+		<? }
+	if (strlen($server_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> List Servers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Server </a></TD></TR>
+	<?}
 
 ### Do nothing if admin has no permissions
 if($LOGast_admin_access < 1) 
@@ -2871,12 +2948,12 @@ if($LOGast_admin_access < 1)
 } 
 if (strlen($reports_hh) > 1) { 
 	?>
-<TR BGCOLOR=#FFFF99><TD ALIGN=CENTER COLSPAN=11><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=1><B> &nbsp; </TD></TR>
+<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </TD></TR>
 <? } ?>
 
 
-<TR><TD ALIGN=LEFT COLSPAN=11 HEIGHT=2 BGCOLOR=BLACK></TD></TR>
-<TR><TD ALIGN=LEFT COLSPAN=11>
+<TR><TD ALIGN=LEFT COLSPAN=10 HEIGHT=2 BGCOLOR=#015B91></TD></TR>
+<TR><TD ALIGN=LEFT COLSPAN=10>
 <? 
 ######################### HTML HEADER BEGIN #######################################
 
@@ -5526,7 +5603,7 @@ if ($ADD==66)
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 
-			$auto_alt_dial_statuses = eregi_replace(" $status","",$row[0]);
+			$auto_alt_dial_statuses = eregi_replace(" $status "," ",$row[0]);
 			$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
