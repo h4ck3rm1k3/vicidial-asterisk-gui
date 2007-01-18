@@ -49,6 +49,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 11. New optimized code for AST_manager_send.pl and AST_send_action_child.pl. 
 	Thanks to Lott Caskey for the code contribution
 
+12. The field user_group has been added to several log tables to allow for 
+	better tracking of stats by user groups. Several reports now offer 
+	user group display options.
+
 
 
 

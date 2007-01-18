@@ -7,3 +7,8 @@ ALTER TABLE vicidial_auto_calls ADD alt_dial ENUM('NONE','MAIN','ALT','ADDR3') d
 ALTER TABLE vicidial_hopper ADD alt_dial ENUM('NONE','ALT','ADDR3') default 'NONE';
 ALTER TABLE vicidial_hopper MODIFY status ENUM('READY','QUEUE','INCALL','DONE','HOLD') default 'READY';
 
+ALTER TABLE vicidial_log ADD user_group VARCHAR(20);
+ALTER TABLE vicidial_closer_log ADD user_group VARCHAR(20);
+ALTER TABLE vicidial_user_log ADD user_group VARCHAR(20);
+ALTER TABLE vicidial_agent_log ADD user_group VARCHAR(20);
+ALTER TABLE vicidial_callbacks ADD user_group VARCHAR(20);

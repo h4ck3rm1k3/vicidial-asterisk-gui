@@ -7,6 +7,7 @@
 #
 # 60619-1712 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 70118-1705 - Added user_group filtering option
 #
 
 require("dbconnect.php");
@@ -15,15 +16,19 @@ $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
-	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
+	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
+if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
+	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
 if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+
+if (strlen($shift)<2) {$shift='ALL';}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -59,6 +64,17 @@ while ($i < $campaigns_to_print)
 	$groups[$i] =$row[0];
 	$i++;
 	}
+$stmt="select user_group from vicidial_user_groups;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$user_groups_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $user_groups_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$user_groups[$i] =$row[0];
+	$i++;
+	}
 ?>
 
 <HTML>
@@ -86,9 +102,22 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 		$o++;
 	}
 echo "</SELECT>\n";
+echo "<SELECT SIZE=1 NAME=user_group>\n";
+echo "<option value=\"\">-- ALL USER GROUPS --</option>\n";
+	$o=0;
+	while ($user_groups_to_print > $o)
+	{
+		if ($user_groups[$o] == $user_group) {echo "<option selected value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
+		  else {echo "<option value=\"$user_groups[$o]\">$user_groups[$o]</option>\n";}
+		$o++;
+	}
+echo "</SELECT>\n";
 echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"AM\">AM</option>\n";
+echo "<option selected value=\"$shift\">$shift</option>\n";
+echo "<option value=\"\">--</option>\n";
+echo "<option value=\"AM\">AM</option>\n";
 echo "<option value=\"PM\">PM</option>\n";
+echo "<option value=\"ALL\">ALL</option>\n";
 echo "</SELECT>\n";
 echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
@@ -120,6 +149,16 @@ if ($shift == 'PM')
 	$time_BEGIN = "15:15:00";   
 	$time_END = "23:15:00";
 	}
+if ($shift == 'ALL') 
+	{
+	$query_date_BEGIN = "$query_date 00:00:00";   
+	$query_date_END = "$query_date 23:59:59";
+	$time_BEGIN = "00:00:00";   
+	$time_END = "23:59:59";
+	}
+
+if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
+else {$ugSQL='';}
 
 echo "VICIDIAL: Agent Performance Detail                        $NOW_TIME\n";
 
@@ -130,7 +169,7 @@ echo "+-----------------+--------+--------+--------+--------+--------+--------+-
 echo "| USER NAME       | ID     | CALLS  | TIME   | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG| A    | B    | DC   | DNC  | N    | NI   | CB   | SALE |\n";
 echo "+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
 
-$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,avg(talk_sec),sum(pause_sec),avg(pause_sec),sum(wait_sec),avg(wait_sec),sum(dispo_sec),avg(dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 group by full_name order by calls desc limit 1000;";
+$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,avg(talk_sec),sum(pause_sec),avg(pause_sec),sum(wait_sec),avg(wait_sec),sum(dispo_sec),avg(dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 $ugSQL group by full_name order by calls desc limit 1000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -390,9 +429,10 @@ while($k < $i)
 	$TOT_NI = sprintf("%-5s", $TOT_NI);
 	$TOT_CB = sprintf("%-5s", $TOT_CB);
 	$TOT_SALE = sprintf("%-5s", $TOT_SALE);
+	$TOT_AGENTS = sprintf("%-4s", $k);
 
 echo "+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
-echo "|  TOTALS                  | $TOTcalls| $TOTtime_MS| $TOTtotPAUSE_MS| $TOTavgPAUSE_MS | $TOTtotWAIT_MS| $TOTavgWAIT_MS | $TOTtotTALK_MS| $TOTavgTALK_MS | $TOTtotDISPO_MS| $TOTavgDISPO_MS | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_CB| $TOT_SALE|\n";
+echo "|  TOTALS      AGENTS:$TOT_AGENTS | $TOTcalls| $TOTtime_MS| $TOTtotPAUSE_MS| $TOTavgPAUSE_MS | $TOTtotWAIT_MS| $TOTavgWAIT_MS | $TOTtotTALK_MS| $TOTavgTALK_MS | $TOTtotDISPO_MS| $TOTavgDISPO_MS | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_CB| $TOT_SALE|\n";
 echo "+--------------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
 
 echo "\n";

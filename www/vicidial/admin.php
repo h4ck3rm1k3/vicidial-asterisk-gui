@@ -856,12 +856,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70116-1200 - Added auto_alt_dial_status functionality to campaign screen
 # 70117-1235 - Added header formatting variables at top of script
 #            - Moved Call Times and Phones/Server functions to Admin section
+# 70118-1706 - Added new user group displays and links
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.79';
-$build = '70117-1235';
+$version = '2.0.80';
+$build = '70118-1706';
 
 $STARTtime = date("U");
 
@@ -1066,7 +1067,8 @@ if ($ADD==7111111)		{$hh='scripts';		echo "Preview Script";}
 if ($ADD==0)			{$hh='users';		echo "Users List";}
 if ($ADD==8)			{$hh='users';		echo "CallBacks Within Agent";}
 if ($ADD==81)			{$hh='campaigns';	echo "CallBacks Within Campaign";}
-if ($ADD==811)			{$hh='campaigns';	echo "CallBacks Within List";}
+if ($ADD==811)			{$hh='lists';	echo "CallBacks Within List";}
+if ($ADD==8111)			{$hh='usergroups';	echo "CallBacks Within User Group";}
 if ($ADD==10)			{$hh='campaigns';	echo "Campaigns";}
 if ($ADD==100)			{$hh='lists';		echo "Lists";}
 if ($ADD==1000)			{$hh='ingroups';	echo "In-Groups";}
@@ -6161,7 +6163,7 @@ else
 		$h++;
 		}
 	echo "<option SELECTED>$row[4]</option></select>$NWB#vicidial_users-user_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Group: </td><td align=left><select size=1 name=user_group>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right><A HREF=\"$PHP_SELF?ADD=311111&user_group=$user_group\">User Group</A>: </td><td align=left><select size=1 name=user_group>\n";
 
 		$stmt="SELECT user_group,group_name from vicidial_user_groups order by user_group";
 		$rslt=mysql_query($stmt, $link);
@@ -7360,6 +7362,8 @@ echo "</table></center><br>\n";
 
 echo "<center><b>\n";
 
+echo "<br><br><a href=\"$PHP_SELF?ADD=811&list_id=$list_id\">Click here to see all CallBack Holds in this list</a><BR><BR>\n";
+
 if ($LOGdelete_lists > 0)
 	{
 	echo "<br><br><a href=\"$PHP_SELF?ADD=511&list_id=$list_id\">DELETE THIS LIST</a>\n";
@@ -7531,6 +7535,43 @@ echo "$campaigns_list";
 echo "$NWB#vicidial_user_groups-allowed_campaigns$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
+
+
+### list of users in this user group
+
+	$active_confs = 0;
+	$stmt="SELECT user,full_name,user_level from vicidial_users where user_group='$user_group'";
+	$rsltx=mysql_query($stmt, $link);
+	$users_to_print = mysql_num_rows($rsltx);
+
+	echo "<center>\n";
+	echo "<br><b>USERS WITHIN THIS USER GROUP: $users_to_print</b><br>\n";
+	echo "<TABLE width=400 cellspacing=3>\n";
+	echo "<tr><td>USER</td><td>FULL NAME</td><td>LEVEL</td></tr>\n";
+
+	$o=0;
+	while ($users_to_print > $o) 
+	{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+
+	if (eregi("1$|3$|5$|7$|9$", $o))
+		{$bgcolor='bgcolor="#B9CBFD"';} 
+	else
+		{$bgcolor='bgcolor="#9BB9FB"';}
+
+	echo "<tr $bgcolor>\n";
+	echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td>\n";
+	echo "<td><font size=1>$rowx[1]</td>\n";
+	echo "<td><font size=1>$rowx[2]</td>\n";
+	echo "</tr>\n";
+	}
+
+echo "</table></center><br>\n";
+
+
+
+echo "<br><br><a href=\"$PHP_SELF?ADD=8111&user_group=$user_group\">Click here to see all CallBack Holds in this user group</a><BR><BR>\n";
 
 if ($LOGdelete_user_groups > 0)
 	{
@@ -8405,13 +8446,28 @@ $ADD='82';
 }
 
 ######################
+# ADD=8111 find all callbacks on hold within a user group
+######################
+if ($ADD==8111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and user_group='$user_group' order by recipient,status desc,callback_time";
+	$rslt=mysql_query($stmt, $link);
+	$cb_to_print = mysql_num_rows($rslt);
+
+echo "<br>USER GROUP CALLBACK HOLD LISTINGS: $list_id\n";
+$ADD='82';
+}
+
+######################
 # ADD=82 display all callbacks on hold
 ######################
 if ($ADD==82)
 {
 echo "<TABLE><TR><TD>\n";
 echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white> CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td></tr>\n";
+echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white> CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td><td><font size=1 color=white>GROUP</td></tr>\n";
 
 	$o=0;
 	while ($cb_to_print > $o) {
@@ -8429,6 +8485,7 @@ echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 c
 		echo "<td><font size=1><A HREF=\"$PHP_SELF?ADD=3&user=$row[8]\">$row[8]</A></td>";
 		echo "<td><font size=1>$row[9]</td>";
 		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1><A HREF=\"$PHP_SELF?ADD=311111&user_group=$row[11]\">$row[11]</A></td>";
 		echo "</tr>\n";
 		$o++;
 	}

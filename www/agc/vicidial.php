@@ -135,7 +135,8 @@
 # 70109-1128 - Fixed wrapup timer bug
 # 70109-1635 - Added option for HotKeys automatically dialing next number in manual mode
 #            - Added option for alternate number dialing with hotkeys
-# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70118-1517 - Added vicidial_agent_log and vicidial_user_log logging of user_group
 #
 
 require("dbconnect.php");
@@ -181,8 +182,8 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 $forever_stop=0;
 
-$version = '2.0.107';
-$build = '70109-1635';
+$version = '2.0.108';
+$build = '70118-1517';
 
 if ($force_logout)
 {
@@ -888,7 +889,7 @@ else
 	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) )
 		{
 		### insert an entry into the user log for the login event
-		$stmt = "INSERT INTO vicidial_user_log values('','$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE')";
+		$stmt = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE','$VU_user_group')";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
 
@@ -1031,7 +1032,7 @@ else
 	$StarTtimE = date("U");
 	$NOW_TIME = date("Y-m-d H:i:s");
 	##### Agent is going to log in so insert the vicidial_agent_log entry now
-	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch) values('$VD_login','$server_ip','$NOW_TIME','$VD_campaign','$StarTtimE','0','$StarTtimE');";
+	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group) values('$VD_login','$server_ip','$NOW_TIME','$VD_campaign','$StarTtimE','0','$StarTtimE','$VU_user_group');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$affected_rows = mysql_affected_rows($link);

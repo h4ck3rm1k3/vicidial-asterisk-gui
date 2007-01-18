@@ -350,6 +350,7 @@ phone_number VARCHAR(12),
 user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
+user_group VARCHAR(20),
 index (lead_id),
 index (call_date)
 );
@@ -370,6 +371,7 @@ user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
 queue_seconds DECIMAL(7,2) default '0',
+user_group VARCHAR(20),
 index (lead_id),
 index (call_date)
 );
@@ -433,6 +435,7 @@ event VARCHAR(50),
 campaign_id VARCHAR(8),
 event_date DATETIME,
 event_epoch INT(10) UNSIGNED,
+user_group VARCHAR(20),
 index (user)
 );
 
@@ -653,7 +656,8 @@ talk_epoch INT(10) UNSIGNED,
 talk_sec SMALLINT(5) UNSIGNED default '0',
 dispo_epoch INT(10) UNSIGNED,
 dispo_sec SMALLINT(5) UNSIGNED default '0',
-status VARCHAR(6)
+status VARCHAR(6),
+user_group VARCHAR(20)
 );
 
  CREATE TABLE vicidial_scripts (
@@ -682,6 +686,7 @@ modify_date TIMESTAMP,
 user VARCHAR(20),
 recipient ENUM('USERONLY','ANYONE'),	
 comments VARCHAR(255),
+user_group VARCHAR(20),
 index (lead_id),
 index (status),
 index (callback_time)

@@ -75,10 +75,11 @@ $browser = getenv("HTTP_USER_AGENT");
 		fclose($fp);
 		}
 
-	$stmt="SELECT full_name from vicidial_users where user='" . mysql_real_escape_string($user) . "';";
+	$stmt="SELECT full_name,user_group from vicidial_users where user='" . mysql_real_escape_string($user) . "';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$full_name = $row[0];
+	$user_group = $row[1];
 
 	$stmt="SELECT * from vicidial_live_agents where user='" . mysql_real_escape_string($user) . "';";
 	$rslt=mysql_query($stmt, $link);
@@ -198,9 +199,10 @@ else
 }
 
 
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name\n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name \n";
+echo " &nbsp; &nbsp; &nbsp; GROUP: $user_group <BR><BR>\n";
 
-echo " - <a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
 echo " - <a href=\"./user_stats.php?user=$user\">User Stats</a>\n";
 echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
 

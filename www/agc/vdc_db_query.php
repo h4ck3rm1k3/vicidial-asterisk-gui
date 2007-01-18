@@ -112,10 +112,11 @@
 # 61128-2229 - Added vicidial_live_agents and vicidial_auto_calls manual dial entries
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70115-1733 - Added alt_dial functionality in auto-dial modes
+# 70118-1501 - Added user_group to vicidial_log,_agent_log,_closer_log,_callbacks
 #
 
-$version = '2.0.39';
-$build = '70115-1733';
+$version = '2.0.40';
+$build = '70118-1501';
 
 require("dbconnect.php");
 
@@ -797,8 +798,18 @@ if ($stage == "start")
 		}
 	else
 		{
+			$user_group='';
+			$stmt="SELECT user_group FROM vicidial_users where user='$user' LIMIT 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ug_record_ct = mysql_num_rows($rslt);
+			if ($ug_record_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$user_group =		trim("$row[0]");
+				}
 		##### insert log into vicidial_log for manual VICIDiaL call
-		$stmt="INSERT INTO vicidial_log (uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,comments,processed) values('$uniqueid','$lead_id','$list_id','$campaign','$NOW_TIME','$StarTtime','INCALL','$phone_code','$phone_number','$user','MANUAL','N');";
+		$stmt="INSERT INTO vicidial_log (uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,comments,processed,user_group) values('$uniqueid','$lead_id','$list_id','$campaign','$NOW_TIME','$StarTtime','INCALL','$phone_code','$phone_number','$user','MANUAL','N','$user_group');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
@@ -1238,14 +1249,24 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 
 		### update the log status to INCALL
-		$stmt = "UPDATE vicidial_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL' where lead_id='$lead_id' and uniqueid='$uniqueid';";
+		$user_group='';
+			$stmt="SELECT user_group FROM vicidial_users where user='$user' LIMIT 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ug_record_ct = mysql_num_rows($rslt);
+			if ($ug_record_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$user_group =		trim("$row[0]");
+				}
+		$stmt = "UPDATE vicidial_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' and uniqueid='$uniqueid';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
 		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 			{
 			### update the vicidial_closer_log user to INCALL
-			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL' where lead_id='$lead_id' order by closecallid desc limit 1;";
+			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' order by closecallid desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -1429,8 +1450,18 @@ if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	}
 else
 	{
+		$user_group='';
+		$stmt="SELECT user_group FROM vicidial_users where user='$user' LIMIT 1;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ug_record_ct = mysql_num_rows($rslt);
+		if ($ug_record_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$user_group =		trim("$row[0]");
+			}
 	##### Insert a LOGOUT record into the user log
-	$stmt="INSERT INTO vicidial_user_log values('','$user','LOGOUT','$campaign','$NOW_TIME','$StarTtime');";
+	$stmt="INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$user','LOGOUT','$campaign','$NOW_TIME','$StarTtime','$user_group');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
@@ -1525,7 +1556,18 @@ if ($ACTION == 'updateDISPO')
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 
-	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime');";
+		$user_group='';
+		$stmt="SELECT user_group FROM vicidial_users where user='$user' LIMIT 1;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ug_record_ct = mysql_num_rows($rslt);
+		if ($ug_record_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$user_group =		trim("$row[0]");
+			}
+
+	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$affected_rows = mysql_affected_rows($link);
@@ -1534,7 +1576,7 @@ if ($ACTION == 'updateDISPO')
 	### CALLBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
-		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments');";
+		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		}

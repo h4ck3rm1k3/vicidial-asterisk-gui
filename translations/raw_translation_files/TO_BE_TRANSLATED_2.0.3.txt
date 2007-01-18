@@ -67,6 +67,8 @@ Delete Auto Alt Dial Status||
  Add New VICIDIAL Conference ||
  List Servers ||
  Add New Server ||
+CallBacks Within User Group||
+USERS WITHIN THIS USER GROUP||
 
 
 ############################################################ CLIENT

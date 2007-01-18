@@ -56,6 +56,7 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70115-1635 - Added initial auto-alt-dial functionality
 # 70116-1619 - Added VDAD Ring-No-Answer Auto Alt Dial code
+# 70118-1539 - Added user_group logging to vicidial_user_log
 # 
 
 
@@ -1039,7 +1040,20 @@ while($one_day_interval > 0)
 			$logrun=0;
 			foreach(@VALOuser)
 				{
-				$stmtA = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch) values('$VALOuser[$logrun]','LOGOUT','$VALOcampaign[$logrun]','$SQLdate','$now_date_epoch');";
+					$VALOuser_group='';
+					$stmtA = "SELECT user_group FROM vicidial_users where user='$VALOuser[$logrun]';";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$UGrec_count=0;
+					while ($sthArows > $UGrec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$VALOuser_group =		"$aryA[0]";
+						$UGrec_count++;
+						}
+					$sthA->finish();
+				$stmtA = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$VALOuser[$logrun]','LOGOUT','$VALOcampaign[$logrun]','$SQLdate','$now_date_epoch','$VALOuser_group');";
 				$affected_rows = $dbhA->do($stmtA);
 
 				$event_string = "|          lagged agent LOGOUT entry inserted $VALOuser[$logrun]|$VALOcampaign[$logrun]|$VALOextension[$logcount]|";
