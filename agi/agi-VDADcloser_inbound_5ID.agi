@@ -296,7 +296,7 @@ while ($sthArows > $cbc)
 $sthA->finish();  
 
 ### insert a record into the vicidial_list table 
-$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now) values('$SQLdate','$tsSQLdate','INBND','$fronter','$channel_group','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','-5.00');";
+$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now) values('$SQLdate','$tsSQLdate','INBND','$fronter','$inbound_number','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','-5.00');";
 $affected_rows = $dbhA->do($stmtA);
 $cbc=0;
 $stmtA = "select LAST_INSERT_ID() LIMIT 1;";
