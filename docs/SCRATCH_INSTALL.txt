@@ -636,10 +636,10 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.3p2.tar.gz
-	- gunzip openssh-4.3p2.tar.gz
-	- tar xvf openssh-4.3p2.tar
-	- cd openssh-4.3p2
+        - wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.4p1.tar.gz
+	- gunzip openssh-4.4p1.tar.gz
+	- tar xvf openssh-4.4p1.tar
+	- cd openssh-4.4p1
 	- ./configure
 	- make
 	- make install
@@ -654,10 +654,10 @@ your locally installed copy of Apache web server)
 10. Go to http://www.openssl.org/ and download the linux source for openssl
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://www.openssl.org/source/openssl-0.9.8b.tar.gz
-	- gunzip openssl-0.9.8b.tar.gz
-	- tar xvf openssl-0.9.8b.tar
-	- cd openssl-0.9.8b
+	- wget http://www.openssl.org/source/openssl-0.9.8d.tar.gz
+	- gunzip openssl-0.9.8d.tar.gz
+	- tar xvf openssl-0.9.8d.tar
+	- cd openssl-0.9.8d
 	- ./config
 	- make
 	- make install
