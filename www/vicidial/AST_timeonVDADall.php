@@ -24,6 +24,7 @@
 # 61102-1155 - made display of columns more modular, added ability to hide server info
 # 61215-1131 - added answered calls and drop percent taken from answered calls
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70123-1151 - added non_latin options for substr in display variables, thanks Marin Blu
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -579,6 +580,10 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 			}
+			else
+			{
+			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
+			}
 		$Luser =			$row[1];
 		$user =				sprintf("%-18s", $row[1]);
 		$Lsessionid =		$row[2];
@@ -595,6 +600,10 @@ $talking_to_print = mysql_num_rows($rslt);
 				{
 				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
 				}
+				else
+				{
+				while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'utf8');}
+				}
 			}
 		if ($UidORname > 0)
 			{
@@ -602,6 +611,10 @@ $talking_to_print = mysql_num_rows($rslt);
 				if ($non_latin < 1)
 				{
 				while(strlen($user)>18) {$user = substr("$user", 0, -1);}
+				}
+				else
+				{
+				while(mb_strlen($user, 'utf-8')>18) {$user = mb_substr("$user", 0, -1,'utf8');}
 				}
 			}
 		if (!eregi("INCALL|QUEUE",$row[3]))
