@@ -113,10 +113,11 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70115-1733 - Added alt_dial functionality in auto-dial modes
 # 70118-1501 - Added user_group to vicidial_log,_agent_log,_closer_log,_callbacks
+# 70123-1357 - Fixed bug that would not update vicidial_closer_log status to dispo
 #
 
-$version = '2.0.40';
-$build = '70118-1501';
+$version = '2.0.41';
+$build = '70123-1357';
 
 require("dbconnect.php");
 
@@ -860,7 +861,7 @@ if ($stage == "end")
 			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 				{
 				##### look for the channel in the UPDATED vicidial_manager record of the call initiation
-				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user';";
+				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 				}
 			else
 				{
@@ -1529,7 +1530,15 @@ if ($ACTION == 'updateDISPO')
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 
-		if ( ($use_internal_dnc=='Y') and ($dispo_choice=='DNC') )
+	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+		{
+		$stmt = "UPDATE vicidial_closer_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
+		echo "$stmt\n";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+
+	if ( ($use_internal_dnc=='Y') and ($dispo_choice=='DNC') )
 		{
 		$stmt = "select phone_number from vicidial_list where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
