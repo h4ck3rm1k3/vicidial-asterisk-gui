@@ -574,14 +574,16 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			$row[5]=$row[6];
 			}
-		$extension = eregi_replace('Local/',"",$row[0]);
-		$extension =		sprintf("%-10s", $extension);
 			if ($non_latin < 1)
 			{
+			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension =		sprintf("%-10s", $extension);
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 			}
 			else
 			{
+			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension =		sprintf("%-40s", $extension);
 			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
 			}
 		$Luser =			$row[1];
@@ -595,25 +597,27 @@ $talking_to_print = mysql_num_rows($rslt);
 		$campaign_id =		sprintf("%-10s", $row[8]);
 		if ($UGdisplay > 0)
 			{
-			$user_group =		sprintf("%-12s", $row[9]);
 				if ($non_latin < 1)
 				{
+				$user_group =		sprintf("%-12s", $row[9]);
 				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
 				}
 				else
 				{
+				$user_group =		sprintf("%-40s", $row[9]);
 				while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'utf8');}
 				}
 			}
 		if ($UidORname > 0)
 			{
-			$user =		sprintf("%-18s", $row[10]);
 				if ($non_latin < 1)
 				{
+				$user =		sprintf("%-18s", $row[10]);
 				while(strlen($user)>18) {$user = substr("$user", 0, -1);}
 				}
 				else
 				{
+				$user =		sprintf("%-40s", $row[10]);
 				while(mb_strlen($user, 'utf-8')>18) {$user = mb_substr("$user", 0, -1,'utf8');}
 				}
 			}
