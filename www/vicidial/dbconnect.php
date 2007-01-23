@@ -44,5 +44,6 @@ $local_AMP = '@';
 $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
+$non_latin = '0';	# set to 1 for UTF rules
 
 ?>

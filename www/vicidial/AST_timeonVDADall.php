@@ -575,7 +575,10 @@ $talking_to_print = mysql_num_rows($rslt);
 			}
 		$extension = eregi_replace('Local/',"",$row[0]);
 		$extension =		sprintf("%-10s", $extension);
+			if ($non_latin < 1)
+			{
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
+			}
 		$Luser =			$row[1];
 		$user =				sprintf("%-18s", $row[1]);
 		$Lsessionid =		$row[2];
@@ -588,12 +591,18 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($UGdisplay > 0)
 			{
 			$user_group =		sprintf("%-12s", $row[9]);
+				if ($non_latin < 1)
+				{
 				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
+				}
 			}
 		if ($UidORname > 0)
 			{
 			$user =		sprintf("%-18s", $row[10]);
+				if ($non_latin < 1)
+				{
 				while(strlen($user)>18) {$user = substr("$user", 0, -1);}
+				}
 			}
 		if (!eregi("INCALL|QUEUE",$row[3]))
 			{$call_time_S = ($STARTtime - $row[6]);}

@@ -516,6 +516,8 @@ if (isset($_GET["auto_alt_dial"]))			{$auto_alt_dial=$_GET["auto_alt_dial"];}
 
 ##### BEGIN VARIABLE FILTERING FOR SECURITY #####
 
+if ($non_latin < 1)
+{
 ### DIGITS ONLY ###
 $adaptive_dropped_percentage = ereg_replace("[^0-9]","",$adaptive_dropped_percentage);
 $adaptive_latest_server_time = ereg_replace("[^0-9]","",$adaptive_latest_server_time);
@@ -766,6 +768,8 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 
 ### VARIABLES not filtered at all ###
 # $script_text
+}
+
 
 ##### END VARIABLE FILTERING FOR SECURITY #####
 
