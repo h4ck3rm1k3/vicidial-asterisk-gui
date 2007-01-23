@@ -425,6 +425,16 @@ alter_agent_interface_options ENUM('0','1') default '0',
 closer_default_blended ENUM('0','1') default '0',
 delete_call_times ENUM('0','1') default '0',
 modify_call_times ENUM('0','1') default '0',
+modify_users ENUM('0','1') default '0',
+modify_campaigns ENUM('0','1') default '0',
+modify_lists ENUM('0','1') default '0',
+modify_scripts ENUM('0','1') default '0',
+modify_filters ENUM('0','1') default '0',
+modify_ingroups ENUM('0','1') default '0',
+modify_usergroups ENUM('0','1') default '0',
+modify_remoteagents ENUM('0','1') default '0',
+modify_servers ENUM('0','1') default '0',
+view_reports ENUM('0','1') default '0',
 index (user)
 );
 

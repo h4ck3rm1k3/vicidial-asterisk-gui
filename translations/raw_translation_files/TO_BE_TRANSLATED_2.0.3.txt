@@ -7,6 +7,8 @@ Concurrent Transfers||
 Concurrent Transfers -<\/B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method||
 Auto Alt-Number Dialing -<\/B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method||
 Auto Alt-Number Dialing||
+View Reports -<\/B> This option allows the user to view the VICIDIAL reports.||
+Modify Sections -<\/B> These options allow the user to view and modify each sections records. If set to 0, the user will be able to see the section list, but not the detail or modification screen of a record in that section||
 VICIDIAL AUTO ALT DIAL STATUSES||
 If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set||
 AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN||
@@ -69,6 +71,17 @@ Delete Auto Alt Dial Status||
  Add New Server ||
 CallBacks Within User Group||
 USERS WITHIN THIS USER GROUP||
+Modify Users: ||
+Modify Campaigns: ||
+Modify Lists: ||
+Modify Scripts: ||
+Modify Filters: ||
+Modify In-Groups: ||
+Modify User Groups: ||
+Modify Remote Agents: ||
+Modify Servers: ||
+View Reports: ||
+You do not have permission to view this page||
 
 
 ############################################################ CLIENT

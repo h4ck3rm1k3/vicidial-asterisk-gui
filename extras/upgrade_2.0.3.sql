@@ -12,3 +12,25 @@ ALTER TABLE vicidial_closer_log ADD user_group VARCHAR(20);
 ALTER TABLE vicidial_user_log ADD user_group VARCHAR(20);
 ALTER TABLE vicidial_agent_log ADD user_group VARCHAR(20);
 ALTER TABLE vicidial_callbacks ADD user_group VARCHAR(20);
+
+ALTER TABLE vicidial_users ADD modify_users ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_campaigns ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_lists ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_scripts ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_filters ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_ingroups ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_usergroups ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_remoteagents ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD modify_servers ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD view_reports ENUM('0','1') default '0';
+
+UPDATE vicidial_users SET modify_users='1',view_reports='1' where user_level>7;
+UPDATE vicidial_users SET modify_campaigns='1' where campaign_detail='1';
+UPDATE vicidial_users SET modify_campaigns='1' where delete_campaigns='1';
+UPDATE vicidial_users SET modify_lists='1' where delete_lists='1';
+UPDATE vicidial_users SET modify_scripts='1' where delete_scripts='1';
+UPDATE vicidial_users SET modify_filters='1' where delete_filters='1';
+UPDATE vicidial_users SET modify_ingroups='1' where delete_ingroups='1';
+UPDATE vicidial_users SET modify_usergroups='1' where delete_user_groups='1';
+UPDATE vicidial_users SET modify_remoteagents='1' where delete_remote_agents='1';
+UPDATE vicidial_users SET modify_servers='1' where ast_admin_access='1';

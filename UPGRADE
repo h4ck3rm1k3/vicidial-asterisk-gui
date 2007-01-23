@@ -53,6 +53,14 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	better tracking of stats by user groups. Several reports now offer 
 	user group display options.
 
+13. VERY IMPORTANT!!! Make sure the php.ini setting for memory_limit is set to 
+	a minimum of 12M, we recommend 24M:
+		memory_limit = 24M
+	Some of the scripts have grown in size and need more memory to run
+	properly on some systems.
+
+14. Added ability to control access to each admin section by vicidial_users.
+	
 
 
 

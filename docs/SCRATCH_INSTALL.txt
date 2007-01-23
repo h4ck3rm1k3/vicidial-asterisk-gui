@@ -692,6 +692,8 @@ installation on another machine)
 	- cp php.ini-dist /usr/local/lib/php.ini
 	   NOTE: you will want to make sure notice logging is turned off:
 	   error_reporting  =  E_ALL & ~E_NOTICE         ; (this is default)
+   !!! REQUIRED !!! raise the memory limit for scripts in php.ini:
+	   memory_limit = 24M
 	- vi /usr/local/apache2/conf/httpd.conf
 		add the following lines:
 			"AddType application/x-httpd-php .php .phtml"
