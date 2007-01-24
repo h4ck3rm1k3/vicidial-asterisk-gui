@@ -82,7 +82,8 @@ Modify Remote Agents: ||
 Modify Servers: ||
 View Reports: ||
 You do not have permission to view this page||
-
+Lead Time Zone Lookup: ||
+Lead Duplicate Check: ||
 
 ############################################################ CLIENT
 
