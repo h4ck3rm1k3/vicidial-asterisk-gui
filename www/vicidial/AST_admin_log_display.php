@@ -35,7 +35,7 @@ $build = '60620-1044';
 
 $STARTtime = date("U");
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 8;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 8 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);

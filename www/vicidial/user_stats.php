@@ -39,7 +39,7 @@ $TODAY = date("Y-m-d");
 if (!isset($begin_date)) {$begin_date = $TODAY;}
 if (!isset($end_date)) {$end_date = $TODAY;}
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and view_reports='1';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];

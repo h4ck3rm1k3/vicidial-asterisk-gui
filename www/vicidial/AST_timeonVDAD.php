@@ -33,7 +33,7 @@ if (isset($_GET["closer_display"]))				{$closer_display=$_GET["closer_display"];
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);

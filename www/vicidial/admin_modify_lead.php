@@ -114,7 +114,7 @@ $TODAY = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and modify_leads='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);

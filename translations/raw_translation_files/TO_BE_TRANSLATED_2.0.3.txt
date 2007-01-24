@@ -31,25 +31,25 @@ Delete Auto Alt Dial Status||
  Remote Agents ||
  Admin ||
  Reports ||
- List Users ||
+ Show Users ||
  Add A New User ||
  Search For A User ||
- Add Campaign ||
- List Campaigns ||
- Realtime Campaigns Summary ||
+ Show Campaigns ||
+ Add A New Campaign ||
+ Real-Time Campaigns Summary ||
  Show Lists ||
- Add New List ||
+ Add A New List ||
  Search For A Lead ||
  Add Number To DNC ||
  Load New Leads ||
- Add Script ||
- View Scripts ||
- Add Filter ||
- View Filters ||
+ Show Scripts ||
+ Add A New Script ||
+ Show Filters ||
+ Add A New Filter ||
  Show In-Groups ||
- Add New In-Group ||
- Add User Group ||
- List User Groups ||
+ Add A New In-Group ||
+ Show User Groups ||
+ Add A New User Group ||
  Group Hourly Report ||
  Show Remote Agents ||
  Add New Remote Agents ||
@@ -58,17 +58,17 @@ Delete Auto Alt Dial Status||
  Conferences ||
  Servers ||
  Show Call Times ||
- Add New Call Time ||
+ Add A New Call Time ||
  Show State Call Times ||
- Add New State Call Time ||
- List Phones ||
- Add New Phone ||
- List Conferences ||
- Add New Conference ||
- List VICIDIAL Conferences ||
- Add New VICIDIAL Conference ||
- List Servers ||
- Add New Server ||
+ Add A New State Call Time ||
+ Show Phones ||
+ Add A New Phone ||
+ Show Conferences ||
+ Add A New Conference ||
+ Show VICIDIAL Conferences ||
+ Add A New VICIDIAL Conference ||
+ Show Servers ||
+ Add A New Server ||
 CallBacks Within User Group||
 USERS WITHIN THIS USER GROUP||
 Modify Users: ||
