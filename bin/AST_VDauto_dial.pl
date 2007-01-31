@@ -57,6 +57,7 @@
 # 70115-1635 - Added initial auto-alt-dial functionality
 # 70116-1619 - Added VDAD Ring-No-Answer Auto Alt Dial code
 # 70118-1539 - Added user_group logging to vicidial_user_log
+# 70131-1550 - Fixed Manual dialing trunk shortage bug
 # 
 
 
@@ -586,6 +587,12 @@ while($one_day_interval > 0)
 
 			if ( ($DBIPold_trunk_shortage[$user_CIPct] > $DBIPtrunk_shortage[$user_CIPct]) || ($DBIPold_trunk_shortage[$user_CIPct] < $DBIPtrunk_shortage[$user_CIPct]) )
 				{
+				if ($DBIPadlevel[$user_CIPct] < 1) 
+					{
+					$event_string="Manual Dial Override for Shortage |$DBIPadlevel[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
+					&event_logger;
+					$DBIPtrunk_shortage[$user_CIPct] = 0;
+					}
 				$stmtA = "UPDATE vicidial_campaign_server_stats SET local_trunk_shortage='$DBIPtrunk_shortage[$user_CIPct]' where server_ip='$server_ip' and campaign_id='$DBIPcampaign[$user_CIPct]';";
 				$affected_rows = $dbhA->do($stmtA);
 				}
