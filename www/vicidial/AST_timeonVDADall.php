@@ -118,6 +118,10 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -138,6 +142,10 @@ $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 
 $stmt="select campaign_id from vicidial_campaigns where active='Y';";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -151,6 +159,10 @@ while ($i < $groups_to_print)
 	}
 
 $stmt="select * from vicidial_user_groups;";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -257,6 +269,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout) from vicidial_campaigns;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -283,6 +299,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select count(*) from vicidial_hopper;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
@@ -292,6 +312,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today) from vicidial_campaign_stats;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
@@ -314,6 +338,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $balanceSHORT = $row[0];
@@ -407,6 +435,10 @@ echo "</FORM>\n\n";
 if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);
@@ -422,6 +454,10 @@ else
 
 	$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') $groupSQL;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $parked_to_print = mysql_num_rows($rslt);
@@ -560,6 +596,10 @@ $stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UN
 
 #$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and campaign_id='" . mysql_real_escape_string($group) . "' order by $orderSQL;";
 
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);

@@ -8,6 +8,7 @@
 # 60619-1712 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 70118-1705 - Added user_group filtering option
+# 70201-1207 - Added non_latin UTF8 output code, widened USER ID to 8 chars
 #
 
 require("dbconnect.php");
@@ -54,6 +55,7 @@ if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $stmt="select campaign_id from vicidial_campaigns;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysql_num_rows($rslt);
@@ -65,6 +67,7 @@ while ($i < $campaigns_to_print)
 	$i++;
 	}
 $stmt="select user_group from vicidial_user_groups;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $user_groups_to_print = mysql_num_rows($rslt);
@@ -130,7 +133,7 @@ if (!$group)
 {
 echo "\n";
 echo "PLEASE SELECT A CAMPAIGN AND DATE-TIME ABOVE AND CLICK SUBMIT\n";
-echo " NOTE: stats taken from 6 hour shift specified\n";
+echo " NOTE: stats taken from shift specified\n";
 }
 
 else
@@ -165,11 +168,12 @@ echo "VICIDIAL: Agent Performance Detail                        $NOW_TIME\n";
 echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- AGENTS Details -------------\n\n";
 
-echo "+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
-echo "| USER NAME       | ID     | CALLS  | TIME   | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG| A    | B    | DC   | DNC  | N    | NI   | CB   | SALE |\n";
-echo "+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
+echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
+echo "| USER NAME       | ID       | CALLS  | TIME   | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG| A    | B    | DC   | DNC  | N    | NI   | CB   | SALE |\n";
+echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
 
 $stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,avg(talk_sec),sum(pause_sec),avg(pause_sec),sum(wait_sec),avg(wait_sec),sum(dispo_sec),avg(dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 $ugSQL group by full_name order by calls desc limit 1000;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -185,7 +189,7 @@ while ($i < $rows_to_print)
 	$TOTtotDISPO=($TOTtotDISPO + $row[9]);
 	$calls[$i] =	sprintf("%-6s", $row[0]);
 	$full_name[$i]=	sprintf("%-15s", $row[2]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
-	$user[$i] =		sprintf("%-6s", $row[3]);
+	$user[$i] =		sprintf("%-8s", $row[3]);
 	$USERtime =	($row[1] + $row[5] + $row[7] + $row[9]);
 	$USERtotTALK =	$row[1];
 	$USERavgTALK =	$row[4];
@@ -294,6 +298,7 @@ while($k < $i)
 	{
 	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   "; $ctCB[$k]="0   "; 
 	$stmt="select count(*),status from vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and user='$user[$k]' and campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$rows_to_print = mysql_num_rows($rslt);
@@ -431,9 +436,9 @@ while($k < $i)
 	$TOT_SALE = sprintf("%-5s", $TOT_SALE);
 	$TOT_AGENTS = sprintf("%-4s", $k);
 
-echo "+-----------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
-echo "|  TOTALS      AGENTS:$TOT_AGENTS | $TOTcalls| $TOTtime_MS| $TOTtotPAUSE_MS| $TOTavgPAUSE_MS | $TOTtotWAIT_MS| $TOTavgWAIT_MS | $TOTtotTALK_MS| $TOTavgTALK_MS | $TOTtotDISPO_MS| $TOTavgDISPO_MS | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_CB| $TOT_SALE|\n";
-echo "+--------------------------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
+echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
+echo "|  TOTALS        AGENTS:$TOT_AGENTS | $TOTcalls| $TOTtime_MS| $TOTtotPAUSE_MS| $TOTavgPAUSE_MS | $TOTtotWAIT_MS| $TOTavgWAIT_MS | $TOTtotTALK_MS| $TOTavgTALK_MS | $TOTtotDISPO_MS| $TOTavgDISPO_MS | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_CB| $TOT_SALE|\n";
+echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
 
 echo "\n";
 
