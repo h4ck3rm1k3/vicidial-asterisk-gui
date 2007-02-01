@@ -87,6 +87,7 @@ Lead Duplicate Check: ||
 
 ############################################################ CLIENT
 
+FAST DIAL||
 
 
 ############################################################  MANAGER Manual
@@ -94,3 +95,4 @@ Lead Duplicate Check: ||
 
 ############################################################  AGENT Manual
 
+Add instructions on FAST DIAL

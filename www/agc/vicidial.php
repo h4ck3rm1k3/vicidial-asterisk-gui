@@ -137,7 +137,11 @@
 #            - Added option for alternate number dialing with hotkeys
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70118-1517 - Added vicidial_agent_log and vicidial_user_log logging of user_group
+# 70201-1249 - Added FAST DIAL option for manually dialing, added UTF8 compatible code
 #
+
+$version = '2.0.109';
+$build = '70201-1249';
 
 require("dbconnect.php");
 
@@ -181,9 +185,6 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 
 $forever_stop=0;
-
-$version = '2.0.108';
-$build = '70118-1517';
 
 if ($force_logout)
 {
@@ -257,6 +258,7 @@ $camp_form_code  = "<select size=1 name=VD_campaign>\n";
 $camp_form_code .= "<option value=\"\"></option>\n";
 
 $stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' order by campaign_id";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 $camps_to_print = mysql_num_rows($rslt);
 
@@ -362,6 +364,7 @@ if ($user_login_first == 1)
 		{
 		$stmt="SELECT phone_login,phone_pass from vicidial_users where user='$VD_login' and pass='$VD_pass' and user_level > 0;";
 		if ($DB) {echo "|$stmt|\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$phone_login=$row[0];
@@ -443,6 +446,7 @@ $VDloginDISPLAY=0;
 	{
 	$stmt="SELECT count(*) from vicidial_users where user='$VD_login' and pass='$VD_pass' and user_level > 0;";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -453,6 +457,7 @@ $VDloginDISPLAY=0;
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
 		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$LOGfullname=$row[0];
@@ -476,6 +481,7 @@ $VDloginDISPLAY=0;
 			{$user_abb = eregi_replace("^.","",$user_abb);   $forever_stop++;}
 
 		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$LOGallowed_campaigns		=$row[0];
@@ -506,6 +512,7 @@ $VDloginDISPLAY=0;
 		##### check to see that the campaign is active
 		$stmt="SELECT count(*) FROM vicidial_campaigns where campaign_id='$VD_campaign' and active='Y';";
 		if ($DB) {echo "|$stmt|\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$CAMPactive=$row[0];
@@ -517,6 +524,7 @@ $VDloginDISPLAY=0;
 			$VARstatusnames='';
 			##### grab the statuses that can be used for dispositioning by an agent
 			$stmt="SELECT status,status_name FROM vicidial_statuses WHERE $selectableSQL status != 'NEW' order by status limit 50;";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$VD_statuses_ct = mysql_num_rows($rslt);
@@ -533,6 +541,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the campaign-specific statuses that can be used for dispositioning by an agent
 			$stmt="SELECT status,status_name FROM vicidial_campaign_statuses WHERE $selectableSQL status != 'NEW' and campaign_id='$VD_campaign' order by status limit 50;";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$VD_statuses_camp = mysql_num_rows($rslt);
@@ -553,6 +562,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the campaign-specific HotKey statuses that can be used for dispositioning by an agent
 			$stmt="SELECT hotkey,status,status_name FROM vicidial_campaign_hotkeys WHERE selectable='Y' and status != 'NEW' and campaign_id='$VD_campaign' order by hotkey limit 9;";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$HK_statuses_camp = mysql_num_rows($rslt);
@@ -583,6 +593,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
 			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -637,6 +648,7 @@ $VDloginDISPLAY=0;
 				{
 				$VARingroups='';
 				$stmt="select group_id from vicidial_inbound_groups where active = 'Y' and group_id IN($closer_campaigns) order by group_id limit 20;";
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$closer_ct = mysql_num_rows($rslt);
@@ -653,6 +665,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the number of leads in the hopper for this campaign
 			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id = '$VD_campaign' and status='READY';";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -713,6 +726,7 @@ $VDloginDISPLAY=0;
 $authphone=0;
 $stmt="SELECT count(*) from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
@@ -751,6 +765,7 @@ else
 	echo "<title>VICIDIAL web client</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$extension=$row[0];
@@ -827,6 +842,7 @@ else
 
 	$stmt="SELECT asterisk_version from servers where server_ip='$server_ip';";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$asterisk_version=$row[0];
@@ -880,10 +896,12 @@ else
 
 	$stmt="DELETE from web_client_sessions where start_time < '$past_month_date' and extension='$extension' and server_ip = '$server_ip' and program = 'vicidial';";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 
 	$stmt="INSERT INTO web_client_sessions values('$extension','$server_ip','vicidial','$NOW_TIME','$session_name');";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 
 	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) )
@@ -891,10 +909,12 @@ else
 		### insert an entry into the user log for the login event
 		$stmt = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE','$VU_user_group')";
 		if ($DB) {echo "|$stmt|\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 
 		##### check to see if the user has a conf extension already, this happens if they previously exited uncleanly
 		$stmt="SELECT conf_exten FROM vicidial_conferences where extension='$SIP_user' and server_ip = '$server_ip' LIMIT 1;";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$prev_login_ct = mysql_num_rows($rslt);
@@ -911,6 +931,7 @@ else
 			{
 			##### grab the next available vicidial_conference room and reserve it
 			$stmt="SELECT conf_exten FROM vicidial_conferences where server_ip = '$server_ip' and ((extension='') or (extension is null)) LIMIT 1;";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$free_conf_ct = mysql_num_rows($rslt);
@@ -922,6 +943,7 @@ else
 				$i++;
 				}
 			$stmt="UPDATE vicidial_conferences set extension='$SIP_user' where server_ip='$server_ip' and conf_exten='$session_id';";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			print "<!-- USING NEW MEETME ROOM - $session_id - $NOW_TIME - $SIP_user -->\n";
 
@@ -929,18 +951,21 @@ else
 
 		$stmt="UPDATE vicidial_list set status='N', user='' where status IN('QUEUE','INCALL') and user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- old QUEUE and INCALL reverted list:   |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_hopper where status IN('QUEUE','INCALL','DONE') and user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- old QUEUE and INCALL reverted hopper: |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_live_agents where user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- old vicidial_live_agents records cleared: |$affected_rows| -->\n";
@@ -953,6 +978,7 @@ else
 		### insert a NEW record to the vicidial_manager table to be processed
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: $SIqueryCID','','','','','');";
 		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- call placed to session_id: $session_id from phone: $SIP_user -->\n";
@@ -964,6 +990,7 @@ else
 			$closer_chooser_string='';
 			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$closer_chooser_string','$user_level');";
 			if ($DB) {echo "$stmt\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
 			print "<!-- new vicidial_live_agents record inserted: |$affected_rows| -->\n";
@@ -979,6 +1006,7 @@ else
 
 			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$user_level');";
 			if ($DB) {echo "$stmt\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
 			print "<!-- new vicidial_live_agents record inserted: |$affected_rows| -->\n";
@@ -1034,6 +1062,7 @@ else
 	##### Agent is going to log in so insert the vicidial_agent_log entry now
 	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group) values('$VD_login','$server_ip','$NOW_TIME','$VD_campaign','$StarTtimE','0','$StarTtimE','$VU_user_group');";
 	if ($DB) {echo "$stmt\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$affected_rows = mysql_affected_rows($link);
 	$agent_log_id = mysql_insert_id();
@@ -1053,6 +1082,7 @@ else
 
 	##### grab the datails of all active scripts in the system
 	$stmt="SELECT script_id,script_name,script_text FROM vicidial_scripts WHERE active='Y' order by script_id limit 100;";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$MM_scripts = mysql_num_rows($rslt);
@@ -2544,7 +2574,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Open page to enter details for a new manual dial lead
-	function NeWManuaLDiaLCalL()
+	function NeWManuaLDiaLCalL(TVfast)
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
@@ -2552,7 +2582,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		else
 			{
-			showDiv('NeWManuaLDiaLBox');
+			if (TVfast=='FAST')
+				{
+				NeWManuaLDiaLCalLSubmiTfast();
+				}
+			else
+				{
+				showDiv('NeWManuaLDiaLBox');
+				}
 			}
 		}
 
@@ -2590,6 +2627,28 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.vicidial_form.MDDiaLOverridE.value = '';
 		}
 
+// ################################################################################
+// Fast version of manual dial
+		function NeWManuaLDiaLCalLSubmiTfast()
+		{
+		var MDDiaLCodEform = document.vicidial_form.phone_code.value;
+		var MDPhonENumbeRform = document.vicidial_form.phone_number.value;
+
+		var MDLookuPLeaD = 'new';
+		if (document.vicidial_form.LeadLookuP.checked==true)
+			{MDLookuPLeaD = 'lookup';}
+		
+			alt_phone_dialing=1;
+			auto_dial_level=0;
+			manual_dial_in_progress=1;
+			MainPanelToFront();
+			buildDiv('DiaLLeaDPrevieW');
+			buildDiv('DiaLDiaLAltPhonE');
+			document.vicidial_form.LeadPreview.checked=false;
+			document.vicidial_form.DiaLAltPhonE.checked=true;
+			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD);
+		
+		}
 
 // ################################################################################
 // Request lookup of manual dial channel
@@ -5564,7 +5623,7 @@ echo "</head>\n";
 </span>
 
 <span style="position:absolute;left:300px;top:365px;z-index:13;" id="ManuaLDiaLButtons"><font class="body_text">
-<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL();return false;">MANUAL DIAL</a></span> <BR>
+<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO');return false;">MANUAL DIAL</a></span> &nbsp; &nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST');return false;">FAST DIAL</a><BR>
 </font></span>
 
 <span style="position:absolute;left:300px;top:350px;z-index:14;" id="CallbacksButtons"><font class="body_text">
