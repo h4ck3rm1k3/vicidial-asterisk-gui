@@ -88,6 +88,7 @@ Lead Duplicate Check: ||
 ############################################################ CLIENT
 
 FAST DIAL||
+YOU MUST BE ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL||
 
 
 ############################################################  MANAGER Manual
