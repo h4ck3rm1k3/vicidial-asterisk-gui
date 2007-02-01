@@ -138,10 +138,11 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70118-1517 - Added vicidial_agent_log and vicidial_user_log logging of user_group
 # 70201-1249 - Added FAST DIAL option for manually dialing, added UTF8 compatible code
+# 70201-1703 - Fixed cursor bug for most text input fields
 #
 
-$version = '2.0.109';
-$build = '70201-1249';
+$version = '2.0.110';
+$build = '70201-1703';
 
 require("dbconnect.php");
 
@@ -221,7 +222,7 @@ $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
 
-$TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
+$TEST_all_statuses		= '1';	# TEST variable allows all statuses in dispo screen
 
 # options now set in DB:
 #$alt_phone_dialing		= '1';	# allow agents to call alt phone numbers
@@ -1939,7 +1940,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 									{var row_color = '#CCCCFF';}
 								var conv_ct = (loop_ct + conv_start);
 								var channelfieldA = conf_chan_array[conv_ct];
-					//			live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">Hangup</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">XFER</td></tr>";
 								if (volumecontrol_active!=1)
 									{
 									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
@@ -1988,7 +1988,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							if (LMAcontent_change > 0)
 								{
 								if (conf_channels_xtra_display == 1)
-									{document.getElementById("outboundcallsspan").innerHTML = live_conf_HTML;}
+									{
+							//		document.getElementById("MainPanel").style.overflow = 'visible';
+									document.getElementById("outboundcallsspan").innerHTML = live_conf_HTML;
+							//		document.getElementById("MainPanel").style.overflow = 'auto';
+									}
 								}
 							nochannelinsession=0;
 							}
@@ -2634,9 +2638,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var MDDiaLCodEform = document.vicidial_form.phone_code.value;
 		var MDPhonENumbeRform = document.vicidial_form.phone_number.value;
 
-		var MDLookuPLeaD = 'new';
-		if (document.vicidial_form.LeadLookuP.checked==true)
-			{MDLookuPLeaD = 'lookup';}
+		if ( (MDDiaLCodEform.length < 1) || (MDPhonENumbeRform.length < 5) )
+			{
+			alert("YOU MUST BE ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL");
+			}
+		else
+			{
+			var MDLookuPLeaD = 'new';
+			if (document.vicidial_form.LeadLookuP.checked==true)
+				{MDLookuPLeaD = 'lookup';}
 		
 			alt_phone_dialing=1;
 			auto_dial_level=0;
@@ -2647,7 +2657,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.LeadPreview.checked=false;
 			document.vicidial_form.DiaLAltPhonE.checked=true;
 			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD);
-		
+			}
 		}
 
 // ################################################################################
@@ -5030,7 +5040,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			hideDiv('CBcommentsBox');
 			hideDiv('HotKeyActionBox');
 			hideDiv('HotKeyEntriesBox');
-			hideDiv('MainXfeRBox');
 			hideDiv('MainPanel');
 			hideDiv('ScriptPanel');
 			hideDiv('DispoSelectBox');
@@ -5432,25 +5441,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		}
 
-
-	function showMainXfeR(divvar,taskxferchan,taskxferchanmain) 
-		{
-		document.getElementById("MainXfeRBox").style.visibility = 'visible';
-		getactiveext("MainXfeRBox");
-		conference_list_display_refresh("MainXfeRconfContent");
-		var XfeR_channel = taskxferchan;
-		document.vicidial_form.H_XfeR_channel.value = XfeR_channel;
-		document.vicidial_form.M_XfeR_channel.value = taskxferchanmain;
-		document.getElementById("MainXfeRChanneL").innerHTML = XfeR_channel;
-		}
-	function hideMainXfeR(divvar) 
-		{
-		document.getElementById("MainXfeRBox").style.visibility = 'hidden';
-		var XfeR_channel = '';
-		document.vicidial_form.H_XfeR_channel.value = '';
-		document.vicidial_form.M_XfeR_channel.value = '';
-		document.getElementById("MainXfeRChanneL").innerHTML = '';
-		}
 	function conf_channels_detail(divvar) 
 		{
 		if (divvar == 'SHOW')
@@ -5560,17 +5550,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 	</script>
 
-    <STYLE type="text/css">
-    </STYLE>
-
 
 <style type="text/css">
 <!--
-	div.scroll_log {height: 135px; width: 600px; overflow: scroll;}
 	div.scroll_callback {height: 300px; width: 620px; overflow: scroll;}
-	div.scroll_park {height: 400px; width: 620px; overflow: scroll;}
 	div.scroll_list {height: 400px; width: 140px; overflow: scroll;}
 	div.scroll_script {height: 331px; width: 600px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
+	div.text_input {overflow: auto; font-size: 10px;  font-family: sans-serif;}
    .body_text {font-size: 13px;  font-family: sans-serif;}
    .preview_text {font-size: 13px;  font-family: sans-serif; background: #CCFFCC}
    .preview_text_red {font-size: 13px;  font-family: sans-serif; background: #FFCCCC}
@@ -5585,7 +5571,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
    .skb_text {font-size: 13px;  font-family: sans-serif; font-weight: bold;}
    .ON_conf {font-size: 11px;  font-family: monospace; color: black ; background: #FFFF99}
    .OFF_conf {font-size: 11px;  font-family: monospace; color: black ; background: #FFCC77}
-   .cust_form {font-family : sans-serif; font-size : 10px}
+   .cust_form {font-family: sans-serif; font-size: 10px; overflow: auto}
 
 -->
 </style>
@@ -5656,7 +5642,9 @@ echo "</head>\n";
 	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (This is usually a 1 in the USA-Canada)</td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Phone Number: </td>
-	<td align=left><font class="body_text"><input type=text size=14 maxlength=12 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (12 digits max - digits only)</td>
+	<td align=left><font class="body_text">
+	<input type=text size=14 maxlength=12 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (12 digits max - digits only)
+	</td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Search Existing Leads: </td>
 	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (This option if checked will attempt to find the phone number in the system before inserting it as a new lead)</td>
@@ -5665,7 +5653,8 @@ echo "</head>\n";
 	<td align=right colspan=2><BR><BR>If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Dial Override field below. To hangup this call you will have to open the CALLS IN THIS SESSION link at the bottom of the screen and hang it up by clicking on its channel link there.<BR> &nbsp; </td>
 	</tr><tr>
 	<td align=right><font class="body_text"> Dial Override: </td>
-	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (digits only please)</td>
+	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (digits only please)
+	</td>
 	</tr></table>
 	<BR>
 	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Dial Now</a>
@@ -5689,6 +5678,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 <span style="position:absolute;left:5px;top:310px;z-index:21;" id="TransferMain">
 	<table bgcolor="#CCCCFF" width=750><tr>
 	<td align=left>
+	<div class="text_input" id="TransferMaindiv">
 	<font class="body_text">
 	 <IMG SRC="./images/vdc_XB_header.gif" border=0 alt="Transfer - Conference"><BR>
 	<span STYLE="background-color: #CCCCCC" id="InternalCloser"><IMG SRC="./images/vdc_XB_internalcloser.gif" border=0 alt="INTERNAL CLOSER"></span>
@@ -5714,6 +5704,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="./images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Dial Blind Transfer"></span>
 	<span STYLE="background-color: #CCCCCC" id="DialBlindVMail"><IMG SRC="./images/vdc_XB_ammessage_OFF.gif" border=0 alt="Blind Transfer VMail Message"></span>
 	</font>
+	</div>
 	</td>
 	</tr></table>
 </span>
@@ -5879,23 +5870,6 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	?>
 </span>
 
-<span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
-	<input type=hidden name=H_XfeR_channel>
-	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=720 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> LIVE CALL TRANSFER</b> <BR>Channel to be transferred: <span id="MainXfeRChanneL">Channel</span><BR></tr>
-	<tr><td>Extensions:<BR><span id="MainXfeRContent"> Extensions Menu </span></td>
-	<td>
-	<BR>
-	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Send to selected extension</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Send to selected vmail box</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Send to this number</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
-	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">REFRESH</a> <BR><BR><BR>
-	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Back to Main Window</a> <BR><BR>
-	</TD>
-	<TD>Conferences:<BR><font size=1>(click on a number below to send to a conference)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Send my channel too<div class="scroll_list" id="MainXfeRconfContent"> Conferences Menu </div></td></TR></TABLE>
-</span>
-
-
 
 <span style="position:absolute;left:154px;top:65px;z-index:15;" id="ScriptPanel">
     <table border=0 bgcolor="#FFE7D0" width=606 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
@@ -5907,7 +5881,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 
 <!-- BEGIN *********   Here is the main VICIDIAL display panel -->
-<span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
+<span style="position:absolute;left:0px;top:46px;width=1000px;height=1000px;z-index:10;" id="MainPanel">
 <TABLE border=0 BGCOLOR="#E0C2D6" width=760 id="MainTable">
 <TR><TD colspan=3><font class="body_text"> STATUS: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
@@ -5941,7 +5915,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <span id="SpacerSpanC"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="./images/vdc_LB_hangupcustomer_OFF.gif" border=0 alt="Hangup Customer"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF"></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></span><BR>
+<div class="text_input" id="SendDTMFdiv"><span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF" align=bottom></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></div></span><BR>
 </center>
 </font>
 </td>
@@ -5955,6 +5929,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <input type=hidden name=country_code value="">
 <input type=hidden name=uniqueid value="">
 <input type=hidden name=callserverip value="">
+<div class="text_input" id="MainPanelCustInfo">
 <table><tr>
 <td align=right><font class="body_text"> seconds: </td>
 <td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Channel: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Cust Time: <input type=text size=22 name=custdatetime class="cust_form" value=""></td>
@@ -5983,14 +5958,18 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right valign=top><font class="body_text"> Comments: </td>
+<td align=left>
+<font class="body_text">
 <?
 if ( ($multi_line_comments) )
-	{echo "<td align=left><font class=\"body_text\"><TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA></td>\n";}
+	{echo "<TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA>\n";}
 else
-	{echo "<td align=left><font class=\"body_text\"><input type=text size=65 name=comments maxlength=255 class=\"cust_form\" value=\"\"></td>\n";}
+	{echo "<input type=text size=65 name=comments maxlength=255 class=\"cust_form\" value=\"\">\n";}
 ?>
-
+</font>
+</td>
 </tr></table>
+</div>
 </font>
 </td>
 <td width=1 align=center>
