@@ -34,3 +34,5 @@ UPDATE vicidial_users SET modify_ingroups='1' where delete_ingroups='1';
 UPDATE vicidial_users SET modify_usergroups='1' where delete_user_groups='1';
 UPDATE vicidial_users SET modify_remoteagents='1' where delete_remote_agents='1';
 UPDATE vicidial_users SET modify_servers='1' where ast_admin_access='1';
+
+ALTER TABLE inbound_numbers ADD department VARCHAR(30);

@@ -166,7 +166,8 @@ comment_e VARCHAR(50)
 extension VARCHAR(30) NOT NULL,
 full_number VARCHAR(30) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
-inbound_name VARCHAR(30)
+inbound_name VARCHAR(30),
+department VARCHAR(30)
 );
 
  CREATE TABLE server_updater (
