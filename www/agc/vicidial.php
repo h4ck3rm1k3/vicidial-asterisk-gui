@@ -139,10 +139,11 @@
 # 70118-1517 - Added vicidial_agent_log and vicidial_user_log logging of user_group
 # 70201-1249 - Added FAST DIAL option for manually dialing, added UTF8 compatible code
 # 70201-1703 - Fixed cursor bug for most text input fields
+# 70202-1453 - Added first portions of Agent Pause Codes
 #
 
-$version = '2.0.110';
-$build = '70201-1703';
+$version = '2.0.111';
+$build = '70202-1453';
 
 require("dbconnect.php");
 
@@ -593,7 +594,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -630,6 +631,7 @@ $VDloginDISPLAY=0;
 			   $use_internal_dnc=$row[29];
 			   $allcalls_delay=$row[30];
 			   $omit_phone_code=$row[31];
+			   $agent_pause_codes_active=$row[32];
 
 			if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
 				{$scheduled_callbacks='1';}
@@ -642,6 +644,30 @@ $VDloginDISPLAY=0;
 			$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
 			$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
 			$closer_campaigns = "'$closer_campaigns'";
+
+			if ($agent_pause_codes_active=='Y')
+				{
+				##### grab the campaign-specific statuses that can be used for dispositioning by an agent
+				$stmt="SELECT pause_code,pause_code_name FROM vicidial_pause_codes WHERE campaign_id='$VD_campaign' order by pause_code limit 50;";
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$VD_pause_codes = mysql_num_rows($rslt);
+				$j=0;
+				while ($j < $VD_pause_codes)
+					{
+					$row=mysql_fetch_row($rslt);
+					$pause_codes[$i] =$row[0];
+					$pause_code_names[$i] =$row[1];
+					$VARpause_codes = "$VARpause_codes'$pause_codes[$i]',";
+					$VARpause_code_names = "$VARpause_code_names'$pause_code_names[$i]',";
+					$i++;
+					$j++;
+					}
+				$VD_pause_codes_ct = ($VD_pause_codes_ct+$VD_pause_codes);
+				$VARpause_codes = substr("$VARpause_codes", 0, -1); 
+				$VARpause_code_names = substr("$VARpause_code_names", 0, -1); 
+				}
 
 			##### grab the inbound groups to choose from if campaign contains CLOSER
 			$VARingroups="''";
@@ -1261,6 +1287,11 @@ $CCAL_OUT .= "</table>";
 	var CallBackCommenTs = '';
 	var scheduled_callbacks = '<? echo $scheduled_callbacks ?>';
 	var dispo_check_all_pause = '<? echo $dispo_check_all_pause ?>';
+	var pause_code_select_display = 0;
+	var agent_pause_codes_active = '<? echo $agent_pause_codes_active ?>';
+	VARpause_codes = new Array(<? echo $VARpause_codes ?>);
+	VARpause_code_names = new Array(<? echo $VARpause_code_names ?>);
+	var VD_pause_codes_ct = '<? echo $VD_pause_codes_ct ?>';
 	VARstatuses = new Array(<? echo $VARstatuses ?>);
 	VARstatusnames = new Array(<? echo $VARstatusnames ?>);
 	var VD_statuses_ct = '<? echo $VD_statuses_ct ?>';
@@ -1469,6 +1500,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CBuser = '';
 	var CBcomments = '';
 	var volumecontrol_active = '<? echo $volumecontrol_active ?>';
+	var PauseCode_HTML = '';
 	var manual_auto_hotkey = 0;
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -3265,6 +3297,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			AutoDialReady = 0;
 			AutoDialWaiting = 0;
 			document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+			if (agent_pause_codes_active=='Y')
+				{
+				pause_code_select_display=1;
+				}
 			}
 
 		var xmlhttp=false;
@@ -4175,6 +4211,25 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.getElementById("DispoSelectContent").innerHTML = dispo_HTML;
 		}
 
+// ################################################################################
+// Generate the Pause Code Chooser panel
+	function PauseCodeSelectContent_create(taskDSgrp,taskDSstage)
+		{
+		pause_code_HTML = '';
+		document.vicidial_form.PauseCodeSelection.value = '';		
+		var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
+		pause_code_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> PAUSE CODE</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectA>";
+		var loop_ct = 0;
+		while (loop_ct < VD_pause_codes_ct)
+			{
+			PauseCode_HTML = PauseCode_HTML + "<font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('" + VARpause_codes[loop_ct] + "');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><BR><BR>";
+			if (loop_ct == VD_pause_codes_ct_half) 
+				{PauseCode_HTML = PauseCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectB>";}
+			loop_ct++;
+			}
+		PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table>";
+		document.getElementById("PauseCodeSelectContent").innerHTML = PauseCode_HTML;
+		}
 
 // ################################################################################
 // open web form, then submit disposition
@@ -4339,6 +4394,52 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			}
 		}
+
+
+// ################################################################################
+// Submit the Pause Code 
+	function PauseCodeSelect_submit(newpausecode)
+		{
+		hideDiv('PauseCodeSelectBox');
+		WaitingForNextStep=0;
+
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauseCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id;
+			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(VMCpausecode_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+			//		alert(xmlhttp.responseText);
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+
+
 
 // ################################################################################
 // Populate the dtmf and xfer number for each preset link in xfer-conf frame
@@ -5055,6 +5156,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			hideDiv('DispoButtonHideC');
 			hideDiv('CallBacKsLisTBox');
 			hideDiv('NeWManuaLDiaLBox');
+			hideDiv('PauseCodeSelectBox');
 			if (agentonly_callbacks != '1')
 				{hideDiv('CallbacksButtons');}
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
@@ -5130,6 +5232,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				WaitingForNextStep=1;
 				check_for_conf_calls(session_id, '0');
+				}
+			if (pause_code_select_display==1)
+				{
+				PauseCodeSelectContent_create('','ReSET');
+				showDiv('PauseCodeSelectBox');
+				WaitingForNextStep=1;
 				}
 			if (logout_stop_timeouts==1)	{WaitingForNextStep=1;}
 			if ( (custchannellive < -30) && (lastcustchannel.length > 3) ) {CustomerChanneLGone();}
@@ -5805,6 +5913,13 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
+<span style="position:absolute;left:0px;top:0px;z-index:38;" id="PauseCodeSelectBox">
+    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
+	<span id="PauseCodeSelectContent"> Pause Code Selection </span>
+	<input type=hidden name=PauseCodeSelection>
+	<BR><BR> &nbsp; 
+	</TD></TR></TABLE>
+</span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:33;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>

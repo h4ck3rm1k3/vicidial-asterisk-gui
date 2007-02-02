@@ -13,7 +13,7 @@
 #  - $pass
 # optional variables:
 #  - $format - ('text','debug')
-#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT')
+#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit')
 #  - $stage - ('start','finish','lookup','new')
 #  - $closer_choice - ('CL_TESTCAMP_L CL_OUT123_L -')
 #  - $conf_exten - ('8600011',...)
@@ -114,10 +114,11 @@
 # 70115-1733 - Added alt_dial functionality in auto-dial modes
 # 70118-1501 - Added user_group to vicidial_log,_agent_log,_closer_log,_callbacks
 # 70123-1357 - Fixed bug that would not update vicidial_closer_log status to dispo
+# 70202-1438 - Added pause code submit function
 #
 
-$version = '2.0.41';
-$build = '70123-1357';
+$version = '2.0.42';
+$build = '70202-1438';
 
 require("dbconnect.php");
 
@@ -1735,6 +1736,27 @@ if ($ACTION == 'UpdatEFavoritEs')
 		}
 	}
 	echo "Favorites list has been updated to $favorites_list for $exten\n";
+}
+
+
+################################################################################
+### PauseCodeSubmit - Update vicidial_agent_log with pause code
+################################################################################
+if ($ACTION == 'PauseCodeSubmit')
+{
+	$row='';   $rowx='';
+	if ( (strlen($status)<1) || (strlen($agent_log_id)<1) )
+	{
+	echo "agent_log_id $agent_log_id or pause_code $status is not valid\n";
+	exit;
+	}
+	else
+	{
+	$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\" where agent_log_id='$agent_log_id';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+	}
+echo "Pause Code has been updated to $status for $agent_log_id\n";
 }
 
 
