@@ -20,7 +20,7 @@ Requirements for installing astGUIclient/VICIDIAL on an Asterisk server:
 - Perl5 with several CPAN modules(Time::HiRes, DBD::mysql, Net::Telnet, etc)
 - asterisk-per-0.08 perl module required (0.09 version does NOT work)
 - Access to MySQL server and mysqlclientlibs, must be version 4.0.X or higher
-- Access to Apache/PHP webserver, php.ini memory_limit set to 12M minimum
+- Access to Apache/PHP webserver, php.ini memory_limit set to 24M
 - Several entries in the crontab for interval-running scripts and keepalives
 
 Requirements for using the astGUIclient/VICIDIAL web-client versions

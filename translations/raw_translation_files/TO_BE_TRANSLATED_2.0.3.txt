@@ -84,6 +84,24 @@ View Reports: ||
 You do not have permission to view this page||
 Lead Time Zone Lookup: ||
 Lead Duplicate Check: ||
+Agent Pause Codes Active -<\/B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N||
+AGENT PAUSE CODES||
+If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the vicidial agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.||
+AGENT PAUSE CODES FOR THIS CAMPAIGN||
+PAUSE CODES||
+BILLABLE||
+ADD NEW AGENT PAUSE CODE||
+Pause Code: ||
+Pause Code Name: ||
+Billable: ||
+New Agent Pause Code||
+Modify Agent Pause Code||
+Delete Agent Pause Code||
+AGENT PAUSE CODE NOT ADDED||
+there is already an entry for this campaign with this  pause code||
+AGENT PAUSE CODE ADDED||
+AGENT PAUSE CODE NOT MODIFIED||
+CAMPAIGN PAUSE CODE NOT DELETED||
 
 ############################################################ CLIENT
 

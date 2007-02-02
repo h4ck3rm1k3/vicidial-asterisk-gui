@@ -529,6 +529,14 @@ if (isset($_GET["modify_servers"]))				{$modify_servers=$_GET["modify_servers"];
 	elseif (isset($_POST["modify_servers"]))	{$modify_servers=$_POST["modify_servers"];}
 if (isset($_GET["view_reports"]))				{$view_reports=$_GET["view_reports"];}
 	elseif (isset($_POST["view_reports"]))		{$view_reports=$_POST["view_reports"];}
+if (isset($_GET["agent_pause_codes_active"]))			{$agent_pause_codes_active=$_GET["agent_pause_codes_active"];}
+	elseif (isset($_POST["agent_pause_codes_active"]))	{$agent_pause_codes_active=$_POST["agent_pause_codes_active"];}
+if (isset($_GET["pause_code"]))				{$pause_code=$_GET["pause_code"];}
+	elseif (isset($_POST["pause_code"]))	{$pause_code=$_POST["pause_code"];}
+if (isset($_GET["pause_code_name"]))			{$pause_code_name=$_GET["pause_code_name"];}
+	elseif (isset($_POST["pause_code_name"]))	{$pause_code_name=$_POST["pause_code_name"];}
+if (isset($_GET["billable"]))				{$billable=$_GET["billable"];}
+	elseif (isset($_POST["billable"]))		{$billable=$_POST["billable"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -666,6 +674,7 @@ $available_only_ratio_tally = ereg_replace("[^NY]","",$available_only_ratio_tall
 $sys_perf_log = ereg_replace("[^NY]","",$sys_perf_log);
 $vicidial_balance_active = ereg_replace("[^NY]","",$vicidial_balance_active);
 $vd_server_logs = ereg_replace("[^NY]","",$vd_server_logs);
+$agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -894,12 +903,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70118-1706 - Added new user group displays and links
 # 70123-1519 - Added user permission settings for all sections
 # 70124-1346 - Fixed spelling errors and formatting consistency
+# 70202-1120 - Added agent_pause_codes section to campaigns
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.82';
-$build = '70124-1346';
+$version = '2.0.83';
+$build = '70202-1120';
 
 $STARTtime = date("U");
 
@@ -1023,6 +1033,7 @@ if ($ADD==22)			{$hh='campaigns';	echo "New Campaign Status Addition";}
 if ($ADD==23)			{$hh='campaigns';	echo "New Campaign HotKey Addition";}
 if ($ADD==25)			{$hh='campaigns';	echo "New Campaign Lead Recycle Addition";}
 if ($ADD==26)			{$hh='campaigns';	echo "New Auto Alt Dial Status";}
+if ($ADD==27)			{$hh='campaigns';	echo "New Agent Pause Code";}
 if ($ADD==211)			{$hh='lists';		echo "New List Addition";}
 if ($ADD==2111)			{$hh='ingroups';	echo "New In-Group Addition";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
@@ -1061,6 +1072,7 @@ if ($ADD==42)			{$hh='campaigns';	echo "Modify Campaign Status";}
 if ($ADD==43)			{$hh='campaigns';	echo "Modify Campaign HotKey";}
 if ($ADD==44)			{$hh='campaigns';	echo "Modify Campaign - Basic View";}
 if ($ADD==45)			{$hh='campaigns';	echo "Modify Campaign Lead Recycle";}
+if ($ADD==47)			{$hh='campaigns';	echo "Modify Agent Pause Code";}
 if ($ADD==411)			{$hh='lists';		echo "Modify List";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Modify In-Group";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
@@ -1096,6 +1108,7 @@ if ($ADD==62)			{$hh='campaigns';	echo "Logout Agents";}
 if ($ADD==63)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==65)			{$hh='campaigns';	echo "Delete Lead Recycle";}
 if ($ADD==66)			{$hh='campaigns';	echo "Delete Auto Alt Dial Status";}
+if ($ADD==67)			{$hh='campaigns';	echo "Delete Agent Pause Code";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -1804,6 +1817,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Allowed Inbound Groups -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound-outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
 
+<BR>
+<A NAME="vicidial_campaigns-agent_pause_codes_active">
+<BR>
+<B>Agent Pause Codes Active -</B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N.
+
 
 
 <BR><BR><BR><BR>
@@ -2001,6 +2019,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_auto_alt_dial_statuses">
 <BR>
 <B>If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set.</B>
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL AGENT PAUSE CODES</FONT></B><BR><BR>
+<A NAME="vicidial_pause_codes">
+<BR>
+<B>If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the vicidial agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.</B>
 
 
 
@@ -3849,6 +3878,46 @@ $ADD=31;
 
 
 ######################
+# ADD=27 adds the new campaign agent pause code entry to the system
+######################
+
+if ($ADD==27)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>AGENT PAUSE CODE NOT ADDED - there is already an entry for this campaign with this  pause code\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($pause_code) < 1) or (strlen($pause_code) > 6) or (strlen($pause_code_name) < 2) )
+			{
+			 echo "<br>AGENT PAUSE CODE NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>pause code must be between 1 and 6 characters in length\n";
+			 echo "<br>pause code name must be between 2 and 30 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>AGENT PAUSE CODE ADDED: $campaign_id - $pause_code - $pause_code_name</B>\n";
+
+			$stmt="INSERT INTO vicidial_pause_codes(campaign_id,pause_code,pause_code_name,billable) values('$campaign_id','$pause_code','$pause_code_name','$billable');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW AGENT PAUSE CODE|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=31;
+}
+
+
+######################
 # ADD=211 adds the new list to the system
 ######################
 
@@ -4517,7 +4586,7 @@ if ($ADD==41)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial' where campaign_id='$campaign_id';";
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -4740,6 +4809,46 @@ if ($ADD==45)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
 			fwrite ($fp, "$date|MODIFY LEAD RECYCLE   |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=31;	# go to campaign modification form below
+}
+
+######################
+# ADD=47 modify agent pause code in the system
+######################
+
+if ($ADD==47)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($campaign_id) < 2) or (strlen($pause_code) < 1) or (strlen($pause_code) > 6) or (strlen($pause_code_name) < 2) )
+		{
+		 echo "<br>AGENT PAUSE CODE NOT MODIFIED - Please go back and look at the data you entered\n";
+		 echo "<br>pause_code must be between 1 and 6 characters in length\n";
+		 echo "<br>pause_code name must be between 2 and 30 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>AGENT PAUSE CODE MODIFIED: $campaign_id - $pause_code - $pause_code_name</B>\n";
+
+		$stmt="UPDATE vicidial_pause_codes SET pause_code_name='$pause_code_name',billable='$billable' where campaign_id='$campaign_id' and pause_code='$pause_code';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY AGENT PAUSECODE|$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		}
@@ -5967,6 +6076,45 @@ if ($ADD==66)
 $ADD=31;	# go to campaign modification form below
 }
 
+######################
+# ADD=67 delete agent pause code in the system
+######################
+
+if ($ADD==67)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($campaign_id) < 2) or (strlen($pause_code) < 1) )
+		{
+		 echo "<br>CAMPAIGN PAUSE CODE NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>pause code must be between 1 and 6 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>CAMPAIGN PAUSE CODE DELETED: $campaign_id - $pause_code</B>\n";
+
+		$stmt="DELETE FROM vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|DELETE AGENT PAUSECODE|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=31;	# go to campaign modification form below
+}
+
 
 ######################
 # ADD=611 delete list record and all leads within it
@@ -6692,6 +6840,7 @@ if ($ADD==31)
 		$concurrent_transfers = $row[53];
 		$auto_alt_dial = $row[54];
 		$auto_alt_dial_statuses = $row[55];
+		$agent_pause_codes_active = $row[56];
 
 	echo "<br>MODIFY A CAMPAIGNS RECORD: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Basic View</a>";
 	echo " | Detail View</a> | ";
@@ -6895,6 +7044,8 @@ if ($ADD==31)
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Use Internal DNC List: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
 
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Pause Codes Active: </td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
+
 
 	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $campaign_id))
 		{
@@ -7086,8 +7237,8 @@ if ($ADD==31)
 		echo "<input type=hidden name=status value=\"$rowx[2]\">\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 		echo "<input type=hidden name=ADD value=45></td>\n";
-		echo "<td><font size=1><input size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
-		echo "<td><font size=1><input size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
+		echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
+		echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
 		echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$rowx[5]</option></select></td>\n";
 		echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$rowx[2]\">DELETE</a></td></tr>\n";
@@ -7102,8 +7253,8 @@ if ($ADD==31)
 	echo "Status: <select size=1 name=status>\n";
 	echo "$LRstatuses_list\n";
 	echo "</select> &nbsp; \n";
-	echo "Attempt Delay: <input size=7 maxlength=5 name=attempt_delay>\n";
-	echo "Attempt Maximum: <input size=5 maxlength=3 name=attempt_maximum>\n";
+	echo "Attempt Delay: <input type=text size=7 maxlength=5 name=attempt_delay>\n";
+	echo "Attempt Maximum: <input type=text size=5 maxlength=3 name=attempt_maximum>\n";
 	echo "<input type=submit name=submit value=ADD><BR>\n";
 
 	echo "</FORM><br>\n";
@@ -7141,7 +7292,50 @@ if ($ADD==31)
 	echo "</select> &nbsp; \n";
 	echo "<input type=submit name=submit value=ADD><BR>\n";
 
+	echo "</FORM><br>\n";
+
+
+
+	echo "<br><br><b>AGENT PAUSE CODES FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_pause_codes$NWE</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>PAUSE CODES</td><td>BILLABLE</td><td>MODIFY</td><td>DELETE</td></tr>\n";
+
+		$stmt="SELECT * from vicidial_pause_codes where campaign_id='$campaign_id' order by pause_code";
+		$rslt=mysql_query($stmt, $link);
+		$pause_codes_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($pause_codes_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>$rowx[0]\n";
+		echo "<input type=hidden name=ADD value=47>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "<input type=hidden name=pause_code value=\"$rowx[0]\"> &nbsp;\n";
+		echo "<input type=text size=20 maxlength=30 name=pause_code_name value=\"$rowx[1]\"></td>\n";
+		echo "<td><select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option><option SELECTED>$rowx[2]</option></select></td>\n";
+		echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=67&campaign_id=$campaign_id&pause_code=$rowx[0]\">DELETE</a></td></tr>\n";
+		}
+
+	echo "</table>\n";
+
+	echo "<br>ADD NEW AGENT PAUSE CODE<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=27>\n";
+	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+	echo "Pause Code: <input type=text size=8 maxlength=6 name=pause_code>\n";
+	echo "Pause Code Name: <input type=text size=20 maxlength=30 name=pause_code_name>\n";
+	echo " &nbsp; Billable: <select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option></select>\n";
+	echo "<input type=submit name=submit value=ADD><BR>\n";
+
 	echo "</center></FORM><br>\n";
+
+
 
 
 

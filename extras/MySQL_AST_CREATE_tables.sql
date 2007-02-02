@@ -308,6 +308,7 @@ last_call_finish DATETIME,
 closer_campaigns TEXT,
 call_server_ip VARCHAR(15),
 user_level INT(2) default '0',
+comments VARCHAR(20),
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -512,7 +513,8 @@ adaptive_intensity VARCHAR(6) default '0',
 adaptive_dl_diff_target SMALLINT(3) default '0',
 concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
 auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE',
-auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -'
+auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -',
+agent_pause_codes_active ENUM('Y','N') default 'N'
 );
 
  CREATE TABLE vicidial_lists (
@@ -658,7 +660,7 @@ user VARCHAR(20),
 server_ip VARCHAR(15) NOT NULL,
 event_time DATETIME,
 lead_id INT(9) UNSIGNED,
-campaign_id VARCHAR(8),			
+campaign_id VARCHAR(8),	
 pause_epoch INT(10) UNSIGNED,
 pause_sec SMALLINT(5) UNSIGNED default '0',
 wait_epoch INT(10) UNSIGNED,
@@ -668,7 +670,9 @@ talk_sec SMALLINT(5) UNSIGNED default '0',
 dispo_epoch INT(10) UNSIGNED,
 dispo_sec SMALLINT(5) UNSIGNED default '0',
 status VARCHAR(6),
-user_group VARCHAR(20)
+user_group VARCHAR(20),
+comments VARCHAR(20),
+sub_status VARCHAR(6)
 );
 
  CREATE TABLE vicidial_scripts (
@@ -840,6 +844,14 @@ DST enum('Y','N'),
 DST_range VARCHAR(8),
 country CHAR(3),
 country_code SMALLINT(5) UNSIGNED
+);
+
+ CREATE TABLE vicidial_pause_codes (
+pause_code VARCHAR(6) NOT NULL,
+pause_code_name VARCHAR(30),
+billable ENUM('NO','YES','HALF') default 'NO',
+campaign_id VARCHAR(8),
+index (campaign_id)
 );
 
 

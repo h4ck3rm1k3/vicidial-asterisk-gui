@@ -212,7 +212,7 @@ while($one_day_interval > 0)
 		 &event_logger;
 
 
-		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
+		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
 		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     QUEUEd call listing vla UPDATEd $affected_rows";
@@ -411,7 +411,7 @@ while($one_day_interval > 0)
 							}
 						$sthA->finish();
 
-						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid,user_level) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','','$DBuser_level[$h]');";
+						$stmtA = "INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,campaign_id,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,channel,uniqueid,callerid,user_level,comments) values('$DBremote_user[$h]','$server_ip','$DBremote_conf_exten[$h]','R/$DBremote_user[$h]','READY','$DBremote_campaign[$h]','$DBremote_random[$h]','$SQLdate','$tsSQLdate','$SQLdate','$DBremote_closer[$h]','','','','$DBuser_level[$h]','REMOTE');";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
 						if ($TESTrun > 0)

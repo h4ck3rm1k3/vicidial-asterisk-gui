@@ -36,3 +36,17 @@ UPDATE vicidial_users SET modify_remoteagents='1' where delete_remote_agents='1'
 UPDATE vicidial_users SET modify_servers='1' where ast_admin_access='1';
 
 ALTER TABLE inbound_numbers ADD department VARCHAR(30);
+
+ALTER TABLE vicidial_agent_log ADD comments VARCHAR(20);
+ALTER TABLE vicidial_agent_log ADD sub_status VARCHAR(6);
+ALTER TABLE vicidial_live_agents ADD comments VARCHAR(20);
+
+ALTER TABLE vicidial_campaigns ADD agent_pause_codes_active ENUM('Y','N') default 'N';
+
+ CREATE TABLE vicidial_pause_codes (
+pause_code VARCHAR(6) NOT NULL,
+pause_code_name VARCHAR(30),
+billable ENUM('NO','YES','HALF') default 'NO',
+campaign_id VARCHAR(8),
+index (campaign_id)
+);
