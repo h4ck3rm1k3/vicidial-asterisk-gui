@@ -141,10 +141,11 @@
 # 70201-1703 - Fixed cursor bug for most text input fields
 # 70202-1453 - Added first portions of Agent Pause Codes
 # 70203-0108 - Finished Agent Pause Codes functionality
+# 70203-0930 - Added dialed_number to webform output
 #
 
-$version = '2.0.112';
-$build = '70203-0108';
+$version = '2.0.113';
+$build = '0203-0930';
 
 require("dbconnect.php");
 
@@ -1502,6 +1503,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var volumecontrol_active = '<? echo $volumecontrol_active ?>';
 	var PauseCode_HTML = '';
 	var manual_auto_hotkey = 0;
+	var dialed_number = '';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2946,6 +2948,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						CBcallback_time									= MDnextResponse_array[29];
 						CBuser											= MDnextResponse_array[30];
 						CBcomments										= MDnextResponse_array[31];
+						dialed_number									= MDnextResponse_array[32];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + document.vicidial_form.phone_number.value + " UID: " + MDnextCID + " &nbsp; " + man_status;
@@ -2994,6 +2997,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&phone=" + document.vicidial_form.phone_number.value + 
 						"&parked_by=" + document.vicidial_form.lead_id.value +
 						"&dispo=" + LeaDDispO + '' +
+						"&dialed_number=" + dialed_number + '' +
 						webform_session;
 						
 // $VICIDIAL_web_QUERY_STRING =~ s/ /+/gi;
@@ -3178,6 +3182,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			var manDiaLonly_num = document.vicidial_form.alt_phone.value;
 			lead_dial_number = document.vicidial_form.alt_phone.value;
+			dialed_number = lead_dial_number;
+			WebFormRefresH('')
 			}
 		else
 			{
@@ -3185,11 +3191,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				var manDiaLonly_num = document.vicidial_form.address3.value;
 				lead_dial_number = document.vicidial_form.address3.value;
-				}
+				dialed_number = lead_dial_number;
+				WebFormRefresH('')
+			}
 			else
 				{
 				var manDiaLonly_num = document.vicidial_form.phone_number.value;
 				lead_dial_number = document.vicidial_form.phone_number.value;
+				dialed_number = lead_dial_number;
+				WebFormRefresH('')
 				}
 			}
 		var xmlhttp=false;
@@ -3518,6 +3528,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						CBcallback_time									= check_VDIC_array[33];
 						CBuser											= check_VDIC_array[34];
 						CBcomments										= check_VDIC_array[35];
+						dialed_number									= check_VDIC_array[36];
 
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
@@ -3614,6 +3625,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&phone=" + document.vicidial_form.phone_number.value + 
 						"&parked_by=" + document.vicidial_form.lead_id.value +
 						"&dispo=" + LeaDDispO + '' +
+						"&dialed_number=" + dialed_number + '' +
 						webform_session;
 						
 						var regWFspace = new RegExp(" ","ig");
@@ -3721,6 +3733,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		"&phone=" + document.vicidial_form.phone_number.value + 
 		"&parked_by=" + document.vicidial_form.lead_id.value +
 		"&dispo=" + LeaDDispO + '' +
+		"&dialed_number=" + dialed_number + '' +
 		webform_session;
 		
 		var regWFspace = new RegExp(" ","ig");
