@@ -140,10 +140,11 @@
 # 70201-1249 - Added FAST DIAL option for manually dialing, added UTF8 compatible code
 # 70201-1703 - Fixed cursor bug for most text input fields
 # 70202-1453 - Added first portions of Agent Pause Codes
+# 70203-0108 - Finished Agent Pause Codes functionality
 #
 
-$version = '2.0.111';
-$build = '70202-1453';
+$version = '2.0.112';
+$build = '70203-0108';
 
 require("dbconnect.php");
 
