@@ -1522,6 +1522,21 @@ else
 		$rslt=mysql_query($stmt, $link);
 		}
 
+	$pause_sec=0;
+	$stmt = "select pause_epoch,pause_sec,wait_epoch,talk_epoch,dispo_epoch from vicidial_agent_log where agent_log_id='$agent_log_id';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+	$VDpr_ct = mysql_num_rows($rslt);
+	if ( ($VDpr_ct > 0) and (strlen($row[3]<5)) and (strlen($row[4]<5)) )
+		{
+		$row=mysql_fetch_row($rslt);
+		$pause_sec = (($StarTtime - $row[0]) + $row[1]);
+
+		$stmt="UPDATE vicidial_agent_log set pause_sec='$pause_sec',wait_epoch='$StarTtime' where agent_log_id='$agent_log_id';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		}
+
 	echo "$vul_insert|$vc_remove|$vla_delete|$wcs_delete|$agent_channel\n";
 	}
 }
