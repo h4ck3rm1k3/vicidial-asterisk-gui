@@ -116,10 +116,11 @@
 # 70123-1357 - Fixed bug that would not update vicidial_closer_log status to dispo
 # 70202-1438 - Added pause code submit function
 # 70203-0930 - Added dialed_number to lead info output
+# 70203-1030 - Added dialed_label to lead info output
 #
 
-$version = '2.0.43';
-$build = '70203-0930';
+$version = '2.0.44';
+$build = '70203-1030';
 
 require("dbconnect.php");
 
@@ -626,6 +627,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$CBuser . "\n";
 			$LeaD_InfO .=	$CBcomments . "\n";
 			$LeaD_InfO .=	$phone_number . "\n";
+			$LeaD_InfO .=	"MAIN\n";
 
 			echo $LeaD_InfO;
 
@@ -1274,7 +1276,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
-			$stmt = "select campaign_id,phone_number from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
+			$stmt = "select campaign_id,phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$VDAC_cid_ct = mysql_num_rows($rslt);
@@ -1283,6 +1285,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$row=mysql_fetch_row($rslt);
 				$VDADchannel_group	=$row[0];
 				$dialed_number		=$row[1];
+				$dialed_label		=$row[2];
 				}
 
 			$stmt = "select count(*) from vicidial_log where lead_id='$lead_id' and uniqueid='$uniqueid';";
@@ -1365,7 +1368,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				}
 			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n|\n";
 			
-			$stmt = "select phone_number from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
+			$stmt = "select phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$VDAC_cid_ct = mysql_num_rows($rslt);
@@ -1373,6 +1376,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				{
 				$row=mysql_fetch_row($rslt);
 				$dialed_number		=$row[0];
+				$dialed_label		=$row[1];
 				}
 			}
 
@@ -1412,6 +1416,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$LeaD_InfO .=	$CBuser . "\n";
 		$LeaD_InfO .=	$CBcomments . "\n";
 		$LeaD_InfO .=	$dialed_number . "\n";
+		$LeaD_InfO .=	$dialed_label . "\n";
 
 		echo $LeaD_InfO;
 
