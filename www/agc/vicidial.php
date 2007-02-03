@@ -223,7 +223,7 @@ $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
 
-$TEST_all_statuses		= '1';	# TEST variable allows all statuses in dispo screen
+$TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
 # options now set in DB:
 #$alt_phone_dialing		= '1';	# allow agents to call alt phone numbers
@@ -1287,7 +1287,6 @@ $CCAL_OUT .= "</table>";
 	var CallBackCommenTs = '';
 	var scheduled_callbacks = '<? echo $scheduled_callbacks ?>';
 	var dispo_check_all_pause = '<? echo $dispo_check_all_pause ?>';
-	var pause_code_select_display = 0;
 	var agent_pause_codes_active = '<? echo $agent_pause_codes_active ?>';
 	VARpause_codes = new Array(<? echo $VARpause_codes ?>);
 	VARpause_code_names = new Array(<? echo $VARpause_code_names ?>);
@@ -3297,10 +3296,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			AutoDialReady = 0;
 			AutoDialWaiting = 0;
 			document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
-			if (agent_pause_codes_active=='Y')
-				{
-				pause_code_select_display=1;
-				}
 			}
 
 		var xmlhttp=false;
@@ -4213,22 +4208,31 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Generate the Pause Code Chooser panel
-	function PauseCodeSelectContent_create(taskDSgrp,taskDSstage)
+	function PauseCodeSelectContent_create()
 		{
-		pause_code_HTML = '';
-		document.vicidial_form.PauseCodeSelection.value = '';		
-		var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
-		pause_code_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> PAUSE CODE</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectA>";
-		var loop_ct = 0;
-		while (loop_ct < VD_pause_codes_ct)
+		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			PauseCode_HTML = PauseCode_HTML + "<font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('" + VARpause_codes[loop_ct] + "');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><BR><BR>";
-			if (loop_ct == VD_pause_codes_ct_half) 
-				{PauseCode_HTML = PauseCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectB>";}
-			loop_ct++;
+			alert("YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE");
 			}
-		PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table>";
-		document.getElementById("PauseCodeSelectContent").innerHTML = PauseCode_HTML;
+		else
+			{
+			showDiv('PauseCodeSelectBox');
+			WaitingForNextStep=1;
+			PauseCode_HTML = '';
+			document.vicidial_form.PauseCodeSelection.value = '';		
+			var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
+			PauseCode_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> PAUSE CODE</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectA>";
+			var loop_ct = 0;
+			while (loop_ct < VD_pause_codes_ct)
+				{
+				PauseCode_HTML = PauseCode_HTML + "<font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('" + VARpause_codes[loop_ct] + "');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><BR><BR>";
+				loop_ct++;
+				if (loop_ct == VD_pause_codes_ct_half) 
+					{PauseCode_HTML = PauseCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauseCodeSelectB>";}
+				}
+			PauseCode_HTML = PauseCode_HTML + "</span></font></td></tr></table><BR><BR><font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauseCodeSelect_submit('');return false;\">Go Back</a>";
+			document.getElementById("PauseCodeSelectContent").innerHTML = PauseCode_HTML;
+			}
 		}
 
 // ################################################################################
@@ -4425,7 +4429,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (xmlhttp) 
 			{ 
 			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauseCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id;
-			xmlhttp.open('POST', 'manager_send.php'); 
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(VMCpausecode_query); 
 			xmlhttp.onreadystatechange = function() 
@@ -5172,6 +5176,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{hideDiv('VolumeControlSpan');}
 			document.vicidial_form.LeadLookuP.checked=true;
 
+			if (agent_pause_codes_active=='Y')
+				{
+				document.getElementById("PauseCodeLinkSpan").innerHTML = "<a href=\"#\" onclick=\"PauseCodeSelectContent_create();return false;\">ENTER A PAUSE CODE</a>";
+				}
+
 			document.getElementById("sessionIDspan").innerHTML = session_id;
 			if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
 				{
@@ -5232,12 +5241,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				WaitingForNextStep=1;
 				check_for_conf_calls(session_id, '0');
-				}
-			if (pause_code_select_display==1)
-				{
-				PauseCodeSelectContent_create('','ReSET');
-				showDiv('PauseCodeSelectBox');
-				WaitingForNextStep=1;
 				}
 			if (logout_stop_timeouts==1)	{WaitingForNextStep=1;}
 			if ( (custchannellive < -30) && (lastcustchannel.length > 3) ) {CustomerChanneLGone();}
@@ -5716,12 +5719,16 @@ echo "</head>\n";
     <table border=0 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="WelcomeBoxAt">VICIDIAL</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:300px;top:365px;z-index:13;" id="ManuaLDiaLButtons"><font class="body_text">
+<span style="position:absolute;left:300px;top:365px;z-index:12;" id="ManuaLDiaLButtons"><font class="body_text">
 <span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO');return false;">MANUAL DIAL</a></span> &nbsp; &nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST');return false;">FAST DIAL</a><BR>
 </font></span>
 
-<span style="position:absolute;left:300px;top:350px;z-index:14;" id="CallbacksButtons"><font class="body_text">
+<span style="position:absolute;left:300px;top:350px;z-index:13;" id="CallbacksButtons"><font class="body_text">
 <span id="CBstatusSpan">X ACTIVE CALLBACKS</span> <BR>
+</font></span>
+
+<span style="position:absolute;left:500px;top:350px;z-index:14;" id="PauseCodeButtons"><font class="body_text">
+<span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="CallBacKsLisTBox">
