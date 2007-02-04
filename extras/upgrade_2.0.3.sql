@@ -50,3 +50,29 @@ billable ENUM('NO','YES','HALF') default 'NO',
 campaign_id VARCHAR(8),
 index (campaign_id)
 );
+
+
+
+ALTER TABLE vicidial_list DROP INDEX lead_id;
+ALTER TABLE recording_log DROP INDEX recording_id;
+ALTER TABLE call_log DROP INDEX uniqueid;
+ALTER TABLE park_log DROP INDEX uniqueid;
+ALTER TABLE vicidial_manager DROP INDEX man_id;
+ALTER TABLE vicidial_hopper DROP INDEX hopper_id;
+ALTER TABLE vicidial_live_agents DROP INDEX live_agent_id;
+ALTER TABLE vicidial_auto_calls DROP INDEX auto_call_id;
+ALTER TABLE vicidial_log DROP INDEX uniqueid;
+ALTER TABLE vicidial_closer_log DROP INDEX closecallid;
+ALTER TABLE vicidial_xfer_log DROP INDEX xfercallid;
+ALTER TABLE vicidial_users DROP INDEX user_id;
+ALTER TABLE vicidial_user_log DROP INDEX user_log_id;
+ALTER TABLE vicidial_campaigns DROP INDEX campaign_id;
+ALTER TABLE vicidial_lists DROP INDEX list_id;
+ALTER TABLE vicidial_statuses DROP INDEX status;
+ALTER TABLE vicidial_inbound_groups DROP INDEX group_id;
+ALTER TABLE vicidial_stations DROP INDEX agent_station;
+ALTER TABLE vicidial_remote_agents DROP INDEX remote_agent_id;
+ALTER TABLE vicidial_agent_log DROP INDEX agent_log_id;
+ALTER TABLE vicidial_scripts DROP INDEX script_id;
+ALTER TABLE vicidial_lead_recycle DROP INDEX recycle_id;
+
