@@ -594,7 +594,7 @@ AST_CRON_mix_recordings_BASIC.pl file in it's place)
 * * * * * /usr/share/astguiclient/AST_VDhopper.pl -q
 
 ### adjust the GMT offset for the leads in the vicidial_list table
-1 1 * * * /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl --debug
+1 1 * * * /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl --debug --postal-code-gmt
 
 ### reset several temporary-info tables in the database
 2 1 * * * /usr/share/astguiclient/AST_reset_mysql_vars.pl
@@ -646,7 +646,7 @@ Now that the sample leads have been entered, we can go into the VICIDIAL
 administration website and set up our campaigns, lists and users.
 But first let's make sure that they have the right GMT offset:
 	run this on the command line:
-	 - /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl
+	 - /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl --postal-code-gmt
 
 3. Enter the astguiclient administration page:
 http://10.10.10.15/vicidial/admin.php
