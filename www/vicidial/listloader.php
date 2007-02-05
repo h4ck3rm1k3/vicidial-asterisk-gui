@@ -15,12 +15,13 @@
 # 60906-1059 - added filter of non-digits in alt_phone field
 # 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1046 - added postal code GMT lookup and duplicate check options
+# 70205-1703 - Defaulted phone_code to 1 if not populated
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 #
 
-$version = '2.0.2';
-$build = '61128-1046';
+$version = '2.0.3';
+$build = '70205-1703';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -872,6 +873,7 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 						}
 
 
+					if (strlen($phone_code)<1) {$phone_code = '1';}
 					if ($multi_insert_counter > 8) {
 						### insert good deal into pending_transactions table ###
 						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
