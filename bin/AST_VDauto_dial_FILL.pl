@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDauto_dial_FILL.pl version 0.1   *DBI-version*
+# AST_VDauto_dial_FILL.pl version 2.0.3   *DBI-version*
 #
 # DESCRIPTION:
 # Places auto_dial calls on the VICIDIAL dialer system across all servers only 
@@ -14,9 +14,10 @@
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# changes:
+# CHANGELOG:
 # 61115-1246 - First build, framework setup, non-functional
 # 61120-2008 - second alpha version, functional and tested in production
+# 70205-1425 - Added code for last called date update
 #
 
 
@@ -222,6 +223,8 @@ while($one_day_interval > 0)
 		$camp_counter=0;
 		$total_shortage=0;
 		$balance_servers=0;
+		$lists_update = '';
+		$LUcount=0;
 
 		$stmtA = "SELECT count(*) FROM servers where vicidial_balance_active = 'Y';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -512,165 +515,179 @@ while($one_day_interval > 0)
 						&event_logger;
 
 
-
-						##################################################################################
-						##### PLACE THE CALLS
-						##################################################################################
-						$event_string="$DBfill_campaign[$camp_CIPct] $DB_camp_server_server_ip[$server_CIPct]: CALLING";
-						&event_logger;
-						$call_CMPIPct=0;
-						$lead_id_call_list='|';
-						my $UDaffected_rows=0;
-						if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
+						$stmtA = "SELECT count(*) FROM vicidial_live_agents where campaign_id='$DBfill_campaign[$camp_CIPct]' and status NOT IN('PAUSED');";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
 							{
-							$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct]";
-							print "|$stmtA|\n";
-						   $UDaffected_rows = $dbhA->do($stmtA);
-							print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
+							@aryA = $sthA->fetchrow_array;
+							$LVA_count =	$aryA[0];
+							$rec_count++;
+							}
+						$sthA->finish();
 
-								if ($UDaffected_rows)
+						if ($LVA_count > 0)
+							{
+							##################################################################################
+							##### PLACE THE CALLS
+							##################################################################################
+							$event_string="$DBfill_campaign[$camp_CIPct] $DB_camp_server_server_ip[$server_CIPct]: CALLING";
+							&event_logger;
+							$call_CMPIPct=0;
+							$lead_id_call_list='|';
+							my $UDaffected_rows=0;
+							if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 								{
-								$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
-									while ($call_CMPIPct < $UDaffected_rows)
+								$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct]";
+								print "|$stmtA|\n";
+							   $UDaffected_rows = $dbhA->do($stmtA);
+								print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
+
+									if ($UDaffected_rows)
 									{
-									$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' LIMIT 1";
-									print "|$stmtA|\n";
-										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-										$sthArows=$sthA->rows;
-										$rec_count=0;
-										 $rec_countCUSTDATA=0;
-										while ($sthArows > $rec_count)
-											{
-											@aryA = $sthA->fetchrow_array;
-												$lead_id =		"$aryA[0]";
-											$rec_count++;
-											}
-										$sthA->finish();
-
-									if ($lead_id_call_list =~ /\|$lead_id\|/)
+									$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
+										while ($call_CMPIPct < $UDaffected_rows)
 										{
-										print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
-										if ($SYSLOG)
-											{
-											open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
-													|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
-											print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
-											close(DUPout);
-											}
-										}
-									else
-										{
-										$stmtA = "UPDATE vicidial_hopper set status='INCALL' where lead_id='$lead_id'";
+										$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' LIMIT 1";
 										print "|$stmtA|\n";
-									   $UQaffected_rows = $dbhA->do($stmtA);
-										print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
-
-										$stmtA = "SELECT * FROM vicidial_list where lead_id='$lead_id';";
-										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-										$sthArows=$sthA->rows;
-										$rec_count=0;
-										 $rec_countCUSTDATA=0;
-										while ($sthArows > $rec_count)
-											{
-											@aryA = $sthA->fetchrow_array;
-												$gmt_offset_now	=			"$aryA[8]";
-												$called_since_last_reset =	"$aryA[9]";
-												$phone_code	=				"$aryA[10]";
-												$phone_number =				"$aryA[11]";
-												$called_count =				"$aryA[30]";
-
-												$rec_countCUSTDATA++;
-											$rec_count++;
-											}
-										$sthA->finish();
-
-										if ($rec_countCUSTDATA)
-											{
-											### update called_count
-											$called_count++;
-											if ($called_since_last_reset =~ /^Y/)
+											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+											$sthArows=$sthA->rows;
+											$rec_count=0;
+											 $rec_countCUSTDATA=0;
+											while ($sthArows > $rec_count)
 												{
-												if ($called_since_last_reset =~ /^Y$/) {$CSLR = 'Y1';}
-												else
+												@aryA = $sthA->fetchrow_array;
+													$lead_id =		"$aryA[0]";
+												$rec_count++;
+												}
+											$sthA->finish();
+
+										if ($lead_id_call_list =~ /\|$lead_id\|/)
+											{
+											print "!!!!!!!!!!!!!!!!duplicate lead_id for this run: |$lead_id|     $lead_id_call_list\n";
+											if ($SYSLOG)
+												{
+												open(DUPout, ">>$PATHlogs/VDAD_DUPLICATE.$file_date")
+														|| die "Can't open $PATHlogs/VDAD_DUPLICATE.$file_date: $!\n";
+												print DUPout "$now_date-----$lead_id_call_list-----$lead_id\n";
+												close(DUPout);
+												}
+											}
+										else
+											{
+											$stmtA = "UPDATE vicidial_hopper set status='INCALL' where lead_id='$lead_id'";
+											print "|$stmtA|\n";
+										   $UQaffected_rows = $dbhA->do($stmtA);
+											print "hopper row updated to INCALL: |$UQaffected_rows|$lead_id|\n";
+
+											$stmtA = "SELECT * FROM vicidial_list where lead_id='$lead_id';";
+											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+											$sthArows=$sthA->rows;
+											$rec_count=0;
+											 $rec_countCUSTDATA=0;
+											while ($sthArows > $rec_count)
+												{
+												@aryA = $sthA->fetchrow_array;
+													$list_id =					"$aryA[7]";
+													$gmt_offset_now	=			"$aryA[8]";
+													$called_since_last_reset =	"$aryA[9]";
+													$phone_code	=				"$aryA[10]";
+													$phone_number =				"$aryA[11]";
+													$called_count =				"$aryA[30]";
+
+													$rec_countCUSTDATA++;
+												$rec_count++;
+												}
+											$sthA->finish();
+
+											if ($rec_countCUSTDATA)
+												{
+												### update called_count
+												$called_count++;
+												if ($called_since_last_reset =~ /^Y/)
 													{
-													$called_since_last_reset =~ s/^Y//gi;
-													$called_since_last_reset++;
-													$CSLR = "Y$called_since_last_reset";
+													if ($called_since_last_reset =~ /^Y$/) {$CSLR = 'Y1';}
+													else
+														{
+														$called_since_last_reset =~ s/^Y//gi;
+														$called_since_last_reset++;
+														$CSLR = "Y$called_since_last_reset";
+														}
 													}
-												}
-											else {$CSLR = 'Y';}
+												else {$CSLR = 'Y';}
 
-											$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
-											$affected_rows = $dbhA->do($stmtA);
-
-											$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
-											$affected_rows = $dbhA->do($stmtA);
-
-											$CCID_on=0;   $CCID='';
-											$local_DEF = 'Local/';
-											$local_AMP = '@';
-											$Local_out_prefix = '9';
-											$Local_dial_timeout = '60';
-										   if ($DBIPdialtimeout[$camp_CIPct] > 4) {$Local_dial_timeout = $DBIPdialtimeout[$camp_CIPct];}
-											$Local_dial_timeout = ($Local_dial_timeout * 1000);
-										   if (length($DBIPdialprefix[$camp_CIPct]) > 0) {$Local_out_prefix = "$DBIPdialprefix[$camp_CIPct]";}
-										   if (length($DBIPvdadexten[$camp_CIPct]) > 0) {$VDAD_dial_exten = "$DBIPvdadexten[$camp_CIPct]";}
-										   else {$VDAD_dial_exten = "$answer_transfer_agent";}
-										   
-										   if (length($DBfill_campaigncid[$camp_CIPct]) > 6) {$CCID = "$DBfill_campaigncid[$camp_CIPct]";   $CCID_on++;}
-										   if ($DBIPdialprefix[$camp_CIPct] =~ /x/i) {$Local_out_prefix = '';}
-
-											if ($RECcount)
-												{
-												if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
-												   {$Local_out_prefix .= "$RECprefix";}
-												}
-											$PADlead_id = sprintf("%09s", $lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
-
-										   $lead_id_call_list .= "$lead_id|";
-
-											### whether to omit phone_code or not
-											if ($DBIPomitcode[$camp_CIPct] > 0) 
-												{$Ndialstring = "$Local_out_prefix$phone_number";}
-											else
-												{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
-
-											### use manager middleware-app to connect the next call to the meetme room
-											# VmmddhhmmssLLLLLLLLL
-												$VqueryCID = "V$CIDdate$PADlead_id";
-											if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
-											else {$CIDstring = "$VqueryCID";}
-											### insert a NEW record to the vicidial_manager table to be processed
-												$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DB_camp_server_server_ip[$server_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
+												$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
 												$affected_rows = $dbhA->do($stmtA);
 
-												$event_string = "|     number call dialed|$DBfill_campaign[$camp_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|";
-												 &event_logger;
-
-											### insert a SENT record to the vicidial_auto_calls table 
-												$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$DB_camp_server_server_ip[$server_CIPct]','$DBfill_campaign[$camp_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUTBALANCE')";
+												$stmtA = "DELETE FROM vicidial_hopper where lead_id='$lead_id'";
 												$affected_rows = $dbhA->do($stmtA);
 
-											### sleep for a tenth of a second to not flood the server with new calls
-											usleep(1*25*1000);
+												$CCID_on=0;   $CCID='';
+												$local_DEF = 'Local/';
+												$local_AMP = '@';
+												$Local_out_prefix = '9';
+												$Local_dial_timeout = '60';
+											   if ($DBIPdialtimeout[$camp_CIPct] > 4) {$Local_dial_timeout = $DBIPdialtimeout[$camp_CIPct];}
+												$Local_dial_timeout = ($Local_dial_timeout * 1000);
+											   if (length($DBIPdialprefix[$camp_CIPct]) > 0) {$Local_out_prefix = "$DBIPdialprefix[$camp_CIPct]";}
+											   if (length($DBIPvdadexten[$camp_CIPct]) > 0) {$VDAD_dial_exten = "$DBIPvdadexten[$camp_CIPct]";}
+											   else {$VDAD_dial_exten = "$answer_transfer_agent";}
+											   
+											   if (length($DBfill_campaigncid[$camp_CIPct]) > 6) {$CCID = "$DBfill_campaigncid[$camp_CIPct]";   $CCID_on++;}
+											   if ($DBIPdialprefix[$camp_CIPct] =~ /x/i) {$Local_out_prefix = '';}
 
+												if ($RECcount)
+													{
+													if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
+													   {$Local_out_prefix .= "$RECprefix";}
+													}
+												$PADlead_id = sprintf("%09s", $lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
+
+												if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
+
+											   $lead_id_call_list .= "$lead_id|";
+
+												### whether to omit phone_code or not
+												if ($DBIPomitcode[$camp_CIPct] > 0) 
+													{$Ndialstring = "$Local_out_prefix$phone_number";}
+												else
+													{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
+
+												### use manager middleware-app to connect the next call to the meetme room
+												# VmmddhhmmssLLLLLLLLL
+													$VqueryCID = "V$CIDdate$PADlead_id";
+												if ($CCID_on) {$CIDstring = "\"$VqueryCID\" <$CCID>";}
+												else {$CIDstring = "$VqueryCID";}
+												### insert a NEW record to the vicidial_manager table to be processed
+													$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$DB_camp_server_server_ip[$server_CIPct]','','Originate','$VqueryCID','Exten: $VDAD_dial_exten','Context: $ext_context','Channel: $local_DEF$Ndialstring$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','')";
+													$affected_rows = $dbhA->do($stmtA);
+
+													$event_string = "|     number call dialed|$DBfill_campaign[$camp_CIPct]|$VqueryCID|$stmtA|$gmt_offset_now|";
+													 &event_logger;
+
+												### insert a SENT record to the vicidial_auto_calls table 
+													$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type) values('$DB_camp_server_server_ip[$server_CIPct]','$DBfill_campaign[$camp_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUTBALANCE')";
+													$affected_rows = $dbhA->do($stmtA);
+
+												### sleep for a tenth of a second to not flood the server with new calls
+												usleep(1*25*1000);
+
+												}
 											}
+										$call_CMPIPct++;
 										}
-									$call_CMPIPct++;
 									}
 								}
 							}
-
-
-
-
-
-
-
-
-
+						else
+							{
+							$event_string.="No Agents logged in, not dialing";
+							&event_logger;
+							}
 
 
 
@@ -719,6 +736,15 @@ while($one_day_interval > 0)
 
 	&get_time_now;
 
+
+		if ($LUcount > 0)
+			{
+			chop($lists_update);
+			$stmtA = "UPDATE vicidial_lists SET list_lastcalldate='$SQLdate' where list_id IN($lists_update);";
+			$affected_rows = $dbhA->do($stmtA);
+			$event_string = "|     lastcalldate UPDATED $affected_rows|$lists_update|";
+			 &event_logger;
+			}
 
 	###############################################################################
 	###### last, wait for a little bit and repeat the loop

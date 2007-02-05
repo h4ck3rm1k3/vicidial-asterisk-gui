@@ -1,21 +1,23 @@
 #!/usr/bin/perl
 #
-# AST_VDadapt.pl version 2.0.1   *DBI-version*
+# AST_VDadapt.pl version 2.0.3   *DBI-version*
 #
 # DESCRIPTION:
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# 60823-1302 - first build from AST_VDhopper.pl
-# 60825-1734 - functional alpha version, no loop
-# 60826-0857 - added loop and CLI flag options
-# 60827-0035 - separate Drop calculation and target dial level calculation into different subroutines
-#            - alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
-# 60828-1149 - add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
-# 60919-1243 - changed variables to use arrays for all campaign-specific values
-# 61215-1110 - added answered calls stats and use drops as percentage of answered for today
-# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# CHANGELOG
+# 60823-1302 - First build from AST_VDhopper.pl
+# 60825-1734 - Functional alpha version, no loop
+# 60826-0857 - Added loop and CLI flag options
+# 60827-0035 - Separate Drop calculation and target dial level calculation into different subroutines
+#            - Alter code so that DROP percentages would calculate only about once a minute no matter he loop delay
+# 60828-1149 - Add field for target dial_level difference, -1 would target one agent waiting, +1 would target 1 customer waiting
+# 60919-1243 - Changed variables to use arrays for all campaign-specific values
+# 61215-1110 - Added answered calls stats and use drops as percentage of answered for today
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70205-1429 - Added code for campaign_changedate and campaign_stats_refresh updates
 #
 
 # constants
@@ -295,6 +297,8 @@ while ($master_loop<$CLIloops)
 @adaptive_latest_server_time=@MT;
 @adaptive_intensity=@MT;
 @adaptive_dl_diff_target=@MT;
+@campaign_changedate=@MT;
+@campaign_stats_refresh=@MT;
 
 if ($CLIcampaign)
 	{
@@ -302,7 +306,7 @@ if ($CLIcampaign)
 	}
 else
 	{
-	$stmtA = "SELECT * from vicidial_campaigns where active='Y'";
+	$stmtA = "SELECT campaign_id,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,UNIX_TIMESTAMP(campaign_changedate),campaign_stats_refresh from vicidial_campaigns where ( (active='Y') or (campaign_stats_refresh='Y') )";
 	}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -311,28 +315,30 @@ $rec_count=0;
 while ($sthArows > $rec_count)
 	{
 	@aryA = $sthA->fetchrow_array;
-	$campaign_id[$rec_count] =		 "$aryA[0]";
-	$dial_status_a[$rec_count] =	 "$aryA[3]";
-	$dial_status_b[$rec_count] =	 "$aryA[4]";
-	$dial_status_c[$rec_count] =	 "$aryA[5]";
-	$dial_status_d[$rec_count] =	 "$aryA[6]";
-	$dial_status_e[$rec_count] =	 "$aryA[7]";
-	$lead_order[$rec_count] =		 "$aryA[8]";
+	$campaign_id[$rec_count] =					$aryA[0];
+	$dial_status_a[$rec_count] =				$aryA[1];
+	$dial_status_b[$rec_count] =				$aryA[2];
+	$dial_status_c[$rec_count] =				$aryA[3];
+	$dial_status_d[$rec_count] =				$aryA[4];
+	$dial_status_e[$rec_count] =				$aryA[5];
+	$lead_order[$rec_count] =					$aryA[6];
 	if (!$CLIlevel) 
-		{$hopper_level[$rec_count] = "$aryA[13]";}
+		{$hopper_level[$rec_count] =			$aryA[7];}
 	else
-		{$hopper_level[$rec_count] = "$CLIlevel";}
-	$auto_dial_level[$rec_count] =	 "$aryA[14]";
-	$local_call_time[$rec_count] =	 "$aryA[16]";
-	$lead_filter_id[$rec_count] =	 "$aryA[35]";
-	$use_internal_dnc[$rec_count] =	 "$aryA[43]";
-	$dial_method[$rec_count] =					$aryA[46];
-	$available_only_ratio_tally[$i][$rec_count] =	$aryA[47];
-	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
-	$adaptive_maximum_level[$rec_count] =		$aryA[49];
-	$adaptive_latest_server_time[$rec_count] =	$aryA[50];
-	$adaptive_intensity[$rec_count] =			$aryA[51];
-	$adaptive_dl_diff_target[$rec_count] =		$aryA[52];
+		{$hopper_level[$rec_count] =			$CLIlevel;}
+	$auto_dial_level[$rec_count] =				$aryA[8];
+	$local_call_time[$rec_count] =				$aryA[9];
+	$lead_filter_id[$rec_count] =				$aryA[10];
+	$use_internal_dnc[$rec_count] =				$aryA[11];
+	$dial_method[$rec_count] =					$aryA[12];
+	$available_only_ratio_tally[$i][$rec_count] =	$aryA[13];
+	$adaptive_dropped_percentage[$rec_count] =	$aryA[14];
+	$adaptive_maximum_level[$rec_count] =		$aryA[15];
+	$adaptive_latest_server_time[$rec_count] =	$aryA[16];
+	$adaptive_intensity[$rec_count] =			$aryA[17];
+	$adaptive_dl_diff_target[$rec_count] =		$aryA[18];
+	$campaign_changedate[$rec_count] =			$aryA[19];
+	$campaign_stats_refresh[$rec_count] =		$aryA[20];
 
 	$rec_count++;
 	}
@@ -395,6 +401,68 @@ foreach(@campaign_id)
 			if ($diff_ratio_updater>=15)
 				{
 				&calculate_dial_level;
+				}
+			}
+		else
+			{
+			if ($campaign_stats_refresh[$i] =~ /Y/)
+				{
+				if ($drop_count_updater>=60)
+					{
+					if ($DB) {print "     REFRESH OVERRIDE: $campaign_id[$i]\n";}
+
+					&calculate_drops;
+
+					$RESETdrop_count_updater++;
+
+					$stmtA = "UPDATE vicidial_campaigns SET campaign_stats_refresh='N' where campaign_id='$campaign_id[$i]';";
+					$affected_rows = $dbhA->do($stmtA);
+					}
+				}
+			else
+				{
+				if ($campaign_changedate[$i] >= $VDL_ninty)
+					{
+					if ($drop_count_updater>=60)
+						{
+						if ($DB) {print "     CHANGEDATE OVERRIDE: $campaign_id[$i]\n";}
+
+						&calculate_drops;
+
+						$RESETdrop_count_updater++;
+						}
+					}
+				}
+			}
+		}
+	else
+		{
+		if ($campaign_stats_refresh[$i] =~ /Y/)
+			{
+			if ($drop_count_updater>=60)
+				{
+				if ($DB) {print "     REFRESH OVERRIDE: $campaign_id[$i]\n";}
+
+				&calculate_drops;
+
+				$RESETdrop_count_updater++;
+
+				$stmtA = "UPDATE vicidial_campaigns SET campaign_stats_refresh='N' where campaign_id='$campaign_id[$i]';";
+				$affected_rows = $dbhA->do($stmtA);
+				}
+			}
+		else
+			{
+			if ($campaign_changedate[$i] >= $VDL_ninty)
+				{
+				if ($drop_count_updater>=60)
+					{
+					if ($DB) {print "     CHANGEDATE OVERRIDE: $campaign_id[$i]\n";}
+
+					&calculate_drops;
+
+					$RESETdrop_count_updater++;
+					}
 				}
 			}
 		}
@@ -504,6 +572,9 @@ $Vmon++;
 if ($Vmon < 10) {$Vmon = "0$Vmon";}
 if ($Vmday < 10) {$Vmday = "0$Vmday";}
 $VDL_five = "$Vyear-$Vmon-$Vmday $Vhour:$Vmin:$Vsec";
+
+### get epoch of ninty seconds ago ###
+	$VDL_ninty = ($secX - (1 * 90));
 
 ### get date-time of one minute ago ###
 	$VDL_one = ($secX - (1 * 60));
@@ -875,6 +946,9 @@ if ($VCScalls_five[$i] > 0)
 	}
 if ($DBX) {print "$campaign_id[$i]|$VCSdrops_five_pct[$i]|$VCSdrops_today_pct[$i]\n";}
 
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]' where campaign_id='$campaign_id[$i]';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
 }
 
 
@@ -940,12 +1014,6 @@ else
 	$agents_average_onemin[$i] =	$total_agents_avg[$i];  
 	$differential_onemin[$i] =		$stat_differential[$i];
 	}
-
-## UPDATE STATS FOR CAMPAIGN
-$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]' where campaign_id='$campaign_id[$i]';";
-$affected_rows = $dbhA->do($stmtA);
-if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
-
 
 if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($force_test>0) )
 	{

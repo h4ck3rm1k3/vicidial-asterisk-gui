@@ -514,14 +514,21 @@ adaptive_dl_diff_target SMALLINT(3) default '0',
 concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
 auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE',
 auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -',
-agent_pause_codes_active ENUM('Y','N') default 'N'
+agent_pause_codes_active ENUM('Y','N') default 'N',
+campaign_description VARCHAR(255),
+campaign_changedate DATETIME,
+campaign_stats_refresh ENUM('Y','N') default 'N',
+campaign_logindate DATETIME
 );
 
  CREATE TABLE vicidial_lists (
 list_id BIGINT(14) UNSIGNED PRIMARY KEY NOT NULL,
 list_name VARCHAR(30),
 campaign_id VARCHAR(8),
-active ENUM('Y','N')
+active ENUM('Y','N'),
+list_description VARCHAR(255),
+list_changedate DATETIME,
+list_lastcalldate DATETIME
 );
 
  CREATE TABLE vicidial_statuses (

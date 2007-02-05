@@ -102,6 +102,17 @@ there is already an entry for this campaign with this  pause code||
 AGENT PAUSE CODE ADDED||
 AGENT PAUSE CODE NOT MODIFIED||
 CAMPAIGN PAUSE CODE NOT DELETED||
+Campaign Description -<\/B> This is a memo field for the campaign, it is optional and can be a maximum of 255 characters in length||
+Campaign Change Date -<\/B> This is the last time that the settings for this campaign were modified in any way||
+Campaign Stats Refresh -<\/B> This checkbox will allow you to force a vicidial stats refresh, even if the campaign is not active||
+Last Campaign Login Date -<\/B> This is the last time that an agent was logged into this campaign||
+List Description -<\/B> This is the memo field for the list, it is optional||
+List Change Date -<\/B> This is the last time that the settings for this list were modified in any way||
+List Last Call Date -<\/B> This is the last time that lead was dialed from this list||
+List Description: ||
+List Change Date: ||
+Campaign Description: ||
+
 
 ############################################################ CLIENT
 

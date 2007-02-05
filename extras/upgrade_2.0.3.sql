@@ -51,8 +51,6 @@ campaign_id VARCHAR(8),
 index (campaign_id)
 );
 
-
-
 ALTER TABLE vicidial_list DROP INDEX lead_id;
 ALTER TABLE recording_log DROP INDEX recording_id;
 ALTER TABLE call_log DROP INDEX uniqueid;
@@ -75,4 +73,12 @@ ALTER TABLE vicidial_remote_agents DROP INDEX remote_agent_id;
 ALTER TABLE vicidial_agent_log DROP INDEX agent_log_id;
 ALTER TABLE vicidial_scripts DROP INDEX script_id;
 ALTER TABLE vicidial_lead_recycle DROP INDEX recycle_id;
+
+ALTER TABLE vicidial_lists ADD list_description VARCHAR(255);
+ALTER TABLE vicidial_lists ADD list_changedate DATETIME;
+ALTER TABLE vicidial_lists ADD list_lastcalldate DATETIME;
+ALTER TABLE vicidial_campaigns ADD campaign_description VARCHAR(255);
+ALTER TABLE vicidial_campaigns ADD campaign_changedate DATETIME;
+ALTER TABLE vicidial_campaigns ADD campaign_stats_refresh ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_campaigns ADD campaign_logindate DATETIME;
 

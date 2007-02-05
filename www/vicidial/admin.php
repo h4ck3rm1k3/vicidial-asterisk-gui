@@ -531,13 +531,18 @@ if (isset($_GET["view_reports"]))				{$view_reports=$_GET["view_reports"];}
 	elseif (isset($_POST["view_reports"]))		{$view_reports=$_POST["view_reports"];}
 if (isset($_GET["agent_pause_codes_active"]))			{$agent_pause_codes_active=$_GET["agent_pause_codes_active"];}
 	elseif (isset($_POST["agent_pause_codes_active"]))	{$agent_pause_codes_active=$_POST["agent_pause_codes_active"];}
-if (isset($_GET["pause_code"]))				{$pause_code=$_GET["pause_code"];}
-	elseif (isset($_POST["pause_code"]))	{$pause_code=$_POST["pause_code"];}
+if (isset($_GET["pause_code"]))					{$pause_code=$_GET["pause_code"];}
+	elseif (isset($_POST["pause_code"]))		{$pause_code=$_POST["pause_code"];}
 if (isset($_GET["pause_code_name"]))			{$pause_code_name=$_GET["pause_code_name"];}
 	elseif (isset($_POST["pause_code_name"]))	{$pause_code_name=$_POST["pause_code_name"];}
-if (isset($_GET["billable"]))				{$billable=$_GET["billable"];}
-	elseif (isset($_POST["billable"]))		{$billable=$_POST["billable"];}
-
+if (isset($_GET["billable"]))					{$billable=$_GET["billable"];}
+	elseif (isset($_POST["billable"]))			{$billable=$_POST["billable"];}
+if (isset($_GET["campaign_description"]))			{$campaign_description=$_GET["campaign_description"];}
+	elseif (isset($_POST["campaign_description"]))	{$campaign_description=$_POST["campaign_description"];}
+if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["campaign_stats_refresh"];}
+	elseif (isset($_POST["campaign_stats_refresh"])){$campaign_stats_refresh=$_POST["campaign_stats_refresh"];}
+if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
+	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -675,6 +680,7 @@ $sys_perf_log = ereg_replace("[^NY]","",$sys_perf_log);
 $vicidial_balance_active = ereg_replace("[^NY]","",$vicidial_balance_active);
 $vd_server_logs = ereg_replace("[^NY]","",$vd_server_logs);
 $agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
+$campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -689,6 +695,8 @@ $dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$dial_prefix);
 $state_call_time_state = ereg_replace("[^0-9a-zA-Z]","",$state_call_time_state);
 $scheduled_callbacks = ereg_replace("[^0-9a-zA-Z]","",$scheduled_callbacks);
 $concurrent_transfers = ereg_replace("[^0-9a-zA-Z]","",$concurrent_transfers);
+$billable = ereg_replace("[^0-9a-zA-Z]","",$billable);
+$pause_code = ereg_replace("[^0-9a-zA-Z]","",$pause_code);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -787,6 +795,9 @@ $server_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$server_description
 $status = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$status);
 $status_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$status_name);
 $wrapup_message = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$wrapup_message);
+$pause_code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$pause_code_name);
+$campaign_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_description);
+$list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -904,14 +915,17 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70123-1519 - Added user permission settings for all sections
 # 70124-1346 - Fixed spelling errors and formatting consistency
 # 70202-1120 - Added agent_pause_codes section to campaigns
+# 70205-1204 - Added memo, last dialed, timestamp and stats-refresh fields to vicidial_campaigns/lists
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.83';
-$build = '70202-1120';
+$version = '2.0.84';
+$build = '70205-1204';
 
 $STARTtime = date("U");
+$SQLdate = date("Y-m-d H:i:s");
+
 
 if ($force_logout)
 {
@@ -1573,6 +1587,26 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Campaign Name -</B> This is the description of the campaign, it must be between 6 and 40 characters in length.
 
 <BR>
+<A NAME="vicidial_campaigns-campaign_description">
+<BR>
+<B>Campaign Description -</B> This is a memo field for the campaign, it is optional and can be a maximum of 255 characters in length.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_changedate">
+<BR>
+<B>Campaign Change Date -</B> This is the last time that the settings for this campaign were modified in any way.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_logindate">
+<BR>
+<B>Last Campaign Login Date -</B> This is the last time that an agent was logged into this campaign.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_stats_refresh">
+<BR>
+<B>Campaign Stats Refresh -</B> This checkbox will allow you to force a vicidial stats refresh, even if the campaign is not active.
+
+<BR>
 <A NAME="vicidial_campaigns-active">
 <BR>
 <B>Active -</B> This is where you set the campaign to Active or Inactive. If Inactive, noone can log into it.
@@ -1835,6 +1869,21 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_lists-list_name">
 <BR>
 <B>List Name -</B> This is the description of the list, it must be between 2 and 20 characters in length.
+
+<BR>
+<A NAME="vicidial_lists-list_description">
+<BR>
+<B>List Description -</B> This is the memo field for the list, it is optional.
+
+<BR>
+<A NAME="vicidial_lists-list_changedate">
+<BR>
+<B>List Change Date -</B> This is the last time that the settings for this list were modified in any way.
+
+<BR>
+<A NAME="vicidial_lists-list_lastcalldate">
+<BR>
+<B>List Last Call Date -</B> This is the last time that lead was dialed from this list.
 
 <BR>
 <A NAME="vicidial_lists-campaign_id">
@@ -3129,6 +3178,7 @@ if ($ADD==11)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_description size=30 maxlength=255>$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Filename: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
@@ -3170,6 +3220,7 @@ if ($ADD==111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (digits only)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List Description: </td><td align=left><input type=text name=list_description size=30 maxlength=255>$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
 
 		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
@@ -3676,7 +3727,7 @@ if ($ADD==21)
 			{
 			echo "<br><B>CAMPAIGN ADDED: $campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch) values('$campaign_id','$campaign_name','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch');";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y');";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -3942,14 +3993,14 @@ if ($ADD==211)
 			{
 			echo "<br><B>LIST ADDED: $list_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_lists values('$list_id','$list_name','$campaign_id','$active');";
+			$stmt="INSERT INTO vicidial_lists (list_id,list_name,campaign_id,active,list_description,list_changedate) values('$list_id','$list_name','$campaign_id','$active','$list_description','$SQLdate');";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW LIST      |$PHP_AUTH_USER|$ip|'$list_id','$list_name','$campaign_id','$active'|\n");
+				fwrite ($fp, "$date|ADD A NEW LIST      |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
@@ -4552,6 +4603,7 @@ if ($ADD==41)
 		{
 		 echo "<br>CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered\n";
 		 echo "<br>the campaign name needs to be at least 6 characters in length\n";
+		 echo "<br>|$campaign_name|$active|\n";
 		}
 	 else
 		{
@@ -4586,7 +4638,7 @@ if ($ADD==41)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active' where campaign_id='$campaign_id';";
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -4744,7 +4796,7 @@ if ($ADD==44)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity' where campaign_id='$campaign_id';";
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_description='$campaign_description',campaign_changedate='$SQLdate' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -4880,7 +4932,7 @@ if ($ADD==411)
 		{
 		echo "<br><B>LIST MODIFIED: $list_id</B>\n";
 
-		$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active' where list_id='$list_id';";
+		$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate' where list_id='$list_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		if ($reset_list == 'Y')
@@ -4888,6 +4940,7 @@ if ($ADD==411)
 			echo "<br>RESETTING LIST-CALLED-STATUS\n";
 			$stmt="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
 			$rslt=mysql_query($stmt, $link);
+
 			### LOG RESET TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
@@ -4907,7 +4960,7 @@ if ($ADD==411)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY LIST INFO    |$PHP_AUTH_USER|$ip|list_name='$list_name',campaign_id='$campaign_id',active='$active' where list_id='$list_id'|\n");
+			fwrite ($fp, "$date|MODIFY LIST INFO    |$PHP_AUTH_USER|$ip|list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description' where list_id='$list_id'|\n");
 			fclose($fp);
 			}
 		}
@@ -6790,6 +6843,7 @@ if ($ADD==31)
 		$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
+		$campaign_name = $row[1];
 		$dial_status_a = $row[3];
 		$dial_status_b = $row[4];
 		$dial_status_c = $row[5];
@@ -6841,6 +6895,10 @@ if ($ADD==31)
 		$auto_alt_dial = $row[54];
 		$auto_alt_dial_statuses = $row[55];
 		$agent_pause_codes_active = $row[56];
+		$campaign_description = $row[57];
+		$campaign_changedate = $row[58];
+		$campaign_stats_refresh = $row[59];
+		$campaign_logindate = $row[60];
 
 	echo "<br>MODIFY A CAMPAIGNS RECORD: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Basic View</a>";
 	echo " | Detail View</a> | ";
@@ -6850,7 +6908,10 @@ if ($ADD==31)
 	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$campaign_name\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_description size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
@@ -7045,6 +7106,8 @@ if ($ADD==31)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Use Internal DNC List: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Pause Codes Active: </td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Stats Refresh: </td><td align=left><select size=1 name=campaign_stats_refresh><option>Y</option><option>N</option><option SELECTED>$campaign_stats_refresh</option></select>$NWB#vicidial_campaigns-campaign_stats_refresh$NWE</td></tr>\n";
 
 
 	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $campaign_id))
@@ -7406,6 +7469,10 @@ if ($ADD==34)
 		$display_dialable_count = $row[39];
 		$dial_method = $row[46];
 		$adaptive_intensity = $row[51];
+		$campaign_description = $row[57];
+		$campaign_changedate = $row[58];
+		$campaign_stats_refresh = $row[59];
+		$campaign_logindate = $row[60];
 
 	echo "<br>MODIFY A CAMPAIGN'S RECORD: $row[0] - Basic View | ";
 	echo "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\">Detail View</a> | ";
@@ -7416,6 +7483,10 @@ if ($ADD==34)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_changedate size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
@@ -7625,6 +7696,9 @@ if ($ADD==311)
 	$row=mysql_fetch_row($rslt);
 	$campaign_id = $row[2];
 	$active = $row[3];
+	$list_description = $row[4];
+	$list_changedate = $row[5];
+	$list_lastcalldate = $row[6];
 
 	# grab names of global statuses and statuses in the selected campaign
 	$stmt="SELECT * from vicidial_statuses order by status";
@@ -7658,6 +7732,7 @@ if ($ADD==311)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20 value=\"$row[1]\">$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List Description: </td><td align=left><input type=text name=list_description size=30 maxlength=255 value=\"$list_description\">$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Campaign</a>: </td><td align=left><select size=1 name=campaign_id>\n";
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
@@ -7676,6 +7751,8 @@ if ($ADD==311)
 	echo "</select>$NWB#vicidial_lists-campaign_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Reset Lead-Called-Status for this list: </td><td align=left><select size=1 name=reset_list><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-reset_list$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List Change Date: </td><td align=left>$list_changedate &nbsp; $NWB#vicidial_lists-list_changedate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List Last Call Date: </td><td align=left>$list_lastcalldate &nbsp; $NWB#vicidial_lists-list_lastcalldate$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 

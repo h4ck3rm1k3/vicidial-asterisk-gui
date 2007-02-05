@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDauto_dial.pl version 0.12   *DBI-version*
+# AST_VDauto_dial.pl version 2.0.3   *DBI-version*
 #
 # DESCRIPTION:
 # Places auto_dial calls on the VICIDIAL dialer system 
@@ -27,7 +27,7 @@
 #
 # Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# changes:
+# CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
 # 50317-0954 - Added duplicate check per cycle to account for DB lockups
 # 50322-1302 - Added campaign custom callerid feature
@@ -58,6 +58,7 @@
 # 70116-1619 - Added VDAD Ring-No-Answer Auto Alt Dial code
 # 70118-1539 - Added user_group logging to vicidial_user_log
 # 70131-1550 - Fixed Manual dialing trunk shortage bug
+# 70205-1414 - Added code for last called date update
 # 
 
 
@@ -265,6 +266,10 @@ while($one_day_interval > 0)
 		$user_campaignIP = '|';
 		$user_CIPct = 0;
 		$active_agents = "'READY','QUEUE','INCALL','DONE'";
+		$lists_update = '';
+		$LUcount=0;
+		$campaigns_update = '';
+		$CPcount=0;
 
 		##### Get a listing of the users that are active and ready to take calls
 		##### Also get a listing of the campaigns and campaigns/serverIP that will be used
@@ -284,6 +289,7 @@ while($one_day_interval > 0)
 				
 				if ($user_campaigns !~ /\|$DBlive_campaign[$user_counter]\|/i)
 					{
+					if ($campaigns_update !~ /'$DBlive_campaign[$user_counter]'/) {$campaigns_update .= "'$DBlive_campaign[$user_counter]',"; $CPcount++;}
 					$user_campaigns .= "$DBlive_campaign[$user_counter]|";
 					$DBcampaigns[$user_campaigns_counter] = $DBlive_campaign[$user_counter];
 					$user_campaigns_counter++;
@@ -671,6 +677,7 @@ while($one_day_interval > 0)
 							while ($sthArows > $rec_count)
 								{
 								@aryA = $sthA->fetchrow_array;
+									$list_id =					"$aryA[7]";
 									$gmt_offset_now	=			"$aryA[8]";
 									$called_since_last_reset =	"$aryA[9]";
 									$phone_code	=				"$aryA[10]";
@@ -743,6 +750,8 @@ while($one_day_interval > 0)
 									   {$Local_out_prefix .= "$RECprefix";}
 									}
 								$PADlead_id = sprintf("%09s", $lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
+
+								if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
 
 							   $lead_id_call_list .= "$lead_id|";
 
@@ -1111,6 +1120,24 @@ while($one_day_interval > 0)
 			 &jam_event_logger;
 			}
 
+
+		if ($LUcount > 0)
+			{
+			chop($lists_update);
+			$stmtA = "UPDATE vicidial_lists SET list_lastcalldate='$SQLdate' where list_id IN($lists_update);";
+			$affected_rows = $dbhA->do($stmtA);
+			$event_string = "|     lastcalldate UPDATED $affected_rows|$lists_update|";
+			 &event_logger;
+			}
+
+		if ($CPcount > 0)
+			{
+			chop($campaigns_update);
+			$stmtA = "UPDATE vicidial_campaigns SET campaign_logindate='$SQLdate' where campaign_id IN($campaigns_update);";
+			$affected_rows = $dbhA->do($stmtA);
+			$event_string = "|     logindate UPDATED $affected_rows|$campaigns_update|";
+			 &event_logger;
+			}
 
 
 	###############################################################################
