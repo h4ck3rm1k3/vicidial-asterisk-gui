@@ -82,3 +82,4 @@ ALTER TABLE vicidial_campaigns ADD campaign_changedate DATETIME;
 ALTER TABLE vicidial_campaigns ADD campaign_stats_refresh ENUM('Y','N') default 'N';
 ALTER TABLE vicidial_campaigns ADD campaign_logindate DATETIME;
 
+ALTER TABLE vicidial_users ADD vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED';

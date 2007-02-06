@@ -144,10 +144,11 @@
 # 70203-0930 - Added dialed_number to webform output
 # 70203-1010 - Added dialed_label to webform output
 # 70206-1201 - Fixed allow_closers bug
+# 70206-1332 - Added vicidial_recording_override users setting function
 #
 
-$version = '2.0.115';
-$build = '70206-1201';
+$version = '2.0.116';
+$build = '70206-1332';
 
 require("dbconnect.php");
 
@@ -462,7 +463,7 @@ $VDloginDISPLAY=0;
 		$login=strtoupper($VD_login);
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
-		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override from vicidial_users where user='$VD_login' and pass='$VD_pass'";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
@@ -477,6 +478,8 @@ $VDloginDISPLAY=0;
 		$VU_vicidial_transfers=$row[8];
 		$VU_closer_default_blended=$row[9];
 		$VU_user_group=$row[10];
+		$VU_vicidial_recording_override=$row[11];
+
 		if ($WeBRooTWritablE > 0)
 			{
 			fwrite ($fp, "vdweb|GOOD|$date|$VD_login|$VD_pass|$ip|$browser|$LOGfullname|\n");
@@ -637,6 +640,11 @@ $VDloginDISPLAY=0;
 			   $omit_phone_code=$row[31];
 			   $agent_pause_codes_active=$row[32];
 
+			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
+				{
+				$campaign_recording = $VU_vicidial_recording_override;
+				print "<!-- USER RECORDING OVERRIDE: |$VU_vicidial_recording_override|$campaign_recording| -->\n";
+				}
 			if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
 				{$scheduled_callbacks='1';}
 			if ($VU_vicidial_recording=='0')

@@ -437,6 +437,7 @@ modify_usergroups ENUM('0','1') default '0',
 modify_remoteagents ENUM('0','1') default '0',
 modify_servers ENUM('0','1') default '0',
 view_reports ENUM('0','1') default '0',
+vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
 index (user)
 );
 

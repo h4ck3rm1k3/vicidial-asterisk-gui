@@ -112,6 +112,8 @@ List Last Call Date -<\/B> This is the last time that lead was dialed from this 
 List Description: ||
 List Change Date: ||
 Campaign Description: ||
+VICIDIAL Recording Override -</B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load||
+VICIDIAL Recording Override: ||
 
 
 ############################################################ CLIENT

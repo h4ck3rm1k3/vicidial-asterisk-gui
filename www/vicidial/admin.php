@@ -543,6 +543,7 @@ if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["ca
 	elseif (isset($_POST["campaign_stats_refresh"])){$campaign_stats_refresh=$_POST["campaign_stats_refresh"];}
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
+if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}		elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -697,6 +698,7 @@ $scheduled_callbacks = ereg_replace("[^0-9a-zA-Z]","",$scheduled_callbacks);
 $concurrent_transfers = ereg_replace("[^0-9a-zA-Z]","",$concurrent_transfers);
 $billable = ereg_replace("[^0-9a-zA-Z]","",$billable);
 $pause_code = ereg_replace("[^0-9a-zA-Z]","",$pause_code);
+$vicidial_recording_override = ereg_replace("[^0-9a-zA-Z]","",$vicidial_recording_override);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -828,7 +830,7 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # AST GUI database administration
 # admin.php
 # 
-# CHANGES
+# CHANGELOG:
 # 50315-1110 - Added Custom Campaign Statuses
 # 50317-1438 - Added Fronter Display var to inbound groups
 # 50322-1355 - Added custom callerID per campaign
@@ -884,23 +886,23 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 60619-1523 - Added variable filtering to eliminate SQL injection attack threat
 # 60622-1216 - Fixed HotKey addition form issues and variable filtering
 # 60623-1159 - Fixed Scheduled Callbacks over-filtering bug and filter_sql bug
-# 60808-1147 - changed filtering for and added instructions for consutative transfers
-# 60816-1552 - added allcalls_delay start delay for recordings in vicidial.php
-# 60817-2226 - fixed bug that would not allow lead recycling of non-selectable statuses
-# 60821-1543 - added option to Omit Phone Code while dialing in vicidial
-# 60821-1625 - added ALLFORCE recording option for campaign_recording
-# 60823-1154 - added fields for adaptive dialing
-# 60824-1326 - added adaptive_latest_target_gmt for ADAPT_TAPERED dial method
-# 60825-1205 - added adaptive_intensity for ADAPT_ dial methods
-# 60828-1019 - changed adaptive_latest_target_gmt to adaptive_latest_server_time
-# 60828-1115 - added adaptive_dl_diff_target and changed intensity dropdown
-# 60927-1246 - added astguiclient/admin.php functions under SERVERS tab
-# 61002-1402 - added fields for vicidial balance trunk controls
-# 61003-1123 - added functions for vicidial_server_trunks records
-# 61109-1022 - added Emergency VDAC Jam Clear function to Campaign Detail screen
-# 61110-1502 - add ability to select NONE in dial statuses, new list_id must not be < 100
-# 61122-1228 - added user group campaign restrictions
-# 61122-1535 - changed script_text to unfiltered and added more variables to SCRIPTS
+# 60808-1147 - Changed filtering for and added instructions for consutative transfers
+# 60816-1552 - Added allcalls_delay start delay for recordings in vicidial.php
+# 60817-2226 - Fixed bug that would not allow lead recycling of non-selectable statuses
+# 60821-1543 - Added option to Omit Phone Code while dialing in vicidial
+# 60821-1625 - Added ALLFORCE recording option for campaign_recording
+# 60823-1154 - Added fields for adaptive dialing
+# 60824-1326 - Added adaptive_latest_target_gmt for ADAPT_TAPERED dial method
+# 60825-1205 - Added adaptive_intensity for ADAPT_ dial methods
+# 60828-1019 - Changed adaptive_latest_target_gmt to adaptive_latest_server_time
+# 60828-1115 - Added adaptive_dl_diff_target and changed intensity dropdown
+# 60927-1246 - Added astguiclient/admin.php functions under SERVERS tab
+# 61002-1402 - Added fields for vicidial balance trunk controls
+# 61003-1123 - Added functions for vicidial_server_trunks records
+# 61109-1022 - Added Emergency VDAC Jam Clear function to Campaign Detail screen
+# 61110-1502 - Add ability to select NONE in dial statuses, new list_id must not be < 100
+# 61122-1228 - Added user group campaign restrictions
+# 61122-1535 - Changed script_text to unfiltered and added more variables to SCRIPTS
 # 61129-1028 - Added headers to Users and Phones with clickable order-by titles
 # 70108-1405 - Added ADAPT OVERRIDE to allow for forced dial_level changes in ADAPT dial methods
 #            - Screen width definable at top of script, merged server_stats into this script
@@ -916,12 +918,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70124-1346 - Fixed spelling errors and formatting consistency
 # 70202-1120 - Added agent_pause_codes section to campaigns
 # 70205-1204 - Added memo, last dialed, timestamp and stats-refresh fields to vicidial_campaigns/lists
+# 70206-1323 - Added user setting for vicidial_recording_override
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.84';
-$build = '70205-1204';
+$version = '2.0.85';
+$build = '70206-1323';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1475,6 +1478,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_users-closer_default_blended">
 <BR>
 <B>Closer Default Blended -</B> This option simply defaults the Blended checkbox on a CLOSER login screen.
+
+<BR>
+<A NAME="vicidial_users-vicidial_recording_override">
+<BR>
+<B>VICIDIAL Recording Override -</B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
 
 <BR>
 <A NAME="vicidial_users-alter_agent_interface_options">
@@ -4484,7 +4492,7 @@ if ($ADD=="4A")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 
@@ -4526,16 +4534,14 @@ if ($ADD=="4B")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
-
-
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended' where user='$user'|\n");
+			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		}
@@ -6698,6 +6704,7 @@ if ($ADD==3)
 	$modify_remoteagents =	$row[41];
 	$modify_servers =		$row[42];
 	$view_reports =			$row[43];
+	$vicidial_recording_override =	$row[44];
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -6758,6 +6765,7 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vicidial Recording: </td><td align=left><select size=1 name=vicidial_recording><option>0</option><option>1</option><option SELECTED>$vicidial_recording</option></select>$NWB#vicidial_users-vicidial_recording$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vicidial Transfers: </td><td align=left><select size=1 name=vicidial_transfers><option>0</option><option>1</option><option SELECTED>$vicidial_transfers</option></select>$NWB#vicidial_users-vicidial_transfers$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Closer Default Blended: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Recording Override: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Inbound Groups: </td><td align=left>\n";
 			echo "$groups_list";
 			echo "$NWB#vicidial_users-closer_campaigns$NWE</td></tr>\n";
