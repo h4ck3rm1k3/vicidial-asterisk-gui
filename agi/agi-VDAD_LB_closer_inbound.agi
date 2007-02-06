@@ -592,7 +592,8 @@ if ($drop_seconds < 1)
 			@aryA = $sthA->fetchrow_array;	
 			$VDADvoicemail_ext	= "$aryA[0]";
 			$VDADvoicemail_ext =~ s/\D//gi;
-			$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";
+			if (length($VDADvoicemail_ext)>0)
+				{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
 			$cbc++;
 			}
 		$sthA->finish();
