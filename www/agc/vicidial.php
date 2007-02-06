@@ -143,10 +143,11 @@
 # 70203-0108 - Finished Agent Pause Codes functionality
 # 70203-0930 - Added dialed_number to webform output
 # 70203-1010 - Added dialed_label to webform output
+# 70206-1201 - Fixed allow_closers bug
 #
 
-$version = '2.0.114';
-$build = '70203-1010';
+$version = '2.0.115';
+$build = '70206-1201';
 
 require("dbconnect.php");
 
@@ -5207,7 +5208,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				document.getElementById("PauseCodeLinkSpan").innerHTML = "<a href=\"#\" onclick=\"PauseCodeSelectContent_create();return false;\">ENTER A PAUSE CODE</a>";
 				}
-
+			if (VICIDiaL_allow_closers < 1)
+				{
+				document.getElementById("InternalCloser").style.visibility = 'hidden';
+				document.getElementById("LocalCloser").style.visibility = 'hidden';
+				}
 			document.getElementById("sessionIDspan").innerHTML = session_id;
 			if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
 				{
