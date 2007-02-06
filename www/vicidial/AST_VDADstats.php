@@ -217,6 +217,7 @@ echo "| AGENT                    | CALLS      | TIME M   | AVRG M |\n";
 echo "+--------------------------+------------+----------+--------+\n";
 
 $stmt="select vicidial_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_log.user=vicidial_users.user group by vicidial_log.user;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -228,8 +229,15 @@ while ($i < $users_to_print)
 	$TOTcalls = ($TOTcalls + $row[2]);
 	$TOTtime = ($TOTtime + $row[3]);
 
-	$user =			sprintf("%-6s", $row[0]);
-	$full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
+	$user =	sprintf("%-6s", $row[0]);while(strlen($user)>6) {$user = substr("$user", 0, -1);}
+	if ($non_latin < 1)
+	{
+ 	 $full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}	
+	}
+	else
+	{
+	 $full_name =	sprintf("%-45s", $row[1]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}	
+	}
 	$USERcalls =	sprintf("%10s", $row[2]);
 	$USERtotTALK =	$row[3];
 	$USERavgTALK =	$row[4];

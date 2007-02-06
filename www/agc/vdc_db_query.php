@@ -117,10 +117,11 @@
 # 70202-1438 - Added pause code submit function
 # 70203-0930 - Added dialed_number to lead info output
 # 70203-1030 - Added dialed_label to lead info output
+# 70206-1126 - Added INBOUND status for inbound/closer calls in vicidial_live_agents
 #
 
-$version = '2.0.44';
-$build = '70203-1030';
+$version = '2.0.45';
+$build = '70206-1126';
 
 require("dbconnect.php");
 
@@ -1315,6 +1316,11 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_xferconf_a_number	= $row[11];
 				$VDCL_xferconf_b_dtmf	= $row[12];
 				$VDCL_xferconf_b_number	= $row[13];
+
+				### update the comments in vicidial_live_agents record
+				$stmt = "UPDATE vicidial_live_agents set comments='INBOUND' where user='$user' and server_ip='$server_ip';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			else
 				{
@@ -1444,6 +1450,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
+		
 		}
 		else
 		{

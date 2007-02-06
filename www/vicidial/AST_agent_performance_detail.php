@@ -36,6 +36,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) { $rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -188,7 +189,24 @@ while ($i < $rows_to_print)
 	$TOTtotPAUSE=($TOTtotPAUSE + $row[5]);
 	$TOTtotDISPO=($TOTtotDISPO + $row[9]);
 	$calls[$i] =	sprintf("%-6s", $row[0]);
-	$full_name[$i]=	sprintf("%-15s", $row[2]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
+
+	if ($non_latin < 1)
+	{
+   	 $full_name[$i]=	sprintf("%-15s", $row[2]); 
+	 while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
+
+	 $user[$i] =		sprintf("%-6s", $row[3]);
+        while(strlen($user[$i])>6) {$user[$i] = substr("$user[$i]", 0, -1);}
+       }
+	else
+	{	
+        $full_name[$i]=	sprintf("%-45s", $row[2]); 
+	 while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
+
+ 	 $user[$i] =		sprintf("%-18s", $row[3]);
+	 while(mb_strlen($user[$i],'utf-8')>6) {$user[$i] = mb_substr("$user[$i]", 0, -1,'utf-8');}
+	}
+
 	$user[$i] =		sprintf("%-8s", $row[3]);
 	$USERtime =	($row[1] + $row[5] + $row[7] + $row[9]);
 	$USERtotTALK =	$row[1];

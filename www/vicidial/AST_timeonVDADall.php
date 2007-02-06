@@ -7,7 +7,7 @@
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
 # 
-# changes:
+# CHANGELOG:
 # 50406-0920 - Added Paused agents < 1 min (Chris Doyle)
 # 51130-1218 - Modified layout and info to show all servers in a vicidial system
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
@@ -21,10 +21,11 @@
 # 61002-1642 - Added TRUNK SHORT/FILL stats
 # 61101-1318 - Added SIP and IAX Listen and Barge links option
 # 61101-1647 - Added Usergroup column and user name option as well as sorting
-# 61102-1155 - made display of columns more modular, added ability to hide server info
-# 61215-1131 - added answered calls and drop percent taken from answered calls
-# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
-# 70123-1151 - added non_latin options for substr in display variables, thanks Marin Blu
+# 61102-1155 - Made display of columns more modular, added ability to hide server info
+# 61215-1131 - Added answered calls and drop percent taken from answered calls
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70123-1151 - Added non_latin options for substr in display variables, thanks Marin Blu
+# 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -528,8 +529,8 @@ $HDsessionid =		"------------------+";
 $HTsessionid =		" SESSIONID        |";
 $HDbarge =			"-------+";
 $HTbarge =			" BARGE |";
-$HDstatus =			"--------+";
-$HTstatus =			" STATUS |";
+$HDstatus =			"----------+";
+$HTstatus =			" STATUS   |";
 $HDserver_ip =		"-----------------+";
 $HTserver_ip =		" SERVER IP       |";
 $HDcall_server_ip =	"-----------------+";
@@ -592,7 +593,7 @@ else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";
 if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
-$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
+$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
 
 #$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and campaign_id='" . mysql_real_escape_string($group) . "' order by $orderSQL;";
 
@@ -634,7 +635,23 @@ $talking_to_print = mysql_num_rows($rslt);
 		$status =			sprintf("%-6s", $row[3]);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
-		$campaign_id =		sprintf("%-10s", $row[8]);
+		$campaign_id =	sprintf("%-10s", $row[8]);
+		$comments=		$row[11];
+
+		if (eregi("INCALL",$Lstatus)) 
+			{
+			if ( (eregi("AUTO",$comments)) or (strlen($comments)<1) )
+				{$CM='A';}
+			else
+				{
+				if (eregi("INBOUND",$comments)) 
+					{$CM='I';}
+				else
+					{$CM='M';}
+				} 
+			}
+		else {$CM=' ';}
+
 		if ($UGdisplay > 0)
 			{
 				if ($non_latin < 1)
@@ -723,7 +740,7 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG | $SVD$G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}
