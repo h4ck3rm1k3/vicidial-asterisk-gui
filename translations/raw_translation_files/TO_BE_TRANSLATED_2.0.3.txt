@@ -127,6 +127,8 @@ YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE||
 
 ############################################################  MANAGER Manual
 
+Add note about using CLOSER-type campaigns to allow logins with no leads
+
 
 ############################################################  AGENT Manual
 
