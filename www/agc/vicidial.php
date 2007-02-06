@@ -5625,6 +5625,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			if (showxfervar == 'ON')
 				{
+				var xfer_height = 310;
+				if (alt_phone_dialing>0) {xfer_height = (xfer_height + 20);}
+				if ( (auto_dial_level == 0) && (manual_dial_preview == 1) ) {xfer_height = (xfer_height + 20);}
+				document.getElementById("TransferMain").style.top = xfer_height;
 				HKbutton_allowed = 0;
 				showDiv('TransferMain');
 				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
