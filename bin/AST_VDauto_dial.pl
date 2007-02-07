@@ -59,6 +59,7 @@
 # 70118-1539 - Added user_group logging to vicidial_user_log
 # 70131-1550 - Fixed Manual dialing trunk shortage bug
 # 70205-1414 - Added code for last called date update
+# 70207-1031 - Fixed Tally-only-available bug with customer hangups
 # 
 
 
@@ -420,7 +421,24 @@ while($one_day_interval > 0)
 
 			$DBIPgoalcalls[$user_CIPct] = ($DBIPadlevel[$user_CIPct] * $DBIPcount[$user_CIPct]);
 			if ($active_only > 0) 
-				{$DBIPgoalcalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] + $DBIPINCALLcount[$user_CIPct]);}
+				{
+				$tally_xfer_line_counter=0;
+				### see how many VDAD calls are live as XFERs to agents
+				$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and campaign_id='$DBIPcampaign[$user_CIPct]' and status='XFER';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+						$tally_xfer_line_counter = "$aryA[0]";
+					$rec_count++;
+					}
+				$sthA->finish();
+
+				$DBIPgoalcalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] + $tally_xfer_line_counter);
+				}
 			if ($DBIPactive[$user_CIPct] =~ /N/) {$DBIPgoalcalls[$user_CIPct] = 0;}
 			$DBIPgoalcalls[$user_CIPct] = sprintf("%.0f", $DBIPgoalcalls[$user_CIPct]);
 
