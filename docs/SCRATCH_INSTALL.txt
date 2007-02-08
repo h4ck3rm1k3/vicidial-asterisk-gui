@@ -705,6 +705,41 @@ installation on another machine)
    - go to http://your-new-asterisk-server-ipaddress/ to see if it worked
    - you are done
 
+   OPTIONAL- Load eaccelerator PHP-caching application:
+   - Go to http://eaccelerator.net and download the most recent package
+	- cd /usr/local
+	- wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.zip
+	- unzip eaccelerator-0.9.5.zip
+	- cd eaccelerator-0.9.5
+	- export PHP_PREFIX="/usr/local"
+	- $PHP_PREFIX/bin/phpize
+	- ./configure --enable-eaccelerator=shared --with-php-config=$PHP_PREFIX/bin/php-config
+	- make
+	- make install
+	- vi /usr/local/lib/php.ini
+	    Add the following lines to the extensions section of php.ini:
+	     (you may need to change the extension location depending on your install of php)
+		extension="eaccelerator.so"
+		eaccelerator.shm_size="48"
+		eaccelerator.cache_dir="/tmp/eaccelerator"
+		eaccelerator.enable="1"
+		eaccelerator.optimizer="1"
+		eaccelerator.check_mtime="1"
+		eaccelerator.debug="0"
+		eaccelerator.filter=""
+		eaccelerator.shm_max="0"
+		eaccelerator.shm_ttl="0"
+		eaccelerator.shm_prune_period="0"
+		eaccelerator.shm_only="0"
+		eaccelerator.compress="1"
+		eaccelerator.compress_level="9"
+	- mkdir /tmp/eaccelerator
+	- chmod 0777 /tmp/eaccelerator
+	# to verify installation:
+	- php -v
+
+
+
 
 balance is a load-balancing application for Linux that will allow you to spread
 the load of your web traffic across many servers. If you are running more than 
