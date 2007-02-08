@@ -717,9 +717,9 @@ installation on another machine)
 	- make
 	- make install
 	- vi /usr/local/lib/php.ini
-	    Add the following lines to the extensions section of php.ini:
+	    Add the following lines to the dynamic extensions section of php.ini:
 	     (you may need to change the extension location depending on your install of php)
-		extension="eaccelerator.so"
+		extension="../../../usr/local/eaccelerator-0.9.5/modules/eaccelerator.so"
 		eaccelerator.shm_size="48"
 		eaccelerator.cache_dir="/tmp/eaccelerator"
 		eaccelerator.enable="1"

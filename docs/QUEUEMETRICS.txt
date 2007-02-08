@@ -1,0 +1,128 @@
+VICIDIAL and QueueMetrics
+
+This document goes over the features and needed changes made to VICIDIAL to enable it to insert activity records into the queue_log and other tables in MySQL that QueueMetrics uses for it's statistical analysis and reports.
+
+QueueMetrics is a closed-source, commercial product written by Loway Research in Italy. The writers of VICIDIAL do not support or warranty QueueMetrics or it's functionality with VICIDIAL in any way.
+
+This feature was added to the package at the request of several users of VICIDIAL and was achieved with some help from the makers of QueueMetrics(although all VICIDIAL code changes were done entirely by Matt Florell).
+
+
+
+Here is a short summary of the needed steps to install QueueMetrics on your system:
+
+First, get Sun Java SDK/JRE and install on your system.
+NOTE: the GCJ java JRE available on most RedHat/Feroda/CentOS systems WILL NOT WORK
+
+download and install the Java jdk-1_5_0_11-linux-i586-rpm.bin from:
+http://www.sun.com/software/communitysource/j2se/java2/index.xml
+
+
+cd /usr/local
+chmod 0777 jdk-1_5_0_11-linux-i586-rpm.bin
+./jdk-1_5_0_11-linux-i586-rpm.bin
+ls -l
+rpm -i jdk-1_5_0_11-linux-i586.rpm
+wget http://www.mirrorgeek.com/apache.org/tomcat/tomcat-5/v5.5.20/bin/apache-tomcat-5.5.20.tar.gz
+gunzip apache-tomcat-5.5.20.tar.gz
+tar xvf apache-tomcat-5.5.20.tar
+cd apache-tomcat-5.5.20
+ln -s apache-tomcat-5.5.20 tomcat
+JAVA_HOME=/usr/java/jdk1.5.0_11/
+JAVA_OPTS="-Xms256M -Xmx512M"
+JRE_HOME=/usr/java/jdk1.5.0_11/jre
+export JAVA_HOME
+export JAVA_OPTS
+export JRE_HOME
+/usr/local/tomcat/bin/startup.sh
+
+At this point you should go here on your web browser to see if the tomcat installation went well:
+http://ip-address:8080/
+
+If it did, then you want to add the following lines to your /etc/rc.d/rc.local file so that tomcat will start up on boot:
+	JAVA_HOME=/usr/java/jdk1.5.0_11/
+	JAVA_OPTS="-Xms256M -Xmx512M"
+	JRE_HOME=/usr/java/jdk1.5.0_11/jre
+	export JAVA_HOME
+	export JAVA_OPTS
+	export JRE_HOME
+	/usr/local/tomcat/bin/startup.sh
+
+cd /usr/local
+*** download QueueMetrics and place it in /usr/local ***
+gunzip QueueMetrics-1.1.tar.gz
+tar xvf QueueMetrics-1.1.tar
+mv queuemetrics-1.1 /usr/local/tomcat/webapps/qm
+cd /usr/local/tomcat/webapps/qm/WEB_INF
+wget http://mysql.mirrors.pair.com/Downloads/Connector-J/mysql-connector-java-3.0.10-stable.tar.gz
+gunzip mysql-connector-java-3.0.10-stable.tar.gz
+tar xvf mysql-connector-java-3.0.10-stable.tar
+cp mysql-connector-java-3.0.10-stable/mysql-connector-java-3.0.10-stable-bin.jar ./lib/
+
+At this point you should go here on your web browser to see if the tomcat installation went well:
+http://ip-address:8080/qm
+
+If you see a QueueMetrics page(probably with many errors), then installation went well up to this point.
+
+You now need to add the database tables, configure the web.xml file and configuration.properties file for your system.
+
+
+
+
+
+Now to the database side of things. First the queue_log table:
+
+mysql> describe queue_log;
++-----------+------------------+------+-----+---------+-------+
+| Field     | Type             | Null | Key | Default | Extra |
++-----------+------------------+------+-----+---------+-------+
+| partition | char(20)         | NO   | MUL |         |       |
+| time_id   | int(11) unsigned | NO   | MUL | 0       |       |
+| call_id   | char(30)         | NO   | MUL |         |       |
+| queue     | char(30)         | NO   |     |         |       |
+| agent     | char(30)         | NO   |     |         |       |
+| verb      | char(30)         | NO   |     |         |       |
+| data1     | char(30)         | NO   |     |         |       |
+| data2     | char(30)         | NO   |     |         |       |
+| data3     | char(30)         | NO   |     |         |       |
+| data4     | char(30)         | NO   |     |         |       |
+| serverid  | varchar(10)      | NO   |     | 0       |       |
++-----------+------------------+------+-----+---------+-------+
+
+partition: set to "P01" for the first partition, should match up with configuration.properties presets
+
+time_id: epoch, unixtime (seconds since 1970-01-01 00:00:00) [1170345603]
+
+call_id: Asterisk unique prepended with server_id field [1-1170345497.30369]
+
+queue: the queue that call came into (we will use the campaign_id here)
+
+agent: we will use the user ID prepended by "agent/" [agent/6666]
+
+verbs:
+PAUSEALL
+PAUSE
+COMPLETECALLER
+AGENTCALLBACKLOGOFF
+ABANDON
+ENTERQUEUE
+AGENTCALLBACKLOGIN
+UNPAUSEALL
+UNPAUSE
+COMPLETEAGENT
+CONNECT
+QUEUESTART
+AGENTDUMP
+TRANSFER
+EXITWITHTIMEOUT
+CONFIGRELOAD
+
+data1: call termination codes, TBD
+
+data2: callerID or number called(sometimes prepended by DNIS) [3101-9015556189]
+
+data3: ??
+
+data4: ??
+
+serverid: number of the server the call came from [1]
+
