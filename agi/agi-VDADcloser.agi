@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADcloser.agi version 0.5   *DBI-version*
+# agi-VDADcloser.agi version 0.6   *DBI-version*
 # 
 # runs when a call comes in from a VICIDIAL fronter. This script will 
 # send the calls out to the closers that are logged in.
@@ -15,9 +15,9 @@
 #exten => _90009.,1,Answer                  ; Answer the line
 #exten => _90009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# changes:
+# CHANGELOG:
 # 60503-1242 - Added drop second/message/exten options from inbound_group
 # 60811-1127 - Changed to DBI
 # 60811-1145 - changed to use /etc/astguiclient.conf for configs
@@ -25,6 +25,7 @@
 #            - changed look for agent every 0.5 second for first 4 sec on hold
 # 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70212-1252 - Fixed issue with Local/ channel transfers on same server
 #
 
 $script = 'agi-VDADcloser.agi';
@@ -235,8 +236,15 @@ if ($AGILOG) {$agi_string = "+++++ VDAD START : |$CIDlead_id|$now_date|";   &agi
 
 if ($channel =~ /Local/i)
 {
-if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
-exit;
+	if ($inbound_number =~ /CXFER/)
+	{
+	if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: CXFER OVERRIDE- $priority";   &agi_output;}
+	}
+	else
+	{
+	if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: EXITING- $priority";   &agi_output;}
+	exit;
+	}
 }
 
 ### Grab Server values from the database

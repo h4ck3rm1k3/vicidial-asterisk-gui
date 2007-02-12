@@ -1,7 +1,7 @@
 <?
 # vdc_db_query.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -70,7 +70,7 @@
 #  - $omit_phone_code - ('Y','N')
 #  - $no_delete_sessions - ('0','1')
 
-# changes
+# CHANGELOG:
 # 50629-1044 - First build of script
 # 50630-1422 - Added manual dial action and MD channel lookup
 # 50701-1451 - Added dial log for start and end of vicidial calls
@@ -101,7 +101,7 @@
 #            - Added USERONLY Callback count output - CalLBacKCounT
 # 60414-1140 - Added Callback lead lookup for manual dialing
 # 60419-1517 - After CALLBK is sent to agent, update callback record to INACTIVE
-# 60421-1419 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60421-1419 - Check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60427-1236 - Fixed closer_choice error for CLOSER campaigns
 # 60609-1148 - Added ability to check for manual dial numbers in DNC
 # 60619-1117 - Added variable filters to close security holes for login form
@@ -118,10 +118,11 @@
 # 70203-0930 - Added dialed_number to lead info output
 # 70203-1030 - Added dialed_label to lead info output
 # 70206-1126 - Added INBOUND status for inbound/closer calls in vicidial_live_agents
+# 70212-1253 - Fixed small issue with CXFER
 #
 
-$version = '2.0.45';
-$build = '70206-1126';
+$version = '2.0.46';
+$build = '70212-1253';
 
 require("dbconnect.php");
 
@@ -1524,7 +1525,7 @@ else
 		$row=mysql_fetch_row($rslt);
 		$agent_channel = "$row[0]";
 		if ($format=='debug') {echo "\n<!-- $row[0] -->";}
-		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','RH123459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','ULGH3459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}

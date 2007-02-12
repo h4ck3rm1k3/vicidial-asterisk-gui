@@ -1,7 +1,7 @@
 <?
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also, you need to have the login
@@ -15,7 +15,7 @@
 # - vdc_db_query.php: Updates information in the database
 # - manager_send.php: Sends manager actions to the DB for execution
 #
-# CHANGES
+# CHANGELOG
 # 50607-1426 - First Build of VICIDIAL web client basic login process finished
 # 50628-1620 - Added some basic formatting and worked on process flow
 # 50628-1715 - Startup variables mapped to javascript variables
@@ -145,10 +145,11 @@
 # 70203-1010 - Added dialed_label to webform output
 # 70206-1201 - Fixed allow_closers bug
 # 70206-1332 - Added vicidial_recording_override users setting function
+# 70212-1252 - Fixed small issue with CXFER
 #
 
-$version = '2.0.116';
-$build = '70206-1332';
+$version = '2.0.117';
+$build = '70212-1252';
 
 require("dbconnect.php");
 
@@ -1764,7 +1765,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (Ctasknum.length < 2)
 					{Ctasknum = '990009';}
 				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
-				tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+				tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
 				}
 			var regAXFvars = new RegExp("AXFER","g");
 			if (tasknum_string.match(regAXFvars))

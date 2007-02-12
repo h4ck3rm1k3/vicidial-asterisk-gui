@@ -101,6 +101,8 @@ agent: we will use the user ID prepended by "agent/" [agent/6666]
 verbs:
 PAUSEALL
 PAUSE
+CALLSTATUS
+PAUSEREASON
 COMPLETECALLER
 AGENTCALLBACKLOGOFF
 ABANDON

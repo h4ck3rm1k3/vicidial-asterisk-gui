@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADfixCXFER.agi version 0.3   *DBI-version*
+# agi-VDADfixCXFER.agi version 0.4   *DBI-version*
 # 
 # runs when a Consultative transfer is released by the vicidial fronter as the
 # call arrives on another channel so that the vicidial_live_agents record is
@@ -10,12 +10,14 @@
 # 
 # ;VICIDIAL Consultative Xfer fix script:
 # exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+# exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+# 
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-#
-# changes:
-# 60809-1749 - first build
-# 60817-1122 - added output options check from database
+# CHANGELOG:
+# 60809-1749 - First build
+# 60817-1122 - Added output options check from database
+# 70212-1252 - Fixed issue with Local/ channel transfers on same server
 #
 
 $script = 'agi-VDADfixCXFER.agi';
@@ -160,6 +162,10 @@ while(<STDIN>)
 	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
 	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
 }
+
+# 010*010*011*011*
+
+$extension =~ s/^\d\d\d\*\d\d\d\*\d\d\d\*\d\d\d\*//gi;
 
 @EXTEN = split(/\*/, $extension);
 	$conf_exten =		$EXTEN[0];
