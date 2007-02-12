@@ -38,6 +38,7 @@ $reports_color =	'#99FF33';
 	$phones_color =		'#CCCC00';
 	$conference_color =	'#CCCC00';
 	$server_color =		'#CCCC00';
+	$settings_color = 	'#CCCC00';
 $users_font =		'BLACK';
 $campaigns_font =	'BLACK';
 $lists_font =		'BLACK';
@@ -52,6 +53,7 @@ $reports_font =		'BLACK';
 	$phones_font =		'BLACK';
 	$conference_font =	'BLACK';
 	$server_font =		'BLACK';
+	$settings_font = 	'BLACK';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -544,6 +546,23 @@ if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["ca
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
 if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}		elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
+if (isset($_GET["use_non_latin"]))				{$use_non_latin=$_GET["use_non_latin"];}
+	elseif (isset($_POST["use_non_latin"]))		{$use_non_latin=$_POST["use_non_latin"];}
+if (isset($_GET["webroot_writable"]))			{$webroot_writable=$_GET["webroot_writable"];}
+	elseif (isset($_POST["webroot_writable"]))	{$webroot_writable=$_POST["webroot_writable"];}
+if (isset($_GET["enable_queuemetrics_logging"]))	{$enable_queuemetrics_logging=$_GET["enable_queuemetrics_logging"];}
+	elseif (isset($_POST["enable_queuemetrics_logging"]))	{$enable_queuemetrics_logging=$_POST["enable_queuemetrics_logging"];}
+if (isset($_GET["queuemetrics_server_ip"]))				{$queuemetrics_server_ip=$_GET["queuemetrics_server_ip"];}
+	elseif (isset($_POST["queuemetrics_server_ip"]))	{$queuemetrics_server_ip=$_POST["queuemetrics_server_ip"];}
+if (isset($_GET["queuemetrics_dbname"]))			{$queuemetrics_dbname=$_GET["queuemetrics_dbname"];}
+	elseif (isset($_POST["queuemetrics_dbname"]))	{$queuemetrics_dbname=$_POST["queuemetrics_dbname"];}
+if (isset($_GET["queuemetrics_login"]))				{$queuemetrics_login=$_GET["queuemetrics_login"];}
+	elseif (isset($_POST["queuemetrics_login"]))	{$queuemetrics_login=$_POST["queuemetrics_login"];}
+if (isset($_GET["queuemetrics_pass"]))			{$queuemetrics_pass=$_GET["queuemetrics_pass"];}
+	elseif (isset($_POST["queuemetrics_pass"]))	{$queuemetrics_pass=$_POST["queuemetrics_pass"];}
+if (isset($_GET["queuemetrics_url"]))			{$queuemetrics_url=$_GET["queuemetrics_url"];}
+	elseif (isset($_POST["queuemetrics_url"]))	{$queuemetrics_url=$_POST["queuemetrics_url"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -662,6 +681,9 @@ $voicemail_ext = ereg_replace("[^0-9]","",$voicemail_ext);
 $voicemail_exten = ereg_replace("[^0-9]","",$voicemail_exten);
 $voicemail_id = ereg_replace("[^0-9]","",$voicemail_id);
 $wrapup_seconds = ereg_replace("[^0-9]","",$wrapup_seconds);
+$use_non_latin = ereg_replace("[^0-9]","",$use_non_latin);
+$webroot_writable = ereg_replace("[^0-9]","",$webroot_writable);
+$enable_queuemetrics_logging = ereg_replace("[^0-9]","",$enable_queuemetrics_logging);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -707,6 +729,7 @@ $adaptive_maximum_level = ereg_replace("[^\.0-9]","",$adaptive_maximum_level);
 $phone_ip = ereg_replace("[^\.0-9]","",$phone_ip);
 $old_server_ip = ereg_replace("[^\.0-9]","",$old_server_ip);
 $computer_ip = ereg_replace("[^\.0-9]","",$computer_ip);
+$queuemetrics_server_ip = ereg_replace("[^\.0-9]","",$queuemetrics_server_ip);
 
 ### ALPHA-NUMERIC and spaces and hash and star and comma
 $xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
@@ -811,12 +834,16 @@ $extension = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$extension);
 $install_directory = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$install_directory);
 $old_extension = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$old_extension);
 $telnet_host = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$telnet_host);
+$queuemetrics_dbname = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_dbname);
+$queuemetrics_login = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_login);
+$queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pass);
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
+# $queuemetrics_url
 
 ### VARIABLES not filtered at all ###
 # $script_text
@@ -919,12 +946,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70202-1120 - Added agent_pause_codes section to campaigns
 # 70205-1204 - Added memo, last dialed, timestamp and stats-refresh fields to vicidial_campaigns/lists
 # 70206-1323 - Added user setting for vicidial_recording_override
+# 70212-1412 - Added system settings section
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$version = '2.0.85';
-$build = '70206-1323';
+$admin_version = '2.0.86';
+$build = '70212-1412';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1024,7 +1052,7 @@ $browser = getenv("HTTP_USER_AGENT");
 header ("Content-type: text/html; charset=utf-8");
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version   BUILD: $build   ADD: $ADD   PHP_SELF: $PHP_SELF-->\n";
+echo "<!-- VERSION: $admin_version   BUILD: $build   ADD: $ADD   PHP_SELF: $PHP_SELF-->\n";
 echo "<title>VICIDIAL ADMIN: ";
 
 if (!isset($ADD))   {$ADD=0;}
@@ -1081,6 +1109,7 @@ if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
+if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
 if ($ADD=="4A")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Modify User";}
@@ -1103,6 +1132,7 @@ if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
+if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	echo "Logout Agents";}
@@ -2714,6 +2744,53 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <B>VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting.</B>
 
 
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>SYSTEM_SETTINGS TABLE</FONT></B><BR><BR>
+<A NAME="settings-use_non_latin">
+<BR>
+<B>Use Non-Latin -</B> This option allows you to default the web display script to use UTF8 characters and not do any latin-character-family regular expression filtering or display formatting. Default is 0.
+
+<BR>
+<A NAME="settings-webroot_writable">
+<BR>
+<B>Webroot Writable -</B> This setting allows you to define whether temp files and authentication files should be placed in the webroot on your web server. Default is 1.
+
+<BR>
+<A NAME="settings-enable_queuemetrics_logging">
+<BR>
+<B>Enable QueueMetrics Logging -</B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0.
+
+<BR>
+<A NAME="settings-queuemetrics_server_ip">
+<BR>
+<B>QueueMetrics Server IP -</B> This is the IP address of the database for your QueueMetrics installation.
+
+<BR>
+<A NAME="settings-queuemetrics_dbname">
+<BR>
+<B>QueueMetrics Database Name -</B> This is the database name for your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_login">
+<BR>
+<B>QueueMetrics Database Login -</B> This is the user name used to log in to your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_pass">
+<BR>
+<B>QueueMetrics Database Password -</B> This is the password used to log in to your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_url">
+<BR>
+<B>QueueMetrics URL -</B> This is the URL or web site address used to get to your QueueMetrics installation.
+
+
+
 <BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR>
 THE END
@@ -3059,13 +3136,16 @@ if (strlen($admin_hh) > 1) {
 		else {$server_sh=''; $server_fc='BLACK';}
 	if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
 		else {$conference_sh=''; $conference_fc='BLACK';}
+	if ($sh=='settings') {$settings_sh="bgcolor=\"$server_color\""; $settings_fc="$server_font";} # pink
+		else {$settings_sh=''; $settings_fc='BLACK';}
 
 	?>
 <TR BGCOLOR=<?=$admin_color ?>>
 <TD ALIGN=LEFT <?=$times_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$times_fc ?> SIZE=<?=$header_font_size ?>> Call Times </a></TD>
 <TD ALIGN=LEFT <?=$phones_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Phones </a></TD>
 <TD ALIGN=LEFT <?=$conference_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Conferences </a></TD>
-<TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=4><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Servers </a></TD>
+<TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Servers </a></TD>
+<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=3><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> System Settings </a></TD>
 </TR>
 	<?
 	if (strlen($times_sh) > 1) { 
@@ -3083,6 +3163,10 @@ if (strlen($admin_hh) > 1) {
 	if (strlen($server_sh) > 1) { 
 		?>
 	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Servers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Server </a></TD></TR>
+	<?}
+	if (strlen($settings_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$settings_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Settings </a></TD></TR>
 	<?}
 
 ### Do nothing if admin has no permissions
@@ -5497,6 +5581,14 @@ if ($ADD==41111111111111)
 
 			$stmt="UPDATE vicidial_conferences set conf_exten='$conf_exten',server_ip='$server_ip',extension='$extension' where conf_exten='$old_conf_exten';";
 			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY SYSTEM SETTINGS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -5506,6 +5598,31 @@ if ($ADD==41111111111111)
 	exit;
 	}
 $ADD=31111111111111;	# go to vicidial conference modification form below
+}
+
+
+
+######################
+# ADD=411111111111111 modify vicidial system settings
+######################
+
+if ($ADD==411111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
+
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url';";
+	$rslt=mysql_query($stmt, $link);
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=311111111111111;	# go to vicidial system settings form below
 }
 
 
@@ -9050,6 +9167,60 @@ if ($ADD==31111111111111)
 
 
 
+######################
+# ADD=311111111111111 modify vicidial system settings
+######################
+
+if ($ADD==311111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url from system_settings;";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$version =						$row[0];
+	$install_date =					$row[1];
+	$use_non_latin =				$row[2];
+	$webroot_writable =				$row[3];
+	$enable_queuemetrics_logging =	$row[4];
+	$queuemetrics_server_ip =		$row[5];
+	$queuemetrics_dbname =			$row[6];
+	$queuemetrics_login =			$row[7];
+	$queuemetrics_pass =			$row[8];
+	$queuemetrics_url =				$row[9];
+
+	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=411111111111111>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Version: </td><td align=left> $version</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Install Date: </td><td align=left> $install_date</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Use Non-Latin: </td><td align=left><select size=1 name=use_non_latin><option>1</option><option>0</option><option selected>$use_non_latin</option></select>$NWB#settings-use_non_latin$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Webroot Writable: </td><td align=left><select size=1 name=webroot_writable><option>1</option><option>0</option><option selected>$webroot_writable</option></select>$NWB#settings-webroot_writable$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Name: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Login: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Password: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+	echo "<center><b>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+
 
 
 
@@ -9830,7 +10001,7 @@ echo "\n\n\n<br><br><br>\n\n";
 
 
 echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; VERSION: $version";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; VERSION: $admin_version";
 echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; BUILD: $build</font>\n";
 
 

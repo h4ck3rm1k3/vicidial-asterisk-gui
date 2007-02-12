@@ -83,3 +83,18 @@ ALTER TABLE vicidial_campaigns ADD campaign_stats_refresh ENUM('Y','N') default 
 ALTER TABLE vicidial_campaigns ADD campaign_logindate DATETIME;
 
 ALTER TABLE vicidial_users ADD vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED';
+
+ CREATE TABLE system_settings (
+version VARCHAR(50) default '2.0.3b2.5',
+install_date VARCHAR(50),
+use_non_latin ENUM('0','1') default '0',
+webroot_writable ENUM('0','1') default '1',
+enable_queuemetrics_logging ENUM('0','1') default '0',
+queuemetrics_server_ip VARCHAR(15),
+queuemetrics_dbname VARCHAR(50),
+queuemetrics_login VARCHAR(50),
+queuemetrics_pass VARCHAR(50),
+queuemetrics_url VARCHAR(255)
+);
+
+INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());

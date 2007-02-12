@@ -70,7 +70,7 @@ NOTE: In a multi-server setup you may want to have your database and web server 
 	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
 
 	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
   SERVER TWO(ASTtest2-10.10.10.16) 

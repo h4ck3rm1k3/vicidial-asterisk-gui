@@ -862,6 +862,21 @@ campaign_id VARCHAR(8),
 index (campaign_id)
 );
 
+ CREATE TABLE system_settings (
+version VARCHAR(50),
+install_date VARCHAR(50),
+use_non_latin ENUM('0','1') default '0',
+webroot_writable ENUM('0','1') default '1',
+enable_queuemetrics_logging ENUM('0','1') default '0',
+queuemetrics_server_ip VARCHAR(15),
+queuemetrics_dbname VARCHAR(50),
+queuemetrics_login VARCHAR(50),
+queuemetrics_pass VARCHAR(50),
+queuemetrics_url VARCHAR(255)
+);
+
+INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
+
 
 INSERT INTO vicidial_user_groups SET user_group='ADMIN',group_name='VICIDIAL ADMINISTRATORS',allowed_campaigns=' -ALL-CAMPAIGNS- - -';
 

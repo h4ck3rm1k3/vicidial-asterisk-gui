@@ -112,8 +112,27 @@ List Last Call Date -<\/B> This is the last time that lead was dialed from this 
 List Description: ||
 List Change Date: ||
 Campaign Description: ||
-VICIDIAL Recording Override -</B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load||
+VICIDIAL Recording Override -<\/B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load||
 VICIDIAL Recording Override: ||
+MODIFY VICIDIAL SYSTEM SETTINGS||
+ System Settings ||
+VICIDIAL SYSTEM SETTINGS MODIFIED||
+Version: ||
+Use Non-Latin: ||
+Webroot Writable: ||
+Enable QueueMetrics Logging: ||
+QueueMetrics Server IP: ||
+QueueMetrics DB Name: ||
+QueueMetrics DB Login: ||
+QueueMetrics DB Password: ||
+Use Non-Latin -<\/B> This option allows you to default the web display script to use UTF8 characters and not do any latin-character-family regular expression filtering or display formatting. Default is 0||
+Webroot Writable -<\/B> This setting allows you to define whether temp files and authentication files should be placed in the webroot on your web server. Default is 1||
+Enable QueueMetrics Logging -<\/B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0||
+QueueMetrics Server IP -<\/B> This is the IP address of the database for your QueueMetrics installation||
+QueueMetrics Database Name -<\/B> This is the database name for your QueueMetrics database||
+QueueMetrics Database Login -<\/B> This is the user name used to log in to your QueueMetrics database||
+QueueMetrics Database Password -<\/B> This is the password used to log in to your QueueMetrics database||
+QueueMetrics URL -<\/B> This is the URL or web site address used to get to your QueueMetrics installation||
 
 
 ############################################################ CLIENT
