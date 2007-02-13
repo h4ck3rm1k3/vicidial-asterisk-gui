@@ -1,6 +1,6 @@
 VICIDIAL and QueueMetrics
 
-This document goes over the features and needed changes made to VICIDIAL to enable it to insert activity records into the queue_log and other tables in MySQL that QueueMetrics uses for it's statistical analysis and reports.
+This document goes over the features and needed changes made to VICIDIAL to enable it to insert activity records into the queue_log and other tables in MySQL that QueueMetrics uses for it's statistical analysis and reports. This document should not be taken as a HOWTO for proper installation steps to get QueueMetrics working.
 
 QueueMetrics is a closed-source, commercial product written by Loway Research in Italy. The writers of VICIDIAL do not support or warranty QueueMetrics or it's functionality with VICIDIAL in any way.
 
@@ -25,11 +25,19 @@ rpm -i jdk-1_5_0_11-linux-i586.rpm
 wget http://www.mirrorgeek.com/apache.org/tomcat/tomcat-5/v5.5.20/bin/apache-tomcat-5.5.20.tar.gz
 gunzip apache-tomcat-5.5.20.tar.gz
 tar xvf apache-tomcat-5.5.20.tar
-cd apache-tomcat-5.5.20
 ln -s apache-tomcat-5.5.20 tomcat
+cd apache-tomcat-5.5.20
+
 JAVA_HOME=/usr/java/jdk1.5.0_11/
 JAVA_OPTS="-Xms256M -Xmx512M"
 JRE_HOME=/usr/java/jdk1.5.0_11/jre
+
+or
+
+JRE_HOME=/usr/java/jre1.6.0/
+JAVA_HOME=/usr/java/
+JAVA_OPTS="-Xms256M -Xmx512M"
+
 export JAVA_HOME
 export JAVA_OPTS
 export JRE_HOME
@@ -46,6 +54,8 @@ If it did, then you want to add the following lines to your /etc/rc.d/rc.local f
 	export JAVA_OPTS
 	export JRE_HOME
 	/usr/local/tomcat/bin/startup.sh
+
+
 
 cd /usr/local
 *** download QueueMetrics and place it in /usr/local ***
@@ -69,7 +79,13 @@ You now need to add the database tables, configure the web.xml file and configur
 
 
 
-Now to the database side of things. First the queue_log table:
+Now to the database side of things. 
+First, give permissions to your user:
+
+GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'localhost' IDENTIFIED BY 'qm'; 
+GRANT ALL PRIVILEGES ON queuemetrics.* TO qm@'%' IDENTIFIED BY 'qm'; 
+
+Second, the queue_log table:
 
 mysql> describe queue_log;
 +-----------+------------------+------+-----+---------+-------+

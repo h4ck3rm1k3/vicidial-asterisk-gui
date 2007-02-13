@@ -146,10 +146,11 @@
 # 70206-1201 - Fixed allow_closers bug
 # 70206-1332 - Added vicidial_recording_override users setting function
 # 70212-1252 - Fixed small issue with CXFER
+# 70213-1018 - Changed CXFER and AXFER to update customer information before transfer
 #
 
-$version = '2.0.117';
-$build = '70212-1252';
+$version = '2.0.118';
+$build = '70213-1018';
 
 require("dbconnect.php");
 
@@ -1736,6 +1737,35 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Send Originate command to manager to place a phone call
 	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait,taskconfxfer) 
 		{
+		var regCXFvars = new RegExp("CXFER","g");
+		var tasknum_string = tasknum.toString();
+		if (tasknum_string.match(regCXFvars))
+			{
+			var Ctasknum = tasknum_string.replace(regCXFvars, '');
+			if (Ctasknum.length < 2)
+				{Ctasknum = '990009';}
+			var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+			tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+
+			CustomerData_update();
+
+			}
+		var regAXFvars = new RegExp("AXFER","g");
+		if (tasknum_string.match(regAXFvars))
+			{
+			var Ctasknum = tasknum_string.replace(regAXFvars, '');
+			if (Ctasknum.length < 2)
+				{Ctasknum = '83009';}
+			var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+			if (closerxfercamptail.length < 3)
+				{closerxfercamptail = 'IVR';}
+			tasknum = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
+
+			CustomerData_update();
+
+			}
+
+
 		var xmlhttp=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
@@ -1757,27 +1787,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{
-			var regCXFvars = new RegExp("CXFER","g");
-			var tasknum_string = tasknum.toString();
-			if (tasknum_string.match(regCXFvars))
-				{
-				var Ctasknum = tasknum_string.replace(regCXFvars, '');
-				if (Ctasknum.length < 2)
-					{Ctasknum = '990009';}
-				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
-				tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
-				}
-			var regAXFvars = new RegExp("AXFER","g");
-			if (tasknum_string.match(regAXFvars))
-				{
-				var Ctasknum = tasknum_string.replace(regAXFvars, '');
-				if (Ctasknum.length < 2)
-					{Ctasknum = '83009';}
-				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
-				if (closerxfercamptail.length < 3)
-					{closerxfercamptail = 'IVR';}
-				tasknum = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
-				}
 			if (taskprefix == 'NO') {var orig_prefix = '';}
 			  else {var orig_prefix = agc_dial_prefix;}
 			if (taskreverse == 'YES')
@@ -2343,7 +2352,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
 			//		alert(xmlhttp.responseText);
-					hideMainXfeR();
 					}
 				}
 			delete xmlhttp;
@@ -2686,7 +2694,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if ( (MDDiaLCodEform.length < 1) || (MDPhonENumbeRform.length < 5) )
 			{
-			alert("YOU MUST BE ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL");
+			alert("YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL");
 			}
 		else
 			{
