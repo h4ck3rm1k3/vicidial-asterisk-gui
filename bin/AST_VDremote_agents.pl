@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDremote_agents.pl version 0.2   *DBI-version*
+# AST_VDremote_agents.pl version 2.0.3   *DBI-version*
 #
 # DESCRIPTION:
 # uses Net::MySQL to keep remote agents logged in to the VICIDIAL system 
@@ -19,17 +19,18 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# changes:
+# CHANGELOG:
 # 50215-0954 - First version of script
 # 50810-1615 - Added database server variable definitions lookup
 # 60807-1003 - Changed to DBI
-#            - changed to use /etc/astguiclient.conf for configs
-# 60814-1726 - added option for no logging to file
-# 60814-1726 - added option for no logging to file
-# 61012-1025 - added performance testing options
-# 61110-1443 - added user_level from vicidial_user record into vicidial_live_agents
+#            - Changed to use /etc/astguiclient.conf for configs
+# 60814-1726 - Added option for no logging to file
+# 60814-1726 - Added option for no logging to file
+# 61012-1025 - Added performance testing options
+# 61110-1443 - Added user_level from vicidial_user record into vicidial_live_agents
+# 70213-1306 - Added queuemetrics logging
 #
 
 ### begin parsing run-time options ###
@@ -90,6 +91,7 @@ $MT[0]='';
 $local_DEF = 'Local/';
 $conf_silent_prefix = '7';
 $local_AMP = '@';
+$agents = '@agents';
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -202,6 +204,28 @@ while($one_day_interval > 0)
 				 $rec_count++;
 				}
 			$sthA->finish();
+
+		#############################################
+		##### START QUEUEMETRICS LOGGING LOOKUP #####
+		$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			 @aryA = $sthA->fetchrow_array;
+				$enable_queuemetrics_logging =	"$aryA[0]";
+				$queuemetrics_server_ip	=		"$aryA[1]";
+				$queuemetrics_dbname	=		"$aryA[2]";
+				$queuemetrics_login	=			"$aryA[3]";
+				$queuemetrics_pass	=			"$aryA[4]";
+			 $rec_count++;
+			}
+		$sthA->finish();
+		##### END QUEUEMETRICS LOGGING LOOKUP #####
+		###########################################
+
 
 
 		### delete call records that are LIVE for over 10 minutes and last_update_time < '$PDtsSQLdate'
@@ -392,6 +416,22 @@ while($one_day_interval > 0)
 						$stmtA = "UPDATE vicidial_live_agents set random_id='$DBremote_random[$h]',campaign_id='$DBremote_campaign[$h]',conf_exten='$DBremote_conf_exten[$h]',closer_campaigns='$DBremote_closer[$h]', status='READY' where user='$DBremote_user[$h]' and server_ip='$server_ip';";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print STDERR "$DBremote_user[$h] ALL UPDATE: $affected_rows\n";}
+			#			if ($affected_rows>0) 
+			#				{
+			#				if ($enable_queuemetrics_logging > 0)
+			#					{
+			#					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			#					 or die "Couldn't connect to database: " . DBI->errstr;
+
+			#					if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			#					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$DBremote_campaign[$h]',agent='Agent/$DBremote_user[$h]',verb='UNPAUSE',serverid='1';";
+			#					$Baffected_rows = $dbhB->do($stmtB);
+
+			#					$dbhB->disconnect();
+			#					}
+
+			#				}
 						}
 					### no records exist so insert a new one
 					else
@@ -421,6 +461,26 @@ while($one_day_interval > 0)
 							$affected_rows = $dbhA->do($stmtA);
 							if ($DBX) {print STDERR "   TESTrun CALL PLACED: 999999999999 $DBremote_conf_exten[$h] $DBremote_user[$h] NEW INSERT: |$affected_rows|\n";}
 							}
+						if ($affected_rows>0) 
+							{
+							if ($enable_queuemetrics_logging > 0)
+								{
+								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+								 or die "Couldn't connect to database: " . DBI->errstr;
+
+								if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+								$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$DBremote_campaign[$h]',agent='Agent/$DBremote_user[$h]',verb='AGENTLOGIN',data1='$DBremote_user[$h]$agents',serverid='1';";
+								$Baffected_rows = $dbhB->do($stmtB);
+
+								$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$DBremote_campaign[$h]',agent='Agent/$DBremote_user[$h]',verb='UNPAUSE',serverid='1';";
+								$Baffected_rows = $dbhB->do($stmtB);
+
+								$dbhB->disconnect();
+								}
+
+							}
+
 						}
 					}
 				}
@@ -432,7 +492,7 @@ while($one_day_interval > 0)
 	###### fourth validate that the calls that the vicidial_live_agents are on are not dead
 	###### and if they are wipe out the values and set the agent record back to READY
 	###############################################################################
-		$stmtA = "SELECT user,extension,status,uniqueid,callerid,lead_id FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
+		$stmtA = "SELECT user,extension,status,uniqueid,callerid,lead_id,campaign_id FROM vicidial_live_agents where extension LIKE \"R/%\" and server_ip='$server_ip' and uniqueid > 10;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -447,6 +507,7 @@ while($one_day_interval > 0)
 			$VDuniqueid =			"$aryA[3]";
 			$VDcallerid =			"$aryA[4]";
 			$VDlead_id =			"$aryA[5]";
+			$VDcampaign_id =		"$aryA[6]";
 			$VDrandom = int( rand(9999999)) + 10000000;
 
 			$VD_user[$z] =			"$VDuser";
@@ -455,6 +516,7 @@ while($one_day_interval > 0)
 			$VD_uniqueid[$z] =		"$VDuniqueid";
 			$VD_callerid[$z] =		"$VDcallerid";
 			$VD_lead_id[$z] =		"$VDlead_id";
+			$VD_campaign_id[$z] =	"$VDcampaign_id";
 			$VD_random[$z] =		"$VDrandom";
 
 			$z++;				
@@ -486,12 +548,72 @@ while($one_day_interval > 0)
 					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='PAUSED', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
 					$affected_rows = $dbhA->do($stmtA);
 					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|PAUSED|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
+					if ($affected_rows>0) 
+						{
+						if ($enable_queuemetrics_logging > 0)
+							{
+							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+							 or die "Couldn't connect to database: " . DBI->errstr;
+
+							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='PAUSE',serverid='1';";
+							$Baffected_rows = $dbhB->do($stmtB);
+
+							$stmtB = "SELECT time_id FROM queue_log where agent='Agent/$VD_user[$z]' and verb='AGENTLOGIN' order by time_id desc limit 1;";
+							$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+							$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+							$sthBrows=$sthB->rows;
+							$rec_count=0;
+							while ($sthBrows > $rec_count)
+								{
+								@aryB = $sthB->fetchrow_array;
+								$logintime =	"$aryB[0]";
+								$rec_count++;
+								}
+							$sthB->finish();
+							if ($DBX) {print "LOGOFF TIME LOG:  $logintime|$secX|$stmtB|\n";}
+
+							$time_logged_in = ($secX - $logintime);
+							if ($time_logged_in > 1000000) {$time_logged_in=1;}
+
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='AGENTLOGOFF',data1='$VD_user[$z]$agents',data2='$time_logged_in',serverid='1';";
+							$Baffected_rows = $dbhB->do($stmtB);
+
+							$dbhB->disconnect();
+							}
+
+						}
 					}
 				else
 					{
-					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='READY', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";
+					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel='' where user='$VD_user[$z]' and server_ip='$server_ip';";
 					$affected_rows = $dbhA->do($stmtA);
 					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
+
+					$stmtA = "UPDATE vicidial_live_agents set status='READY' where user='$VD_user[$z]' and server_ip='$server_ip';";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($DB) {print STDERR "$VD_user[$z] CALL WIPE UPDATE: $affected_rows|READY|$VD_uniqueid[$z]|$VD_user[$z]|\n";}
+					if ($affected_rows>0) 
+						{
+						if ($enable_queuemetrics_logging > 0)
+							{
+							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+							 or die "Couldn't connect to database: " . DBI->errstr;
+
+							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='PAUSE',serverid='1';";
+							$Baffected_rows = $dbhB->do($stmtB);
+
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='UNPAUSE',serverid='1';";
+							$Baffected_rows = $dbhB->do($stmtB);
+
+							$dbhB->disconnect();
+							}
+
+						}
+
 					}
 				}
 	### possible future active call checker
@@ -589,7 +711,6 @@ exit;
 
 sub get_time_now	#get the current date and time and epoch for logging call lengths and datetimes
 {
-	$secX = time();
 $secX = time();
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($secX);
 	$LOCAL_GMT_OFF = $SERVER_GMT;

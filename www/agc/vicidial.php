@@ -603,44 +603,39 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
-			   $status_A = $row[0];
-			   $status_B = $row[1];
-			   $status_C = $row[2];
-			   $status_D = $row[3];
-			   $status_E = $row[4];
-			   $park_ext = $row[5];
-			   $park_file_name = $row[6];
-			   $web_form_address = $row[7];
-			   $allow_closers = $row[8];
-			   $auto_dial_level = $row[9];
-			   $dial_timeout = $row[10];
-			   $dial_prefix = $row[11];
-			   $campaign_cid = $row[12];
-			   $campaign_vdad_exten = $row[13];
-			   $campaign_rec_exten = $row[14];
-			   $campaign_recording = $row[15];
-			   $campaign_rec_filename = $row[16];
-			   $campaign_script = $row[17];
-			   $get_call_launch = $row[18];
-			   $campaign_am_message_exten = $row[19];
-			   $xferconf_a_dtmf = $row[20];
-			   $xferconf_a_number = $row[21];
-			   $xferconf_b_dtmf = $row[22];
-			   $xferconf_b_number = $row[23];
-			   $alt_number_dialing=$row[24];
-			   $VC_scheduled_callbacks=$row[25];
-			   $wrapup_seconds=$row[26];
-			   $wrapup_message=$row[27];
-			   $closer_campaigns=$row[28];
-			   $use_internal_dnc=$row[29];
-			   $allcalls_delay=$row[30];
-			   $omit_phone_code=$row[31];
-			   $agent_pause_codes_active=$row[32];
+			   $park_ext =					$row[0];
+			   $park_file_name =			$row[1];
+			   $web_form_address =			$row[2];
+			   $allow_closers =				$row[3];
+			   $auto_dial_level =			$row[4];
+			   $dial_timeout =				$row[5];
+			   $dial_prefix =				$row[6];
+			   $campaign_cid =				$row[7];
+			   $campaign_vdad_exten =		$row[8];
+			   $campaign_rec_exten =		$row[9];
+			   $campaign_recording =		$row[10];
+			   $campaign_rec_filename =		$row[11];
+			   $campaign_script =			$row[12];
+			   $get_call_launch =			$row[13];
+			   $campaign_am_message_exten = $row[14];
+			   $xferconf_a_dtmf =			$row[15];
+			   $xferconf_a_number =			$row[16];
+			   $xferconf_b_dtmf =			$row[17];
+			   $xferconf_b_number =			$row[18];
+			   $alt_number_dialing =		$row[19];
+			   $VC_scheduled_callbacks =	$row[20];
+			   $wrapup_seconds =			$row[21];
+			   $wrapup_message =			$row[22];
+			   $closer_campaigns =			$row[23];
+			   $use_internal_dnc =			$row[24];
+			   $allcalls_delay =			$row[25];
+			   $omit_phone_code =			$row[26];
+			   $agent_pause_codes_active =	$row[27];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -1024,6 +1019,27 @@ else
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- call placed to session_id: $session_id from phone: $SIP_user -->\n";
 
+		#############################################
+		##### START QUEUEMETRICS LOGGING LOOKUP #####
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$qm_conf_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $qm_conf_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_queuemetrics_logging =	$row[0];
+			$queuemetrics_server_ip	=		$row[1];
+			$queuemetrics_dbname	=		$row[2];
+			$queuemetrics_login	=			$row[3];
+			$queuemetrics_pass	=			$row[4];
+			$i++;
+			}
+		##### END QUEUEMETRICS LOGGING LOOKUP #####
+		###########################################
+
 		if ($auto_dial_level > 0)
 			{
 			print "<!-- campaign is set to auto_dial_level: $auto_dial_level -->\n";
@@ -1036,9 +1052,33 @@ else
 			$affected_rows = mysql_affected_rows($link);
 			print "<!-- new vicidial_live_agents record inserted: |$affected_rows| -->\n";
 
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				mysql_select_db("$queuemetrics_dbname", $linkB);
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='1';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='1';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+				print "<!-- queue_log PAUSE entry added: $VD_login|$affected_rows -->\n";
+
+				mysql_close($linkB);
+				mysql_select_db("$VARDB_database", $link);
+				}
+
+
 			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign))
 				{
-				print "<!-- code to trigger window to pick closer groups goes here -->\n";
+				print "<!-- CLOSER-type campaign -->\n";
 				}
 			}
 		else
@@ -1051,6 +1091,29 @@ else
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
 			print "<!-- new vicidial_live_agents record inserted: |$affected_rows| -->\n";
+
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				mysql_select_db("$queuemetrics_dbname", $linkB);
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='1';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='1';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+				print "<!-- queue_log PAUSE entry added: $VD_login|$affected_rows -->\n";
+
+				mysql_close($linkB);
+				mysql_select_db("$VARDB_database", $link);
+				}
 			}
 		}
 	else
@@ -1106,7 +1169,7 @@ else
 	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$affected_rows = mysql_affected_rows($link);
-	$agent_log_id = mysql_insert_id();
+	$agent_log_id = mysql_insert_id($link);
 	print "<!-- vicidial_agent_log record inserted: |$affected_rows|$agent_log_id| -->\n";
 
 	$S='*';
@@ -1404,11 +1467,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CalL_AutO_LauncH = '';
 	var panel_bgcolor = '#E0C2D6';
 	var CusTCB_bgcolor = '#FFFF66';
-	var status_A = '<? echo $status_A ?>';
-	var status_B = '<? echo $status_B ?>';
-	var status_C = '<? echo $status_C ?>';
-	var status_D = '<? echo $status_D ?>';
-	var status_E = '<? echo $status_E ?>';
 	var auto_dial_level = '<? echo $auto_dial_level ?>';
 	var starting_dial_level = '<? echo $auto_dial_level ?>';
 	var dial_timeout = '<? echo $dial_timeout ?>';
@@ -3356,7 +3414,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			autoDiaLready_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=" + taskaction + "&user=" + user + "&pass=" + pass + "&stage=" + VDRP_stage + "&agent_log_id=" + agent_log_id + "&agent_log=" + taskagentlog;
+			autoDiaLready_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=" + taskaction + "&user=" + user + "&pass=" + pass + "&stage=" + VDRP_stage + "&agent_log_id=" + agent_log_id + "&agent_log=" + taskagentlog + "&campaign=" + campaign;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(autoDiaLready_query); 

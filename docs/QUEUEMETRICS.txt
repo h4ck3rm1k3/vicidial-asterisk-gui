@@ -115,24 +115,26 @@ queue: the queue that call came into (we will use the campaign_id here)
 agent: we will use the user ID prepended by "agent/" [agent/6666]
 
 verbs:
-PAUSEALL
-PAUSE
-CALLSTATUS
-PAUSEREASON
-COMPLETECALLER
-AGENTCALLBACKLOGOFF
-ABANDON
-ENTERQUEUE
-AGENTCALLBACKLOGIN
-UNPAUSEALL
-UNPAUSE
-COMPLETEAGENT
-CONNECT
-QUEUESTART
-AGENTDUMP
-TRANSFER
-EXITWITHTIMEOUT
-CONFIGRELOAD
+system actions
+	QUEUESTART
+agent actions
+	AGENTLOGIN(channel) 
+	AGENTLOGOFF(channel|logintime) 
+	PAUSEALL
+	PAUSE
+	UNPAUSEALL
+	UNPAUSE
+	PAUSEREASON
+call actions
+	ENTERQUEUE(url|callerid)
+	ABANDON(position|origposition|waittime) 
+	CONNECT(holdtime)
+	COMPLETEAGENT(holdtime|calltime|origposition)
+	COMPLETECALLER(holdtime|calltime|origposition) 
+	EXITWITHTIMEOUT(position) 
+	TRANSFER(extension,context) 
+	CALLSTATUS
+
 
 data1: call termination codes, TBD
 
@@ -144,3 +146,13 @@ data4: ??
 
 serverid: number of the server the call came from [1]
 
+
+
+
+On the vicidial side of things, we will add the following columns to the system_settings table:
+enable_queuemetrics_logging ENUM('0','1') default '0',
+queuemetrics_server_ip VARCHAR(15),
+queuemetrics_dbname VARCHAR(50),
+queuemetrics_login VARCHAR(50),
+queuemetrics_pass VARCHAR(50),
+queuemetrics_url VARCHAR(255)

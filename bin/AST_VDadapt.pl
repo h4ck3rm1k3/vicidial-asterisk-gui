@@ -18,6 +18,7 @@
 # 61215-1110 - Added answered calls stats and use drops as percentage of answered for today
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70205-1429 - Added code for campaign_changedate and campaign_stats_refresh updates
+# 70213-1221 - Added code for QueueMetrics queue_log QUEUESTART record
 #
 
 # constants
@@ -231,6 +232,41 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 if ($DBX) {print "CONNECTED TO DATABASE:  $VARDB_server|$VARDB_database\n";}
+
+
+#############################################
+##### START QUEUEMETRICS LOGGING LOOKUP #####
+$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	 @aryA = $sthA->fetchrow_array;
+		$enable_queuemetrics_logging =	"$aryA[0]";
+		$queuemetrics_server_ip	=		"$aryA[1]";
+		$queuemetrics_dbname	=		"$aryA[2]";
+		$queuemetrics_login	=			"$aryA[3]";
+		$queuemetrics_pass	=			"$aryA[4]";
+	 $rec_count++;
+	}
+$sthA->finish();
+
+if ($enable_queuemetrics_logging > 0)
+	{
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	 or die "Couldn't connect to database: " . DBI->errstr;
+
+	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secT',call_id='NONE',queue='NONE',agent='NONE',verb='QUEUESTART',serverid='1';";
+	$Baffected_rows = $dbhB->do($stmtB);
+
+	$dbhB->disconnect();
+	}
+##### END QUEUEMETRICS LOGGING LOOKUP #####
+###########################################
 
 
 $master_loop=0;
