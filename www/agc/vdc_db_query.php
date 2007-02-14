@@ -120,10 +120,11 @@
 # 70206-1126 - Added INBOUND status for inbound/closer calls in vicidial_live_agents
 # 70212-1253 - Fixed small issue with CXFER
 # 70213-1431 - Added QueueMetrics PAUSE/UNPAUSE/AGENTLOGIN/AGENTLOGOFF actions
+# 70214-1231 - Added queuemetrics_log_id field for server_id in queue_log
 #
 
-$version = '2.0.47';
-$build = '70213-1431';
+$version = '2.0.48';
+$build = '70214-1231';
 
 require("dbconnect.php");
 
@@ -987,7 +988,7 @@ if ($stage == "end")
 				{
 				#############################################
 				##### START QUEUEMETRICS LOGGING LOOKUP #####
-				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -998,9 +999,10 @@ if ($stage == "end")
 					$row=mysql_fetch_row($rslt);
 					$enable_queuemetrics_logging =	$row[0];
 					$queuemetrics_server_ip	=		$row[1];
-					$queuemetrics_dbname	=		$row[2];
+					$queuemetrics_dbname =			$row[2];
 					$queuemetrics_login	=			$row[3];
-					$queuemetrics_pass	=			$row[4];
+					$queuemetrics_pass =			$row[4];
+					$queuemetrics_log_id =			$row[5];
 					$i++;
 					}
 				##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1010,14 +1012,13 @@ if ($stage == "end")
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 					mysql_select_db("$queuemetrics_dbname", $linkB);
 
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='1';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
 
 					mysql_close($linkB);
-					mysql_select_db("$VARDB_database", $link);
 					}
 				}
 			}
@@ -1035,7 +1036,7 @@ if ($stage == "end")
 				{
 				#############################################
 				##### START QUEUEMETRICS LOGGING LOOKUP #####
-				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -1046,9 +1047,10 @@ if ($stage == "end")
 					$row=mysql_fetch_row($rslt);
 					$enable_queuemetrics_logging =	$row[0];
 					$queuemetrics_server_ip	=		$row[1];
-					$queuemetrics_dbname	=		$row[2];
+					$queuemetrics_dbname =			$row[2];
 					$queuemetrics_login	=			$row[3];
-					$queuemetrics_pass	=			$row[4];
+					$queuemetrics_pass =			$row[4];
+					$queuemetrics_log_id =			$row[5];
 					$i++;
 					}
 				##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1058,14 +1060,13 @@ if ($stage == "end")
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 					mysql_select_db("$queuemetrics_dbname", $linkB);
 
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='1';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
 
 					mysql_close($linkB);
-					mysql_select_db("$VARDB_database", $link);
 					}
 				}
 			}
@@ -1627,7 +1628,7 @@ else
 			{
 			#############################################
 			##### START QUEUEMETRICS LOGGING LOOKUP #####
-			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1638,9 +1639,10 @@ else
 				$row=mysql_fetch_row($rslt);
 				$enable_queuemetrics_logging =	$row[0];
 				$queuemetrics_server_ip	=		$row[1];
-				$queuemetrics_dbname	=		$row[2];
+				$queuemetrics_dbname =			$row[2];
 				$queuemetrics_login	=			$row[3];
-				$queuemetrics_pass	=			$row[4];
+				$queuemetrics_pass =			$row[4];
+				$queuemetrics_log_id =			$row[5];
 				$i++;
 				}
 			##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1673,7 +1675,7 @@ else
 				$time_logged_in = ($StarTtime - $logintime);
 				if ($time_logged_in > 1000000) {$time_logged_in=1;}
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='AGENTLOGOFF',data1='$user$agents',data2='$time_logged_in',serverid='1';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='AGENTLOGOFF',data1='$user$agents',data2='$time_logged_in',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
@@ -1859,7 +1861,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		{
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
-		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1870,9 +1872,10 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			$row=mysql_fetch_row($rslt);
 			$enable_queuemetrics_logging =	$row[0];
 			$queuemetrics_server_ip	=		$row[1];
-			$queuemetrics_dbname	=		$row[2];
+			$queuemetrics_dbname =			$row[2];
 			$queuemetrics_login	=			$row[3];
-			$queuemetrics_pass	=			$row[4];
+			$queuemetrics_pass =			$row[4];
+			$queuemetrics_log_id =			$row[5];
 			$i++;
 			}
 		##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1884,7 +1887,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);
 
-			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='$QMstatus',serverid='1';";
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='$QMstatus',serverid='$queuemetrics_log_id';";
 			if ($DB) {echo "$stmt\n";}
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $linkB);

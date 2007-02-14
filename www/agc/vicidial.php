@@ -147,10 +147,11 @@
 # 70206-1332 - Added vicidial_recording_override users setting function
 # 70212-1252 - Fixed small issue with CXFER
 # 70213-1018 - Changed CXFER and AXFER to update customer information before transfer
+# 70214-1233 - Added queuemetrics_log_id field for server_id in queue_log
 #
 
-$version = '2.0.118';
-$build = '70213-1018';
+$version = '2.0.119';
+$build = '70214-1233';
 
 require("dbconnect.php");
 
@@ -1021,7 +1022,7 @@ else
 
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
-		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass FROM system_settings;";
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1032,9 +1033,10 @@ else
 			$row=mysql_fetch_row($rslt);
 			$enable_queuemetrics_logging =	$row[0];
 			$queuemetrics_server_ip	=		$row[1];
-			$queuemetrics_dbname	=		$row[2];
+			$queuemetrics_dbname =			$row[2];
 			$queuemetrics_login	=			$row[3];
-			$queuemetrics_pass	=			$row[4];
+			$queuemetrics_pass =			$row[4];
+			$queuemetrics_log_id =			$row[5];
 			$i++;
 			}
 		##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1057,14 +1059,14 @@ else
 				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 				mysql_select_db("$queuemetrics_dbname", $linkB);
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='1';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
 				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='1';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
@@ -1097,14 +1099,14 @@ else
 				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 				mysql_select_db("$queuemetrics_dbname", $linkB);
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='1';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='AGENTLOGIN',data1='$VD_login@agents',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
 				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='1';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
