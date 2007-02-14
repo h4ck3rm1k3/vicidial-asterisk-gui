@@ -133,6 +133,8 @@ QueueMetrics Database Name -<\/B> This is the database name for your QueueMetric
 QueueMetrics Database Login -<\/B> This is the user name used to log in to your QueueMetrics database||
 QueueMetrics Database Password -<\/B> This is the password used to log in to your QueueMetrics database||
 QueueMetrics URL -<\/B> This is the URL or web site address used to get to your QueueMetrics installation||
+QueueMetrics Log ID -<\/B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record||
+QueueMetrics Log ID: ||
 
 
 ############################################################ CLIENT

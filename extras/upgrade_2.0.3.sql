@@ -94,7 +94,8 @@ queuemetrics_server_ip VARCHAR(15),
 queuemetrics_dbname VARCHAR(50),
 queuemetrics_login VARCHAR(50),
 queuemetrics_pass VARCHAR(50),
-queuemetrics_url VARCHAR(255)
+queuemetrics_url VARCHAR(255),
+queuemetrics_log_id VARCHAR(10) default 'VIC'
 );
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
