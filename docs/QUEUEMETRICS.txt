@@ -6,6 +6,8 @@ QueueMetrics is a closed-source, commercial product written by Loway Research in
 
 This feature was added to the package at the request of several users of VICIDIAL and was achieved with some help from the makers of QueueMetrics(although all VICIDIAL code changes were done entirely by Matt Florell).
 
+This feature is currently only functional on outbound dialing.
+
 
 
 Here is a short summary of the needed steps to install QueueMetrics on your system:
@@ -109,15 +111,18 @@ partition: set to "P01" for the first partition, should match up with configurat
 time_id: epoch, unixtime (seconds since 1970-01-01 00:00:00) [1170345603]
 
 call_id: Asterisk unique prepended with server_id field [1-1170345497.30369]
+	For VICIDIAL we will use the CallerIDname of the call to 
 
 queue: the queue that call came into (we will use the campaign_id here)
 
 agent: we will use the user ID prepended by "agent/" [agent/6666]
 
 verbs:
-system actions
+
+system actions - used by the AST_VDadapt.pl script when starting up
 	QUEUESTART
-agent actions
+
+agent actions - used by vicidial.php, vdc_db_query.php and AST_VDremote_agents.pl
 	AGENTLOGIN(channel) 
 	AGENTLOGOFF(channel|logintime) 
 	PAUSEALL
@@ -125,7 +130,8 @@ agent actions
 	UNPAUSEALL
 	UNPAUSE
 	PAUSEREASON
-call actions
+
+call actions - used by 
 	ENTERQUEUE(url|callerid)
 	ABANDON(position|origposition|waittime) 
 	CONNECT(holdtime)
@@ -144,7 +150,7 @@ data3: ??
 
 data4: ??
 
-serverid: number of the server the call came from [1]
+serverid: number of the server the call came from [for VICIDIAL use the system_settings.queuemetrics_log_id field]
 
 
 
@@ -155,4 +161,5 @@ queuemetrics_server_ip VARCHAR(15),
 queuemetrics_dbname VARCHAR(50),
 queuemetrics_login VARCHAR(50),
 queuemetrics_pass VARCHAR(50),
-queuemetrics_url VARCHAR(255)
+queuemetrics_url VARCHAR(255),
+queuemetrics_log_id VARCHAR(10) default 'VIC'
