@@ -1981,6 +1981,44 @@ if ($ACTION == 'PauseCodeSubmit')
 	$stmt="UPDATE vicidial_agent_log set sub_status=\"$status\" where agent_log_id='$agent_log_id';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
+	$affected_rows = mysql_affected_rows($link);
+	if ($affected_rows > 0) 
+		{
+		#############################################
+		##### START QUEUEMETRICS LOGGING LOOKUP #####
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$qm_conf_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $qm_conf_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_queuemetrics_logging =	$row[0];
+			$queuemetrics_server_ip	=		$row[1];
+			$queuemetrics_dbname =			$row[2];
+			$queuemetrics_login	=			$row[3];
+			$queuemetrics_pass =			$row[4];
+			$queuemetrics_log_id =			$row[5];
+			$i++;
+			}
+		##### END QUEUEMETRICS LOGGING LOOKUP #####
+		###########################################
+		if ($enable_queuemetrics_logging > 0)
+			{
+			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+			mysql_select_db("$queuemetrics_dbname", $linkB);
+
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSEREASON',serverid='$queuemetrics_log_id',data1='$status';";
+			if ($DB) {echo "$stmt\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $linkB);
+			$affected_rows = mysql_affected_rows($linkB);
+
+			mysql_close($linkB);
+			}
+		}
 	}
 echo "Pause Code has been updated to $status for $agent_log_id\n";
 }
