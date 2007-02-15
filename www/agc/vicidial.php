@@ -148,10 +148,11 @@
 # 70212-1252 - Fixed small issue with CXFER
 # 70213-1018 - Changed CXFER and AXFER to update customer information before transfer
 # 70214-1233 - Added queuemetrics_log_id field for server_id in queue_log
+# 70215-1240 - Added queuemetrics_log_id field for server_id in queue_log
 #
 
-$version = '2.0.119';
-$build = '70214-1233';
+$version = '2.0.120';
+$build = '70215-1240';
 
 require("dbconnect.php");
 
@@ -1437,6 +1438,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CalLCID = '';
 	var MDnextCID = '';
 	var XDnextCID = '';
+	var LasTCID = '';
 	var lead_dial_number = '';
 	var MD_channel_look = 0;
 	var XD_channel_look = 0;
@@ -2994,6 +2996,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					else
 						{
 						fronter = user;
+						LasTCID											= MDnextResponse_array[0];
 						document.vicidial_form.lead_id.value			= MDnextResponse_array[1];
 						LeaDPreVDispO									= MDnextResponse_array[2];
 						document.vicidial_form.vendor_lead_code.value	= MDnextResponse_array[4];
@@ -3582,6 +3585,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						custchannellive=1;
 
+						LasTCID											= check_VDIC_array[4];
 						LeaDPreVDispO									= check_VDIC_array[6];
 						fronter											= check_VDIC_array[7];
 						document.vicidial_form.vendor_lead_code.value	= check_VDIC_array[8];
@@ -4400,7 +4404,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				if (xmlhttp) 
 					{ 
-					DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateDISPO&format=text&user=" + user + "&pass=" + pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&comments=" + CallBackCommenTs;
+					DSupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateDISPO&format=text&user=" + user + "&pass=" + pass + "&dispo_choice=" + DispoChoice + "&lead_id=" + document.vicidial_form.lead_id.value + "&campaign=" + campaign + "&auto_dial_level=" + auto_dial_level + "&agent_log_id=" + agent_log_id + "&CallBackDatETimE=" + CallBackDatETimE + "&list_id=" + document.vicidial_form.list_id.value + "&recipient=" + CallBackrecipient + "&use_internal_dnc=" + use_internal_dnc + "&MDnextCID=" + LasTCID + "&comments=" + CallBackCommenTs;
 					xmlhttp.open('POST', 'vdc_db_query.php'); 
 					xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 					xmlhttp.send(DSupdate_query); 

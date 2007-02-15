@@ -25,7 +25,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
@@ -60,6 +60,7 @@
 # 70131-1550 - Fixed Manual dialing trunk shortage bug
 # 70205-1414 - Added code for last called date update
 # 70207-1031 - Fixed Tally-only-available bug with customer hangups
+# 70215-1123 - Added queue_log ABANDON logging
 # 
 
 
@@ -213,6 +214,29 @@ $sthA->finish();
 
 	$event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 	&event_logger;
+
+#############################################
+##### START QUEUEMETRICS LOGGING LOOKUP #####
+$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	 @aryA = $sthA->fetchrow_array;
+		$enable_queuemetrics_logging =	"$aryA[0]";
+		$queuemetrics_server_ip	=		"$aryA[1]";
+		$queuemetrics_dbname =			"$aryA[2]";
+		$queuemetrics_login=			"$aryA[3]";
+		$queuemetrics_pass =			"$aryA[4]";
+		$queuemetrics_log_id =			"$aryA[5]";
+	 $rec_count++;
+	}
+$sthA->finish();
+##### END QUEUEMETRICS LOGGING LOOKUP #####
+###########################################
+
 
 $one_day_interval = 12;		# 1 month loops for one year 
 while($one_day_interval > 0)
@@ -890,7 +914,7 @@ while($one_day_interval > 0)
 					{
 					$CLlead_id=''; $auto_call_id=''; $CLstatus=''; $CLcampaign_id=''; $CLphone_number=''; $CLphone_code='';
 
-					$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial FROM vicidial_auto_calls where callerid='$KLcallerid[$kill_vac]'";
+					$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage FROM vicidial_auto_calls where callerid='$KLcallerid[$kill_vac]'";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
@@ -906,12 +930,12 @@ while($one_day_interval > 0)
 							$CLcampaign_id	= "$aryA[4]";
 							$CLphone_code	= "$aryA[5]";
 							$CLalt_dial		= "$aryA[6]";
+							$CLstage		= "$aryA[7]";
 						$rec_count++;
 						}
 					$sthA->finish();
 
 					$stmtA = "DELETE from vicidial_auto_calls where auto_call_id='$auto_call_id'";
-		#			$stmtA = "UPDATE vicidial_auto_calls set status='PAUSED' where callerid='$KLcallerid[$kill_vac]'";
 					$affected_rows = $dbhA->do($stmtA);
 
 					$event_string = "|     dead call vac deleted|$auto_call_id|$CLlead_id|$KLcallerid[$kill_vac]|$end_epoch|$affected_rows|$KLchannel[$kill_vac]|";
@@ -928,14 +952,29 @@ while($one_day_interval > 0)
 						if ($CLstatus =~ /LIVE/) {$CLnew_status = 'DROP';}
 						else 
 							{
+							$CLstage =~ s/LIVE|-//gi;
+							if ($CLstage < 0.25) {$CLstage=1;}
+
 							$end_epoch = ($now_date_epoch + 1);
-							$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$CLuniqueid','$CLlead_id','$CLcampaign_id','$SQLdate','$now_date_epoch','$CLnew_status','$CLphone_code','$CLphone_number','VDAD','N','1','$end_epoch')";
+							$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$CLuniqueid','$CLlead_id','$CLcampaign_id','$SQLdate','$now_date_epoch','$CLnew_status','$CLphone_code','$CLphone_number','VDAD','N','$CLstage','$end_epoch')";
 								if($M){print STDERR "\n|$stmtA|\n";}
 							$affected_rows = $dbhA->do($stmtA);
 
 							$event_string = "|     dead NA call added to log $CLuniqueid|$CLlead_id|$CLphone_number|$CLstatus|$CLnew_status|$affected_rows|";
 							 &event_logger;
 
+							if ($enable_queuemetrics_logging > 0)
+								{
+								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+								 or die "Couldn't connect to database: " . DBI->errstr;
+
+								if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+								$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$KLcallerid[$kill_vac]',queue='$CLcampaign_id',agent='NONE',verb='ABANDON',data1='1',data2='1',data3='$CLstage',serverid='$queuemetrics_log_id';";
+								$Baffected_rows = $dbhB->do($stmtB);
+
+								$dbhB->disconnect();
+								}
 							}
 
 						$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
@@ -1099,7 +1138,7 @@ while($one_day_interval > 0)
 			}
 
 
-		### delete call records that are SENT for over 3 minutes
+		### delete call records that are SENT for over 2 minutes
 		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$XDSQLdate' and status NOT IN('XFER','CLOSER','LIVE')";
 		$affected_rows = $dbhA->do($stmtA);
 
@@ -1125,18 +1164,73 @@ while($one_day_interval > 0)
 			$sthA->finish();
 			}
 
-		### delete call records that are LIVE and not updated for over 10 seconds
-		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE');";
-		$affected_rows = $dbhA->do($stmtA);
-
-		$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
-		 &event_logger;
-
-		if ($affected_rows > 0)
+		### find call records that are LIVE and not updated for over 10 seconds
+		$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
 			{
-			$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
-			 &jam_event_logger;
+			@aryA = $sthA->fetchrow_array;
+				$auto_call_id	= "$aryA[0]";
+				$CLlead_id		= "$aryA[1]";
+				$CLphone_number	= "$aryA[2]";
+				$CLstatus		= "$aryA[3]";
+				$CLcampaign_id	= "$aryA[4]";
+				$CLphone_code	= "$aryA[5]";
+				$CLalt_dial		= "$aryA[6]";
+				$CLstage		= "$aryA[7]";
+				$CLcallerid		= "$aryA[8]";
+				$CLuniqueid		= "$aryA[9]";
+			$rec_count++;
 			}
+		$sthA->finish();
+
+		### delete call records that are LIVE and not updated for over 10 seconds
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			$stmtA = "DELETE from vicidial_auto_calls where auto_call_id='$auto_call_id'";
+			$affected_rows = $dbhA->do($stmtA);
+
+			$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+			 &event_logger;
+
+			if ($affected_rows > 0)
+				{
+				$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+				 &jam_event_logger;
+
+				$CLstage =~ s/LIVE|-//gi;
+				if ($CLstage < 0.25) {$CLstage=1;}
+
+				$end_epoch = ($now_date_epoch + 1);
+				$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$CLuniqueid','$CLlead_id','$CLcampaign_id','$SQLdate','$now_date_epoch','DROP','$CLphone_code','$CLphone_number','VDAD','N','$CLstage','$end_epoch')";
+					if($M){print STDERR "\n|$stmtA|\n";}
+				$affected_rows = $dbhA->do($stmtA);
+
+				$event_string = "|     dead NA call added to log $CLuniqueid|$CLlead_id|$CLphone_number|$CLstatus|DROP|$affected_rows|";
+				 &event_logger;
+
+				if ($enable_queuemetrics_logging > 0)
+					{
+					$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+					 or die "Couldn't connect to database: " . DBI->errstr;
+
+					if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$CLcallerid',queue='$CLcampaign_id',agent='NONE',verb='ABANDON',data1='1',data2='1',data3='$CLstage',serverid='$queuemetrics_log_id';";
+					$Baffected_rows = $dbhB->do($stmtB);
+
+					$dbhB->disconnect();
+					}
+
+				}
+
+			$rec_count++;
+			}
+		$sthA->finish();
 
 
 		if ($LUcount > 0)
@@ -1193,6 +1287,28 @@ while($one_day_interval > 0)
 					 $rec_count++;
 					}
 				$sthA->finish();
+
+			#############################################
+			##### START QUEUEMETRICS LOGGING LOOKUP #####
+			$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				 @aryA = $sthA->fetchrow_array;
+					$enable_queuemetrics_logging =	"$aryA[0]";
+					$queuemetrics_server_ip	=		"$aryA[1]";
+					$queuemetrics_dbname =			"$aryA[2]";
+					$queuemetrics_login=			"$aryA[3]";
+					$queuemetrics_pass =			"$aryA[4]";
+					$queuemetrics_log_id =			"$aryA[5]";
+				 $rec_count++;
+				}
+			$sthA->finish();
+			##### END QUEUEMETRICS LOGGING LOOKUP #####
+			###########################################
 
 			### delete call records that are LIVE for over 10 minutes
 			$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$TDSQLdate' and status NOT IN('XFER','CLOSER')";

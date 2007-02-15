@@ -131,15 +131,24 @@ agent actions - used by vicidial.php, vdc_db_query.php and AST_VDremote_agents.p
 	UNPAUSE
 	PAUSEREASON
 
-call actions - used by 
+call actions before going to agent - used by agi-VDADtransfer scripts
 	ENTERQUEUE(url|callerid)
-	ABANDON(position|origposition|waittime) 
 	CONNECT(holdtime)
+	EXITWITHTIMEOUT(position) 
+
+call actions before going to agent - used by AST_VDauto_dial.pl
+	ABANDON(position|origposition|waittime) 
+
+call actions after going to agent - used by vicidial.php, vdc_db_query.php and FastAGI_log.pl
 	COMPLETEAGENT(holdtime|calltime|origposition)
 	COMPLETECALLER(holdtime|calltime|origposition) 
-	EXITWITHTIMEOUT(position) 
+	CALLSTATUS(status)
+
+
+not used in vicidial - 
 	TRANSFER(extension,context) 
-	CALLSTATUS
+
+
 
 
 data1: call termination codes, TBD

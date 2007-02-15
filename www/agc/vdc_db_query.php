@@ -121,10 +121,11 @@
 # 70212-1253 - Fixed small issue with CXFER
 # 70213-1431 - Added QueueMetrics PAUSE/UNPAUSE/AGENTLOGIN/AGENTLOGOFF actions
 # 70214-1231 - Added queuemetrics_log_id field for server_id in queue_log
+# 70215-1210 - Added queuemetrics COMPLETEAGENT action
 #
 
-$version = '2.0.48';
-$build = '70214-1231';
+$version = '2.0.49';
+$build = '70215-1210';
 
 require("dbconnect.php");
 
@@ -900,6 +901,29 @@ if ($stage == "end")
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			}
+
+		#############################################
+		##### START QUEUEMETRICS LOGGING LOOKUP #####
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$qm_conf_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $qm_conf_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_queuemetrics_logging =	$row[0];
+			$queuemetrics_server_ip	=		$row[1];
+			$queuemetrics_dbname =			$row[2];
+			$queuemetrics_login	=			$row[3];
+			$queuemetrics_pass =			$row[4];
+			$queuemetrics_log_id =			$row[5];
+			$i++;
+			}
+		##### END QUEUEMETRICS LOGGING LOOKUP #####
+		###########################################
+
 		if ($auto_dial_level > 0)
 			{
 			### check to see if campaign has alt_dial enabled
@@ -975,10 +999,48 @@ if ($stage == "end")
 					}
 				}
 
+			if ($enable_queuemetrics_logging > 0)
+				{
+				### check to see if lead should be alt_dialed
+				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$VAC_qm_ct = mysql_num_rows($rslt);
+				if ($VAC_qm_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$auto_call_id	= $row[0];
+					$CLlead_id		= $row[1];
+					$CLphone_number	= $row[2];
+					$CLstatus		= $row[3];
+					$CLcampaign_id	= $row[4];
+					$CLphone_code	= $row[5];
+					$CLalt_dial		= $row[6];
+					$CLstage		= $row[7];
+					$CLcallerid		= $row[8];
+					$CLuniqueid		= $row[9];
+					}
+
+				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
+				if ($CLstage < 0.25) {$CLstage=0;}
+
+				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				mysql_select_db("$queuemetrics_dbname", $linkB);
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$CLcallerid',queue='$CLcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+
+				mysql_close($linkB);
+				}
+
 			### delete call record from  vicidial_auto_calls
-			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
+			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
+
 
 			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',lead_id='',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
@@ -986,27 +1048,6 @@ if ($stage == "end")
 			$affected_rows = mysql_affected_rows($link);
 			if ($affected_rows > 0) 
 				{
-				#############################################
-				##### START QUEUEMETRICS LOGGING LOOKUP #####
-				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
-				$rslt=mysql_query($stmt, $link);
-				if ($DB) {echo "$stmt\n";}
-				$qm_conf_ct = mysql_num_rows($rslt);
-				$i=0;
-				while ($i < $qm_conf_ct)
-					{
-					$row=mysql_fetch_row($rslt);
-					$enable_queuemetrics_logging =	$row[0];
-					$queuemetrics_server_ip	=		$row[1];
-					$queuemetrics_dbname =			$row[2];
-					$queuemetrics_login	=			$row[3];
-					$queuemetrics_pass =			$row[4];
-					$queuemetrics_log_id =			$row[5];
-					$i++;
-					}
-				##### END QUEUEMETRICS LOGGING LOOKUP #####
-				###########################################
 				if ($enable_queuemetrics_logging > 0)
 					{
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
@@ -1024,6 +1065,43 @@ if ($stage == "end")
 			}
 		else
 			{
+			if ($enable_queuemetrics_logging > 0)
+				{
+				### check to see if lead should be alt_dialed
+				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$VAC_qm_ct = mysql_num_rows($rslt);
+				if ($VAC_qm_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$auto_call_id	= $row[0];
+					$CLlead_id		= $row[1];
+					$CLphone_number	= $row[2];
+					$CLstatus		= $row[3];
+					$CLcampaign_id	= $row[4];
+					$CLphone_code	= $row[5];
+					$CLalt_dial		= $row[6];
+					$CLstage		= $row[7];
+					$CLcallerid		= $row[8];
+					$CLuniqueid		= $row[9];
+					}
+
+				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
+				if ($CLstage < 0.25) {$CLstage=0;}
+
+				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				mysql_select_db("$queuemetrics_dbname", $linkB);
+
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$CLcallerid',queue='$CLcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $linkB);
+				$affected_rows = mysql_affected_rows($linkB);
+
+				mysql_close($linkB);
+				}
+
 			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
@@ -1034,27 +1112,6 @@ if ($stage == "end")
 			$affected_rows = mysql_affected_rows($link);
 			if ($affected_rows > 0) 
 				{
-				#############################################
-				##### START QUEUEMETRICS LOGGING LOOKUP #####
-				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
-				$rslt=mysql_query($stmt, $link);
-				if ($DB) {echo "$stmt\n";}
-				$qm_conf_ct = mysql_num_rows($rslt);
-				$i=0;
-				while ($i < $qm_conf_ct)
-					{
-					$row=mysql_fetch_row($rslt);
-					$enable_queuemetrics_logging =	$row[0];
-					$queuemetrics_server_ip	=		$row[1];
-					$queuemetrics_dbname =			$row[2];
-					$queuemetrics_login	=			$row[3];
-					$queuemetrics_pass =			$row[4];
-					$queuemetrics_log_id =			$row[5];
-					$i++;
-					}
-				##### END QUEUEMETRICS LOGGING LOOKUP #####
-				###########################################
 				if ($enable_queuemetrics_logging > 0)
 					{
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
@@ -1796,6 +1853,41 @@ if ($ACTION == 'updateDISPO')
 		$stmt="DELETE from vicidial_hopper where lead_id='$lead_id' and status='HOLD';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+		}
+
+	#############################################
+	##### START QUEUEMETRICS LOGGING LOOKUP #####
+	$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$qm_conf_ct = mysql_num_rows($rslt);
+	$i=0;
+	while ($i < $qm_conf_ct)
+		{
+		$row=mysql_fetch_row($rslt);
+		$enable_queuemetrics_logging =	$row[0];
+		$queuemetrics_server_ip	=		$row[1];
+		$queuemetrics_dbname =			$row[2];
+		$queuemetrics_login	=			$row[3];
+		$queuemetrics_pass =			$row[4];
+		$queuemetrics_log_id =			$row[5];
+		$i++;
+		}
+	##### END QUEUEMETRICS LOGGING LOOKUP #####
+	###########################################
+	if ($enable_queuemetrics_logging > 0)
+		{
+		$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+		mysql_select_db("$queuemetrics_dbname", $linkB);
+
+		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='CALLSTATUS',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
+		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $linkB);
+		$affected_rows = mysql_affected_rows($linkB);
+
+		mysql_close($linkB);
 		}
 
 	echo 'Lead ' . $lead_id . ' has been changed to ' . $dispo_choice . " Status\nNext agent_log_id:\n" . $agent_log_id . "\n";
