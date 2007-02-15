@@ -943,6 +943,9 @@ while($one_day_interval > 0)
 
 					if ($CLstatus !~ /XFER|CLOSER/) 
 						{
+						$CLstage =~ s/LIVE|-//gi;
+						if ($CLstage < 0.25) {$CLstage=1;}
+
 						if ($CLstatus =~ /BUSY/) {$CLnew_status = 'B';}
 						else
 							{
@@ -952,9 +955,6 @@ while($one_day_interval > 0)
 						if ($CLstatus =~ /LIVE/) {$CLnew_status = 'DROP';}
 						else 
 							{
-							$CLstage =~ s/LIVE|-//gi;
-							if ($CLstage < 0.25) {$CLstage=1;}
-
 							$end_epoch = ($now_date_epoch + 1);
 							$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$CLuniqueid','$CLlead_id','$CLcampaign_id','$SQLdate','$now_date_epoch','$CLnew_status','$CLphone_code','$CLphone_number','VDAD','N','$CLstage','$end_epoch')";
 								if($M){print STDERR "\n|$stmtA|\n";}
@@ -963,18 +963,6 @@ while($one_day_interval > 0)
 							$event_string = "|     dead NA call added to log $CLuniqueid|$CLlead_id|$CLphone_number|$CLstatus|$CLnew_status|$affected_rows|";
 							 &event_logger;
 
-							if ($enable_queuemetrics_logging > 0)
-								{
-								$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
-								 or die "Couldn't connect to database: " . DBI->errstr;
-
-								if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
-
-								$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$KLcallerid[$kill_vac]',queue='$CLcampaign_id',agent='NONE',verb='ABANDON',data1='1',data2='1',data3='$CLstage',serverid='$queuemetrics_log_id';";
-								$Baffected_rows = $dbhB->do($stmtB);
-
-								$dbhB->disconnect();
-								}
 							}
 
 						$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
@@ -988,6 +976,19 @@ while($one_day_interval > 0)
 
 						$event_string = "|     dead call vla agent PAUSED $affected_rows|$CLlead_id|$CLphone_number|$CLstatus|";
 						 &event_logger;
+
+						if ( ($enable_queuemetrics_logging > 0) && ($CLstatus =~ /LIVE/) )
+							{
+							$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+							 or die "Couldn't connect to database: " . DBI->errstr;
+
+							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$KLcallerid[$kill_vac]',queue='$CLcampaign_id',agent='NONE',verb='ABANDON',data1='1',data2='1',data3='$CLstage',serverid='$queuemetrics_log_id';";
+							$Baffected_rows = $dbhB->do($stmtB);
+
+							$dbhB->disconnect();
+							}
 
 						##### BEGIN AUTO ALT PHONE DIAL SECTION #####
 						### check to see if campaign has alt_dial enabled
