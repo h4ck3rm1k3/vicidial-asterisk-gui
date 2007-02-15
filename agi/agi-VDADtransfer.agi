@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADtransfer.agi version 0.7   *DBI-version*
+# agi-VDADtransfer.agi version 2.0.3   *DBI-version*
 # 
 # runs when a call comes in from the VICIDIAL_auto_dialer. This script will 
 # send the calls out to the reps that are logged in.
@@ -14,19 +14,20 @@
 # exten => 8365,1,AGI(call_log.agi,${EXTEN})
 # exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# changes:
-# 50322-1246 - changed callerid handling to allow for custom callerid
-# 60119-1408 - fixed calleridname issue with 1.2 tree for custom CID
+# CHANGELOG:
+# 50322-1246 - Changed callerid handling to allow for custom callerid
+# 60119-1408 - Fixed calleridname issue with 1.2 tree for custom CID
 # 60503-1054 - Added safe harbor and drop second options from campaign
-# 60731-1441 - changed to use DBI-DBD::mysql
-#            - changed to use /etc/astguiclient.conf for configs
-# 60816-1036 - added output options check from database
-#            - changed look for agent every 0.5 second for first 4 sec on hold
-# 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
-# 70109-1715 - added option for concurrent_transfers
-# 
+# 60731-1441 - Changed to use DBI-DBD::mysql
+#            - Changed to use /etc/astguiclient.conf for configs
+# 60816-1036 - Added output options check from database
+#            - Changed look for agent every 0.5 second for first 4 sec on hold
+# 60905-1047 - Changed look for agent every 0.25 second for first 4 sec on hold
+# 70109-1715 - Added option for concurrent_transfers
+# 70214-1214 - Added QueueMetrics optional logging
+#
 
 $script = 'agi-VDADtransfer.agi';
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADtransferSURVEY.agi version 0.7   *DBI-version*
+# agi-VDADtransferSURVEY.agi version 2.0.3   *DBI-version*
 # 
 # runs when a call comes in from the VICIDIAL auto_dialer. This script will 
 # send the calls out to the reps that are logged in if called person presses key.
@@ -14,16 +14,17 @@
 # exten => 8366,1,AGI(call_log.agi,${EXTEN})
 # exten => 8366,2,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-# CHANGES
-# 60119-1408 - fixed calleridname issue with 1.2 tree for custom CID
+# CHANGELOG
+# 60119-1408 - Fixed calleridname issue with 1.2 tree for custom CID
 # 60503-1100 - Added safe harbor and drop second options from campaign
-# 60731-1441 - changed to use DBI-DBD::mysql
-#            - changed to use /etc/astguiclient.conf for configs
-# 60816-1034 - added output options check from database
-#            - changed look for agent every 0.5 second for first 4 sec on hold
-# 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
+# 60731-1441 - Changed to use DBI-DBD::mysql
+#            - Changed to use /etc/astguiclient.conf for configs
+# 60816-1034 - Added output options check from database
+#            - Changed look for agent every 0.5 second for first 4 sec on hold
+# 60905-1047 - Changed look for agent every 0.25 second for first 4 sec on hold
+# 70215-1052 - Added QueueMetrics optional logging
 #
 
 $script = 'agi-VDADtransferSURVEY.agi';
@@ -340,6 +341,53 @@ if ($affected_rows > 0)
 	$affected_rows = $dbhA->do($stmtA);
 
 	if ($AGILOG) {$agi_string = "--    VDAD : |$VDADlead_id|$CIDlead_id|insert to vicidial_log: $uniqueid";   &agi_output;}
+
+	#############################################
+	##### START QUEUEMETRICS LOGGING LOOKUP #####
+	$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		 @aryA = $sthA->fetchrow_array;
+			$enable_queuemetrics_logging =	"$aryA[0]";
+			$queuemetrics_server_ip	=		"$aryA[1]";
+			$queuemetrics_dbname =			"$aryA[2]";
+			$queuemetrics_login=			"$aryA[3]";
+			$queuemetrics_pass =			"$aryA[4]";
+			$queuemetrics_log_id =			"$aryA[5]";
+		 $rec_count++;
+		}
+	$sthA->finish();
+	##### END QUEUEMETRICS LOGGING LOOKUP #####
+	###########################################
+	if ($enable_queuemetrics_logging > 0)
+		{
+		$stmtA = "SELECT phone_number FROM vicidial_auto_calls where lead_id='$CIDlead_id';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			 @aryA = $sthA->fetchrow_array;
+			 $phone_number =	"$aryA[0]";
+			 $rec_count++;
+			}
+		$sthA->finish();
+
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+		if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+		$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='ENTERQUEUE',data2='$phone_number',serverid='$queuemetrics_log_id';";
+		$Baffected_rows = $dbhB->do($stmtB);
+
+		$dbhB->disconnect();
+		}
 	}
 
 $drop_timer=0;
@@ -454,6 +502,19 @@ if ($rec_countWAIT < $DBconcurrent_transfers)
 
 		$dbhA->disconnect();
 
+		if ($enable_queuemetrics_logging > 0)
+			{
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			 or die "Couldn't connect to database: " . DBI->errstr;
+
+			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$callerid',queue='$VDADcampaign',agent='Agent/$VDADuser',verb='CONNECT',data1='$drop_timer',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
+			$dbhB->disconnect();
+			}
+
 		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $VDADconf_exten";   &agi_output;}
 		print "SET CONTEXT $ext_context\n";
 			checkresult($result);
@@ -544,6 +605,19 @@ $DROPexten = '';
 if ($drop_seconds < 1) 
 	{
 	$drop_seconds = $DROP_TIME;
+
+	if ($enable_queuemetrics_logging > 0)
+		{
+		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+		if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+		$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='EXITWITHTIMEOUT',data1='1',serverid='$queuemetrics_log_id';";
+		$Baffected_rows = $dbhB->do($stmtB);
+
+		$dbhB->disconnect();
+		}
 
 	if ($safe_harbor_message =~ /Y/)
 		{
