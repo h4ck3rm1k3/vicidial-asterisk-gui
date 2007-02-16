@@ -69,6 +69,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 16. Added optional Asterisk-compatible queue_log logging for QueueMetrics
 	compatibility. See the QUEUEMETRICS.txt doc for more information
 
+17. RECOMMENDATION - If you are calling in the USA, you should add the 
+	"--postal-code-gmt" flag to your adjust GMT script in the crontab to
+	more accurately assign timezones to your leads.
+
 
 
 

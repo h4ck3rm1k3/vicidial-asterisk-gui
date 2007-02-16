@@ -540,11 +540,29 @@ while($one_day_interval > 0)
 				@aryA = $sthA->fetchrow_array;
 				$autocallexists[$z] =	"$aryA[0]";
 				$rec_count++;
+					if ($DB) {print STDERR "$autocallexists[$z] CALL EXISTS|$VD_uniqueid[$z]|$server_ip|\n";}
 				}
 			$sthA->finish();
 			
 			if ($autocallexists[$z] < 1)
 				{
+
+
+				$stmtA = "SELECT uniqueid,callerid,status FROM vicidial_auto_calls where server_ip='$server_ip';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$rec_count++;
+						if ($DB) {print STDERR "     CALLS: $rec_count|$aryA[0]|$aryA[1]|$aryA[2]|\n";}
+					}
+				$sthA->finish();
+
+
+
 				if ($DELusers =~ /R\/$VD_user[$z]\|/)
 					{
 					$stmtA = "UPDATE vicidial_live_agents set random_id='$VD_random[$z]',status='PAUSED', last_call_finish='$SQLdate',lead_id='',uniqueid='',callerid='',channel=''  where user='$VD_user[$z]' and server_ip='$server_ip';";

@@ -645,8 +645,16 @@ sub process_request {
 						}
 					$sthB->finish();
 
-					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$VD_callerid',queue='$VD_campaign_id',agent='$VD_agent',verb='COMPLETECALLER',data1='$VD_stage',data2='$VD_call_length',data3='1',serverid='$queuemetrics_log_id';";
-					$Baffected_rows = $dbhB->do($stmtB);
+					if ($rec_count < 1)
+						{
+						$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$VD_callerid',queue='$VD_campaign_id',agent='$VD_agent',verb='ABANDON',data1='1',data2='1',data3='$VD_stage',serverid='$queuemetrics_log_id';";
+						$Baffected_rows = $dbhB->do($stmtB);
+						}
+					else
+						{
+						$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$VD_callerid',queue='$VD_campaign_id',agent='$VD_agent',verb='COMPLETECALLER',data1='$VD_stage',data2='$VD_call_length',data3='1',serverid='$queuemetrics_log_id';";
+						$Baffected_rows = $dbhB->do($stmtB);
+						}
 
 					$dbhB->disconnect();
 					}
