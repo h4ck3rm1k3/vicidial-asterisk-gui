@@ -122,10 +122,11 @@
 # 70213-1431 - Added QueueMetrics PAUSE/UNPAUSE/AGENTLOGIN/AGENTLOGOFF actions
 # 70214-1231 - Added queuemetrics_log_id field for server_id in queue_log
 # 70215-1210 - Added queuemetrics COMPLETEAGENT action
+# 70216-1051 - Fixed double call complete queuemetrics logging
 #
 
-$version = '2.0.49';
-$build = '70215-1210';
+$version = '2.0.50';
+$build = '70216-1051';
 
 require("dbconnect.php");
 
@@ -1021,18 +1022,30 @@ if ($stage == "end")
 					$CLuniqueid		= $row[9];
 					}
 
-				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
-				if ($CLstage < 0.25) {$CLstage=0;}
+				$CLstage = preg_replace("/.*-/",'',$CLstage);
+				if (strlen($CLstage) < 1) {$CLstage=0;}
 
 				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 				mysql_select_db("$queuemetrics_dbname", $linkB);
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
-				if ($DB) {echo "$stmt\n";}
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETECALLER';";
 				$rslt=mysql_query($stmt, $linkB);
-				$affected_rows = mysql_affected_rows($linkB);
+				if ($DB) {echo "$stmt\n";}
+				$VAC_cc_ct = mysql_num_rows($rslt);
+				if ($VAC_cc_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$caller_complete	= $row[0];
+					}
 
+				if ($caller_complete < 1)
+					{
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+					if ($DB) {echo "$stmt\n";}
+					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+					$rslt=mysql_query($stmt, $linkB);
+					$affected_rows = mysql_affected_rows($linkB);
+					}
 				mysql_close($linkB);
 				}
 

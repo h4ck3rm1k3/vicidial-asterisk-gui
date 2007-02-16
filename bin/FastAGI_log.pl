@@ -621,6 +621,7 @@ sub process_request {
 				###########################################
 				if ($enable_queuemetrics_logging > 0)
 					{
+					$VD_agent='NONE';
 					$secX = time();
 					$VD_call_length = ($secX - $VD_start_epoch);
 					$VD_stage =~ s/.*-//gi;
@@ -631,7 +632,20 @@ sub process_request {
 
 					if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$VD_callerid',queue='$VD_campaign_id',agent='NONE',verb='COMPLETECALLER',data1='$VD_stage',data2='$VD_call_length',data3='1',serverid='$queuemetrics_log_id';";
+					$stmtB = "SELECT agent from queue_log where call_id='$VD_callerid' and verb='CONNECT';";
+					$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+					$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+					$sthBrows=$sthB->rows;
+					$rec_count=0;
+					while ($sthBrows > $rec_count)
+						{
+						@aryB = $sthB->fetchrow_array;
+						$VD_agent =	"$aryB[0]";
+						$rec_count++;
+						}
+					$sthB->finish();
+
+					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$VD_callerid',queue='$VD_campaign_id',agent='$VD_agent',verb='COMPLETECALLER',data1='$VD_stage',data2='$VD_call_length',data3='1',serverid='$queuemetrics_log_id';";
 					$Baffected_rows = $dbhB->do($stmtB);
 
 					$dbhB->disconnect();

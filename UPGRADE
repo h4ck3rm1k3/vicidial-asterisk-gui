@@ -66,6 +66,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 15. Added Agent Pause Codes that are definable per campaign and allows the
 	agent to select what they are doing when they are in pause time.
 
+16. Added optional Asterisk-compatible queue_log logging for QueueMetrics
+	compatibility. See the QUEUEMETRICS.txt doc for more information
+
+
+
 
 
 

@@ -1,5 +1,7 @@
 VICIDIAL and QueueMetrics
 
+queue_log logging was added to VICIDIAL outbound calling as an option in the 2.0.3 release tree.
+
 This document goes over the features and needed changes made to VICIDIAL to enable it to insert activity records into the queue_log and other tables in MySQL that QueueMetrics uses for it's statistical analysis and reports. This document should not be taken as a HOWTO for proper installation steps to get QueueMetrics working.
 
 QueueMetrics is a closed-source, commercial product written by Loway Research in Italy. The writers of VICIDIAL do not support or warranty QueueMetrics or it's functionality with VICIDIAL in any way.
