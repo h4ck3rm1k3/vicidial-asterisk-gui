@@ -2,7 +2,7 @@
 # admin.php - VICIDIAL administration page
 # 
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 
 
@@ -564,10 +564,17 @@ if (isset($_GET["queuemetrics_url"]))			{$queuemetrics_url=$_GET["queuemetrics_u
 	elseif (isset($_POST["queuemetrics_url"]))	{$queuemetrics_url=$_POST["queuemetrics_url"];}
 if (isset($_GET["queuemetrics_log_id"]))			{$queuemetrics_log_id=$_GET["queuemetrics_log_id"];}
 	elseif (isset($_POST["queuemetrics_log_id"]))	{$queuemetrics_log_id=$_POST["queuemetrics_log_id"];}
-
+if (isset($_GET["dial_status"]))				{$dial_status=$_GET["dial_status"];}
+	elseif (isset($_POST["dial_status"]))		{$dial_status=$_POST["dial_status"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
+
+if (strlen($dial_status) > 0) 
+	{
+	$ADD='28';
+	$status = $dial_status;
+	}
 
 ##### BEGIN VARIABLE FILTERING FOR SECURITY #####
 
@@ -792,6 +799,7 @@ $user = ereg_replace("[^-\_0-9a-zA-Z]","",$user);
 $user_group = ereg_replace("[^-\_0-9a-zA-Z]","",$user_group);
 $VICIDIAL_park_on_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$VICIDIAL_park_on_filename);
 $auto_alt_dial = ereg_replace("[^-\_0-9a-zA-Z]","",$auto_alt_dial);
+$dial_status = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -951,12 +959,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70206-1323 - Added user setting for vicidial_recording_override
 # 70212-1412 - Added system settings section
 # 70214-1226 - Added QueueMetrics Log ID field to system settings section
+# 70219-1102 - Changed campaign dial statuses to be one string allowing for high limit
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.87';
-$build = '70214-1226';
+$admin_version = '2.0.88';
+$build = '70219-1102';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1083,6 +1092,7 @@ if ($ADD==23)			{$hh='campaigns';	echo "New Campaign HotKey Addition";}
 if ($ADD==25)			{$hh='campaigns';	echo "New Campaign Lead Recycle Addition";}
 if ($ADD==26)			{$hh='campaigns';	echo "New Auto Alt Dial Status";}
 if ($ADD==27)			{$hh='campaigns';	echo "New Agent Pause Code";}
+if ($ADD==28)			{$hh='campaigns';	echo "Campaign Dial Status Added";}
 if ($ADD==211)			{$hh='lists';		echo "New List Addition";}
 if ($ADD==2111)			{$hh='ingroups';	echo "New In-Group Addition";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
@@ -1160,6 +1170,7 @@ if ($ADD==63)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==65)			{$hh='campaigns';	echo "Delete Lead Recycle";}
 if ($ADD==66)			{$hh='campaigns';	echo "Delete Auto Alt Dial Status";}
 if ($ADD==67)			{$hh='campaigns';	echo "Delete Agent Pause Code";}
+if ($ADD==68)			{$hh='campaigns';	echo "Campaign Dial Status Removed";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -1676,7 +1687,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-dial_status">
 <BR>
-<B>Dial Status -</B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below
+<B>Dial Status -</B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below. To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove.
 
 <BR>
 <A NAME="vicidial_campaigns-lead_order">
@@ -2827,18 +2838,14 @@ if ($ADD==73)
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
+	$stmt="SELECT dial_statuses,local_call_time,lead_filter_id from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$dial_status_a = $row[3];
-	$dial_status_b = $row[4];
-	$dial_status_c = $row[5];
-	$dial_status_d = $row[6];
-	$dial_status_e = $row[7];
-	$local_call_time = $row[16];
+	$dial_statuses =		$row[0];
+	$local_call_time =		$row[1];
 	if ($lead_filter_id=='')
 		{
-		$lead_filter_id = $row[35];
+		$lead_filter_id =	$row[2];
 		if ($lead_filter_id=='') 
 			{
 			$lead_filter_id='NONE';
@@ -2869,12 +2876,12 @@ if ($ADD==73)
 	echo "<B>Show Dialable Leads Count</B> -<BR><BR>\n";
 	echo "<B>CAMPAIGN:</B> $campaign_id<BR>\n";
 	echo "<B>LISTS:</B> $camp_lists<BR>\n";
-	echo "<B>STATUSES:</B> $dial_status_a,$dial_status_b,$dial_status_c,$dial_status_d,$dial_status_e<BR>\n";
+	echo "<B>STATUSES:</B> $dial_statuses<BR>\n";
 	echo "<B>FILTER:</B> $lead_filter_id<BR>\n";
 	echo "<B>CALL TIME:</B> $local_call_time<BR><BR>\n";
 
 	### call function to calculate and print dialable leads
-	dialable_leads($DB,$link,$local_call_time,$dial_status_a,$dial_status_b,$dial_status_c,$dial_status_d,$dial_status_e,$camp_lists,$fSQL);
+	dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
 
 	echo "<BR><BR>\n";
 	echo "</BODY></HTML>\n";
@@ -4061,6 +4068,52 @@ if ($ADD==27)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
 				fwrite ($fp, "$date|ADD A NEW AGENT PAUSE CODE|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=31;
+}
+
+
+######################
+# ADD=28 adds new status to the campaign dial statuses
+######################
+
+if ($ADD==28)
+{
+	$status = eregi_replace("-----.*",'',$status);
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>CAMPAIGN DIAL STATUS NOT ADDED - there is already an entry for this campaign with this status\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+			{
+			 echo "<br>CAMPAIGN DIAL STATUS NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>status must be between 1 and 6 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>CAMPAIGN DIAL STATUS ADDED: $campaign_id - $status</B>\n";
+
+			$stmt="SELECT dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+
+			if (strlen($row[0])<2) {$row[0] = ' -';}
+			$dial_statuses = " $status$row[0]";
+			$stmt="UPDATE vicidial_campaigns set dial_statuses='$dial_statuses' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD CAMPAIGN DIAL STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
@@ -6303,6 +6356,57 @@ $ADD=31;	# go to campaign modification form below
 
 
 ######################
+# ADD=68 remove campaign dial status
+######################
+
+if ($ADD==68)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] < 1)
+		{echo "<br>CAMPAIGN DIAL STATUS NOT REMOVED - this dial status is not selected for this campaign\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+			{
+			 echo "<br>CAMPAIGN DIAL STATUS NOT REMOVED - Please go back and look at the data you entered\n";
+			 echo "<br>status must be between 1 and 6 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>CAMPAIGN DIAL STATUS REMOVED: $campaign_id - $status</B>\n";
+
+			$stmt="SELECT dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+
+			$dial_statuses = eregi_replace(" $status "," ",$row[0]);
+			$stmt="UPDATE vicidial_campaigns set dial_statuses='$dial_statuses' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DIAL STATUS REMOVED   |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=31;	# go to campaign modification form below
+}
+
+######################
 # ADD=611 delete list record and all leads within it
 ######################
 
@@ -7034,6 +7138,7 @@ if ($ADD==31)
 		$campaign_changedate = $row[58];
 		$campaign_stats_refresh = $row[59];
 		$campaign_logindate = $row[60];
+		$dial_statuses = $row[61];
 
 	echo "<br>MODIFY A CAMPAIGNS RECORD: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Basic View</a>";
 	echo " | Detail View</a> | ";
@@ -7051,64 +7156,61 @@ if ($ADD==31)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$row[12]</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><select size=1 name=dial_status_a>\n";
+
+	$stmt="SELECT * from vicidial_statuses order by status";
+	$rslt=mysql_query($stmt, $link);
+	$statuses_to_print = mysql_num_rows($rslt);
+	$statuses_list='';
+
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (eregi("Y",$rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
+
+	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
+	$rslt=mysql_query($stmt, $link);
+	$Cstatuses_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($Cstatuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (eregi("Y",$rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
+
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
+
+	$o=0;
+	while ($Ds_to_print > $o) 
+		{
+		$o++;
+		$Dstatus = $Dstatuses[$o];
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
+		echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+		echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+		}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status>\n";
 	echo "<option value=\"\"> - NONE - </option>\n";
 
-		$stmt="SELECT * from vicidial_statuses order by status";
-		$rslt=mysql_query($stmt, $link);
-		$statuses_to_print = mysql_num_rows($rslt);
-		$statuses_list='';
-
-		$o=0;
-		while ($statuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (eregi("Y",$rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
-
-		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
-		$rslt=mysql_query($stmt, $link);
-		$Cstatuses_to_print = mysql_num_rows($rslt);
-
-		$o=0;
-		while ($Cstatuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (eregi("Y",$rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
 	echo "$statuses_list";
-	echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 2: </td><td align=left><select size=1 name=dial_status_b>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_b\" SELECTED>$dial_status_b - $statname_list[$dial_status_b]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 3: </td><td align=left><select size=1 name=dial_status_c>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_c\" SELECTED>$dial_status_c - $statname_list[$dial_status_c]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 4: </td><td align=left><select size=1 name=dial_status_d>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_d\" SELECTED>$dial_status_d - $statname_list[$dial_status_d]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 5: </td><td align=left><select size=1 name=dial_status_e>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_e\" SELECTED>$dial_status_e - $statname_list[$dial_status_e]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+	echo "</select> &nbsp; \n";
+	echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
@@ -7302,7 +7404,7 @@ if ($ADD==31)
 	if ($display_dialable_count == 'Y')
 		{
 		### call function to calculate and print dialable leads
-		dialable_leads($DB,$link,$local_call_time,$dial_status_a,$dial_status_b,$dial_status_c,$dial_status_d,$dial_status_e,$camp_lists,$fSQL);
+		dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
 		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
 		}
 	else
@@ -7608,6 +7710,7 @@ if ($ADD==34)
 		$campaign_changedate = $row[58];
 		$campaign_stats_refresh = $row[59];
 		$campaign_logindate = $row[60];
+		$dial_statuses = $row[61];
 
 	echo "<br>MODIFY A CAMPAIGN'S RECORD: $row[0] - Basic View | ";
 	echo "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\">Detail View</a> | ";
@@ -7626,58 +7729,61 @@ if ($ADD==34)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 1: </td><td align=left><select size=1 name=dial_status_a>\n";
+
+	$stmt="SELECT * from vicidial_statuses order by status";
+	$rslt=mysql_query($stmt, $link);
+	$statuses_to_print = mysql_num_rows($rslt);
+	$statuses_list='';
+
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (eregi("Y",$rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
+
+	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
+	$rslt=mysql_query($stmt, $link);
+	$Cstatuses_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($Cstatuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$statname_list["$rowx[0]"] = "$rowx[1]";
+		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+		if (eregi("Y",$rowx[2]))
+			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+		$o++;
+		}
+
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
+
+	$o=0;
+	while ($Ds_to_print > $o) 
+		{
+		$o++;
+		$Dstatus = $Dstatuses[$o];
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
+		echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+		echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+		}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status>\n";
 	echo "<option value=\"\"> - NONE - </option>\n";
 
-		$stmt="SELECT * from vicidial_statuses order by status";
-		$rslt=mysql_query($stmt, $link);
-		$statuses_to_print = mysql_num_rows($rslt);
-		$statuses_list='';
-
-		$o=0;
-		while ($statuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$o++;
-			}
-
-		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
-		$rslt=mysql_query($stmt, $link);
-		$Cstatuses_to_print = mysql_num_rows($rslt);
-
-		$o=0;
-		while ($Cstatuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$o++;
-			}
 	echo "$statuses_list";
-	echo "<option value=\"$dial_status_a\" SELECTED>$dial_status_a - $statname_list[$dial_status_a]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 2: </td><td align=left><select size=1 name=dial_status_b>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_b\" SELECTED>$dial_status_b - $statname_list[$dial_status_b]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 3: </td><td align=left><select size=1 name=dial_status_c>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_c\" SELECTED>$dial_status_c - $statname_list[$dial_status_c]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 4: </td><td align=left><select size=1 name=dial_status_d>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_d\" SELECTED>$dial_status_d - $statname_list[$dial_status_d]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial status 5: </td><td align=left><select size=1 name=dial_status_e>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-	echo "$statuses_list";
-	echo "<option value=\"$dial_status_e\" SELECTED>$dial_status_e - $statname_list[$dial_status_e]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+	echo "</select> &nbsp; \n";
+	echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
@@ -7761,7 +7867,7 @@ if ($ADD==34)
 	if ($display_dialable_count == 'Y')
 		{
 		### call function to calculate and print dialable leads
-		dialable_leads($DB,$link,$local_call_time,$dial_status_a,$dial_status_b,$dial_status_c,$dial_status_d,$dial_status_e,$camp_lists,$fSQL);
+		dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
 		echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
 		}
 	else
@@ -10032,318 +10138,337 @@ exit;
 
 
 ##### CALCULATE DIALABLE LEADS #####
-function dialable_leads($DB,$link,$local_call_time,$dial_status_a,$dial_status_b,$dial_status_c,$dial_status_d,$dial_status_e,$camp_lists,$fSQL)
+function dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL)
 {
 ##### BEGIN calculate what gmt_offset_now values are within the allowed local_call_time setting ###
 if (isset($camp_lists))
 	{
 	if (strlen($camp_lists)>1)
 		{
-		$g=0;
-		$p='13';
-		$GMT_gmt[0] = '';
-		$GMT_hour[0] = '';
-		$GMT_day[0] = '';
-		while ($p > -13)
+		if (strlen($dial_statuses)>2)
 			{
-			$pzone=3600 * $p;
-			$pmin=(gmdate("i", time() + $pzone));
-			$phour=( (gmdate("G", time() + $pzone)) * 100);
-			$pday=gmdate("w", time() + $pzone);
-			$tz = sprintf("%.2f", $p);	
-			$GMT_gmt[$g] = "$tz";
-			$GMT_day[$g] = "$pday";
-			$GMT_hour[$g] = ($phour + $pmin);
-			$p = ($p - 0.25);
-			$g++;
-			}
-
-		$stmt="SELECT * FROM vicidial_call_times where call_time_id='$local_call_time';";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_query($stmt, $link);
-		$rowx=mysql_fetch_row($rslt);
-		$Gct_default_start =	"$rowx[3]";
-		$Gct_default_stop =		"$rowx[4]";
-		$Gct_sunday_start =		"$rowx[5]";
-		$Gct_sunday_stop =		"$rowx[6]";
-		$Gct_monday_start =		"$rowx[7]";
-		$Gct_monday_stop =		"$rowx[8]";
-		$Gct_tuesday_start =	"$rowx[9]";
-		$Gct_tuesday_stop =		"$rowx[10]";
-		$Gct_wednesday_start =	"$rowx[11]";
-		$Gct_wednesday_stop =	"$rowx[12]";
-		$Gct_thursday_start =	"$rowx[13]";
-		$Gct_thursday_stop =	"$rowx[14]";
-		$Gct_friday_start =		"$rowx[15]";
-		$Gct_friday_stop =		"$rowx[16]";
-		$Gct_saturday_start =	"$rowx[17]";
-		$Gct_saturday_stop =	"$rowx[18]";
-		$Gct_state_call_times = "$rowx[19]";
-
-		$ct_states = '';
-		$ct_state_gmt_SQL = '';
-		$ct_srs=0;
-		$b=0;
-		if (strlen($Gct_state_call_times)>2)
-			{
-			$state_rules = explode('|',$Gct_state_call_times);
-			$ct_srs = ((count($state_rules)) - 2);
-			}
-		while($ct_srs >= $b)
-			{
-			if (strlen($state_rules[$b])>1)
+			$g=0;
+			$p='13';
+			$GMT_gmt[0] = '';
+			$GMT_hour[0] = '';
+			$GMT_day[0] = '';
+			while ($p > -13)
 				{
-				$stmt="SELECT * from vicidial_state_call_times where state_call_time_id='$state_rules[$b]';";
-				$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				$Gstate_call_time_id =		"$row[0]";
-				$Gstate_call_time_state =	"$row[1]";
-				$Gsct_default_start =		"$row[4]";
-				$Gsct_default_stop =		"$row[5]";
-				$Gsct_sunday_start =		"$row[6]";
-				$Gsct_sunday_stop =			"$row[7]";
-				$Gsct_monday_start =		"$row[8]";
-				$Gsct_monday_stop =			"$row[9]";
-				$Gsct_tuesday_start =		"$row[10]";
-				$Gsct_tuesday_stop =		"$row[11]";
-				$Gsct_wednesday_start =		"$row[12]";
-				$Gsct_wednesday_stop =		"$row[13]";
-				$Gsct_thursday_start =		"$row[14]";
-				$Gsct_thursday_stop =		"$row[15]";
-				$Gsct_friday_start =		"$row[16]";
-				$Gsct_friday_stop =			"$row[17]";
-				$Gsct_saturday_start =		"$row[18]";
-				$Gsct_saturday_stop =		"$row[19]";
-
-				$ct_states .="'$Gstate_call_time_state',";
-
-				$r=0;
-				$state_gmt='';
-				while($r < $g)
-					{
-					if ($GMT_day[$r]==0)	#### Sunday local time
-						{
-						if (($Gsct_sunday_start==0) and ($Gsct_sunday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_sunday_start) and ($GMT_hour[$r]<$Gsct_sunday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==1)	#### Monday local time
-						{
-						if (($Gsct_monday_start==0) and ($Gsct_monday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_monday_start) and ($GMT_hour[$r]<$Gsct_monday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==2)	#### Tuesday local time
-						{
-						if (($Gsct_tuesday_start==0) and ($Gsct_tuesday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_tuesday_start) and ($GMT_hour[$r]<$Gsct_tuesday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==3)	#### Wednesday local time
-						{
-						if (($Gsct_wednesday_start==0) and ($Gsct_wednesday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_wednesday_start) and ($GMT_hour[$r]<$Gsct_wednesday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==4)	#### Thursday local time
-						{
-						if (($Gsct_thursday_start==0) and ($Gsct_thursday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_thursday_start) and ($GMT_hour[$r]<$Gsct_thursday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==5)	#### Friday local time
-						{
-						if (($Gsct_friday_start==0) and ($Gsct_friday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_friday_start) and ($GMT_hour[$r]<$Gsct_friday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					if ($GMT_day[$r]==6)	#### Saturday local time
-						{
-						if (($Gsct_saturday_start==0) and ($Gsct_saturday_stop==0))
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						else
-							{
-							if ( ($GMT_hour[$r]>=$Gsct_saturday_start) and ($GMT_hour[$r]<$Gsct_saturday_stop) )
-								{$state_gmt.="'$GMT_gmt[$r]',";}
-							}
-						}
-					$r++;
-					}
-				$state_gmt = "$state_gmt'99'";
-				$ct_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
+				$pzone=3600 * $p;
+				$pmin=(gmdate("i", time() + $pzone));
+				$phour=( (gmdate("G", time() + $pzone)) * 100);
+				$pday=gmdate("w", time() + $pzone);
+				$tz = sprintf("%.2f", $p);	
+				$GMT_gmt[$g] = "$tz";
+				$GMT_day[$g] = "$pday";
+				$GMT_hour[$g] = ($phour + $pmin);
+				$p = ($p - 0.25);
+				$g++;
 				}
 
-			$b++;
-			}
-		if (strlen($ct_states)>2)
-			{
-			$ct_states = eregi_replace(",$",'',$ct_states);
-			$ct_statesSQL = "and state NOT IN($ct_states)";
+			$stmt="SELECT * FROM vicidial_call_times where call_time_id='$local_call_time';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			$Gct_default_start =	"$rowx[3]";
+			$Gct_default_stop =		"$rowx[4]";
+			$Gct_sunday_start =		"$rowx[5]";
+			$Gct_sunday_stop =		"$rowx[6]";
+			$Gct_monday_start =		"$rowx[7]";
+			$Gct_monday_stop =		"$rowx[8]";
+			$Gct_tuesday_start =	"$rowx[9]";
+			$Gct_tuesday_stop =		"$rowx[10]";
+			$Gct_wednesday_start =	"$rowx[11]";
+			$Gct_wednesday_stop =	"$rowx[12]";
+			$Gct_thursday_start =	"$rowx[13]";
+			$Gct_thursday_stop =	"$rowx[14]";
+			$Gct_friday_start =		"$rowx[15]";
+			$Gct_friday_stop =		"$rowx[16]";
+			$Gct_saturday_start =	"$rowx[17]";
+			$Gct_saturday_stop =	"$rowx[18]";
+			$Gct_state_call_times = "$rowx[19]";
+
+			$ct_states = '';
+			$ct_state_gmt_SQL = '';
+			$ct_srs=0;
+			$b=0;
+			if (strlen($Gct_state_call_times)>2)
+				{
+				$state_rules = explode('|',$Gct_state_call_times);
+				$ct_srs = ((count($state_rules)) - 2);
+				}
+			while($ct_srs >= $b)
+				{
+				if (strlen($state_rules[$b])>1)
+					{
+					$stmt="SELECT * from vicidial_state_call_times where state_call_time_id='$state_rules[$b]';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					$Gstate_call_time_id =		"$row[0]";
+					$Gstate_call_time_state =	"$row[1]";
+					$Gsct_default_start =		"$row[4]";
+					$Gsct_default_stop =		"$row[5]";
+					$Gsct_sunday_start =		"$row[6]";
+					$Gsct_sunday_stop =			"$row[7]";
+					$Gsct_monday_start =		"$row[8]";
+					$Gsct_monday_stop =			"$row[9]";
+					$Gsct_tuesday_start =		"$row[10]";
+					$Gsct_tuesday_stop =		"$row[11]";
+					$Gsct_wednesday_start =		"$row[12]";
+					$Gsct_wednesday_stop =		"$row[13]";
+					$Gsct_thursday_start =		"$row[14]";
+					$Gsct_thursday_stop =		"$row[15]";
+					$Gsct_friday_start =		"$row[16]";
+					$Gsct_friday_stop =			"$row[17]";
+					$Gsct_saturday_start =		"$row[18]";
+					$Gsct_saturday_stop =		"$row[19]";
+
+					$ct_states .="'$Gstate_call_time_state',";
+
+					$r=0;
+					$state_gmt='';
+					while($r < $g)
+						{
+						if ($GMT_day[$r]==0)	#### Sunday local time
+							{
+							if (($Gsct_sunday_start==0) and ($Gsct_sunday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_sunday_start) and ($GMT_hour[$r]<$Gsct_sunday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==1)	#### Monday local time
+							{
+							if (($Gsct_monday_start==0) and ($Gsct_monday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_monday_start) and ($GMT_hour[$r]<$Gsct_monday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==2)	#### Tuesday local time
+							{
+							if (($Gsct_tuesday_start==0) and ($Gsct_tuesday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_tuesday_start) and ($GMT_hour[$r]<$Gsct_tuesday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==3)	#### Wednesday local time
+							{
+							if (($Gsct_wednesday_start==0) and ($Gsct_wednesday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_wednesday_start) and ($GMT_hour[$r]<$Gsct_wednesday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==4)	#### Thursday local time
+							{
+							if (($Gsct_thursday_start==0) and ($Gsct_thursday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_thursday_start) and ($GMT_hour[$r]<$Gsct_thursday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==5)	#### Friday local time
+							{
+							if (($Gsct_friday_start==0) and ($Gsct_friday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_friday_start) and ($GMT_hour[$r]<$Gsct_friday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						if ($GMT_day[$r]==6)	#### Saturday local time
+							{
+							if (($Gsct_saturday_start==0) and ($Gsct_saturday_stop==0))
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_default_start) and ($GMT_hour[$r]<$Gsct_default_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							else
+								{
+								if ( ($GMT_hour[$r]>=$Gsct_saturday_start) and ($GMT_hour[$r]<$Gsct_saturday_stop) )
+									{$state_gmt.="'$GMT_gmt[$r]',";}
+								}
+							}
+						$r++;
+						}
+					$state_gmt = "$state_gmt'99'";
+					$ct_state_gmt_SQL .= "or (state='$Gstate_call_time_state' and gmt_offset_now IN($state_gmt)) ";
+					}
+
+				$b++;
+				}
+			if (strlen($ct_states)>2)
+				{
+				$ct_states = eregi_replace(",$",'',$ct_states);
+				$ct_statesSQL = "and state NOT IN($ct_states)";
+				}
+			else
+				{
+				$ct_statesSQL = "";
+				}
+
+			$r=0;
+			$default_gmt='';
+			while($r < $g)
+				{
+				if ($GMT_day[$r]==0)	#### Sunday local time
+					{
+					if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==1)	#### Monday local time
+					{
+					if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==2)	#### Tuesday local time
+					{
+					if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==3)	#### Wednesday local time
+					{
+					if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==4)	#### Thursday local time
+					{
+					if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==5)	#### Friday local time
+					{
+					if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				if ($GMT_day[$r]==6)	#### Saturday local time
+					{
+					if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
+						{
+						if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					else
+						{
+						if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
+							{$default_gmt.="'$GMT_gmt[$r]',";}
+						}
+					}
+				$r++;
+				}
+
+			$default_gmt = "$default_gmt'99'";
+			$all_gmtSQL = "(gmt_offset_now IN($default_gmt) $ct_statesSQL) $ct_state_gmt_SQL";
+
+			$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+			$Dstatuses = explode(" ", $dial_statuses);
+			$Ds_to_print = (count($Dstatuses) -1);
+			$Dsql = '';
+			$o=0;
+			while ($Ds_to_print > $o) 
+				{
+				$Dsql .= "'$Dstatuses[$o]',";
+				$o++;
+				}
+			$Dsql = preg_replace("/,$/","",$Dsql);
+
+			$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($all_gmtSQL) $fSQL";
+			#$DB=1;
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$rslt_rows = mysql_num_rows($rslt);
+			if ($rslt_rows)
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$active_leads = "$rowx[0]";
+				}
+			else {$active_leads = '0';}
+
+			echo "This campaign has $active_leads leads to be dialed in those lists\n";
 			}
 		else
 			{
-			$ct_statesSQL = "";
+			echo "no dial statuses selected for this campaign\n";
 			}
-
-		$r=0;
-		$default_gmt='';
-		while($r < $g)
-			{
-			if ($GMT_day[$r]==0)	#### Sunday local time
-				{
-				if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_sunday_start) and ($GMT_hour[$r]<$Gct_sunday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==1)	#### Monday local time
-				{
-				if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_monday_start) and ($GMT_hour[$r]<$Gct_monday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==2)	#### Tuesday local time
-				{
-				if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_tuesday_start) and ($GMT_hour[$r]<$Gct_tuesday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==3)	#### Wednesday local time
-				{
-				if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_wednesday_start) and ($GMT_hour[$r]<$Gct_wednesday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==4)	#### Thursday local time
-				{
-				if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_thursday_start) and ($GMT_hour[$r]<$Gct_thursday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==5)	#### Friday local time
-				{
-				if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_friday_start) and ($GMT_hour[$r]<$Gct_friday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			if ($GMT_day[$r]==6)	#### Saturday local time
-				{
-				if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
-					{
-					if ( ($GMT_hour[$r]>=$Gct_default_start) and ($GMT_hour[$r]<$Gct_default_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				else
-					{
-					if ( ($GMT_hour[$r]>=$Gct_saturday_start) and ($GMT_hour[$r]<$Gct_saturday_stop) )
-						{$default_gmt.="'$GMT_gmt[$r]',";}
-					}
-				}
-			$r++;
-			}
-
-		$default_gmt = "$default_gmt'99'";
-		$all_gmtSQL = "(gmt_offset_now IN($default_gmt) $ct_statesSQL) $ct_state_gmt_SQL";
-
-		$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN('$dial_status_a','$dial_status_b','$dial_status_c','$dial_status_d','$dial_status_e') and list_id IN($camp_lists) and ($all_gmtSQL) $fSQL";
-		#$DB=1;
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_query($stmt, $link);
-		$rslt_rows = mysql_num_rows($rslt);
-		if ($rslt_rows)
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$active_leads = "$rowx[0]";
-			}
-		else {$active_leads = '0';}
-
-		echo "This campaign has $active_leads leads to be dialed in those lists\n";
 		}
 	else
 		{

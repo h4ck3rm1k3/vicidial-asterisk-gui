@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.0.2   *DBI-version*
+# AST_VDhopper.pl version 2.0.3   *DBI-version*
 #
 # DESCRIPTION:
 # uses DBD::MySQL to update the VICIDIAL leads hopper for the streamlined 
@@ -23,8 +23,9 @@
 # a minute, you may want to play with the variables below to streamline for 
 # your usage
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
+# CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup
 # 60215-1106 - Added Scheduled Callback release functionality
 # 60228-1623 - Change Callback activation to set the called_since_last_reset=N
@@ -36,12 +37,13 @@
 # 60511-1150 - Added inserts into vicidial_campaign_stats table
 # 60609-1451 - Added ability to filter by DNC list vicidial_dnc
 # 60614-1159 - Added campaign lead recycling ability
-# 60715-2251 - changed to use /etc/astguiclient.conf for configs
+# 60715-2251 - Changed to use /etc/astguiclient.conf for configs
 # 60801-1634 - Fixed Callback activation bug 000008
-# 60814-1720 - added option for no logging to file
-# 60822-1527 - added campaign_stats and logging options for adaptive dialing
-# 60925-1330 - fixed recycling leads issues
-# 61110-1513 - changed Xth NEW to fill to hopper_level with standard if not enough NEW
+# 60814-1720 - Added option for no logging to file
+# 60822-1527 - Added campaign_stats and logging options for adaptive dialing
+# 60925-1330 - Fixed recycling leads issues
+# 61110-1513 - Changed Xth NEW to fill to hopper_level with standard if not enough NEW
+# 70219-1247 - Changed to use dial_statuses field instead of dial_status_x fields
 #
 
 # constants
@@ -384,11 +386,6 @@ while ($sthArows > $rec_count)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$campaign_id[$rec_count] =		 "$aryA[0]";
-	$dial_status_a[$rec_count] =	 "$aryA[3]";
-	$dial_status_b[$rec_count] =	 "$aryA[4]";
-	$dial_status_c[$rec_count] =	 "$aryA[5]";
-	$dial_status_d[$rec_count] =	 "$aryA[6]";
-	$dial_status_e[$rec_count] =	 "$aryA[7]";
 	$lead_order[$rec_count] =		 "$aryA[8]";
 	if (!$CLIlevel) 
 		{$hopper_level[$rec_count] = "$aryA[13]";}
@@ -402,6 +399,7 @@ while ($sthArows > $rec_count)
 	$available_only_ratio_tally[$rec_count] =	$aryA[47];
 	$adaptive_dropped_percentage[$rec_count] =	$aryA[48];
 	$adaptive_maximum_level[$rec_count] =		$aryA[49];
+	$dial_statuses[$rec_count] =				$aryA[61];
 
 	$rec_count++;
 	}
@@ -416,6 +414,18 @@ foreach(@campaign_id)
 	### BEGIN - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
 	$vicidial_log = 'vicidial_log';
 	$VCSdialable_leads[$i]=0;
+
+	$dial_statuses[$i] =~ s/ -$//gi;
+	@Dstatuses = split(/ /,$dial_statuses[$i]);
+	$Ds_to_print = (($#Dstatuses) + 0);
+	$STATUSsql[$i]='';
+	$o=0;
+	while ($Ds_to_print > $o) 
+		{
+		$o++;
+		$STATUSsql[$i] .= "'$Dstatuses[$o]',";
+		}
+	chop($STATUSsql[$i]);
 
 	$stmtA = "SELECT dialable_leads from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -955,7 +965,7 @@ foreach(@campaign_id)
 			if ($DBX) {print "     |$lead_filter_id[$i]|\n";}
 			}
 
-		$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN('$dial_status_a[$i]','$dial_status_b[$i]','$dial_status_c[$i]','$dial_status_d[$i]','$dial_status_e[$i]') and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
+		$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
 			if ($DBX) {print "     |$stmtA|\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1137,7 +1147,7 @@ foreach(@campaign_id)
 			if ($campaign_leads_to_call[$i] > 0)
 				{
 				if ($DB) {print "     lead call order:      $order_stmt\n";}
-				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state FROM vicidial_list where called_since_last_reset='N' and status IN('$dial_status_a[$i]','$dial_status_b[$i]','$dial_status_c[$i]','$dial_status_d[$i]','$dial_status_e[$i]') and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $OTHER_level;";
+				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $OTHER_level;";
 				if ($DBX) {print "     |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

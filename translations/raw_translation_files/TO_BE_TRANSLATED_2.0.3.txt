@@ -135,6 +135,17 @@ QueueMetrics Database Password -<\/B> This is the password used to log in to you
 QueueMetrics URL -<\/B> This is the URL or web site address used to get to your QueueMetrics installation||
 QueueMetrics Log ID -<\/B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record||
 QueueMetrics Log ID: ||
+Campaign Dial Status Added||
+Campaign Dial Status Removed||
+To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove||
+CAMPAIGN DIAL STATUS NOT ADDED||
+CAMPAIGN DIAL STATUS ADDED||
+this dial status is not selected for this campaign||
+CAMPAIGN DIAL STATUS NOT REMOVED||
+CAMPAIGN DIAL STATUS REMOVED||
+>REMOVE<||
+Dial Status ||
+no dial statuses selected for this campaign||
 
 
 ############################################################ CLIENT

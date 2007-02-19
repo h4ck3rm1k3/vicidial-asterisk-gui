@@ -130,7 +130,7 @@ $group = $groups[$k];
 echo "<b><a href=\"./AST_timeonVDADall.php?group=$group&RR=$RR&DB=$DB&adastats=$adastats\">$group</a></b> &nbsp; - &nbsp; ";
 echo "<a href=\"./admin.php?ADD=34&campaign_id=$group\">Modify</a>\n";
 
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -151,6 +151,9 @@ $ADAavailonly =	$row[14];
 $TAPERtime =	$row[15];
 $CALLtime =		$row[16];
 $DIALtimeout =	$row[17];
+$DIALstatuses =	$row[18];
+	$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
+	$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
@@ -216,7 +219,7 @@ echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ANSWERED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatusA, $DIALstatusB, $DIALstatusC, $DIALstatusD, $DIALstatusE &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
 echo "<TR>";

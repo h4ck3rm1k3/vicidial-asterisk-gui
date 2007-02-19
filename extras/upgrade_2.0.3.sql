@@ -99,3 +99,7 @@ queuemetrics_log_id VARCHAR(10) default 'VIC'
 );
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
+
+ALTER TABLE vicidial_campaigns ADD dial_statuses VARCHAR(255) default ' NEW -';
+
+update vicidial_campaigns SET dial_statuses=concat_ws(""," ",`dial_status_a`," ",`dial_status_b`," ",`dial_status_c`," ",`dial_status_d`," ",`dial_status_e`," -");

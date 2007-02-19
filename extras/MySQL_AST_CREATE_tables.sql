@@ -519,7 +519,8 @@ agent_pause_codes_active ENUM('Y','N') default 'N',
 campaign_description VARCHAR(255),
 campaign_changedate DATETIME,
 campaign_stats_refresh ENUM('Y','N') default 'N',
-campaign_logindate DATETIME
+campaign_logindate DATETIME,
+auto_alt_dial_statuses VARCHAR(255) default ' NEW -'
 );
 
  CREATE TABLE vicidial_lists (

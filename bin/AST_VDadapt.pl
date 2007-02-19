@@ -5,7 +5,7 @@
 # DESCRIPTION:
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG
 # 60823-1302 - First build from AST_VDhopper.pl
@@ -19,6 +19,7 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70205-1429 - Added code for campaign_changedate and campaign_stats_refresh updates
 # 70213-1221 - Added code for QueueMetrics queue_log QUEUESTART record
+# 70219-1249 - Removed unused references to dial_status_x fields
 #
 
 # constants
@@ -316,11 +317,6 @@ while ($master_loop<$CLIloops)
 #	if ($DB) {print "TIME DEBUG: $master_loop   $LOCAL_GMT_OFF_STD|$LOCAL_GMT_OFF|$isdst|   GMT: $hour:$min\n";}
 
 @campaign_id=@MT; 
-@dial_status_a=@MT;
-@dial_status_b=@MT;
-@dial_status_c=@MT;
-@dial_status_d=@MT;
-@dial_status_e=@MT;
 @lead_order=@MT;
 @hopper_level=@MT;
 @auto_dial_level=@MT;
@@ -343,7 +339,7 @@ if ($CLIcampaign)
 	}
 else
 	{
-	$stmtA = "SELECT campaign_id,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,UNIX_TIMESTAMP(campaign_changedate),campaign_stats_refresh from vicidial_campaigns where ( (active='Y') or (campaign_stats_refresh='Y') )";
+	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,UNIX_TIMESTAMP(campaign_changedate),campaign_stats_refresh from vicidial_campaigns where ( (active='Y') or (campaign_stats_refresh='Y') )";
 	}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -353,29 +349,24 @@ while ($sthArows > $rec_count)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$campaign_id[$rec_count] =					$aryA[0];
-	$dial_status_a[$rec_count] =				$aryA[1];
-	$dial_status_b[$rec_count] =				$aryA[2];
-	$dial_status_c[$rec_count] =				$aryA[3];
-	$dial_status_d[$rec_count] =				$aryA[4];
-	$dial_status_e[$rec_count] =				$aryA[5];
-	$lead_order[$rec_count] =					$aryA[6];
+	$lead_order[$rec_count] =					$aryA[1];
 	if (!$CLIlevel) 
-		{$hopper_level[$rec_count] =			$aryA[7];}
+		{$hopper_level[$rec_count] =			$aryA[2];}
 	else
 		{$hopper_level[$rec_count] =			$CLIlevel;}
-	$auto_dial_level[$rec_count] =				$aryA[8];
-	$local_call_time[$rec_count] =				$aryA[9];
-	$lead_filter_id[$rec_count] =				$aryA[10];
-	$use_internal_dnc[$rec_count] =				$aryA[11];
-	$dial_method[$rec_count] =					$aryA[12];
-	$available_only_ratio_tally[$i][$rec_count] =	$aryA[13];
-	$adaptive_dropped_percentage[$rec_count] =	$aryA[14];
-	$adaptive_maximum_level[$rec_count] =		$aryA[15];
-	$adaptive_latest_server_time[$rec_count] =	$aryA[16];
-	$adaptive_intensity[$rec_count] =			$aryA[17];
-	$adaptive_dl_diff_target[$rec_count] =		$aryA[18];
-	$campaign_changedate[$rec_count] =			$aryA[19];
-	$campaign_stats_refresh[$rec_count] =		$aryA[20];
+	$auto_dial_level[$rec_count] =				$aryA[3];
+	$local_call_time[$rec_count] =				$aryA[4];
+	$lead_filter_id[$rec_count] =				$aryA[5];
+	$use_internal_dnc[$rec_count] =				$aryA[6];
+	$dial_method[$rec_count] =					$aryA[7];
+	$available_only_ratio_tally[$i][$rec_count] =	$aryA[8];
+	$adaptive_dropped_percentage[$rec_count] =	$aryA[9];
+	$adaptive_maximum_level[$rec_count] =		$aryA[10];
+	$adaptive_latest_server_time[$rec_count] =	$aryA[11];
+	$adaptive_intensity[$rec_count] =			$aryA[12];
+	$adaptive_dl_diff_target[$rec_count] =		$aryA[13];
+	$campaign_changedate[$rec_count] =			$aryA[14];
+	$campaign_stats_refresh[$rec_count] =		$aryA[15];
 
 	$rec_count++;
 	}
