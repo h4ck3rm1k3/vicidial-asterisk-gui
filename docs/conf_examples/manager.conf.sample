@@ -1,6 +1,3 @@
-; /etc/asterisk/manager.conf:
-; This is the sample manager API configuration file
-
 [general]
 enabled = yes
 port = 5038

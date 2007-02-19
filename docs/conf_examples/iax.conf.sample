@@ -1,7 +1,3 @@
-; /etc/asterisk/iax.conf:
-; Here is an example of a configuration where there is one IAX phone, one IAX 
-; server as a friend and one IAX trunk from a service provider (binfone.com)
-
 [general]
 bindport=4569
 iaxcompat=yes
@@ -11,7 +7,7 @@ allow=gsm                      ; Always allow GSM, it's cool :)
 jitterbuffer=no
 tos=lowdelay
 
-register => 1112223333:PASSWORD@iax.binfone.com
+;register => 1112223333:PASSWORD@iax.binfone.com
 
 [1112223333]
 auth=md5

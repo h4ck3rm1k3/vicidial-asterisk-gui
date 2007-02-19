@@ -1,6 +1,3 @@
-; /etc/asterisk/meetme.conf:
-; This is the sample meetme conferencing configuration file
-
 [general]
 static=yes
 writeprotect=no
@@ -108,6 +105,8 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 ; Extension 4001 rings Zap phone (this example for FXS on Zap port 1)
 exten => 4001,1,Dial,Zap/1|30|		; ring Zap device 1
 exten => 4001,2,Voicemail,u4001         ; Send to voicemail...
+
+
 
 
 ; FastAGI for VICIDIAL/astGUIclient call logging

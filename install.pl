@@ -2,7 +2,7 @@
 
 # install.pl
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 
 ############################################
@@ -124,6 +124,7 @@ if (length($ARGV[0])>1)
 	print "     5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 	print "     6 - FastAGI_log\n";
 	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
+	print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
 	print "  [--fastagi_log_min_servers=3] = define FastAGI log min servers\n";
 	print "  [--fastagi_log_max_servers=16] = define FastAGI log max servers\n";
 	print "  [--fastagi_log_min_spare_servers=2] = define FastAGI log min spare servers\n";
@@ -312,6 +313,15 @@ if (length($ARGV[0])>1)
 			$CLIactive_keepalives=1;
 			print "  CLI active keepalive procs: $VARactive_keepalives\n";
 			}
+		}
+		if ($args =~ /--copy_sample_conf_files/i) # CLI defined conf files
+		{
+		$CLIcopy_conf_files='y';
+		print "  CLI copy conf files:        YES\n";
+		}
+		else
+		{
+		$CLIcopy_conf_files='n';
 		}
 		if ($args =~ /--fastagi_log_min_servers=/i) # CLI defined fastagi min servers
 		{
@@ -996,6 +1006,41 @@ else
 			}
 		##### END active_keepalives prompting and check  #####
 
+		##### BEGIN copy asterisk sample conf files prompt #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nCopy sample configuration files to /etc/asterisk/ ? [$CLIcopy_conf_files] ");
+			$PROMPTcopy_conf_files = <STDIN>;
+			chomp($PROMPTcopy_conf_files);
+			if (length($PROMPTcopy_conf_files)<1)
+				{$PROMPTcopy_conf_files = $CLIcopy_conf_files;}
+			if ($PROMPTcopy_conf_files =~ /y/i)
+				{
+				if (!-e "/etc/asterisk")
+					{
+					print("/etc/asterisk does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTmonitor = <STDIN>;
+					chomp($createPROMPTmonitor);
+					if ($createPROMPTmonitor =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p /etc/asterisk`;
+							print "     /etc/asterisk directory created\n";
+						$continue='YES';
+						}
+					}
+				else
+					{
+					$continue='YES';
+					}
+				}
+			}
+		##### END copy asterisk sample conf files prompt #####
+
 		##### BEGIN fastagi_log_min_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
@@ -1151,6 +1196,7 @@ else
 		print "  defined DB_pass:          $VARDB_pass\n";
 		print "  defined DB_port:          $VARDB_port\n";
 		print "  defined active_keepalives $VARactive_keepalives\n";
+		print "  defined copying conf files:            $PROMPTcopy_conf_files\n";
 		print "  defined fastagi_log_min_servers:       $VARfastagi_log_min_servers\n";
 		print "  defined fastagi_log_max_servers:       $VARfastagi_log_max_servers\n";
 		print "  defined fastagi_log_min_spare_servers: $VARfastagi_log_min_spare_servers\n";
@@ -1274,6 +1320,19 @@ if ($NOWEB < 1)
 	`chmod 0777 $PATHweb/vicidial/`;
 	`chmod 0777 $PATHweb/vicidial/ploticus/`;
 	`chmod 0777 $PATHweb/vicidial/agent_reports/`;
+	}
+
+if ($PROMPTcopy_conf_files =~ /y/i)
+	{
+	print "Copying sample conf files to /etc/asterisk/...\n";
+	cp -f ./docs/conf_examples/extensions.conf.sample /etc/asterisk/extensions.conf`;
+	cp -f ./docs/conf_examples/meetme.conf.sample /etc/asterisk/meetme.conf`;
+	cp -f ./docs/conf_examples/manager.conf.sample /etc/asterisk/manager.conf`;
+	cp -f ./docs/conf_examples/voicemail.conf.sample /etc/asterisk/voicemail.conf`;
+	cp -f ./docs/conf_examples/sip.conf.sample /etc/asterisk/sip.conf`;
+	cp -f ./docs/conf_examples/logger.conf.sample /etc/asterisk/logger.conf`;
+	cp -f ./docs/conf_examples/iax.conf.sample /etc/asterisk/iax.conf`;
+	cp -f ./docs/conf_examples/dnsmgr.conf.sample /etc/asterisk/dnsmgr.conf`;
 	}
 
 print "\nASTGUICLIENT INSTALLATION FINISHED!     ENJOY!\n";

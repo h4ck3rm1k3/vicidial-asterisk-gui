@@ -1,6 +1,3 @@
-; /etc/asterisk/meetme.conf:
-; This is the sample meetme conferencing configuration file
-
 [rooms]
 conf => 8600
 conf => 8601,1234
