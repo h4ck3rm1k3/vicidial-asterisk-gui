@@ -412,6 +412,7 @@ if (length($ARGV[0])>1)
 else
 {
 #	print "no command line options set\n";
+$CLIcopy_conf_files='n';
 }
 ### end parsing run-time options ###
 
@@ -1037,6 +1038,10 @@ else
 					{
 					$continue='YES';
 					}
+				}
+			else
+				{
+				$continue='YES';
 				}
 			}
 		##### END copy asterisk sample conf files prompt #####
