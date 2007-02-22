@@ -123,10 +123,11 @@
 # 70214-1231 - Added queuemetrics_log_id field for server_id in queue_log
 # 70215-1210 - Added queuemetrics COMPLETEAGENT action
 # 70216-1051 - Fixed double call complete queuemetrics logging
+# 70222-1616 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 #
 
-$version = '2.0.50';
-$build = '70216-1051';
+$version = '2.0.51';
+$build = '70222-1616';
 
 require("dbconnect.php");
 
@@ -1066,7 +1067,7 @@ if ($stage == "end")
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 					mysql_select_db("$queuemetrics_dbname", $linkB);
 
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='$queuemetrics_log_id';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
@@ -1130,7 +1131,7 @@ if ($stage == "end")
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 					mysql_select_db("$queuemetrics_dbname", $linkB);
 
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='$queuemetrics_log_id';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
@@ -1987,12 +1988,12 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		###########################################
 		if ($enable_queuemetrics_logging > 0)
 			{
-			if (ereg('READY',$stage)) {$QMstatus='UNPAUSE';}
-			if (ereg('PAUSE',$stage)) {$QMstatus='PAUSE';}
+			if (ereg('READY',$stage)) {$QMstatus='UNPAUSEALL';}
+			if (ereg('PAUSE',$stage)) {$QMstatus='PAUSEALL';}
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);
 
-			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='$QMstatus',serverid='$queuemetrics_log_id';";
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='$QMstatus',serverid='$queuemetrics_log_id';";
 			if ($DB) {echo "$stmt\n";}
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $linkB);

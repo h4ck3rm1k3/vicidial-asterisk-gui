@@ -32,6 +32,7 @@
 # 61110-1443 - Added user_level from vicidial_user record into vicidial_live_agents
 # 70213-1306 - Added queuemetrics logging
 # 70214-1243 - Added queuemetrics_log_id field to queue_log logging
+# 70222-1606 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 #
 
 ### begin parsing run-time options ###
@@ -559,7 +560,7 @@ while($one_day_interval > 0)
 
 							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='PAUSE',serverid='$queuemetrics_log_id';";
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='NONE',agent='Agent/$VD_user[$z]',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 							$Baffected_rows = $dbhB->do($stmtB);
 
 							$stmtB = "SELECT time_id FROM queue_log where agent='Agent/$VD_user[$z]' and verb='AGENTLOGIN' order by time_id desc limit 1;";
@@ -605,10 +606,10 @@ while($one_day_interval > 0)
 
 							if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='PAUSE',serverid='$queuemetrics_log_id';";
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='NONE',agent='Agent/$VD_user[$z]',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 							$Baffected_rows = $dbhB->do($stmtB);
 
-							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='$VD_campaign_id[$z]',agent='Agent/$VD_user[$z]',verb='UNPAUSE',serverid='$queuemetrics_log_id';";
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='NONE',queue='NONE',agent='Agent/$VD_user[$z]',verb='UNPAUSEALL',serverid='$queuemetrics_log_id';";
 							$Baffected_rows = $dbhB->do($stmtB);
 
 							$dbhB->disconnect();

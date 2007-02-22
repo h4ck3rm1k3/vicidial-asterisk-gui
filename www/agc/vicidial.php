@@ -149,10 +149,11 @@
 # 70213-1018 - Changed CXFER and AXFER to update customer information before transfer
 # 70214-1233 - Added queuemetrics_log_id field for server_id in queue_log
 # 70215-1240 - Added queuemetrics_log_id field for server_id in queue_log
+# 70222-1617 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 #
 
-$version = '2.0.120';
-$build = '70215-1240';
+$version = '2.0.121';
+$build = '70222-1617';
 
 require("dbconnect.php");
 
@@ -1067,7 +1068,7 @@ else
 				$affected_rows = mysql_affected_rows($linkB);
 				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='$queuemetrics_log_id';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='NONE',agent='Agent/$VD_login',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
@@ -1107,7 +1108,7 @@ else
 				$affected_rows = mysql_affected_rows($linkB);
 				print "<!-- queue_log AGENTLOGIN entry added: $VD_login|$affected_rows -->\n";
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='$VD_campaign',agent='Agent/$VD_login',verb='PAUSE',serverid='$queuemetrics_log_id';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtimE',call_id='NONE',queue='NONE',agent='Agent/$VD_login',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
