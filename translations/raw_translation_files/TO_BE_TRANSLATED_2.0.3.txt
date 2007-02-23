@@ -146,6 +146,8 @@ CAMPAIGN DIAL STATUS REMOVED||
 >REMOVE<||
 Dial Status ||
 no dial statuses selected for this campaign||
+QueueMetrics EnterQueue Prepend -<\/B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything||
+QueueMetrics EnterQueue Prepend: ||
 
 
 ############################################################ CLIENT

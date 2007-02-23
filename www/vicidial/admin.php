@@ -566,6 +566,8 @@ if (isset($_GET["queuemetrics_log_id"]))			{$queuemetrics_log_id=$_GET["queuemet
 	elseif (isset($_POST["queuemetrics_log_id"]))	{$queuemetrics_log_id=$_POST["queuemetrics_log_id"];}
 if (isset($_GET["dial_status"]))				{$dial_status=$_GET["dial_status"];}
 	elseif (isset($_POST["dial_status"]))		{$dial_status=$_POST["dial_status"];}
+if (isset($_GET["queuemetrics_eq_prepend"]))			{$queuemetrics_eq_prepend=$_GET["queuemetrics_eq_prepend"];}
+	elseif (isset($_POST["queuemetrics_eq_prepend"]))	{$queuemetrics_eq_prepend=$_POST["queuemetrics_eq_prepend"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -800,6 +802,7 @@ $user_group = ereg_replace("[^-\_0-9a-zA-Z]","",$user_group);
 $VICIDIAL_park_on_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$VICIDIAL_park_on_filename);
 $auto_alt_dial = ereg_replace("[^-\_0-9a-zA-Z]","",$auto_alt_dial);
 $dial_status = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status);
+$queuemetrics_eq_prepend = ereg_replace("[^-\_0-9a-zA-Z]","",$queuemetrics_eq_prepend);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -960,12 +963,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70212-1412 - Added system settings section
 # 70214-1226 - Added QueueMetrics Log ID field to system settings section
 # 70219-1102 - Changed campaign dial statuses to be one string allowing for high limit
+# 70223-0957 - Added queuemetrics_eq_prepend for custom ENTERQUEUE prepending of a field
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.88';
-$build = '70219-1102';
+$admin_version = '2.0.89';
+$build = '70223-0957';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2809,6 +2813,10 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <BR>
 <B>QueueMetrics Log ID -</B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record.
 
+<BR>
+<A NAME="settings-queuemetrics_eq_prepend">
+<BR>
+<B>QueueMetrics EnterQueue Prepend -</B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything.
 
 
 <BR><BR><BR><BR><BR><BR><BR><BR>
@@ -5669,7 +5677,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -9294,7 +9302,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -9308,6 +9316,7 @@ if ($ADD==311111111111111)
 	$queuemetrics_pass =			$row[8];
 	$queuemetrics_url =				$row[9];
 	$queuemetrics_log_id =			$row[10];
+	$queuemetrics_eq_prepend =		$row[11];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -9324,6 +9333,16 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Password: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics Log ID: </td><td align=left><input type=text name=queuemetrics_log_id size=12 maxlength=10 value=\"$queuemetrics_log_id\">$NWB#settings-queuemetrics_log_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics EnterQueue Prepend: </td><td align=left><select size=1 name=queuemetrics_eq_prepend>\n";
+	echo "<option value=\"NONE\">NONE</option>\n";
+	echo "<option value=\"lead_id\">lead_id</option>\n";
+	echo "<option value=\"list_id\">list_id</option>\n";
+	echo "<option value=\"source_id\">source_id</option>\n";
+	echo "<option value=\"vendor_lead_code\">vendor_lead_code</option>\n";
+	echo "<option value=\"address3\">address3</option>\n";
+	echo "<option value=\"security_phrase\">security_phrase</option>\n";
+	echo "<option selected value=\"$queuemetrics_eq_prepend\">$queuemetrics_eq_prepend</option>\n";
+	echo "</select>$NWB#settings-queuemetrics_eq_prepend$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";

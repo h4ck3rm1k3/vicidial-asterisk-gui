@@ -156,6 +156,9 @@ not used in vicidial -
 data1: call termination codes, TBD
 
 data2: callerID or number called(sometimes prepended by DNIS) [3101-9015556189]
+	NOTE: the queuemetrics_eq_prepend field allows you to specify what
+	vicidial_list field you would like to prefend to the phone number on
+	ENTERQUEUE events
 
 data3: ??
 
@@ -174,3 +177,4 @@ queuemetrics_login VARCHAR(50),
 queuemetrics_pass VARCHAR(50),
 queuemetrics_url VARCHAR(255),
 queuemetrics_log_id VARCHAR(10) default 'VIC'
+queuemetrics_eq_prepend VARCHAR(255) default 'NONE'

@@ -28,6 +28,7 @@
 #            - Changed look for agent every 0.5 second for first 4 sec on hold
 # 60905-1047 - Changed look for agent every 0.25 second for first 4 sec on hold
 # 70215-1052 - Added QueueMetrics optional logging
+# 70223-1100 - Added QueueMetrics ENTERQUEUE prepend option
 #
 
 $script = 'agi-VDADtransfer.agi';
@@ -309,7 +310,7 @@ if ($affected_rows > 0)
 
 	#############################################
 	##### START QUEUEMETRICS LOGGING LOOKUP #####
-	$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+	$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,queuemetrics_eq_prepend FROM system_settings;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -318,11 +319,12 @@ if ($affected_rows > 0)
 		{
 		 @aryA = $sthA->fetchrow_array;
 			$enable_queuemetrics_logging =	"$aryA[0]";
-			$queuemetrics_server_ip	=		"$aryA[1]";
-			$queuemetrics_dbname =			"$aryA[2]";
-			$queuemetrics_login=			"$aryA[3]";
-			$queuemetrics_pass =			"$aryA[4]";
-			$queuemetrics_log_id =			"$aryA[5]";
+			$queuemetrics_server_ip	=	"$aryA[1]";
+			$queuemetrics_dbname =		"$aryA[2]";
+			$queuemetrics_login=		"$aryA[3]";
+			$queuemetrics_pass =		"$aryA[4]";
+			$queuemetrics_log_id =		"$aryA[5]";
+			$queuemetrics_eq_prepend =	"$aryA[6]";
 		 $rec_count++;
 		}
 	$sthA->finish();
@@ -340,15 +342,34 @@ if ($affected_rows > 0)
 			 @aryA = $sthA->fetchrow_array;
 			 $phone_number =	"$aryA[0]";
 			 $rec_count++;
+			 $data2 = "$phone_number";
 			}
 		$sthA->finish();
+
+		if ( (length($queuemetrics_eq_prepend) > 0) && ($queuemetrics_eq_prepend !~ /NONE/) )
+			{
+			$stmtA = "SELECT $queuemetrics_eq_prepend FROM vicidial_list where lead_id='$CIDlead_id';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				 $DASH='-';
+				 @aryA = $sthA->fetchrow_array;
+				 $QMprepend =	"$aryA[0]";
+				 $rec_count++;
+				 $data2 = "$QMprepend$DASH$phone_number";
+				}
+			$sthA->finish();
+			}
 
 		$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
 		 or die "Couldn't connect to database: " . DBI->errstr;
 
 		if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-		$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='ENTERQUEUE',data2='$phone_number',serverid='$queuemetrics_log_id';";
+		$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secX',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='ENTERQUEUE',data2='$data2',serverid='$queuemetrics_log_id';";
 		$Baffected_rows = $dbhB->do($stmtB);
 
 		$dbhB->disconnect();

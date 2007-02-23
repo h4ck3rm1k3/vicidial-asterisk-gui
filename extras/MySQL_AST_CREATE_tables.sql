@@ -874,7 +874,8 @@ queuemetrics_dbname VARCHAR(50),
 queuemetrics_login VARCHAR(50),
 queuemetrics_pass VARCHAR(50),
 queuemetrics_url VARCHAR(255),
-queuemetrics_log_id VARCHAR(10) default 'VIC'
+queuemetrics_log_id VARCHAR(10) default 'VIC',
+queuemetrics_eq_prepend VARCHAR(255) default 'NONE'
 );
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
