@@ -1,7 +1,7 @@
 <?
 # manager_send.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -35,7 +35,7 @@
 #  - $stage - ('UP','DOWN')
 # 
 
-# changes
+# CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
 # 50404-1045 - Redirect basic function enabled
 # 50406-1522 - Monitor basic function enabled
@@ -65,6 +65,7 @@
 # 61130-1617 - Added lead_id to MonitorConf for recording_log
 # 61201-1115 - Added user to MonitorConf for recording_log
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70226-1251 - Added Mute/UnMute to conference volume control
 #
 
 require("dbconnect.php");
@@ -134,8 +135,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.27';
-$build = '61130-1617';
+$version = '2.0.28';
+$build = '70226-1251';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -1019,8 +1020,10 @@ if ($ACTION=="VolumeControl")
 	else
 	{
 	$participant_number='XXYYXXYYXXYYXX';
+	if (eregi('UP',$stage)) {$vol_prefix='4';}
 	if (eregi('DOWN',$stage)) {$vol_prefix='3';}
-	else {$vol_prefix='4';}
+	if (eregi('UNMUTE',$stage)) {$vol_prefix='2';}
+	if (eregi('MUTING',$stage)) {$vol_prefix='1';}
 	$local_DEF = 'Local/';
 	$local_AMP = '@';
 	$volume_local_channel = "$local_DEF$participant_number$vol_prefix$exten$local_AMP$ext_context";

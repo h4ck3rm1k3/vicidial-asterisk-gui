@@ -150,10 +150,11 @@
 # 70214-1233 - Added queuemetrics_log_id field for server_id in queue_log
 # 70215-1240 - Added queuemetrics_log_id field for server_id in queue_log
 # 70222-1617 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
+# 70226-1252 - Added Mute/UnMute to agent screen
 #
 
-$version = '2.0.121';
-$build = '70222-1617';
+$version = '2.0.122';
+$build = '70226-1252';
 
 require("dbconnect.php");
 
@@ -1424,6 +1425,7 @@ $CCAL_OUT .= "</table>";
 	var dialplan_number = '<? echo $dialplan_number ?>';
 	var ext_context = '<? echo $ext_context ?>';
 	var protocol = '<? echo $protocol ?>';
+	var agentchannel = '';
 	var local_gmt ='<? echo $local_gmt ?>';
 	var server_ip = '<? echo $server_ip ?>';
 	var server_ip_dialstring = '<? echo $server_ip_dialstring ?>';
@@ -1683,8 +1685,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send volume control command for meetme participant
-	function volume_control(taskdirection,taskvolchannel) 
+	function volume_control(taskdirection,taskvolchannel,taskagentmute) 
 		{
+		if (taskagentmute=='AgenT')
+			{
+			taskvolchannel = agentchannel;
+			}
 		var xmlhttp=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
@@ -1723,6 +1729,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			delete xmlhttp;
 			}
+		if (taskagentmute=='AgenT')
+			{
+			if (taskdirection=='MUTING')
+				{
+				document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('UNMUTE','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a>";
+				}
+			else
+				{
+				document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+				}
+			}
+
 		}
 
 
@@ -2064,7 +2082,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 									}
 								else
 									{
-									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a></td></tr>";
+									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
 									}
 			//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
 
@@ -2078,6 +2096,29 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{var nothing='';}
 									else
 										{custchannellive++;}
+									}
+
+								if (volumecontrol_active > 0)
+									{
+									if (protocol != 'EXTERNAL') 
+										{
+										var regAGNTchan = new RegExp(protocol + '/' + extension,"g");
+										if  ( (channelfieldA.match(regAGNTchan)) && (agentchannel != channelfieldA) )
+											{
+											agentchannel = channelfieldA;
+
+											document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+											}
+										}
+									else
+										{
+										if (agentchannel.length < 3)
+											{
+											agentchannel = channelfieldA;
+
+											document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+											}
+										}
 									}
 
 			//		document.getElementById("debugbottomspan").innerHTML = debugspan + '<BR>' + channelfieldA + '|' + lastcustchannel + '|' + custchannellive + '|' + LMAcontent_change + '|' + LMAalter;
@@ -2907,8 +2948,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 
-								document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + MDchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
-								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + MDchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
+								document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + MDchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
+								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + MDchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
 
 
 								// INSERT VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
@@ -3661,8 +3702,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	
 						if (lastcustserverip == server_ip)
 						{
-							document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
-							document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
+							document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
+							document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
 						}
 
 						document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
@@ -5849,6 +5890,10 @@ echo "</head>\n";
 <span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
+<span style="position:absolute;left:500px;top:370px;z-index:15;" id="AgentMuteButton"><font class="body_text">
+<span id="AgentMuteSpan"></span> <BR>
+</font></span>
+
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="CallBacKsLisTBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CALLBACKS FOR AGENT <? echo $VD_login ?>:<BR>Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.
 	<BR>
@@ -6111,7 +6156,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 
-<span style="position:absolute;left:154px;top:65px;z-index:15;" id="ScriptPanel">
+<span style="position:absolute;left:154px;top:65px;z-index:16;" id="ScriptPanel">
     <table border=0 bgcolor="#FFE7D0" width=606 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
 </span>
 

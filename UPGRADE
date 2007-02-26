@@ -76,6 +76,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 18. Changed dial statuses to use dynamic number of dial statuses instead of
 	static dial_status_x fields.
 
+19. Added Mute/UnMute ability to vicidial.php agent screen. To use, you must
+	have the _X18600XXX and _X28600XXX entries in your extensions.conf
+
+
 
 
 
