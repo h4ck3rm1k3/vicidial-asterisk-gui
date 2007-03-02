@@ -61,6 +61,7 @@
 # 70205-1414 - Added code for last called date update
 # 70207-1031 - Fixed Tally-only-available bug with customer hangups
 # 70215-1123 - Added queue_log ABANDON logging
+# 70302-1412 - Fixed max_vicidial_trunks update if set to 0
 # 
 
 
@@ -117,7 +118,7 @@ $MT[0]='';
 $RECcount=''; ### leave blank for no REC count
 $RECprefix='7'; ### leave blank for no REC prefix
 $useJAMdebugFILE='1'; ### leave blank for no Jam call debug file writing
-
+$max_vicidial_trunks=0; ### setting a default value for max_vicidial_trunks
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -202,7 +203,7 @@ while ($sthArows > $rec_count)
 		if ($DBASTmgrUSERNAMEupdate)	{$ASTmgrUSERNAMEupdate = $DBASTmgrUSERNAMEupdate;}
 		if ($DBASTmgrUSERNAMElisten)	{$ASTmgrUSERNAMElisten = $DBASTmgrUSERNAMElisten;}
 		if ($DBASTmgrUSERNAMEsend)		{$ASTmgrUSERNAMEsend = $DBASTmgrUSERNAMEsend;}
-		if ($DBmax_vicidial_trunks)		{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+			$max_vicidial_trunks = $DBmax_vicidial_trunks;
 		if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 		if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 		if ($DBext_context)				{$ext_context = $DBext_context;}
@@ -395,7 +396,7 @@ while($one_day_interval > 0)
 					$DBIPserver_trunks_limit[$user_CIPct] =		"$aryA[0]";
 				$rec_count++;
 				}
-			$stmtA = "SELECT sum(dedicated_trunks) FROM vicidial_server_trunks where campaign_id!='$DBIPcampaign[$user_CIPct]' and server_ip='$server_ip';";
+			$stmtA = "SELECT sum(dedicated_trunks) FROM vicidial_server_trunks where campaign_id NOT IN('$DBIPcampaign[$user_CIPct]') and server_ip='$server_ip';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -1331,7 +1332,7 @@ while($one_day_interval > 0)
 					$DBanswer_transfer_agent=	"$aryA[1]";
 					$DBSERVER_GMT		=		"$aryA[2]";
 					$DBext_context	=			"$aryA[3]";
-					if ($DBmax_vicidial_trunks)		{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+						$max_vicidial_trunks = $DBmax_vicidial_trunks;
 					if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
 					if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
 					if ($DBext_context)				{$ext_context = $DBext_context;}
