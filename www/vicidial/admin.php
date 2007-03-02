@@ -59,6 +59,8 @@ $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 
+if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))	{$DB=$_POST["DB"];}
 if (isset($_GET["active"]))	{$active=$_GET["active"];}
 	elseif (isset($_POST["active"]))	{$active=$_POST["active"];}
 if (isset($_GET["adaptive_dl_diff_target"]))	{$adaptive_dl_diff_target=$_GET["adaptive_dl_diff_target"];}
@@ -964,12 +966,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70214-1226 - Added QueueMetrics Log ID field to system settings section
 # 70219-1102 - Changed campaign dial statuses to be one string allowing for high limit
 # 70223-0957 - Added queuemetrics_eq_prepend for custom ENTERQUEUE prepending of a field
+# 70302-1111 - Fixed small bug in dialable leads calculation
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.89';
-$build = '70223-0957';
+$admin_version = '2.0.90';
+$build = '70302-1111';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -10458,15 +10461,16 @@ if (isset($camp_lists))
 			$default_gmt = "$default_gmt'99'";
 			$all_gmtSQL = "(gmt_offset_now IN($default_gmt) $ct_statesSQL) $ct_state_gmt_SQL";
 
+
 			$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
 			$Dstatuses = explode(" ", $dial_statuses);
-			$Ds_to_print = (count($Dstatuses) -1);
+			$Ds_to_print = (count($Dstatuses) - 0);
 			$Dsql = '';
 			$o=0;
 			while ($Ds_to_print > $o) 
 				{
-				$Dsql .= "'$Dstatuses[$o]',";
 				$o++;
+				$Dsql .= "'$Dstatuses[$o]',";
 				}
 			$Dsql = preg_replace("/,$/","",$Dsql);
 
@@ -10482,6 +10486,7 @@ if (isset($camp_lists))
 				}
 			else {$active_leads = '0';}
 
+			echo "|$DB|\n";
 			echo "This campaign has $active_leads leads to be dialed in those lists\n";
 			}
 		else
