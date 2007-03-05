@@ -107,6 +107,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 # 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
 # 61130-1639 - Added recording_log lookup and list for this lead_id
 # 61201-1136 - Added recording_log user(TSR) display and link
+# 70305-1133 - Changed to default CHECKED modify logs upon status change
 #
 
 $STARTtime = date("U");
@@ -359,7 +360,7 @@ else
 			echo "</select></td></tr>\n";
 
 
-		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent and vicidial logs </td><td align=left><input type=checkbox name=modify_logs value=\"1\"></td></tr>\n";			
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent and vicidial logs </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
 
 		echo "<tr><td colspan=2 align=center><input type=submit name=submit value=\"SUBMIT\"></td></tr>\n";
 		echo "</table></form>\n";
