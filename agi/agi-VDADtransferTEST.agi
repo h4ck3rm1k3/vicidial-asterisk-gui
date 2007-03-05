@@ -507,7 +507,7 @@ if ($rec_countWAIT < $DBconcurrent_transfers)
 		$VDADuser='';
 		while ( (length($VDADuser)<1) && ($r<10) )
 			{
-			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status IN('QUEUE','INCALL') and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
