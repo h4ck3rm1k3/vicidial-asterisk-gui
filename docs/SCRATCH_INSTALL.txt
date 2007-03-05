@@ -636,10 +636,10 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.4p1.tar.gz
-	- gunzip openssh-4.4p1.tar.gz
-	- tar xvf openssh-4.4p1.tar
-	- cd openssh-4.4p1
+        - wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.5p1.tar.gz
+	- gunzip openssh-4.5p1.tar.gz
+	- tar xvf openssh-4.5p1.tar
+	- cd openssh-4.5p1
 	- ./configure
 	- make
 	- make install

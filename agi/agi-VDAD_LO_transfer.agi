@@ -37,6 +37,7 @@
 # 60905-1047 - Changed look for agent every 0.25 second for first 4 sec on hold
 # 70215-1052 - Added QueueMetrics optional logging
 # 70223-1101 - Added QueueMetrics ENTERQUEUE prepend option
+# 70305-1251 - Fixed problems where the same call will run this script twice
 #
 
 $script = 'agi-VDAD_LO_transfer.agi';
@@ -266,6 +267,47 @@ if ($priority > 2) {sleep(1);}
 exit;
 }
 
+$stmtA = "SELECT count(*) FROM vicidial_live_agents where callerid='$callerid';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+ $rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$Pseudo_duplicate_count	= "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+if ($Pseudo_duplicate_count > 0)
+{
+if ($AGILOG) {$agi_string = "+++++ VDAD START PSEUDO DUPLICATE: EXITING- $priority";   &agi_output;}
+exit;
+}
+
+$stmtA = "SELECT count(*) FROM vicidial_auto_calls where callerid='$callerid' and status IN('LIVE','XFER');";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+ $rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$dialplan_duplicate_count = "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+if ($dialplan_duplicate_count > 0)
+{
+if ($AGILOG) {$agi_string = "+++++ VDAD START DIALPLAN DUPLICATE: EXITING- $priority";   &agi_output;}
+exit;
+}
+
+
 
 ### Grab call parameters from vicidial_auto_calls table
 $stmtA = "UPDATE vicidial_auto_calls set uniqueid='$unique_id', channel='$channel',status='LIVE',stage='LIVE-0' where callerid='$callerid' order by call_time desc limit 1;";
@@ -470,21 +512,35 @@ if ($rec_countWAIT < $concurrent_transfers)
 	if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|update of vla table: $VDADcampaign|$VARserver_ip\n|$stmtA|";   &agi_output;}
 	if ($affected_rows > 0)
 		{
-		$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
-			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		 $rec_count=0;
-		while ($sthArows > $rec_count)
+		$r=0;
+		$VDADuser='';
+		while ( (length($VDADuser)<1) && ($r<10) )
 			{
-			@aryA = $sthA->fetchrow_array;
-			$VDADconf_exten	= "$aryA[0]";
-			$VDADuser	= "$aryA[1]";
-			$VDADextension	= "$aryA[2]";
-			 $rec_count++;
+			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			 $rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VDADconf_exten	= "$aryA[0]";
+				$VDADuser	= "$aryA[1]";
+				$VDADextension	= "$aryA[2]";
+				 $rec_count++;
+				}
+			$sthA->finish();
+			$r++;
+			if ($r > 1)
+				{
+				if ($AGILOG) {$agi_string = "EEEEEEEEEE vla UPDATE DELAY!!! |$callerid|$r|";   &agi_output;}
+
+				### sleep for 23 hundredths of a second
+				usleep(1*230*1000);
+				$drop_timer = ($drop_timer + 0.25);
+				}
 			}
-		$sthA->finish();
 
 		$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
 		$affected_rows = $dbhA->do($stmtA);
@@ -585,22 +641,36 @@ if ($rec_countWAITrem < $concurrent_transfers)
 	if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|update of vla table: $VDADcampaign|$VARserver_ip\n|$stmtA|";   &agi_output;}
 	if ($affected_rows > 0)
 		{
-		$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and server_ip!='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
-			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		 $rec_count=0;
-		while ($sthArows > $rec_count)
+		$r=0;
+		$VDADuser='';
+		while ( (length($VDADuser)<1) && ($r<10) )
 			{
-			@aryA = $sthA->fetchrow_array;
-			$VDADconf_exten	= "$aryA[0]";
-			$VDADuser	= "$aryA[1]";
-			$VDADextension	= "$aryA[2]";
-			$VDADserver_ip	= "$aryA[3]";
-			 $rec_count++;
+			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and server_ip!='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			 $rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VDADconf_exten	= "$aryA[0]";
+				$VDADuser	= "$aryA[1]";
+				$VDADextension	= "$aryA[2]";
+				$VDADserver_ip	= "$aryA[3]";
+				 $rec_count++;
+				}
+			$sthA->finish();
+			$r++;
+			if ($r > 1)
+				{
+				if ($AGILOG) {$agi_string = "EEEEEEEEEE vla UPDATE DELAY!!! |$callerid|$r|";   &agi_output;}
+
+				### sleep for 23 hundredths of a second
+				usleep(1*230*1000);
+				$drop_timer = ($drop_timer + 0.25);
+				}
 			}
-		$sthA->finish();
 
 		$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
 		$affected_rows = $dbhA->do($stmtA);
