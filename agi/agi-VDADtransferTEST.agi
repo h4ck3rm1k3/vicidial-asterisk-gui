@@ -505,7 +505,7 @@ if ($rec_countWAIT < $DBconcurrent_transfers)
 		{
 		$r=0;
 		$VDADuser='';
-		while ( (length($VDADuser)<1) && ($r<10) )
+		while ( (length($VDADuser)<1) && ($r<3) )
 			{
 			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status IN('QUEUE','INCALL') and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -530,6 +530,26 @@ if ($rec_countWAIT < $DBconcurrent_transfers)
 				### sleep for 23 hundredths of a second
 				usleep(1*230*1000);
 				$drop_timer = ($drop_timer + 0.25);
+				}
+			if ($r > 2)
+				{
+				$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where callerid='$callerid' order by last_call_time limit 1;";
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				 $rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VDADconf_exten	= "$aryA[0]";
+					$VDADuser	= "$aryA[1]";
+					$VDADextension	= "$aryA[2]";
+					 $rec_count++;
+					}
+				$sthA->finish();
+
+				if ($AGILOG) {$agi_string = "FFFFFFFFFF vla OR SELECT |$callerid|$VDADuser|";   &agi_output;}
 				}
 			}
 
