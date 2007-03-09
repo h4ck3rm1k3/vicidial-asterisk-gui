@@ -151,10 +151,11 @@
 # 70215-1240 - Added queuemetrics_log_id field for server_id in queue_log
 # 70222-1617 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70226-1252 - Added Mute/UnMute to agent screen
+# 70309-1035 - Allow amphersands and questions marks in comments to pass through
 #
 
-$version = '2.0.122';
-$build = '70226-1252';
+$version = '2.0.123';
+$build = '70309-1035';
 
 require("dbconnect.php");
 
@@ -4269,6 +4270,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Update vicidial_list lead record with all altered values from form
 	function CustomerData_update()
 		{
+
+		var REGcommentsAMP = new RegExp('&',"g");
+		var REGcommentsQUES = new RegExp("\\?","g");
+		var REGcommentsRESULT = document.vicidial_form.comments.value.replace(REGcommentsAMP, "--AMP--");
+		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsQUES, "--QUES--");
+
 		var xmlhttp=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
@@ -4311,7 +4318,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			"&alt_phone=" + document.vicidial_form.alt_phone.value + 
 			"&email=" + document.vicidial_form.email.value + 
 			"&security_phrase=" + document.vicidial_form.security_phrase.value + 
-			"&comments=" + document.vicidial_form.comments.value;
+			"&comments=" + REGcommentsRESULT;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(VLupdate_query); 
