@@ -929,7 +929,7 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-beta4-2.3.4.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-2.3.4-7.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 

@@ -152,10 +152,11 @@
 # 70222-1617 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70226-1252 - Added Mute/UnMute to agent screen
 # 70309-1035 - Allow amphersands and questions marks in comments to pass through
+# 70313-1052 - Allow pound signs(hash) in comments to pass through
 #
 
-$version = '2.0.123';
-$build = '70309-1035';
+$version = '2.0.124';
+$build = '70313-1052';
 
 require("dbconnect.php");
 
@@ -4273,8 +4274,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		var REGcommentsAMP = new RegExp('&',"g");
 		var REGcommentsQUES = new RegExp("\\?","g");
+		var REGcommentsPOUND = new RegExp("\\#","g");
 		var REGcommentsRESULT = document.vicidial_form.comments.value.replace(REGcommentsAMP, "--AMP--");
 		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsQUES, "--QUES--");
+		REGcommentsRESULT = REGcommentsRESULT.replace(REGcommentsPOUND, "--POUND--");
 
 		var xmlhttp=false;
 		/*@cc_on @*/

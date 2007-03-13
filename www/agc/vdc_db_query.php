@@ -125,10 +125,11 @@
 # 70216-1051 - Fixed double call complete queuemetrics logging
 # 70222-1616 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70309-1034 - Allow amphersands and questions marks in comments to pass through
+# 70313-1052 - Allow pound signs(hash) in comments to pass through
 #
 
-$version = '2.0.52';
-$build = '70309-1034';
+$version = '2.0.53';
+$build = '70313-1052';
 
 require("dbconnect.php");
 
@@ -1927,6 +1928,7 @@ if ($ACTION == 'updateLEAD')
 	$comments = eregi_replace("\n",'!N',$comments);
 	$comments = eregi_replace("--AMP--",'&',$comments);
 	$comments = eregi_replace("--QUES--",'?',$comments);
+	$comments = eregi_replace("--POUND--",'#',$comments);
 
 	$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysql_real_escape_string($vendor_lead_code) . "', title='" . mysql_real_escape_string($title) . "', first_name='" . mysql_real_escape_string($first_name) . "', middle_initial='" . mysql_real_escape_string($middle_initial) . "', last_name='" . mysql_real_escape_string($last_name) . "', address1='" . mysql_real_escape_string($address1) . "', address2='" . mysql_real_escape_string($address2) . "', address3='" . mysql_real_escape_string($address3) . "', city='" . mysql_real_escape_string($city) . "', state='" . mysql_real_escape_string($state) . "', province='" . mysql_real_escape_string($province) . "', postal_code='" . mysql_real_escape_string($postal_code) . "', country_code='" . mysql_real_escape_string($country_code) . "', gender='" . mysql_real_escape_string($gender) . "', date_of_birth='" . mysql_real_escape_string($date_of_birth) . "', alt_phone='" . mysql_real_escape_string($alt_phone) . "', email='" . mysql_real_escape_string($email) . "', security_phrase='" . mysql_real_escape_string($security_phrase) . "', comments='" . mysql_real_escape_string($comments) . "' where lead_id='$lead_id';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
