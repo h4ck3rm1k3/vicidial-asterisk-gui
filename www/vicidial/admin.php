@@ -967,12 +967,13 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70219-1102 - Changed campaign dial statuses to be one string allowing for high limit
 # 70223-0957 - Added queuemetrics_eq_prepend for custom ENTERQUEUE prepending of a field
 # 70302-1111 - Fixed small bug in dialable leads calculation
+# 70314-1133 - Added insert selection on script forms
 #
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.90';
-$build = '70302-1111';
+$admin_version = '2.0.91';
+$build = '70314-1133';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3099,6 +3100,31 @@ if ($hh=='reports')
 function openNewWindow(url) {
   window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
 }
+function scriptInsertField() {
+	openField = '--A--';
+	closeField = '--B--';
+	var textBox = document.scriptForm.script_text;
+	var scriptIndex = document.getElementById("selectedField").selectedIndex;
+	var insValue =  document.getElementById('selectedField').options[scriptIndex].value;
+  if (document.selection) {
+	//IE
+	textBox = document.scriptForm.script_text;
+	insValue = document.scriptForm.selectedField.options[document.scriptForm.selectedField.selectedIndex].text;
+	textBox.focus();
+	sel = document.selection.createRange();
+	sel.text = openField + insValue + closeField;
+  } else if (textBox.selectionStart || textBox.selectionStart == 0) {
+	//Mozilla
+	var startPos = textBox.selectionStart;
+	var endPos = textBox.selectionEnd;
+	textBox.value = textBox.value.substring(0, startPos)
+	+ openField + insValue + closeField
+	+ textBox.value.substring(endPos, textBox.value.length);
+  } else {
+	textBox.value += openField + insValue + closeField;
+  }
+}
+
 </script>
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
@@ -3525,14 +3551,57 @@ if ($ADD==1111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW SCRIPT<form action=$PHP_SELF method=POST>\n";
+	echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=2111111>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script Comments: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: </td><td align=left><TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: </td><td align=left>";
+	# BEGIN Insert Field
+	echo "<select id=\"selectedField\" name=\"selectedField\">";
+	echo "<option>vendor_lead_code</option>";
+	echo "<option>source_id</option>";
+	echo "<option>list_id</option>";
+	echo "<option>gmt_offset_now</option>";
+	echo "<option>called_since_last_reset</option>";
+	echo "<option>phone_code</option>";
+	echo "<option>phone_number</option>";
+	echo "<option>title</option>";
+	echo "<option>first_name</option>";
+	echo "<option>middle_initial</option>";
+	echo "<option>last_name</option>";
+	echo "<option>address1</option>";
+	echo "<option>address2</option>";
+	echo "<option>address3</option>";
+	echo "<option>city</option>";
+	echo "<option>state</option>";
+	echo "<option>province</option>";
+	echo "<option>postal_code</option>";
+	echo "<option>country_code</option>";
+	echo "<option>gender</option>";
+	echo "<option>date_of_birth</option>";
+	echo "<option>alt_phone</option>";
+	echo "<option>email</option>";
+	echo "<option>security_phrase</option>";
+	echo "<option>comments</option>";
+	echo "<option>lead_id</option>";
+	echo "<option>campaign</option>";
+	echo "<option>phone_login</option>";
+	echo "<option>group</option>";
+	echo "<option>channel_group</option>";
+	echo "<option>SQLdate</option>";
+	echo "<option>epoch</option>";
+	echo "<option>uniqueid</option>";
+	echo "<option>customer_zap_channel</option>";
+	echo "<option>server_ip</option>";
+	echo "<option>SIPexten</option>";
+	echo "<option>session_id</option>";
+	echo "</select>";
+	echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
+	# END Insert Field
+	echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -8535,14 +8604,57 @@ if ($ADD==3111111)
 	$active =			$row[4];
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>MODIFY A SCRIPT<form action=$PHP_SELF method=POST>\n";
+	echo "<br>MODIFY A SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=4111111>\n";
 	echo "<input type=hidden name=script_id value=\"$script_id\">\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><B>$script_id</B>$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50 value=\"$script_name\"> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script Comments: </td><td align=left><input type=text name=script_comments size=50 maxlength=255 value=\"$script_comments\"> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option><option selected>$active</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: <BR><BR><B><a href=\"javascript:openNewWindow('$PHP_SELF?ADD=7111111&script_id=$script_id')\">Preview Script</a></B> </td><td align=left><TEXTAREA NAME=script_text ROWS=20 COLS=50>$script_text</TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: <BR><BR><B><a href=\"javascript:openNewWindow('$PHP_SELF?ADD=7111111&script_id=$script_id')\">Preview Script</a></B> </td><td align=left>";
+	# BEGIN Insert Field
+	echo "<select id=\"selectedField\" name=\"selectedField\">";
+	echo "<option>vendor_lead_code</option>";
+	echo "<option>source_id</option>";
+	echo "<option>list_id</option>";
+	echo "<option>gmt_offset_now</option>";
+	echo "<option>called_since_last_reset</option>";
+	echo "<option>phone_code</option>";
+	echo "<option>phone_number</option>";
+	echo "<option>title</option>";
+	echo "<option>first_name</option>";
+	echo "<option>middle_initial</option>";
+	echo "<option>last_name</option>";
+	echo "<option>address1</option>";
+	echo "<option>address2</option>";
+	echo "<option>address3</option>";
+	echo "<option>city</option>";
+	echo "<option>state</option>";
+	echo "<option>province</option>";
+	echo "<option>postal_code</option>";
+	echo "<option>country_code</option>";
+	echo "<option>gender</option>";
+	echo "<option>date_of_birth</option>";
+	echo "<option>alt_phone</option>";
+	echo "<option>email</option>";
+	echo "<option>security_phrase</option>";
+	echo "<option>comments</option>";
+	echo "<option>lead_id</option>";
+	echo "<option>campaign</option>";
+	echo "<option>phone_login</option>";
+	echo "<option>group</option>";
+	echo "<option>channel_group</option>";
+	echo "<option>SQLdate</option>";
+	echo "<option>epoch</option>";
+	echo "<option>uniqueid</option>";
+	echo "<option>customer_zap_channel</option>";
+	echo "<option>server_ip</option>";
+	echo "<option>SIPexten</option>";
+	echo "<option>session_id</option>";
+	echo "</select>";
+	echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
+	# END Insert Field
+	echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50>$script_text</TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 
