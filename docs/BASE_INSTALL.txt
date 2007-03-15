@@ -74,6 +74,7 @@ cd ../asterisk-1.2.16
 	mkdir /etc/asterisk
 	mv amd2.conf /etc/asterisk/amd.conf
 	*OPTIONAL*(1.2.12.1 thru 1.2.16) apply the meetme volume control patch
+		*Different patches available for 1.2.7.1 through 1.2.14
 	wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 	patch -p1 < ./meetme_volume_control_1.2.16.patch
 		- File to patch: app_meetme.c
