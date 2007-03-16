@@ -153,10 +153,11 @@
 # 70226-1252 - Added Mute/UnMute to agent screen
 # 70309-1035 - Allow amphersands and questions marks in comments to pass through
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
+# 70316-1406 - Moved the MUTE button to be accessible during a transfer/conf
 #
 
-$version = '2.0.124';
-$build = '70313-1052';
+$version = '2.0.125';
+$build = '70316-1406';
 
 require("dbconnect.php");
 
@@ -5900,11 +5901,11 @@ echo "</head>\n";
 <span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:500px;top:370px;z-index:15;" id="AgentMuteButton"><font class="body_text">
+<span style="position:absolute;left:680px;top:370px;z-index:22;" id="AgentMuteButton"><font class="body_text">
 <span id="AgentMuteSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:36;" id="CallBacKsLisTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:37;" id="CallBacKsLisTBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CALLBACKS FOR AGENT <? echo $VD_login ?>:<BR>Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
@@ -5915,7 +5916,7 @@ echo "</head>\n";
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:37;" id="NeWManuaLDiaLBox">
+<span style="position:absolute;left:0px;top:0px;z-index:38;" id="NeWManuaLDiaLBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> NEW MANUAL DIAL LEAD FOR <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Enter information below for the new lead you wish to call.
 	<BR>
 	<? 
@@ -5997,7 +5998,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</tr></table>
 </span>
 
-<span style="position:absolute;left:5px;top:310px;z-index:22;" id="HotKeyActionBox">
+<span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyActionBox">
     <table border=0 bgcolor="#FFDD99" width=740 height=70>
 	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Lead Dispositioned As: </font><BR><BR><CENTER>
 	<font class="sd_text"><span id="HotKeyDispo"> - </span></font></CENTER>
@@ -6005,7 +6006,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyEntriesBox">
+<span style="position:absolute;left:5px;top:310px;z-index:24;" id="HotKeyEntriesBox">
     <table border=0 bgcolor="#FFDD99" width=740 height=70>
 	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Disposition Hot Keys: </font></td><td colspan=2>
 	<font class="body_small">When active, simply press the keyboard key for the desired disposition for this call. The call will then be hungup and dispositioned automatically:</font></td></tr><tr>
@@ -6021,7 +6022,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:5px;top:310px;z-index:24;" id="CBcommentsBox">
+<span style="position:absolute;left:5px;top:310px;z-index:25;" id="CBcommentsBox">
     <table border=0 bgcolor="#FFFFCC" width=740 height=70>
 	<TR bgcolor="#FFFF66">
 	<TD align=left><font class="sh_text"> Previous Callback Information: </font></td>
@@ -6038,7 +6039,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:12px;z-index:25;" id="NoneInSessionBox">
+<span style="position:absolute;left:0px;top:12px;z-index:26;" id="NoneInSessionBox">
     <table border=1 bgcolor="#CCFFFF" width=720 height=500><TR><TD align=center> Noone is in your session: <span id="NoneInSessionID"></span><BR>
 	<a href="#" onclick="NoneInSessionOK();return false;">Go Back</a>
 	<BR><BR>
@@ -6046,7 +6047,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:26;" id="CustomerGoneBox">
+<span style="position:absolute;left:0px;top:0px;z-index:27;" id="CustomerGoneBox">
     <table border=1 bgcolor="#CCFFFF" width=770 height=500><TR><TD align=center> Customer has hung up: <span id="CustomerGoneChanneL"></span><BR>
 	<a href="#" onclick="CustomerGoneOK();return false;">Go Back</a>
 	<BR><BR>
@@ -6055,7 +6056,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:27;" id="WrapupBox">
+<span style="position:absolute;left:0px;top:0px;z-index:28;" id="WrapupBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=550><TR><TD align=center> Call Wrapup: <span id="WrapupTimer"></span> seconds remaining in wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
@@ -6064,23 +6065,23 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:28;" id="LogouTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:29;" id="LogouTBox">
     <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:70px;z-index:29;" id="DispoButtonHideA">
+<span style="position:absolute;left:0px;top:70px;z-index:30;" id="DispoButtonHideA">
     <table border=0 bgcolor="#CCFFCC" width=165 height=22><TR><TD align=center VALIGN=top></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:138px;z-index:30;" id="DispoButtonHideB">
+<span style="position:absolute;left:0px;top:138px;z-index:31;" id="DispoButtonHideB">
     <table border=0 bgcolor="#CCFFCC" width=165 height=250><TR><TD align=center VALIGN=top>&nbsp;</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:31;" id="DispoButtonHideC">
+<span style="position:absolute;left:0px;top:0px;z-index:32;" id="DispoButtonHideC">
     <table border=0 bgcolor="#CCFFCC" width=770 height=47><TR><TD align=center VALIGN=top>Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call. </TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:32;" id="DispoSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:33;" id="DispoSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
 	<span id="DispoSelectContent"> End-of-call Disposition Selection </span>
 	<input type=hidden name=DispoSelection><BR>
@@ -6093,7 +6094,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:38;" id="PauseCodeSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:39;" id="PauseCodeSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
 	<span id="PauseCodeSelectContent"> Pause Code Selection </span>
 	<input type=hidden name=PauseCodeSelection>
@@ -6101,7 +6102,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:33;" id="CallBackSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:34;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN>
 	<input type=hidden name=CallBackTimESelectioN>
@@ -6144,7 +6145,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:34;" id="CloserSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:35;" id="CloserSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
 	<span id="CloserSelectContent"> Closer Inbound Group Selection </span>
 	<input type=hidden name=CloserSelectList><BR>
@@ -6155,7 +6156,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:35;" id="NothingBox">
+<span style="position:absolute;left:0px;top:0px;z-index:36;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="./images/blank.gif"></BUTTON>
 	<span id="DiaLLeaDPrevieWHide">Channel</span>
 	<span id="DiaLDiaLAltPhonEHide">Channel</span>
