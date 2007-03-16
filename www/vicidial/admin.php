@@ -570,6 +570,9 @@ if (isset($_GET["dial_status"]))				{$dial_status=$_GET["dial_status"];}
 	elseif (isset($_POST["dial_status"]))		{$dial_status=$_POST["dial_status"];}
 if (isset($_GET["queuemetrics_eq_prepend"]))			{$queuemetrics_eq_prepend=$_GET["queuemetrics_eq_prepend"];}
 	elseif (isset($_POST["queuemetrics_eq_prepend"]))	{$queuemetrics_eq_prepend=$_POST["queuemetrics_eq_prepend"];}
+if (isset($_GET["vicidial_agent_disable"]))				{$vicidial_agent_disable=$_GET["vicidial_agent_disable"];}
+	elseif (isset($_POST["vicidial_agent_disable"]))	{$vicidial_agent_disable=$_POST["vicidial_agent_disable"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -805,6 +808,7 @@ $VICIDIAL_park_on_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$VICIDIAL_park_on
 $auto_alt_dial = ereg_replace("[^-\_0-9a-zA-Z]","",$auto_alt_dial);
 $dial_status = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status);
 $queuemetrics_eq_prepend = ereg_replace("[^-\_0-9a-zA-Z]","",$queuemetrics_eq_prepend);
+$vicidial_agent_disable = ereg_replace("[^-\_0-9a-zA-Z]","",$vicidial_agent_disable);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -2821,6 +2825,11 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <A NAME="settings-queuemetrics_eq_prepend">
 <BR>
 <B>QueueMetrics EnterQueue Prepend -</B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything.
+
+<BR>
+<A NAME="settings-vicidial_agent_disable">
+<BR>
+<B>VICIDIAL Agent Disable Display -</B> This field is used to select when to show an agent when their session has been disabled by the system, a manager action or by an external measure. The NOT_ACTIVE setting will disable the message on the agents screen. The LIVE_AGENT setting will only display the disabled message when the agents vicidial_auto_calls record has been removed, such as during a force logout or emergency logout. 
 
 
 <BR><BR><BR><BR><BR><BR><BR><BR>

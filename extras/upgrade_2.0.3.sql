@@ -105,3 +105,5 @@ ALTER TABLE vicidial_campaigns ADD dial_statuses VARCHAR(255) default ' NEW -';
 update vicidial_campaigns SET dial_statuses=concat_ws(""," ",`dial_status_a`," ",`dial_status_b`," ",`dial_status_c`," ",`dial_status_d`," ",`dial_status_e`," -");
 
 ALTER TABLE system_settings ADD queuemetrics_eq_prepend VARCHAR(255) default 'NONE';
+
+

@@ -809,8 +809,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.14) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.14. These instructions are how we get 
+this writing the official release is 1.2.16) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.16. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -1638,7 +1638,7 @@ use asterisk;
 GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
 GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.14');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.16');
 
 insert into server_updater values('10.10.10.15','');
 
