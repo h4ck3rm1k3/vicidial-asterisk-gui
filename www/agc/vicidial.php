@@ -155,10 +155,11 @@
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
 # 70316-1406 - Moved the MUTE button to be accessible during a transfer/conf
 # 70319-1446 - Added agent-deactive-display and disable customer info update functions
+# 70319-1626 - Added option to allow agent logins to campaigns with no leads in the hopper
 #
 
-$version = '2.0.126';
-$build = '70319-1446';
+$version = '2.0.127';
+$build = '70319-1626';
 
 require("dbconnect.php");
 
@@ -611,7 +612,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -644,6 +645,7 @@ $VDloginDISPLAY=0;
 			   $allcalls_delay =			$row[25];
 			   $omit_phone_code =			$row[26];
 			   $agent_pause_codes_active =	$row[27];
+			   $no_hopper_leads_logins =	$row[28];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -948,7 +950,7 @@ else
 	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 
-	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) )
+	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) || (ereg('Y',$no_hopper_leads_logins)) )
 		{
 		### insert an entry into the user log for the login event
 		$stmt = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE','$VU_user_group')";

@@ -154,6 +154,8 @@ Disable Alter Customer Data -<\/B> If set to Y, does not change any of the custo
 Disable Alter Customer Data: ||
 Agent Alter Customer Data Override -<\/B> This option will override whatever the option is in the campaign for altering of customer data. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer data, no matter what the campaign setting is. Default is NOT_ACTIVE||
 Agent Alter Customer Data Override: ||
+Allow No-Hopper-Leads Logins -<\/B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N||
+Allow No-Hopper-Leads Logins: ||
 
 
 ############################################################ CLIENT

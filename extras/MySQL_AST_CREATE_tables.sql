@@ -522,7 +522,8 @@ campaign_changedate DATETIME,
 campaign_stats_refresh ENUM('Y','N') default 'N',
 campaign_logindate DATETIME,
 dial_statuses VARCHAR(255) default ' NEW -',
-disable_alter_custdata ENUM('Y','N') default 'N'
+disable_alter_custdata ENUM('Y','N') default 'N',
+no_hopper_leads_logins ENUM('Y','N') default 'N'
 );
 
  CREATE TABLE vicidial_lists (
