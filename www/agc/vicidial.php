@@ -154,10 +154,11 @@
 # 70309-1035 - Allow amphersands and questions marks in comments to pass through
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
 # 70316-1406 - Moved the MUTE button to be accessible during a transfer/conf
+# 70319-1446 - Added agent-deactive-display and disable customer info update functions
 #
 
-$version = '2.0.125';
-$build = '70316-1406';
+$version = '2.0.126';
+$build = '70319-1446';
 
 require("dbconnect.php");
 
@@ -1027,8 +1028,8 @@ else
 		print "<!-- call placed to session_id: $session_id from phone: $SIP_user -->\n";
 
 		#############################################
-		##### START QUEUEMETRICS LOGGING LOOKUP #####
-		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+		##### START SYSTEM_SETTINGS LOOKUP #####
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,vicidial_agent_disable FROM system_settings;";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1043,6 +1044,7 @@ else
 			$queuemetrics_login	=			$row[3];
 			$queuemetrics_pass =			$row[4];
 			$queuemetrics_log_id =			$row[5];
+			$vicidial_agent_disable =		$row[6];
 			$i++;
 			}
 		##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -1576,6 +1578,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var no_delete_sessions = '<? echo $no_delete_sessions ?>';
 	var webform_session = '<? echo $webform_sessionname ?>';
 	var local_consult_xfers = '<? echo $local_consult_xfers ?>';
+	var vicidial_agent_disable = '<? echo $vicidial_agent_disable ?>';
 	var CBentry_time = '';
 	var CBcallback_time = '';
 	var CBuser = '';
@@ -2034,7 +2037,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					 UnixTime = parseInt(UnixTime);
 					 UnixTimeMS = (UnixTime * 1000);
 					t.setTime(UnixTimeMS);
-					if (agentcallsstatus == '1')
+					if ( (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
 						{
 						var Astatus_array = check_time_array[2].split("Status: ");
 						var AGStatuS = Astatus_array[1];
@@ -2047,6 +2050,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (CamPCalLs != 'N')
 							{
 							document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
+							}
+						if ( (AGStatuS == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
+							{
+							showDiv('AgenTDisablEBoX');
+							}
+						if ( (AGStatuS == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
+							{
+							showDiv('AgenTDisablEBoX');
 							}
 						}
 					var check_conf_array=check_ALL_array[1].split("|");
@@ -4301,7 +4312,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			VLupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=updateLEAD&format=text&user=" + user + "&pass=" + pass + 
+			VLupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&campaign=" + campaign +  "&ACTION=updateLEAD&format=text&user=" + user + "&pass=" + pass + 
 			"&lead_id=" + document.vicidial_form.lead_id.value + 
 			"&vendor_lead_code=" + document.vicidial_form.vendor_lead_code.value + 
 			"&phone_number=" + document.vicidial_form.phone_number.value + 
@@ -5311,6 +5322,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			hideDiv('ScriptPanel');
 			hideDiv('DispoSelectBox');
 			hideDiv('LogouTBox');
+			hideDiv('AgenTDisablEBoX');
 			hideDiv('CustomerGoneBox');
 			hideDiv('NoneInSessionBox');
 			hideDiv('WrapupBox');
@@ -5905,7 +5917,7 @@ echo "</head>\n";
 <span id="AgentMuteSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:37;" id="CallBacKsLisTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:38;" id="CallBacKsLisTBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CALLBACKS FOR AGENT <? echo $VD_login ?>:<BR>Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
@@ -5916,7 +5928,7 @@ echo "</head>\n";
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:38;" id="NeWManuaLDiaLBox">
+<span style="position:absolute;left:0px;top:0px;z-index:39;" id="NeWManuaLDiaLBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> NEW MANUAL DIAL LEAD FOR <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Enter information below for the new lead you wish to call.
 	<BR>
 	<? 
@@ -6065,23 +6077,28 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:29;" id="LogouTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:29;" id="AgenTDisablEBoX">
+    <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
+</TD></TR></TABLE>
+</span>
+
+<span style="position:absolute;left:0px;top:0px;z-index:30;" id="LogouTBox">
     <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:70px;z-index:30;" id="DispoButtonHideA">
+<span style="position:absolute;left:0px;top:70px;z-index:31;" id="DispoButtonHideA">
     <table border=0 bgcolor="#CCFFCC" width=165 height=22><TR><TD align=center VALIGN=top></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:138px;z-index:31;" id="DispoButtonHideB">
+<span style="position:absolute;left:0px;top:138px;z-index:32;" id="DispoButtonHideB">
     <table border=0 bgcolor="#CCFFCC" width=165 height=250><TR><TD align=center VALIGN=top>&nbsp;</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:32;" id="DispoButtonHideC">
+<span style="position:absolute;left:0px;top:0px;z-index:33;" id="DispoButtonHideC">
     <table border=0 bgcolor="#CCFFCC" width=770 height=47><TR><TD align=center VALIGN=top>Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call. </TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:33;" id="DispoSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:34;" id="DispoSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
 	<span id="DispoSelectContent"> End-of-call Disposition Selection </span>
 	<input type=hidden name=DispoSelection><BR>
@@ -6094,7 +6111,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:39;" id="PauseCodeSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:40;" id="PauseCodeSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
 	<span id="PauseCodeSelectContent"> Pause Code Selection </span>
 	<input type=hidden name=PauseCodeSelection>
@@ -6102,7 +6119,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:34;" id="CallBackSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN>
 	<input type=hidden name=CallBackTimESelectioN>
@@ -6145,7 +6162,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:35;" id="CloserSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:36;" id="CloserSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
 	<span id="CloserSelectContent"> Closer Inbound Group Selection </span>
 	<input type=hidden name=CloserSelectList><BR>
@@ -6156,7 +6173,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:36;" id="NothingBox">
+<span style="position:absolute;left:0px;top:0px;z-index:37;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="./images/blank.gif"></BUTTON>
 	<span id="DiaLLeaDPrevieWHide">Channel</span>
 	<span id="DiaLDiaLAltPhonEHide">Channel</span>

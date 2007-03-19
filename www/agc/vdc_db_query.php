@@ -126,10 +126,11 @@
 # 70222-1616 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70309-1034 - Allow amphersands and questions marks in comments to pass through
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
+# 70319-1544 - Added agent disable update customer data function
 #
 
-$version = '2.0.53';
-$build = '70313-1052';
+$version = '2.0.54';
+$build = '70319-1544';
 
 require("dbconnect.php");
 
@@ -1917,6 +1918,8 @@ if ($ACTION == 'updateLEAD')
 {
 	$MT[0]='';
 	$row='';   $rowx='';
+	$DO_NOT_UPDATE=0;
+	$DO_NOT_UPDATE_text='';
 	if ( (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 	echo "phone_number $phone_number or lead_id $lead_id is not valid\n";
@@ -1924,15 +1927,54 @@ if ($ACTION == 'updateLEAD')
 	}
 	else
 	{
-	$comments = eregi_replace("\r",'',$comments);
-	$comments = eregi_replace("\n",'!N',$comments);
-	$comments = eregi_replace("--AMP--",'&',$comments);
-	$comments = eregi_replace("--QUES--",'?',$comments);
-	$comments = eregi_replace("--POUND--",'#',$comments);
 
-	$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysql_real_escape_string($vendor_lead_code) . "', title='" . mysql_real_escape_string($title) . "', first_name='" . mysql_real_escape_string($first_name) . "', middle_initial='" . mysql_real_escape_string($middle_initial) . "', last_name='" . mysql_real_escape_string($last_name) . "', address1='" . mysql_real_escape_string($address1) . "', address2='" . mysql_real_escape_string($address2) . "', address3='" . mysql_real_escape_string($address3) . "', city='" . mysql_real_escape_string($city) . "', state='" . mysql_real_escape_string($state) . "', province='" . mysql_real_escape_string($province) . "', postal_code='" . mysql_real_escape_string($postal_code) . "', country_code='" . mysql_real_escape_string($country_code) . "', gender='" . mysql_real_escape_string($gender) . "', date_of_birth='" . mysql_real_escape_string($date_of_birth) . "', alt_phone='" . mysql_real_escape_string($alt_phone) . "', email='" . mysql_real_escape_string($email) . "', security_phrase='" . mysql_real_escape_string($security_phrase) . "', comments='" . mysql_real_escape_string($comments) . "' where lead_id='$lead_id';";
-		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$stmt = "SELECT disable_alter_custdata FROM vicidial_campaigns where campaign_id='$campaign'";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$dac_conf_ct = mysql_num_rows($rslt);
+	$i=0;
+	while ($i < $dac_conf_ct)
+		{
+		$row=mysql_fetch_row($rslt);
+		$disable_alter_custdata =	$row[0];
+		$i++;
+		}
+	if (ereg('Y',$disable_alter_custdata))
+		{
+		$DO_NOT_UPDATE=1;
+		$DO_NOT_UPDATE_text=' NOT';
+		$stmt = "SELECT alter_custdata_override FROM vicidial_users where user='$user'";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$aco_conf_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $aco_conf_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$alter_custdata_override =	$row[0];
+			$i++;
+			}
+		if (ereg('ALLOW_ALTER',$alter_custdata_override))
+			{
+			$DO_NOT_UPDATE=0;
+			$DO_NOT_UPDATE_text='';
+			}
+		}
+
+	if ($DO_NOT_UPDATE < 1)
+		{
+		$comments = eregi_replace("\r",'',$comments);
+		$comments = eregi_replace("\n",'!N',$comments);
+		$comments = eregi_replace("--AMP--",'&',$comments);
+		$comments = eregi_replace("--QUES--",'?',$comments);
+		$comments = eregi_replace("--POUND--",'#',$comments);
+
+		$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysql_real_escape_string($vendor_lead_code) . "', title='" . mysql_real_escape_string($title) . "', first_name='" . mysql_real_escape_string($first_name) . "', middle_initial='" . mysql_real_escape_string($middle_initial) . "', last_name='" . mysql_real_escape_string($last_name) . "', address1='" . mysql_real_escape_string($address1) . "', address2='" . mysql_real_escape_string($address2) . "', address3='" . mysql_real_escape_string($address3) . "', city='" . mysql_real_escape_string($city) . "', state='" . mysql_real_escape_string($state) . "', province='" . mysql_real_escape_string($province) . "', postal_code='" . mysql_real_escape_string($postal_code) . "', country_code='" . mysql_real_escape_string($country_code) . "', gender='" . mysql_real_escape_string($gender) . "', date_of_birth='" . mysql_real_escape_string($date_of_birth) . "', alt_phone='" . mysql_real_escape_string($alt_phone) . "', email='" . mysql_real_escape_string($email) . "', security_phrase='" . mysql_real_escape_string($security_phrase) . "', comments='" . mysql_real_escape_string($comments) . "' where lead_id='$lead_id';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		}
 
 	$random = (rand(1000000, 9999999) + 10000000);
 	$stmt="UPDATE vicidial_live_agents set random_id='$random' where user='$user' and server_ip='$server_ip';";
@@ -1940,7 +1982,7 @@ if ($ACTION == 'updateLEAD')
 	$rslt=mysql_query($stmt, $link);
 
 	}
-	echo "Lead $lead_id information has been updated\n";
+	echo "Lead $lead_id information has$DO_NOT_UPDATE_text been updated\n";
 }
 
 

@@ -106,4 +106,8 @@ update vicidial_campaigns SET dial_statuses=concat_ws(""," ",`dial_status_a`," "
 
 ALTER TABLE system_settings ADD queuemetrics_eq_prepend VARCHAR(255) default 'NONE';
 
+ALTER TABLE system_settings ADD vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'NOT_ACTIVE';
 
+ALTER TABLE vicidial_campaigns ADD disable_alter_custdata ENUM('Y','N') default 'N';
+
+ALTER TABLE vicidial_users ADD alter_custdata_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE';

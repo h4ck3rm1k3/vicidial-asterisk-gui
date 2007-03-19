@@ -438,6 +438,7 @@ modify_remoteagents ENUM('0','1') default '0',
 modify_servers ENUM('0','1') default '0',
 view_reports ENUM('0','1') default '0',
 vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
+alter_custdata_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
 index (user)
 );
 
@@ -520,7 +521,8 @@ campaign_description VARCHAR(255),
 campaign_changedate DATETIME,
 campaign_stats_refresh ENUM('Y','N') default 'N',
 campaign_logindate DATETIME,
-dial_statuses VARCHAR(255) default ' NEW -'
+dial_statuses VARCHAR(255) default ' NEW -',
+disable_alter_custdata ENUM('Y','N') default 'N'
 );
 
  CREATE TABLE vicidial_lists (
@@ -875,7 +877,8 @@ queuemetrics_login VARCHAR(50),
 queuemetrics_pass VARCHAR(50),
 queuemetrics_url VARCHAR(255),
 queuemetrics_log_id VARCHAR(10) default 'VIC',
-queuemetrics_eq_prepend VARCHAR(255) default 'NONE'
+queuemetrics_eq_prepend VARCHAR(255) default 'NONE',
+vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'NOT_ACTIVE'
 );
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());

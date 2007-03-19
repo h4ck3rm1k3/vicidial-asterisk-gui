@@ -148,6 +148,12 @@ Dial Status ||
 no dial statuses selected for this campaign||
 QueueMetrics EnterQueue Prepend -<\/B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything||
 QueueMetrics EnterQueue Prepend: ||
+VICIDIAL Agent Disable Display -<\/B> This field is used to select when to show an agent when their session has been disabled by the system, a manager action or by an external measure. The NOT_ACTIVE setting will disable the message on the agents screen. The LIVE_AGENT setting will only display the disabled message when the agents vicidial_auto_calls record has been removed, such as during a force logout or emergency logout||
+VICIDIAL Agent Disable Display: ||
+Disable Alter Customer Data -<\/B> If set to Y, does not change any of the customer data record when an agent dispositions the call. Default is N||
+Disable Alter Customer Data: ||
+Agent Alter Customer Data Override -<\/B> This option will override whatever the option is in the campaign for altering of customer data. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer data, no matter what the campaign setting is. Default is NOT_ACTIVE||
+Agent Alter Customer Data Override: ||
 
 
 ############################################################ CLIENT
@@ -157,6 +163,7 @@ YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL||
  SELECT A PAUSE CODE :||
 ENTER A PAUSE CODE||
 YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE||
+Your session has been disabled||
 
 
 ############################################################  MANAGER Manual
