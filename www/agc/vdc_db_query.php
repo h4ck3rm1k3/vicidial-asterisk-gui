@@ -1790,7 +1790,6 @@ if ($ACTION == 'updateDISPO')
 	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 		{
 		$stmt = "UPDATE vicidial_closer_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
-		echo "$stmt\n";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		}

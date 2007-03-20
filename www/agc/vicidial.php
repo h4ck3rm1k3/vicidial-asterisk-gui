@@ -4521,8 +4521,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{
 							var check_dispo = null;
 							check_dispo = xmlhttp.responseText;
-						//	alert(xmlhttp.responseText);
 							var check_DS_array=check_dispo.split("\n");
+						//	alert(xmlhttp.responseText + "\n|" + check_DS_array[1] + "\n|" + check_DS_array[2] + "|");
 							if (check_DS_array[1] == 'Next agent_log_id:')
 								{
 								agent_log_id = check_DS_array[2];
