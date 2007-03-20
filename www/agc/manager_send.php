@@ -66,6 +66,7 @@
 # 61201-1115 - Added user to MonitorConf for recording_log
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70226-1251 - Added Mute/UnMute to conference volume control
+# 70320-1502 - Added option to allow retry of leave-3way-call and debug logging
 #
 
 require("dbconnect.php");
@@ -135,8 +136,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.28';
-$build = '70226-1251';
+$version = '2.0.29';
+$build = '70320-1502';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");

@@ -156,10 +156,11 @@
 # 70316-1406 - Moved the MUTE button to be accessible during a transfer/conf
 # 70319-1446 - Added agent-deactive-display and disable customer info update functions
 # 70319-1626 - Added option to allow agent logins to campaigns with no leads in the hopper
+# 70320-1501 - Added option to allow retry of leave-3way-call from dispo screen
 #
 
-$version = '2.0.127';
-$build = '70319-1626';
+$version = '2.0.128';
+$build = '70320-1501';
 
 require("dbconnect.php");
 

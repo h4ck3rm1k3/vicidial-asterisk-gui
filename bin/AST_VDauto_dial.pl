@@ -62,6 +62,7 @@
 # 70207-1031 - Fixed Tally-only-available bug with customer hangups
 # 70215-1123 - Added queue_log ABANDON logging
 # 70302-1412 - Fixed max_vicidial_trunks update if set to 0
+# 70320-1458 - Fixed several errors in calculating trunk shortage for campaigns
 # 
 
 
