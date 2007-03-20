@@ -562,6 +562,7 @@ if ($ACTION=="RedirectNameVmail")
 
 if ($ACTION=="RedirectXtraCX")
 {
+	$DBout='';
 	$row='';   $rowx='';
 	$channel_liveX=1;
 	$channel_liveY=1;
@@ -577,6 +578,15 @@ if ($ACTION=="RedirectXtraCX")
 		echo "ext_context $ext_context must be set\n";
 		echo "ext_priority $ext_priority must be set\n";
 		echo "\nRedirect Action not sent\n";
+		if (ereg("SECOND|FIRST|DEBUG",$filename))
+			{
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
+				fclose($fp);
+				}
+			}
 	}
 	else
 	{
@@ -596,6 +606,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveX=0;
 				echo "Channel $channel is not live on $call_server_ip, Redirect command not inserted\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel is not live on $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -612,6 +623,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveY=0;
 				echo "Channel $channel is not live on $server_ip, Redirect command not inserted\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel is not live on $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -624,6 +636,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveY=0;
 				echo "No Local agent to send call to, Redirect command not inserted\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
 			{
@@ -656,6 +669,7 @@ if ($ACTION=="RedirectXtraCX")
 				$rslt=mysql_query($stmt, $link);
 
 				echo "RedirectXtraCX command sent for Channel $channel on $call_server_ip and \nHungup $extrachannel on $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel on $call_server_ip, Hungup $extrachannel on $server_ip";}
 			}
 		}
 		else
@@ -664,8 +678,19 @@ if ($ACTION=="RedirectXtraCX")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel on $server_ip";}
 		}
+
+	if (ereg("SECOND|FIRST|DEBUG",$filename))
+		{
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./vicidial_debug.txt", "a");
+			fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$DBout|\n");
+			fclose($fp);
+			}
+		}
+
 	}
 }
 
@@ -690,6 +715,15 @@ if ($ACTION=="RedirectXtra")
 			echo "ext_context $ext_context must be set\n";
 			echo "ext_priority $ext_priority must be set\n";
 			echo "\nRedirect Action not sent\n";
+			if (ereg("SECOND|FIRST|DEBUG",$filename))
+				{
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./vicidial_debug.txt", "a");
+					fwrite ($fp, "$NOW_TIME|RDX|$filename|$user|$campaign|$$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
+					fclose($fp);
+					}
+				}
 		}
 		else
 		{
@@ -710,6 +744,7 @@ if ($ACTION=="RedirectXtra")
 				{
 				$channel_liveX=0;
 				echo "Cannot find empty conference on $server_ip, Redirect command not inserted\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Cannot find empty conference on $server_ip";}
 				}
 			}
 
@@ -719,7 +754,7 @@ if ($ACTION=="RedirectXtra")
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-			if ($row[0]==0)
+			if ( ($row[0]==0) && (!ereg("SECOND",$filename)) )
 			{
 				$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$call_server_ip' and channel='$channel';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -729,13 +764,14 @@ if ($ACTION=="RedirectXtra")
 				{
 					$channel_liveX=0;
 					echo "Channel $channel is not live on $call_server_ip, Redirect command not inserted\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel is not live on $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-			if ($row[0]==0)
+			if ( ($row[0]==0) && (!ereg("SECOND",$filename)) )
 			{
 				$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -745,6 +781,7 @@ if ($ACTION=="RedirectXtra")
 				{
 					$channel_liveY=0;
 					echo "Channel $channel is not live on $server_ip, Redirect command not inserted\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel is not live on $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -756,6 +793,7 @@ if ($ACTION=="RedirectXtra")
 					$rslt=mysql_query($stmt, $link);
 
 					echo "RedirectXtra command sent for Channel $channel and \nExtraChannel $extrachannel\n to $exten on $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten on $server_ip";}
 				}
 				else
 				{
@@ -780,6 +818,7 @@ if ($ACTION=="RedirectXtra")
 					$rslt=mysql_query($stmt, $link);
 
 					echo "RedirectXtra command sent for Channel $channel on $call_server_ip and \nExtraChannel $extrachannel\n to $exten on $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
 			else
@@ -790,6 +829,17 @@ if ($ACTION=="RedirectXtra")
 				{$ACTION="Redirect";   $channel=$extrachannel;}
 
 			}
+
+		if (ereg("SECOND|FIRST|DEBUG",$filename))
+			{
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|RDX|$filename|$user|$campaign|$DBout|\n");
+				fclose($fp);
+				}
+			}
+
 		}
 	}
 }

@@ -1590,6 +1590,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var manual_auto_hotkey = 0;
 	var dialed_number = '';
 	var dialed_label = '';
+	var DispO3waychannel = '';
+	var DispO3wayXtrAchannel = '';
+	var DispO3wayCalLserverip = '';
+	var DispO3wayCalLxfernumber = '';
+	var DispO3wayCalLcamptail = '';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -1763,9 +1768,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // place 3way and customer into other conference and fake-hangup the lines
-	function leave_3way_call()
+	function leave_3way_call(tempvarattempt)
 		{
-		mainxfer_send_redirect('3WAY');
+		mainxfer_send_redirect('3WAY','','',tempvarattempt);
 
 		document.vicidial_form.callchannel.value = '';
 		document.vicidial_form.callserverip.value = '';
@@ -2301,7 +2306,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // ################################################################################
 // Send Redirect command for live call to Manager sends phone name where call is going to
 // Covers the following types: XFER, VMAIL, ENTRY, CONF, PARK, FROMPARK, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
-	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip) 
+	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
 		var xmlhttp=false;
 		/*@cc_on @*/
@@ -2416,6 +2421,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (taskvar == '3WAY')
 				{
+				xferredirect_query='';
+
 				var queryCID = "VXvdcW" + epoch_sec + user_abb;
 				var redirectdestination = "NEXTAVAILABLE";
 				var redirectXTRAvalue = XDchannel;
@@ -2426,7 +2433,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{var redirecttype = 'RedirectXtraCX';}
 				else
 					{var redirecttype = 'RedirectXtra';}
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&campaign=CL_" + campaign + '' + closerxfercamptail;
+				DispO3waychannel = redirectvalue;
+				DispO3wayXtrAchannel = redirectXTRAvalue;
+				DispO3wayCalLserverip = redirectserverip;
+				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
+				DispO3wayCalLcamptail = document.vicidial_form.xfercode.value;
+
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value+ "&filename=" + taskdebugnote + "&campaign=CL_" + campaign + '' + closerxfercamptail;
+
+				if (taskdebugnote == 'FIRST') 
+					{
+					document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoLeavE3wayAgaiN()\">Leave 3Way Call Again</a>";
+					}
 				}
 			if (taskvar == 'ParK')
 				{
@@ -2911,7 +2929,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("MainStatuSSpan").innerHTML = " Called 3rd party: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
 
-								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call();return false;\"><IMG SRC=\"./images/vdc_XB_leave3waycall.gif\" border=0 alt=\"LEAVE 3-WAY CALL\"></a>";
+								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call('FIRST');return false;\"><IMG SRC=\"./images/vdc_XB_leave3waycall.gif\" border=0 alt=\"LEAVE 3-WAY CALL\"></a>";
 
 								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"./images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Dial With Customer\">";
 
@@ -3928,6 +3946,28 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	document.getElementById("DispoSelectHAspan").innerHTML = "";
 
 	dialedcall_send_hangup();
+	}
+
+
+// ################################################################################
+// Send leave 3way call a second time from the dispo screen 
+	function DispoLeavE3wayAgaiN() 
+	{
+	XDchannel = DispO3wayXtrAchannel;
+	document.vicidial_form.xfernumber.value = DispO3wayCalLxfernumber;
+	document.vicidial_form.xfercode.value = DispO3wayCalLcamptail;
+	MDchannel = DispO3waychannel;
+	lastcustserverip = DispO3wayCalLserverip;
+
+	document.getElementById("DispoSelectHAspan").innerHTML = "";
+
+	leave_3way_call('SECOND');
+
+	DispO3waychannel = '';
+	DispO3wayXtrAchannel = '';
+	DispO3wayCalLserverip = '';
+	DispO3wayCalLxfernumber = '';
+	DispO3wayCalLcamptail = '';
 	}
 
 

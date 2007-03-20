@@ -288,6 +288,7 @@ while($one_day_interval > 0)
 		$active_line_counter=0;
 		$user_counter=0;
 		$user_campaigns = '|';
+		$user_campaignsSQL = "''";
 		$user_campaigns_counter = 0;
 		$user_campaignIP = '|';
 		$user_CIPct = 0;
@@ -317,6 +318,7 @@ while($one_day_interval > 0)
 					{
 					if ($campaigns_update !~ /'$DBlive_campaign[$user_counter]'/) {$campaigns_update .= "'$DBlive_campaign[$user_counter]',"; $CPcount++;}
 					$user_campaigns .= "$DBlive_campaign[$user_counter]|";
+					$user_campaignsSQL .= ",'$DBlive_campaign[$user_counter]'";
 					$DBcampaigns[$user_campaigns_counter] = $DBlive_campaign[$user_counter];
 					$user_campaigns_counter++;
 					}
@@ -332,9 +334,30 @@ while($one_day_interval > 0)
 			}
 		$sthA->finish();
 
-		$event_string="LIVE AGENTS LOGGED IN: $user_counter";
+		### see how many total VDAD calls are going on right now for max limiter
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$server_ip' and status IN('SENT','RINGING','LIVE','XFER');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+				$active_line_counter = "$aryA[0]";
+			$rec_count++;
+			}
+		$sthA->finish();
+
+		$event_string="LIVE AGENTS LOGGED IN: $user_counter   ACTIVE CALLS: $active_line_counter";
 		&event_logger;
 
+		$stmtA = "UPDATE vicidial_campaign_server_stats set local_trunk_shortage='0' where server_ip='$server_ip' and campaign_id NOT IN($user_campaignsSQL);";
+		$UVCSSaffected_rows = $dbhA->do($stmtA);
+		if ($UVCSSaffected_rows > 0) 
+			{
+			$event_string="OLD TRUNK SHORTS CLEARED: $UVCSSaffected_rows |$user_campaignsSQL|";
+			&event_logger;
+			}
 		$user_CIPct = 0;
 		foreach(@DBIPcampaign)
 			{
@@ -470,21 +493,6 @@ while($one_day_interval > 0)
 			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: agents: $DBIPcount[$user_CIPct]     dial_level: $DBIPadlevel[$user_CIPct]";
 			&event_logger;
 
-			$active_line_counter=0;
-			$active_line_goal=0;
-			### see how many total VDAD calls are going on right now for max limiter
-			$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and status IN('SENT','RINGING','LIVE','XFER');";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
-				{
-				@aryA = $sthA->fetchrow_array;
-					$active_line_counter = "$aryA[0]";
-				$rec_count++;
-				}
-			$sthA->finish();
 
 			### see how many calls are alrady active per campaign per server and 
 			### subtract that number from goalcalls to determine how many new 
@@ -515,15 +523,21 @@ while($one_day_interval > 0)
 				}
 			$sthA->finish();
 
+			$active_line_goal=0;
 			$DBIPmakecalls[$user_CIPct] = ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]);
+			$DBIPmakecallsGOAL = $DBIPmakecalls[$user_CIPct];
 			$MVT_msg = '';
 			$DBIPtrunk_shortage[$user_CIPct] = 0;
 			$active_line_goal = ($active_line_counter + $DBIPmakecalls[$user_CIPct]);
 			if ($active_line_goal > $max_vicidial_trunks) 
 				{
-				$MVT_msg = "MVT override: $max_vicidial_trunks";
-				$DBIPmakecalls[$user_CIPct] = ($max_vicidial_trunks - $active_line_counter);
+				$NEWmakecallsgoal = ($max_vicidial_trunks - $active_line_counter);
+				if ($DBIPmakecalls[$user_CIPct] > $NEWmakecallsgoal)
+					{$DBIPmakecalls[$user_CIPct] = $NEWmakecallsgoal;}
 				$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $max_vicidial_trunks);
+				if ($DBIPtrunk_shortage[$user_CIPct] > $DBIPmakecallsGOAL) 
+					{$DBIPtrunk_shortage[$user_CIPct] = $DBIPmakecallsGOAL}
+				$MVT_msg = "MVT override: $max_vicidial_trunks |$DBIPmakecalls[$user_CIPct] $DBIPtrunk_shortage[$user_CIPct]|";
 				}
 			if (length($DBIPserver_trunks_limit[$user_CIPct])>0) 
 				{
@@ -531,8 +545,12 @@ while($one_day_interval > 0)
 					{
 					$MVT_msg .= " TRUNK LIMIT override: $DBIPserver_trunks_limit[$user_CIPct]";
 					$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $DBIPserver_trunks_limit[$user_CIPct]);
+					if ($DBIPtrunk_shortage[$user_CIPct] > $DBIPmakecallsGOAL) 
+						{$DBIPtrunk_shortage[$user_CIPct] = $DBIPmakecallsGOAL}
 					$active_line_goal = $DBIPserver_trunks_limit[$user_CIPct];
-					$DBIPmakecalls[$user_CIPct] = ($active_line_goal - $active_line_counter);
+					$NEWmakecallsgoal = ($active_line_goal - $active_line_counter);
+					if ($DBIPmakecalls[$user_CIPct] > $NEWmakecallsgoal)
+						{$DBIPmakecalls[$user_CIPct] = $NEWmakecallsgoal;}
 					}
 				}
 			else
@@ -541,14 +559,19 @@ while($one_day_interval > 0)
 					{
 					$MVT_msg .= " OTHER LIMIT override: $DBIPserver_trunks_allowed[$user_CIPct]";
 					$DBIPtrunk_shortage[$user_CIPct] = ($active_line_goal - $DBIPserver_trunks_allowed[$user_CIPct]);
+					if ($DBIPtrunk_shortage[$user_CIPct] > $DBIPmakecallsGOAL) 
+						{$DBIPtrunk_shortage[$user_CIPct] = $DBIPmakecallsGOAL}
 					$active_line_goal = $DBIPserver_trunks_allowed[$user_CIPct];
-					$DBIPmakecalls[$user_CIPct] = ($active_line_goal - $active_line_counter);
+					$NEWmakecallsgoal = ($active_line_goal - $active_line_counter);
+					if ($DBIPmakecalls[$user_CIPct] > $NEWmakecallsgoal)
+						{$DBIPmakecalls[$user_CIPct] = $NEWmakecallsgoal;}
 					}
 				}
 
-			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]) $MVT_msg";
+			if ($DBIPmakecalls[$user_CIPct] > 0) 
+				{$active_line_counter = ($DBIPmakecalls[$user_CIPct] + $active_line_counter);}
+			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: Calls to place: $DBIPmakecalls[$user_CIPct] ($DBIPgoalcalls[$user_CIPct] - $DBIPexistcalls[$user_CIPct]) $active_line_counter $MVT_msg";
 			&event_logger;
-
 
 			### Calculate campaign-wide agent waiting and calls waiting differential
 			### This is used by the AST_VDadapt script to see if the current dial_level
