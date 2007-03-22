@@ -12,7 +12,7 @@
 #  - $user
 #  - $pass
 # optional variables:
-#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl')
+#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl','OriginateVDRelogin')
 #  - $queryCID - ('CN012345678901234567',...)
 #  - $format - ('text','debug')
 #  - $channel - ('Zap/41-1','SIP/test101-1jut','IAX2/iaxy@iaxy',...)
@@ -67,6 +67,7 @@
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70226-1251 - Added Mute/UnMute to conference volume control
 # 70320-1502 - Added option to allow retry of leave-3way-call and debug logging
+# 70322-1636 - Added sipsak display ability
 #
 
 require("dbconnect.php");
@@ -126,6 +127,16 @@ if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
 	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
 if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
 	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
+if (isset($_GET["extension"]))					{$extension=$_GET["extension"];}
+	elseif (isset($_POST["extension"]))			{$extension=$_POST["extension"];}
+if (isset($_GET["protocol"]))					{$protocol=$_GET["protocol"];}
+	elseif (isset($_POST["protocol"]))			{$protocol=$_POST["protocol"];}
+if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
+	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
+if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
+	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
+if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["allow_sipsak_messages"];}
+	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -280,6 +291,21 @@ if ($ACTION=="OriginateNameVmail")
 		$ACTION="Originate";
 		}
 	}
+}
+
+if ($ACTION=="OriginateVDRelogin")
+{
+	if ( ($enable_sipsak_messages > 0) and ($allow_sipsak_messages > 0) and (eregi("SIP",$protocol)) )
+	{
+	$CIDdate = date("ymdHis");
+	$DS='-';
+	$SIPSAK_prefix = 'LIN-';
+	print "<!-- sending login sipsak message: $SIPSAK_prefix$VD_campaign -->\n";
+	passthru("/usr/local/bin/sipsak -M -O desktop -B \"$SIPSAK_prefix$campaign\" -r 5060 -s sip:$extension@$phone_ip > /dev/null");
+	$queryCID = "$SIPSAK_prefix$campaign$DS$CIDdate";
+
+	}
+	$ACTION="Originate";
 }
 
 if ($ACTION=="Originate")

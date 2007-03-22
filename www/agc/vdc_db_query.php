@@ -127,10 +127,11 @@
 # 70309-1034 - Allow amphersands and questions marks in comments to pass through
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
 # 70319-1544 - Added agent disable update customer data function
+# 70322-1545 - Added sipsak display ability
 #
 
-$version = '2.0.54';
-$build = '70319-1544';
+$version = '2.0.55';
+$build = '70322-1545';
 
 require("dbconnect.php");
 
@@ -257,6 +258,10 @@ if (isset($_GET["use_internal_dnc"]))			{$use_internal_dnc=$_GET["use_internal_d
 	elseif (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
 if (isset($_GET["omit_phone_code"]))			{$omit_phone_code=$_GET["omit_phone_code"];}
 	elseif (isset($_POST["omit_phone_code"]))	{$omit_phone_code=$_POST["omit_phone_code"];}
+if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
+	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
+if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
+	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
 
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
@@ -1702,7 +1707,7 @@ else
 			{
 			#############################################
 			##### START QUEUEMETRICS LOGGING LOOKUP #####
-			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1717,10 +1722,17 @@ else
 				$queuemetrics_login	=			$row[3];
 				$queuemetrics_pass =			$row[4];
 				$queuemetrics_log_id =			$row[5];
+				$allow_sipsak_messages =		$row[6];
 				$i++;
 				}
 			##### END QUEUEMETRICS LOGGING LOOKUP #####
 			###########################################
+			if ( ($enable_sipsak_messages > 0) and ($allow_sipsak_messages > 0) and (eregi("SIP",$protocol)) )
+				{
+				$SIPSAK_message = 'LOGGED OUT';
+				passthru("/usr/local/bin/sipsak -M -O desktop -B \"$SIPSAK_message\" -r 5060 -s sip:$extension@$phone_ip > /dev/null");
+				}
+
 			if ($enable_queuemetrics_logging > 0)
 				{
 				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
@@ -2138,7 +2150,7 @@ if ($ACTION == 'PauseCodeSubmit')
 		{
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
-		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -2153,10 +2165,16 @@ if ($ACTION == 'PauseCodeSubmit')
 			$queuemetrics_login	=			$row[3];
 			$queuemetrics_pass =			$row[4];
 			$queuemetrics_log_id =			$row[5];
+			$allow_sipsak_messages =		$row[6];
 			$i++;
 			}
 		##### END QUEUEMETRICS LOGGING LOOKUP #####
 		###########################################
+		if ( ($enable_sipsak_messages > 0) and ($allow_sipsak_messages > 0) and (eregi("SIP",$protocol)) )
+			{
+			$SIPSAK_prefix = 'BK-';
+			passthru("/usr/local/bin/sipsak -M -O desktop -B \"$SIPSAK_prefix$status\" -r 5060 -s sip:$extension@$phone_ip > /dev/null");
+			}
 		if ($enable_queuemetrics_logging > 0)
 			{
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");

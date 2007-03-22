@@ -113,3 +113,7 @@ ALTER TABLE vicidial_campaigns ADD disable_alter_custdata ENUM('Y','N') default 
 ALTER TABLE vicidial_users ADD alter_custdata_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE';
 
 ALTER TABLE vicidial_campaigns ADD no_hopper_leads_logins ENUM('Y','N') default 'N';
+
+ALTER TABLE phones ADD enable_sipsak_messages ENUM('0','1') default '0';
+
+ALTER TABLE system_settings ADD allow_sipsak_messages ENUM('0','1') default '0';

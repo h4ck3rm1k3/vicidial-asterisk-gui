@@ -803,6 +803,25 @@ are running in it.
 	- /usr/local/bin/mtop --dbuser=root --seconds=3
 
 
+sipsak is an optional utility that VICIDIAL can use to send messages to an 
+agent's SIP-based phone(like the Snom 320) to display text on their LCD screen.
+If you want to use this, make sure it is installed on the same server that your
+web server is installed on(Apache).
+*OPTIONAL*
+ 15. Go to http://sipsak.org to download the most recent version
+  - to install this directly on the command line, type:
+	- cd /usr/local
+	- wget http://download.berlios.de/sipsak/sipsak-0.9.6-1.tar.gz
+	- gunzip sipsak-0.9.6-1.tar.gz
+	- tar xvf sipsak-0.9.6-1.tar
+	- cd sipsak-0.9.6-1
+	- ./configure
+	- make
+	- make install
+	- /usr/local/bin/sipsak --version
+
+
+
 
 
 PHASE 4: INSTALLING ASTERISK

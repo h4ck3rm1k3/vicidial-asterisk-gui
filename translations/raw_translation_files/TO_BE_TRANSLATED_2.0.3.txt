@@ -156,6 +156,10 @@ Agent Alter Customer Data Override -<\/B> This option will override whatever the
 Agent Alter Customer Data Override: ||
 Allow No-Hopper-Leads Logins -<\/B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N||
 Allow No-Hopper-Leads Logins: ||
+Enable SIPSAK Messages -</B> If enabled the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. Feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0||
+Enable SIPSAK Messages: ||
+Allow SIPSAK Messages -</B> If set to 1, this will allow the phones table setting to work properly, the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. This feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0||
+Allow SIPSAK Messages: ||
 
 
 ############################################################ CLIENT
