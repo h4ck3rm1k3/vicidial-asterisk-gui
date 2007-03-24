@@ -694,7 +694,7 @@ $talking_to_print = mysql_num_rows($rslt);
 	while ($i < $talking_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
-			if (eregi("READY|PAUSED",$row[4]))
+			if (eregi("READY|PAUSED",$row[3]))
 			{
 			$row[5]=$row[6];
 			}
