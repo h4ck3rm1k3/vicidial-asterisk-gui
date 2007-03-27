@@ -5654,6 +5654,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			if (Cmon == 9) {Cmon = "OCT";}
 			if (Cmon == 10) {Cmon = "NOV";}
 			if (Cmon == 11) {Cmon = "DEC";}
+			if (Chours == 12) {AMPM = 'PM';}
 			if (Chours > 12) {Chours = (Chours - 12);   AMPM = 'PM';}
 			if (Cmin < 10) {Cmin = "0" + Cmin;}
 			if (Csec < 10) {Csec = "0" + Csec;}
