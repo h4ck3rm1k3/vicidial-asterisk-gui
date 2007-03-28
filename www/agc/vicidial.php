@@ -293,7 +293,7 @@ while ($camps_to_print > $o)
 		{$campname = '';}
 	if ($VD_campaign)
 		{
-		if (eregi("$VD_campaign",$rowx[0]))
+		if ( (eregi("$VD_campaign",$rowx[0])) and (strlen($VD_campaign) == strlen($rowx[0])) )
 			{$camp_form_code .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0]$campname</option>\n";}
 		else
 			{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
