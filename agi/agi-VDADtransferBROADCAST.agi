@@ -28,7 +28,7 @@
 # 61110-1625 - added change of vicidial_list, vicidial_log to PU once this script runs
 #
 
-$script = 'agi-VDADtransfer.agi';
+$script = 'agi-VDADtransferBROADCAST.agi';
 
 $DROP_TIME = 10; # default number of seconds to wait until you drop a waiting call
 
