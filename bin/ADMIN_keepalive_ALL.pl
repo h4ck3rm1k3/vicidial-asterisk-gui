@@ -284,6 +284,7 @@ if ($DB) {print "double check that processes are not running...\n";}
 
 	sleep(1);
 
+`PERL5LIB="$PATHhome/libs"; export PERL5LIB`;
 ### you may have to use a different ps command if you're not using Slackware Linux
 #	@psoutput = `ps -f -C AST_update --no-headers`;
 #	@psoutput = `ps -f -C AST_updat* --no-headers`;

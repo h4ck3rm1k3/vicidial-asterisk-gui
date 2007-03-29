@@ -19,6 +19,8 @@ foreach(@conf)
 	{
 	$line = $conf[$i];
 	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -33,6 +35,8 @@ foreach(@conf)
 		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 	$i++;
 	}
+
+`PERL5LIB="$PATHhome/libs"; export PERL5LIB`;
 
 use DBI;	  
 
