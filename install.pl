@@ -1274,6 +1274,8 @@ print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 if ($WEBONLY < 1)
 	{
 	print "Creating $PATHhome/LEADS_IN/DONE directories...\n";
+	`mkdir $PATHhome/libs`;
+	`mkdir $PATHhome/libs/Asterisk`;
 	`mkdir $PATHhome/LEADS_IN`;
 	`mkdir $PATHhome/LEADS_IN/DONE`;
 	`chmod -R 0766 $PATHhome/LEADS_IN`;
@@ -1286,6 +1288,10 @@ if ($WEBONLY < 1)
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;
+
+	print "Copying libs to $PATHhome ...\n";
+	`cp -f ./extras/Asterisk.pm $PATHhome/libs/`;
+	`cp -f ./extras/Asterisk/* $PATHhome/libs/Asterisk/`;
 
 	print "setting cron scripts to executable...\n";
 	`chmod 0755 $PATHhome/*`;
