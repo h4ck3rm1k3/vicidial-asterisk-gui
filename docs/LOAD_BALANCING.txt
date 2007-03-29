@@ -16,7 +16,9 @@ How do I set up load balancing on my two server VICIDIAL setup?
 
 These steps are taken directly from the SCRATCH_INSTALL document, but they are all put together here to give a better idea of what is needed all in one place. It is assumed that you already have VICIDIAL up and running on both servers.
 
-NOTE: In a multi-server setup you may want to have your database and web server on a separate machine from your Asterisk/VICIDIAL servers. Simply copy the web page directories to your new database/web server and set the AST_SERVER_conf.pl files on your VICIDIAL servers to point to that new database server. You can also have several web servers(or even load-balancing web servers) if you have more than 70 seats in one installation you may want to do that. For the web pages you just need to make sure the dbconnect.php files are configured for your database server. We have had 9 VICIDIAL servers and 2 web servers using a single database server with no problems.
+NOTE: In a multi-server setup you may want to have your database and web server on a separate machine from your Asterisk/VICIDIAL servers. Simply copy the web page directories to your new database/web server and set the AST_SERVER_conf.pl files on your VICIDIAL servers to point to that new database server. You can also have several web servers(or even load-balancing web servers) if you have more than 70 seats in one installation you may want to do that if you are not using eaccelerator. For the web pages you just need to make sure the dbconnect.php files are configured for your database server. We have had 12 VICIDIAL servers and 2 web servers using a single database server with no problems.
+
+NOTE: at the bottom of this document are conf examples for a 3 server load balancing setup.
 
 
 1. The VICIDIAL/Asterisk servers need to have all of the perl scripts and cron jobs installed on them, except these which only need to be on one of the servers: 
@@ -65,12 +67,11 @@ NOTE: In a multi-server setup you may want to have your database and web server 
 	TRUNKIAX2=IAX2/ASTtest1:test@10.10.10.16
 
   	[default]
-	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*8600XXX,2,Hangup
 	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 
-	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
   SERVER TWO(ASTtest2-10.10.10.16) 
@@ -80,7 +81,6 @@ NOTE: In a multi-server setup you may want to have your database and web server 
 
   	[default]
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-	exten => _010*010*010*015*8600XXX,2,Hangup
 	exten => _010*010*010*016*8600XXX,1,Goto(default,${EXTEN:16},1)
 
 	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
@@ -137,3 +137,136 @@ If you have any questions or problems please post to the astguiclient-users list
 - AST_VDadapt.pl
 - AST_VDauto_dial_FILL.pl
 
+
+
+
+
+THREE VICIDIAL SERVER LOAD BALANCING SETUP:
+
+The only steps that are different as you add more load-balanced servers are steps 2 and 3:
+
+2. The three servers need to be registered to each other as IAX2 friends:
+  SERVER ONE(ASTtest1-10.10.10.15) 
+    iax.conf:
+	register => ASTtest1:test@10.10.10.16
+	register => ASTtest1:test@10.10.10.17
+
+  	[ASTtest2]
+	type=friend
+	accountcode=IAXtrunk2
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+  	[ASTtest3]
+	type=friend
+	accountcode=IAXtrunk3
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+  SERVER TWO(ASTtest2-10.10.10.16) 
+    iax.conf:
+	register => ASTtest2:test@10.10.10.15
+	register => ASTtest2:test@10.10.10.17
+
+  	[ASTtest1]
+	type=friend
+	accountcode=IAXtrunk1
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+  	[ASTtest3]
+	type=friend
+	accountcode=IAXtrunk3
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+  SERVER THREE(ASTtest3-10.10.10.17) 
+    iax.conf:
+	register => ASTtest3:test@10.10.10.15
+	register => ASTtest3:test@10.10.10.16
+
+  	[ASTtest1]
+	type=friend
+	accountcode=IAXtrunk1
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+  	[ASTtest2]
+	type=friend
+	accountcode=IAXtrunk2
+	context=default
+	auth=plaintext
+	host=dynamic
+	permit=0.0.0.0/0.0.0.0
+	secret=test
+	qualify=yes
+
+
+3. The three servers need to have wildcard extensions assigned to the other server in the dialplan:
+  SERVER ONE(ASTtest1-10.10.10.15) 
+    extensions.conf:
+	[globals]
+	TRUNKIAX2=IAX2/ASTtest1:test@10.10.10.16
+	TRUNKIAX3=IAX2/ASTtest1:test@10.10.10.17
+
+  	[default]
+	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*8600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+
+	exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*8600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+
+  SERVER TWO(ASTtest2-10.10.10.16) 
+    extensions.conf:
+	[globals]
+	TRUNKIAX1=IAX2/ASTtest2:test@10.10.10.15
+	TRUNKIAX3=IAX2/ASTtest2:test@10.10.10.17
+
+  	[default]
+	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*017*8600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+
+	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _010*010*010*017*8600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+
+  SERVER THREE(ASTtest3-10.10.10.17) 
+    extensions.conf:
+	[globals]
+	TRUNKIAX1=IAX2/ASTtest2:test@10.10.10.15
+	TRUNKIAX2=IAX2/ASTtest2:test@10.10.10.16
+
+  	[default]
+	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*8600XXX,1,Goto(default,${EXTEN:16},1)
+
+	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
