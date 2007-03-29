@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.3               2007-02-XX
+Asterisk/astguiclient install from scratch.    v.2.0.3               2007-03-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -65,16 +65,16 @@ and the number of phones you want
 PHASE 1: INSTALLING AN OPERATING SYSTEM
 
 
-This installation will be using Slackware 10.2 for the linux distribution, 
-Slackware 10.0will also work with these instructions. There are several easier 
+This installation will be using Slackware 11 for the linux distribution, 
+Slackware 10.X will also work with these instructions. There are several easier 
 linux distributions and there are others that are more popular, but Slackware is 
 a nice non-commercial distro that has been around for a long time and proven 
 itself to be a very uncluttered and stable platform for development.
 
 1.	Go to http://www.ultimatebootcd.com/ , download the latest bootcd and 
 burn it to a CD. This will be needed to partition the hard drive prior to 
-installation of Slackware linux. The latest version as of this writing is 3.3
-(If you have problems with your hardware booting some of the utilities with 3.3
+installation of Slackware linux. The latest version as of this writing is 4.0
+(If you have problems with your hardware booting some of the utilities with 4.0
 I suggest trying 1.7, that version has older utilities, but still gets the job 
 done and works on every machine I've tried it on).
 
@@ -88,7 +88,7 @@ partitions:
    - press F3 to exit and let it do it's thing, this will take an hour or so.
 
 4.	Go to http://www.slackware.com/getslack/ to download Slackware linux. 
-The most recent release as of this writing is 10.2. This release fits on 2 CDs. 
+The most recent release as of this writing is 11.0. This release fits on 2 CDs. 
 Download both installation disks from any close server listed on the download 
 page and burn them both to CDs.
 
@@ -173,7 +173,7 @@ then you need to use a 2.6 Linux kernel in order to use the echo-cancellation
 functionality of the card.
 
 If you want to compile a 2.6 kernel then start with OPTION 1, otherwise to 
-compile the 2.4 kernel that comes with Slackware(2.4.31) start with OPTION 2:
+compile the 2.4 kernel that comes with Slackware(2.4.33) start with OPTION 2:
 
 OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 
@@ -261,7 +261,7 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 
 
 
-OPTION 2: compile Linux kernel 2.4.31
+OPTION 2: compile Linux kernel 2.4.33.3
 
 1.  cd /usr/src/linux			# move to your linux source directory
 2.  cp .config config.save		# copy old config to a save file
@@ -491,24 +491,6 @@ to be loaded to use that option.
    - you are done
 
 
-mpg123 is the mp3 player for asterisk and is used for music-on-hold 
-applications. We do not usually use it on our system, but to be more 
-comprehensive we will give the directions to install it.
-*OPTIONAL* (only if you want to use Astrisk's music-on-hold)
-
-3. Go to http://www.mpg123.de/ and download the mpg123 package
-   - to install this directly on the command line type:
-	- cd /usr/local
-	- wget http://www.mpg123.de/mpg123/mpg123-0.59r.tar.gz
-	- gunzip mpg123-0.59r.tar.gz
-	- tar xvf mpg123-0.59r.tar
-	- cd mpg123-0.59r
-	- ./configure
-	- make linux
-	- make install
-   - you are done
-
-
 Screen is a terminal emulator that allows you to run a process as command line 
 and be able to detach from them('Ctrl+a' then 'd') and log all output of the 
 terminal to a screenlog file if desired(add a '-L' to the launching command). 
@@ -517,7 +499,7 @@ the ability to log output and still attach to the screen that executed asterisk
 originally.
 *REQUIRED*  *MANDITORY FOR VICIDIAL SERVERS*
 
-4. Go to http://www.gnu.org/software/screen/ and download the screen package
+3. Go to http://www.gnu.org/software/screen/ and download the screen package
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://ftp.gnu.org/gnu/screen/screen-4.0.2.tar.gz
@@ -537,7 +519,7 @@ graphical time-based scrolling graph. We use it to view how loaded the system is
 and it visualizes load spikes very well
 *OPTIONAL* (only for obsessive admins like me)
 
-5.  Go to http://www.daveltd.com/src/util/ttyload/ and download the ttyload 
+4.  Go to http://www.daveltd.com/src/util/ttyload/ and download the ttyload 
 package
    - to install this directly on the command line type:
 	- cd /usr/local
@@ -555,7 +537,7 @@ with the time of a master server somewhere in the world. We use it to make sure
 the time is the same on our client computers and our servers.
 *MANDITORY FOR VICIDIAL SERVERS* (install on server and all clients)
 
-6. Go to http://www.ntp.org/ and download the ntpd package
+5. Go to http://www.ntp.org/ and download the ntpd package
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.2p3.tar.gz
@@ -578,7 +560,7 @@ iftop is a good console bandwidth visualization tool that shows you active
 connections, where they are going to/from and how much of your precious bandwidth 
 they are using. *OPTIONAL*
 
-7. Go to http://www.ex-parrot.com/~pdw/iftop/ and download the package
+6. Go to http://www.ex-parrot.com/~pdw/iftop/ and download the package
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.tcpdump.org/release/libpcap-0.9.4.tar.gz
@@ -606,7 +588,7 @@ package along with the included PHP script to generate server performance graphs
 that can be displayed real-time on a web page. 
 *OPTIONAL* (only needed for server performance graphing web reports)
 
-8. Go to http://ploticus.sourceforge.net/ and download the package
+7. Go to http://ploticus.sourceforge.net/ and download the package
    - to install this directly on the command line type:
 	NOTE: you may have to edit the Makefile to remove X11 if you don't have it
 	- cd /usr/local	
@@ -628,7 +610,7 @@ updated on your system, so we're going to install a new version now.
 *OPTIONAL* (only updated as a precaution, not manditory)
 	[NOTE: newer zlib is needed before installing]
 
-9. Go to http://www.openssh.org/ and download the linux source for openssh
+8. Go to http://www.openssh.org/ and download the linux source for openssh
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.zlib.net/zlib-1.2.3.tar.gz
@@ -654,7 +636,7 @@ locally and have it work with apache, you need it installed on your machine
 *OPTIONAL* (only install openssl if you want to use SSL secured web pages on 
 your locally installed copy of Apache web server)
 
-10. Go to http://www.openssl.org/ and download the linux source for openssl
+9. Go to http://www.openssl.org/ and download the linux source for openssl
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://www.openssl.org/source/openssl-0.9.8d.tar.gz
@@ -673,7 +655,7 @@ functionalities we need to have Apache and PHP installed on this machine.
 *OPTIONAL* (only install Apache and PHP locally if you don't want to use an 
 installation on another machine)
 
-11. Go to http://www.apache.org/ and download the apache unix source
+10. Go to http://www.apache.org/ and download the apache unix source
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
@@ -750,7 +732,7 @@ the load of your web traffic across many servers. If you are running more than
 another cheap web server to handle the extra load.
 *OPTIONAL*
 
-12. Go to http://balance.sourceforge.net to download the most recent source version
+11. Go to http://balance.sourceforge.net to download the most recent source version
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://voxel.dl.sourceforge.net/sourceforge/balance/balance-3.34.tgz
@@ -770,7 +752,7 @@ you want to use the latest development code of Asterisk you will need to have
 this loaded on your system.
 *OPTIONAL*
 
-13. Go to http://subversion.tigris.org to download the most recent source version
+12. Go to http://subversion.tigris.org to download the most recent source version
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://subversion.tigris.org/downloads/subversion-1.3.2.tar.gz
@@ -785,7 +767,7 @@ this loaded on your system.
 mtop is a great utility for real-time monitoring of mysql and the queries that
 are running in it.
 *OPTIONAL*
- 14. Go to http://mtop.sourceforge.net to download the most recent version
+ 13. Go to http://mtop.sourceforge.net to download the most recent version
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://superb-east.dl.sourceforge.net/sourceforge/mtop/mtop-0.6.6.tar.gz
@@ -808,7 +790,7 @@ agent's SIP-based phone(like the Snom 320) to display text on their LCD screen.
 If you want to use this, make sure it is installed on the same server that your
 web server is installed on(Apache).
 *OPTIONAL*
- 15. Go to http://sipsak.org to download the most recent version
+ 14. Go to http://sipsak.org to download the most recent version
   - to install this directly on the command line, type:
 	- cd /usr/local
 	- wget http://download.berlios.de/sipsak/sipsak-0.9.6-1.tar.gz
@@ -828,8 +810,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.16) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.16. These instructions are how we get 
+this writing the official release is 1.2.17) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.17. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -844,13 +826,13 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.16.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.15.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.17.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.16.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.4.tar.gz
-	- gunzip asterisk-1.2.16.tar.gz
-	- tar xvf asterisk-1.2.16.tar
-	- gunzip zaptel-1.2.15.tar.gz
-	- tar xvf zaptel-1.2.15.tar
+	- gunzip asterisk-1.2.17.tar.gz
+	- tar xvf asterisk-1.2.17.tar
+	- gunzip zaptel-1.2.16.tar.gz
+	- tar xvf zaptel-1.2.16.tar
 	- gunzip libpri-1.2.4.tar.gz
 	- tar xvf libpri-1.2.4.tar
    B. if you want latest SVN_1.2 version (release tree with new patches)
@@ -875,7 +857,7 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.15
+	- cd ./zaptel-1.2.16
 	- make clean
 	- make
 	- make install
@@ -883,7 +865,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.16
+	- cd ../asterisk-1.2.17
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -898,7 +880,7 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
-		*OPTIONAL*(1.2.12.1 thru 1.2.16) apply the meetme volume control patch
+		*OPTIONAL*(1.2.12.1 thru 1.2.17) apply the meetme volume control patch
 			*Different patches available for 1.2.7.1 through 1.2.14
 		- wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 		- patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -1432,12 +1414,11 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 
 ### OPTIONAL IAX Load Balance extens to allow for Overflow and Balanced VDAD
 ### In this setup, the serverIP is the prefix followed by agent conf_exten
+### FOR MORE INFORMATION, READ THE LOAD_BALANCING.txt DOCUMENT
 ### server 1 extens:
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*8600XXX,2,Hangup
 ### server 2 extens:
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-	exten => _010*010*010*015*8600XXX,2,Hangup
 
 10. edit dnsmgr.conf:   # It is very helpful to enable dnsmgr
 	[general]
@@ -1553,11 +1534,13 @@ follow the steps below:
 	exten => 301,1,Dial(IAX2/firefly01@firefly01/s)
 	exten => 301,2,Voicemail,u301           ; Send to voicemail...
 
-3. Download Firefly 3rd party application for windows:
+3. Download Firefly 3rd party, or IDEfisk for Windows or Linux:
   - http://www.virbiage.com/firefly/download/firefly-thirdparty.exe
   MIRRORS:
   - http://mirror.isp.net.au/ftp/pub/firefly/firefly-thirdparty.exe
   - http://www.freedomphones.net/files/firefly-thirdparty.exe
+  IDEFISK:
+  - http://www.asteriskguru.com/idefisk/
 	- Install the application
 	- Launch Firefly Softphone
 	- click the "I wish to connect to a 3rd party network" button
@@ -1596,12 +1579,12 @@ SUBPHASE 6.0: putting the files in place
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.2)
+package(as of this writing it is 2.0.3)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.2.zip
-	- unzip astguiclient_2.0.2.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.3.zip
+	- unzip astguiclient_2.0.3.zip
 	- perl install.pl (make sure you are in the directory with the install.pl file)
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
@@ -1657,7 +1640,7 @@ use asterisk;
 GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
 GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.16');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.17');
 
 insert into server_updater values('10.10.10.15','');
 
