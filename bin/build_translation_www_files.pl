@@ -2,10 +2,11 @@
 
 # build_translation_www_files.pl - converts web pages to other language
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 60808-1029 - Changed to use /etc/astguiclient.conf for configs
+# 70402-1305 - Added error log generation for not found phrases
 #
 
 ############################################
@@ -66,6 +67,8 @@ $US='_';
 $MT[0]='';
 $language_admin_file = 'language_admin.txt';
 $language_file = 'language.txt';
+$error_file = "language_error.txt";
+$admin_error_file = "language_admin_error.txt";
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -138,6 +141,7 @@ if ( (!$admin_only) && (!$client_only) )
 if ($admin_only==1) 
 	{
 	print "\n----- LANGUAGE BUILD: $CLIlanguage -----\n\n";
+	$LANG_FILE_ERROR = "$PATHlogs/$CLIlanguage$US$admin_error_file";
 	$LANG_FILE_ADMIN = "./translations/$CLIlanguage$US$language_admin_file";
 	open(lang, "$LANG_FILE_ADMIN") || die "can't open $LANG_FILE_ADMIN: $!\n";
 	@lang = <lang>;
@@ -153,6 +157,7 @@ if ($admin_only==1)
 
 if ($client_only==1) 
 	{
+	$LANG_FILE_ERROR = "$PATHlogs/$CLIlanguage$US$error_file";
 	$LANG_FILE = "./translations/$CLIlanguage$US$language_file";
 	open(lang, "$LANG_FILE") || die "can't open $LANG_FILE: $!\n";
 	@lang = <lang>;
@@ -311,6 +316,7 @@ foreach(@lang_list)
 								{
 								if ($file[$LINESct] !~ /^\#|^\s*function |'INCALL'|'PAUSED'|'READY'|'NEW'|xmlhttp|ILPV |ILPA |SELECT cmd_line_f|=\"SELECT/)
 									{
+									$phrase_found_counter=0;
 									if ($file[$LINESct] =~ /INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL/)
 										{
 										$file[$LINESct] =~ s/INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL/ILPV/g;
@@ -359,10 +365,22 @@ foreach(@lang_list)
 												$file[$LINESct] =~ s/\"help.gif/\"..\/astguiclient\/help.gif/g;
 												}
 											if ($lang_abb !~ /^en/)
-												{$file[$LINESct] =~ s/$ORIGtext/$TRANStext/g;}
+												{
+												$file[$LINESct] =~ s/$ORIGtext/$TRANStext/g;
+												$phrase_found_counter++;
+												}
 											}
 										}
 									}
+
+								if ($phrase_found_counter < 1)
+									{
+									open(ERRout, ">>$LANG_FILE_ERROR")
+											|| die "Can't open $LANG_FILE_ERROR: $!\n";
+									print ERRout "|$ORIGtext|\n";
+									close(ERRout);
+									}
+
 								$LINESct++;
 
 								if ($a =~ /00000$/i) {print "$a     $file[$LINESct]\n|$ORIGtext|$TRANStext|";}

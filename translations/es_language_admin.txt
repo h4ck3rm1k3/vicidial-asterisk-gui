@@ -1,4 +1,4 @@
-﻿# es_language_admin.txt - this file is for the internationalization of the astGUIclient 
+# es_language_admin.txt - this file is for the internationalization of the astGUIclient 
 # admin web pages. The associated install.pl file will take the language as an 
 # argument and alter the php scripts to the language typed in the command line:
 # example: ./install.pl --language=es
@@ -42,6 +42,7 @@ vicidial|AST_admin_log_display.php|0
 vicidial|AST_timeonVDADallSUMMARY.php|0
 vicidial|inbound_popup.php|0
 vicidial|AST_inboundEXTstats.php|0
+vicidial|welcome.php|0
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|Border|
@@ -1124,3 +1125,168 @@ Click here to delete the oldest LIVE record in VDAC for|Chasque aquí para supri
 Allowed Campaigns|Campañas Permitidas|
 USERS CAN VIEW ANY CAMPAIGN|LOS USUARIOS PUEDEN VISIÓN CUALQUIER CAMPAÑA|
 Campaign Not Allowed|Campaña No permitida|
+### START translations for 2.0.3 release ###
+ADAPT OVERRIDE|ADAPTE LA INVALIDACIÓN|
+The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.|El checkbox de la INVALIDACIÓN del ADAPTAR permite que usted fuerceun nuevo nivel del dial aunque el método del dial está en un mododel ADAPTAR. Esto es útil si hay una cambio dramática en la calidadde plomos y usted desea cambiar drástico el dial_level manualmente.|
+There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead|Hay dos opciones especiales que usted puede utilizar conjuntamente conel número de teléfono alterno que marca, ALTPH2 de HotKey - el dialcaliente del teléfono alterno y el dial caliente ADDR3-----Address3permiten que un agente utilice un hotkey al retraso su llamada,permanecen en el mismo plomo, y marcan otro número del contacto deese conducen|
+Concurrent Transfers|Transferencias Concurrentes|
+Concurrent Transfers -<\/B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method|Transferencias concurrentes -</B> este ajuste se utiliza para definir elnúmero de las llamadas que se pueden enviar a los agentes en el mismotiempo. Se recomienda que este ajuste está dejado en el AUTOMÓVIL. Este campo no es utilizado por el método MANUAL del dial|
+Auto Alt-Number Dialing -<\/B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method|Alt-Nu'mero auto que marca -</B> este ajuste se utiliza para marcarautomáticamente campos alternos del número mientras que marca en elCOCIENTE y ADAPTA métodos del dial cuando no hay contacto en elnúmero de teléfono principal para un plomo, los estados del NA, deB, de la C.C. y de N. Este ajuste no es utilizado por el métodoMANUAL del dial|
+Auto Alt-Number Dialing|El Marcar Auto Del Alt-Nu'mero|
+View Reports -<\/B> This option allows the user to view the VICIDIAL reports.|La visión divulga -</B> esta opción permite que el usuario visión losinformes de VICIDIAL.|
+Modify Sections -<\/B> These options allow the user to view and modify each sections records. If set to 0, the user will be able to see the section list, but not the detail or modification screen of a record in that section|Modifique las secciones -</B> estas opciones permiten que el usuariovisión y modifique cada uno los expedientes de las secciones. Si elsistema a 0, el usuario puede considerar la lista de la sección, perono el detalle o la pantalla de la modificación de un expediente enesa sección|
+VICIDIAL AUTO ALT DIAL STATUSES|ESTADOS AUTO DEL DIAL DE VICIDIAL ALT|
+If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set|Si se fija el campo que marca del Alt-Nu'mero auto, después losplomos que son dispositioned bajo estos estados del dial del alt delautomóvil tendrán su alt_phone y-o los campos address3 marcadosdespués de que cualesquiera de estos ninguno-contesten a estados sefijan|
+AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN|NÚMERO AUTO DEL ALT QUE MARCA PARA ESTA CAMPAÑA|
+ADD NEW AUTO ALT NUMBER DIALING STATUS|AGREGUE EL ESTADO QUE MARCA DEL NUEVO DEL AUTOMÓVIL NÚMERO DEL ALT|
+AUTO ALT DIAL STATUS NOT ADDED|ESTADO AUTO DEL DIAL DEL ALT NO AGREGADO|
+there is already an entry for this campaign with this status|hay ya una entrada para esta campaña con este estado|
+AUTO ALT DIAL STATUS ADDED|ESTADO AUTO DEL DIAL DEL ALT AGREGADO|
+AUTO ALT DIAL STATUS NOT DELETED|ESTADO AUTO DEL DIAL DEL ALT NO SUPRIMIDO|
+AUTO ALT DIAL STATUS DELETED|ESTADO AUTO DEL DIAL DEL ALT SUPRIMIDO|
+this auto alt dial status is not in this campaign|este estado del dial del alt del automóvil no está en esta campaña|
+New Auto Alt Dial Status|Nuevo Estado Del Dial Del Alt Del Automóvil|
+Delete Auto Alt Dial Status|Estado Auto Del Dial Del Alt De la Cancelación|
+ Users | Usuarios |
+ Campaigns | Campañas |
+ Lists | Listas |
+ Scripts | Escrituras |
+ Filters | Filtros |
+ In-Groups | En-Grupos |
+ User Groups | Grupos De Usuario |
+ Remote Agents | Agentes Alejados |
+ Admin | Admin |
+ Reports | Informes |
+ Show Users | Demuestre A Usuarios |
+ Add A New User | Agregue A Nuevo Usuario |
+ Search For A User | Búsqueda Para Un Usuario |
+ Show Campaigns | Demuestre Las Campañas |
+ Add A New Campaign | Agregue Una Nueva Campaña |
+ Real-Time Campaigns Summary | Campañas En tiempo real Sumarias |
+ Show Lists | Demuestre Las Listas |
+ Add A New List | Agregue Una Nueva Lista |
+ Search For A Lead | Búsqueda Para Un Plomo |
+ Add Number To DNC | Agregue El Número a DNC |
+ Load New Leads | Nuevos Plomos De la Carga |
+ Show Scripts | Demuestre Las Escrituras |
+ Add A New Script | Agregue Una Nueva Escritura |
+ Show Filters | Demuestre Los Filtros |
+ Add A New Filter | Agregue Un Filtro Nuevo |
+ Show In-Groups | Demuestre A En-Grupos |
+ Add A New In-Group | Agregue A Nuevo En-Grupo |
+ Show User Groups | Demuestre A Grupos De Usuario |
+ Add A New User Group | Agregue A Nuevo Grupo De Usuario |
+ Group Hourly Report | Informe Cada hora Del Grupo |
+ Show Remote Agents | Demuestre Los Agentes Alejados |
+ Add New Remote Agents | Agregue Los Agentes Alejados Nuevos |
+ Call Times | Tiempos De la Llamada |
+ Phones | Teléfonos |
+ Conferences | Conferencias |
+ Servers | Servidores |
+ Show Call Times | Demuestre Los Tiempos De la Llamada |
+ Add A New Call Time | Agregue Un Nuevo Rato De la Llamada |
+ Show State Call Times | Demuestre Los Tiempos De la Llamada Del Estado |
+ Add A New State Call Time | Agregue Un Nuevo Rato De la Llamada Del Estado |
+ Show Phones | Demuestre Los Teléfonos |
+ Add A New Phone | Agregue Un Teléfono Nuevo |
+ Show Conferences | Demuestre Las Conferencias |
+ Add A New Conference | Agregue Una Nueva Conferencia |
+ Show VICIDIAL Conferences | Demuestre Las Conferencias de VICIDIAL |
+ Add A New VICIDIAL Conference | Agregue Una Nueva Conferencia de VICIDIAL |
+ Show Servers | Demuestre Los Servidores |
+ Add A New Server | Agregue Un Servidor Nuevo |
+CallBacks Within User Group|Servicios repetidos Dentro Del Grupo De Usuario|
+USERS WITHIN THIS USER GROUP|USUARIOS DENTRO DE ESTE GRUPO DE USUARIO|
+Modify Users: |Modifique A Usuarios: |
+Modify Campaigns: |Modifique Las Campañas: |
+Modify Lists: |Modifique Las Listas: |
+Modify Scripts: |Modifique Las Escrituras: |
+Modify Filters: |Modifique Los Filtros: |
+Modify In-Groups: |Modifique A En-Grupos: |
+Modify User Groups: |Modifique A Grupos De Usuario: |
+Modify Remote Agents: |Modifique Los Agentes Alejados: |
+Modify Servers: |Modifique Los Servidores: |
+View Reports: |Informes De la Visión: |
+You do not have permission to view this page|Usted no tiene permiso de visión esta página|
+Lead Time Zone Lookup: |Operaciones de búsqueda De la Zona De Tiempo De Plomo:|
+Lead Duplicate Check: |Cheque Del Duplicado Del Plomo:|
+Agent Pause Codes Active -<\/B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N|La pausa del agente cifra activo -</B> permite que los agentes seleccionenun código de la pausa cuando chascan encendido el botón de PAUSA envicidial.php. Los códigos de la pausa son definibles por campaña enel fondo de la pantalla del detalle de la opinión de la campaña y sealmacenan en la tabla del vicidial_agent_log. El defecto es N|
+AGENT PAUSE CODES|CÓDIGOS DE LA PAUSA DEL AGENTE|
+If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the vicidial agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.|Si la pausa del agente cifra el campo activo se fija a activo entonceslos agentes podrá seleccionar de estos códigos de la pausa cuandochascan encendido el botón de PAUSA en sus pantallas. Estos datosentonces se almacenan en el registro vicidial del agente. El códigode la pausa debe contener solamente letras y números y ser menos de 7caracteres de largo. El nombre del código de la pausa puede estar nomás de largo de 30 caracteres.|
+AGENT PAUSE CODES FOR THIS CAMPAIGN|CÓDIGOS DE LA PAUSA DEL AGENTE PARA ESTA CAMPAÑA|
+PAUSE CODES|CÓDIGOS DE LA PAUSA|
+BILLABLE|FACTURABLE|
+ADD NEW AGENT PAUSE CODE|AGREGUE EL NUEVO CÓDIGO DE LA PAUSA DEL AGENTE|
+Pause Code: |Código De la Pausa: |
+Pause Code Name: |Nombre Del Código De la Pausa: |
+Billable: |Facturable: |
+New Agent Pause Code|Nuevo Código De la Pausa Del Agente|
+Modify Agent Pause Code|Modifique El Código De la Pausa Del Agente|
+Delete Agent Pause Code|Código De la Pausa Del Agente De la Cancelación|
+AGENT PAUSE CODE NOT ADDED|CÓDIGO DE LA PAUSA DEL AGENTE NO AGREGADO|
+there is already an entry for this campaign with this  pause code|hay ya una entrada para esta campaña con este code|| de la pausa|
+AGENT PAUSE CODE ADDED|EL CÓDIGO DE LA PAUSA DEL AGENTE AGREGÓ|
+AGENT PAUSE CODE NOT MODIFIED|CÓDIGO DE LA PAUSA DEL AGENTE NO MODIFICADO|
+CAMPAIGN PAUSE CODE NOT DELETED|CÓDIGO DE LA PAUSA DE LA CAMPAÑA NO SUPRIMIDO|
+Campaign Description -<\/B> This is a memo field for the campaign, it is optional and can be a maximum of 255 characters in length|Descripción de la campaña -</B> esto es un campo de la nota para lacampaña, es opcional y puede ser un máximo de 255 caracteres enlongitud|
+Campaign Change Date -<\/B> This is the last time that the settings for this campaign were modified in any way|Fecha del cambio de la campaña -</B> ésta es la vez última que losajustes para esta campaña fueron modificados de cualquier manera|
+Campaign Stats Refresh -<\/B> This checkbox will allow you to force a vicidial stats refresh, even if the campaign is not active|Los Stats de la campaña restauran -</B> este checkbox permitirá queusted fuerce un stats vicidial restaura, incluso si la campaña no esactiva|
+Last Campaign Login Date -<\/B> This is the last time that an agent was logged into this campaign|La fecha pasada de la conexión de la campaña -</B> ésta es la vezúltima que un agente fue registrado en esta campaña|
+List Description -<\/B> This is the memo field for the list, it is optional|Descripción de la lista -</B> éste es el campo de la nota para la lista,él es opcional|
+List Change Date -<\/B> This is the last time that the settings for this list were modified in any way|Fecha del cambio de la lista -</B> ésta es la vez última que los ajustespara esta lista fueron modificados de cualquier manera|
+List Last Call Date -<\/B> This is the last time that lead was dialed from this list|Fecha de la llamada del último de la lista -</B> ésta es la vez últimaque conduce fue marcado de esta lista|
+List Description: |Descripción De la Lista: |
+List Change Date: |Fecha Del Cambio De la Lista: |
+Campaign Description: |Descripción De la Campaña: |
+VICIDIAL Recording Override -<\/B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load|Invalidación de la grabación de VICIDIAL -</B> esta opción seeliminará lo que es la opción en la campaña para la grabación.LISIADO no eliminará el ajuste de la grabación de la campaña. NUNCAinhabilitará la grabación en el cliente. ONDEMAND es el defecto ypermite que el agente comience y pare a registrar según lonecesitado. ALLCALLS comenzará la grabación en el cliente siempreque una llamada se envíe a un agente. ALLFORCE comenzará lagrabación en el cliente siempre que una llamada se envíe a un agenteque no da al agente ninguna opción para parar el registrar. ParaALLCALLS y ALLFORCE hay una opción para utilizar la grabaciónretrasa para reducir en grabaciones y carga de sistema muy cortas delrecude|
+VICIDIAL Recording Override: |Invalidación De la Grabación de VICIDIAL:|
+MODIFY VICIDIAL SYSTEM SETTINGS|MODIFIQUE LOS AJUSTES DEL SISTEMA DE VICIDIAL|
+ System Settings | Ajustes Del Sistema |
+VICIDIAL SYSTEM SETTINGS MODIFIED|AJUSTES DEL SISTEMA DE VICIDIAL MODIFICADOS|
+Version: |Versión: |
+Use Non-Latin: |Uso No-Latino: |
+Webroot Writable: |Webroot Escribible: |
+Enable QueueMetrics Logging: |Permita La Registración De QueueMetrics: |
+QueueMetrics Server IP: |IP Del Servidor De QueueMetrics: |
+QueueMetrics DB Name: |Nombre del DB De QueueMetrics: |
+QueueMetrics DB Login: |Conexión del DB De QueueMetrics: |
+QueueMetrics DB Password: |Contraseña del DB De QueueMetrics: |
+Use Non-Latin -<\/B> This option allows you to default the web display script to use UTF8 characters and not do any latin-character-family regular expression filtering or display formatting. Default is 0|Uso No-Latino -</B> esta opción permite que usted omita la escritura dela exhibición de la tela los caracteres del uso UTF8 y que no haganinguna expresión regular de la latino-cara'cter-familia que sefiltra ni que no exhiba el formato. El defecto es 0|
+Webroot Writable -<\/B> This setting allows you to define whether temp files and authentication files should be placed in the webroot on your web server. Default is 1|Webroot escribible -</B> este ajuste permite que usted defina si losarchivos de la temperatura y los archivos de la autentificación seancolocados en el webroot en su web server. El defecto es 1|
+Enable QueueMetrics Logging -<\/B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0|Permita la registración de QueueMetrics -</B> este ajuste permite queusted defina si VICIDIAL inserte entradas del registro en la tabla dela base de datos del queue_log como lo hace la actividad de lascoletas del asterisco. QueueMetrics es un independiente, programa delanálisis estadístico de la cerrado-fuente. Usted debe tenerQueueMetrics instalado y configurado ya antes de permitir estacaracterística. El defecto es 0|
+QueueMetrics Server IP -<\/B> This is the IP address of the database for your QueueMetrics installation|IP del servidor de QueueMetrics -</B> éste es el IP address de la base dedatos para su instalación de QueueMetrics|
+QueueMetrics Database Name -<\/B> This is the database name for your QueueMetrics database|Nombre de la base de datos de QueueMetrics -</B> éste es el nombre de labase de datos para su base de datos de QueueMetrics|
+QueueMetrics Database Login -<\/B> This is the user name used to log in to your QueueMetrics database|Conexión de la base de datos de QueueMetrics -</B> éste es el nombre delusuario usado para abrirse una sesión a su base de datos deQueueMetrics|
+QueueMetrics Database Password -<\/B> This is the password used to log in to your QueueMetrics database|Contraseña de la base de datos de QueueMetrics -</B> ésta es lacontraseña usada para abrirse una sesión a su base de datos deQueueMetrics|
+QueueMetrics URL -<\/B> This is the URL or web site address used to get to your QueueMetrics installation|URL de QueueMetrics -</B> Ésta es la dirección del URL o del Web siteusada para conseguir a su instalación de QueueMetrics|
+QueueMetrics Log ID -<\/B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record|Identificación del registro de QueueMetrics -</B> ésta es laidentificación del servidor que todos los registros de VICIDIAL queentran la base de datos de QueueMetrics utilizarán como identificadorpara cada expediente|
+QueueMetrics Log ID: |Identificación Del Registro De QueueMetrics: |
+Campaign Dial Status Added|Estado Del Dial De la Campaña Agregado|
+Campaign Dial Status Removed|El Estado Del Dial De la Campaña Quitó|
+To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove|Para agregar otro estado al dial, selecciónelo de la lista drop-downy el tecleo AGREGA. Para quitar uno de los estados del dial, chasqueencendido el acoplamiento del QUITAR al lado del estado que usteddesea quitar|
+CAMPAIGN DIAL STATUS NOT ADDED|ESTADO DEL DIAL DE LA CAMPAÑA NO AGREGADO|
+CAMPAIGN DIAL STATUS ADDED|EL ESTADO DEL DIAL DE LA CAMPAÑA AGREGÓ|
+this dial status is not selected for this campaign|este estado del dial no se selecciona para esta campaña|
+CAMPAIGN DIAL STATUS NOT REMOVED|ESTADO DEL DIAL DE LA CAMPAÑA NO QUITADO|
+CAMPAIGN DIAL STATUS REMOVED|EL ESTADO DEL DIAL DE LA CAMPAÑA QUITÓ|
+>REMOVE<|>QUITE<|
+Dial Status |Estado Del Dial |
+no dial statuses selected for this campaign|ningunos estados del dial seleccionados para esta campaña|
+QueueMetrics EnterQueue Prepend -<\/B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything|QueueMetrics EnterQueue prepend -</B> este campo se utiliza para permitirprepending de una de las zonas de informaciones del vicidial_listdelante del número de teléfono del cliente para los informesmodificados para requisitos particulares de QueueMetrics. El defectono es NINGUNO no poblar cualquier cosa|
+QueueMetrics EnterQueue Prepend: |QueueMetrics EnterQueue Prepend: |
+VICIDIAL Agent Disable Display -<\/B> This field is used to select when to show an agent when their session has been disabled by the system, a manager action or by an external measure. The NOT_ACTIVE setting will disable the message on the agents screen. The LIVE_AGENT setting will only display the disabled message when the agents vicidial_auto_calls record has been removed, such as during a force logout or emergency logout|El agente de VICIDIAL inhabilita la exhibición -</B> este campo seutiliza para seleccionar cuando demostrar a un agente cuando susesión ha sido inhabilitada por el sistema, una acción del encargadoo por una medida externa. El ajuste de NOT_ACTIVE inhabilitará elmensaje en la pantalla de los agentes. El ajuste de LIVE_AGENTexhibirá solamente el mensaje lisiado cuando se ha quitado elexpediente de los vicidial_auto_calls de los agentes, por ejemplodurante un registro de estado de la máquina de la fuerza o registrode estado de la máquina de la emergencia|
+VICIDIAL Agent Disable Display: |El Agente de VICIDIAL Inhabilita La Exhibición:|
+Disable Alter Customer Data -<\/B> If set to Y, does not change any of the customer data record when an agent dispositions the call. Default is N|Inhabilite alteran datos del cliente -</B> si el sistema a Y, no cambiacualquiera del expediente de datos del cliente cuando lasdisposiciones de un agente la llamada. El defecto es N|
+Disable Alter Customer Data: |Inhabilite Alteran Datos Del Cliente:|
+Agent Alter Customer Data Override -<\/B> This option will override whatever the option is in the campaign for altering of customer data. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer data, no matter what the campaign setting is. Default is NOT_ACTIVE|El agente altera la invalidación de los datos del cliente -</B> estaopción se eliminará lo que es la opción en la campaña paraalterarse de los datos del cliente. NOT_ACTIVE utilizará lo que estápresente el ajuste para la campaña. ALLOW_ALTER permitirá siemprepara que el agente altere los datos del cliente, no importa qué es elajuste de la campaña. El defecto es NOT_ACTIVE|
+Agent Alter Customer Data Override: |El Agente Altera La Invalidación De los Datos Del Cliente: |
+Allow No-Hopper-Leads Logins -<\/B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N|Permita Ninguno-Tolva-Conduce conexiones -</B> si el sistema a Y, permiteagentes a la conexión a la campaña incluso si no hay plomos cargadosen la tolva para esa campaña. Esta función no se necesita encampañas de CLOSER-type. El defecto es N|
+Allow No-Hopper-Leads Logins: |Permita Ninguno-Tolva-Conduce Conexiones: |
+Enable SIPSAK Messages -<\/B> If enabled the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. Feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0|Permita los mensajes de SIPSAK -</B> si está permitido el servidorenviará mensajes al teléfono del SIP a la exhibición en laexhibición del LCD del teléfono cuando está registrado en VICIDIAL.La característica trabaja solamente con los teléfonos del SIP yrequiere el uso del sipsak ser instalada en el web server. El defectoes 0|
+Enable SIPSAK Messages: |Permita Los Mensajes de SIPSAK: |
+Allow SIPSAK Messages -<\/B> If set to 1, this will allow the phones table setting to work properly, the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. This feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0|Permita los mensajes de SIPSAK -</B> si el sistema a 1, éste permite queel ajuste de la tabla de los teléfonos trabaje correctamente, elservidor enviará mensajes al teléfono del SIP a la exhibición en laexhibición del LCD del teléfono cuando está registrado en VICIDIAL.Esta característica trabaja solamente con los teléfonos del SIP yrequiere el uso del sipsak ser instalada en el web server. El defectoes 0|
+Allow SIPSAK Messages: |Permita Los Mensajes de SIPSAK: |
+Admin Home URL -<\/B> This is the URL or web site address that you will go to if you click on the HOME link at the top of the admin.php page|URL casero del Admin -</B> ésta es la dirección del URL o del Web siteque usted irá si usted chasca encendido el acoplamiento CASERO en latapa de la página de admin.php|
+Admin Home URL: |URL Casero Del Admin: |
+>HOME<|>CASERO<|
+ Welcome | Recepción |
