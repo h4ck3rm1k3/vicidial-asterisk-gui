@@ -816,7 +816,7 @@ our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and
 one IAX2 softphone. 
 
 NOTE: If you want to use release 1.0.8 or 9 we would recommend either using the 
-CVS_v1-0_Stable branch where the issues are fixed, or patching your 1.0.8/1.0.9 code
+CVS_v1-0 branch where the issues are fixed, or patching your 1.0.8/1.0.9 code
 with the following patch: 
 (http://astguiclient.sourceforge.net/experimental_code/localmasq.patch)
 - If you do patch your system make sure you put the asterisk version 
@@ -851,8 +851,8 @@ with the following patch:
 		edit this line and change 100 to 999:
 		#define MAXMSG 100
 	- (1.0 tree)if you have no X server installed on your Asterisk machine, then you 
-	  will need to comment out the gtk console lib(only affects stable tree 
-	  and 1.0 releases) edit the voicemail source code file:
+	  will need to comment out the gtk console lib(only affects 1.0 releases)
+	  edit the voicemail source code file:
 	   -  vi /usr/src/asterisk/asterisk/pbx/Makefile
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")

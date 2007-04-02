@@ -582,6 +582,8 @@ if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["e
 	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
 if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["allow_sipsak_messages"];}
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
+if (isset($_GET["admin_home_url"]))				{$admin_home_url=$_GET["admin_home_url"];}
+	elseif (isset($_POST["admin_home_url"]))	{$admin_home_url=$_POST["admin_home_url"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -879,6 +881,7 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
 # $queuemetrics_url
+# $admin_home_url
 
 ### VARIABLES not filtered at all ###
 # $script_text
@@ -990,11 +993,12 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70319-1423 - Added Alter Customer Data and agent disable display functions
 # 70319-1625 - Added option to allow agents to login to outbound campaigns with no leads in the hopper
 # 70322-1455 - Added sipsak messages parameters
+# 70402-1157 - Added HOME link and entry to system_settings table, added QM link on reports section
 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.94';
-$build = '70322-1455';
+$admin_version = '2.0.95';
+$build = '70402-1157';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2873,9 +2877,13 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <BR>
 <B>Allow SIPSAK Messages -</B> If set to 1, this will allow the phones table setting to work properly, the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. This feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0. 
 
+<BR>
+<A NAME="settings-admin_home_url">
+<BR>
+<B>Admin Home URL -</B> This is the URL or web site address that you will go to if you click on the HOME link at the top of the admin.php page.
 
 
-allow_sipsak_messages
+
 
 <BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR>
@@ -3184,9 +3192,15 @@ function scriptInsertField() {
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <?
 echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
+
+$stmt="SELECT admin_home_url from system_settings;";
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$admin_home_url_LU =	$row[0];
+
 ?>
 <CENTER>
-<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 <TR BGCOLOR=#015B91>
 <TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Users </a></TD>
@@ -5803,7 +5817,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -9480,7 +9494,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -9497,6 +9511,7 @@ if ($ADD==311111111111111)
 	$queuemetrics_eq_prepend =		$row[11];
 	$vicidial_agent_disable =		$row[12];
 	$allow_sipsak_messages =		$row[13];
+	$admin_home_url =				$row[14];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -9531,6 +9546,7 @@ if ($ADD==311111111111111)
 	echo "<option selected value=\"$vicidial_agent_disable\">$vicidial_agent_disable</option>\n";
 	echo "</select>$NWB#settings-vicidial_agent_disable$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allow SIPSAK Messages: </td><td align=left><select size=1 name=allow_sipsak_messages><option>1</option><option>0</option><option selected>$allow_sipsak_messages</option></select>$NWB#settings-allow_sipsak_messages$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Admin Home URL: </td><td align=left><input type=text name=admin_home_url size=50 maxlength=255 value=\"$admin_home_url\">$NWB#settings-admin_home_url$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
@@ -10266,6 +10282,13 @@ if ($ADD==999999)
 		$active[$i] =				$row[3];
 		$i++;
 		}
+
+	$stmt="SELECT enable_queuemetrics_logging,queuemetrics_url from system_settings;";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$enable_queuemetrics_logging_LU =	$row[0];
+	$queuemetrics_url_LU =				$row[1];
+
 	?>
 
 	<HTML>
@@ -10282,8 +10305,13 @@ if ($ADD==999999)
 	<LI><a href="AST_agent_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE</a></FONT>
 	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>
 	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
+<?
+	if ($enable_queuemetrics_logging_LU > 0)
+		{
+		echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS REPORTS</a></FONT>\n";
+		}
+?>
 	</UL>
-
 	<PRE><TABLE BORDER=1 CELLPADDING=0 cellspacing=0>
 	<TR><TD>SERVER</TD><TD>DESCRIPTION</TD><TD>IP ADDRESS</TD><TD>ACTIVE</TD><TD>VDAD time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
 	<? 

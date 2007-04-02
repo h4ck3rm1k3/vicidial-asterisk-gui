@@ -160,6 +160,10 @@ Enable SIPSAK Messages -</B> If enabled the server will send messages to the SIP
 Enable SIPSAK Messages: ||
 Allow SIPSAK Messages -</B> If set to 1, this will allow the phones table setting to work properly, the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. This feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0||
 Allow SIPSAK Messages: ||
+Admin Home URL -</B> This is the URL or web site address that you will go to if you click on the HOME link at the top of the admin.php page||
+Admin Home URL: ||
+>HOME<||
+ Welcome ||
 
 
 ############################################################ CLIENT

@@ -117,3 +117,5 @@ ALTER TABLE vicidial_campaigns ADD no_hopper_leads_logins ENUM('Y','N') default 
 ALTER TABLE phones ADD enable_sipsak_messages ENUM('0','1') default '0';
 
 ALTER TABLE system_settings ADD allow_sipsak_messages ENUM('0','1') default '0';
+
+ALTER TABLE system_settings ADD admin_home_url VARCHAR(255) default '../vicidial/welcome.php';
