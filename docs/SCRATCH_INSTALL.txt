@@ -435,6 +435,8 @@ following modules first:   (say YES if asked to install prerequisites)
    - install Jcode			(needed for super list loader Excel)
    - install Spreadsheet::WriteExcel	(needed for super list loader Excel)
    - install OLE::Storage_Lite		(needed for super list loader Excel)
+   - install Proc::ProcessTable		(needed for super list loader Excel)
+   - install IO::Scalar			(needed for super list loader Excel)
    - install Spreadsheet::ParseExcel	(needed for super list loader Excel)
 - then quit cpan, you are done
 5. Go to http://asterisk.gnuinter.net/ and download the asterisk-perl module
