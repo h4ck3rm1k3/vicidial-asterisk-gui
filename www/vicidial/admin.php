@@ -1323,7 +1323,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		}
 
 	##### BEGIN get inbound groups listing for checkboxes #####
-	if (($ADD>20) and ($ADD<70))
+	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
 	{
 	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
