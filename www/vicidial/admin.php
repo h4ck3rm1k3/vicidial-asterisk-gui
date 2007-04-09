@@ -1292,7 +1292,7 @@ if ( ($ADD>9) && ($ADD < 99998) )
 		}
 	}
 
-if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD==31) or ($ADD==41) or ($ADD=="4A")  or ($ADD=="4B") or (strlen($ADD)==12) )
+if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD<70)) or ($ADD=="4A")  or ($ADD=="4B") or (strlen($ADD)==12) )
 	{
 	##### get server listing for dynamic pulldown
 	$stmt="SELECT server_ip,server_description from servers order by server_ip";
@@ -1323,7 +1323,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or ($ADD==21) or ($ADD=
 		}
 
 	##### BEGIN get inbound groups listing for checkboxes #####
-	if ($ADD==31)
+	if (($ADD>20) and ($ADD<70))
 	{
 	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
