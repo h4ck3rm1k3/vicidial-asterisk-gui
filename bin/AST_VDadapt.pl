@@ -20,6 +20,7 @@
 # 70205-1429 - Added code for campaign_changedate and campaign_stats_refresh updates
 # 70213-1221 - Added code for QueueMetrics queue_log QUEUESTART record
 # 70219-1249 - Removed unused references to dial_status_x fields
+# 70409-1219 - Removed CLOSER-type campaign restriction
 #
 
 # constants
@@ -407,15 +408,15 @@ foreach(@campaign_id)
 		$differential_onemin[$i]=0;
 		$agents_average_onemin[$i]=0;
 
-		### Grab the count of agents and lines
-		if ($campaign_id[$i] !~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
-			{
+	#	### Grab the count of agents and lines
+	#	if ($campaign_id[$i] !~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
+	#		{
 			&count_agents_lines;
-			}
-		else
-			{
-			if ($DB) {print "     CLOSER CAMPAIGN\n";}
-			}
+	#		}
+	#	else
+	#		{
+	#		if ($DB) {print "     CLOSER CAMPAIGN\n";}
+	#		}
 
 		if ($total_agents_avg[$i] > 0)
 			{
