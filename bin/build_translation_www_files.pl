@@ -363,6 +363,7 @@ foreach(@lang_list)
 												{
 												$file[$LINESct] =~ s/\.\/images\//\.\.\/agc\/images\//g;
 												$file[$LINESct] =~ s/\"help.gif/\"..\/astguiclient\/help.gif/g;
+												$phrase_found_counter++;
 												}
 											if ($lang_abb !~ /^en/)
 												{

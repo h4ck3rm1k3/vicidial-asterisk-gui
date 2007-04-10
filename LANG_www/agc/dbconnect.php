@@ -1,6 +1,6 @@
 <?
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 if ( file_exists("/etc/astguiclient.conf") )
 {
@@ -36,7 +36,7 @@ $WeBServeRRooT = '/usr/local/apache2/htdocs';
 }
 
 $link=mysql_connect("$VARDB_server", "$VARDB_user", "$VARDB_pass");
-mysql_select_db("$VARDB_database");
+mysql_select_db("$VARDB_database",$link);
 
 $local_DEF = 'Local/';
 $conf_silent_prefix = '7';
@@ -44,5 +44,6 @@ $local_AMP = '@';
 $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
+$non_latin = '0';	# set to 1 for UTF rules
 
 ?>

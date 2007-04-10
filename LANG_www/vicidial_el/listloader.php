@@ -137,11 +137,11 @@ function ShowProgress(good, bad, total, dup, post) {
 	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="" name='list_id_override' size=10 maxlength=8> (μόνο αριθμοί or leave blank for values in the file)</td>
   </tr>
   <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Duplicate Check: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Διπλός έλεγχος μολύβδου: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck><option selected value="NONE">NO DUPLICATE CHECK</option><option value="DUP">CHECK FOR DUPLICATES BY PHONE IN ID ΛΙΣΤΑΣ</option></select></td>
   </tr>
   <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Timezone Lookup: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Συμβούλευση ζώνης χρονικής ανοχής: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=postalgmt><option selected value="AREA">COUNTRY CODE AND AREA CODE ONLY</option><option value="POSTAL">POSTAL CODE FIRST</option></select></td>
   </tr>
   <tr>

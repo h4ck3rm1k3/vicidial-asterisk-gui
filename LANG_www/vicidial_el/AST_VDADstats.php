@@ -29,7 +29,7 @@ if (isset($_GET["ΕΠΙΒΕΒΑΙΩΣΗ"]))				{$ΕΠΙΒΕΒΑΙΩΣΗ=$_GET["�
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -88,7 +88,7 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 	}
 echo "</SELECT>\n";
 echo "<INPUT type=submit NAME=ΕΠΙΒΕΒΑΙΩΣΗ VALUE=ΥΠΟΒΑΛΛΩ>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./server_stats.php\">ΑΝΑΦΟΡΕΣ</a> </FONT>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./admin.php?ADD=999999\">ΑΝΑΦΟΡΕΣ</a> </FONT>\n";
 echo "</FORM>\n\n";
 
 echo "<PRE><FONT SIZE=2>\n\n";
@@ -203,6 +203,82 @@ echo "Μέσος όρος σε δευτερόλεπτα για ΝΑ κλήσει
 
 
 ##############################
+#########  CALL STATUS STATS
+
+$TOTALcalls = 0;
+
+echo "\n";
+echo "---------- CALL STATUS STATS\n";
+echo "+--------+----------------------+------------+\n";
+echo "| STATUS | DESCRIPTION          | CALLS      |\n";
+echo "+--------+----------------------+------------+\n";
+
+$stmt="SELECT * from vicidial_statuses order by status";
+$rslt=mysql_query($stmt, $link);
+$statuses_to_print = mysql_num_rows($rslt);
+$statuses_list='';
+
+$o=0;
+while ($statuses_to_print > $o) 
+	{
+	$rowx=mysql_fetch_row($rslt);
+	$statname_list["$rowx[0]"] = "$rowx[1]";
+	$o++;
+	}
+
+$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='" . mysql_real_escape_string($group) . "' order by status";
+$rslt=mysql_query($stmt, $link);
+$Cstatuses_to_print = mysql_num_rows($rslt);
+
+$o=0;
+while ($Cstatuses_to_print > $o) 
+	{
+	$rowx=mysql_fetch_row($rslt);
+	$statname_list["$rowx[0]"] = "$rowx[1]";
+	$o++;
+	}
+
+$stmt="select count(*),status from vicidial_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$TOTALcalls = ($TOTALcalls + $row[0]);
+
+	$STATUScount =	sprintf("%10s", $row[0]);while(strlen($STATUScount)>10) {$STATUScount = substr("$STATUScount", 0, -1);}
+	$RAWstatus = $row[1];
+	$status =	sprintf("%-6s", $row[1]);while(strlen($status)>6) {$status = substr("$status", 0, -1);}
+
+	if ($non_latin < 1)
+		{
+		 $status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
+		 while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
+		}
+	else
+		{
+		 $status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
+		 while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
+		}
+
+
+	echo "| $status | $status_name | $STATUScount |\n";
+
+	$i++;
+	}
+
+$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+
+echo "+--------+----------------------+------------+\n";
+echo "| TOTAL:                        | $TOTALcalls |\n";
+echo "+-------------------------------+------------+\n";
+
+
+##############################
 #########  USER STATS
 
 $TOTagents=0;
@@ -217,6 +293,7 @@ echo "| ΧΕΙΡΙΣΤΗΣ                   | CALLS      | TIME M   | AVRG M |\
 echo "+--------------------------+------------+----------+--------+\n";
 
 $stmt="select vicidial_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_log.user=vicidial_users.user group by vicidial_log.user;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -228,8 +305,15 @@ while ($i < $users_to_print)
 	$TOTcalls = ($TOTcalls + $row[2]);
 	$TOTtime = ($TOTtime + $row[3]);
 
-	$user =			sprintf("%-6s", $row[0]);
-	$full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}
+	$user =	sprintf("%-6s", $row[0]);while(strlen($user)>6) {$user = substr("$user", 0, -1);}
+	if ($non_latin < 1)
+	{
+ 	 $full_name =	sprintf("%-15s", $row[1]); while(strlen($full_name)>15) {$full_name = substr("$full_name", 0, -1);}	
+	}
+	else
+	{
+	 $full_name =	sprintf("%-45s", $row[1]); while(mb_strlen($full_name,'utf-8')>15) {$full_name = mb_substr("$full_name", 0, -1,'utf-8');}	
+	}
 	$USERcalls =	sprintf("%10s", $row[2]);
 	$USERtotTALK =	$row[3];
 	$USERavgTALK =	$row[4];

@@ -3,6 +3,11 @@
 ### 
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
+# CHANGES
+#
+# 60620-1042 - Added variable filtering to eliminate SQL injection attack threat
+#            - Added required user/pass to gain access to this page
+#
 
 require("dbconnect.php");
 
@@ -17,6 +22,23 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
 if (isset($_GET["ENVIAR"]))				{$ENVIAR=$_GET["ENVIAR"];}
 	elseif (isset($_POST["ENVIAR"]))		{$ENVIAR=$_POST["ENVIAR"];}
+
+$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
+
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$auth=$row[0];
+
+  if( (strlen($PHP_AUTH_USER)<2) or (strlen($PHP_AUTH_PW)<2) or (!$auth))
+	{
+    Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
+    Header("HTTP/1.0 401 Unauthorized");
+    echo "Nombre y contraseña inválidos del usuario: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    exit;
+	}
 
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
@@ -67,7 +89,7 @@ echo"<META HTTP-EQUIV=Refresh CONTENT=\"7; URL=$PHP_SELF?server_ip=$server_ip&DB
 echo "<TITLE>VICIDIAL: Time On Park</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<PRE><FONT SIZE=3>\n\n";
 
-echo "VICIDIAL: Time On Park                       $NOW_TIME\n\n";
+echo "VICIDIAL: Time On Park         $NOW_TIME    <a href=\"./admin.php?ADD=999999\">INFORMES</a>\n\n";
 echo "+------------+-----------------+---------------------+---------+\n";
 echo "| CHANNEL    | GROUP           | START TIME          | MINUTES |\n";
 echo "+------------+-----------------+---------------------+---------+\n";
@@ -76,7 +98,7 @@ echo "+------------+-----------------+---------------------+---------+\n";
 # $linkX=mysql_connect("localhost", "cron", "1234");
 #mysql_select_db("asterisk");
 
-$stmt="select extension,user,channel,channel_group,parked_time,UNIX_TIMESTAMP(parked_time) from park_log where status ='PARKED' and server_ip='$server_ip' order by uniqueid;";
+$stmt="select extension,user,channel,channel_group,parked_time,UNIX_TIMESTAMP(parked_time) from park_log where status ='PARKED' and server_ip='" . mysql_real_escape_string($server_ip) . "' order by uniqueid;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $parked_to_print = mysql_num_rows($rslt);
@@ -138,7 +160,7 @@ echo "| STATION    | USER   | CHANNEL    | GROUP           | START TIME         
 echo "+------------|--------+------------+-----------------+---------------------+---------+\n";
 
 
-$stmt="select extension,user,channel,channel_group,grab_time,UNIX_TIMESTAMP(grab_time) from park_log where status ='TALKING' and server_ip='$server_ip' order by uniqueid;";
+$stmt="select extension,user,channel,channel_group,grab_time,UNIX_TIMESTAMP(grab_time) from park_log where status ='TALKING' and server_ip='" . mysql_real_escape_string($server_ip) . "' order by uniqueid;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);

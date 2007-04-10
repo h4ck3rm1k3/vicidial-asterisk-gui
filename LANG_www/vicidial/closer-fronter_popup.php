@@ -4,6 +4,11 @@
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # this is the closer popup of a specific call that starts recording the call and allows you to go and fetch info on that caller in the local CRM system.
+# CHANGES
+#
+# 60620-1020 - Added variable filtering to eliminate SQL injection attack threat
+# 61201-1114 - Added lead_id and user to recording_log entry
+#
 
 require("dbconnect.php");
 
@@ -91,6 +96,8 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 
+$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 #$DB = '1';	# DEBUG override
 $US = '_';
@@ -161,6 +168,7 @@ $browser = getenv("HTTP_USER_AGENT");
 echo "<html>\n";
 echo "<head>\n";
 echo "<title>VICIDIAL FRONTER-CLOSER: Popup</title>\n";
+echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 
 if (eregi('CL_UNIV',$channel_group))
 	{
@@ -234,15 +242,15 @@ if ($parked_count > 0)
 
 	# Local/78600098@demo-6617,2
 
-	$stmt = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Originate','$DTqueryCID','Channel: $local_DEF$conf_silent_prefix$session_id$local_AMP$ext_context','Context: $ext_context','Exten: $recording_exten','Priority: 1','Callerid: $filename','','','','','')";
+	$stmt = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','" . mysql_real_escape_string($server_ip) . "','','Originate','$DTqueryCID','Channel: $local_DEF$conf_silent_prefix" . mysql_real_escape_string($session_id) . "$local_AMP$ext_context','Context: $ext_context','Exten: $recording_exten','Priority: 1','Callerid: " . mysql_real_escape_string($filename) . "','','','','','')";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
-	$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename) values('Zap/$channel','$server_ip','SIP/$SIPexten','$NOW_TIME','$STARTtime','$filename')";
+	$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('Zap/" . mysql_real_escape_string($channel) . "','" . mysql_real_escape_string($server_ip) . "','SIP/" . mysql_real_escape_string($SIPexten) . "','$NOW_TIME','$STARTtime','" . mysql_real_escape_string($filename) . "','$lead_id','$user')";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
-	$stmt="SELECT recording_id FROM recording_log where filename='$filename'";
+	$stmt="SELECT recording_id FROM recording_log where filename='" . mysql_real_escape_string($filename) . "'";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
@@ -250,7 +258,7 @@ if ($parked_count > 0)
 
 	echo "Recording command sent for channel $channel - $filename - $recording_id &nbsp; &nbsp; &nbsp; $NOW_TIME\n<BR><BR>\n";
 
-	$stmt="SELECT full_name from vicidial_users where user='$user'";
+	$stmt="SELECT full_name from vicidial_users where user='" . mysql_real_escape_string($user) . "'";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
@@ -278,7 +286,7 @@ if (eregi('CL_TEST',$channel_group))
 	{
 	echo "GALLERIA TEST CLOSER GROUP: $channel_group\n";
 
-	$stmt="SELECT user,phone_number from vicidial_list where lead_id='$parked_by';";
+	$stmt="SELECT user,phone_number from vicidial_list where lead_id='" . mysql_real_escape_string($parked_by) . "';";
 		if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -313,7 +321,7 @@ if ( (eregi('CL_MWCOF',$channel_group)) or (eregi('MWCOF',$group)) or (eregi('TE
 	{
 	echo "BUYERS EDGE INTERNAL CLOSER GROUP: $channel_group\n";
 
-	$stmt="SELECT user,phone_number from vicidial_list where lead_id='$parked_by';";
+	$stmt="SELECT user,phone_number from vicidial_list where lead_id='" . mysql_real_escape_string($parked_by) . "';";
 		if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);

@@ -4,6 +4,10 @@
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # this is the closer popup of a specific call that grabs the call and allows you to go and fetch info on that caller in the local CRM system.
+# CHANGES
+#
+# 60620-1029 - Added variable filtering to eliminate SQL injection attack threat
+#
 
 require("dbconnect.php");
 
@@ -42,6 +46,9 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+
+$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 
 #$DB=1;
@@ -99,6 +106,7 @@ $browser = getenv("HTTP_USER_AGENT");
 echo "<html>\n";
 echo "<head>\n";
 echo "<title>VICIDIAL CLOSER: Popup</title>\n";
+echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 
 if (eregi('CL_UNIV',$channel_group))
 	{
@@ -152,7 +160,7 @@ $parked_count = $row[0];
 
 if ($parked_count > 0)
 {
-	$stmt="DELETE from parked_channels where server_ip='$server_ip' and parked_time='$parked_time' and channel='$channel' LIMIT 1";
+	$stmt="DELETE from parked_channels where server_ip='" . mysql_real_escape_string($server_ip) . "' and parked_time='" . mysql_real_escape_string($parked_time) . "' and channel='" . mysql_real_escape_string($channel) . "' LIMIT 1";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
@@ -180,13 +188,13 @@ if ($parked_count > 0)
 #	echo "Recording command sent for channel $channel - $filename - $recording_id<BR>\n";
 
 	### insert a NEW record to the vicidial_manager table to be processed
-	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Redirect','$DTqueryCID','Exten: $dialplan_number','Channel: $channel','Context: $ext_context','Priority: 1','Callerid: $DTqueryCID','','','','','')";
+	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','" . mysql_real_escape_string($server_ip) . "','','Redirect','$DTqueryCID','Exten: $dialplan_number','Channel: " . mysql_real_escape_string($channel) . "','Context: $ext_context','Priority: 1','Callerid: $DTqueryCID','','','','','')";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
 	echo "Redirect command sent for channel $channel &nbsp; &nbsp; &nbsp; $NOW_TIME\n<BR><BR>\n";
 
-	$stmt="SELECT full_name from vicidial_users where user='$parked_by'";
+	$stmt="SELECT full_name from vicidial_users where user='" . mysql_real_escape_string($parked_by) . "'";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
@@ -200,7 +208,7 @@ if ($parked_count > 0)
 
 
 
-	$stmt="UPDATE park_log set grab_time='$NOW_TIME',status='TALKING',extension='$extension',user='$PHP_AUTH_USER' where parked_time='$parked_time' and server_ip='$server_ip' and  channel='$channel'";
+	$stmt="UPDATE park_log set grab_time='$NOW_TIME',status='TALKING',extension='" . mysql_real_escape_string($extension) . "',user='$PHP_AUTH_USER' where parked_time='" . mysql_real_escape_string($parked_time) . "' and server_ip='" . mysql_real_escape_string($server_ip) . "' and  channel='" . mysql_real_escape_string($channel) . "'";
 	if ($DB) {echo "|$stmt|\n";}
 		$fp = fopen ("./closer_SQL_updates.txt", "a");
 		fwrite ($fp, "$date|$PHP_AUTH_USER|$stmt|\n");
@@ -216,7 +224,7 @@ if (eregi('CL_TEST',$channel_group))
 	{
 	echo "GALLERIA TEST CLOSER GROUP: $channel_group\n";
 
-	$stmt="SELECT user,phone_number from vicidial_list where lead_id='$parked_by';";
+	$stmt="SELECT user,phone_number from vicidial_list where lead_id='" . mysql_real_escape_string($parked_by) . "';";
 		if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -251,7 +259,7 @@ if (eregi('CL_MWCOF',$channel_group))
 	{
 	echo "GALLERIA INTERNAL CLOSER GROUP: $channel_group\n";
 
-	$stmt="SELECT user,phone_number from vicidial_list where lead_id='$parked_by';";
+	$stmt="SELECT user,phone_number from vicidial_list where lead_id='" . mysql_real_escape_string($parked_by) . "';";
 		if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);

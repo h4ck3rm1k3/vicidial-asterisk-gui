@@ -28,7 +28,7 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -63,7 +63,11 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Time Sheet</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
-echo "<a href=\"./admin.php\">VICIDIAL ADMIN</a>: Agent Time Sheet<BR>\n";
+echo "<a href=\"./admin.php\">VICIDIAL ADMIN</a>: Agent Time Sheet\n";
+echo " - <a href=\"./user_stats.php?user=$agent\">User Stats</a>\n";
+echo " - <a href=\"./user_status.php?user=$agent\">User Status</a>\n";
+echo " - <a href=\"./admin.php?ADD=3&user=$agent\">Ändern Sie Benutzer</a>\n";
+echo "<BR>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET> &nbsp; \n";
 echo "Date: <INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
 echo "User ID: <INPUT TYPE=TEXT NAME=agent SIZE=10 MAXLENGTH=20 VALUE=\"$agent\">\n";

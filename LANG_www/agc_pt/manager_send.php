@@ -1,7 +1,7 @@
 <?
 # manager_send.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -12,7 +12,7 @@
 #  - $user
 #  - $pass
 # optional variables:
-#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl')
+#  - $ACTION - ('Originate','Redirect','Hangup','Command','Monitor','StopMonitor','SysCIDOriginate','RedirectName','RedirectNameVmail','MonitorConf','StopMonitorConf','RedirectXtra','RedirectXtraCX','RedirectVD','HangupConfDial','VolumeControl','OriginateVDRelogin')
 #  - $queryCID - ('CN012345678901234567',...)
 #  - $format - ('text','debug')
 #  - $channel - ('Zap/41-1','SIP/test101-1jut','IAX2/iaxy@iaxy',...)
@@ -35,7 +35,7 @@
 #  - $stage - ('UP','DOWN')
 # 
 
-# changes
+# CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
 # 50404-1045 - Redirect basic function enabled
 # 50406-1522 - Monitor basic function enabled
@@ -64,6 +64,10 @@
 # 61004-1526 - Added parsing of volume control command and lookup or number
 # 61130-1617 - Added lead_id to MonitorConf for recording_log
 # 61201-1115 - Added user to MonitorConf for recording_log
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70226-1251 - Added Mute/UnMute to conference volume control
+# 70320-1502 - Added option to allow retry of leave-3way-call and debug logging
+# 70322-1636 - Added sipsak display ability
 #
 
 require("dbconnect.php");
@@ -123,6 +127,16 @@ if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
 	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
 if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
 	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
+if (isset($_GET["extension"]))					{$extension=$_GET["extension"];}
+	elseif (isset($_POST["extension"]))			{$extension=$_POST["extension"];}
+if (isset($_GET["protocol"]))					{$protocol=$_GET["protocol"];}
+	elseif (isset($_POST["protocol"]))			{$protocol=$_POST["protocol"];}
+if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
+	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
+if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
+	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
+if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["allow_sipsak_messages"];}
+	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -133,8 +147,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.27';
-$build = '61130-1617';
+$version = '2.0.29';
+$build = '70320-1502';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -277,6 +291,21 @@ if ($ACTION=="OriginateNameVmail")
 		$ACTION="Originate";
 		}
 	}
+}
+
+if ($ACTION=="OriginateVDRelogin")
+{
+	if ( ($enable_sipsak_messages > 0) and ($allow_sipsak_messages > 0) and (eregi("SIP",$protocol)) )
+	{
+	$CIDdate = date("ymdHis");
+	$DS='-';
+	$SIPSAK_prefix = 'LIN-';
+	print "<!-- sending login sipsak message: $SIPSAK_prefix$VD_campaign -->\n";
+	passthru("/usr/local/bin/sipsak -M -O desktop -B \"$SIPSAK_prefix$campaign\" -r 5060 -s sip:$extension@$phone_ip > /dev/null");
+	$queryCID = "$SIPSAK_prefix$campaign$DS$CIDdate";
+
+	}
+	$ACTION="Originate";
 }
 
 if ($ACTION=="Originate")
@@ -430,7 +459,7 @@ if ($ACTION=="RedirectVD")
 	else
 	{
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
-			if (eregi("CLOSER",$campaign))
+			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 				{
 				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -560,6 +589,7 @@ if ($ACTION=="RedirectNameVmail")
 
 if ($ACTION=="RedirectXtraCX")
 {
+	$DBout='';
 	$row='';   $rowx='';
 	$channel_liveX=1;
 	$channel_liveY=1;
@@ -575,6 +605,15 @@ if ($ACTION=="RedirectXtraCX")
 		echo "ext_context $ext_context deve ser ajustado\n";
 		echo "ext_priority $ext_priority deve ser ajustado\n";
 		echo "\nRedirect Action não emitido\n";
+		if (ereg("SECOND|FIRST|DEBUG",$filename))
+			{
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
+				fclose($fp);
+				}
+			}
 	}
 	else
 	{
@@ -594,6 +633,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveX=0;
 				echo "Canaleta $channel não está vivo em $call_server_ip, Redirect comando não introduzido\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel não está vivo em $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -610,6 +650,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveY=0;
 				echo "Canaleta $channel não está vivo em $server_ip, Redirect comando não introduzido\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel não está vivo em $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -622,6 +663,7 @@ if ($ACTION=="RedirectXtraCX")
 			{
 				$channel_liveY=0;
 				echo "No Local agent to send call to, Redirect comando não introduzido\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
 			{
@@ -654,6 +696,7 @@ if ($ACTION=="RedirectXtraCX")
 				$rslt=mysql_query($stmt, $link);
 
 				echo "RedirectXtraCX comando emitido para Canaleta $channel em $call_server_ip and \nHungup $extrachannel em $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel em $call_server_ip, Hungup $extrachannel em $server_ip";}
 			}
 		}
 		else
@@ -662,8 +705,19 @@ if ($ACTION=="RedirectXtraCX")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel em $server_ip";}
 		}
+
+	if (ereg("SECOND|FIRST|DEBUG",$filename))
+		{
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./vicidial_debug.txt", "a");
+			fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$DBout|\n");
+			fclose($fp);
+			}
+		}
+
 	}
 }
 
@@ -688,6 +742,15 @@ if ($ACTION=="RedirectXtra")
 			echo "ext_context $ext_context deve ser ajustado\n";
 			echo "ext_priority $ext_priority deve ser ajustado\n";
 			echo "\nRedirect Action não emitido\n";
+			if (ereg("SECOND|FIRST|DEBUG",$filename))
+				{
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./vicidial_debug.txt", "a");
+					fwrite ($fp, "$NOW_TIME|RDX|$filename|$user|$campaign|$$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
+					fclose($fp);
+					}
+				}
 		}
 		else
 		{
@@ -708,6 +771,7 @@ if ($ACTION=="RedirectXtra")
 				{
 				$channel_liveX=0;
 				echo "Não pode encontrar a conferência vazia em $server_ip, Redirect comando não introduzido\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Não pode encontrar a conferência vazia em $server_ip";}
 				}
 			}
 
@@ -717,7 +781,7 @@ if ($ACTION=="RedirectXtra")
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-			if ($row[0]==0)
+			if ( ($row[0]==0) && (!ereg("SECOND",$filename)) )
 			{
 				$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$call_server_ip' and channel='$channel';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -727,13 +791,14 @@ if ($ACTION=="RedirectXtra")
 				{
 					$channel_liveX=0;
 					echo "Canaleta $channel não está vivo em $call_server_ip, Redirect comando não introduzido\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel não está vivo em $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-			if ($row[0]==0)
+			if ( ($row[0]==0) && (!ereg("SECOND",$filename)) )
 			{
 				$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$server_ip' and channel='$extrachannel';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -743,6 +808,7 @@ if ($ACTION=="RedirectXtra")
 				{
 					$channel_liveY=0;
 					echo "Canaleta $channel não está vivo em $server_ip, Redirect comando não introduzido\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel não está vivo em $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -754,6 +820,7 @@ if ($ACTION=="RedirectXtra")
 					$rslt=mysql_query($stmt, $link);
 
 					echo "RedirectXtra comando emitido para Canaleta $channel and \nExtraCanaleta $extrachannel\n to $exten em $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten em $server_ip";}
 				}
 				else
 				{
@@ -778,6 +845,7 @@ if ($ACTION=="RedirectXtra")
 					$rslt=mysql_query($stmt, $link);
 
 					echo "RedirectXtra comando emitido para Canaleta $channel em $call_server_ip and \nExtraCanaleta $extrachannel\n to $exten em $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
 			else
@@ -788,6 +856,17 @@ if ($ACTION=="RedirectXtra")
 				{$ACTION="Redirect";   $channel=$extrachannel;}
 
 			}
+
+		if (ereg("SECOND|FIRST|DEBUG",$filename))
+			{
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|RDX|$filename|$user|$campaign|$DBout|\n");
+				fclose($fp);
+				}
+			}
+
 		}
 	}
 }
@@ -1018,8 +1097,10 @@ if ($ACTION=="VolumeControl")
 	else
 	{
 	$participant_number='XXYYXXYYXXYYXX';
+	if (eregi('UP',$stage)) {$vol_prefix='4';}
 	if (eregi('DOWN',$stage)) {$vol_prefix='3';}
-	else {$vol_prefix='4';}
+	if (eregi('UNMUTE',$stage)) {$vol_prefix='2';}
+	if (eregi('MUTING',$stage)) {$vol_prefix='1';}
 	$local_DEF = 'Local/';
 	$local_AMP = '@';
 	$volume_local_channel = "$local_DEF$participant_number$vol_prefix$exten$local_AMP$ext_context";

@@ -7,7 +7,8 @@
 #
 # 60619-1654 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
-#
+# 70115-1614 - Added ALT field for vicidial_hopper alt_dial column
+# 
 
 require("dbconnect.php");
 
@@ -24,7 +25,7 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1' and modify_campaigns='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -122,11 +123,11 @@ echo "Total leads in hopper right now:       $TOTALcalls\n";
 
 echo "\n";
 echo "---------- LEADS IN HOPPER\n";
-echo "+------+-----------+------------+-------+--------+-------+--------+\n";
-echo "|      | LEAD_ID   | PHONE NUM  | STATE | STATUS | COUNT | GMT    |\n";
-echo "+------+-----------+------------+-------+--------+-------+--------+\n";
+echo "+------+-----------+------------+-------+--------+-------+--------+-------+\n";
+echo "|      | LEAD_ID   | PHONE NUM  | STATE | STATUS | COUNT | GMT    | ALT   |\n";
+echo "+------+-----------+------------+-------+--------+-------+--------+-------+\n";
 
-$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by hopper_id limit 2000;";
+$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id,alt_dial from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by hopper_id limit 2000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -143,14 +144,15 @@ while ($i < $users_to_print)
 	$count =		sprintf("%-5s", $row[4]);
 	$gmt =			sprintf("%-6s", $row[5]);
 	$hopper_id =	sprintf("%-6s", $row[6]);
+	$alt_dial =		sprintf("%-5s", $row[7]);
 
 if ($DB) {echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt | $hopper_id |\n";}
-else {echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt |\n";}
+else {echo "| $FMT_i | $lead_id | $phone_number | $state | $status | $count | $gmt | $alt_dial |\n";}
 
 	$i++;
 	}
 
-echo "+------+-----------+------------+-------+--------+-------+--------+\n";
+echo "+------+-----------+------------+-------+--------+-------+--------+-------+\n";
 
 
 }

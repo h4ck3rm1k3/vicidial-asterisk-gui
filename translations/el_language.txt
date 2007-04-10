@@ -420,3 +420,10 @@ Agent: |Πράκτορας:|
 Comments: |Σχολιάζει:|
 ### BEGIN translation phrases for 2.0.2 release ###
 VOLUME|ΟΓΚΟΣ|
+### BEGIN translation phrases for 2.0.3 release ###
+FAST DIAL|ΓΡΗΓΟΡΟΣ ΠΙΝΑΚΑΣ|
+YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|ΠΡΕΠΕΙ ΝΑ ΠΛΗΚΤΡΟΛΟΓΕΣΕΤΕ έναν ΤΗΛΕΦΩΝΙΚΟ ΑΡΙΘΜΟ ΚΑΙ έναν ΚΩΔΙΚΟΠΙΝΑΚΩΝ στο ΓΡΗΓΟΡΟ ΠΙΝΑΚΑ ΧΡΗΣΗΣ|
+ SELECT A PAUSE CODE :| ΕΠΙΛΕΞΤΕ έναν ΚΩΔΙΚΑ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ :|
+ENTER A PAUSE CODE|ΠΛΗΚΤΡΟΛΟΓΕΣΤΕ έναν ΚΩΔΙΚΟ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ|
+YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|ΠΡΕΠΕΙ ΝΑ ΣΤΑΜΑΤΗΘΕΙΤΕ ΓΙΑ ΝΑ ΠΛΗΚΤΡΟΛΟΓΕΙΤΕ έναν ΚΩΔΙΚΟ ΜΙΚΡΗΣΔΙΑΚΟΠΉΣ στον ΤΡΟΠΟ αυτόματος-ΠΙΝΑΚΩΝ|
+Your session has been disabled|Η σύνοδός σας έχει τεθεί εκτός λειτουργίας|

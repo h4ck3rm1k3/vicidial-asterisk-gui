@@ -85,6 +85,8 @@ if (isset($_GET["callback_id"]))				{$callback_id=$_GET["callback_id"];}
 	elseif (isset($_POST["callback_id"]))		{$callback_id=$_POST["callback_id"];}
 if (isset($_GET["CBuser"]))				{$CBuser=$_GET["CBuser"];}
 	elseif (isset($_POST["CBuser"]))		{$CBuser=$_POST["CBuser"];}
+if (isset($_GET["modify_logs"]))			{$modify_logs=$_GET["modify_logs"];}
+	elseif (isset($_POST["modify_logs"]))	{$modify_logs=$_POST["modify_logs"];}
 
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -105,6 +107,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 # 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
 # 61130-1639 - Added recording_log lookup and list for this lead_id
 # 61201-1136 - Added recording_log user(TSR) display and link
+# 70305-1133 - Changed to default CHECKED modify logs upon status change
 #
 
 $STARTtime = date("U");
@@ -112,7 +115,7 @@ $TODAY = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and modify_leads='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -215,6 +218,17 @@ $call_length = ($STARTtime - $call_began);
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<BR>Lead added to DNC List: $lead_id - $phone_number<BR>\n";
+	}
+	### update last record in vicidial_agent_log and vicidial_log tables 
+       if (($dispo != $status) and ($modify_logs > 0)) 
+	{
+		$stmt="UPDATE vicidial_log set status='" . mysql_real_escape_string($status) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "' order by call_date desc limit 1";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE vicidial_agent_log set status='" . mysql_real_escape_string($status) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "' order by agent_log_id desc limit 1";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 	}
 
 }
@@ -346,7 +360,9 @@ else
 			echo "</select></td></tr>\n";
 
 
-		echo "<tr><td colspan=2><input type=submit name=submit value=\"SUBMIT\"></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent and vicidial logs </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
+
+		echo "<tr><td colspan=2 align=center><input type=submit name=submit value=\"SUBMIT\"></td></tr>\n";
 		echo "</table></form>\n";
 		echo "<BR><BR><BR>\n";
 

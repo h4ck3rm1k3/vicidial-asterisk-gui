@@ -27,7 +27,7 @@ if (isset($_GET["ENVIAR"]))				{$ENVIAR=$_GET["ENVIAR"];}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -86,7 +86,7 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 	}
 echo "</SELECT>\n";
 echo "<INPUT TYPE=submit NAME=ENVIAR VALUE=ENVIAR>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group\">MODIFICAR</a> | <a href=\"./server_stats.php\">INFORMES</a> </FONT>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group\">MODIFICAR</a> | <a href=\"./admin.php?ADD=999999\">INFORMES</a> </FONT>\n";
 echo "</FORM>\n\n";
 
 echo "<PRE><FONT SIZE=2>\n\n";

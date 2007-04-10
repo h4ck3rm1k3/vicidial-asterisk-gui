@@ -179,7 +179,7 @@ $admDIR = "$HTTPprotocol$server_name$script_name";
 $admDIR = eregi_replace('new_listloader_superL.php','',$admDIR);
 $admSCR = 'admin.php';
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$admDIR$admSCR?ADD=99999";
-$NWE = "')\"><IMG SRC=\"../astguiclient/help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+$NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
 
 $secX = date("U");
 $hour = date("H");
@@ -307,7 +307,7 @@ function ParseFileName() {
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck><option selected value="NONE">NO DUPLICATE CHECK</option><option value="DUP">CHECK FOR DUPLICATES BY PHONE IN LIST ID</option></select></td>
   </tr>
   <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Timezone Lookup: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Time Zone Lookup: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=postalgmt><option selected value="AREA">COUNTRY CODE AND AREA CODE ONLY</option><option value="POSTAL">POSTAL CODE FIRST</option></select></td>
   </tr>
 <tr>

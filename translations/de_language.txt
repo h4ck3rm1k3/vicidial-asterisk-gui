@@ -207,8 +207,8 @@ CAMPAIGN CUSTOM PARKING|KAMPAGNE ANGEPASSTES PARKEN|
 CAMPAIGN DEFAULT PARKING|KAMPAGNE DEFAULT PARKEN|
 CAMPAIGN CUSTOM WEB FORM|KAMPAGNE ANGEPASSTES WEB-FORMULAR|
 CAMPAIGN DEFAULT WEB FORM|KAMPAGNE DEFAULT WEB-FORMULAR|
-CAMPAIGN ALLOWS CLOSERS|KAMPAGNE ERLAUBT CLOSERS|
-CAMPAIGN ALLOWS NO CLOSERS|KAMPAGNE ERLAUBT KEINE CLOSERS|
+CAMPAIGN ALLOWS CLOSERS|KAMPAGNE ERLAUBT SUPERVISOR|
+CAMPAIGN ALLOWS NO CLOSERS|KAMPAGNE ERLAUBT KEINE SUPERVISOREN|
 USING PREVIOUS MEETME ROOM|VERWENDEN DES VORHERGEHENDEN MEETME RAUMES|
 USING NEW MEETME ROOM|VERWENDEN DES NEUEN MEETME RAUMES|
 old QUEUE and INCALL reverted list|alte WARTESCHLANGE und INCALL umgegehrte Liste|
@@ -234,8 +234,8 @@ Hangup Xfer Line|Transferleitung auflegen|
 Hangup Both Lines|Beide Leitungen auflegen|
 Hangup Customer|Kunden auflegen|
 Transfer - Conference|Transfer - Konferenz|
-LOCAL CLOSER|LOKALER CLOSER|
-INTERNAL CLOSER|INTERNER CLOSER|
+LOCAL CLOSER|LOKALER SUPERVISOR|
+INTERNAL CLOSER|INTERNER SUPERVISOR|
 Dial Blind Transfer|Wähle blinden Transfer|
 Dial timed out, contact your system administrator|Timeout beim wählen, bitte kontaktieren sie ihren Systemadministrator|
 No more leads in the hopper for campaign|Es sind keine Adressen im Hopper vorhanden|
@@ -252,8 +252,8 @@ Logged in as User|Angemeldet als Benutzer|
 Noone is in your session|Niemand ist in ihrer Konferenz.|
 Customer has hung up|Kunde hat aufgelegt|
 End-of-call Disposition Selection|Gesprächsergebnis Auswahl|
-CLOSER INBOUND GROUP SELECTION|CLOSER INBOUND GRUPPENWAHL|
-Closer Inbound Group Selection|Closer Inbound Gruppenwahl|
+CLOSER INBOUND GROUP SELECTION|SUPERVISOR INBOUND GRUPPENWAHL|
+Closer Inbound Group Selection|Supervisor Inbound Gruppenwahl|
 BLENDED CALLING|GEMISCHTES ANRUFEN|
 outbound activated|Outbound aktiviert|
 Preview the Lead then|Adressenvorschau|
@@ -273,7 +273,7 @@ HOT KEYS INACTIVE|TASTATURKÜRZEL DEAKTIVIERT|
 DIAL OVERRIDE|WÄHLVORGANG OVERRIDE|
 SKIP LEAD|ADRESSE ÜBERSPRINGEN|
 DIAL LEAD|ADRESSE WÄHLEN|
-LEAD PREVIEW|PREVIEW ADRESSE|
+LEAD PREVIEW|ADRESSEN VORSCHAU|
 PAUSE AGENT DIALING|WÄHLPAUSE|
 DISPOSITION CALL|ABSCHLUSS CALL|
  session ID| Session ID|
@@ -327,7 +327,7 @@ Login|Login|
 User|Benutzer|
 Password|Passwort|
 VERSION|VERSION|
-BUILD|BAU|
+BUILD|BUILD|
 Server|Server|
 RECORD|AUFNAHME|
 HANGUP|AUFLEGEN|
@@ -359,7 +359,7 @@ VOICEMAIL|VOICEMAIL|
 PAUSE|PAUSE|
 START|START|
 Pause|Pause|
-Resume|Zusammenfassung|
+Resume|WiederAufnehmen|
 Faster|Schneller|
 Slower|Langsamer|
 Initializing|Initialisierung|
@@ -367,16 +367,16 @@ Invalid|Unzulässig|
 Username|Username|
 CUSTOM|ANGEPASST|
 Notes|Anmerkungen|
-First|Zuerst|
+First|Vorname|
 MI: |MI:|
-Last|Letzte|
+Last|Nachname|
 Address|Adresse|
 City|Stadt|
 State|Bundesland|
 PostCode|Postleitzahl|
-Province|Provinz|
+Province|Region|
 Vendor ID|Anbieter ID|
-DialCode|WahlCode|
+DialCode|Vorwahl|
 Alt. Phone|Alternative Telefonnummer|
 Show|Zeigen|
 Email|Email|
@@ -397,7 +397,7 @@ AVAILABLE EXTENSIONS|VORHANDENE EXTENSION|
  FAVORITES| FAVORITEN|
 ### END translation phrases through 1.1.11 release ###
 Search Existing Leads|Suche existierende Adresse|
-This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Wenn diese Option ausgewählt ist wird versucht, die Telefonnummer im System zu finden, bevor eine neue Adresse eingefügt wird|
+This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Wenn diese Option ausgewählt ist, wird versucht, die Telefonnummer im System zu finden, bevor eine neue Adresse eingefügt wird|
 Finish Wrapup and Move On|Beende Nachbereitung und mache weiter|
 seconds remaining in wrapup|Verbleibende Sekunden der Nachbereitung|
 Call Wrapup:|Anruf Nachbereitung|
@@ -422,4 +422,10 @@ Agent: |Agent:|
 Comments: |Anmerkungen:|
 ### BEGIN translation phrases for 2.0.2 release ###
 VOLUME|LAUTSTÄRKE|
-
+### BEGIN translation phrases for 2.0.3 release ###
+FAST DIAL|SCHNELLER VORWAHLKNOPF|
+YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|SIE MÜSSEN Eine TELEFONNUMMER UND Einen VORWAHLKNOPF-CODE EINGEBEN,UM SCHNELLEN VORWAHLKNOPF ZU BENUTZEN|
+ SELECT A PAUSE CODE :| WÄHLEN Sie Einen PAUSE CODE Vor :|
+ENTER A PAUSE CODE|GEBEN Sie Einen PAUSE CODE Ein|
+YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|SIE MÜSSEN PAUSIERT WERDEN, UM Einen PAUSE CODE Im AUTO-DIAL MODUSEINZUGEBEN|
+Your session has been disabled|Ihr Lernabschnitt ist gesperrt worden|

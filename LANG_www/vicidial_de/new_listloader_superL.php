@@ -303,11 +303,11 @@ function ParseFileName() {
 	<td align=left><font face="arial, helvetica" size=2><input type=radio name="file_layout" value="standard" checked>Standard-VICIDIAL&nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name="file_layout" value="custom">Kundenspezifischer Plan</td>
   </tr>
     <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Duplicate Check: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Leitung Duplikat-Überprüfung: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck><option selected value="NONE">NO DUPLICATE CHECK</option><option value="DUP">CHECK FOR DUPLICATES BY PHONE IN LISTE IDENTIFIKATION</option></select></td>
   </tr>
   <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Lead Timezone Lookup: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Vorbereitungs- und Anlaufzeit Zone Nachschlagen: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=postalgmt><option selected value="AREA">COUNTRY CODE AND AREA CODE ONLY</option><option value="POSTAL">POSTAL CODE FIRST</option></select></td>
   </tr>
 <tr>

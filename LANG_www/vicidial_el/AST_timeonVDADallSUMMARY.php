@@ -9,6 +9,8 @@
 # 
 # changes:
 # 61102-1616 - first build
+# 61215-1131 - added answered calls and drop percent taken from answered calls
+# 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -35,7 +37,7 @@ if (!isset($RR))			{$gRRroup=4;}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
@@ -114,7 +116,7 @@ else
 	{
 	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=1\"><font size=1>- VIEW LESS SETTINGS</font></a>";
 	}
-echo " &nbsp; &nbsp; &nbsp; <a href=\"./server_stats.php\">ΑΝΑΦΟΡΕΣ</a>";
+echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=999999\">ΑΝΑΦΟΡΕΣ</a>";
 echo "<BR><BR>\n\n";
 
 $k=0;
@@ -128,7 +130,7 @@ $group = $groups[$k];
 echo "<b><a href=\"./AST_timeonVDADall.php?group=$group&RR=$RR&DB=$DB&adastats=$adastats\">$group</a></b> &nbsp; - &nbsp; ";
 echo "<a href=\"./admin.php?ADD=34&campaign_id=$group\">Modify</a>\n";
 
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -149,6 +151,9 @@ $ADAavailonly =	$row[14];
 $TAPERtime =	$row[15];
 $CALLtime =		$row[16];
 $DIALtimeout =	$row[17];
+$DIALstatuses =	$row[18];
+	$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
+	$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
@@ -214,7 +219,7 @@ echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ANSWERED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatusA, $DIALstatusB, $DIALstatusC, $DIALstatusD, $DIALstatusE &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
 echo "<TR>";
@@ -240,7 +245,7 @@ echo "<TD ALIGN=LEFT COLSPAN=8>";
 ################################################################################
 ###### OUTBOUND CALLS
 ################################################################################
-if (eregi("CLOSER",$group))
+if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 	$rslt=mysql_query($stmt, $link);
@@ -289,7 +294,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		if ($out_live > 9) {$F='<FONT class="r3">'; $FG='</FONT>';}
 		if ($out_live > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 
-		if (eregi("CLOSER",$group))
+		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 			{echo "$NFB$out_total$NFE current active calls&nbsp; &nbsp; &nbsp; \n";}
 		else
 			{echo "$NFB$out_total$NFE calls being placed &nbsp; &nbsp; &nbsp; \n";}

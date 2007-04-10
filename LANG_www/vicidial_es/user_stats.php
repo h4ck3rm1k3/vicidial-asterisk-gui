@@ -7,6 +7,7 @@
 #
 # 60619-1743 - Added variable filtering to eliminate SQL injection attack threat
 # 61201-1136 - Added recordings display and changed calls to time range with 10000 limit
+# 70118-1605 - Added user group column to login/out and calls lists
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -38,7 +39,7 @@ $TODAY = date("Y-m-d");
 if (!isset($begin_date)) {$begin_date = $TODAY;}
 if (!isset($end_date)) {$end_date = $TODAY;}
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and view_reports='1';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -111,6 +112,11 @@ echo "<input type=submit name=submit value=submit>\n";
 
 echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name\n";
 
+echo " - <a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo " - <a href=\"./user_status.php?user=$user\">User Status</a>\n";
+echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modificar Usuario</a>\n";
+
+
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
 
@@ -173,10 +179,10 @@ echo "<br><br>\n";
 echo "<center>\n";
 
 echo "<B>TIEMPO LOGIN/LOGOUT:</B>\n";
-echo "<TABLE width=400 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=2>EVENTO</td><td align=right><font size=2> FECHA</td><td align=right><font size=2> CAMPAÑA</td><td align=right><font size=2>HORAS:MINUTOS</td></tr>\n";
+echo "<TABLE width=500 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=2>EVENTO</td><td align=right><font size=2> FECHA</td><td align=right><font size=2> CAMPAÑA</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HORAS:MINUTOS</td></tr>\n";
 
-	$stmt="SELECT event,event_epoch,event_date,campaign_id from vicidial_user_log where user='" . mysql_real_escape_string($user) . "' and event_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and event_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59'";
+	$stmt="SELECT event,event_epoch,event_date,campaign_id,user_group from vicidial_user_log where user='" . mysql_real_escape_string($user) . "' and event_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and event_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59'";
 	$rslt=mysql_query($stmt, $link);
 	$events_to_print = mysql_num_rows($rslt);
 
@@ -197,6 +203,7 @@ echo "<tr><td><font size=2>EVENTO</td><td align=right><font size=2> FECHA</td><t
 			echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
 			echo "<td align=right><font size=2> $row[2]</td>\n";
 			echo "<td align=right><font size=2> $row[3]</td>\n";
+			echo "<td align=right><font size=2> $row[4]</td>\n";
 			echo "<td align=right><font size=2> </td></tr>\n";
 			}
 		if (ereg("LOGOUT", $row[0]))
@@ -216,6 +223,7 @@ echo "<tr><td><font size=2>EVENTO</td><td align=right><font size=2> FECHA</td><t
 				echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
 				echo "<td align=right><font size=2> $row[2]</td>\n";
 				echo "<td align=right><font size=2> $row[3]</td>\n";
+				echo "<td align=right><font size=2> $row[4]</td>\n";
 				echo "<td align=right><font size=2> $event_hours_int:$event_minutes_int</td></tr>\n";
 				$event_start_seconds='';
 				$event_stop_seconds='';
@@ -256,8 +264,8 @@ echo "<br><br>\n";
 echo "<center>\n";
 
 echo "<B>CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
-echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAÑA</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAÑA</td><td align=right><font size=2> GROUP</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
 	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
 	$rslt=mysql_query($stmt, $link);
@@ -279,13 +287,14 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 			echo "<td align=left><font size=2> $row[8]</td>\n";
 			echo "<td align=left><font size=2> $row[10] </td>\n";
 			echo "<td align=right><font size=2> $row[3] </td>\n";
+			echo "<td align=right><font size=2> $row[14] </td>\n";
 			echo "<td align=right><font size=2> $row[2] </td>\n";
 			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td></tr>\n";
 
 	}
 
 
-echo "</TABLE></center>\n";
+echo "</TABLE></center><BR><BR>\n";
 
 
 

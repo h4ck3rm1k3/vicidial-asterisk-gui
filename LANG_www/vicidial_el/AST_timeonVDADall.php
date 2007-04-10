@@ -7,7 +7,7 @@
 #
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
 # 
-# changes:
+# CHANGELOG:
 # 50406-0920 - Added Paused agents < 1 min (Chris Doyle)
 # 51130-1218 - Modified layout and info to show all servers in a vicidial system
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
@@ -21,7 +21,11 @@
 # 61002-1642 - Added TRUNK SHORT/FILL stats
 # 61101-1318 - Added SIP and IAX Listen and Barge links option
 # 61101-1647 - Added Usergroup column and user name option as well as sorting
-# 61102-1155 - made display of columns more modular, added ability to hide server info
+# 61102-1155 - Made display of columns more modular, added ability to hide server info
+# 61215-1131 - Added answered calls and drop percent taken from answered calls
+# 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
+# 70123-1151 - Added non_latin options for substr in display variables, thanks Marin Blu
+# 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -113,8 +117,12 @@ $load_ave = get_server_load(true);
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -135,6 +143,10 @@ $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 
 $stmt="select campaign_id from vicidial_campaigns where active='Y';";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -148,6 +160,10 @@ while ($i < $groups_to_print)
 	}
 
 $stmt="select * from vicidial_user_groups;";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -242,18 +258,22 @@ echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats&SIPmonito
 echo "<a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">GO</a>";
 echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | \n";
 echo "<a href=\"./AST_timeonVDADallSUMMARY.php?group=$group&RR=$RR&DB=$DB&adastats=$adastats\">SUMMARY</a> | \n";
-echo "<a href=\"./server_stats.php\">ΑΝΑΦΟΡΕΣ</a> </FONT>\n";
+echo "<a href=\"./admin.php?ADD=999999\">ΑΝΑΦΟΡΕΣ</a> </FONT>\n";
 echo "\n\n";
 
 
 if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FORM>\n"; exit;}
 else
 {
-$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 if ($group=='XXXX-ALL-ACTIVE-XXXX') 
 	{
-	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout) from vicidial_campaigns;";
+	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses) from vicidial_campaigns;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -274,12 +294,19 @@ $ADAavailonly =	$row[14];
 $TAPERtime =	$row[15];
 $CALLtime =		$row[16];
 $DIALtimeout =	$row[17];
+$DIALstatuses =	$row[18];
+	$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
+	$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
 if ($group=='XXXX-ALL-ACTIVE-XXXX') 
 	{
 	$stmt="select count(*) from vicidial_hopper;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
@@ -289,6 +316,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today) from vicidial_campaign_stats;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads = $row[0];
@@ -311,6 +342,10 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $balanceSHORT = $row[0];
@@ -351,7 +386,7 @@ echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ANSWERED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatusA, $DIALstatusB, $DIALstatusC, $DIALstatusD, $DIALstatusE &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
 echo "<TR>";
@@ -401,9 +436,13 @@ echo "</FORM>\n\n";
 ###################################################################################
 ###### OUTBOUND CALLS
 ###################################################################################
-if (eregi("CLOSER",$group))
+if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);
@@ -419,6 +458,10 @@ else
 
 	$stmt="select status from vicidial_auto_calls where status NOT IN('XFER') $groupSQL;";
 	}
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $parked_to_print = mysql_num_rows($rslt);
@@ -450,7 +493,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		if ($out_live > 9) {$F='<FONT class="r3">'; $FG='</FONT>';}
 		if ($out_live > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 
-		if (eregi("CLOSER",$group))
+		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
 			{echo "$NFB$out_total$NFE current active calls&nbsp; &nbsp; &nbsp; \n";}
 		else
 			{echo "$NFB$out_total$NFE calls being placed &nbsp; &nbsp; &nbsp; \n";}
@@ -489,8 +532,8 @@ $HDsessionid =		"------------------+";
 $HTsessionid =		" SESSIONID        |";
 $HDbarge =			"-------+";
 $HTbarge =			" BARGE |";
-$HDstatus =			"--------+";
-$HTstatus =			" STATUS |";
+$HDstatus =			"----------+";
+$HTstatus =			" STATUS   |";
 $HDserver_ip =		"-----------------+";
 $HTserver_ip =		" ΔΙΑΚΟΜΙΣΤΗΣ IP       |";
 $HDcall_server_ip =	"-----------------+";
@@ -553,10 +596,14 @@ else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";
 if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
-$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
+$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
 
 #$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and campaign_id='" . mysql_real_escape_string($group) . "' order by $orderSQL;";
 
+if ($non_latin > 0)
+{
+$rslt=mysql_query("SET NAMES 'UTF8'");
+}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);
@@ -571,9 +618,18 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 			$row[5]=$row[6];
 			}
-		$extension = eregi_replace('Local/',"",$row[0]);
-		$extension =		sprintf("%-10s", $extension);
+			if ($non_latin < 1)
+			{
+			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension =		sprintf("%-10s", $extension);
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
+			}
+			else
+			{
+			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension =		sprintf("%-40s", $extension);
+			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
+			}
 		$Luser =			$row[1];
 		$user =				sprintf("%-18s", $row[1]);
 		$Lsessionid =		$row[2];
@@ -582,16 +638,48 @@ $talking_to_print = mysql_num_rows($rslt);
 		$status =			sprintf("%-6s", $row[3]);
 		$server_ip =		sprintf("%-15s", $row[4]);
 		$call_server_ip =	sprintf("%-15s", $row[7]);
-		$campaign_id =		sprintf("%-10s", $row[8]);
+		$campaign_id =	sprintf("%-10s", $row[8]);
+		$comments=		$row[11];
+
+		if (eregi("INCALL",$Lstatus)) 
+			{
+			if ( (eregi("AUTO",$comments)) or (strlen($comments)<1) )
+				{$CM='A';}
+			else
+				{
+				if (eregi("INBOUND",$comments)) 
+					{$CM='I';}
+				else
+					{$CM='M';}
+				} 
+			}
+		else {$CM=' ';}
+
 		if ($UGdisplay > 0)
 			{
-			$user_group =		sprintf("%-12s", $row[9]);
+				if ($non_latin < 1)
+				{
+				$user_group =		sprintf("%-12s", $row[9]);
 				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
+				}
+				else
+				{
+				$user_group =		sprintf("%-40s", $row[9]);
+				while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'utf8');}
+				}
 			}
 		if ($UidORname > 0)
 			{
-			$user =		sprintf("%-18s", $row[10]);
+				if ($non_latin < 1)
+				{
+				$user =		sprintf("%-18s", $row[10]);
 				while(strlen($user)>18) {$user = substr("$user", 0, -1);}
+				}
+				else
+				{
+				$user =		sprintf("%-40s", $row[10]);
+				while(mb_strlen($user, 'utf-8')>18) {$user = mb_substr("$user", 0, -1,'utf8');}
+				}
 			}
 		if (!eregi("INCALL|QUEUE",$row[3]))
 			{$call_time_S = ($STARTtime - $row[6]);}
@@ -655,7 +743,7 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG | $SVD$G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG |\n";
 
 		$i++;
 		}

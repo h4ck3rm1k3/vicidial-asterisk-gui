@@ -4,6 +4,11 @@
 ### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # the purpose of this script and webpage is to allow for remote or local users of the system to log in and grab phone calls that are coming inbound into the Asterisk server and being put in the parked_channels table while they hear a soundfile for a limited amount of time before being forwarded on to either a set extension or a voicemail box. This gives remote or local agents a way to grab calls without tying up their phone lines all day. The agent sees the refreshing screen of calls on park and when they want to take one they just click on it, and a small window opens that will allow them to grab the call and/or look up more information on the caller through the callerID that is given(if available)
+# CHANGES
+#
+# 60620-1032 - Added variable filtering to eliminate SQL injection attack threat
+#            - Added required user/pass to gain access to this page
+#
 
 require("dbconnect.php");
 
@@ -42,6 +47,9 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+
+$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -128,13 +136,13 @@ if (!$dialplan_number)
 
 	if ($extension)
 	{
-	$stmt="SELECT count(*) from phones where extension='$extension';";
+	$stmt="SELECT count(*) from phones where extension='" . mysql_real_escape_string($extension) . "';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$ext_found=$row[0];
 		if ($ext_found > 0)
 		{
-		$stmt="SELECT dialplan_number,server_ip from phones where extension='$extension';";
+		$stmt="SELECT dialplan_number,server_ip from phones where extension='" . mysql_real_escape_string($extension) . "';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$dialplan_number=$row[0];
@@ -181,10 +189,10 @@ if (!$dialplan_number)
 				$o++;
 			}
 
-			$stmt="INSERT INTO vicidial_user_log values('','$user','LOGIN','CLOSER','$NOW_TIME','$STARTtime');";
+			$stmt="INSERT INTO vicidial_user_log values('','" . mysql_real_escape_string($user) . "','LOGIN','CLOSER','$NOW_TIME','$STARTtime');";
 			$rslt=mysql_query($stmt, $link);
 
-			echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
+			echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 			echo"<META HTTP-EQUIV=Refresh CONTENT=\"3; URL=$PHP_SELF?dialplan_number=$dialplan_number&server_ip=$server_ip&extension=$extension&DB=$DB$form_groups\">\n";
 
 			echo "<font=green><b>extension found, forwarding you to closer page, please wait 3 seconds...</b></font>\n";
@@ -224,7 +232,7 @@ while($o < $group_selected)
 }
 
 
-echo"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
+echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"5; URL=$PHP_SELF?dialplan_number=$dialplan_number&server_ip=$server_ip&extension=$extension&DB=$DB$form_groups\">\n";
 
 #CHANNEL    SERVER        CHANNEL_GROUP   EXTENSION    PARKED_BY            PARKED_TIME        
@@ -245,14 +253,14 @@ echo "--------------------------------------------------------------------------
 
 
 
-$stmt="SELECT count(*) from parked_channels where server_ip='$server_ip'";
+$stmt="SELECT count(*) from parked_channels where server_ip='" . mysql_real_escape_string($server_ip) . "'";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 $parked_count = $row[0];
 	if ($parked_count > 0)
 	{
-	$stmt="SELECT * from parked_channels where server_ip='$server_ip' and channel_group LIKE \"CL_%\" order by channel_group,parked_time";
+	$stmt="SELECT * from parked_channels where server_ip='" . mysql_real_escape_string($server_ip) . "' and channel_group LIKE \"CL_%\" order by channel_group,parked_time";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$parked_to_print = mysql_num_rows($rslt);

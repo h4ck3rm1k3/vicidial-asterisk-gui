@@ -33,6 +33,7 @@
 # 60421-1405 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1201 - Added variable filters to close security holes for login form
 # 61128-2255 - Added update for manual dial vicidial_live_agents
+# 70319-1542 - Added agent disabled display function
 #
 
 require("dbconnect.php");
@@ -69,8 +70,8 @@ if (!isset($format))   {$format="text";}
 if (!isset($ACTION))   {$ACTION="refresh";}
 if (!isset($client))   {$client="agc";}
 
-$version = '0.0.10';
-$build = '61128-2255';
+$version = '0.0.11';
+$build = '70319-1542';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -144,6 +145,23 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 
 		if ($client == 'vdc')
 			{
+			$Acount=0;
+			$AexternalDEAD=0;
+
+			### see if the agent has a record in the vicidial_live_agents table
+			$stmt="SELECT count(*) from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$Acount=$row[0];
+
+		#	### find out if external table shows agent should be disabled
+		#	$stmt="SELECT count(*) from another_table where user='$user' and status='DEAD';";
+		#	if ($DB) {echo "|$stmt|\n";}
+		#	$rslt=mysql_query($stmt, $link);
+		#	$row=mysql_fetch_row($rslt);
+		#	$AexternalDEAD=$row[0];
+
 			if ($auto_dial_level > 0)
 				{
 				### update the vicidial_live_agents every second with a new random number so it is shown to be alive
@@ -185,6 +203,9 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				$rslt=mysql_query($stmt, $link);
 
 				}
+
+			if ($Acount < 1) {$Astatus='DEAD_VLA';}
+			if ($AexternalDEAD > 0) {$Astatus='DEAD_EXTERNAL';}
 
 			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Status: ' . $Astatus . '|CampCalls: ' . $RingCalls . "|\n";
 
