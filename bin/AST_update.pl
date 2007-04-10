@@ -1149,7 +1149,7 @@ if (!$run_validate_parked_channels_now)
 
 				$rec_countB++;
 				}
-			$sthA->finish();
+			$sthB->finish();
 
 			if ($PQcount < 1)
 				{
