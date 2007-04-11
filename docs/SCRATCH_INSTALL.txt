@@ -664,15 +664,15 @@ installation on another machine)
 	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.59.tar.gz
 	- gunzip httpd-2.0.59.tar.gz
 	- tar xvf httpd-2.0.59.tar
-	- wget http://us2.php.net/distributions/php-4.4.4.tar.gz
+	- wget http://us2.php.net/distributions/php-4.4.6.tar.gz
 		NOTE: PHP 5.1.1 has also been tested with this release
-	- gunzip php-4.4.4.tar.gz
-	- tar xvf php-4.4.4.tar
+	- gunzip php-4.4.6.tar.gz
+	- tar xvf php-4.4.6.tar
 	- cd httpd-2.0.59
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install
-	- cd ../php-4.4.4
+	- cd ../php-4.4.6
 	- ./configure --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql
 	- make
 	- make install
