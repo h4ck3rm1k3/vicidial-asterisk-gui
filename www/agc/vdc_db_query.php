@@ -128,10 +128,11 @@
 # 70313-1052 - Allow pound signs(hash) in comments to pass through
 # 70319-1544 - Added agent disable update customer data function
 # 70322-1545 - Added sipsak display ability
+# 70413-1253 - Fixed bug for outbound call time in CLOSER-type blended campaigns
 #
 
-$version = '2.0.55';
-$build = '70322-1545';
+$version = '2.0.56';
+$build = '70413-1253';
 
 require("dbconnect.php");
 
@@ -881,12 +882,12 @@ if ($stage == "end")
 			{
 			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
 				{
-				##### look for the channel in the UPDATED vicidial_manager record of the call initiation
+				##### look for the start epoch in the vicidial_closer_log table
 				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 				}
 			else
 				{
-				##### look for the channel in the UPDATED vicidial_manager record of the call initiation
+				##### look for the start epoch in the vicidial_log table
 				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 				}
 			$rslt=mysql_query($stmt, $link);
@@ -901,6 +902,24 @@ if ($stage == "end")
 			else
 				{
 				$length_in_sec = 0;
+				}
+			if ( ($length_in_sec < 1) and (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign)) )
+				{
+				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
+				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$VM_mancall_ct = mysql_num_rows($rslt);
+				if ($VM_mancall_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$start_epoch =$row[0];
+					$length_in_sec = ($StarTtime - $start_epoch);
+					}
+				else
+					{
+					$length_in_sec = 0;
+					}
 				}
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}

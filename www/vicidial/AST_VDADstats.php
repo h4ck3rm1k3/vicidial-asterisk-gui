@@ -1,7 +1,7 @@
 <? 
 ### AST_VDADstats.php
 ### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # CHANGES
 #
