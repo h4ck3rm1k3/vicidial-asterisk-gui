@@ -506,7 +506,7 @@ while($one_day_interval > 0)
 					$DBIPclosercamp[$user_CIPct] =~ s/ /','/gi;
 					$DBIPclosercamp[$user_CIPct] = "'$DBIPclosercamp[$user_CIPct]'";
 				   }
-				  else {$DBIPclosercamp[$user_CIPct]=''}
+				  else {$DBIPclosercamp[$user_CIPct]="''";}
 				
 				$campaign_query = "( (call_type='IN' and campaign_id IN($DBIPclosercamp[$user_CIPct])) or (campaign_id='$DBIPcampaign[$user_CIPct]' and call_type IN('OUT','OUTBALANCE')) )";
 				}
