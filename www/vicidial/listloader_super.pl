@@ -15,6 +15,7 @@
 # 61110-1229 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1207 - added postal code GMT lookup and duplicate check options
 # 70205-1703 - Defaulted phone_code to 1 if not populated
+# 70417-1059 - Fixed default phone_code bug
 #
 
 ### begin parsing run-time options ###
@@ -250,6 +251,8 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 			{
 			$phone_list .= "$phone_number$US$list_id|";
 			$postalgmt_found=0;
+			if (length($phone_code)<1) {$phone_code = '1';}
+
 			if ( ($postalgmt > 0) && (length($postal_code)>4) )
 				{
 				if ($phone_code =~ /^1$/)
@@ -437,7 +440,6 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 					$AC_processed++;
 					}
 
-			if (length($phone_code)<1) {$phone_code = '1';}
 			if ($multi_insert_counter > 8) {
 				### insert good deal into pending_transactions table ###
 				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
