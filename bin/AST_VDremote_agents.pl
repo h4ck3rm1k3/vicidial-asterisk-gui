@@ -33,6 +33,7 @@
 # 70213-1306 - Added queuemetrics logging
 # 70214-1243 - Added queuemetrics_log_id field to queue_log logging
 # 70222-1606 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
+# 70417-1346 - Fixed bug that would add unneeded simulated agent lines
 #
 
 ### begin parsing run-time options ###
@@ -459,10 +460,27 @@ while($one_day_interval > 0)
 						if ($DBX) {print STDERR "$DBremote_user[$h] NEW INSERT\n";}
 						if ($TESTrun > 0)
 							{
-							$SIqueryCID = "T$CIDdate$DBremote_conf_exten[$h]";
-							$stmtA="INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $local_DEF$DBremote_conf_exten[$h]$local_AMP$ext_context','Context: $ext_context','Exten: 999999999999','Priority: 1','Callerid: $SIqueryCID','','','','','');";
-							$affected_rows = $dbhA->do($stmtA);
-							if ($DBX) {print STDERR "   TESTrun CALL PLACED: 999999999999 $DBremote_conf_exten[$h] $DBremote_user[$h] NEW INSERT: |$affected_rows|\n";}
+							$stmtA = "SELECT count(*) FROM live_sip_channels where extension LIKE \"%999999999999\" and server_ip='$server_ip';";
+							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+							$sthArows=$sthA->rows;
+							$rec_countLSC=0;
+							while ($sthArows > $rec_countLSC)
+								{
+								@aryA = $sthA->fetchrow_array;
+								$LSC_count =	"$aryA[0]";
+								$rec_countLSC++;
+								}
+							$sthA->finish();
+
+							if ($number_of_lines > $LSC_count)
+								{
+								$SIqueryCID = "T$CIDdate$DBremote_conf_exten[$h]";
+								$stmtA="INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $local_DEF$DBremote_conf_exten[$h]$local_AMP$ext_context','Context: $ext_context','Exten: 999999999999','Priority: 1','Callerid: $SIqueryCID','','','','','');";
+								$affected_rows = $dbhA->do($stmtA);
+								if ($DBX) {print STDERR "   TESTrun CALL PLACED: 999999999999 $DBremote_conf_exten[$h] $DBremote_user[$h] NEW INSERT: |$affected_rows|\n";}
+								}
+							else {print STDERR "Agent test calls already adequate $number_of_lines !> $LSC_count\n";}
 							}
 						if ($affected_rows>0) 
 							{
@@ -481,9 +499,7 @@ while($one_day_interval > 0)
 
 								$dbhB->disconnect();
 								}
-
 							}
-
 						}
 					}
 				}

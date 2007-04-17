@@ -147,12 +147,12 @@ $AVGcpuUSER =	sprintf("%10s", $row[0]);
 $AVGcpuSYSTEM =	sprintf("%10s", $row[1]);
 $AVGcpuIDLE =	sprintf("%10s", $row[2]);
 
-	$stmt="select count(*),SUM(length_in_min) from call_log where extension NOT IN('8365','8366','8367') and  start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
-	$rslt=mysql_query($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$row=mysql_fetch_row($rslt);
-	$TOTALcalls =	sprintf("%10s", $row[0]);
-	$OFFHOOKtime =	sprintf("%10s", $row[1]);
+$stmt="select count(*),SUM(length_in_min) from call_log where extension NOT IN('8365','8366','8367') and  start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+$TOTALcalls =	sprintf("%10s", $row[0]);
+$OFFHOOKtime =	sprintf("%10s", $row[1]);
 
 
 echo "Total Calls in/out on this server:        $TOTALcalls\n";
@@ -199,7 +199,7 @@ fclose($DATfp);
 
 $rows_to_max = ($rows_to_print + 100);
 
-print "rows: $i\n";
+#print "rows: $i\n";
 
 $time_scale_abb = '5 minutes';
 $time_scale_tick = '1 minute';
