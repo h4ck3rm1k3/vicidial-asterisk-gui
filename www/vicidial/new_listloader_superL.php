@@ -418,7 +418,6 @@ function ParseFileName() {
 
 						if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 							{
-
 							if (strlen($phone_code)<1) {$phone_code = '1';}
 
 							$US='_';
@@ -554,6 +553,7 @@ function ParseFileName() {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 						$US='_';
 						$phone_list .= "$phone_number$US$list_id|";
@@ -705,6 +705,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 							$US='_';
 							$phone_list .= "$phone_number$US$list_id|";
@@ -856,6 +857,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 						$US='_';
 						$phone_list .= "$phone_number$US$list_id|";
