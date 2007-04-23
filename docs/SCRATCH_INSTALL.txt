@@ -1637,7 +1637,7 @@ use asterisk;
 
 \. /usr/src/astguiclient/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
-	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
+	\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 
 GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
 GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
