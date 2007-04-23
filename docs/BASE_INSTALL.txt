@@ -127,7 +127,7 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-beta4-2.3.4.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-2.3.4-7.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 
@@ -247,15 +247,13 @@ GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.16');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.17');
 
 insert into server_updater values('10.10.10.15','');
 
 insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
 
 insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users) values('6666','1234','Admin','9','ADMIN','1','1','1','1');
-
-insert into vicidial_user_groups (user_group,group_name,allowed_campaigns) values('ADMIN','Administrators',' -ALL-CAMPAIGNS- - -');
 
 insert into conferences values('8600001','10.10.10.15','');
 insert into conferences values('8600002','10.10.10.15','');

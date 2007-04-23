@@ -1650,8 +1650,6 @@ insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer
 
 insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users) values('6666','1234','Admin','9','ADMIN','1','1','1','1');
 
-insert into vicidial_user_groups (user_group,group_name,allowed_campaigns) values('ADMIN','Administrators',' -ALL-CAMPAIGNS- - -');
-
 insert into conferences values('8600001','10.10.10.15','');
 insert into conferences values('8600002','10.10.10.15','');
 insert into conferences values('8600003','10.10.10.15','');
