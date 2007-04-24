@@ -560,11 +560,11 @@ UPGRADE NOTES:
 - Made several changes to admin.php and made it more customizable
 - Made changes to HotKeys to allow for manual auto dial and auto alt number dial
 - Added ability to dial alternate lead phone numbers in auto-dial modes
-- Added ability to send more calls to agents at once helping large installations
+- Added ability to send more calls to agents at once, helping large installations
 - Added more levels of access control to the administrative interfaces
 - Added Agent Pause codes to alow agents to categorize their PAUSE time
 - Added VICIDIAL outbound compatibility with QueueMetrics
 - Many other changes and bug fixes listed in the TODO Wiki webpage:
-     http://www.eflo.net/VICIDIALwiki/index.php/TODO:current
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.3
 UPGRADE NOTES:
  * if upgrading from 2.0.2 you need to follow instructions in the UPGRADE doc

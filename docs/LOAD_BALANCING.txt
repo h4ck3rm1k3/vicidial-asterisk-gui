@@ -14,9 +14,9 @@ As of release 2.0.2, a new script(AST_VDauto_dial_FILL.pl) allows for dial-out-o
 
 How do I set up load balancing on my two server VICIDIAL setup?
 
-These steps are taken directly from the SCRATCH_INSTALL document, but they are all put together here to give a better idea of what is needed all in one place. It is assumed that you already have VICIDIAL up and running on both servers.
+These steps are mostly taken directly from the SCRATCH_INSTALL document, but they are all put together here to give a better idea of what is needed all in one place. It is assumed that you already have VICIDIAL up and running on both servers.
 
-NOTE: In a multi-server setup you may want to have your database and web server on a separate machine from your Asterisk/VICIDIAL servers. Simply copy the web page directories to your new database/web server and set the AST_SERVER_conf.pl files on your VICIDIAL servers to point to that new database server. You can also have several web servers(or even load-balancing web servers) if you have more than 70 seats in one installation you may want to do that if you are not using eaccelerator. For the web pages you just need to make sure the dbconnect.php files are configured for your database server. We have had 12 VICIDIAL servers and 2 web servers using a single database server with no problems.
+NOTE: In a multi-server setup you may want to have your database and web server on a separate machine from your Asterisk/VICIDIAL servers. Simply copy the web page directories to your new database/web server and set the /etc/astguiclient.conf files on your VICIDIAL servers to point to that new database server. You can also have several web servers(or even load-balancing web servers) if you have more than 70 seats in one installation you may want to do that if you are not using eaccelerator. For the web pages you just need to make sure the dbconnect.php files are configured for your database server. We have had 12 VICIDIAL servers and 2 web servers using a single database server with no problems.
 
 NOTE: at the bottom of this document are conf examples for a 3 server load balancing setup.
 
@@ -29,8 +29,16 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
 	- AST_VDadapt.pl
 	- AST_VDauto_dial_FILL.pl
 
+2. The VARactive_keepalives variable in /etc/astguiclient.conf should have "5" and "7" on only ONE SERVER in your entire dialer setup, the other servers should not have 5 or 7 in that field.
+	#  1 - AST_update
+	#  2 - AST_send_listen
+	#  3 - AST_VDauto_dial
+	#  4 - AST_VDremote_agents
+	#  5 - AST_VDadapt (If multi-server system, this must only be on one server)
+	#  6 - FastAGI_log
+	#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)
 
-2. The two servers need to be registered to each other as IAX2 friends:
+3. The two servers need to be registered to each other as IAX2 friends:
   SERVER ONE(ASTtest1-10.10.10.15) 
     iax.conf:
 	register => ASTtest1:test@10.10.10.16
@@ -60,7 +68,7 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
 	qualify=yes
 
 
-3. The two servers need to have wildcard extensions assigned to the other server in the dialplan:
+4. The two servers need to have wildcard extensions assigned to the other server in the dialplan:
   SERVER ONE(ASTtest1-10.10.10.15) 
     extensions.conf:
 	[globals]
@@ -87,7 +95,7 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
 	exten => _010*010*010*016*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
-4. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed:
+5. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed:
 
 	; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
 	exten => 8367,1,AGI(call_log.agi,${EXTEN})
@@ -125,11 +133,11 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
 	exten => 1234,3,Hangup
 
 
-5. Reload both Asterisk servers and for outbound change the VDAD exten to 8367 or 8368 and kill the AST_VDauto_dial.pl scripts on both servers so they can restart and you can now look at the AST_timeonVDADall.php page(per campaign time-on-VDAD available from the STATS and REPORTS link on the vicidial admin screen) that will allo you to see the server_ip of the agent and the server_ip of the call per campaign across all campaigns.
+6. Reload both Asterisk servers and for outbound change the VDAD exten to 8367 or 8368 and kill the AST_VDauto_dial.pl scripts on both servers so they can restart and you can now look at the AST_timeonVDADall.php page(per campaign time-on-VDAD available from the STATS and REPORTS link on the vicidial admin screen) that will allo you to see the server_ip of the agent and the server_ip of the call per campaign across all campaigns.
 
 If you have any questions or problems please post to the astguiclient-users list(link available on the project website)
 
-6. For multi-server VICIDIAL/astGUIclient installations these cron scripts only need to be set up and run on one of the servers:
+7. For multi-server VICIDIAL/astGUIclient installations these cron scripts only need to be set up and run on one of the servers:
 - AST_VDhopper.pl
 - AST_cleanup_agent_log.pl
 - ADMIN_adjust_GMTnow_on_leads.pl
@@ -145,7 +153,7 @@ THREE VICIDIAL SERVER LOAD BALANCING SETUP:
 
 The only steps that are different as you add more load-balanced servers are steps 2 and 3:
 
-2. The three servers need to be registered to each other as IAX2 friends:
+3. The three servers need to be registered to each other as IAX2 friends:
   SERVER ONE(ASTtest1-10.10.10.15) 
     iax.conf:
 	register => ASTtest1:test@10.10.10.16
@@ -222,7 +230,7 @@ The only steps that are different as you add more load-balanced servers are step
 	qualify=yes
 
 
-3. The three servers need to have wildcard extensions assigned to the other server in the dialplan:
+4. The three servers need to have wildcard extensions assigned to the other server in the dialplan:
   SERVER ONE(ASTtest1-10.10.10.15) 
     extensions.conf:
 	[globals]
