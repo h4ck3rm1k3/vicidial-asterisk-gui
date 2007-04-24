@@ -129,10 +129,11 @@
 # 70319-1544 - Added agent disable update customer data function
 # 70322-1545 - Added sipsak display ability
 # 70413-1253 - Fixed bug for outbound call time in CLOSER-type blended campaigns
+# 70424-1100 - Fixed bug for fronter/closer calls that would delete vdac records
 #
 
-$version = '2.0.56';
-$build = '70413-1253';
+$version = '2.0.57';
+$build = '70424-1100';
 
 require("dbconnect.php");
 
@@ -1078,9 +1079,10 @@ if ($stage == "end")
 				}
 
 			### delete call record from  vicidial_auto_calls
-			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id';";
+			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
+
 
 
 			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',lead_id='',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
@@ -1143,7 +1145,7 @@ if ($stage == "end")
 				mysql_close($linkB);
 				}
 
-			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id';";
+			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -1465,6 +1467,15 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDADchannel_group	=$row[0];
 				$dialed_number		=$row[1];
 				$dialed_label		=$row[2];
+				}
+			else
+				{
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./vicidial_debug.txt", "a");
+					fwrite ($fp, "$NOW_TIME|INBND|$callerid|$user|$user_group|$list_id|$lead_id|$phone_number|$uniqueid|\n");
+					fclose($fp);
+					}
 				}
 
 			$stmt = "select count(*) from vicidial_log where lead_id='$lead_id' and uniqueid='$uniqueid';";

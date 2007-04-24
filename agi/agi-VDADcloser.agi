@@ -314,18 +314,18 @@ $sthA->finish();
 
 ### insert a LIVE record to the vicidial_auto_calls table 
 $stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','LIVE','$CIDlead_id','$uniqueid','$callerid','$channel','$VDADphone_code','$VDADphone','$SQLdate','IN','LIVE-0')";
-	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 
 $stmtA = "INSERT INTO vicidial_closer_log (lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$CIDlead_id','$VDADcampaign','$SQLdate','$now_date_epoch','QUEUE','$VDADphone_code','$VDADphone','VDCL','N')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($AGILOG) {$agi_string = "--    VDCL : |$VDADlead_id|$CIDlead_id|insert to vicidial_closer_log";   &agi_output;}
+if ($AGILOG) {$agi_string = "--    VDCL : |$affected_rows|$VDADlead_id|$CIDlead_id|insert to vicidial_closer_log";   &agi_output;}
 
 $stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer) values('$CIDlead_id','$VDADcampaign','$SQLdate','$VDADphone_code','$VDADphone','$VDADfronter','VDXL')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($AGILOG) {$agi_string = "--    VDXL : |$VDADlead_id|$CIDlead_id|insert to vicidial_xfer_log";   &agi_output;}
+if ($AGILOG) {$agi_string = "--    VDXL : |$affected_rows|$VDADlead_id|$CIDlead_id|insert to vicidial_xfer_log";   &agi_output;}
 
 
 $drop_timer=0;
@@ -412,6 +412,12 @@ if ($channel_status < 1)
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER', stage='CLOSER-$drop_timer' where callerid='$callerid';";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDCL XFER : |$affected_rows|$callerid\n|$stmtA|";   &agi_output;}
+			if ($affected_rows < 1)
+				{
+				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$CIDlead_id','$uniqueid','$callerid','$channel','$VDADphone_code','$VDADphone','$SQLdate','IN','CLOSER-$drop_timer')";
+				$affected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
+				}
 
 			$stmtA = "UPDATE vicidial_xfer_log set closer='$VDADuser' where lead_id = '$CIDlead_id' order by call_date desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
@@ -485,7 +491,14 @@ else
 
 $stmtA = "UPDATE vicidial_auto_calls set stage='LIVE-$drop_timer' where callerid='$callerid';";
 $affected_rows = $dbhA->do($stmtA);
-#if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
+if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
+if ($affected_rows < 1)
+	{
+	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','LIVE','$CIDlead_id','$uniqueid','$callerid','$channel','$VDADphone_code','$VDADphone','$SQLdate','IN','LIVE-$drop_timer')";
+	$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
+	}
+
 
 }
 

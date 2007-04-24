@@ -336,7 +336,7 @@ while($one_day_interval > 0)
 		$sthA->finish();
 
 		### see how many total VDAD calls are going on right now for max limiter
-		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$server_ip' and status IN('SENT','RINGING','LIVE','XFER');";
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$server_ip' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -473,7 +473,7 @@ while($one_day_interval > 0)
 				{
 				$tally_xfer_line_counter=0;
 				### see how many VDAD calls are live as XFERs to agents
-				$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and campaign_id='$DBIPcampaign[$user_CIPct]' and status='XFER';";
+				$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$DBIPaddress[$user_CIPct]' and campaign_id='$DBIPcampaign[$user_CIPct]' and status IN('XFER','CLOSER');";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
