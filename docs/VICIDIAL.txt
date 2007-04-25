@@ -6,31 +6,44 @@ being able to call up clients efficiently and without using a predictive dialer
 that would potentially lose calls and alienate clients. Since then we have added 
 the ability to do predictive dialing alongside ratio dialing and the traditional 
 one-call-at-a-time dialing as well as the ability to take inbound calls and set
-up campaigns to do blended inbound and outbound at the same time.
+up campaigns to do blended inbound and outbound call handling at the same time.
 
-Features:
+Major Features:
+- Inbound, Outbound and Blended call handling
+- Outbound agent-controlled, broadcast and predictive dialing
+- Full USA FTC-compliance capability
+- Web-based agent and administrative interfaces
+- Ability to have agents operate remotely
+- Integrated call recording
+- Three-Way calling within the agent application
+- Scheduled Callbacks: Agent-Only and Anyone
+- Scalable to hundreds of seats
+- Ability to use standard Telco lines and VOIP trunks
+- Open-Source GPL licensed, with no software licensing cost
+
+Complete Features List:
 - Ability for an agent to call clients in succession from a database through a web-client
 - Ability to display a script for the agent to read with fields like name, address, etc. filled-in
 - Ability to set a campaign to auto-dial and send live calls to available agents
 - Ability to dial predictively in a campaign with an adaptive dialing algorithm
 - Ability to dial on a single campaign across multiple Asterisk servers, or multiple campaigns on a single server
 - Ability to transfer calls with customer data to a closer on the local system or a remote Asterisk server
-- Ability to open a custom web page with user data from the call per campaign
+- Ability to open a custom web page with user data from the call, per campaign
 - Ability to autodial campaigns to start with a simple IVR then direct to agent
+- Ability to broadcast dial to customers with a pre-recorded message
 - Ability to park the customer with custom music per campaign
 - Ability to send a dropped call to a voicemail box per campaign if no agent is available
 - Ability to set outbound CallerID per campaign
 - Ability to take inbound calls grabbing CallerID
 - Ability to function as an ACD for inbound and fronter/closer verification calls
 - Ability to have an agent take both inbound and outbound calls in one session(blended)
-- Ability for agents to log in remotely and have calls redirected to any phone number
 - Ability to start and stop recording an agent's calls at any time
 - Ability to automatically record all calls
-- Ability to call upto two other customer numbers for the same lead
+- Ability to manually or automatically call upto two other customer numbers for the same lead
 - Ability to schedule a callback with a customer as either any-agent or agent-specific
 - Ability in Manual dial mode to preview leads before dialing
 - Ability for agents to be logged in remotely anywhere with just a phone and a web browser
-- Faster dispositioning of calls with agent key-binding (HotKeys)
+- Faster hangup and dispositioning of calls with one key press (HotKeys)
 - Definable Agent Wrapup-time per campaign
 - Ability to add custom call dispositions per campaign
 - Ability to use custom database queries in campaign dialing
@@ -39,7 +52,7 @@ Features:
 - Dialing with Answering Machine Detection, also playing a message for AM calls
 - Multiple campaigns and lead-lists are possible
 - Option of a drop timer with safe-harbor message for FTC compliance
-- Variable Drop call percentage when dialing predictively for FTC compliance
+- Variable drop call percentage when dialing predictively for FTC compliance
 - Internal DNC list can optionally be activated per campaign
 - All calls are logged and statuses of calls are logged as well as agent time breakdowns
 - Load Balancing across multiple inbound or outbound Asterisk servers is possible
@@ -51,6 +64,9 @@ Features:
 - Ability to set user levels and permissions for certain features and campaigns
 - Ability for managers to listen-in on agent conversations
 - Ability for managers to enter conversations with agents and customers
+- Ability for agents to select a Pause Code when they are not active
+- Ability for agents to control volume levels and mute themselves
+- Outbound dialing is QueueMetrics-compatible
 - Web-based administration
 - Client web-app web pages available in English, Spanish, Greek, German, French, Italian, Polish, Portuguese and Brazillian Portuguese
 - Admin web pages available in English, Spanish, Greek and German
@@ -70,9 +86,9 @@ This system is dependant on a MySQL server acting as the storage place of
 all data and settings for the system. This was done so that it would be very 
 scalable and flexible. This application draws on a lot of the core scripting 
 inside of the astGUIclient suite of applications and was built with flexibility
-in mind. We have used VICIDIAL for over two years now on up to 120 seats at 
-once across 6 separate Asterisk servers all using the same MySQL server and 
-dialing on the same campaign. It is important to keep in mind that because 
+in mind. We have used VICIDIAL for over three years now on up to 160 seats at 
+once across 8 separate Asterisk servers all using the same MySQL server and 
+dialing on the same campaigns. It is important to keep in mind that because 
 VICIDIAL uses Asterisk meetme rooms for it's dialing that the Asterisk server 
 will see an increased load as compared to a simple Zap/SIP-only calls.
 
