@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.3               2007-03-XX
+Asterisk/astguiclient install from scratch.    v.2.0.3               2007-04-27
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please

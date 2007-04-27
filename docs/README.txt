@@ -555,7 +555,7 @@ UPGRADE NOTES:
 UPGRADE NOTES:
  * if upgrading from 2.0.1 you need to follow instructions in the UPGRADE doc
 
-2.0.3 - Twenty-Eighth public release - 2007-04-XX
+2.0.3 - Twenty-Eighth public release - 2007-04-27
 - Added optimized manager sending scripts
 - Made several changes to admin.php and made it more customizable
 - Made changes to HotKeys to allow for manual auto dial and auto alt number dial

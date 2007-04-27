@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from existing server.    v.2.0.3        2007-04-XX
+Asterisk/astguiclient install from existing server.    v.2.0.3        2007-04-27
    By the astGUIclient group                              astguiclient@eflo.net
 
 
