@@ -281,6 +281,10 @@ echo "+-------------------------------+------------+\n";
 ##############################
 #########  USER STATS
 
+if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $campaign_id))
+	{$vicidial_log = 'vicidial_closer_log';}
+else
+	{$vicidial_log = 'vicidial_log';}
 $TOTagents=0;
 $TOTcalls=0;
 $TOTtime=0;
@@ -292,7 +296,7 @@ echo "+--------------------------+------------+----------+--------+\n";
 echo "| MITTEL                   | CALLS      | TIME M   | AVRG M |\n";
 echo "+--------------------------+------------+----------+--------+\n";
 
-$stmt="select vicidial_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_log.user=vicidial_users.user group by vicidial_log.user;";
+$stmt="select $vicidial_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from $vicidial_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and $vicidial_log.user is not null and length_in_sec is not null and length_in_sec > 4 and $vicidial_log.user=vicidial_users.user group by $vicidial_log.user;";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}

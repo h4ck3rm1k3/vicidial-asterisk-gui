@@ -108,6 +108,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 # 61130-1639 - Added recording_log lookup and list for this lead_id
 # 61201-1136 - Added recording_log user(TSR) display and link
 # 70305-1133 - Changed to default CHECKED modify logs upon status change
+# 70424-1128 - Added campaign-specific statuses, reformatted recordings list
 #
 
 $STARTtime = date("U");
@@ -274,6 +275,36 @@ else
 	if ($lead_count > 0)
 	{
 
+	$stmt="select * from vicidial_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by uniqueid desc limit 500;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	$call_log = '';
+	$log_campaign = '';
+	while ($logs_to_print > $u) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (strlen($log_campaign)<1) {$log_campaign = $row[3];}
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			$call_log .= "<tr $bgcolor>";
+			$call_log .= "<td><font size=1>$u</td>";
+			$call_log .= "<td><font size=2>$row[4]</td>";
+			$call_log .= "<td align=left><font size=2> $row[7]</td>\n";
+			$call_log .= "<td align=left><font size=2> $row[8]</td>\n";
+			$call_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[11]</A> </td>\n";
+			$call_log .= "<td align=right><font size=2> $row[3] </td>\n";
+			$call_log .= "<td align=right><font size=2> $row[2] </td>\n";
+			$call_log .= "<td align=right><font size=2> $row[1] </td></tr>\n";
+
+		}
+
+
 		$stmt="SELECT * from vicidial_list where lead_id='" . mysql_real_escape_string($lead_id) . "'";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -349,15 +380,32 @@ else
 				while ($statuses_to_print > $o) 
 				{
 					$rowx=mysql_fetch_row($rslt);
-					if ($dispo == "$rowx[0]")
+					if ( (strlen($dispo) ==  strlen($rowx[0])) and (eregi($dispo,$rowx[0])) )
 						{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
 					else
 						{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 					$o++;
 				}
+
+				$stmt="SELECT * from vicidial_campaign_statuses where selectable='Y' and campaign_id='$log_campaign' order by status";
+				$rslt=mysql_query($stmt, $link);
+				$CAMPstatuses_to_print = mysql_num_rows($rslt);
+
+				$o=0;
+				while ($CAMPstatuses_to_print > $o) 
+				{
+					$rowx=mysql_fetch_row($rslt);
+					if ( (strlen($dispo) ==  strlen($rowx[0])) and (eregi($dispo,$rowx[0])) )
+						{$statuses_list .= "<option SELECTED value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n"; $DS++;}
+					else
+						{$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+					$o++;
+				}
+
+
 				if ($DS < 1) {$statuses_list .= "<option SELECTED value=\"$dispo\">$dispo</option>\n";}
 			echo "$statuses_list";
-			echo "</select></td></tr>\n";
+			echo "</select> <i>(with $log_campaign statuses)</i></td></tr>\n";
 
 
 		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent and vicidial logs </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
@@ -433,38 +481,19 @@ echo "<B>CALLS TO THIS LEAD:</B>\n";
 echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
-	$stmt="select * from vicidial_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by uniqueid desc limit 500;";
-	$rslt=mysql_query($stmt, $link);
-	$logs_to_print = mysql_num_rows($rslt);
 
-	$u=0;
-	while ($logs_to_print > $u) 
-		{
-		$row=mysql_fetch_row($rslt);
-		if (eregi("1$|3$|5$|7$|9$", $u))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+echo "$call_log\n";
 
-			$u++;
-			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td><font size=2>$row[4]</td>";
-			echo "<td align=left><font size=2> $row[7]</td>\n";
-			echo "<td align=left><font size=2> $row[8]</td>\n";
-			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[11]</A> </td>\n";
-			echo "<td align=right><font size=2> $row[3] </td>\n";
-			echo "<td align=right><font size=2> $row[2] </td>\n";
-			echo "<td align=right><font size=2> $row[1] </td></tr>\n";
 
-		}
+
+
 
 
 echo "</TABLE></center>\n";
 echo "<BR><BR>\n";
 
 echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
-echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td><td align=left><font size=2>TSR</td></tr>\n";
 
 	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
@@ -484,10 +513,10 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 			echo "<tr $bgcolor>";
 			echo "<td><font size=1>$u</td>";
 			echo "<td align=left><font size=2> $row[12] </td>";
-			echo "<td align=left><font size=2> $row[4] </td>\n";
+			echo "<td align=left><font size=1> $row[4] </td>\n";
 			echo "<td align=left><font size=2> $row[8] </td>\n";
-			echo "<td align=left><font size=2> $row[0] </td>\n";
-			echo "<td align=center><font size=2> $row[10] </td>\n";
+			echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
+			echo "<td align=center><font size=1> $row[10] </td>\n";
 			echo "<td align=left><font size=2> $row[11] </td>\n";
 			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
 			echo "</tr>\n";

@@ -15,6 +15,8 @@
 # 60906-1058 - added filter of non-digits in alt_phone field
 # 61110-1229 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1215 - added postal code GMT lookup and duplicate check options
+# 70205-1703 - Defaulted phone_code to 1 if not populated
+# 70417-1059 - Fixed default phone_code bug
 #
 
 ### begin parsing run-time options ###
@@ -247,6 +249,8 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 			{
 			$phone_list .= "$phone_number$US$list_id|";
 			$postalgmt_found=0;
+			if (length($phone_code)<1) {$phone_code = '1';}
+
 			if ( ($postalgmt > 0) && (length($postal_code)>4) )
 				{
 				if ($phone_code =~ /^1$/)
@@ -454,7 +458,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 		}
 		$total++;
 		if ($total%100==0) {
-			print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total)</script>";
+			print "<script language='JavaScript1.2'>ShowProgress($good, $bad, $total, $dup_lead, $postalgmt_found)</script>";
 			sleep(1);
 #			flush();
 		}

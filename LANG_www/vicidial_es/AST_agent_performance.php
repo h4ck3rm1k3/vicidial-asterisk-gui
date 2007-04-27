@@ -7,6 +7,7 @@
 #
 # 60619-1711 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 70201-1203 - Added non_latin UTF8 output code, widened USER ID to 8 chars
 #
 
 require("dbconnect.php");
@@ -28,8 +29,9 @@ if (isset($_GET["ENVIAR"]))				{$ENVIAR=$_GET["ENVIAR"];}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6;";
+	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) { $rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -49,6 +51,7 @@ if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $stmt="select campaign_id from vicidial_campaigns;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $campaigns_to_print = mysql_num_rows($rslt);
@@ -91,7 +94,7 @@ echo "<option selected value=\"AM\">AM</option>\n";
 echo "<option value=\"PM\">PM</option>\n";
 echo "</SELECT>\n";
 echo "<INPUT TYPE=Submit NAME=ENVIAR VALUE=ENVIAR>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFICAR</a> | <a href=\"./server_stats.php\">INFORMES</a> </FONT>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFICAR</a> | <a href=\"./admin.php?ADD=999999\">INFORMES</a> </FONT>\n";
 echo "</FORM>\n\n";
 
 echo "<PRE><FONT SIZE=2>\n";
@@ -126,11 +129,12 @@ echo "VICIDIAL: Agent Performance                             $NOW_TIME\n";
 echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- AGENTS Details -------------\n\n";
 
-echo "+-----------------+--------+--------+--------+--------+------+------+------+------+------+------+------+\n";
-echo "| USER NAME       | ID     | CALLS  | TALK   | TALKAVG| A    | B    | DC   | DNC  | N    | NI   | SALE |\n";
-echo "+-----------------+--------+--------+--------+--------+------+------+------+------+------+------+------+\n";
+echo "+-----------------+----------+--------+--------+--------+------+------+------+------+------+------+------+\n";
+echo "| USER NAME       | ID       | CALLS  | TALK   | TALKAVG| A    | B    | DC   | DNC  | N    | NI   | SALE |\n";
+echo "+-----------------+----------+--------+--------+--------+------+------+------+------+------+------+------+\n";
 
 $stmt="select count(*) as calls,sum(length_in_sec) as talk,full_name,vicidial_users.user,avg(length_in_sec) from vicidial_users,vicidial_log where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN' and vicidial_users.user=vicidial_log.user and campaign_id='" . mysql_real_escape_string($group) . "' group by full_name order by calls desc limit 1000;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -141,8 +145,25 @@ while ($i < $rows_to_print)
 	$TOTcalls=($TOTcalls + $row[0]);
 	$TOTtotTALK=($TOTtotTALK + $row[1]);
 	$calls[$i] =	sprintf("%-6s", $row[0]);
-	$full_name[$i]=	sprintf("%-15s", $row[2]); while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
-	$user[$i] =		sprintf("%-6s", $row[3]);
+
+	if ($non_latin < 1)
+	{
+   	 $full_name[$i]=	sprintf("%-15s", $row[2]); 
+	 while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
+
+	 $user[$i] =		sprintf("%-6s", $row[3]);
+        while(strlen($user[$i])>6) {$user[$i] = substr("$user[$i]", 0, -1);}
+       }
+	else
+	{	
+        $full_name[$i]=	sprintf("%-45s", $row[2]); 
+	 while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
+
+ 	 $user[$i] =		sprintf("%-18s", $row[3]);
+	 while(mb_strlen($user[$i],'utf-8')>6) {$user[$i] = mb_substr("$user[$i]", 0, -1,'utf-8');}
+	}
+
+	$user[$i] =		sprintf("%-8s", $row[3]);
 	$USERtotTALK =	$row[1];
 	$USERavgTALK =	$row[4];
 
@@ -173,6 +194,10 @@ while($k < $i)
 	{
 	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   "; 
 	$stmt="select count(*),status from vicidial_log where call_date <= '$query_date_END' and call_date >= '$query_date_BEGIN' and user='$user[$k]' and campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+	if ($non_latin > 0)
+	{
+	$rslt=mysql_query("SET NAMES 'UTF8'");
+	}
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$rows_to_print = mysql_num_rows($rslt);
@@ -217,9 +242,9 @@ while($k < $i)
 	$TOT_NI = sprintf("%-5s", $TOT_NI);
 	$TOT_SALE = sprintf("%-5s", $TOT_SALE);
 
-echo "+-----------------+--------+--------+--------+--------+------+------+------+------+------+------+------+\n";
-echo "|  TOTALS                  | $TOTcalls| $TOTtotTALK_MS|        | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_SALE|\n";
-echo "+-----------------+--------+--------+--------+--------+------+------+------+------+------+------+------+\n";
+echo "+-----------------+----------+--------+--------+--------+------+------+------+------+------+------+------+\n";
+echo "|  TOTALS                    | $TOTcalls| $TOTtotTALK_MS|        | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_SALE|\n";
+echo "+-----------------+----------+--------+--------+--------+------+------+------+------+------+------+------+\n";
 
 echo "\n";
 

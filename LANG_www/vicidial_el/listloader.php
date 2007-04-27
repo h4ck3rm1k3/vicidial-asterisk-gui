@@ -1,7 +1,7 @@
 <?
 # listloader.php
 # 
-# Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # AST Web GUI lead loader from formatted file
 # 
@@ -15,12 +15,14 @@
 # 60906-1059 - added filter of non-digits in alt_phone field
 # 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1046 - added postal code GMT lookup and duplicate check options
+# 70205-1703 - Defaulted phone_code to 1 if not populated
+# 70417-1059 - Fixed default phone_code bug
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 #
 
-$version = '2.0.2';
-$build = '61128-1046';
+$version = '2.0.3';
+$build = '770417-1059';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -258,6 +260,8 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 					$gmt_offset =			'0';
 					$called_since_last_reset='N';
 					$phone_list .= "$phone_number$US$list_id|";
+
+					if (strlen($phone_code)<1) {$phone_code = '1';}
 
 					$postalgmt_found=0;
 					if ( (eregi("POSTAL",$postalgmt)) && (strlen($postal_code)>4) )
@@ -870,7 +874,6 @@ if ($leadfile and filesize($LF_path)<=8388608) {
 						if ($DBX) {print "     DST: 0\n";}
 						$AC_processed++;
 						}
-
 
 					if ($multi_insert_counter > 8) {
 						### insert good deal into pending_transactions table ###

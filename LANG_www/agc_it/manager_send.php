@@ -610,7 +610,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./vicidial_debug.txt", "a");
-				fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
+				fwrite ($fp, "$NOW_TIME|RDCXC|$filename|$user|$campaign|$channel|$extrachannel|$queryCID|$exten|$ext_context|ext_priority|\n");
 				fclose($fp);
 				}
 			}

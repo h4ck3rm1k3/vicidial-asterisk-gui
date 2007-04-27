@@ -1,7 +1,7 @@
 <?
 # new_listloader_superL.php
 # 
-# Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # AST GUI lead loader from formatted file
 # 
@@ -17,11 +17,12 @@
 # 60906-1100 - added filter of non-digits in alt_phone field
 # 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1149 - added postal code GMT lookup and duplicate check options
+# 70417-1059 - Fixed default phone_code bug
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.2';
-$build = '61128-1149';
+$version = '2.0.3';
+$build = '70417-1059';
 
 
 require("dbconnect.php");
@@ -417,6 +418,7 @@ function ParseFileName() {
 
 						if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 							{
+							if (strlen($phone_code)<1) {$phone_code = '1';}
 
 							$US='_';
 							$phone_list .= "$phone_number$US$list_id|";
@@ -551,6 +553,7 @@ function ParseFileName() {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 						$US='_';
 						$phone_list .= "$phone_number$US$list_id|";
@@ -702,6 +705,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 							$US='_';
 							$phone_list .= "$phone_number$US$list_id|";
@@ -853,6 +857,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if ( (strlen($phone_number)>6) and ($dup_lead<1) )
 						{
+						if (strlen($phone_code)<1) {$phone_code = '1';}
 
 						$US='_';
 						$phone_list .= "$phone_number$US$list_id|";

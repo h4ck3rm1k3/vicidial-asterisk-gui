@@ -1,12 +1,14 @@
 <? 
 # AST_server_performance.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGES
 #
 # 60619-1732 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 70417-1106 - Changed time frame to be definable per time range on a single day
+#            - Fixed vertical scaling issues
 #
 
 require("dbconnect.php");
@@ -16,10 +18,12 @@ $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
+if (isset($_GET["begin_query_time"]))			{$begin_query_time=$_GET["begin_query_time"];}
+	elseif (isset($_POST["begin_query_time"]))	{$begin_query_time=$_POST["begin_query_time"];}
+if (isset($_GET["end_query_time"]))				{$end_query_time=$_GET["end_query_time"];}
+	elseif (isset($_POST["end_query_time"]))	{$end_query_time=$_POST["end_query_time"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
-if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
-	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["ΕΠΙΒΕΒΑΙΩΣΗ"]))				{$ΕΠΙΒΕΒΑΙΩΣΗ=$_GET["ΕΠΙΒΕΒΑΙΩΣΗ"];}
@@ -51,6 +55,8 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
+if (!isset($begin_query_time)) {$begin_query_time = '09:00:00';}
+if (!isset($end_query_time)) {$end_query_time = '15:30:00';}
 if (!isset($group)) {$group = '';}
 
 $stmt="select server_ip from servers;";
@@ -81,8 +87,10 @@ while ($i < $servers_to_print)
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Server Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "<INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
-echo "<SELECT SIZE=1 NAME=group>\n";
+echo "Date: <INPUT TYPE=TEXT NAME=query_date SIZE=12 MAXLENGTH=10 VALUE=\"$query_date\"> &nbsp; \n";
+echo "Time: <INPUT TYPE=TEXT NAME=begin_query_time SIZE=10 MAXLENGTH=8 VALUE=\"$begin_query_time\"> \n";
+echo "to <INPUT TYPE=TEXT NAME=end_query_time SIZE=10 MAXLENGTH=8 VALUE=\"$end_query_time\"> \n";
+echo "Server: <SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($servers_to_print > $o)
 	{
@@ -90,11 +98,7 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 		  else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
 		$o++;
 	}
-echo "</SELECT>\n";
-echo "<SELECT SIZE=1 NAME=shift>\n";
-echo "<option selected value=\"AM\">AM</option>\n";
-echo "<option value=\"PM\">PM</option>\n";
-echo "</SELECT>\n";
+echo "</SELECT> \n";
 echo "<INPUT TYPE=Submit NAME=ΕΠΙΒΕΒΑΙΩΣΗ VALUE=ΥΠΟΒΑΛΛΩ>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=999999\">ΑΝΑΦΟΡΕΣ</a> </FONT>\n";
 echo "</FORM>\n\n";
@@ -105,46 +109,35 @@ echo "<PRE><FONT SIZE=2>\n";
 if (!$group)
 {
 echo "\n";
-echo "PLEASE SELECT A ΔΙΑΚΟΜΙΣΤΗΣ AND DATE-TIME ABOVE AND CLICK ΕΠΙΒΕΒΑΙΩΣΗ\n";
-echo " NOTE: stats taken from 6 hour shift specified\n";
+echo "PLEASE SELECT A SERVER, DATE AND TIME RANGE ABOVE AND CLICK ΕΠΙΒΕΒΑΙΩΣΗ\n";
 }
 
 else
 {
-if ($shift == 'AM') 
-	{
-	$query_date_BEGIN = "$query_date 08:45:00";   
-	$query_date_END = "$query_date 15:30:00";
-	$time_BEGIN = "08:45:00";   
-	$time_END = "15:55:00";
-	}
-if ($shift == 'PM') 
-	{
-	$query_date_BEGIN = "$query_date 15:30:00";   
-	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:30:00";   
-	$time_END = "23:55:00";
-	}
+
+$query_date_BEGIN = "$query_date $begin_query_time";   
+$query_date_END = "$query_date $end_query_time";
+$time_BEGIN = "$begin_query_time";   
+$time_END = "$end_query_time";
 
 echo "VICIDIAL: Server Performance                             $NOW_TIME\n";
 
 echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- TOTALS, PEAKS and AVERAGES\n";
 
-$stmt="select sysload from server_performance where start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "' order by sysload desc limit 1;";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-$HIGHload =	sprintf("%10s", $row[0]);
-$HIGHmulti = intval($HIGHload / 100);
-#$HIGHmulti = ($HIGHload / 100);
-
-$stmt="select AVG(sysload),AVG(channels_total) from server_performance where start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
+$stmt="select AVG(sysload),AVG(channels_total),MAX(sysload),MAX(channels_total),MAX(processes) from server_performance where start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 $AVGload =	sprintf("%10s", $row[0]);
 $AVGchannels =	sprintf("%10s", $row[1]);
+$HIGHload =	$row[2];
+	$HIGHmulti = intval($HIGHload / 100);
+$HIGHchannels =	$row[3];
+$HIGHprocesses =$row[4];
+if ($row[2] > $row[3]) {$HIGHlimit = $row[2];}
+else {$HIGHlimit = $row[3];}
+if ($HIGHlimit < $row[4]) {$HIGHlimit = $row[4];}
 
 $stmt="select AVG(cpu_user_percent),AVG(cpu_system_percent),AVG(cpu_idle_percent) from server_performance where start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
@@ -154,26 +147,18 @@ $AVGcpuUSER =	sprintf("%10s", $row[0]);
 $AVGcpuSYSTEM =	sprintf("%10s", $row[1]);
 $AVGcpuIDLE =	sprintf("%10s", $row[2]);
 
-$stmt="select usedram from server_performance where start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "' order by usedram desc limit 1;";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-$USEDram =	sprintf("%10s", $row[0]);
-
-$stmt="select count(*),SUM(length_in_min) from call_log where extension NOT IN('8365','8366','8367') and  start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-$TOTALcalls =	sprintf("%10s", $row[0]);
-$OFFHOOKtime =	sprintf("%10s", $row[1]);
+#	$stmt="select count(*),SUM(length_in_min) from call_log where extension NOT IN('8365','8366','8367') and  start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' and server_ip='" . mysql_real_escape_string($group) . "';";
+#	$rslt=mysql_query($stmt, $link);
+#	if ($DB) {echo "$stmt\n";}
+#	$row=mysql_fetch_row($rslt);
+#	$TOTALcalls =	sprintf("%10s", $row[0]);
+#	$OFFHOOKtime =	sprintf("%10s", $row[1]);
 
 
 echo "Total Calls in/out on this server:        $TOTALcalls\n";
 echo "Total Off-Hook time on this server (min): $OFFHOOKtime\n";
-echo "Average channels in use for server:       $AVGchannels\n";
-echo "Average load for server:                  $AVGload\n";
-echo "Peak load for server:                     $HIGHload\n";
-#echo "Peak used memory for server (in MB):      $USEDram\n";
+echo "Average/Peak channels in use for server:  $AVGchannels / $HIGHchannels\n";
+echo "Average/Peak load for server:             $AVGload / $HIGHload\n";
 echo "Average USER process cpu percentage:      $AVGcpuUSER %\n";
 echo "Average SYSTEM process cpu percentage:    $AVGcpuSYSTEM %\n";
 echo "Average IDLE process cpu percentage:      $AVGcpuIDLE %\n";
@@ -214,7 +199,17 @@ fclose($DATfp);
 
 $rows_to_max = ($rows_to_print + 100);
 
+print "rows: $i\n";
 
+$time_scale_abb = '5 minutes';
+$time_scale_tick = '1 minute';
+if ($i > 1000) {$time_scale_abb = '10 minutes';   $time_scale_tick = '2 minutes';}
+if ($i > 2000) {$time_scale_abb = '20 minutes';   $time_scale_tick = '4 minutes';}
+if ($i > 3000) {$time_scale_abb = '30 minutes';   $time_scale_tick = '5 minutes';}
+if ($i > 4000) {$time_scale_abb = '40 minutes';   $time_scale_tick = '10 minutes';}
+if ($i > 5000) {$time_scale_abb = '60 minutes';   $time_scale_tick = '15 minutes';}
+if ($i > 6000) {$time_scale_abb = '90 minutes';   $time_scale_tick = '15 minutes';}
+if ($i > 7000) {$time_scale_abb = '120 minutes';   $time_scale_tick = '30 minutes';}
 
 $HTMcontent  = '';
 $HTMcontent .= "#proc page\n";
@@ -232,11 +227,11 @@ $HTMcontent .= "titledetails: size=14  align=C\n";
 $HTMcontent .= "rectangle: 1 1 14 7\n";
 $HTMcontent .= "xscaletype: time hh:mm:ss\n";
 $HTMcontent .= "xrange: $time_BEGIN $time_END\n";
-$HTMcontent .= "yrange: 0 $HIGHload\n";
+$HTMcontent .= "yrange: 0 $HIGHlimit\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc xaxis\n";
-$HTMcontent .= "stubs: inc 30 minutes\n";
-$HTMcontent .= "minorticinc: 5 minutes\n";
+$HTMcontent .= "stubs: inc $time_scale_abb\n";
+$HTMcontent .= "minorticinc: $time_scale_tick\n";
 $HTMcontent .= "stubformat: hh:mm:ssa\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc yaxis\n";
