@@ -1,0 +1,45 @@
+INOUND/CLOSER proces flow					  2007-05-02
+
+** THIS FULLY REDONE INBOUND-CLOSER PROSESS IS PLANNED FOR THE 2.0.4 RELEASE **
+
+This will outline the process I have thought through in my head for rewriting the inbound and closer call queueing and handling processes within VICIDIAL. The objective is to add the following features to make VICIDIAL a more well-rounded product:
+- announce estimated time on hold
+- announce place in line
+- custom hold music per in-group
+- option for customer to leave the queue and leave a message while still keeping their place in line
+- allow agent to search for customer lead in system after they have been connected
+- for closer transfers, allow fronter to send calls to any in-group by a pull-down list
+- put call_times into effect for in-groups allowing calls coming in after hours to be directed to another extension or voicemail box
+
+
+
+The Agent Side:
+The vicidial.php script will need to be modified to allow for a record to pop up and show that a customer has called and possibly display their callerID and play a message that they may have left. The agent would then have the option to place a manual dial call to reach the customer.
+
+Another important change that needs to be made to the vicidial.php agent interface is to allow searching for a customer's record and changing the lead_id that is associated with the call while the call is going on. This could prove problematic, but will end up being a much better solution than locking the agent into a record when the call comes in. This may also result in records having to be associated with other records, which might mean either another table or possibly adding another field to the vicidial_list table.
+
+For the changes in the Fronter/Closer transfers, new User Group permissions will need to be added to be able to restrict the in-groups that agents are allowed to transfer calls to. When Closer transfers are enabled in a campaign the agent interface will select these in-groups and can transfer calls to any of those groups. Also, a complete reworking of how the Transfer Conference box is laid out will be done.
+
+
+
+The Admin Side:
+More settings will be needed for the In-Groups section to be able to accomodate these changes:
+moh_extension VARCHAR(20)
+announce_place_in_line ENUM('Y','N') default 'N'
+announce_estimate_hold_time ENUM('Y','N') default 'N'
+allow_leave_queue_place ENUM('Y','N') default 'N'
+allow_leave_queue_message ENUM('Y','N') default 'N'
+call_time VARCHAR(20)
+after_hours ENUM('HANGUP','VOICEMAIL','EXTENSION') default 'EXTENSION'
+
+For the fronter/closer transfers some fields will need to be added to the vicidial_user groups table:
+allowable_xfer_inbound_groups TEXT
+default_xfer_inbound_group VARCHAR(40)
+
+
+
+
+The Server Side:
+For inbound and closer transfers, the agi_VDAD... scripts will still run as normal, but after 5 seconds without a transfer to an agent the customer will be put into the new queue manager which will consist of a constantly running perl script that will keep track of the call while it is still active and before it gets sent to an agent. This script will also have to somehow keep the vicidial_auto_calls records active even after a customer has hung up in order to preserve place-in-line and allow for playing of a customer message or callback to a customer.
+
+MORE TO COME...
