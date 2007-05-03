@@ -25,12 +25,23 @@ For the changes in the Fronter/Closer transfers, new User Group permissions will
 The Admin Side:
 More settings will be needed for the In-Groups section to be able to accomodate these changes:
 moh_extension VARCHAR(20)
+prompt_interval SMALLINT(5) UNSIGNED default '60'
 announce_place_in_line ENUM('Y','N') default 'N'
 announce_estimate_hold_time ENUM('Y','N') default 'N'
 allow_leave_queue_place ENUM('Y','N') default 'N'
 allow_leave_queue_message ENUM('Y','N') default 'N'
+callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK')
 call_time VARCHAR(20)
 after_hours ENUM('HANGUP','VOICEMAIL','EXTENSION') default 'EXTENSION'
+after_hours_exten VARCHAR(20)
+
+In the servers table a field will also be added:
+hold_queue_prompt_exten VARCHAR(20) default '8359'
+
+In the vicidial_auto_calls table a field will also be added:
+last_prompt_time DATETIME
+random_id INT(9) UNSIGNED
+recording_id INT(10) UNSIGNED 
 
 For the fronter/closer transfers some fields will need to be added to the vicidial_user groups table:
 allowable_xfer_inbound_groups TEXT
@@ -38,8 +49,30 @@ default_xfer_inbound_group VARCHAR(40)
 
 
 
-
 The Server Side:
-For inbound and closer transfers, the agi_VDAD... scripts will still run as normal, but after 5 seconds without a transfer to an agent the customer will be put into the new queue manager which will consist of a constantly running perl script that will keep track of the call while it is still active and before it gets sent to an agent. This script will also have to somehow keep the vicidial_auto_calls records active even after a customer has hung up in order to preserve place-in-line and allow for playing of a customer message or callback to a customer.
+For inbound and closer transfers, the agi_VDAD... scripts will still run as they normally do now, but after 5 seconds, without a transfer to an agent, the customer will be put into the new call-queue manager which will consist of a constantly running perl script(we will call it "AST_VD_hold_queue.pl") that will keep track of the call while it is still active and before it gets sent to an agent, and an AGI script(we will call this one agi-VD_queue_prompts.agi) that will perform the dynamic functions of speaking the customer's place in line, estimated hold time and offer the option to press a DTMF digit and either leave a message for the agent to take the call or leave a callback number to be called back when their turn arrives. This script will also have to somehow keep the vicidial_auto_calls records active even after a customer has hung up in order to preserve place-in-line and allow for playing of a customer message or callback to a customer.
+
+Here is a process flow explanation of how a call would move through the hold queue:
+- Call comes in to the agi_VDADcloser... script and cannot find an agent to send the call to within 5 seconds
+- the agi_VDADcloser script changes the status of the call in vicidial_auto_calls to HOLDP and sends the call to the extension that the agi-VD_queue_prompts.agi script is on(defined in the servers table, default will be 8359)
+- the agi-VD_queue_prompts.agi script will query the database for the vicidial_inbound_group settings to see what options it should offer the customer and then that script plays the desired prompts(if selected, leave number and/or leave voice message), then it will wait 15 seconds for a digit press and if there is no valid digit press then it will continue on(steps for if there is a digit press are at the end of this process flow)
+- Then the agi script checks for a "conferences" table entry that matches that moh_extension(for a moh_extension of 1234 this would be reserved under HOLDQ1234 in the conferences table)
+- If the conference is reserved then the customer call is immediately transferred there, if it does not exist, the agi script will reserve a new conferences record and post an Originate record to the vicidial_manager table so that the hold music/message will start playing in that meetme conference
+- The vicidial_auto_calls record is changed to HOLDQ and the customer call is then sent to that meetme room in listen-only mode so that multiple customers can be sent to the same meetme room.(This adds the extra option of allowing a manager to dial into that conference and speak a message to all of the people waiting in the queue)
+- The AST_VD_hold_queue.pl script then checks to see if there are any available agents as well as updates the time on the vicidial_auto_calls record every second to keep it alive, as well as checking to see whether the call is due to be sent back to the prompt agi by how old the call's last_prompt_time field is set to(even if a call is in HOLDP and is in the prompt agi process, it will still keep it's place in line and it will immediately be transferred if an agent becomes available)
+- If the last_prompt_time is older than prompt_interval seconds, then the vicidial_auto_calls status is set back to HOLDP and the call is sent back to the agi-VD_queue_prompts.agi script for another loop
+- If there is an available agent, then the vicidial_live_agents record is updated and the call is immediately sent to the agent's meetme room
+- If the customer is in the agi-prompt script and they choose to leave a message and/or leave a callback phone number, the script will add the callback number to the alt_phone field(if it does not match callerIDnumber that the call came in under), and the voice message will be logged in the recording_log table along with the server_ip that it was recorded on. The filename for the recording will be something like this "70503124128_CUSTSERV_7275551212-all.wav" which is the datetimecode_inboundgroup_customerphone
+- If customer enters in a callback number and vicidial_inbound_groups callback_number_validation field is set to 6-14, NORTH_AMERICA or UK then the number of digits and pattern are validated or cleaned to make sure it is a valid number. The agi prompt script will also read back the phone number they entered to verify it again with the customer and ask for a confirmation of that number with press of a 1 or 2.
+- After the customer has left a callback phone number and left a message their vicidial_auto_calls status is changed to PLACE and their call is hung-up
+- When a PLACE call that a customer had left a message on is sento to an agent, the agent will see the customer record appear and the audio recording will be automatically played in their session with a button to allow them to play it again. Then the agent screen will go into manual-dial-alt-dial mode allowing the agent to place a call back to the customer.
+
+
+
+This functionality will require three new statuses in the vicidial_auto_calls table: 
+HOLDQ - this status will be for the LIVE-status calls that were not sent to an agent in the first five seconds on the system, so they will be handed over to be taken care of by the AST_VD_queue_hold.pl perl script.
+HOLDP - this status will be for the HOLDQ calls that are currently in the agi-VD_queue_prompts.agi script.
+PLACE - this status is a placeholder for the customer after they choose the option to hang-up and either leave a message or leave their contact number for a callback. They are no longer on an active channel, but their place in line as a customer should be preserved so that the agent that receives their record can proceed with a call to follow-up with the customer.
+
 
 MORE TO COME...
