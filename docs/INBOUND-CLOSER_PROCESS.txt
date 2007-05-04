@@ -14,7 +14,7 @@ This will outline the process I have thought through in my head for rewriting th
 
 
 The Agent Side:
-The vicidial.php script will need to be modified to allow for a record to pop up and show that a customer has called and possibly display their callerID and play a message that they may have left. The agent would then have the option to place a manual dial call to reach the customer.
+The vicidial.php script will need to be modified to allow for a record to load and show that a customer has called and possibly display their callerID and play a message that they may have left. The agent would then have the option to place a manual dial call to reach the customer.
 
 Another important change that needs to be made to the vicidial.php agent interface is to allow searching for a customer's record and changing the lead_id that is associated with the call while the call is going on. This could prove problematic, but will end up being a much better solution than locking the agent into a record when the call comes in. This may also result in records having to be associated with other records, which might mean either another table or possibly adding another field to the vicidial_list table.
 
@@ -64,8 +64,8 @@ Here is a process flow explanation of how a call would move through the hold que
 - If there is an available agent, then the vicidial_live_agents record is updated and the call is immediately sent to the agent's meetme room
 - If the customer is in the agi-prompt script and they choose to leave a message and/or leave a callback phone number, the script will add the callback number to the alt_phone field(if it does not match callerIDnumber that the call came in under), and the voice message will be logged in the recording_log table along with the server_ip that it was recorded on. The filename for the recording will be something like this "70503124128_CUSTSERV_7275551212-all.wav" which is the datetimecode_inboundgroup_customerphone
 - If customer enters in a callback number and vicidial_inbound_groups callback_number_validation field is set to 6-14, NORTH_AMERICA or UK then the number of digits and pattern are validated or cleaned to make sure it is a valid number. The agi prompt script will also read back the phone number they entered to verify it again with the customer and ask for a confirmation of that number with press of a 1 or 2.
-- After the customer has left a callback phone number and left a message their vicidial_auto_calls status is changed to PLACE and their call is hung-up
-- When a PLACE call that a customer had left a message on is sento to an agent, the agent will see the customer record appear and the audio recording will be automatically played in their session with a button to allow them to play it again. Then the agent screen will go into manual-dial-alt-dial mode allowing the agent to place a call back to the customer.
+- After the customer has left a callback phone number and left a message, their vicidial_auto_calls status is changed to PLACE and their call is hung-up
+- When a PLACE call that a customer had left a message on is sent to an agent, the agent will see the customer record appear and the audio recording will be automatically played in their session with a button to allow them to play it again. Then the agent screen will go into manual-dial-alt-dial mode allowing the agent to place a call back to the customer.
 
 
 
