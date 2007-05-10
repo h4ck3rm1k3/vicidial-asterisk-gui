@@ -158,10 +158,11 @@
 # 70319-1626 - Added option to allow agent logins to campaigns with no leads in the hopper
 # 70320-1501 - Added option to allow retry of leave-3way-call from dispo screen
 # 70322-1545 - Added sipsak display ability
+# 70510-1319 - Added onUnload force Logout
 #
 
-$version = '2.0.129';
-$build = '70322-1545';
+$version = '2.0.130';
+$build = '70510-1319';
 
 require("dbconnect.php");
 
@@ -4923,6 +4924,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 
 // ################################################################################
+// Log the user out of the system when they close their browser while logged in
+	function BrowserCloseLogout()
+		{
+		if (logout_stop_timeouts < 1)
+			{
+			LogouT();
+			alert("PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME.\n");
+			}
+		}
+
+
+// ################################################################################
 // Log the user out of the system, if active call or active dial is occuring, don't let them.
 	function LogouT()
 		{
@@ -5933,7 +5946,7 @@ echo "</head>\n";
 
 
 ?>
-<BODY onload="begin_all_refresh();">
+<BODY onload="begin_all_refresh();"  onunload="BrowserCloseLogout();">
 <FORM name=vicidial_form>
 <span style="position:absolute;left:0px;top:0px;z-index:2;" id="Header">
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=760 MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
