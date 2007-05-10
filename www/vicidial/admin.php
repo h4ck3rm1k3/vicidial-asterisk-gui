@@ -5096,7 +5096,7 @@ if ($ADD==44)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_description='$campaign_description',campaign_changedate='$SQLdate' where campaign_id='$campaign_id';";
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -7877,7 +7877,7 @@ if ($ADD==34)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_changedate size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left>$row[57]$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
 
