@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VICIDIAL_IN_new_leads_file.pl version 0.5   *DBI-version*
+# VICIDIAL_IN_new_leads_file.pl version 0.6   *DBI-version*
 #
 # DESCRIPTION:
 # script lets you insert leads into the vicidial_list table from a TAB-delimited
@@ -8,7 +8,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 #
 # CHANGES
@@ -22,6 +22,7 @@
 #            - added duplicate check flag option within same list
 # 61127-1132 - Added new DST methods
 # 61128-1037 - Added postal codes GMT lookup option
+# 70510-1518 - Added campaign and system duplicate check and phonecode override
 #
 
 $secX = time();
@@ -105,7 +106,10 @@ if (length($ARGV[0])>1)
 	print "  [--forcegmt] = forces gmt value of column after comments column\n";
 	print "  [--debug] = debug output\n";
 	print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
+	print "  [--forcephonecode=44] = overrides the phone_code given in the lead with the 44\n";
 	print "  [--duplicate-check] = checks for the same phone number in the same list id before inserting lead\n";
+	print "  [--duplicate-campaign-check] = checks for the same phone number in the same campaign before inserting lead\n";
+	print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
 	print "  [--postal-code-gmt] = checks for the time zone based on the postal code given where available\n";
 	print "  [-h] = this help screen\n\n";
 	print "\n";
@@ -150,10 +154,31 @@ if (length($ARGV[0])>1)
 		}
 		else
 			{$forcelistid = '';}
+
+		if ($args =~ /--forcephonecode=/i)
+		{
+		@data_in = split(/--forcephonecode=/,$args);
+			$forcephonecode = $data_in[1];
+			$forcephonecode =~ s/ .*//gi;
+		print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";
+		}
+		else
+			{$forcephonecode = '';}
+
 		if ($args =~ /-duplicate-check/i)
 		{
 		$dupcheck=1;
 		print "\n----- DUPLICATE CHECK -----\n\n";
+		}
+		if ($args =~ /-duplicate-campaign-check/i)
+		{
+		$dupcheckcamp=1;
+		print "\n----- DUPLICATE CAMPAIGN CHECK -----\n\n";
+		}
+		if ($args =~ /-duplicate-system-check/i)
+		{
+		$dupchecksys=1;
+		print "\n----- DUPLICATE SYSTEM CHECK -----\n\n";
 		}
 		if ($args =~ /-postal-code-gmt/i)
 		{
@@ -303,15 +328,26 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			{
 			$list_id =	$forcelistid;		# set list_id to override value
 			}
-		if ($dupcheck > 0)
+		if (length($forcephonecode) > 0)
+			{
+			$phone_code =	$forcephonecode;	# set phone_code to override value
+			}
+
+		##### Check for duplicate phone numbers in vicidial_list table entire database #####
+		if ($dupchecksys > 0)
 			{
 			$dup_lead=0;
-			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
+			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number';";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
 				@aryA = $sthA->fetchrow_array;
 				$dup_lead = $aryA[0];
+				$dup_lead_list=$list_id;
+				}
 			$sthA->finish();
 			if ($dup_lead < 1)
 				{
@@ -319,6 +355,86 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 					{$dup_lead++;}
 				}
 			}
+		##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+		if ($dupcheck > 0)
+			{
+			$dup_lead=0;
+			$stmtA = "select llst_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$dup_lead_list = $aryA[0];
+				$dup_lead++;
+				}
+			$sthA->finish();
+			if ($dup_lead < 1)
+				{
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
+				}
+			}
+		##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+		if ($dupcheckcamp > 0)
+			{
+			$dup_lead=0;
+			$dup_lists='';
+
+			$stmtA = "select count(*) from vicidial_lists where list_id='$list_id';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				@aryA = $sthA->fetchrow_array;
+				$ci_recs = $aryA[0];
+			$sthA->finish();
+			if ($ci_recs > 0)
+				{
+				$stmtA = "select campaign_id from vicidial_lists where list_id='$list_id';";
+					if($DBX){print STDERR "\n|$stmtA|\n";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					@aryA = $sthA->fetchrow_array;
+					$dup_camp = $aryA[0];
+				$sthA->finish();
+
+				$stmtA = "select list_id from vicidial_lists where campaign_id='$dup_camp';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$dup_lists .=	"'$aryA[0]',";
+					$rec_count++;
+					}
+				$sthA->finish();
+
+				chop($dup_lists);
+				$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$dup_lead_list =	"'$aryA[0]',";
+					$rec_count++;
+					$dup_lead=1;
+					}
+				$sthA->finish();
+				}
+			if ($dup_lead < 1)
+				{
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
+				}
+			}
+
 		if ( (length($phone_number)>6) && ($dup_lead < 1) )
 			{
 			$phone_list .= "$phone_number$US$list_id|";
@@ -547,7 +663,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		else
 			{
 			if ($dup_lead > 0)
-				{print "DUPLICATE: $phone|$list_id";   $f++;}
+				{print "DUPLICATE: $phone|$list_id|$dup_lead_list|";   $f++;}
 			else
 				{print "BAD Home_Phone: $phone|$vendor_id";   $e++;}
 			}
