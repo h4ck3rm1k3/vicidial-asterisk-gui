@@ -405,6 +405,28 @@ sub process_request {
 				$extension = $SIP_ext;
 				}
 
+			if ( ($callerid =~ /^V|^M/) && ($callerid =~ /\d\d\d\d\d\d\d\d\d/) && (length($number_dialed)<1) )
+				{
+				$stmtA = "SELECT cmd_line_b,cmd_line_d FROM vicidial_manager where callerid='$callerid' limit 1;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$cmd_line_b	=	"$aryA[0]";
+					$cmd_line_d	=	"$aryA[1]";
+						$cmd_line_b =~ s/Exten: //gi;
+						$cmd_line_d =~ s/Channel: Local\/|@.*//gi;
+					$rec_count++;
+					}
+				$sthA->finish();
+				if ($callerid =~ /^V/) {$number_dialed = "$cmd_line_d";}
+				if ($callerid =~ /^M/) {$number_dialed = "$cmd_line_b";}
+				$number_dialed =~ s/\D//gi;
+				if (length($number_dialed)<1) {$number_dialed=$extension;}
+				}
 			$stmtA = "INSERT INTO call_log (uniqueid,channel,channel_group,type,server_ip,extension,number_dialed,start_time,start_epoch,end_time,end_epoch,length_in_sec,length_in_min,caller_code) values('$unique_id','$channel','$channel_group','$type','$VARserver_ip','$extension','$number_dialed','$now_date','$now_date_epoch','','','','','$callerid')";
 
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
@@ -442,7 +464,7 @@ sub process_request {
 
 				if ($AGILOG) {$agi_string = "QUERY done: start time = $start_time | sec: $length_in_sec | min: $length_in_min |";   &agi_output;}
 
-				$stmtA = "UPDATE call_log set end_time='$now_date',end_epoch='$now_date_epoch',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where uniqueid='$unique_id'";
+				$stmtA = "UPDATE call_log set end_time='$now_date',end_epoch='$now_date_epoch',length_in_sec=$length_in_sec,length_in_min='$length_in_min',channel='$channel' where uniqueid='$unique_id'";
 
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 				$affected_rows = $dbhA->do($stmtA);

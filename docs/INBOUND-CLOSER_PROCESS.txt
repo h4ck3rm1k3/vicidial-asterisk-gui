@@ -45,7 +45,7 @@ recording_id INT(10) UNSIGNED
 
 For the fronter/closer transfers some fields will need to be added to the vicidial_user groups table:
 allowable_xfer_inbound_groups TEXT
-default_xfer_inbound_group VARCHAR(40)
+default_xfer_inbound_group VARCHAR(20)
 
 
 
