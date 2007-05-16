@@ -12,6 +12,7 @@ $page_width='750';
 $section_width='700';
 $header_font_size='3';
 $subheader_font_size='2';
+$subcamp_font_size='2';
 $header_selected_bold='<b>';
 $header_nonselected_bold='';
 $users_color =		'#FFFF99';
@@ -54,6 +55,8 @@ $reports_font =		'BLACK';
 	$conference_font =	'BLACK';
 	$server_font =		'BLACK';
 	$settings_font = 	'BLACK';
+$subcamp_color =	'#CCFF66';
+$subcamp_font =		'BLACK';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -584,6 +587,16 @@ if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["all
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 if (isset($_GET["admin_home_url"]))				{$admin_home_url=$_GET["admin_home_url"];}
 	elseif (isset($_POST["admin_home_url"]))	{$admin_home_url=$_POST["admin_home_url"];}
+if (isset($_GET["list_order_mix"]))				{$list_order_mix=$_GET["list_order_mix"];}
+	elseif (isset($_POST["list_order_mix"]))	{$list_order_mix=$_POST["list_order_mix"];}
+if (isset($_GET["vcl_id"]))						{$vcl_id=$_GET["vcl_id"];}
+	elseif (isset($_POST["vcl_id"]))			{$vcl_id=$_POST["vcl_id"];}
+if (isset($_GET["vcl_name"]))					{$vcl_name=$_GET["vcl_name"];}
+	elseif (isset($_POST["vcl_name"]))			{$vcl_name=$_POST["vcl_name"];}
+if (isset($_GET["list_mix_container"]))				{$list_mix_container=$_GET["list_mix_container"];}
+	elseif (isset($_POST["list_mix_container"]))	{$list_mix_container=$_POST["list_mix_container"];}
+if (isset($_GET["mix_method"]))					{$mix_method=$_GET["mix_method"];}
+	elseif (isset($_POST["mix_method"]))		{$mix_method=$_POST["mix_method"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -826,6 +839,9 @@ $dial_status = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status);
 $queuemetrics_eq_prepend = ereg_replace("[^-\_0-9a-zA-Z]","",$queuemetrics_eq_prepend);
 $vicidial_agent_disable = ereg_replace("[^-\_0-9a-zA-Z]","",$vicidial_agent_disable);
 $alter_custdata_override = ereg_replace("[^-\_0-9a-zA-Z]","",$alter_custdata_override);
+$list_order_mix = ereg_replace("[^-\_0-9a-zA-Z]","",$list_order_mix);
+$vcl_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vcl_id);
+$mix_method = ereg_replace("[^-\_0-9a-zA-Z]","",$mix_method);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -860,6 +876,7 @@ $wrapup_message = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$wrapup_message);
 $pause_code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$pause_code_name);
 $campaign_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_description);
 $list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
+$vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -877,6 +894,7 @@ $queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pas
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
+$list_mix_container = ereg_replace(";","",$list_mix_container);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
@@ -994,11 +1012,12 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70319-1625 - Added option to allow agents to login to outbound campaigns with no leads in the hopper
 # 70322-1455 - Added sipsak messages parameters
 # 70402-1157 - Added HOME link and entry to system_settings table, added QM link on reports section
-
+# 70516-1628 - Started reformatting campaigns to use submenus to break up options
+#
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.95';
-$build = '70402-1157';
+$admin_version = '2.0.96';
+$build = '70516-1628';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1104,7 +1123,7 @@ echo "<title>VICIDIAL ADMIN: ";
 if (!isset($ADD))   {$ADD=0;}
 
 if ($ADD==1)			{$hh='users';		echo "Add New User";}
-if ($ADD==11)			{$hh='campaigns';	echo "Add New Campaign";}
+if ($ADD==11)			{$hh='campaigns';	$sh='basic';	echo "Add New Campaign";}
 if ($ADD==111)			{$hh='lists';		echo "Add New List";}
 if ($ADD==121)			{$hh='lists';		echo "Add New DNC";}
 if ($ADD==1111)			{$hh='ingroups';	echo "Add New In-Group";}
@@ -1119,13 +1138,14 @@ if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
 if ($ADD==2)			{$hh='users';		echo "New User Addition";}
-if ($ADD==21)			{$hh='campaigns';	echo "New Campaign Addition";}
-if ($ADD==22)			{$hh='campaigns';	echo "New Campaign Status Addition";}
-if ($ADD==23)			{$hh='campaigns';	echo "New Campaign HotKey Addition";}
-if ($ADD==25)			{$hh='campaigns';	echo "New Campaign Lead Recycle Addition";}
-if ($ADD==26)			{$hh='campaigns';	echo "New Auto Alt Dial Status";}
-if ($ADD==27)			{$hh='campaigns';	echo "New Agent Pause Code";}
-if ($ADD==28)			{$hh='campaigns';	echo "Campaign Dial Status Added";}
+if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "New Campaign Addition";}
+if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "New Campaign Status Addition";}
+if ($ADD==23)			{$hh='campaigns';	$sh='hotkey';	echo "New Campaign HotKey Addition";}
+if ($ADD==25)			{$hh='campaigns';	$sh='recycle';	echo "New Campaign Lead Recycle Addition";}
+if ($ADD==26)			{$hh='campaigns';	$sh='autoalt';	echo "New Auto Alt Dial Status";}
+if ($ADD==27)			{$hh='campaigns';	$sh='pause';	echo "New Agent Pause Code";}
+if ($ADD==28)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Status Added";}
+if ($ADD==29)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mix Added";}
 if ($ADD==211)			{$hh='lists';		echo "New List Addition";}
 if ($ADD==2111)			{$hh='ingroups';	echo "New In-Group Addition";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
@@ -1141,8 +1161,15 @@ if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFER
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
-if ($ADD==31)			{$hh='campaigns';	echo "Modify Campaign";}
-if ($ADD==34)			{$hh='campaigns';	echo "Modify Campaign - Basic View";}
+if ($ADD==31)			{$hh='campaigns';	$sh='detail';	echo "Modify Campaign - Detail View";}
+if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Campaign Statuses";}
+if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Campaign HotKeys";}
+if ($ADD==34)			{$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View";}
+if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Campaign Lead Recycle Entries";}
+if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Campaign Auto Alt Dial Statuses";}
+if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Campaign Agent Pause Codes";}
+if ($ADD==38)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Statuses";}
+if ($ADD==39)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mixes";}
 if ($ADD==311)			{$hh='lists';		echo "Modify List";}
 if ($ADD==3111)			{$hh='ingroups';	echo "Modify In-Group";}
 if ($ADD==31111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
@@ -1160,12 +1187,13 @@ if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL S
 if ($ADD=="4A")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Modify User";}
-if ($ADD==41)			{$hh='campaigns';	echo "Modify Campaign";}
-if ($ADD==42)			{$hh='campaigns';	echo "Modify Campaign Status";}
-if ($ADD==43)			{$hh='campaigns';	echo "Modify Campaign HotKey";}
-if ($ADD==44)			{$hh='campaigns';	echo "Modify Campaign - Basic View";}
-if ($ADD==45)			{$hh='campaigns';	echo "Modify Campaign Lead Recycle";}
-if ($ADD==47)			{$hh='campaigns';	echo "Modify Agent Pause Code";}
+if ($ADD==41)			{$hh='campaigns';	$sh='detail';	echo "Modify Campaign";}
+if ($ADD==42)			{$hh='campaigns';	$sh='status';	echo "Modify Campaign Status";}
+if ($ADD==43)			{$hh='campaigns';	$sh='hotkey';	echo "Modify Campaign HotKey";}
+if ($ADD==44)			{$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View";}
+if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Modify Campaign Lead Recycle";}
+if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Modify Agent Pause Code";}
+if ($ADD==47)			{$hh='campaigns';	$sh='listmix';	echo "Modify Campaign List Mix";}
 if ($ADD==411)			{$hh='lists';		echo "Modify List";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Modify In-Group";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
@@ -1181,9 +1209,9 @@ if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
-if ($ADD==51)			{$hh='campaigns';	echo "Delete Campaign";}
-if ($ADD==52)			{$hh='campaigns';	echo "Logout Agents";}
-if ($ADD==53)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
+if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Campaign";}
+if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Logout Agents";}
+if ($ADD==53)			{$hh='campaigns';	$sh='detail';	echo "Emergency VDAC Jam Clear";}
 if ($ADD==511)			{$hh='lists';		echo "Delete List";}
 if ($ADD==5111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==51111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -1197,13 +1225,14 @@ if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
-if ($ADD==61)			{$hh='campaigns';	echo "Delete Campaign";}
-if ($ADD==62)			{$hh='campaigns';	echo "Logout Agents";}
-if ($ADD==63)			{$hh='campaigns';	echo "Emergency VDAC Jam Clear";}
-if ($ADD==65)			{$hh='campaigns';	echo "Delete Lead Recycle";}
-if ($ADD==66)			{$hh='campaigns';	echo "Delete Auto Alt Dial Status";}
-if ($ADD==67)			{$hh='campaigns';	echo "Delete Agent Pause Code";}
-if ($ADD==68)			{$hh='campaigns';	echo "Campaign Dial Status Removed";}
+if ($ADD==61)			{$hh='campaigns';	$sh='detail';	echo "Delete Campaign";}
+if ($ADD==62)			{$hh='campaigns';	$sh='detail';	echo "Logout Agents";}
+if ($ADD==63)			{$hh='campaigns';	$sh='detail';	echo "Emergency VDAC Jam Clear";}
+if ($ADD==65)			{$hh='campaigns';	$sh='recycle';	echo "Delete Lead Recycle";}
+if ($ADD==66)			{$hh='campaigns';	$sh='autoalt';	echo "Delete Auto Alt Dial Status";}
+if ($ADD==67)			{$hh='campaigns';	$sh='pause';	echo "Delete Agent Pause Code";}
+if ($ADD==68)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Status Removed";}
+if ($ADD==69)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mix Removed";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Delete Remote Agents";}
@@ -1221,10 +1250,10 @@ if ($ADD==73)			{$hh='campaigns';	echo "Dialable Lead Count";}
 if ($ADD==7111111)		{$hh='scripts';		echo "Preview Script";}
 if ($ADD==0)			{$hh='users';		echo "Users List";}
 if ($ADD==8)			{$hh='users';		echo "CallBacks Within Agent";}
-if ($ADD==81)			{$hh='campaigns';	echo "CallBacks Within Campaign";}
+if ($ADD==81)			{$hh='campaigns';	$sh='list';	echo "CallBacks Within Campaign";}
 if ($ADD==811)			{$hh='lists';	echo "CallBacks Within List";}
 if ($ADD==8111)			{$hh='usergroups';	echo "CallBacks Within User Group";}
-if ($ADD==10)			{$hh='campaigns';	echo "Campaigns";}
+if ($ADD==10)			{$hh='campaigns';	$sh='list';	echo "Campaigns";}
 if ($ADD==100)			{$hh='lists';		echo "Lists";}
 if ($ADD==1000)			{$hh='ingroups';	echo "In-Groups";}
 if ($ADD==10000)		{$hh='remoteagent';	echo "Remote Agents";}
@@ -3219,10 +3248,52 @@ $admin_home_url_LU =	$row[0];
 	?>
 <TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Users </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a></TD></TR>
 <? } 
-if (strlen($campaigns_hh) > 1) { 
+if (strlen($campaigns_hh) > 1) 
+	{ 
+
+#	if ($sh=='basic') {$basic_sh="bgcolor=\"$subcamp_color\""; $basic_fc="$subcamp_font";}
+#		else {$basic_sh=''; $basic_fc='BLACK';}
+#	if ($sh=='detail') {$detail_sh="bgcolor=\"$subcamp_color\""; $detail_fc="$subcamp_font";}
+#		else {$detail_sh=''; $detail_fc='BLACK';}
+#	if ($sh=='dialstat') {$dialstat_sh="bgcolor=\"$subcamp_color\""; $dialstat_fc="$subcamp_font";}
+#		else {$dialstat_sh=''; $dialstat_fc='BLACK';}
+
+	if ($sh=='basic') {$sh='list';}
+	if ($sh=='detail') {$sh='list';}
+	if ($sh=='dialstat') {$sh='list';}
+
+	if ($sh=='list') {$list_sh="bgcolor=\"$subcamp_color\""; $list_fc="$subcamp_font";}
+		else {$list_sh=''; $list_fc='BLACK';}
+	if ($sh=='status') {$status_sh="bgcolor=\"$subcamp_color\""; $status_fc="$subcamp_font";}
+		else {$status_sh=''; $status_fc='BLACK';}
+	if ($sh=='hotkey') {$hotkey_sh="bgcolor=\"$subcamp_color\""; $hotkey_fc="$subcamp_font";}
+		else {$hotkey_sh=''; $hotkey_fc='BLACK';}
+	if ($sh=='recycle') {$recycle_sh="bgcolor=\"$subcamp_color\""; $recycle_fc="$subcamp_font";}
+		else {$recycle_sh=''; $recycle_fc='BLACK';}
+	if ($sh=='autoalt') {$autoalt_sh="bgcolor=\"$subcamp_color\""; $autoalt_fc="$subcamp_font";}
+		else {$autoalt_sh=''; $autoalt_fc='BLACK';}
+	if ($sh=='pause') {$pause_sh="bgcolor=\"$subcamp_color\""; $pause_fc="$subcamp_font";}
+		else {$pause_sh=''; $pause_fc='BLACK';}
+	if ($sh=='listmix') {$listmix_sh="bgcolor=\"$subcamp_color\""; $listmix_fc="$subcamp_font";}
+		else {$listmix_sh=''; $listmix_fc='BLACK';}
+
 	?>
-<TR BGCOLOR=<?=$campaigns_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Real-Time Campaigns Summary </a></TD></TR>
-<? } 
+<TR BGCOLOR=<?=$campaigns_color ?>>
+<TD ALIGN=LEFT <?=$list_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$list_fc ?> SIZE=<?=$subcamp_font_size ?>> Campaigns Main </a></TD>
+<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=32"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$subcamp_font_size ?>> Statuses </a></TD>
+<TD ALIGN=LEFT <?=$hotkey_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=33"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$hotkey_fc ?> SIZE=<?=$subcamp_font_size ?>> HotKeys </a></TD>
+<TD ALIGN=LEFT <?=$recycle_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>> Lead Recycle </a></TD>
+<TD ALIGN=LEFT <?=$autoalt_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>> Auto-Alt Dial </a></TD>
+<TD ALIGN=LEFT <?=$pause_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=37"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$pause_fc ?> SIZE=<?=$subcamp_font_size ?>> Pause Codes </a></TD>
+<TD ALIGN=LEFT <?=$listmix_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>> List Mix </a></TD>
+</TR>
+	<?
+	if (strlen($list_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Show Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Add A New Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Real-Time Campaigns Summary </a></TD></TR>
+		<? } 
+
+	} 
 if (strlen($lists_hh) > 1) { 
 	?>
 <TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Lists </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New List </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A Lead </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Number To DNC </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./new_listloader_superL.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Load New Leads </a></TD></TR>

@@ -32,11 +32,12 @@ ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
 
 ALTER TABLE vicidial_campaigns ADD list_order_mix VARCHAR(20) default 'DISABLED';
 
- CREATE TABLE vicidial_campaign_lists (
+ CREATE TABLE vicidial_campaigns_list_mix (
 vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
 vcl_name VARCHAR(50),
 campaign_id VARCHAR(8),
-list_mix TEXT,
+list_mix_container TEXT,
+mix_method ENUM('EVEN_MIX','IN_ORDER','RANDOM') default 'EVEN_MIX',
 status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
 index (campaign_id)
 );
