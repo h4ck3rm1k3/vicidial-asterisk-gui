@@ -1,0 +1,29 @@
+OUTBOUND LIST ORDERING AND MIXING				  2007-05-02
+
+** THIS NEW OPTIONAL LIST ORDERING FEATURE IS PLANNED FOR THE 2.0.4 RELEASE **
+
+This document will outline the new optional feature within VICIDIAL outbound dialing that will allow for both list ordering and mixing while dialing outbound vicidial campaigns.
+
+
+The Agent Side:
+Nothing changes
+
+
+The Admin Side:
+The lists used in a VICIDIAL campaign will be moved to a different tab in the Campaign Modification screen to allow for easier quick modification of the lists used and their order and mixing percentage. Also, a new field will be added to vicidial_campaigns table and a new vicidial_campaign_lists table will be created to store the information for list ordering and mixing:
+ALTER TABLE vicidial_campaigns ADD list_order_mix VARCHAR(20) default 'DISABLED';
+
+ CREATE TABLE vicidial_campaign_lists (
+vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
+vcl_name VARCHAR(50),
+campaign_id VARCHAR(8),
+list_mix TEXT,
+status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
+index (campaign_id)
+);
+
+
+
+The Server Side:
+
+MORE TO COME...

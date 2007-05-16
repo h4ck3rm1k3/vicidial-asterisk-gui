@@ -25,3 +25,18 @@ ALTER TABLE vicidial_auto_calls ADD recording_id INT(10) UNSIGNED;
 
 ALTER TABLE vicidial_user_groups ADD allowable_xfer_inbound_groups TEXT
 ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
+
+
+
+
+
+ALTER TABLE vicidial_campaigns ADD list_order_mix VARCHAR(20) default 'DISABLED';
+
+ CREATE TABLE vicidial_campaign_lists (
+vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
+vcl_name VARCHAR(50),
+campaign_id VARCHAR(8),
+list_mix TEXT,
+status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
+index (campaign_id)
+);

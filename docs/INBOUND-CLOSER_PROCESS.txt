@@ -24,28 +24,28 @@ For the changes in the Fronter/Closer transfers, new User Group permissions will
 
 The Admin Side:
 More settings will be needed for the In-Groups section to be able to accomodate these changes:
-moh_extension VARCHAR(20)
-prompt_interval SMALLINT(5) UNSIGNED default '60'
-announce_place_in_line ENUM('Y','N') default 'N'
-announce_estimate_hold_time ENUM('Y','N') default 'N'
-allow_leave_queue_place ENUM('Y','N') default 'N'
-allow_leave_queue_message ENUM('Y','N') default 'N'
-callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK')
-call_time VARCHAR(20)
-after_hours ENUM('HANGUP','VOICEMAIL','EXTENSION') default 'EXTENSION'
-after_hours_exten VARCHAR(20)
+ALTER TABLE vicidial_inbound_groups ADD moh_extension VARCHAR(20);
+ALTER TABLE vicidial_inbound_groups ADD prompt_interval SMALLINT(5) UNSIGNED default '60';
+ALTER TABLE vicidial_inbound_groups ADD announce_place_in_line ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD announce_estimate_hold_time ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_place ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_message ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK');
+ALTER TABLE vicidial_inbound_groups ADD call_time VARCHAR(20);
+ALTER TABLE vicidial_inbound_groups ADD after_hours ENUM('HANGUP','VOICEMAIL','EXTENSION') default 'EXTENSION';
+ALTER TABLE vicidial_inbound_groups ADD after_hours_exten VARCHAR(20);
 
 In the servers table a field will also be added:
-hold_queue_prompt_exten VARCHAR(20) default '8359'
+ALTER TABLE servers ADD hold_queue_prompt_exten VARCHAR(20) default '8359';
 
 In the vicidial_auto_calls table a field will also be added:
-last_prompt_time DATETIME
-random_id INT(9) UNSIGNED
-recording_id INT(10) UNSIGNED 
+ALTER TABLE vicidial_auto_calls ADD last_prompt_time DATETIME;
+ALTER TABLE vicidial_auto_calls ADD random_id INT(9) UNSIGNED;
+ALTER TABLE vicidial_auto_calls ADD recording_id INT(10) UNSIGNED;
 
 For the fronter/closer transfers some fields will need to be added to the vicidial_user groups table:
-allowable_xfer_inbound_groups TEXT
-default_xfer_inbound_group VARCHAR(20)
+ALTER TABLE vicidial_user_groups ADD allowable_xfer_inbound_groups TEXT
+ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
 
 
 
