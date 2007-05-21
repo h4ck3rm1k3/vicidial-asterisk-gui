@@ -31,11 +31,11 @@ PHASE 1: INSTALLING ASTERISK
 1. follow these command line steps:
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.17.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.18.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.16.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.4.tar.gz
-gunzip asterisk-1.2.17.tar.gz
-tar xvf asterisk-1.2.17.tar
+gunzip asterisk-1.2.18.tar.gz
+tar xvf asterisk-1.2.18.tar
 gunzip zaptel-1.2.16.tar.gz
 tar xvf zaptel-1.2.16.tar
 gunzip libpri-1.2.4.tar.gz
@@ -58,7 +58,7 @@ cd ../libpri-1.2.4
 make clean
 make
 make install
-cd ../asterisk-1.2.17
+cd ../asterisk-1.2.18
 	(1.2 tree) If you want to include Answering Machine Detection ability
 	  you will need to download app_amd.c and amd.conf and alter the 
 	  apps/Makefile to compile it properly
@@ -73,7 +73,7 @@ cd ../asterisk-1.2.17
 	wget http://www.eflo.net/files/amd2.conf
 	mkdir /etc/asterisk
 	mv amd2.conf /etc/asterisk/amd.conf
-	*OPTIONAL*(1.2.12.1 thru 1.2.17) apply the meetme volume control patch
+	*OPTIONAL*(1.2.12.1 thru 1.2.18) apply the meetme volume control patch
 		*Different patches available for 1.2.7.1 through 1.2.14
 	wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 	patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -247,7 +247,7 @@ GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.17');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.18');
 
 insert into server_updater values('10.10.10.15','');
 
