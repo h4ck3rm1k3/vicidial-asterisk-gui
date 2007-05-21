@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDadapt.pl version 2.0.3   *DBI-version*
+# AST_VDadapt.pl version 2.0.4   *DBI-version*
 #
 # DESCRIPTION:
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
@@ -21,12 +21,16 @@
 # 70213-1221 - Added code for QueueMetrics queue_log QUEUESTART record
 # 70219-1249 - Removed unused references to dial_status_x fields
 # 70409-1219 - Removed CLOSER-type campaign restriction
+# 70521-1038 - Fixed bug when no live campaigns are running, define $vicidial_log
 #
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate lots of lines of output per minute
 $US='__';
 $MT[0]='';
+	$vicidial_log = 'vicidial_log FORCE INDEX (call_date) ';
+#	$vicidial_log = 'vicidial_log';
+
 
 $i=0;
 $drop_count_updater=0;
@@ -403,8 +407,6 @@ foreach(@campaign_id)
 	if ($hopper_ready_count>0)
 		{
 		### BEGIN - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
-		$vicidial_log = 'vicidial_log FORCE INDEX (call_date) ';
-	#	$vicidial_log = 'vicidial_log';
 		$differential_onemin[$i]=0;
 		$agents_average_onemin[$i]=0;
 
