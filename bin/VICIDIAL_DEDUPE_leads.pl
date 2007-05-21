@@ -239,18 +239,23 @@ $b=0;
 foreach(@dup_list)
 	{
 	$dup_limit = ($dup_count[$b] - 1);
-	$stmtA = "select lead_id,list_id,entry_date from vicidial_list where phone_number='$dup_list[$b]' $and $campSQL $listSQL order by entry_date desc limit $dup_limit;";
+	$stmtA = "select lead_id,list_id,entry_date from vicidial_list where phone_number='$dup_list[$b]' $and $campSQL $listSQL order by entry_date;";
 		if($DBX){print STDERR "\n|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
 	$rec_count=0;
 	open(out, ">>$VDHLOGfile") || die "Can't open $VDHLOGfile: $!\n";
-	print out "$dup_list[$b]|$dup_count[$b]\n";
+	print out "$dup_list[$b]|$dup_count[$b]|";
 	while ($sthArows > $rec_count)
 		{
 		@aryA = $sthA->fetchrow_array;
-		print out "$aryA[0]|$aryA[1]|$aryA[2]\n";
+		if ($rec_count<1) {print out "$aryA[0]|$aryA[1]|$aryA[2]\n";}
+		else
+			{
+			print out "     $aryA[0]|$aryA[1]|$aryA[2]\n";
+			$DUP_updates .= "'$aryA[0]',";
+			}
 		$rec_count++;
 		}
 	close(out);
@@ -270,6 +275,9 @@ foreach(@dup_list)
 	if ($b =~ /000$/i) {print "|$b|$phone_number|\n";}
 
 	}
+chop($DUP_updates);
+
+		if($DBX){print STDERR "\nDUP UPDATES|$DUP_updates|\n";}
 
 
 
