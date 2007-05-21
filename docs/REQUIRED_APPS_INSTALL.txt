@@ -1,0 +1,283 @@
+# Quick install of required apps    v.2.0.4               2007-05-21
+# This file is a supplement to the BASE_INSTALL document giving you simple copy/
+# paste installation shell commands for required and helper apps for VICIDIAL
+
+cd /usr/local
+wget http://mirrors.kernel.org/gnu/make/make-3.81.tar.gz
+gunzip make-3.81.tar.gz
+tar xvf make-3.81.tar
+cd make-3.81
+./configure
+make
+make install
+
+cd /usr/local
+wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
+gunzip mysql-4.0.27.tar.gz
+tar xvf mysql-4.0.27.tar
+cd mysql-4.0.27
+groupadd mysql
+useradd -g mysql mysql
+./configure --prefix=/usr/local/mysql --enable-large-files --enable-shared=yes --with-readline
+make
+make install
+scripts/mysql_install_db
+chown -R root  /usr/local/mysql
+chown -R mysql /usr/local/mysql/var
+chgrp -R mysql /usr/local/mysql
+cp support-files/my-medium.cnf /etc/my.cnf
+/usr/local/mysql/bin/mysqld_safe --user=mysql &
+ln -s /tmp/mysql.sock /var/run/mysql/mysql.sock
+
+
+perl -MCPAN -e shell
+install MD5
+install Digest::MD5
+install Digest::SHA1
+install readline
+install Bundle::CPAN
+install DBI
+force install DBD::mysql
+install Net::Telnet
+install Time::HiRes
+install Net::Server
+install Unicode::Map
+install Jcode
+install Spreadsheet::WriteExcel
+install OLE::Storage_Lite
+install Proc::ProcessTable
+install IO::Scalar
+install Spreadsheet::ParseExcel
+quit
+
+
+cd /usr/local
+wget http://asterisk.gnuinter.net/files/asterisk-perl-0.08.tar.gz
+gunzip asterisk-perl-0.08.tar.gz
+tar xvf asterisk-perl-0.08.tar
+cd asterisk-perl-0.08
+perl Makefile.PL
+make all
+make install
+
+
+cd /usr/local
+wget http://easynews.dl.sourceforge.net/sourceforge/sox/sox-12.17.9.tar.gz
+gunzip sox-12.17.9.tar.gz
+tar xvf sox-12.17.9.tar
+cd sox-12.17.9
+./configure
+make
+make install
+
+
+cd /usr/local
+wget http://ftp.gnu.org/gnu/screen/screen-4.0.2.tar.gz
+gunzip screen-4.0.2.tar.gz
+tar xvf screen-4.0.2.tar
+cd screen-4.0.2
+./configure
+make
+make install
+
+
+cd /usr/local
+wget http://www.daveltd.com/src/util/ttyload/ttyload-0.4.4.tar.gz
+gunzip ttyload-0.4.4.tar.gz
+tar xvf ttyload-0.4.4.tar
+cd ttyload-0.4.4
+make
+ln -s /usr/local/ttyload-0.4.4/ttyload /usr/bin/ttyload
+
+
+cd /usr/local
+wget http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/ntp-4.2.2p3.tar.gz
+gunzip ntp-4.2.2p3.tar.gz
+tar xvf ntp-4.2.2p3.tar
+cd ntp-4.2.2p3
+./configure
+make
+make install
+/usr/local/bin/ntpdate -u 18.145.0.30
+
+
+cd /usr/local
+wget http://www.tcpdump.org/release/libpcap-0.9.4.tar.gz
+gunzip libpcap-0.9.4.tar.gz
+tar xvf libpcap-0.9.4.tar
+cd libpcap-0.9.4
+./configure
+make
+make install
+cd /usr/local
+wget http://www.ex-parrot.com/~pdw/iftop/download/iftop-0.17.tar.gz
+gunzip iftop-0.17.tar.gz
+tar xvf iftop-0.17.tar
+cd iftop-0.17
+./configure
+make
+make install
+
+
+cd /usr/local	
+wget http://ploticus.sourceforge.net/download/pl232src.tar.gz
+gunzip pl232src.tar.gz
+tar xvf pl232src.tar
+cd pl232src/src/
+make clean
+make
+make install
+
+
+cd /usr/local
+wget http://www.zlib.net/zlib-1.2.3.tar.gz
+gunzip zlib-1.2.3.tar.gz
+tar xvf zlib-1.2.3.tar
+cd zlib-1.2.3
+./configure
+make
+make install
+cd /usr/local
+wget http://mirror.mcs.anl.gov/openssh/portable/openssh-4.6p1.tar.gz
+gunzip openssh-4.6p1.tar.gz
+tar xvf openssh-4.6p1.tar
+cd openssh-4.6p1
+./configure
+make
+make install
+
+
+cd /usr/local
+wget http://www.openssl.org/source/openssl-0.9.8e.tar.gz
+gunzip openssl-0.9.8e.tar.gz
+tar xvf openssl-0.9.8e.tar
+cd openssl-0.9.8e
+./config
+make
+make install
+
+
+cd /usr/local
+wget http://apache.secsup.org/dist/httpd/httpd-2.0.59.tar.gz
+gunzip httpd-2.0.59.tar.gz
+tar xvf httpd-2.0.59.tar
+wget http://us2.php.net/distributions/php-4.4.6.tar.gz
+gunzip php-4.4.6.tar.gz
+tar xvf php-4.4.6.tar
+cd httpd-2.0.59
+./configure --prefix=/usr/local/apache2 --enable-ssl --enable-setenvif --enable-so --with-apxs2 --enable-dav --enable-maintainer-mode
+make
+make install
+mkdir /usr/local/apache2/conf/ssl.key
+mkdir /usr/local/apache2/conf/ssl.crt
+mkdir /usr/local/apache2/conf/ssl.crl
+openssl req -new -x509 -days 1200 -keyout /usr/local/apache2/conf/ssl.key/server.key.cpy -out /usr/local/apache2/conf/ssl.crt/server.crt -subj '/CN=10.10.10.15'
+
+
+openssl rsa -in /usr/local/apache2/conf/ssl.key/server.key.cpy -out /usr/local/apache2/conf/ssl.key/server.key
+
+
+cd ../php-4.4.6
+./configure --with-mysql=/usr/local/mysql --enable-inline-optimization --enable-memory-limit --enable-track-vars --enable-libgcc --with-xml --enable-versioning --enable-sysvsem --with-openssl --disable-debug --with-apxs2=/usr/local/apache2/bin/apxs --with-zlib
+make
+make install
+cp php.ini-dist /usr/local/lib/php.ini
+vi /usr/local/apache2/conf/httpd.conf
+
+
+	add the following lines:
+		"AddType application/x-httpd-php .php .phtml"
+		"LoadModule php4_module libexec/libphp4.so"
+		  or
+		"LoadModule php4_module module/libphp4.so"
+	modify the index.html line and add index.php to the list
+
+
+vi /usr/local/lib/php.ini
+
+
+      modify the following line:
+            "memory_limit = 8M"
+        and change it to:
+            "memory_limit = 48M"
+
+
+/usr/local/apache2/bin/apachectl startssl
+
+
+cd /usr/local
+wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.zip
+unzip eaccelerator-0.9.5.zip
+cd eaccelerator-0.9.5
+export PHP_PREFIX="/usr/local"
+$PHP_PREFIX/bin/phpize
+./configure --enable-eaccelerator=shared --with-php-config=$PHP_PREFIX/bin/php-config
+make
+make install
+vi /usr/local/lib/php.ini
+
+
+    Add the following lines to the dynamic extensions section of php.ini:
+     (you may need to change the extension location depending on your install of php)
+extension="../../../usr/local/eaccelerator-0.9.5/modules/eaccelerator.so"
+eaccelerator.shm_size="48"
+eaccelerator.cache_dir="/tmp/eaccelerator"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="0"
+eaccelerator.shm_prune_period="0"
+eaccelerator.shm_only="0"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+
+
+mkdir /tmp/eaccelerator
+chmod 0777 /tmp/eaccelerator
+php -v
+
+
+cd /usr/local
+wget http://subversion.tigris.org/downloads/subversion-1.3.2.tar.gz
+gunzip subversion-1.3.2.tar.gz
+tar xvf subversion-1.3.2.tar
+cd subversion-1.3.2
+./configure
+make
+make install
+
+
+cd /usr/local
+wget http://superb-east.dl.sourceforge.net/sourceforge/mtop/mtop-0.6.6.tar.gz
+gunzip mtop-0.6.6.tar.gz
+tar xvf mtop-0.6.6.tar
+cd mtop-0.6.6
+cpan 
+
+
+install Curses
+install Getopt::Long
+install Net::Domain
+quit
+
+
+perl Makefile.PL
+make
+make install
+/usr/local/bin/mtop --dbuser=root --seconds=3
+
+
+cd /usr/local
+wget http://download.berlios.de/sipsak/sipsak-0.9.6-1.tar.gz
+gunzip sipsak-0.9.6-1.tar.gz
+tar xvf sipsak-0.9.6-1.tar
+cd sipsak-0.9.6
+./configure
+make
+make install
+/usr/local/bin/sipsak --version
+
+
