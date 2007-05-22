@@ -70,6 +70,7 @@ foreach(@conf)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
+$liveupdate=0;
 
 if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
 
@@ -91,9 +92,11 @@ if (length($ARGV[0])>1)
 	print "allowed run time options:\n";
 	print "  [-q] = quiet\n";
 	print "  [-t] = test\n";
+	print "  [--live-update] = runs the live UPDATE to move leads, default is report only\n";
 	print "  [--system-duplicate] = checks for duplicates in entire database\n";
 	print "  [--campaign-duplicate=1234] = duplicate check witin this campaign\n";
 	print "  [--ignore-list=999] = ignores the list in duplicate check\n";
+	print "  [--duplicate-list=998] = list_id that duplicate leads are moved to, default is 998\n";
 	print "  [-h] = this help screen\n\n";
 	print "\n";
 
@@ -121,6 +124,11 @@ if (length($ARGV[0])>1)
 		$TEST=1;
 		print "\n----- TESTING -----\n\n";
 		}
+		if ($args =~ /-live-update/i)
+		{
+		$liveupdate=1;
+		print "\n----- RUN LIVE UPDATE -----\n\n";
+		}
 		if ($args =~ /-system-duplicate/i)
 		{
 		$sysdup=1;
@@ -131,7 +139,7 @@ if (length($ARGV[0])>1)
 		@data_in = split(/-campaign-duplicate=/,$args);
 			$campdup = $data_in[1];
 			$campdup =~ s/ .*//gi;
-		print "\n----- CAMPAIGN DUPLICATE CHECK: $forcelistid -----\n\n";
+		print "\n----- CAMPAIGN DUPLICATE CHECK: $campdup -----\n\n";
 		}
 		else
 			{$campdup = '';}
@@ -146,6 +154,16 @@ if (length($ARGV[0])>1)
 		else
 			{$ignorelist = '';}
 
+		if ($args =~ /--duplicate-list=/i)
+		{
+		@data_in = split(/--duplicate-list=/,$args);
+			$duplicatelist = $data_in[1];
+			$duplicatelist =~ s/ .*//gi;
+		print "\n----- LISTID DUPLICATE: $duplicatelist -----\n\n";
+		}
+		else
+			{$duplicatelist = '998';}
+
 	}
 }
 else
@@ -153,7 +171,9 @@ else
 print "no command line options set\n";
 $args = "";
 $i=0;
-$forcelistid = '';
+$campdup = '';
+$liveupdate=0;
+$duplicatelist = '998';
 }
 ### end parsing run-time options ###
 
@@ -277,9 +297,18 @@ foreach(@dup_list)
 	}
 chop($DUP_updates);
 
-		if($DBX){print STDERR "\nDUP UPDATES|$DUP_updates|\n";}
+if ($liveupdate>0)
+	{
+	$stmtA = "UPDATE vicidial_list set list_id='$duplicatelist' where lead_id IN($DUP_updates);";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
-
+		if($DBX){print STDERR "\nDUP UPDATES|$DUP_updates|\n   $affected_rows Leads moved to $duplicatelist\n";}
+	}
+else
+	{
+		if($DB){print STDERR "\n|$stmtA|\n";}
+	}
 
 $dbhA->disconnect();
 
