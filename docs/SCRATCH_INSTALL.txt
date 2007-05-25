@@ -1699,7 +1699,7 @@ NOTE: if you click on the Logout button you must leave the user/pass empty and c
 database in the vicidial_users table (subphase 6.1 [6666/1234])
    - Now that you are logged into the astGUIclient administration system we can 
 add a new phone entry for each of the sipura lines we created.
-	- click on the "PHONES" link at the top, then the "ADD PHONE" link below
+	- click on the "Admin" link at the top, then the "ADD PHONE" link below
 that and enter in the proper information for each of the new phone lines. 
 Here's what we entered for spa2000:
 	   - Phone extension: spa2000
