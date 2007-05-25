@@ -132,12 +132,14 @@ exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001|30|to
 exten => 7275551212,6,Voicemail,u2000
 
 ; dial a long distance outbound number to the UK
+; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
 exten => _901144XXXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => _901144XXXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
 exten => _901144XXXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},55,tTo)
 exten => _901144XXXXXXXXXX,3,Hangup
 
 ; dial a long distance outbound number to Australia
+; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
 exten => _901161XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => _901161XXXXXXXXX,1,AGI(call_log.agi,${EXTEN})
 exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
@@ -174,6 +176,7 @@ exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
 exten => _9813NXXXXXX,3,Hangup
 
 ; dial a long distance outbound number
+; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
 exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => _91NXXNXXXXXX,1,AGI(call_log.agi,${EXTEN})
 exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
