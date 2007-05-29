@@ -1015,11 +1015,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70322-1455 - Added sipsak messages parameters
 # 70402-1157 - Added HOME link and entry to system_settings table, added QM link on reports section
 # 70516-1628 - Started reformatting campaigns to use submenus to break up options
+# 70529-1653 - Added help for list mix
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.96';
-$build = '70516-1628';
+$admin_version = '2.0.97';
+$build = '70529-1653';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1996,6 +1997,31 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-no_hopper_leads_logins">
 <BR>
 <B>Allow No-Hopper-Leads Logins -</B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N.
+
+<BR>
+<A NAME="vicidial_campaigns-list_order_mix">
+<BR>
+<B>List Order Mix -</B> Overrides the Lead Order and Dial Status fields. Will use the List and status parameters for the selected List Mix entry in the List Mix sub section instead. Default is DISABLED.
+
+<BR>
+<A NAME="vicidial_campaigns-vcl_id">
+<BR>
+<B>List Mix ID -</B> ID of the list mix. Must be from 2-20 characters in length with no spaces or other special punctuation.
+
+<BR>
+<A NAME="vicidial_campaigns-vcl_name">
+<BR>
+<B>List Mix Name -</B> Descriptive name of the list mix. Must be from 2-50 characters in length.
+
+<BR>
+<A NAME="vicidial_campaigns-list_mix_container">
+<BR>
+<B>List Mix Detail -</B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated.
+
+<BR>
+<A NAME="vicidial_campaigns-mix_method">
+<BR>
+<B>List Mix Method -</B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.
 
 
 
@@ -7385,6 +7411,9 @@ if ($ADD==31)
 		$dial_statuses = $row[61];
 		$disable_alter_custdata = $row[62];
 		$no_hopper_leads_logins = $row[63];
+		$list_order_mix = $row[64];
+
+
 
 	$stmt="SELECT * from vicidial_statuses order by status";
 	$rslt=mysql_query($stmt, $link);
@@ -7926,6 +7955,52 @@ if ($ADD==31)
 		echo "</center></FORM><br>\n";
 		}
 
+
+	if ($SUB==29)
+		{
+		echo "<br><br><b>LIST MIXES FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaigns-list_order_mix$NWE</b><br>\n";
+
+		echo "<br><br><b>Experimental Feature in development</b><br>\n";
+
+/*		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>PAUSE CODES</td><td>BILLABLE</td><td>MODIFY</td><td>DELETE</td></tr>\n";
+
+			$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status desc, vcl_id";
+			$rslt=mysql_query($stmt, $link);
+			$listmixes = mysql_num_rows($rslt);
+			$o=0;
+			while ($listmixes > $o) {
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>$rowx[0]\n";
+			echo "<input type=hidden name=ADD value=47>\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<input type=hidden name=pause_code value=\"$rowx[0]\"> &nbsp;\n";
+			echo "<input type=text size=20 maxlength=30 name=pause_code_name value=\"$rowx[1]\"></td>\n";
+			echo "<td><select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option><option SELECTED>$rowx[2]</option></select></td>\n";
+			echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=67&campaign_id=$campaign_id&pause_code=$rowx[0]\">DELETE</a></td></tr>\n";
+			}
+
+		echo "</table>\n";
+
+		echo "<br>ADD NEW LIST MIX<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=27>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "Pause Code: <input type=text size=8 maxlength=6 name=pause_code>\n";
+		echo "Pause Code Name: <input type=text size=20 maxlength=30 name=pause_code_name>\n";
+		echo " &nbsp; Billable: <select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option></select>\n";
+		echo "<input type=submit name=submit value=ADD><BR>\n";
+
+		echo "</center></FORM><br>\n";
+*/
+		}
 
 
 
