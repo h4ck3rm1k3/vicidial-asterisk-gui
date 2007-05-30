@@ -8,6 +8,13 @@
 
 require("dbconnect.php");
 
+
+######################################################################################################
+######################################################################################################
+#######   static variable settings for display options
+######################################################################################################
+######################################################################################################
+
 $page_width='750';
 $section_width='700';
 $header_font_size='3';
@@ -61,6 +68,13 @@ $subcamp_font =		'BLACK';
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
+
+######################################################################################################
+######################################################################################################
+#######   Form variable declaration
+######################################################################################################
+######################################################################################################
+
 
 if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))	{$DB=$_POST["DB"];}
@@ -611,7 +625,11 @@ if (strlen($dial_status) > 0)
 	$status = $dial_status;
 	}
 
-##### BEGIN VARIABLE FILTERING FOR SECURITY #####
+######################################################################################################
+######################################################################################################
+#######   Form variable filtering for security and data integrity
+######################################################################################################
+######################################################################################################
 
 if ($non_latin < 1)
 {
@@ -1019,11 +1037,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70516-1628 - Started reformatting campaigns to use submenus to break up options
 # 70529-1653 - Added help for list mix
 # 70530-1354 - Added human_answered field to statuses, added system status modification
+# 70530-1714 - Added lists for all campaign subsections
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.98';
-$build = '70530-1354';
+$admin_version = '2.0.99';
+$build = '70530-1714';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1119,6 +1138,13 @@ $browser = getenv("HTTP_USER_AGENT");
 			}
 		}
 	}
+
+######################################################################################################
+######################################################################################################
+#######   Header settings
+######################################################################################################
+######################################################################################################
+
 
 header ("Content-type: text/html; charset=utf-8");
 echo "<html>\n";
@@ -1270,7 +1296,7 @@ if ($ADD==8)			{$hh='users';		echo "CallBacks Within Agent";}
 if ($ADD==81)			{$hh='campaigns';	$sh='list';	echo "CallBacks Within Campaign";}
 if ($ADD==811)			{$hh='lists';	echo "CallBacks Within List";}
 if ($ADD==8111)			{$hh='usergroups';	echo "CallBacks Within User Group";}
-if ($ADD==10)			{$hh='campaigns';	$sh='list';	echo "Campaigns";}
+if ($ADD==10)			{$hh='campaigns';	$sh='list';		echo "Campaigns";}
 if ($ADD==100)			{$hh='lists';		echo "Lists";}
 if ($ADD==1000)			{$hh='ingroups';	echo "In-Groups";}
 if ($ADD==10000)		{$hh='remoteagent';	echo "Remote Agents";}
@@ -1510,6 +1536,15 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 BORDER=0 ALT=\"HELP\" ALIGN=TOP></A>";
+
+
+######################################################################################################
+######################################################################################################
+#######   9 series, HELP screen
+######################################################################################################
+######################################################################################################
+
+
 ######################
 # ADD=99999 display the HELP SCREENS
 ######################
@@ -2966,6 +3001,12 @@ exit;
 #### END HELP SCREENS
 }
 
+
+######################################################################################################
+######################################################################################################
+#######   7 series, filter count preview and script preview
+######################################################################################################
+######################################################################################################
 
 
 
@@ -8399,6 +8440,389 @@ echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 echo "You do not have permission to view campaign $campaign_id\n";
 }
+
+
+######################
+# ADD=32 display all campaign statuses
+######################
+if ($ADD==32)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CUSTOM CAMPAIGN STATUSES LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>STATUSES</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_campaign_statuses where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">MODIFY STATUSES</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=33 display all campaign hotkeys
+######################
+if ($ADD==33)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CAMPAIGN HOTKEYS LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>HOTKEYS</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_campaign_hotkeys where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\">MODIFY HOTKEYS</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=35 display all campaign lead recycle entries
+######################
+if ($ADD==35)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CAMPAIGN LEAD RECYCLE LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>LEAD RECYCLES</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_lead_recycle where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\">MODIFY LEAD RECYCLES</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=36 display all campaign auto-alt dial entries
+######################
+if ($ADD==36)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CAMPAIGN LEAD AUTO-ALT DIAL LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>AUTO-ALT DIAL</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaigns_id_list[$o]';";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if (strlen($row[0])<3) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\">MODIFY AUTO-ALT DIAL</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=37 display all campaign agent pause codes
+######################
+if ($ADD==37)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CAMPAIGN AGENT PAUSE CODE LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>PAUSE CODES</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT pause_code from vicidial_pause_codes where campaign_id='$campaigns_id_list[$o]' order by pause_code;";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\">MODIFY PAUSE CODES</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=39 display all campaign list mixes
+######################
+if ($ADD==39)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>CAMPAIGN LIST MIX LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>NAME</B></td>\n";
+echo "<td><B>LIST MIX</B></td>\n";
+echo "<td><B>MODIFY</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT vcl_id from vicidial_campaigns_list_mix where campaign_id='$campaigns_id_list[$o]' order by status,vcl_id;";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\">MODIFY LIST MIX</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+#	if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Campaign Statuses";}
+#	if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Campaign HotKeys";}
+#	if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Campaign Lead Recycle Entries";}
+#	if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Campaign Auto Alt Dial Statuses";}
+#	if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Campaign Agent Pause Codes";}
+#	if ($ADD==38)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Statuses";}
+#	if ($ADD==39)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mixes";}
+
+
 
 
 
