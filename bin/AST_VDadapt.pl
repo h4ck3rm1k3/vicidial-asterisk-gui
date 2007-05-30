@@ -710,6 +710,37 @@ if ($DB) {print "     $event_string\n";}
 
 sub calculate_drops
 {
+$camp_ANS_STAT_SQL='';
+# GET LIST OF HUMAN-ANSWERED STATUSES
+$stmtA = "SELECT status from vicidial_statuses where human_answered='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$camp_ANS_STAT_SQL .=	 "'$aryA[0]',";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$stmtA = "SELECT status from vicidial_campaign_statuses where campaign_id='$campaign_id[$i]' and human_answered='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$camp_ANS_STAT_SQL .=	 "'$aryA[0]',";
+	$rec_count++;
+	}
+$sthA->finish();
+chop($camp_ANS_STAT_SQL);
+
+if ($DBX) {print "     CAMPAIGN ANSWERED STATUSES: $campaign_id[$i]|$camp_ANS_STAT_SQL|\n";}
+
 $RESETdrop_count_updater++;
 $VCScalls_today[$i]=0;
 $VCSanswers_today[$i]=0;
@@ -749,7 +780,7 @@ $sthA->finish();
 if ($VCScalls_one[$i] > 0)
 	{
 	# LAST MINUTE ANSWERS
-	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status NOT IN('NA','B');";
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one' and status IN($camp_ANS_STAT_SQL);";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -797,7 +828,7 @@ $sthA->finish();
 if ($VCScalls_today[$i] > 0)
 	{
 	# TODAY ANSWERS
-	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status NOT IN('NA','B');";
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN($camp_ANS_STAT_SQL);";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -848,7 +879,7 @@ $sthA->finish();
 if ($VCScalls_hour[$i] > 0)
 	{
 	# ANSWERS LAST HOUR
-	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status NOT IN('NA','B');";
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_hour' and status IN($camp_ANS_STAT_SQL);";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -896,7 +927,7 @@ $sthA->finish();
 if ($VCScalls_halfhour[$i] > 0)
 	{
 	# ANSWERS HALFHOUR
-	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status NOT IN('NA','B');";
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_halfhour' and status IN($camp_ANS_STAT_SQL);";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -944,7 +975,7 @@ $sthA->finish();
 if ($VCScalls_five[$i] > 0)
 	{
 	# ANSWERS FIVEMINUTE
-	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status NOT IN('NA','B');";
+	$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_five' and status IN($camp_ANS_STAT_SQL);";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;

@@ -524,7 +524,8 @@ campaign_stats_refresh ENUM('Y','N') default 'N',
 campaign_logindate DATETIME,
 dial_statuses VARCHAR(255) default ' NEW -',
 disable_alter_custdata ENUM('Y','N') default 'N',
-no_hopper_leads_logins ENUM('Y','N') default 'N'
+no_hopper_leads_logins ENUM('Y','N') default 'N',
+list_order_mix VARCHAR(20) default 'DISABLED'
 );
 
  CREATE TABLE vicidial_lists (
@@ -540,7 +541,8 @@ list_lastcalldate DATETIME
  CREATE TABLE vicidial_statuses (
 status VARCHAR(6) PRIMARY KEY NOT NULL,
 status_name VARCHAR(30),
-selectable ENUM('Y','N')
+selectable ENUM('Y','N'),
+human_answered ENUM('Y','N') default 'N'
 );
 
  CREATE TABLE vicidial_campaign_statuses (
@@ -548,6 +550,7 @@ status VARCHAR(6) NOT NULL,
 status_name VARCHAR(30),
 selectable ENUM('Y','N'),
 campaign_id VARCHAR(8),
+human_answered ENUM('Y','N') default 'N',
 index (campaign_id)
 );
 
@@ -884,6 +887,17 @@ vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 
 allow_sipsak_messages ENUM('0','1') default '0',
 admin_home_url VARCHAR(255) default '../vicidial/welcome.php'
 );
+
+ CREATE TABLE vicidial_campaigns_list_mix (
+vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
+vcl_name VARCHAR(50),
+campaign_id VARCHAR(8),
+list_mix_container TEXT,
+mix_method ENUM('EVEN_MIX','IN_ORDER','RANDOM') default 'IN_ORDER',
+status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
+index (campaign_id)
+);
+
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
 

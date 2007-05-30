@@ -26,6 +26,17 @@ List Mix Name -<\/B> Descriptive name of the list mix. Must be from 2-50 charact
 List Mix Detail -<\/B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated||
 List Mix Method -<\/B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.||
 LIST MIXES FOR THIS CAMPAIGN: ||
+The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls.||
+HUMAN ANSWER||
+ADDING VICIDIAL SYSTEM STATUSES||
+MODIFY VICIDIAL SYSTEM STATUSES||
+SYSTEM STATUS NOT ADDED||
+SYSTEM STATUS ADDED||
+SYSTEM STATUS NOT DELETED||
+the system status cannot be a reserved status: ||
+the system status needs to be at least 1 characters in length||
+VICIDIAL STATUSES WITHIN THIS SYSTEM: ||
+ADD NEW SYSTEM STATUS||
 
 
 ############################################################ CLIENT

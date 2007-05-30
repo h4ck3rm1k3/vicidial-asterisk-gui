@@ -599,7 +599,8 @@ if (isset($_GET["list_mix_container"]))				{$list_mix_container=$_GET["list_mix_
 	elseif (isset($_POST["list_mix_container"]))	{$list_mix_container=$_POST["list_mix_container"];}
 if (isset($_GET["mix_method"]))					{$mix_method=$_GET["mix_method"];}
 	elseif (isset($_POST["mix_method"]))		{$mix_method=$_POST["mix_method"];}
-
+if (isset($_GET["human_answered"]))				{$human_answered=$_GET["human_answered"];}
+	elseif (isset($_POST["human_answered"]))	{$human_answered=$_POST["human_answered"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -751,6 +752,7 @@ $agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
 $campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 $disable_alter_custdata = ereg_replace("[^NY]","",$disable_alter_custdata);
 $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
+$human_answered = ereg_replace("[^NY]","",$human_answered);
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -1016,11 +1018,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70402-1157 - Added HOME link and entry to system_settings table, added QM link on reports section
 # 70516-1628 - Started reformatting campaigns to use submenus to break up options
 # 70529-1653 - Added help for list mix
+# 70530-1354 - Added human_answered field to statuses, added system status modification
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.97';
-$build = '70529-1653';
+$admin_version = '2.0.98';
+$build = '70530-1354';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1162,6 +1165,7 @@ if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
+if ($ADD==221111111111111)	{$hh='admin';	$sh='settings';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			
@@ -1205,7 +1209,7 @@ if ($ADD==43)			{$hh='campaigns';	$sh='hotkey';	echo "Modify Campaign HotKey";}
 if ($ADD==44)			{$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View";}
 if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Modify Campaign Lead Recycle";}
 if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Modify Agent Pause Code";}
-if ($ADD==47)			{$hh='campaigns';	$sh='listmix';	echo "Modify Campaign List Mix";}
+if ($ADD==49)			{$hh='campaigns';	$sh='listmix';	echo "Modify Campaign List Mix";}
 if ($ADD==411)			{$hh='lists';		echo "Modify List";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Modify In-Group";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
@@ -1220,6 +1224,7 @@ if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
+if ($ADD==421111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Logout Agents";}
@@ -2203,7 +2208,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>VICIDIAL_CAMPAIGN_STATUSES TABLE</FONT></B><BR><BR>
 <A NAME="vicidial_campaign_statuses">
 <BR>
-<B>Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition.</B>
+<B>Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls.</B>
 
 
 
@@ -4143,14 +4148,14 @@ if ($ADD==22)
 				{
 				echo "<br><B>CAMPAIGN STATUS ADDED: $campaign_id - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_campaign_statuses values('$status','$status_name','$selectable','$campaign_id');";
+				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered) values('$status','$status_name','$selectable','$campaign_id','$human_answered');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
 				if ($WeBRooTWritablE > 0)
 					{
 					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ADD A NEW CAMPAIGN STATUS |$PHP_AUTH_USER|$ip|'$status','$status_name','$selectable','$campaign_id'|\n");
+					fwrite ($fp, "$date|ADD A NEW CAMPAIGN STATUS |$PHP_AUTH_USER|$ip|$stmt|\n");
 					fclose($fp);
 					}
 				}
@@ -4872,6 +4877,55 @@ $ADD=31111111111111;
 }
 
 
+######################
+# ADD=221111111111111 adds the new system status to the system
+######################
+
+if ($ADD==221111111111111)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaign_statuses where status='$status';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>SYSTEM STATUS NOT ADDED - there is already a campaign-status in the system with this name: $row[0]\n";}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_statuses where status='$status';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>SYSTEM STATUS NOT ADDED - there is already a global-status in the system with this name\n";}
+		else
+			{
+			 if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
+				{
+				 echo "<br>SYSTEM STATUS NOT ADDED - Please go back and look at the data you entered\n";
+				 echo "<br>status must be between 1 and 8 characters in length\n";
+				 echo "<br>status name must be between 2 and 30 characters in length\n";
+				}
+			 else
+				{
+				echo "<br><B>SYSTEM STATUS ADDED: $status_name - $status</B>\n";
+
+				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered) values('$status','$status_name','$selectable','$human_answered');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW SYSTEM STATUS   |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+				}
+			}
+		}
+$ADD=311111111111111;
+}
+
+
 
 ######################################################################################################
 ######################################################################################################
@@ -5157,7 +5211,7 @@ if ($ADD==43)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey'|\n");
+			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey'|\n");
 			fclose($fp);
 			}
 		}
@@ -5954,6 +6008,46 @@ if ($ADD==411111111111111)
 $ADD=311111111111111;	# go to vicidial system settings form below
 }
 
+
+######################
+# ADD=421111111111111 delete system status in the system
+######################
+
+if ($ADD==421111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($status) < 1)  or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
+		{
+		 echo "<br>SYSTEM STATUS NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>the system status cannot be a reserved status: B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+		 echo "<br>the system status needs to be at least 1 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
+
+		$stmt="DELETE FROM vicidial_statuses where status='$status';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=311111111111111;	# go to system settings modification form below
+}
 
 
 ######################################################################################################
@@ -7745,8 +7839,8 @@ if ($ADD==31)
 		{
 		echo "<center>\n";
 		echo "<br><b>CUSTOM STATUSES WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_statuses$NWE</b><br>\n";
-		echo "<TABLE width=400 cellspacing=3>\n";
-		echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>DELETE</td></tr>\n";
+		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>DELETE</td></tr>\n";
 
 			$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id'";
 			$rslt=mysql_query($stmt, $link);
@@ -7761,7 +7855,7 @@ if ($ADD==31)
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1><a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&action=DELETE\">DELETE</a></td></tr>\n";
+			echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[4]</td><td><font size=1><a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&action=DELETE\">DELETE</a></td></tr>\n";
 
 			}
 
@@ -7773,6 +7867,7 @@ if ($ADD==31)
 		echo "Status: <input type=text name=status size=10 maxlength=8> &nbsp; \n";
 		echo "Description: <input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
 		echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
 		echo "<input type=submit name=submit value=ADD><BR>\n";
 
 		echo "</FORM><br>\n";
@@ -9781,7 +9876,53 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 
-	echo "<center><b>\n";
+	echo "<center>\n";
+
+
+
+	echo "<br>\n";
+	echo "<br><b>VICIDIAL STATUSES WITHIN THIS SYSTEM: &nbsp; $NWB#vicidial_statuses$NWE</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>DELETE</td></tr>\n";
+
+		$stmt="SELECT * from vicidial_statuses order by status;";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>\n";
+		if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
+			{
+			echo "<DEL>DELETE</DEL>\n";
+			}
+		else
+			{
+			echo "<a href=\"$PHP_SELF?ADD=421111111111111&status=$rowx[0]&action=DELETE\">DELETE</a>\n";
+			}
+		echo "</td></tr>\n";
+
+		}
+
+	echo "</table>\n";
+
+	echo "<br>ADD NEW SYSTEM STATUS<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=221111111111111>\n";
+	echo "Status: <input type=text name=status size=10 maxlength=6> &nbsp; \n";
+	echo "Description: <input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
+	echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "<input type=submit name=submit value=ADD><BR>\n";
+
+	echo "</FORM><br>\n";
+
 	}
 	else
 	{
