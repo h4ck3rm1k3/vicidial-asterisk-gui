@@ -24,6 +24,7 @@ index (campaign_id)
 !!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
 
 
+ALTER TABLE vicidial_hopper ADD priority TINYINT(2) default '50';
 
 ALTER TABLE vicidial_inbound_groups ADD moh_extension VARCHAR(20);
 ALTER TABLE vicidial_inbound_groups ADD prompt_interval SMALLINT(5) UNSIGNED default '60';

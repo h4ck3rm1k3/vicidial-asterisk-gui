@@ -37,6 +37,13 @@ the system status cannot be a reserved status: ||
 the system status needs to be at least 1 characters in length||
 VICIDIAL STATUSES WITHIN THIS SYSTEM: ||
 ADD NEW SYSTEM STATUS||
+CUSTOM CAMPAIGN STATUSES LISTINGS:||
+CAMPAIGN HOTKEYS LISTINGS:||
+CAMPAIGN LEAD RECYCLE LISTINGS:||
+LEAD RECYCLES||
+CAMPAIGN LEAD AUTO-ALT DIAL LISTINGS:||
+CAMPAIGN AGENT PAUSE CODE LISTINGS:||
+CAMPAIGN LIST MIX LISTINGS:||
 
 
 ############################################################ CLIENT
