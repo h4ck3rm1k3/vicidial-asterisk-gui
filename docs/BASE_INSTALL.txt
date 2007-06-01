@@ -85,6 +85,10 @@ cd ../asterisk-1.2.18
 	patch -p1 < ./cli_chan_concise_delimiter.patch
 		- File to patch: cli.c
 
+	*OPTIONAL*(1.2.14 thru 1.2.18) rewrite of waitforsilence
+	wget http://www.eflo.net/files/app_waitforsilence.c
+	mv app_waitforsilence.c apps/app_waitforsilence.c
+
 make clean
 make
 make install

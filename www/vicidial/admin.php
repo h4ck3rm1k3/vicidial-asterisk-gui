@@ -1039,15 +1039,17 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70530-1354 - Added human_answered field to statuses, added system status modification
 # 70530-1714 - Added lists for all campaign subsections
 # 70531-1631 - Development on List mix admin interface
+# 70601-1629 - More development on List mix admin interface, formatting, and added some javascript
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-100';
-$build = '70531-1631';
+$admin_version = '2.0.4-101';
+$build = '70601-1629';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
 $MT[0]='';
+$US='_';
 
 if ($force_logout)
 {
@@ -3269,9 +3271,42 @@ if ($hh=='reports')
 	{$reports_hh="bgcolor=\"$reports_color\""; $reports_fc="$reports_font"; $reports_bold="$header_selected_bold";}
 	else {$reports_hh=''; $reports_fc='WHITE'; $reports_bold="$header_nonselected_bold";}
 
+echo "</title>\n";
+echo "<script language=\"Javascript\">\n";
+
+######################
+# ADD=31 or 34 and SUB=29 for list mixes
+######################
+if ( ( ($ADD==34) or ($ADD==31) ) and ($SUB==29) and ($LOGmodify_campaigns==1) and ( (eregi("$campaign_id",$LOGallowed_campaigns)) or (eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+{
+
 ?>
-</title>
-<script language="Javascript">
+function mod_mix_status(stage,vcl_id,entry) 
+	{
+	var mod_status = document.getElementById("dial_status_" + entry + "_" + vcl_id);
+	var old_statuses = document.getElementById("status_" + entry + "_" + vcl_id);
+	var ROold_statuses = document.getElementById("ROstatus_" + entry + "_" + vcl_id);
+	alert("Hello: " + stage + "|" + vcl_id + "|" + entry + "|" + mod_status.value);
+	if (stage=="ADD")
+		{
+		var new_statuses = " " + mod_status.value + "" + old_statuses.value;
+		alert(new_statuses);
+		old_statuses.value = new_statuses;
+		ROold_statuses.value = new_statuses;
+		mod_status.value = "";
+		}
+	if (stage=="REMOVE")
+		{
+		var DELstatus = new RegExp(" " + mod_status.value,"g");
+		old_statuses.value = old_statuses.value.replace(DELstatus, "");
+		ROold_statuses.value = ROold_statuses.value.replace(DELstatus, "");
+		}
+	}
+
+<?
+}
+?>
+
 function openNewWindow(url) {
   window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
 }
@@ -8206,6 +8241,43 @@ if ($ADD==34)
 	else
 		{$DEFlistDISABLE = 'disabled';	$DEFstatusDISABLED=1;}
 
+		$stmt="SELECT * from vicidial_statuses order by status";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$statuses_list='';
+
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$statname_list["$rowx[0]"] = "$rowx[1]";
+			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+			if (eregi("Y",$rowx[2]))
+				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+			$o++;
+			}
+
+		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$Cstatuses_to_print = mysql_num_rows($rslt);
+
+		$o=0;
+		while ($Cstatuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$statname_list["$rowx[0]"] = "$rowx[1]";
+			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+			if (eregi("Y",$rowx[2]))
+				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+			$o++;
+			}
+
+		$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+		$Dstatuses = explode(" ", $dial_statuses);
+		$Ds_to_print = (count($Dstatuses) -1);
+
 	##### get list_mix listings for dynamic pulldown
 	$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
 	$rslt=mysql_query($stmt, $link);
@@ -8262,43 +8334,6 @@ if ($ADD==34)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-
-		$stmt="SELECT * from vicidial_statuses order by status";
-		$rslt=mysql_query($stmt, $link);
-		$statuses_to_print = mysql_num_rows($rslt);
-		$statuses_list='';
-
-		$o=0;
-		while ($statuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (eregi("Y",$rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
-
-		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
-		$rslt=mysql_query($stmt, $link);
-		$Cstatuses_to_print = mysql_num_rows($rslt);
-
-		$o=0;
-		while ($Cstatuses_to_print > $o) 
-			{
-			$rowx=mysql_fetch_row($rslt);
-			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$statname_list["$rowx[0]"] = "$rowx[1]";
-			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-			if (eregi("Y",$rowx[2]))
-				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-			$o++;
-			}
-
-		$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-		$Dstatuses = explode(" ", $dial_statuses);
-		$Ds_to_print = (count($Dstatuses) -1);
 
 		$o=0;
 		while ($Ds_to_print > $o) 
@@ -8467,9 +8502,25 @@ if ( ($ADD==34) or ($ADD==31) )
 	{
 	if ($SUB==29)
 		{
+		##### get list_id listings for dynamic pulldown
+		$stmt="SELECT list_id,list_name from vicidial_lists where campaign_id='$campaign_id' order by list_id";
+		$rslt=mysql_query($stmt, $link);
+		$mixlists_to_print = mysql_num_rows($rslt);
+		$mixlists_list="";
+
+		$o=0;
+		while ($mixlists_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixlists_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$mixlistsname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
+
 		echo "<br><br><b>LIST MIXES FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaigns-list_order_mix$NWE</b><br>\n";
 
-		echo "<br><br><b>Experimental Feature in development</b><br>\n";
+		echo "<br><br><b>Experimental Feature in development!!! NON-FUNCTIONAL</b><br>\n";
 
 
 		$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status desc, vcl_id";
@@ -8479,6 +8530,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		while ($listmixes > $o) 
 			{
 			$rowx=mysql_fetch_row($rslt);
+			$vcl_id=$rowx[0];
 			$o++;
 
 			if (eregi("1$|3$|5$|7$|9$", $o))
@@ -8486,11 +8538,21 @@ if ( ($ADD==34) or ($ADD==31) )
 			else
 				{$tablecolor='bgcolor="#9BB9FB"';   $bgcolor='bgcolor="#B9CBFD"';}
 
-			echo "<a name=\"LISTMIX_$o_$rowx[0]\"><BR>\n";
-			echo "<TABLE width=600 cellspacing=3 $tablecolor>\n";
-			echo "<tr><td colspan=6><B>$rowx[0]: $rowx[1]</B></td></tr>\n";
-			echo "<tr><td colspan=3>Status: <B>$rowx[5]</B> </td><td colspan=3> METHOD: <B>$rowx[4]</B></td></tr>\n";
-			echo "<tr><td>LIST ID</td><td>PRIORITY</td><td>PERCENT</td><td>STATUSES</td><td>MODIFY</td><td>DELETE</td></tr>\n";
+			echo "<a name=\"LISTMIX$US$vcl_id$US$o\"><BR>\n";
+			echo "<span id=\"LISTMIX$US$vcl_id$US$o\">";
+			echo "<TABLE width=740 cellspacing=3 $tablecolor>\n";
+			echo "<tr><td colspan=6>\n";
+			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<input type=hidden name=ADD value=49>\n";
+			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<B>$vcl_id:</B>\n";
+			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$q$US$vcl_id id=vcl_name$US$q$US$vcl_id value=\"$rowx[1]\"></td></tr>\n";
+			echo "<tr><td colspan=2>Status:\n";
+			echo "<select size=1 name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id><option>ACTIVE</option><option>INACTIVE</option><option SELECTED>$rowx[5]</option></select></td>\n";
+			echo "<td colspan=4>Method:\n";
+			echo "<select size=1 name=method$US$q$US$vcl_id id=method$US$q$US$vcl_id><option>EVEN_MIX</option><option>IN_ORDER</option><option>RANDOM</option><option SELECTED>$rowx[4]</option></select></td></tr>\n";
+			echo "<tr><td>LIST ID</td><td>PRIORITY</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
 
 # list_id|order|percent|statuses|:list_id|order|percent|statuses|:...
 # 101|1|40| A B NA -|:102|2|25| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|
@@ -8505,6 +8567,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			while ($Ms_to_print > $q) 
 				{
 				$MIXdetails = explode('|', $MIXentries[$q]);
+				$MIXdetailsLIST = $MIXdetails[0];
 
 				$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
 				$Dstatuses = explode(" ", $dial_statuses);
@@ -8514,21 +8577,51 @@ if ( ($ADD==34) or ($ADD==31) )
 				while ($Ds_to_print > $r) 
 					{
 					$r++;
-					$Dsql .= "'$Dstatuses[$o]',";
+					$Dsql .= "'$Dstatuses[$r]',";
 					}
 				$Dsql = preg_replace("/,$/","",$Dsql);
 
-				echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>\n";
-				echo "<input type=hidden name=ADD value=49>\n";
-				echo "<input type=hidden name=vcl_id value=\"$rowx[0]\">\n";
-				echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-				echo "<input type=text size=20 maxlength=30 name=list_id value=\"$MIXdetails[0]\"></td>\n";
-				echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"$MIXdetails[1]\"></td>\n";
-				echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"$MIXdetails[2]\"></td>\n";
-				echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"$MIXdetails[3]\"></td>\n";
-				echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
-				echo "<td><font size=1><a href=\"$PHP_SELF?ADD=69&campaign_id=$campaign_id&pause_code=$rowx[0]\">DELETE</a></td></tr>\n";
+				echo "<tr $bgcolor><td NOWRAP><font size=3>\n";
+				echo "<input type=hidden name=list_id$US$q$US$vcl_id id=list_id$US$q$US$vcl_id value=$MIXdetailsLIST>\n";
+				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"\">REMOVE</a></font></td>\n";
+
+				echo "<td><select size=1 name=priority$US$q$US$vcl_id id=priority$US$q$US$vcl_id>\n";
+				$n=10;
+				while ($n>=1)
+					{
+					echo "<option>$n</option>\n";
+					$n = ($n-1);
+					}
+				echo "<option SELECTED>$MIXdetails[1]</option></select></td>\n";
+
+				echo "<td><select size=1 name=percentage$US$q$US$vcl_id id=percentage$US$q$US$vcl_id>\n";
+				$n=100;
+				while ($n>=1)
+					{
+					echo "<option>$n</option>\n";
+					$n = ($n-5);
+					}
+				echo "<option SELECTED>$MIXdetails[2]</option></select></td>\n";
+
 				
+				echo "<td><input type=hidden name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id value=\"$MIXdetails[3]\"><input type=text size=20 maxlength=255 name=ROstatus$US$q$US$vcl_id id=ROstatus$US$q$US$vcl_id value=\"$MIXdetails[3]\" READONLY></td>\n";
+				echo "<td NOWRAP>\n";
+
+
+
+				echo "<select size=1 name=dial_status$US$q$US$vcl_id id=dial_status$US$q$US$vcl_id>\n";
+				echo "<option value=\"\"> - Select A Status - </option>\n";
+
+				echo "$statuses_list";
+				echo "</select> <font size=2><B>\n";
+				echo "<a href=\"\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> \n";
+				echo "<a href=\"\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">REMOVE</a>\n";
+				echo "</font></B></td></tr>\n";
+
+
+				echo "</td></tr>\n";
+
+
 				$q++;
 
 				}
@@ -8537,7 +8630,15 @@ if ( ($ADD==34) or ($ADD==31) )
 
 			
 
-			echo "</table>\n";
+			echo "<tr $bgcolor><td colspan=4 align=right><font size=2>\n";
+			echo "List: <select size=1 name=list_id>\n";
+			echo "$mixlists_list";
+			echo "<option selected value=\"\">ADD ANOTHER ENTRY</option>\n";
+			echo "</select></td>\n";
+
+			echo "<td><input type=submit name=submit value=\"ADD ENTRY\">\n";
+			echo "</form></td></tr>\n";
+			echo "</table></span>\n";
 			}
 
 
