@@ -1040,11 +1040,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70530-1714 - Added lists for all campaign subsections
 # 70531-1631 - Development on List mix admin interface
 # 70601-1629 - More development on List mix admin interface, formatting, and added some javascript
+# 70602-1300 - More development on List mix admin interface, more javascript
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-101';
-$build = '70601-1629';
+$admin_version = '2.0.4-102';
+$build = '70602-1300';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3281,28 +3282,76 @@ if ( ( ($ADD==34) or ($ADD==31) ) and ($SUB==29) and ($LOGmodify_campaigns==1) a
 {
 
 ?>
+// List Mix status add and remove
 function mod_mix_status(stage,vcl_id,entry) 
 	{
 	var mod_status = document.getElementById("dial_status_" + entry + "_" + vcl_id);
-	var old_statuses = document.getElementById("status_" + entry + "_" + vcl_id);
-	var ROold_statuses = document.getElementById("ROstatus_" + entry + "_" + vcl_id);
-	alert("Hello: " + stage + "|" + vcl_id + "|" + entry + "|" + mod_status.value);
-	if (stage=="ADD")
+	if (mod_status.value.length < 1)
 		{
-		var new_statuses = " " + mod_status.value + "" + old_statuses.value;
-		alert(new_statuses);
-		old_statuses.value = new_statuses;
-		ROold_statuses.value = new_statuses;
-		mod_status.value = "";
+		alert("You must select a status first");
 		}
-	if (stage=="REMOVE")
+	else
 		{
-		var DELstatus = new RegExp(" " + mod_status.value,"g");
-		old_statuses.value = old_statuses.value.replace(DELstatus, "");
-		ROold_statuses.value = ROold_statuses.value.replace(DELstatus, "");
+		var old_statuses = document.getElementById("status_" + entry + "_" + vcl_id);
+		var ROold_statuses = document.getElementById("ROstatus_" + entry + "_" + vcl_id);
+		var MODstatus = new RegExp(" " + mod_status.value + " ","g");
+		if (stage=="ADD")
+			{
+			if (old_statuses.value.match(MODstatus))
+				{
+				alert("The status " + mod_status.value + " is already present");
+				}
+			else
+				{
+				var new_statuses = " " + mod_status.value + "" + old_statuses.value;
+				old_statuses.value = new_statuses;
+				ROold_statuses.value = new_statuses;
+				mod_status.value = "";
+				}
+			}
+		if (stage=="REMOVE")
+			{
+			var MODstatus = new RegExp(" " + mod_status.value + " ","g");
+			old_statuses.value = old_statuses.value.replace(MODstatus, " ");
+			ROold_statuses.value = ROold_statuses.value.replace(MODstatus, " ");
+			}
 		}
 	}
 
+// List Mix percent difference calculation and warning message
+function mod_mix_percent(vcl_id,entries) 
+	{
+	var i=0;
+	var total_percent=0;
+	var percent_diff='';
+	while(i < entries)
+		{
+		var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
+		temp_percent = mod_percent_field.value * 1;
+		total_percent = (total_percent + temp_percent);
+		i++;
+		}
+
+	var mod_diff_percent = document.getElementById("PCT_DIFF_" + vcl_id);
+	percent_diff = (total_percent - 100);
+	if (percent_diff > 0)
+		{
+		percent_diff = '+' + percent_diff;
+		}
+	var mix_list_submit = document.getElementById("submit_" + vcl_id);
+	if ( (percent_diff > 0) || (percent_diff < 0) )
+		{
+		mix_list_submit.disabled = true;
+		document.getElementById("ERROR_" + vcl_id).innerHTML = "<font color=red><B>The Difference % must be 0</B></font>";
+		}
+	else
+		{
+		mix_list_submit.disabled = false;
+		document.getElementById("ERROR_" + vcl_id).innerHTML = "";
+		}
+
+	mod_diff_percent.value = percent_diff;
+	}
 <?
 }
 ?>
@@ -8594,9 +8643,9 @@ if ( ($ADD==34) or ($ADD==31) )
 					}
 				echo "<option SELECTED>$MIXdetails[1]</option></select></td>\n";
 
-				echo "<td><select size=1 name=percentage$US$q$US$vcl_id id=percentage$US$q$US$vcl_id>\n";
+				echo "<td><select size=1 name=percentage$US$q$US$vcl_id id=percentage$US$q$US$vcl_id onChange=\"mod_mix_percent('$vcl_id','$Ms_to_print')\">\n";
 				$n=100;
-				while ($n>=1)
+				while ($n>=0)
 					{
 					echo "<option>$n</option>\n";
 					$n = ($n-5);
@@ -8614,8 +8663,8 @@ if ( ($ADD==34) or ($ADD==31) )
 
 				echo "$statuses_list";
 				echo "</select> <font size=2><B>\n";
-				echo "<a href=\"\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> \n";
-				echo "<a href=\"\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">REMOVE</a>\n";
+				echo "<a href=\"#\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> &nbsp; \n";
+				echo "<a href=\"#\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">REMOVE</a>\n";
 				echo "</font></B></td></tr>\n";
 
 
@@ -8629,6 +8678,14 @@ if ( ($ADD==34) or ($ADD==31) )
 
 
 			
+			echo "<tr $bgcolor><td colspan=3 align=right><font size=2>\n";
+			echo "Difference %: <input type=text size=4 name=PCT_DIFF_$vcl_id id=PCT_DIFF_$vcl_id value=0 readonly>\n";
+			echo "</td>\n";
+
+			echo "<td colspan=2><input type=submit name=submit_$vcl_id id=submit_$vcl_id value=\"SUBMIT\"> &nbsp; \n";
+			echo "<span id=ERROR_$vcl_id></span>\n";
+			echo "</form></td></tr>\n";
+
 
 			echo "<tr $bgcolor><td colspan=4 align=right><font size=2>\n";
 			echo "List: <select size=1 name=list_id>\n";
