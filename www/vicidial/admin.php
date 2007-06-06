@@ -4222,7 +4222,7 @@ if ($ADD==21)
 			{
 			echo "<br><B>CAMPAIGN ADDED: $campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y');";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh,list_order_mix) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y','DISABLED');";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -7638,21 +7638,31 @@ if ($ADD==31)
 	else
 		{$DEFlistDISABLE = 'disabled';	$DEFstatusDISABLED=1;}
 
-	##### get list_mix listings for dynamic pulldown
-	$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix";
 	$rslt=mysql_query($stmt, $link);
-	$mixes_to_print = mysql_num_rows($rslt);
-	$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
-
-	$o=0;
-	while ($mixes_to_print > $o)
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] < 1)
 		{
-		$rowx=mysql_fetch_row($rslt);
-		$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$mixname_list["$rowx[0]"] = "$rowx[1]";
-		$o++;
+		$mixes_list="<option SELECTED value=\"DISABLED\">DISABLED</option>\n";
+		$mixname_list["DISABLED"] = "DISABLED";
 		}
+	else
+		{
+		##### get list_mix listings for dynamic pulldown
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+		$rslt=mysql_query($stmt, $link);
+		$mixes_to_print = mysql_num_rows($rslt);
+		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
 
+		$o=0;
+		while ($mixes_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$mixname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+		}
 
 	##### get status listings for dynamic pulldown
 	$stmt="SELECT * from vicidial_statuses order by status";
@@ -8327,19 +8337,30 @@ if ($ADD==34)
 		$Dstatuses = explode(" ", $dial_statuses);
 		$Ds_to_print = (count($Dstatuses) -1);
 
-	##### get list_mix listings for dynamic pulldown
-	$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix";
 	$rslt=mysql_query($stmt, $link);
-	$mixes_to_print = mysql_num_rows($rslt);
-	$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
-
-	$o=0;
-	while ($mixes_to_print > $o)
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] < 1)
 		{
-		$rowx=mysql_fetch_row($rslt);
-		$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$mixname_list["$rowx[0]"] = "$rowx[1]";
-		$o++;
+		$mixes_list="<option SELECTED value=\"DISABLED\">DISABLED</option>\n";
+		$mixname_list["DISABLED"] = "DISABLED";
+		}
+	else
+		{
+		##### get list_mix listings for dynamic pulldown
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+		$rslt=mysql_query($stmt, $link);
+		$mixes_to_print = mysql_num_rows($rslt);
+		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
+
+		$o=0;
+		while ($mixes_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$mixname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
 		}
 
 	if ($SUB<1)		{$camp_detail_color=$subcamp_color;}
