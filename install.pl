@@ -1318,6 +1318,7 @@ if ($NOWEB < 1)
 	`mkdir $PATHweb/vicidial/`;
 	`mkdir $PATHweb/vicidial/ploticus/`;
 	`mkdir $PATHweb/vicidial/agent_reports/`;
+	`mkdir $PATHweb/vicidial/server_reports/`;
 
 	print "Copying web files...\n";
 	`cp -f -R ./www/* $PATHweb/`;
@@ -1331,6 +1332,7 @@ if ($NOWEB < 1)
 	`chmod 0777 $PATHweb/vicidial/`;
 	`chmod 0777 $PATHweb/vicidial/ploticus/`;
 	`chmod 0777 $PATHweb/vicidial/agent_reports/`;
+	`chmod 0777 $PATHweb/vicidial/server_reports/`;
 	}
 
 if ($PROMPTcopy_conf_files =~ /y/i)

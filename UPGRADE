@@ -12,6 +12,15 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	then make sure you back them up before running the install.pl script. 
 	This script will replace existing files in the astguiclient installation.
 
+2. upgrade the MySQL asterisk database:
+	mysql
+	use asterisk
+	\. /path/from/root/extras/upgrade_2.0.4.sql
+	quit
+
+3. add the "server_reports" directory to your Web Path:
+	mkdir $PATHweb/vicidial/server_reports/
+	chmod 0777 $PATHweb/vicidial/server_reports/
 
 
 

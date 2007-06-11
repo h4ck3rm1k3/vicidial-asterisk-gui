@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.0.3   *DBI-version*
+# AST_VDhopper.pl version 2.0.4   *DBI-version*
 #
 # DESCRIPTION:
 # uses DBD::MySQL to update the VICIDIAL leads hopper for the streamlined 
@@ -129,6 +129,7 @@ if (length($ARGV[0])>1)
 		#	print "\n|$ARGS|\n\n";
 		@data_in = split(/--campaign=/,$args);
 			$CLIcampaign = $data_in[1];
+			$CLIcampaign =~ s/ .*$//gi;
 		}
 		else
 			{$CLIcampaign = '';}

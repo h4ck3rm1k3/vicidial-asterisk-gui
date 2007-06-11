@@ -4,6 +4,7 @@ ALTER TABLE vicidial_campaign_statuses ADD human_answered ENUM('Y','N') default 
 UPDATE vicidial_statuses SET human_answered='Y' where status IN('DROP','DNC','DEC','SALE','XFER','CALLBK','NP','NI','N');
 
 ALTER TABLE vicidial_campaigns ADD list_order_mix VARCHAR(20) default 'DISABLED';
+UPDATE vicidial_campaigns SET list_order_mix='DISABLED';
 
  CREATE TABLE vicidial_campaigns_list_mix (
 vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
