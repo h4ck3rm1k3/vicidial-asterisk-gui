@@ -1042,11 +1042,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70601-1629 - More development on List mix admin interface, formatting, and added some javascript
 # 70602-1300 - More development on List mix admin interface, more javascript
 # 70608-1459 - Added option to set LIVE Callbacks to INACTIVE after one month
+# 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-103';
-$build = '70608-1459';
+$admin_version = '2.0.4-104';
+$build = '70612-1451';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1055,6 +1056,8 @@ $US='_';
 
 $month_old = mktime(0, 0, 0, date("m")-1, date("d"),  date("Y"));
 $past_month_date = date("Y-m-d H:i:s",$month_old);
+$week_old = mktime(0, 0, 0, date("m"), date("d")-7,  date("Y"));
+$past_week_date = date("Y-m-d H:i:s",$week_old);
 
 if ($force_logout)
 {
@@ -10762,24 +10765,29 @@ echo "</TABLE></center>\n";
 ######################
 if ($ADD==8)
 {
-	if ($SUB==89)
+	if ($LOGmodify_users==1)
 	{
-		if ($LOGmodify_users==1)
+		if ($SUB==89)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_month_date';";
 		$rslt=mysql_query($stmt, $link);
 		echo "<br>User($user) callback listings LIVE for more than one month have been made INACTIVE\n";
 		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>User($user) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
 	}
-$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8&SUB=89&user=$user\">Remove LIVE Callbacks older than one month for this user</a><BR>";
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8&SUB=89&user=$user\">Remove LIVE Callbacks older than one month for this user</a><BR><a href=\"$PHP_SELF?ADD=8&SUB=899&user=$user\">Remove LIVE Callbacks older than one week for this user</a><BR>";
 
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and user='$user' order by recipient,status desc,callback_time";
-$rslt=mysql_query($stmt, $link);
-$cb_to_print = mysql_num_rows($rslt);
+	$CBquerySQLwhere = "and user='$user'";
 
 echo "<br>USER CALLBACK HOLD LISTINGS: $user\n";
+$oldADD = "ADD=8&user=$user";
 $ADD='82';
 }
 
@@ -10788,24 +10796,29 @@ $ADD='82';
 ######################
 if ($ADD==81)
 {
-	if ($SUB==89)
+	if ($LOGmodify_campaigns==1)
 	{
-		if ($LOGmodify_campaigns==1)
+		if ($SUB==89)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where campaign_id='$campaign_id' and status='LIVE' and callback_time < '$past_month_date';";
 		$rslt=mysql_query($stmt, $link);
 		echo "<br>campaign($campaign_id) callback listings LIVE for more than one month have been made INACTIVE\n";
 		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where campaign_id='$campaign_id' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>campaign($campaign_id) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
 	}
-$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=81&SUB=89&campaign_id=$campaign_id\">Remove LIVE Callbacks older than one month for this campaign</a><BR>";
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=81&SUB=89&campaign_id=$campaign_id\">Remove LIVE Callbacks older than one month for this campaign</a><BR><a href=\"$PHP_SELF?ADD=81&SUB=899&campaign_id=$campaign_id\">Remove LIVE Callbacks older than one week for this campaign</a><BR>";
 
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and campaign_id='$campaign_id' order by recipient,status desc,callback_time";
-$rslt=mysql_query($stmt, $link);
-$cb_to_print = mysql_num_rows($rslt);
+	$CBquerySQLwhere = "and campaign_id='$campaign_id'";
 
 echo "<br>CAMPAIGN CALLBACK HOLD LISTINGS: $campaign_id\n";
+$oldADD = "ADD=81&campaign_id=$campaign_id";
 $ADD='82';
 }
 
@@ -10814,24 +10827,29 @@ $ADD='82';
 ######################
 if ($ADD==811)
 {
-	if ($SUB==89)
+	if ($LOGmodify_lists==1)
 	{
-		if ($LOGmodify_lists==1)
+		if ($SUB==89)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where list_id='$list_id' and status='LIVE' and callback_time < '$past_month_date';";
 		$rslt=mysql_query($stmt, $link);
 		echo "<br>list($list_id) callback listings LIVE for more than one month have been made INACTIVE\n";
 		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where list_id='$list_id' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>list($list_id) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
 	}
-$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=811&SUB=89&list_id=$list_id\">Remove LIVE Callbacks older than one month for this list</a><BR>";
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=811&SUB=89&list_id=$list_id\">Remove LIVE Callbacks older than one month for this list</a><BR><a href=\"$PHP_SELF?ADD=811&SUB=899&list_id=$list_id\">Remove LIVE Callbacks older than one week for this list</a><BR>";
 
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and list_id='$list_id' order by recipient,status desc,callback_time";
-$rslt=mysql_query($stmt, $link);
-$cb_to_print = mysql_num_rows($rslt);
+	$CBquerySQLwhere = "and list_id='$list_id'";
 
 echo "<br>LIST CALLBACK HOLD LISTINGS: $list_id\n";
+$oldADD = "ADD=811&list_id=$list_id";
 $ADD='82';
 }
 
@@ -10840,24 +10858,29 @@ $ADD='82';
 ######################
 if ($ADD==8111)
 {
-	if ($SUB==89)
+	if ($LOGmodify_usergroups==1)
 	{
-		if ($LOGmodify_usergroups==1)
+		if ($SUB==89)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user_group='$user_group' and status='LIVE' and callback_time < '$past_month_date';";
 		$rslt=mysql_query($stmt, $link);
 		echo "<br>user group($user_group) callback listings LIVE for more than one month have been made INACTIVE\n";
 		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user_group='$user_group' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>user group($user_group) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
 	}
-	$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8111&SUB=89&user_group=$user_group\">Remove LIVE Callbacks older than one month for this user group</a><BR>";
+	$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8111&SUB=89&user_group=$user_group\">Remove LIVE Callbacks older than one month for this user group</a><BR><a href=\"$PHP_SELF?ADD=8111&SUB=899&user_group=$user_group\">Remove LIVE Callbacks older than one week for this user group</a><BR>";
 
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and user_group='$user_group' order by recipient,status desc,callback_time";
-	$rslt=mysql_query($stmt, $link);
-	$cb_to_print = mysql_num_rows($rslt);
+	$CBquerySQLwhere = "and user_group='$user_group'";
 
 echo "<br>USER GROUP CALLBACK HOLD LISTINGS: $list_id\n";
+$oldADD = "ADD=8111&user_group=$user_group";
 $ADD='82';
 }
 
@@ -10866,9 +10889,30 @@ $ADD='82';
 ######################
 if ($ADD==82)
 {
+
+$USERlink='stage=USERIDDOWN';
+$GROUPlink='stage=GROUPDOWN';
+$ENDATElink='stage=ENDATEDOWN';
+$SQLorder='order by ';
+if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc,';   $USERlink='stage=USERIDUP';}
+if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc,';   $NAMElink='stage=NAMEUP';}
+if (eregi("ENDATEDOWN",$stage)) {$SQLorder='order by entry_time desc,';   $LEVELlink='stage=LEVELUP';}
+
+	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') $CBquerySQLwhere $SQLorder recipient,status desc,callback_time";
+	$rslt=mysql_query($stmt, $link);
+	$cb_to_print = mysql_num_rows($rslt);
+
 echo "<TABLE><TR><TD>\n";
 echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white> CAMPAIGN</td><td><font size=1 color=white>ENTRY DATE</td><td><font size=1 color=white>CALLBACK DATE</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>STATUS</td><td><font size=1 color=white>GROUP</td></tr>\n";
+echo "<tr bgcolor=black>\n";
+echo "<td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td>\n";
+echo "<td><font size=1 color=white> CAMPAIGN</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$ENDATElink\"><font size=1 color=white><B>ENTRY DATE</B></a></td>\n";
+echo "<td><font size=1 color=white>CALLBACK DATE</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$USERlink\"><font size=1 color=white><B>USER</B></a></td>\n";
+echo "<td><font size=1 color=white>RECIPIENT</td>\n";
+echo "<td><font size=1 color=white>STATUS</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td></tr>\n";
 
 	$o=0;
 	while ($cb_to_print > $o) {
