@@ -542,7 +542,8 @@ list_lastcalldate DATETIME
 status VARCHAR(6) PRIMARY KEY NOT NULL,
 status_name VARCHAR(30),
 selectable ENUM('Y','N'),
-human_answered ENUM('Y','N') default 'N'
+human_answered ENUM('Y','N') default 'N',
+category VARCHAR(20) default 'UNDEFINED'
 );
 
  CREATE TABLE vicidial_campaign_statuses (
@@ -551,6 +552,7 @@ status_name VARCHAR(30),
 selectable ENUM('Y','N'),
 campaign_id VARCHAR(8),
 human_answered ENUM('Y','N') default 'N',
+category VARCHAR(20) default 'UNDEFINED',
 index (campaign_id)
 );
 
@@ -898,9 +900,16 @@ status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
 index (campaign_id)
 );
 
+ CREATE TABLE vicidial_status_categories (
+vsc_id VARCHAR(20) PRIMARY KEY NOT NULL,
+vsc_name VARCHAR(50),
+vsc_description VARCHAR(255),
+tovdad_display ENUM('Y','N') default 'N'
+);
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
 
+INSERT INTO vicidial_status_categories (vsc_id,vsc_name) values('UNDEFINED','Default Category');
 
 INSERT INTO vicidial_user_groups SET user_group='ADMIN',group_name='VICIDIAL ADMINISTRATORS',allowed_campaigns=' -ALL-CAMPAIGNS- - -';
 

@@ -22,6 +22,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	mkdir $PATHweb/vicidial/server_reports/
 	chmod 0777 $PATHweb/vicidial/server_reports/
 
+4. A new set of changes have been made to the statuses sections in the admin.php
+	pages allowing for categorizing statuse and modifyig them without delete
+
+5. The admin.php interface has had more sections broken into sub-sections for
+	easier management and rapid modifications.
+
 
 
 

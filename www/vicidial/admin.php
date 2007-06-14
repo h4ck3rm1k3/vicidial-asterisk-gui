@@ -15,8 +15,8 @@ require("dbconnect.php");
 ######################################################################################################
 ######################################################################################################
 
-$page_width='750';
-$section_width='700';
+$page_width='770';
+$section_width='720';
 $header_font_size='3';
 $subheader_font_size='2';
 $subcamp_font_size='2';
@@ -47,6 +47,7 @@ $reports_color =	'#99FF33';
 	$conference_color =	'#FF33FF';
 	$server_color =		'#FF33FF';
 	$settings_color = 	'#FF33FF';
+	$status_color = 	'#FF33FF';
 $users_font =		'BLACK';
 $campaigns_font =	'BLACK';
 $lists_font =		'BLACK';
@@ -62,6 +63,7 @@ $reports_font =		'BLACK';
 	$conference_font =	'BLACK';
 	$server_font =		'BLACK';
 	$settings_font = 	'BLACK';
+	$status_font = 	'BLACK';
 $subcamp_color =	'#FF9933';
 $subcamp_font =		'BLACK';
 
@@ -615,6 +617,17 @@ if (isset($_GET["mix_method"]))					{$mix_method=$_GET["mix_method"];}
 	elseif (isset($_POST["mix_method"]))		{$mix_method=$_POST["mix_method"];}
 if (isset($_GET["human_answered"]))				{$human_answered=$_GET["human_answered"];}
 	elseif (isset($_POST["human_answered"]))	{$human_answered=$_POST["human_answered"];}
+if (isset($_GET["category"]))					{$category=$_GET["category"];}
+	elseif (isset($_POST["category"]))			{$category=$_POST["category"];}
+if (isset($_GET["vsc_id"]))						{$vsc_id=$_GET["vsc_id"];}
+	elseif (isset($_POST["vsc_id"]))			{$vsc_id=$_POST["vsc_id"];}
+if (isset($_GET["vsc_name"]))					{$vsc_name=$_GET["vsc_name"];}
+	elseif (isset($_POST["vsc_name"]))			{$vsc_name=$_POST["vsc_name"];}
+if (isset($_GET["vsc_description"]))			{$vsc_description=$_GET["vsc_description"];}
+	elseif (isset($_POST["vsc_description"]))	{$vsc_description=$_POST["vsc_description"];}
+if (isset($_GET["tovdad_display"]))				{$tovdad_display=$_GET["tovdad_display"];}
+	elseif (isset($_POST["tovdad_display"]))	{$tovdad_display=$_POST["tovdad_display"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -771,6 +784,7 @@ $campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 $disable_alter_custdata = ereg_replace("[^NY]","",$disable_alter_custdata);
 $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
 $human_answered = ereg_replace("[^NY]","",$human_answered);
+$tovdad_display =  ereg_replace("[^NY]","",$tovdad_display);
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -864,6 +878,8 @@ $alter_custdata_override = ereg_replace("[^-\_0-9a-zA-Z]","",$alter_custdata_ove
 $list_order_mix = ereg_replace("[^-\_0-9a-zA-Z]","",$list_order_mix);
 $vcl_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vcl_id);
 $mix_method = ereg_replace("[^-\_0-9a-zA-Z]","",$mix_method);
+$category = ereg_replace("[^-\_0-9a-zA-Z]","",$category);
+$vsc_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vsc_id);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -899,6 +915,8 @@ $pause_code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$pause_code_name);
 $campaign_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_description);
 $list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
 $vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
+$vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
+$vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1043,11 +1061,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70602-1300 - More development on List mix admin interface, more javascript
 # 70608-1459 - Added option to set LIVE Callbacks to INACTIVE after one month
 # 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
+# 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-104';
-$build = '70612-1451';
+$admin_version = '2.0.4-105';
+$build = '70614-0231';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1202,7 +1221,8 @@ if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
-if ($ADD==221111111111111)	{$hh='admin';	$sh='settings';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
+if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
+if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL STATUS CATEGORY";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			
@@ -1237,6 +1257,8 @@ if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
+if ($ADD==321111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
+if ($ADD==331111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL STATUS CATEGORY";}
 if ($ADD=="4A")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Modify User";}
@@ -1261,7 +1283,8 @@ if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
-if ($ADD==421111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
+if ($ADD==421111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
+if ($ADD==431111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL STATUS CATEGORIES";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Logout Agents";}
@@ -2254,7 +2277,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>VICIDIAL_CAMPAIGN_STATUSES TABLE</FONT></B><BR><BR>
 <A NAME="vicidial_campaign_statuses">
 <BR>
-<B>Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls.</B>
+<B>Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.</B>
 
 
 
@@ -3001,6 +3024,23 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 
 
 
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_STATUSES TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_statuses">
+<BR>
+<B>Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.</B>
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_STATUS_CATEGORIES TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_status_categories">
+<BR>
+<B>Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report.</B>
+
+
+
 
 <BR><BR><BR><BR><BR><BR><BR><BR>
 <BR><BR><BR><BR><BR><BR><BR><BR>
@@ -3503,8 +3543,10 @@ if (strlen($admin_hh) > 1) {
 		else {$server_sh=''; $server_fc='BLACK';}
 	if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
 		else {$conference_sh=''; $conference_fc='BLACK';}
-	if ($sh=='settings') {$settings_sh="bgcolor=\"$server_color\""; $settings_fc="$server_font";} # pink
+	if ($sh=='settings') {$settings_sh="bgcolor=\"$settings_color\""; $settings_fc="$settings_font";} # pink
 		else {$settings_sh=''; $settings_fc='BLACK';}
+	if ($sh=='status') {$status_sh="bgcolor=\"$status_color\""; $status_fc="$status_font";} # pink
+		else {$status_sh=''; $status_fc='BLACK';}
 
 	?>
 <TR BGCOLOR=<?=$admin_color ?>>
@@ -3512,7 +3554,8 @@ if (strlen($admin_hh) > 1) {
 <TD ALIGN=LEFT <?=$phones_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Phones </a></TD>
 <TD ALIGN=LEFT <?=$conference_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Conferences </a></TD>
 <TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Servers </a></TD>
-<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=3><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> System Settings </a></TD>
+<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> System Settings </a></TD>
+<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$header_font_size ?>> System Statuses </a></TD>
 </TR>
 	<?
 	if (strlen($times_sh) > 1) { 
@@ -3534,6 +3577,10 @@ if (strlen($admin_hh) > 1) {
 	if (strlen($settings_sh) > 1) { 
 		?>
 	<TR BGCOLOR=<?=$settings_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Settings </a></TD></TR>
+	<?}
+	if (strlen($status_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Statuses </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Status Categories </a></TD></TR>
 	<?}
 
 ### Do nothing if admin has no permissions
@@ -4281,7 +4328,7 @@ if ($ADD==22)
 				{
 				echo "<br><B>CAMPAIGN STATUS ADDED: $campaign_id - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered) values('$status','$status_name','$selectable','$campaign_id','$human_answered');";
+				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) values('$status','$status_name','$selectable','$campaign_id','$human_answered','$category');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
@@ -5042,7 +5089,7 @@ if ($ADD==221111111111111)
 				{
 				echo "<br><B>SYSTEM STATUS ADDED: $status_name - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered) values('$status','$status_name','$selectable','$human_answered');";
+				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered,category) values('$status','$status_name','$selectable','$human_answered','$category');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
@@ -5055,7 +5102,57 @@ if ($ADD==221111111111111)
 				}
 			}
 		}
-$ADD=311111111111111;
+$ADD=321111111111111;
+}
+
+
+######################
+# ADD=231111111111111 adds the new status category to the system
+######################
+
+if ($ADD==231111111111111)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_status_categories where vsc_id='$vsc_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>STATUS CATEGORY NOT ADDED - there is already a status category in the system with this ID: $row[0]\n";}
+	else
+		{
+		 if ( (strlen($vsc_id) < 2) or (strlen($vsc_id) > 20) or (strlen($vsc_name) < 2) )
+			{
+			 echo "<br>STATUS CATEGORY NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>ID must be between 2 and 20 characters in length\n";
+			 echo "<br>name name must be between 2 and 50 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>STATUS CATEGORY ADDED: $vsc_id - $vsc_name</B>\n";
+
+			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
+				{
+				$tovdad_display = 'N';
+				echo "<br><B>ERROR: There are already 4 Status Categories set to TimeOnVDAD Display</B>\n";
+				}
+
+			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW STATUS CATEGORY |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=331111111111111;
 }
 
 
@@ -5276,7 +5373,7 @@ $ADD=31;	# go to campaign modification form below
 }
 
 ######################
-# ADD=42 delete campaign status in the system
+# ADD=42 modify/delete campaign status in the system
 ######################
 
 if ($ADD==42)
@@ -5293,17 +5390,35 @@ if ($ADD==42)
 		}
 	 else
 		{
-		echo "<br><B>CUSTOM CAMPAIGN STATUS DELETED: $campaign_id - $status</B>\n";
-
-		$stmt="DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if (ereg('delete',$stage))
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status'|\n");
-			fclose($fp);
+			echo "<br><B>CUSTOM CAMPAIGN STATUS DELETED: $campaign_id - $status</B>\n";
+
+			$stmt="DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		if (ereg('modify',$stage))
+			{
+			echo "<br><B>CUSTOM CAMPAIGN STATUS MODIFIED: $campaign_id - $status</B>\n";
+
+			$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -6143,7 +6258,7 @@ $ADD=311111111111111;	# go to vicidial system settings form below
 
 
 ######################
-# ADD=421111111111111 delete system status in the system
+# ADD=421111111111111 modify/delete system status in the system
 ######################
 
 if ($ADD==421111111111111)
@@ -6152,25 +6267,52 @@ if ($ADD==421111111111111)
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($status) < 1)  or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
+	if (ereg('delete',$stage))
 		{
-		 echo "<br>SYSTEM STATUS NOT DELETED - Please go back and look at the data you entered\n";
-		 echo "<br>the system status cannot be a reserved status: B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
-		 echo "<br>the system status needs to be at least 1 characters in length\n";
-		}
-	 else
-		{
-		echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
-
-		$stmt="DELETE FROM vicidial_statuses where status='$status';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if ( (strlen($status) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			 echo "<br>SYSTEM STATUS NOT DELETED - Please go back and look at the data you entered\n";
+			 echo "<br>the system status cannot be a reserved status: B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+			 echo "<br>the system status needs to be at least 1 characters in length\n";
+			}
+		else
+			{
+			echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
+
+			$stmt="DELETE FROM vicidial_statuses where status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	if (ereg('modify',$stage))
+		{
+		if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
+			{
+			 echo "<br>SYSTEM STATUS NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>the system status needs to be at least 1 characters in length\n";
+			 echo "<br>the system status name needs to be at least 1 characters in length\n";
+			}
+		else
+			{
+			echo "<br><B>SYSTEM STATUS MODIFIED: $status</B>\n";
+
+			$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -6179,8 +6321,78 @@ if ($ADD==421111111111111)
 	echo "You do not have permission to view this page\n";
 	exit;
 	}
-$ADD=311111111111111;	# go to system settings modification form below
+$ADD=321111111111111;	# go to system settings modification form below
 }
+
+
+######################
+# ADD=431111111111111 modify/delete status category in the system
+######################
+
+if ($ADD==431111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($vsc_id) < 2)  or (preg_match("/^UNDEFINED$/i",$vsc_id)) )
+		{
+		 echo "<br>STATUS CATEGORY NOT MODIFIED - Please go back and look at the data you entered\n";
+		 echo "<br>the status category cannot be a reserved category: UNDEFINED\n";
+		 echo "<br>the status category needs to be at least 2 characters in length\n";
+		}
+	 else
+		{
+		if (ereg('delete',$stage))
+			{
+			echo "<br><B>STATUS CATEGORY DELETED: $vsc_id</B>\n";
+
+			$stmt="DELETE FROM vicidial_status_categories where vsc_id='$vsc_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		if (ereg('modify',$stage))
+			{
+			echo "<br><B>STATUS CATEGORY MODIFIED: $vsc_id</B>\n";
+
+			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
+				{
+				$tovdad_display = 'N';
+				echo "<br><B>ERROR: There are already 4 Status Categories set to TimeOnVDAD Display</B>\n";
+				}
+
+			$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display' where vsc_id='$vsc_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=331111111111111;	# go to system settings modification form below
+}
+
+
 
 
 ######################################################################################################
@@ -8014,26 +8226,62 @@ if ($ADD==31)
 
 	if ($SUB==22)
 		{
+
+	##### get status category listings for dynamic pulldown
+	$stmt="SELECT vsc_id,vsc_name from vicidial_status_categories order by vsc_id desc";
+	$rslt=mysql_query($stmt, $link);
+	$cats_to_print = mysql_num_rows($rslt);
+	$cats_list="";
+
+	$o=0;
+	while ($cats_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$cats_list .= "<option value=\"$rowx[0]\">$rowx[0] - " . substr($rowx[1],0,20) . "</option>\n";
+		$catsname_list["$rowx[0]"] = substr($rowx[1],0,20);
+		$o++;
+		}
+
+
 		echo "<center>\n";
 		echo "<br><b>CUSTOM STATUSES WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_statuses$NWE</b><br>\n";
 		echo "<TABLE width=500 cellspacing=3>\n";
 		echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>DELETE</td></tr>\n";
 
-			$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id'";
-			$rslt=mysql_query($stmt, $link);
-			$statuses_to_print = mysql_num_rows($rslt);
-			$o=0;
-			while ($statuses_to_print > $o) {
-				$rowx=mysql_fetch_row($rslt);
-				$o++;
+		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id'";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$AScategory = $rowx[5];
+			$o++;
 
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[4]</td><td><font size=1><a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&action=DELETE\">DELETE</a></td></tr>\n";
-
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=42>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=status value=\"$rowx[0]\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<font size=2><B>$rowx[0]</B></td>\n";
+			echo "<td><input type=text name=status_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+			echo "<td><select size=1 name=selectable><option>Y</option><option>N</option><option selected>$rowx[2]</option></select></td>\n";
+			echo "<td><select size=1 name=human_answered><option>Y</option><option>N</option><option selected>$rowx[4]</option></select></td>\n";
+			echo "<td>\n";
+			echo "<select size=1 name=category>\n";
+			echo "$cats_list";
+			echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+			echo "</select>\n";
+			echo "</td>\n";
+			echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; \n";
+			echo "<a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&stage=delete\">DELETE</a>\n";
+			echo "</form></td></tr>\n";
 			}
 
 		echo "</table>\n";
@@ -8045,6 +8293,11 @@ if ($ADD==31)
 		echo "Description: <input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
 		echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
 		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Category: \n";
+		echo "<select size=1 name=category>\n";
+		echo "$cats_list";
+		echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+		echo "</select> &nbsp; <BR>\n";
 		echo "<input type=submit name=submit value=ADD><BR>\n";
 
 		echo "</FORM><br>\n";
@@ -9129,15 +9382,6 @@ echo "</tr>\n";
 
 echo "</TABLE></center>\n";
 }
-
-
-#	if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Campaign Statuses";}
-#	if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Campaign HotKeys";}
-#	if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Campaign Lead Recycle Entries";}
-#	if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Campaign Auto Alt Dial Statuses";}
-#	if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Campaign Agent Pause Codes";}
-#	if ($ADD==38)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Statuses";}
-#	if ($ADD==39)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mixes";}
 
 
 
@@ -10616,50 +10860,108 @@ if ($ADD==311111111111111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
+	echo "</form>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
 
-	echo "<center>\n";
 
 
 
-	echo "<br>\n";
-	echo "<br><b>VICIDIAL STATUSES WITHIN THIS SYSTEM: &nbsp; $NWB#vicidial_statuses$NWE</b><br>\n";
-	echo "<TABLE width=500 cellspacing=3>\n";
-	echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>DELETE</td></tr>\n";
 
-		$stmt="SELECT * from vicidial_statuses order by status;";
-		$rslt=mysql_query($stmt, $link);
-		$statuses_to_print = mysql_num_rows($rslt);
-		$o=0;
-		while ($statuses_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
-			$o++;
+
+######################
+# ADD=321111111111111 modify vicidial system statuses
+######################
+
+if ($ADD==321111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>VICIDIAL STATUSES WITHIN THIS SYSTEM: &nbsp; $NWB#vicidial_statuses$NWE</b><br>\n";
+	echo "<TABLE width=700 cellspacing=3>\n";
+	echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECT-<BR>ABLE</td><td>HUMAN<BR>ANSWER</td><td>CATEGORY</td><td>MODIFY/DELETE</td></tr>\n";
+
+	##### get status category listings for dynamic pulldown
+	$stmt="SELECT vsc_id,vsc_name from vicidial_status_categories order by vsc_id desc";
+	$rslt=mysql_query($stmt, $link);
+	$cats_to_print = mysql_num_rows($rslt);
+	$cats_list="";
+
+	$o=0;
+	while ($cats_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$cats_list .= "<option value=\"$rowx[0]\">$rowx[0] - " . substr($rowx[1],0,20) . "</option>\n";
+		$catsname_list["$rowx[0]"] = substr($rowx[1],0,20);
+		$o++;
+		}
+
+
+	$stmt="SELECT * from vicidial_statuses order by status;";
+	$rslt=mysql_query($stmt, $link);
+	$statuses_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$AScategory = $rowx[4];
+		$o++;
 
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-		echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>\n";
+		echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=421111111111111>\n";
+		echo "<input type=hidden name=stage value=modify>\n";
+		echo "<input type=hidden name=status value=\"$rowx[0]\">\n";
+		echo "<font size=2><B>$rowx[0]</B></td>\n";
+		echo "<td><input type=text name=status_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+		echo "<td><select size=1 name=selectable><option>Y</option><option>N</option><option selected>$rowx[2]</option></select></td>\n";
+		echo "<td><select size=1 name=human_answered><option>Y</option><option>N</option><option selected>$rowx[3]</option></select></td>\n";
+		echo "<td>\n";
+		echo "<select size=1 name=category>\n";
+		echo "$cats_list";
+		echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+		echo "</select>\n";
+		echo "</td>\n";
+		echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+		echo " &nbsp; \n";
+		
 		if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
 			{
 			echo "<DEL>DELETE</DEL>\n";
 			}
 		else
 			{
-			echo "<a href=\"$PHP_SELF?ADD=421111111111111&status=$rowx[0]&action=DELETE\">DELETE</a>\n";
+			echo "<a href=\"$PHP_SELF?ADD=421111111111111&status=$rowx[0]&stage=delete\">DELETE</a>\n";
 			}
-		echo "</td></tr>\n";
-
+		echo "</form></td></tr>\n";
 		}
 
 	echo "</table>\n";
 
 	echo "<br>ADD NEW SYSTEM STATUS<BR><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=221111111111111>\n";
-	echo "Status: <input type=text name=status size=10 maxlength=6> &nbsp; \n";
-	echo "Description: <input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
+	echo "Status: <input type=text name=status size=7 maxlength=6> &nbsp; \n";
+	echo "Description: <input type=text name=status_name size=30 maxlength=30><BR>\n";
 	echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
 	echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Category: \n";
+	echo "<select size=1 name=category>\n";
+	echo "$cats_list";
+	echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+	echo "</select> &nbsp; <BR>\n";
 	echo "<input type=submit name=submit value=ADD><BR>\n";
 
 	echo "</FORM><br>\n";
@@ -10672,6 +10974,108 @@ if ($ADD==311111111111111)
 	}
 }
 
+
+
+
+
+######################
+# ADD=331111111111111 modify vicidial status categories
+######################
+
+if ($ADD==331111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>VICIDIAL STATUS CATEGORIES: &nbsp; $NWB#vicidial_status_categories$NWE</b><br>\n";
+	echo "<TABLE width=700 cellspacing=3>\n";
+	echo "<tr><td>CATEGORY</td><td>NAME</td><td>TOVDAD</td><td>STATUSES IN THIS CATEGORY</td></tr>\n";
+
+		$stmt="SELECT * from vicidial_status_categories order by vsc_id;";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+
+			$Avsc_id[$o] = $rowx[0];
+			$Avsc_name[$o] = $rowx[1];
+			$Avsc_description[$o] = $rowx[2];
+			$Atovdad_display[$o] = $rowx[3];
+
+			$o++;
+			}
+		$p=0;
+		while ($o > $p)
+			{
+			if (eregi("1$|3$|5$|7$|9$", $p))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$CATstatuses='';
+			$stmt="SELECT status from vicidial_statuses where category='$Avsc_id[$p]' order by status;";
+			$rslt=mysql_query($stmt, $link);
+			$statuses_to_print = mysql_num_rows($rslt);
+			$q=0;
+			while ($statuses_to_print > $q) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$CATstatuses.=" $rowx[0]";
+				$q++;
+				}
+			$stmt="SELECT status from vicidial_campaign_statuses where category='$Avsc_id[$p]' order by status;";
+			$rslt=mysql_query($stmt, $link);
+			$statuses_to_print = mysql_num_rows($rslt);
+			$q=0;
+			while ($statuses_to_print > $q) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$CATstatuses.=" $rowx[0]";
+				$q++;
+				}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=431111111111111>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=vsc_id value=\"$Avsc_id[$p]\">\n";
+			echo "<font size=2><B>$Avsc_id[$p]</B></td>\n";
+			echo "<td><input type=text name=vsc_name size=30 maxlength=50 value=\"$Avsc_name[$p]\"></td>\n";
+			echo "<td><select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select></td>\n";
+			echo "<td><font size=1>\n";
+			echo "$CATstatuses";
+			echo "</td></tr>\n";
+			echo "<tr $bgcolor><td colspan=4><font size=1>Description: <input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
+			echo "<tr $bgcolor><td colspan=4 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; <a href=\"$PHP_SELF?ADD=431111111111111&vsc_id=$Avsc_id[$p]&stage=delete\">DELETE</a></td></tr>\n";
+			echo "<tr><td colspan=4><font size=1> &nbsp; </form></td></tr>\n";
+
+			$p++;
+			}
+
+	echo "</table>\n";
+
+	echo "<br>ADD NEW STATUS CATEGORY<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=231111111111111>\n";
+	echo "Category ID: <input type=text name=vsc_id size=20 maxlength=20> &nbsp; \n";
+	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; \n";
+	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
+	echo "Description: <input type=text name=vsc_description size=80 maxlength=255> &nbsp; \n";
+	echo "<input type=submit name=submit value=ADD><BR>\n";
+
+	echo "</FORM><br>\n";
+
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
 
 
 
@@ -11550,12 +11954,12 @@ $ENDtime = date("U");
 
 $RUNtime = ($ENDtime - $STARTtime);
 
-echo "\n\n\n<br><br><br>\n\n";
+echo "\n\n\n<br><br><br>\n<center>\n";
 
 
 echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; VERSION: $admin_version";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; BUILD: $build</font>\n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; VERSION: $admin_version";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; BUILD: $build</font>\n";
 
 
 ?>

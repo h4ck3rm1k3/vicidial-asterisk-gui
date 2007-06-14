@@ -2876,23 +2876,23 @@ insert into vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','
 insert into vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead07','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
 
 ### these first 5 must be in all VICIDIAL systems for it to work properly #
-insert into vicidial_statuses values('NEW','New Lead','N');
-insert into vicidial_statuses values('QUEUE','Lead To Be Called','N');
-insert into vicidial_statuses values('INCALL','Lead Being Called','N');
-insert into vicidial_statuses values('DROP','Agent Not Available','N');
-insert into vicidial_statuses values('NA','No Answer AutoDial','N');
+insert into vicidial_statuses values('NEW','New Lead','N','N','UNDEFINED');
+insert into vicidial_statuses values('QUEUE','Lead To Be Called','N','N','UNDEFINED');
+insert into vicidial_statuses values('INCALL','Lead Being Called','N','N','UNDEFINED');
+insert into vicidial_statuses values('DROP','Agent Not Available','N','Y','UNDEFINED');
+insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINED');
 
-insert into vicidial_statuses values('CALLBK','Call Back','Y');
-insert into vicidial_statuses values('A','Answering Machine','Y');
-insert into vicidial_statuses values('B','Busy','Y');
-insert into vicidial_statuses values('DC','Disconnected Number','Y');
-insert into vicidial_statuses values('DEC','Declined Sale','Y');
-insert into vicidial_statuses values('DNC','DO NOT CALL','Y');
-insert into vicidial_statuses values('SALE','Sale Made','Y');
-insert into vicidial_statuses values('N','No Answer','Y');
-insert into vicidial_statuses values('NI','Not Interested','Y');
-insert into vicidial_statuses values('NP','No Pitch No Price','Y');
-insert into vicidial_statuses values('XFER','Call Transferred','Y');
+insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
+insert into vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
+insert into vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
+insert into vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('DNC','DO NOT CALL','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('SALE','Sale Made','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('N','No Answer','Y','N','UNDEFINED');
+insert into vicidial_statuses values('NI','Not Interested','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('NP','No Pitch No Price','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('XFER','Call Transferred','Y','Y','UNDEFINED');
 
 quit
 ######------ END Mysql data entry ------######

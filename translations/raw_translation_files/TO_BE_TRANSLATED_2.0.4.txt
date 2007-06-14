@@ -44,6 +44,31 @@ LEAD RECYCLES||
 CAMPAIGN LEAD AUTO-ALT DIAL LISTINGS:||
 CAMPAIGN AGENT PAUSE CODE LISTINGS:||
 CAMPAIGN LIST MIX LISTINGS:||
+The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.||
+MODIFY VICIDIAL STATUS CATEGORIES||
+ADDING VICIDIAL STATUS CATEGORY||
+ Status Categories ||
+ System Statuses ||
+MODIFY VICIDIAL SYSTEM STATUSES||
+MODIFY VICIDIAL STATUS CATEGORY||
+Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis||
+Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report||
+ADD NEW STATUS CATEGORY||
+STATUS CATEGORY NOT ADDED||
+there is already a status category in the system with this ID||
+ID must be between 2 and 20 characters in length||
+name name must be between 2 and 50 characters in length||
+STATUS CATEGORY NOT MODIFIED||
+the status category cannot be a reserved category: ||
+the status category needs to be at least 2 characters in length||
+STATUS CATEGORY DELETED||
+STATUS CATEGORY MODIFIED||
+Category: ||
+the system status name needs to be at least 1 characters in length||
+SYSTEM STATUS NOT MODIFIED||
+SYSTEM STATUS MODIFIED||
+ERROR: There are already 4 Status Categories set to TimeOnVDAD Display||
+CUSTOM CAMPAIGN STATUS MODIFIED||
 
 
 ############################################################ CLIENT

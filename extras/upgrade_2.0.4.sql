@@ -16,6 +16,19 @@ status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
 index (campaign_id)
 );
 
+ CREATE TABLE vicidial_status_categories (
+vsc_id VARCHAR(20) PRIMARY KEY NOT NULL,
+vsc_name VARCHAR(50),
+vsc_description VARCHAR(255),
+tovdad_display ENUM('Y','N') default 'N'
+);
+
+ALTER TABLE vicidial_campaign_statuses ADD category VARCHAR(20) default 'UNDEFINED';
+ALTER TABLE vicidial_statuses ADD category VARCHAR(20) default 'UNDEFINED';
+
+INSERT INTO vicidial_status_categories (vsc_id,vsc_name) values('UNDEFINED','Default Category');
+
+
 
 
 
