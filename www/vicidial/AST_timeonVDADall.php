@@ -1,7 +1,7 @@
 <? 
 # AST_timeonVDADall.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -26,6 +26,7 @@
 # 70111-1600 - Added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70123-1151 - Added non_latin options for substr in display variables, thanks Marin Blu
 # 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
+# 70619-1339 - Added Status Category tally display
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -311,10 +312,10 @@ $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
 
-$stmt="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4 from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
 if ($group=='XXXX-ALL-ACTIVE-XXXX') 
 	{
-	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today) from vicidial_campaign_stats;";
+	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats;";
 	}
 if ($non_latin > 0)
 {
@@ -322,14 +323,23 @@ $rslt=mysql_query("SET NAMES 'UTF8'");
 }
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
-$DAleads = $row[0];
-$callsTODAY = $row[1];
-$dropsTODAY = $row[2];
-$drpctTODAY = $row[3];
-$diffONEMIN = $row[4];
+$DAleads =		$row[0];
+$callsTODAY =	$row[1];
+$dropsTODAY =	$row[2];
+$drpctTODAY =	$row[3];
+$diffONEMIN =	$row[4];
 $agentsONEMIN = $row[5];
-$balanceFILL = $row[6];
+$balanceFILL =	$row[6];
 $answersTODAY = $row[7];
+$VSCcat1 =		$row[8];
+$VSCcat1tally = $row[9];
+$VSCcat2 =		$row[10];
+$VSCcat2tally = $row[11];
+$VSCcat3 =		$row[12];
+$VSCcat3tally = $row[13];
+$VSCcat4 =		$row[14];
+$VSCcat4tally = $row[15];
+
 if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
 	{
 	$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
@@ -396,6 +406,17 @@ echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>
 echo "<TD ALIGN=RIGHT><font size=2><B>ORDER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALorder &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
+echo "<TR>";
+echo "<TD ALIGN=LEFT COLSPAN=8>";
+if ( (!eregi('NULL',$VSCcat1)) and (strlen($VSCcat1)>0) )
+	{echo "<font size=2><B>$VSCcat1:</B> &nbsp; $VSCcat1tally &nbsp;  &nbsp;  &nbsp; \n";}
+if ( (!eregi('NULL',$VSCcat2)) and (strlen($VSCcat2)>0) )
+	{echo "<font size=2><B>$VSCcat2:</B> &nbsp; $VSCcat2tally &nbsp;  &nbsp;  &nbsp; \n";}
+if ( (!eregi('NULL',$VSCcat3)) and (strlen($VSCcat3)>0) )
+	{echo "<font size=2><B>$VSCcat3:</B> &nbsp; $VSCcat3tally &nbsp;  &nbsp;  &nbsp; \n";}
+if ( (!eregi('NULL',$VSCcat4)) and (strlen($VSCcat4)>0) )
+	{echo "<font size=2><B>$VSCcat4:</B> &nbsp; $VSCcat4tally &nbsp;  &nbsp;  &nbsp; \n";}
+echo "</TD></TR>";
 echo "<TR>";
 echo "<TD ALIGN=LEFT COLSPAN=8>";
 

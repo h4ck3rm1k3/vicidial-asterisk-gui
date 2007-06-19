@@ -28,7 +28,14 @@ ALTER TABLE vicidial_statuses ADD category VARCHAR(20) default 'UNDEFINED';
 
 INSERT INTO vicidial_status_categories (vsc_id,vsc_name) values('UNDEFINED','Default Category');
 
-
+ALTER TABLE vicidial_campaign_stats ADD status_category_1 VARCHAR(20);
+ALTER TABLE vicidial_campaign_stats ADD status_category_count_1 INT(9) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD status_category_2 VARCHAR(20);
+ALTER TABLE vicidial_campaign_stats ADD status_category_count_2 INT(9) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD status_category_3 VARCHAR(20);
+ALTER TABLE vicidial_campaign_stats ADD status_category_count_3 INT(9) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD status_category_4 VARCHAR(20);
+ALTER TABLE vicidial_campaign_stats ADD status_category_count_4 INT(9) UNSIGNED default '0';
 
 
 

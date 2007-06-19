@@ -819,7 +819,15 @@ drops_onemin INT(9) UNSIGNED default '0',
 drops_onemin_pct VARCHAR(6) default '0',
 differential_onemin VARCHAR(20) default '0',
 agents_average_onemin VARCHAR(20) default '0',
-balance_trunk_fill SMALLINT(5) UNSIGNED default '0'
+balance_trunk_fill SMALLINT(5) UNSIGNED default '0',
+status_category_1 VARCHAR(20),
+status_category_count_1 INT(9) UNSIGNED default '0',
+status_category_2 VARCHAR(20),
+status_category_count_2 INT(9) UNSIGNED default '0',
+status_category_3 VARCHAR(20),
+status_category_count_3 INT(9) UNSIGNED default '0',
+status_category_4 VARCHAR(20),
+status_category_count_4 INT(9) UNSIGNED default '0'
 );
 
  CREATE TABLE vicidial_dnc (

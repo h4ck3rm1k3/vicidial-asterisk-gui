@@ -22,6 +22,7 @@
 # 70219-1249 - Removed unused references to dial_status_x fields
 # 70409-1219 - Removed CLOSER-type campaign restriction
 # 70521-1038 - Fixed bug when no live campaigns are running, define $vicidial_log
+# 70619-1339 - Added Status Category tally calculations
 #
 
 # constants
@@ -1008,7 +1009,81 @@ if ($VCScalls_five[$i] > 0)
 	}
 if ($DBX) {print "$campaign_id[$i]|$VCSdrops_five_pct[$i]|$VCSdrops_today_pct[$i]\n";}
 
-$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]' where campaign_id='$campaign_id[$i]';";
+# DETERMINE WHETHER TO GATHER STATUS CATEGORY STATISTICS
+$VSC_categories=0;
+$VSCupdateSQL='';
+$stmtA = "SELECT vsc_id from vicidial_status_categories where tovdad_display='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VSC_categories[$rec_count] =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$g=0;
+foreach (@VSC_categories)
+	{
+		$VSCcategory=$VSC_categories[$g];
+		$VSCtally='';
+		$CATstatusesSQL='';
+	# FIND STATUSES IN STATUS CATEGORY
+	$stmtA = "SELECT status from vicidial_statuses where category='$VSCcategory';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$CATstatusesSQL .=		 "'$aryA[0]',";
+		$rec_count++;
+		}
+	# FIND CAMPAIGN_STATUSES IN STATUS CATEGORY
+	$stmtA = "SELECT status from vicidial_campaign_statuses where category='$VSCcategory' and campaign_id='$campaign_id[$i]';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$CATstatusesSQL .=		 "'$aryA[0]',";
+		$rec_count++;
+		}
+	chop($CATstatusesSQL);
+	if (length($CATstatusesSQL)>2)
+		{
+		# FIND STATUSES IN STATUS CATEGORY
+		$stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_date' and status IN($CATstatusesSQL);";
+		#	if ($DBX) {print "|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VSCtally =		 "$aryA[0]";
+			$rec_count++;
+			}
+		}
+	$g++;
+	if ($DBX) {print "     $campaign_id[$i]|$VSCcategory|$VSCtally|$CATstatusesSQL|\n";}
+	$VSCupdateSQL .= "status_category_$g='$VSCcategory',status_category_count_$g='$VSCtally',";
+	}
+while ($g < 4)
+	{
+	$g++;
+	$VSCupdateSQL .= "status_category_$g='',status_category_count_$g='0',";
+	}
+chop($VSCupdateSQL);
+
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]',$VSCupdateSQL where campaign_id='$campaign_id[$i]';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
 }
