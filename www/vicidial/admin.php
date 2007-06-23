@@ -8924,14 +8924,14 @@ if ( ($ADD==34) or ($ADD==31) )
 					}
 				echo "<option SELECTED>$MIXdetails[1]</option></select></td>\n";
 
-				echo "<td><select size=1 name=percentage$US$q$US$vcl_id id=percentage$US$q$US$vcl_id onChange=\"mod_mix_percent('$vcl_id','$Ms_to_print')\">\n";
+				echo "<td><select size=1 name=\"percentage$US$q$US$vcl_id\" id=\"percentage$US$q$US$vcl_id\" onChange=\"mod_mix_percent('$vcl_id','$Ms_to_print')\">\n";
 				$n=100;
 				while ($n>=0)
 					{
-					echo "<option>$n</option>\n";
+					echo "<option value=\"$n\">$n</option>\n";
 					$n = ($n-5);
 					}
-				echo "<option SELECTED>$MIXdetails[2]</option></select></td>\n";
+				echo "<option SELECTED value=\"$MIXdetails[2]\">$MIXdetails[2]</option></select></td>\n";
 
 				
 				echo "<td><input type=hidden name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id value=\"$MIXdetails[3]\"><input type=text size=20 maxlength=255 name=ROstatus$US$q$US$vcl_id id=ROstatus$US$q$US$vcl_id value=\"$MIXdetails[3]\" READONLY></td>\n";
