@@ -628,7 +628,6 @@ if (isset($_GET["vsc_description"]))			{$vsc_description=$_GET["vsc_description"
 if (isset($_GET["tovdad_display"]))				{$tovdad_display=$_GET["tovdad_display"];}
 	elseif (isset($_POST["tovdad_display"]))	{$tovdad_display=$_POST["tovdad_display"];}
 
-
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
 
@@ -1062,11 +1061,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70608-1459 - Added option to set LIVE Callbacks to INACTIVE after one month
 # 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
 # 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
+# 70623-1008 - List Mix section now allows modification of list mix entries
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-105';
-$build = '70614-0231';
+$admin_version = '2.0.4-106';
+$build = '70623-1008';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3325,7 +3325,7 @@ echo "<script language=\"Javascript\">\n";
 ######################
 # ADD=31 or 34 and SUB=29 for list mixes
 ######################
-if ( ( ($ADD==34) or ($ADD==31) ) and ($SUB==29) and ($LOGmodify_campaigns==1) and ( (eregi("$campaign_id",$LOGallowed_campaigns)) or (eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+if ( ( ($ADD==34) or ($ADD==31) or ($ADD==49) ) and ($SUB==29) and ($LOGmodify_campaigns==1) and ( (eregi("$campaign_id",$LOGallowed_campaigns)) or (eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
 {
 
 ?>
@@ -3398,6 +3398,26 @@ function mod_mix_percent(vcl_id,entries)
 		}
 
 	mod_diff_percent.value = percent_diff;
+	}
+
+function submit_mix(vcl_id,entries) 
+	{
+	var i=0;
+	var list_mix_container='';
+	var mod_list_mix_container_field = document.getElementById("list_mix_container_" + vcl_id);
+	while(i < entries)
+		{
+		var mod_list_id_field = document.getElementById("list_id_" + i + "_" + vcl_id);
+		var mod_priority_field = document.getElementById("priority_" + i + "_" + vcl_id);
+		var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
+		var mod_statuses_field = document.getElementById("status_" + i + "_" + vcl_id);
+
+		list_mix_container = list_mix_container + mod_list_id_field.value + "|" + mod_priority_field.value + "|" + mod_percent_field.value + "|" + mod_statuses_field.value + "|:";
+		i++;
+		}
+	mod_list_mix_container_field.value = list_mix_container;
+	var form_to_submit = document.getElementById("" + vcl_id);
+	form_to_submit.submit();
 	}
 <?
 }
@@ -5632,6 +5652,64 @@ if ($ADD==47)
 $SUB=27;
 $ADD=31;	# go to campaign modification form below
 }
+
+
+######################
+# ADD=49 modify campaign list mix in the system
+######################
+
+if ($ADD==49)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$Flist_mix_container = "list_mix_container_$vcl_id";
+	$Fmix_method = "mix_method_$vcl_id";
+	$Fstatus = "status_$vcl_id";
+	$Fvcl_name = "vcl_name_$vcl_id";
+
+	if (isset($_GET[$Flist_mix_container]))				{$list_mix_container=$_GET[$Flist_mix_container];}
+		elseif (isset($_POST[$Flist_mix_container]))	{$list_mix_container=$_POST[$Flist_mix_container];}
+	if (isset($_GET[$Fmix_method]))						{$mix_method=$_GET[$Fmix_method];}
+		elseif (isset($_POST[$Fmix_method]))			{$mix_method=$_POST[$Fmix_method];}
+	if (isset($_GET[$Fstatus]))							{$status=$_GET[$Fstatus];}
+		elseif (isset($_POST[$Fstatus]))				{$status=$_POST[$Fstatus];}
+	if (isset($_GET[$Fvcl_name]))						{$vcl_name=$_GET[$Fvcl_name];}
+		elseif (isset($_POST[$Fvcl_name]))				{$vcl_name=$_POST[$Fvcl_name];}
+	$list_mix_container = preg_replace("/:$/","",$list_mix_container);
+
+	 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_mix_container) < 6) or (strlen($vcl_name) < 2) )
+		{
+		 echo "<br>LIST MIX NOT MODIFIED - Please go back and look at the data you entered\n";
+		 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+		 echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $vcl_name</B>\n";
+
+		$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',status='$status',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$SUB=29;
+$ADD=31;	# go to campaign modification form below
+}
+
 
 ######################
 # ADD=411 submit list modifications to the system
@@ -8874,14 +8952,16 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "<tr><td colspan=6>\n";
 			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
 			echo "<input type=hidden name=ADD value=49>\n";
+			echo "<input type=hidden name=SUB value=29>\n";
 			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
 			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<input type=hidden name=list_mix_container$US$vcl_id id=list_mix_container$US$vcl_id value=\"\">\n";
 			echo "<B>$vcl_id:</B>\n";
-			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$q$US$vcl_id id=vcl_name$US$q$US$vcl_id value=\"$rowx[1]\"></td></tr>\n";
+			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$vcl_id id=vcl_name$US$vcl_id value=\"$rowx[1]\"></td></tr>\n";
 			echo "<tr><td colspan=2>Status:\n";
-			echo "<select size=1 name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id><option>ACTIVE</option><option>INACTIVE</option><option SELECTED>$rowx[5]</option></select></td>\n";
+			echo "<select size=1 name=status$US$vcl_id id=status$US$vcl_id><option value=\"ACTIVE\">ACTIVE</option><option value=\"INACTIVE\">INACTIVE</option><option SELECTED value=\"$rowx[5]\">$rowx[5]</option></select></td>\n";
 			echo "<td colspan=4>Method:\n";
-			echo "<select size=1 name=method$US$q$US$vcl_id id=method$US$q$US$vcl_id><option>EVEN_MIX</option><option>IN_ORDER</option><option>RANDOM</option><option SELECTED>$rowx[4]</option></select></td></tr>\n";
+			echo "<select size=1 name=mix_method$US$vcl_id id=method$US$vcl_id><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option><option SELECTED value=\"$rowx[4]\">$rowx[4]</option></select></td></tr>\n";
 			echo "<tr><td>LIST ID</td><td>PRIORITY</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
 
 # list_id|order|percent|statuses|:list_id|order|percent|statuses|:...
@@ -8919,10 +8999,10 @@ if ( ($ADD==34) or ($ADD==31) )
 				$n=10;
 				while ($n>=1)
 					{
-					echo "<option>$n</option>\n";
+					echo "<option value=\"$n\">$n</option>\n";
 					$n = ($n-1);
 					}
-				echo "<option SELECTED>$MIXdetails[1]</option></select></td>\n";
+				echo "<option SELECTED value=\"$MIXdetails[1]\">$MIXdetails[1]</option></select></td>\n";
 
 				echo "<td><select size=1 name=\"percentage$US$q$US$vcl_id\" id=\"percentage$US$q$US$vcl_id\" onChange=\"mod_mix_percent('$vcl_id','$Ms_to_print')\">\n";
 				$n=100;
@@ -8963,7 +9043,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "Difference %: <input type=text size=4 name=PCT_DIFF_$vcl_id id=PCT_DIFF_$vcl_id value=0 readonly>\n";
 			echo "</td>\n";
 
-			echo "<td colspan=2><input type=submit name=submit_$vcl_id id=submit_$vcl_id value=\"SUBMIT\"> &nbsp; \n";
+			echo "<td colspan=2><input type=button name=submit_$vcl_id id=submit_$vcl_id value=\"SUBMIT\" onClick=\"submit_mix('$vcl_id','$Ms_to_print')\"> &nbsp; \n";
 			echo "<span id=ERROR_$vcl_id></span>\n";
 			echo "</form></td></tr>\n";
 

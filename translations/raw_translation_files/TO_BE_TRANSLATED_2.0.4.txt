@@ -69,6 +69,8 @@ SYSTEM STATUS NOT MODIFIED||
 SYSTEM STATUS MODIFIED||
 ERROR: There are already 4 Status Categories set to TimeOnVDAD Display||
 CUSTOM CAMPAIGN STATUS MODIFIED||
+LIST MIX NOT MODIFIED||
+LIST MIX MODIFIED||
 
 
 ############################################################ CLIENT
