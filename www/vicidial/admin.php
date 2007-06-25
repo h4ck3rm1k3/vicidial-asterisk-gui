@@ -7853,7 +7853,7 @@ if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi
 
 if ($ADD==31)
 {
-	if ($LOGmodify_users==1)
+	if ($LOGmodify_campaigns==1)
 	{
 		if ($stage=='show_dialable')
 		{
