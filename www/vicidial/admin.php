@@ -627,6 +627,8 @@ if (isset($_GET["vsc_description"]))			{$vsc_description=$_GET["vsc_description"
 	elseif (isset($_POST["vsc_description"]))	{$vsc_description=$_POST["vsc_description"];}
 if (isset($_GET["tovdad_display"]))				{$tovdad_display=$_GET["tovdad_display"];}
 	elseif (isset($_POST["tovdad_display"]))	{$tovdad_display=$_POST["tovdad_display"];}
+if (isset($_GET["mix_container_item"]))				{$mix_container_item=$_GET["mix_container_item"];}
+	elseif (isset($_POST["mix_container_item"]))	{$mix_container_item=$_POST["mix_container_item"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -760,6 +762,7 @@ $webroot_writable = ereg_replace("[^0-9]","",$webroot_writable);
 $enable_queuemetrics_logging = ereg_replace("[^0-9]","",$enable_queuemetrics_logging);
 $enable_sipsak_messages = ereg_replace("[^0-9]","",$enable_sipsak_messages);
 $allow_sipsak_messages = ereg_replace("[^0-9]","",$allow_sipsak_messages);
+$mix_container_item = ereg_replace("[^0-9]","",$mix_container_item);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -1062,11 +1065,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
 # 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
 # 70623-1008 - List Mix section now allows modification of list mix entries
+# 70629-1721 - List Mix section adding and removing if list entries active
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-106';
-$build = '70623-1008';
+$admin_version = '2.0.4-107';
+$build = '70629-1721';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -5662,42 +5666,123 @@ if ($ADD==49)
 {
 	if ($LOGmodify_campaigns==1)
 	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	$Flist_mix_container = "list_mix_container_$vcl_id";
-	$Fmix_method = "mix_method_$vcl_id";
-	$Fstatus = "status_$vcl_id";
-	$Fvcl_name = "vcl_name_$vcl_id";
-
-	if (isset($_GET[$Flist_mix_container]))				{$list_mix_container=$_GET[$Flist_mix_container];}
-		elseif (isset($_POST[$Flist_mix_container]))	{$list_mix_container=$_POST[$Flist_mix_container];}
-	if (isset($_GET[$Fmix_method]))						{$mix_method=$_GET[$Fmix_method];}
-		elseif (isset($_POST[$Fmix_method]))			{$mix_method=$_POST[$Fmix_method];}
-	if (isset($_GET[$Fstatus]))							{$status=$_GET[$Fstatus];}
-		elseif (isset($_POST[$Fstatus]))				{$status=$_POST[$Fstatus];}
-	if (isset($_GET[$Fvcl_name]))						{$vcl_name=$_GET[$Fvcl_name];}
-		elseif (isset($_POST[$Fvcl_name]))				{$vcl_name=$_POST[$Fvcl_name];}
-	$list_mix_container = preg_replace("/:$/","",$list_mix_container);
-
-	 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_mix_container) < 6) or (strlen($vcl_name) < 2) )
+	##### MODIFY a list mix container entry #####
+		if ($stage=='MODIFY')
 		{
-		 echo "<br>LIST MIX NOT MODIFIED - Please go back and look at the data you entered\n";
-		 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
-		 echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
-		}
-	 else
-		{
-		echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $vcl_name</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',status='$status',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
-		$rslt=mysql_query($stmt, $link);
+		$Flist_mix_container = "list_mix_container_$vcl_id";
+		$Fmix_method = "mix_method_$vcl_id";
+		$Fstatus = "status_$vcl_id";
+		$Fvcl_name = "vcl_name_$vcl_id";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if (isset($_GET[$Flist_mix_container]))				{$list_mix_container=$_GET[$Flist_mix_container];}
+			elseif (isset($_POST[$Flist_mix_container]))	{$list_mix_container=$_POST[$Flist_mix_container];}
+		if (isset($_GET[$Fmix_method]))						{$mix_method=$_GET[$Fmix_method];}
+			elseif (isset($_POST[$Fmix_method]))			{$mix_method=$_POST[$Fmix_method];}
+		if (isset($_GET[$Fstatus]))							{$status=$_GET[$Fstatus];}
+			elseif (isset($_POST[$Fstatus]))				{$status=$_POST[$Fstatus];}
+		if (isset($_GET[$Fvcl_name]))						{$vcl_name=$_GET[$Fvcl_name];}
+			elseif (isset($_POST[$Fvcl_name]))				{$vcl_name=$_POST[$Fvcl_name];}
+		$list_mix_container = preg_replace("/:$/","",$list_mix_container);
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_mix_container) < 6) or (strlen($vcl_name) < 2) )
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			 echo "<br>LIST MIX NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $vcl_name</B>\n";
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',status='$status',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	##### ADD a list mix container entry #####
+		if ($stage=='ADD')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_id) < 1) )
+			{
+			 echo "<br>LIST MIX NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>list_id must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id</B>\n";
+
+			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$OLDlist_mix_container =	$row[0];
+			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id||0||";
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	##### REMOVE a list mix container entry #####
+		if ($stage=='REMOVE')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_id) < 1) )
+			{
+			 echo "<br>LIST MIX NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>list_id must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
+
+			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$MIXentries = $MT;
+			$MIXentries = explode(":", $row[0]);
+			$Ms_to_print = (count($MIXentries) - 0);
+			$q=0;
+			while ($Ms_to_print > $q) 
+				{
+				if ( ($mix_container_item > $q) or ($mix_container_item < $q) )
+					{
+					$NEWlist_mix_container .= "$MIXentries[$q]:";
+					}
+				$q++;
+				}
+			$NEWlist_mix_container = preg_replace("/.$/",'',$NEWlist_mix_container);
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -8953,6 +9038,7 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
 			echo "<input type=hidden name=ADD value=49>\n";
 			echo "<input type=hidden name=SUB value=29>\n";
+			echo "<input type=hidden name=stage value=\"MODIFY\">\n";
 			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
 			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 			echo "<input type=hidden name=list_mix_container$US$vcl_id id=list_mix_container$US$vcl_id value=\"\">\n";
@@ -8993,7 +9079,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 				echo "<tr $bgcolor><td NOWRAP><font size=3>\n";
 				echo "<input type=hidden name=list_id$US$q$US$vcl_id id=list_id$US$q$US$vcl_id value=$MIXdetailsLIST>\n";
-				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"\">REMOVE</a></font></td>\n";
+				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"$PHP_SELF?ADD=49&SUB=29&stage=REMOVE&campaign_id=$campaign_id&vcl_id=$vcl_id&mix_container_item=$q&list_id=$MIXdetailsLIST\">REMOVE</a></font></td>\n";
 
 				echo "<td><select size=1 name=priority$US$q$US$vcl_id id=priority$US$q$US$vcl_id>\n";
 				$n=10;
@@ -9049,6 +9135,12 @@ if ( ($ADD==34) or ($ADD==31) )
 
 
 			echo "<tr $bgcolor><td colspan=4 align=right><font size=2>\n";
+			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<input type=hidden name=ADD value=49>\n";
+			echo "<input type=hidden name=SUB value=29>\n";
+			echo "<input type=hidden name=stage value=\"ADD\">\n";
+			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 			echo "List: <select size=1 name=list_id>\n";
 			echo "$mixlists_list";
 			echo "<option selected value=\"\">ADD ANOTHER ENTRY</option>\n";
