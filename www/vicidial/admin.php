@@ -5708,6 +5708,7 @@ if ($ADD==49)
 				}
 			}
 		}
+
 	##### ADD a list mix container entry #####
 		if ($stage=='ADD')
 		{
@@ -5727,7 +5728,7 @@ if ($ADD==49)
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$OLDlist_mix_container =	$row[0];
-			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id||0||";
+			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id||0| -|";
 
 			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
@@ -5741,6 +5742,7 @@ if ($ADD==49)
 				}
 			}
 		}
+
 	##### REMOVE a list mix container entry #####
 		if ($stage=='REMOVE')
 		{
@@ -5754,34 +5756,63 @@ if ($ADD==49)
 			}
 		 else
 			{
-			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
-
 			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$MIXentries = $MT;
 			$MIXentries = explode(":", $row[0]);
 			$Ms_to_print = (count($MIXentries) - 0);
-			$q=0;
-			while ($Ms_to_print > $q) 
+
+			if ($Ms_to_print < 2)
 				{
-				if ( ($mix_container_item > $q) or ($mix_container_item < $q) )
-					{
-					$NEWlist_mix_container .= "$MIXentries[$q]:";
-					}
-				$q++;
+				echo "<br><B>LIST MIX NOT MODIFIED: You cannot delete the last list_id entry from a list mix</B>\n";
 				}
-			$NEWlist_mix_container = preg_replace("/.$/",'',$NEWlist_mix_container);
-
-			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			else
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				$MIXdetailsPCT = explode('|', $MIXentries[$mix_container_item]);
+				$MIXpercentPCT = $MIXdetailsPCT[2];
+
+				$q=0;
+				while ($Ms_to_print > $q) 
+					{
+					if ( ($mix_container_item > $q) or ($mix_container_item < $q) )
+						{
+						if ( ($q==0) and ($mix_container_item > 0) )
+							{
+							$MIXdetailsONE = explode('|', $MIXentries[$q]);
+							$MIXpercentONE = ($MIXdetailsONE[2] + $MIXpercentPCT);
+							$NEWlist_mix_container .= "$MIXdetailsONE[0]|$MIXdetailsONE[1]|$MIXpercentONE|$MIXdetailsONE[3]|:";
+							}
+						else
+							{
+							if ( ($q==1) and ($mix_container_item < 1) )
+								{
+								$MIXdetailsONE = explode('|', $MIXentries[$q]);
+								$MIXpercentONE = ($MIXdetailsONE[2] + $MIXpercentPCT);
+								$NEWlist_mix_container .= "$MIXdetailsONE[0]|$MIXdetailsONE[1]|$MIXpercentONE|$MIXdetailsONE[3]|:";
+								}
+							else
+								{
+								$NEWlist_mix_container .= "$MIXentries[$q]:";
+								}
+							}
+						}
+					$q++;
+					}
+				$NEWlist_mix_container = preg_replace("/.$/",'',$NEWlist_mix_container);
+
+				$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
 				}
 			}
 		}

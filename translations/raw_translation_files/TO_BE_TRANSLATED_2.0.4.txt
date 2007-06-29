@@ -71,6 +71,7 @@ ERROR: There are already 4 Status Categories set to TimeOnVDAD Display||
 CUSTOM CAMPAIGN STATUS MODIFIED||
 LIST MIX NOT MODIFIED||
 LIST MIX MODIFIED||
+You cannot delete the last list_id entry from a list mix||
 
 
 ############################################################ CLIENT
