@@ -72,6 +72,11 @@ CUSTOM CAMPAIGN STATUS MODIFIED||
 LIST MIX NOT MODIFIED||
 LIST MIX MODIFIED||
 You cannot delete the last list_id entry from a list mix||
+LIST MIX ADDED: ||
+LIST MIX NOT ADDED ||
+There is already a list mix with this ID in the system||
+LIST MIX NOT DELETED||
+LIST MIX DELETED: ||
 
 
 ############################################################ CLIENT

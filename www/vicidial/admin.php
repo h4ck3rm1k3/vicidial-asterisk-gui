@@ -1065,7 +1065,7 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
 # 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
 # 70623-1008 - List Mix section now allows modification of list mix entries
-# 70629-1721 - List Mix section adding and removing if list entries active
+# 70629-1721 - List Mix section adding and removing of list entries active
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
@@ -5694,8 +5694,6 @@ if ($ADD==49)
 			}
 		 else
 			{
-			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $vcl_name</B>\n";
-
 			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',status='$status',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 
@@ -5706,6 +5704,8 @@ if ($ADD==49)
 				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
+
+			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
 		}
 
@@ -5722,8 +5722,6 @@ if ($ADD==49)
 			}
 		 else
 			{
-			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id</B>\n";
-
 			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
@@ -5740,6 +5738,8 @@ if ($ADD==49)
 				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
+
+			echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id</B>\n";
 			}
 		}
 
@@ -5814,6 +5814,71 @@ if ($ADD==49)
 
 				echo "<br><B>LIST MIX MODIFIED: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
 				}
+			}
+		}
+
+	##### ADD a NEW list mix #####
+		if ($stage=='NEWMIX')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($vcl_name) < 2) )
+			{
+			 echo "<br>LIST MIX NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>vcl_name must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			$stmt="SELECT count(*) from vicidial_campaigns_list_mix where vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				 echo "<br>LIST MIX NOT ADDED - There is already a list mix with this ID in the system\n";
+				}
+			else
+				{
+				$stmt="INSERT INTO vicidial_campaigns_list_mix SET list_mix_container='$list_id|1|100| $status -|',campaign_id='$campaign_id',vcl_id='$vcl_id',vcl_name='$vcl_name',mix_method='$mix_method',status='INACTIVE';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				echo "<br><B>LIST MIX ADDED: $campaign_id - $vcl_id - $vcl_name</B>\n";
+				}
+			}
+		}
+
+	##### DELETE an existing list mix #####
+		if ($stage=='DELMIX')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) )
+			{
+			 echo "<br>LIST MIX NOT DELETED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			}
+		 else
+			{
+			$stmt="DELETE from vicidial_campaigns_list_mix where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>LIST MIX DELETED: $campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
 		}
 	}
@@ -9062,11 +9127,11 @@ if ( ($ADD==34) or ($ADD==31) )
 			else
 				{$tablecolor='bgcolor="#9BB9FB"';   $bgcolor='bgcolor="#B9CBFD"';}
 
-			echo "<a name=\"LISTMIX$US$vcl_id$US$o\"><BR>\n";
+			echo "<a name=\"$vcl_id\"><BR>\n";
 			echo "<span id=\"LISTMIX$US$vcl_id$US$o\">";
 			echo "<TABLE width=740 cellspacing=3 $tablecolor>\n";
 			echo "<tr><td colspan=6>\n";
-			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<form action=\"$PHP_SELF#$vcl_id\" method=POST name=$vcl_id id=$vcl_id>\n";
 			echo "<input type=hidden name=ADD value=49>\n";
 			echo "<input type=hidden name=SUB value=29>\n";
 			echo "<input type=hidden name=stage value=\"MODIFY\">\n";
@@ -9074,7 +9139,8 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 			echo "<input type=hidden name=list_mix_container$US$vcl_id id=list_mix_container$US$vcl_id value=\"\">\n";
 			echo "<B>$vcl_id:</B>\n";
-			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$vcl_id id=vcl_name$US$vcl_id value=\"$rowx[1]\"></td></tr>\n";
+			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$vcl_id id=vcl_name$US$vcl_id value=\"$rowx[1]\">\n";
+			echo " &nbsp; &nbsp; <a href=\"$PHP_SELF?ADD=49&SUB=29&stage=DELMIX&campaign_id=$campaign_id&vcl_id=$vcl_id\">DELETE LIST MIX</a></td></tr>\n";
 			echo "<tr><td colspan=2>Status:\n";
 			echo "<select size=1 name=status$US$vcl_id id=status$US$vcl_id><option value=\"ACTIVE\">ACTIVE</option><option value=\"INACTIVE\">INACTIVE</option><option SELECTED value=\"$rowx[5]\">$rowx[5]</option></select></td>\n";
 			echo "<td colspan=4>Method:\n";
@@ -9110,7 +9176,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 				echo "<tr $bgcolor><td NOWRAP><font size=3>\n";
 				echo "<input type=hidden name=list_id$US$q$US$vcl_id id=list_id$US$q$US$vcl_id value=$MIXdetailsLIST>\n";
-				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"$PHP_SELF?ADD=49&SUB=29&stage=REMOVE&campaign_id=$campaign_id&vcl_id=$vcl_id&mix_container_item=$q&list_id=$MIXdetailsLIST\">REMOVE</a></font></td>\n";
+				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"$PHP_SELF?ADD=49&SUB=29&stage=REMOVE&campaign_id=$campaign_id&vcl_id=$vcl_id&mix_container_item=$q&list_id=$MIXdetailsLIST#$vcl_id\">REMOVE</a></font></td>\n";
 
 				echo "<td><select size=1 name=priority$US$q$US$vcl_id id=priority$US$q$US$vcl_id>\n";
 				$n=10;
@@ -9166,7 +9232,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 
 			echo "<tr $bgcolor><td colspan=4 align=right><font size=2>\n";
-			echo "<form action=$PHP_SELF method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<form action=\"$PHP_SELF#$vcl_id\" method=POST name=$vcl_id id=$vcl_id>\n";
 			echo "<input type=hidden name=ADD value=49>\n";
 			echo "<input type=hidden name=SUB value=29>\n";
 			echo "<input type=hidden name=stage value=\"ADD\">\n";
@@ -9183,16 +9249,24 @@ if ( ($ADD==34) or ($ADD==31) )
 			}
 
 
-		echo "<br>ADD NEW LIST MIX<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<br><br>ADD NEW LIST MIX<BR><form action=$PHP_SELF method=POST>\n";
 		echo "<table border=0>\n";
-		echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>\n";
+		echo "<tr $bgcolor><td><form action=\"$PHP_SELF#$vcl_id\" method=POST>\n";
 		echo "<input type=hidden name=ADD value=49>\n";
+		echo "<input type=hidden name=SUB value=29>\n";
+		echo "<input type=hidden name=stage value=\"NEWMIX\">\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-		echo "<input type=text size=20 maxlength=30 name=list_id value=\"\"></td>\n";
-		echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"\"></td>\n";
-		echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"\"></td>\n";
-		echo "<td><input type=text size=20 maxlength=30 name=list_id value=\"\"></td>\n";
-		echo "<td><font size=1><input type=submit name=submit value=ADD></form></td>\n";
+		echo "Mix ID: <input type=text size=20 maxlength=20 name=vcl_id value=\"\"></td>\n";
+		echo "<td>Mix Name: <input type=text size=30 maxlength=50 name=vcl_name value=\"\"></td>\n";
+		echo "<td>Mix Method: ";
+		echo "<select size=1 name=mix_method><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option></select></td></tr>\n";
+		echo "<tr $bgcolor><td>List: <select size=1 name=list_id>\n";
+		echo "$mixlists_list";
+		echo "</select></td>\n";
+		echo "<td>Dial Status: <select size=1 name=status>\n";
+		echo "$statuses_list";
+		echo "</select></td>\n";
+		echo "<td> &nbsp; <input type=submit name=submit value=SUBMIT></form></td>\n";
 		echo "</tr>\n";
 		echo "</table>\n";
 
