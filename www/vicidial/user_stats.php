@@ -1,13 +1,14 @@
 <?
 ### user_stats.php
 ### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # CHANGES
 #
 # 60619-1743 - Added variable filtering to eliminate SQL injection attack threat
 # 61201-1136 - Added recordings display and changed calls to time range with 10000 limit
 # 70118-1605 - Added user group column to login/out and calls lists
+# 70702-1231 - Added recording location link and truncation
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -300,7 +301,7 @@ echo "</TABLE></center><BR><BR>\n";
 
 echo "<B>RECORDINGS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td></tr>\n";
+echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=center><font size=2>LOCATION &nbsp; </td></tr>\n";
 
 	$stmt="select * from recording_log where user='" . mysql_real_escape_string($user) . "' and start_time >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and start_time <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by recording_id desc limit 10000;";
 	$rslt=mysql_query($stmt, $link);
@@ -315,16 +316,25 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-			$u++;
-			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td align=left><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[12]\" target=\"_blank\">$row[12]</A> </td>";
-			echo "<td align=left><font size=2> $row[4] </td>\n";
-			echo "<td align=left><font size=2> $row[8] </td>\n";
-			echo "<td align=left><font size=2> $row[0] </td>\n";
-			echo "<td align=center><font size=2> $row[10] </td>\n";
-			echo "<td align=right><font size=2> $row[11] </td>\n";
-			echo "</tr>\n";
+		$location = $row[11];
+		if (strlen($location)>30)
+			{$locat = substr($location,0,27);  $locat = "$locat...";}
+		else
+			{$locat = $location;}
+		if (eregi("http",$location))
+			{$location = "<a href=\"$location\">$locat</a>";}
+		else
+			{$location = $locat;}
+		$u++;
+		echo "<tr $bgcolor>";
+		echo "<td><font size=1>$u</td>";
+		echo "<td align=left><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[12]\" target=\"_blank\">$row[12]</A> </td>";
+		echo "<td align=left><font size=2> $row[4] </td>\n";
+		echo "<td align=left><font size=2> $row[8] </td>\n";
+		echo "<td align=left><font size=2> $row[0] </td>\n";
+		echo "<td align=center><font size=2> $row[10] </td>\n";
+		echo "<td align=right><font size=2> $location &nbsp; </td>\n";
+		echo "</tr>\n";
 
 		}
 

@@ -1,7 +1,12 @@
 <?
 # admin_modify_lead.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+
+# CHANGES
+#
+# 70702-1259 - Added recording location link and truncation
 #
 
 require("dbconnect.php");
@@ -509,17 +514,26 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-			$u++;
-			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td align=left><font size=2> $row[12] </td>";
-			echo "<td align=left><font size=1> $row[4] </td>\n";
-			echo "<td align=left><font size=2> $row[8] </td>\n";
-			echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
-			echo "<td align=center><font size=1> $row[10] </td>\n";
-			echo "<td align=left><font size=2> $row[11] </td>\n";
-			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
-			echo "</tr>\n";
+		$location = $row[11];
+		if (strlen($location)>30)
+			{$locat = substr($location,0,27);  $locat = "$locat...";}
+		else
+			{$locat = $location;}
+		if (eregi("http",$location))
+			{$location = "<a href=\"$location\">$locat</a>";}
+		else
+			{$location = $locat;}
+		$u++;
+		echo "<tr $bgcolor>";
+		echo "<td><font size=1>$u</td>";
+		echo "<td align=left><font size=2> $row[12] </td>";
+		echo "<td align=left><font size=1> $row[4] </td>\n";
+		echo "<td align=left><font size=2> $row[8] </td>\n";
+		echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
+		echo "<td align=center><font size=1> $row[10] </td>\n";
+		echo "<td align=left><font size=2> $location </td>\n";
+		echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+		echo "</tr>\n";
 
 		}
 
