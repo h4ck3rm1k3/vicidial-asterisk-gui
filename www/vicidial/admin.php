@@ -1066,11 +1066,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
 # 70623-1008 - List Mix section now allows modification of list mix entries
 # 70629-1721 - List Mix section adding and removing of list entries active
+# 70706-1636 - List Mix section cleanup and more error-checking
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-107';
-$build = '70629-1721';
+$admin_version = '2.0.4-108';
+$build = '70706-1636';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3406,18 +3407,27 @@ function mod_mix_percent(vcl_id,entries)
 
 function submit_mix(vcl_id,entries) 
 	{
-	var i=0;
+	var h=1;
+	var j=1;
 	var list_mix_container='';
 	var mod_list_mix_container_field = document.getElementById("list_mix_container_" + vcl_id);
-	while(i < entries)
+	while(h < 11)
 		{
-		var mod_list_id_field = document.getElementById("list_id_" + i + "_" + vcl_id);
-		var mod_priority_field = document.getElementById("priority_" + i + "_" + vcl_id);
-		var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
-		var mod_statuses_field = document.getElementById("status_" + i + "_" + vcl_id);
-
-		list_mix_container = list_mix_container + mod_list_id_field.value + "|" + mod_priority_field.value + "|" + mod_percent_field.value + "|" + mod_statuses_field.value + "|:";
-		i++;
+		var i=0;
+		while(i < entries)
+			{
+			var mod_list_id_field = document.getElementById("list_id_" + i + "_" + vcl_id);
+			var mod_priority_field = document.getElementById("priority_" + i + "_" + vcl_id);
+			var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
+			var mod_statuses_field = document.getElementById("status_" + i + "_" + vcl_id);
+			if (mod_priority_field.value==h)
+				{
+				list_mix_container = list_mix_container + mod_list_id_field.value + "|" + j + "|" + mod_percent_field.value + "|" + mod_statuses_field.value + "|:";
+				j++
+				}
+			i++;
+			}
+		h++
 		}
 	mod_list_mix_container_field.value = list_mix_container;
 	var form_to_submit = document.getElementById("" + vcl_id);
@@ -5694,7 +5704,7 @@ if ($ADD==49)
 			}
 		 else
 			{
-			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',status='$status',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG CHANGES TO LOG FILE ###
@@ -5726,7 +5736,7 @@ if ($ADD==49)
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$OLDlist_mix_container =	$row[0];
-			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id||0| -|";
+			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id|10|0| -|";
 
 			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
@@ -5879,6 +5889,36 @@ if ($ADD==49)
 				}
 
 			echo "<br><B>LIST MIX DELETED: $campaign_id - $vcl_id - $vcl_name</B>\n";
+			}
+		}
+
+	##### Set list mix entry to active #####
+		if ($stage=='SETACTIVE')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) )
+			{
+			 echo "<br>LIST MIX NOT ACTIVATED - Please go back and look at the data you entered\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			}
+		 else
+			{
+			$stmt="UPDATE vicidial_campaigns_list_mix SET status='INACTIVE' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET status='ACTIVE' where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>LIST MIX ACTIVATED: $campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
 		}
 	}
@@ -9112,7 +9152,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		echo "<br><br><b>Experimental Feature in development!!! NON-FUNCTIONAL</b><br>\n";
 
 
-		$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status desc, vcl_id";
+		$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status, vcl_id";
 		$rslt=mysql_query($stmt, $link);
 		$listmixes = mysql_num_rows($rslt);
 		$o=0;
@@ -9122,11 +9162,15 @@ if ( ($ADD==34) or ($ADD==31) )
 			$vcl_id=$rowx[0];
 			$o++;
 
-			if (eregi("1$|3$|5$|7$|9$", $o))
-				{$tablecolor='bgcolor="#B9CBFD"';   $bgcolor='bgcolor="#9BB9FB"';} 
+			if ($o < 2)
+				{$tablecolor='bgcolor="#99FF99"';   $bgcolor='bgcolor="#CCFFCC"';}
 			else
-				{$tablecolor='bgcolor="#9BB9FB"';   $bgcolor='bgcolor="#B9CBFD"';}
-
+				{
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$tablecolor='bgcolor="#B9CBFD"';   $bgcolor='bgcolor="#9BB9FB"';} 
+				else
+					{$tablecolor='bgcolor="#9BB9FB"';   $bgcolor='bgcolor="#B9CBFD"';}
+				}
 			echo "<a name=\"$vcl_id\"><BR>\n";
 			echo "<span id=\"LISTMIX$US$vcl_id$US$o\">";
 			echo "<TABLE width=740 cellspacing=3 $tablecolor>\n";
@@ -9141,9 +9185,15 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "<B>$vcl_id:</B>\n";
 			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$vcl_id id=vcl_name$US$vcl_id value=\"$rowx[1]\">\n";
 			echo " &nbsp; &nbsp; <a href=\"$PHP_SELF?ADD=49&SUB=29&stage=DELMIX&campaign_id=$campaign_id&vcl_id=$vcl_id\">DELETE LIST MIX</a></td></tr>\n";
-			echo "<tr><td colspan=2>Status:\n";
-			echo "<select size=1 name=status$US$vcl_id id=status$US$vcl_id><option value=\"ACTIVE\">ACTIVE</option><option value=\"INACTIVE\">INACTIVE</option><option SELECTED value=\"$rowx[5]\">$rowx[5]</option></select></td>\n";
-			echo "<td colspan=4>Method:\n";
+			echo "<tr><td colspan=3>Status: \n";
+			if ($rowx[5]=='INACTIVE')
+				{
+				echo "<B>$rowx[5]</B>\n";
+				echo "<a href=\"$PHP_SELF?ADD=49&SUB=29&stage=SETACTIVE&campaign_id=$campaign_id&vcl_id=$vcl_id\"><font size=1>SET TO ACTIVE</font></a></td>\n";
+				}
+			else
+				{echo "<B>$rowx[5]</B></td>\n";}
+			echo "<td colspan=3>Method:\n";
 			echo "<select size=1 name=mix_method$US$vcl_id id=method$US$vcl_id><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option><option SELECTED value=\"$rowx[4]\">$rowx[4]</option></select></td></tr>\n";
 			echo "<tr><td>LIST ID</td><td>PRIORITY</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
 
@@ -9242,14 +9292,16 @@ if ( ($ADD==34) or ($ADD==31) )
 			echo "$mixlists_list";
 			echo "<option selected value=\"\">ADD ANOTHER ENTRY</option>\n";
 			echo "</select></td>\n";
-
-			echo "<td><input type=submit name=submit value=\"ADD ENTRY\">\n";
+			
+			if ($q > 9) {$AE_disabled = 'DISABLED';}
+			else {$AE_disabled = '';}
+			echo "<td><input type=submit name=submit value=\"ADD ENTRY\" $AE_disabled>\n";
 			echo "</form></td></tr>\n";
 			echo "</table></span>\n";
 			}
 
 
-		echo "<br><br>ADD NEW LIST MIX<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<br><br><B>ADD NEW LIST MIX</B><BR><form action=$PHP_SELF method=POST>\n";
 		echo "<table border=0>\n";
 		echo "<tr $bgcolor><td><form action=\"$PHP_SELF#$vcl_id\" method=POST>\n";
 		echo "<input type=hidden name=ADD value=49>\n";
