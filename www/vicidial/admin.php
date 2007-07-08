@@ -8156,7 +8156,7 @@ if ($ADD==31)
 	else
 		{$DEFlistDISABLE = 'disabled';	$DEFstatusDISABLED=1;}
 
-	$stmt="SELECT count(*) from vicidial_campaigns_list_mix";
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE'";
 	$rslt=mysql_query($stmt, $link);
 	$rowx=mysql_fetch_row($rslt);
 	if ($rowx[0] < 1)
@@ -8167,7 +8167,7 @@ if ($ADD==31)
 	else
 		{
 		##### get list_mix listings for dynamic pulldown
-		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE' limit 1";
 		$rslt=mysql_query($stmt, $link);
 		$mixes_to_print = mysql_num_rows($rslt);
 		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
@@ -8176,8 +8176,8 @@ if ($ADD==31)
 		while ($mixes_to_print > $o)
 			{
 			$rowx=mysql_fetch_row($rslt);
-			$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$mixname_list["$rowx[0]"] = "$rowx[1]";
+			$mixes_list .= "<option value=\"ACTIVE\">ACTIVE ($rowx[0] - $rowx[1])</option>\n";
+			$mixname_list["ACTIVE"] = "$rowx[0] - $rowx[1]";
 			$o++;
 			}
 		}
@@ -8299,7 +8299,10 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 		echo "$mixes_list";
-		echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";
+		if (ereg("DISABLED",$list_order_mix))
+			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
+		else
+			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
 		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
@@ -8896,7 +8899,7 @@ if ($ADD==34)
 		$Dstatuses = explode(" ", $dial_statuses);
 		$Ds_to_print = (count($Dstatuses) -1);
 
-	$stmt="SELECT count(*) from vicidial_campaigns_list_mix";
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE'";
 	$rslt=mysql_query($stmt, $link);
 	$rowx=mysql_fetch_row($rslt);
 	if ($rowx[0] < 1)
@@ -8907,7 +8910,7 @@ if ($ADD==34)
 	else
 		{
 		##### get list_mix listings for dynamic pulldown
-		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix order by status desc, vcl_id";
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE' limit 1";
 		$rslt=mysql_query($stmt, $link);
 		$mixes_to_print = mysql_num_rows($rslt);
 		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
@@ -8916,8 +8919,8 @@ if ($ADD==34)
 		while ($mixes_to_print > $o)
 			{
 			$rowx=mysql_fetch_row($rslt);
-			$mixes_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$mixname_list["$rowx[0]"] = "$rowx[1]";
+			$mixes_list .= "<option value=\"ACTIVE\">ACTIVE ($rowx[0] - $rowx[1])</option>\n";
+			$mixname_list["ACTIVE"] = "$rowx[0] - $rowx[1]";
 			$o++;
 			}
 		}
@@ -8992,9 +8995,12 @@ if ($ADD==34)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 		echo "$mixes_list";
-		echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";
+		if (ereg("DISABLED",$list_order_mix))
+			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
+		else
+			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
 		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
