@@ -32,10 +32,16 @@ for example:
 101|1|40| A B NA -|:102|2|25| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|
 The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated.
 
+campaign hopper_level must be at least 100 when in list-mix-mode
+
+No more than 10 lists can be in a single list mix record
+
+
 
 
 The Server Side:
 The AST_VDhopper.pl script will need to be changed to use the new order mix to grab and order the leads for a campaign. This will involve checking if the list_order_mix is set to DISABLED or not, and if it is then it will proceed as it currently does. If it does not, it will grab the vicidial_campaigns_list_mix record that matches the list_order_mix and parse through it's lists. Then it will do a SELECT for each of the lists and mix all of the leads together using the proper mix_method.
+
 
 
 MORE TO COME...

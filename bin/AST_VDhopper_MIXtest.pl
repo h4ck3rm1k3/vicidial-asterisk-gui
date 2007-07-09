@@ -923,25 +923,66 @@ foreach(@campaign_id)
 		{
 		if ($DB) {print "     hopper too low ($hopper_ready_count|$hopper_level[$i]) starting hopper dump\n";}
 
-		### Get list of the lists in the campaign ###
-		$stmtA = "SELECT list_id FROM vicidial_lists where campaign_id='$campaign_id[$i]' and active='Y';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		$rec_countLISTS=0;
-		$camp_lists[$i] = '';
-		while ($sthArows > $rec_countLISTS)
+		if ($list_order_mix[$i] =~ /DISABLED/)
 			{
-			@aryA = $sthA->fetchrow_array;
-			$camp_lists[$i] .= "'$aryA[0]',";
-			$rec_countLISTS++;
-			}
-		$sthA->finish();
-		if (length($camp_lists[$i])<3) {$camp_lists[$i]="''";}
-		   else {chop($camp_lists[$i]);}
+			### Get list of the lists in the campaign ###
+			$stmtA = "SELECT list_id FROM vicidial_lists where campaign_id='$campaign_id[$i]' and active='Y';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_countLISTS=0;
+			$camp_lists[$i] = '';
+			while ($sthArows > $rec_countLISTS)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$camp_lists[$i] .= "'$aryA[0]',";
+				$rec_countLISTS++;
+				}
+			$sthA->finish();
+			if (length($camp_lists[$i])<3) {$camp_lists[$i]="''";}
+			   else {chop($camp_lists[$i]);}
 
-		if ($DB) {print "     campaign lists count: $rec_countLISTS | $camp_lists[$i]\n";}
-		if ($DBX) {print "     |$stmtA|\n";}
+			if ($DB) {print "     campaign lists count: $rec_countLISTS | $camp_lists[$i]\n";}
+			if ($DBX) {print "     |$stmtA|\n";}
+			}
+		else
+			{
+			$hopper_level[$rec_count]
+			$stmtA = "SELECT vcl_id,vcl_name,list_mix_container,mix_method FROM vicidial_campaigns_list_mix where campaign_id='$campaign_id[$i]' and status='ACTIVE';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$rec_count=0;
+			while ($sthArows > $rec_count)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$vcl_id[$i] =				"$aryA[0]";
+				$vcl_name[$i] =				"$aryA[1]";
+				$list_mix_container[$i] =	"$aryA[2]";
+				$mix_method[$i] =			"$aryA[3]";
+				$rec_count++;
+				}
+			$sthA->finish();
+
+			@list_mixARY=@MT;
+			$list_mix_dialableSQL='';
+			@list_mixARY = split(/:/,$list_mix_container[$i]);
+			$x=0;
+			foreach(@list_mixARY)
+				{
+				if ($x > 0) {$list_mix_dialableSQL .= " or ";}
+				@list_mix_stepARY=@MT;
+				@list_mix_stepARY = split(/|/,$list_mixARY[$x]);
+				$list_mix_stepARY[3] =~ s/ /','/gi;
+				$list_mix_stepARY[3] =~ s/^',|,'-//gi;
+				if ($DBX) {print "     LM $x |$list_mix_stepARY[0]|$list_mix_stepARY[2]|$list_mix_stepARY[3]|\n";}
+				$list_mix_dialableSQL .= "(list_id='$list_mix_stepARY[0]' and status IN($list_mix_stepARY[3]))";
+
+				$x++;
+				}
+
+			if ($DB) {print "     campaign mix: $list_order_mix[$i] |$vcl_id[$i] - $vcl_name[$i]|$list_mix_container[$i]|$x|$mix_method[$i]|\n";}
+			}
 
 		if ( ($lead_filter_id[$i] !~ /NONE/) && (length($lead_filter_id[$i])>0) )
 			{
@@ -960,7 +1001,6 @@ foreach(@campaign_id)
 			$sthA->finish();
 			$lead_filter_sql[$i] =~ s/^and|and$|^or|or$|^ and|and $|^ or|or $//gi;
 			$lead_filter_sql[$i] = "and $lead_filter_sql[$i]";
-			if ($DB) {print "     campaign lists count: $rec_countLISTS | $camp_lists[$i]\n";}
 			if ($DB) {print "     lead filter $lead_filter_id[$i] defined for $campaign_id[$i]\n";}
 			if ($DBX) {print "     |$lead_filter_sql[$i]|\n";}
 			}
@@ -971,7 +1011,15 @@ foreach(@campaign_id)
 			if ($DBX) {print "     |$lead_filter_id[$i]|\n";}
 			}
 
-		$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
+		##### Get count of leads that are dialable #####
+		if ($list_order_mix[$i] =~ /DISABLED/)
+			{
+			$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
+			}
+		else
+			{
+			$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and ($list_mix_dialableSQL) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
+			}
 			if ($DBX) {print "     |$stmtA|\n";}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
