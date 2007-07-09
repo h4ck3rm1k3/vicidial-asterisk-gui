@@ -11,11 +11,17 @@
 # 61219-1118 - First version
 # 70503-2137 - Added upsell
 # 70611-1154 - Added CLI options
-#
+# 70709-1411 - Added FTP transfer option
 
 $txt = '.txt';
 $US = '_';
 $MT[0] = '';
+
+# optional FTP account variables
+$FTP_host = '10.0.0.4';
+$FTP_user = 'cron';
+$FTP_pass = 'test';
+$FTP_dir  = 'REPORTS';
 
 # default CLI values
 $campaign = 'TESTCAMP';
@@ -39,6 +45,7 @@ if (length($ARGV[0])>1)
 	print "  [--sale-statuses=XXX-XXY] = Statuses that are deemed to be \"Sales\". Default SALE\n";
 	print "  [--output-format=XXX] = Format of file. Default \"pipe-standard\"\n";
 	print "  [--with-inbound=XXX-XXY] = include the following inbound groups\n";
+	print "  [--ftp-transfer] = Send results file by FTP to another server\n";
 	print "  [-q] = quiet\n";
 	print "  [-t] = test\n";
 	print "  [--debug] = debugging messages\n";
@@ -84,6 +91,12 @@ if (length($ARGV[0])>1)
 		$DBX=1;
 		print "\n----- SUPER DEBUG MODE -----\n\n";
 		}
+		if ($args =~ /-ftp-transfer/i)
+			{
+			if (!$Q)
+				{print "\n----- FTP TRANSFER MODE -----\n\n";}
+			$ftp_transfer=1;
+			}
 		if ($args =~ /-q/i)
 		{
 		$q=1;   $Q=1;
@@ -312,9 +325,20 @@ if (length($with_inboundSQL)>3)
 	$sthA->finish();
 	}
 
-
-
 close(out);
+
+
+if ($ftp_transfer > 0)
+{
+	use Net::FTP;
+
+	if (!$Q) {print "Sending File Over FTP: $outfile\n";}
+	$ftp = Net::FTP->new("$FTP_host", Port => 21);
+	$ftp->login("$FTP_user","$FTP_pass");
+	$ftp->cwd("$FTP_dir");
+	$ftp->put("$PATHweb/vicidial/server_reports/$outfile", "$outfile");
+	$ftp->quit;
+}
 
 ### calculate time to run script ###
 $secY = time();
