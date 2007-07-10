@@ -1254,7 +1254,7 @@ foreach(@campaign_id)
 			##### LIST MIX LEADS GRAB #####
 				else
 					{
-
+					$USX='_____';
 					$x=0;
 					$z=0;
 					@LM_results=@MT;
@@ -1264,7 +1264,8 @@ foreach(@campaign_id)
 						@list_mix_stepARY=@MT;
 
 						@list_mix_stepARY = split(/\|/,$list_mixARY[$x]);
-						$LM_step_goal[$x] = ( ($hopper_level[$i] * $list_mix_stepARY[2]) / 100);
+						$LM_step_goal[$x] = ( ($list_mix_stepARY[2] / 100) * $hopper_level[$i]);
+						$LM_step_even[$x] = ( (100 / $list_mix_stepARY[2]) * 100000);
 						$list_mix_stepARY[3] =~ s/ /','/gi;
 						$list_mix_stepARY[3] =~ s/^',|,'-//gi;
 						if ($DBX) {print "  LM $x |$list_mix_stepARY[0]|$list_mix_stepARY[2]|$LM_step_goal[$x]|$list_mix_stepARY[3]|\n";}
@@ -1286,29 +1287,30 @@ foreach(@campaign_id)
 								{
 								if ($mix_method[$i] =~ /EVEN_MIX/) 
 									{
-									$order = ( ($rec_count * 100) + $x);
+									$order = ( ($rec_count * $LM_step_even[$x]) + $x);
 									}
 								else
 									{
 									$order = ( ($x * 1000000) + $rec_count);
 									}
 								}
-							$LM_results[$z] = "$order|$aryA[0]|$aryA[1]|$aryA[2]|$aryA[3]|$aryA[4]";
-							if ($DBX) {print "     $z|$LM_results[$z]\n";}
+							$LM_results[$z] = "$order$USX$aryA[0]$USX$aryA[1]$USX$aryA[2]$USX$aryA[3]$USX$aryA[4]";
+						#	if ($DBX) {print "     $z|$LM_results[$z]\n";}
 
 							$rec_count++;
 							$z++;
 							}
+						$sthA->finish();
 
 						$x++;
 						}
 
-					@LM_results_SORT = sort { $b <=> $a } @LM_results;
+					@LM_results_SORT = sort { $a <=> $b } @LM_results;
 
 					$w=0;
 					while ($z > $w)
 						{
-						@aryA = split(/\|/,$LM_results_SORT[$w]);
+						@aryA = split(/_____/,$LM_results_SORT[$w]);
 						if ($REC_rec_countLEADS > $REC_insert_count)
 							{
 							$leads_to_hopper[$rec_countLEADS] = "$REC_leads_to_hopper[$REC_insert_count]";

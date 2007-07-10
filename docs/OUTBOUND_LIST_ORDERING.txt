@@ -36,6 +36,7 @@ campaign hopper_level must be at least 100 when in list-mix-mode
 
 No more than 10 lists can be in a single list mix record
 
+List orders with "2nd NEW, 3rd NEW and 4th NEW" are ignored, and only DOWN COUNT is used
 
 
 
