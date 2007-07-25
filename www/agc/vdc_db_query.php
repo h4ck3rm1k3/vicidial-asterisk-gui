@@ -264,6 +264,8 @@ if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
 	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
 if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
 	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
+if (isset($_GET["status"]))						{$status=$_GET["status"];}
+	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
 
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
