@@ -30,6 +30,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 5. The admin.php interface has had more sections broken into sub-sections for
 	easier management and rapid modifications.
 
+6. Added option for shorter enter and leave sounds(done during Asterisk build)
+	BASE/SCRATCH_INSTALL or extras/Changed_meetme_sounds for more details
 
 
 

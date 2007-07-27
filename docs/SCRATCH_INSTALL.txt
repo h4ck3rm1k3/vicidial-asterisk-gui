@@ -894,6 +894,17 @@ with the following patch:
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
 
+		*OPTIONAL*(1.2.14 thru 1.2.18) rewrite of waitforsilence
+		- wget http://www.eflo.net/files/app_waitforsilence.c
+		- mv app_waitforsilence.c apps/app_waitforsilence.c
+
+		*OPTIONAL* shorter enter and leave sounds for meetme
+		- wget http://www.eflo.net/files/enter.h
+		- wget http://www.eflo.net/files/leave.h
+		- mv -f enter.h apps/enter.h
+		- mv -f leave.h apps/leave.h
+
+
 	- make clean
 	- make
 	- make install
@@ -1866,6 +1877,9 @@ exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 exten => _90009.,1,Answer                  ; Answer the line
 exten => _90009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
 exten => _90009.,3,Hangup
+exten => _990009.,1,Answer                  ; Answer the line
+exten => _990009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
+exten => _990009.,3,Hangup
 
 ; parameters for agi-VDADcloser_inbound....agi (7 fields separated by five dashes "-----"):
 ; 1. the full name of the IN GROUP to be used in vicidial for the inbound call

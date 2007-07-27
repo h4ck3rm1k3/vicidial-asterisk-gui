@@ -240,6 +240,9 @@ exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 exten => _90009.,1,Answer                  ; Answer the line
 exten => _90009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
 exten => _90009.,3,Hangup
+exten => _990009.,1,Answer                  ; Answer the line
+exten => _990009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
+exten => _990009.,3,Hangup
 
 ; parameters for agi-VDADcloser_inbound....agi (7 fields separated by five dashes "-----"):
 ; 1. the full name of the IN GROUP to be used in vicidial for the inbound call

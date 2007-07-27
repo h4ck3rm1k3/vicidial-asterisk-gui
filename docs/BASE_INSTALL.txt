@@ -89,6 +89,12 @@ cd ../asterisk-1.2.18
 	wget http://www.eflo.net/files/app_waitforsilence.c
 	mv app_waitforsilence.c apps/app_waitforsilence.c
 
+	*OPTIONAL* shorter enter and leave sounds for meetme
+	wget http://www.eflo.net/files/enter.h
+	wget http://www.eflo.net/files/leave.h
+	mv -f enter.h apps/enter.h
+	mv -f leave.h apps/leave.h
+
 make clean
 make
 make install
