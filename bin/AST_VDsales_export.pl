@@ -43,6 +43,7 @@ if (length($ARGV[0])>1)
 	print "allowed run time options:\n";
 	print "  [--campaign=XXX] = Campaign that sales will be pulled from\n";
 	print "  [--sale-statuses=XXX-XXY] = Statuses that are deemed to be \"Sales\". Default SALE\n";
+	print "    NOTE: To include all statuses in the export, use \"--sale-statuses=---ALL---\"\n";
 	print "  [--output-format=XXX] = Format of file. Default \"pipe-standard\"\n";
 	print "  [--with-inbound=XXX-XXY] = include the following inbound groups\n";
 	print "  [--ftp-transfer] = Send results file by FTP to another server\n";
@@ -56,6 +57,20 @@ if (length($ARGV[0])>1)
 	}
 	else
 	{
+		if ($args =~ /--debug/i)
+		{
+		$DB=1;
+		print "\n----- DEBUG MODE -----\n\n";
+		}
+		if ($args =~ /--debugX/i)
+		{
+		$DBX=1;
+		print "\n----- SUPER DEBUG MODE -----\n\n";
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;   $Q=1;
+		}
 		if ($args =~ /--campaign=/i)
 		{
 		#	print "\n|$ARGS|\n\n";
@@ -68,6 +83,8 @@ if (length($ARGV[0])>1)
 		@data_in = split(/--sale-statuses=/,$args);
 			$sale_statuses = $data_in[1];
 			$sale_statuses =~ s/ .*$//gi;
+			if ($sale_statuses =~ /---ALL---/)
+				{if (!$Q) {print "\n----- EXPORT ALL STATUSES -----\n\n";} }
 		}
 		if ($args =~ /--output-format=/i)
 		{
@@ -81,26 +98,12 @@ if (length($ARGV[0])>1)
 			$with_inbound = $data_in[1];
 			$with_inbound =~ s/ .*$//gi;
 		}
-		if ($args =~ /--debug/i)
-		{
-		$DB=1;
-		print "\n----- DEBUG MODE -----\n\n";
-		}
-		if ($args =~ /--debugX/i)
-		{
-		$DBX=1;
-		print "\n----- SUPER DEBUG MODE -----\n\n";
-		}
 		if ($args =~ /-ftp-transfer/i)
 			{
 			if (!$Q)
 				{print "\n----- FTP TRANSFER MODE -----\n\n";}
 			$ftp_transfer=1;
 			}
-		if ($args =~ /-q/i)
-		{
-		$q=1;   $Q=1;
-		}
 		if ($args =~ /-t/i)
 		{
 		$T=1;   $TEST=1;
@@ -188,9 +191,17 @@ if ($output_format =~ /^pipe-triplep$/)
 if ($output_format =~ /^pipe-vici$/) 
 	{$DLT = '|';   $txt='.txt';}
 
-	$sale_statusesSQL = $sale_statuses;
-	$sale_statusesSQL =~ s/-/','/gi;
-	$sale_statusesSQL = "'$sale_statusesSQL'";
+	if ($sale_statuses =~ /---ALL---/)
+		{
+		$sale_statusesSQL='';
+		}
+	else
+		{
+		$sale_statusesSQL = $sale_statuses;
+		$sale_statusesSQL =~ s/-/','/gi;
+		$sale_statusesSQL = "'$sale_statusesSQL'";
+		$sale_statusesSQL = " and vicidial_log.status IN($sale_statusesSQL)";
+		}
 
 	$with_inboundSQL = $with_inbound;
 	$with_inboundSQL =~ s/-/','/gi;
@@ -231,7 +242,7 @@ $TOTAL_SALES=0;
 ###########################################################################
 ########### CURRENT DAY SALES GATHERING outbound-only: vicidial_log  ######
 ###########################################################################
-$stmtA = "select vicidial_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_log.list_id from vicidial_list,vicidial_log,vicidial_users where campaign_id='$campaign' and vicidial_log.status IN($sale_statusesSQL) and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_log.user;";
+$stmtA = "select vicidial_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_log.list_id from vicidial_list,vicidial_log,vicidial_users where campaign_id='$campaign' $sale_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_log.user;";
 if ($DB) {print "|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
