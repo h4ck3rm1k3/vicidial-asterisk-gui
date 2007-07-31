@@ -10,6 +10,9 @@
 # ***** THIS SCRIPT ONLY WORKS WITH A CROSSOVER T1 CABLE FROM ONE T1 PORT *****
 # ***** TO ANOTHER T1 PORT WHETHER ON THE SAME SERVER OR DIFFERENT ONE    *****
 #
+# IN THE CAMPAIGN OR IN-GROUP NUMBER PRESET FIELD:
+# AXFER83009
+#
 # ON THE SERVER ORIGINATING THE CALL:
 #;outbound DTMF VICIDIAL calls:
 #exten => _983009.,1,AGI(call_log.agi,${EXTEN})
@@ -21,7 +24,7 @@
 #exten => _83009.,1,AGI(agi-VDADlisten_DTMF.agi,${EXTEN})
 #exten => _83009.,2,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 60206-1434 first build

@@ -8,6 +8,9 @@
 # then logs the portion as listened to in the vicidial_list_pins table
 # then plays second portion and hangs up.
 #
+# IN THE CAMPAIGN OR IN-GROUP NUMBER PRESET FIELD:
+# AXFER83209
+#
 # ON THE SERVER ORIGINATING THE CALL:
 #;outbound IVR play VICIDIAL calls:
 #exten => _983209.,1,AGI(call_log.agi,${EXTEN})
@@ -20,7 +23,7 @@
 #exten => _83209.,2,AGI(agi-VDAD_pin_IVR.agi,${EXTEN})
 #exten => _83209.,3,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 60802-1304 - first build
