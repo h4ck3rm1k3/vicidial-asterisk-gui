@@ -1,0 +1,1292 @@
+# fr_language_admin.txt - this file is for the internationalization of the astGUIclient 
+# admin web pages. The associated install.pl file will take the language as an 
+# argument and alter the php scripts to the language typed in the command line:
+# example: ./install.pl --language=fr
+# current languages in the file:
+# - English - (en) no alterations
+# - French - (fr) first column
+***LANGUAGES***
+en-English|fr-French|
+***FILES***
+vicidial|admin.php|0
+vicidial|dbconnect.php|1
+vicidial|AST_VICIDIAL_hopperlist.php|0
+vicidial|AST_agent_time_sheet.php|0
+vicidial|user_status.php|0
+vicidial|server_stats.php|0
+vicidial|AST_VDADstats.php|0
+vicidial|AST_timeonVDAD.php|0
+vicidial|AST_timeonVDAD_closer.php|0
+vicidial|AST_timeonVDADall.php|0
+vicidial|AST_timeoncall.php|0
+vicidial|AST_timeonpark.php|0
+vicidial|listloader.php|0
+vicidial|listloaderMAIN.php|0
+vicidial|new_listloader_superL.php|0
+vicidial|count.htm|1
+vicidial|help.gif|1
+vicidial|listloader.pl|1
+vicidial|listloader_rowdisplay.pl|1
+vicidial|listloader_super.pl|1
+vicidial|user_stats.php|0
+vicidial|remote_dispo.php|0
+vicidial|group_hourly_stats.php|0
+vicidial|admin_search_lead.php|0
+vicidial|admin_modify_lead.php|0
+vicidial|AST_CLOSERstats.php|0
+vicidial|vdremote.php|0
+vicidial|AST_agent_performance_detail.php|0
+vicidial|AST_agent_performance.php|0
+vicidial|AST_server_performance.php|0
+vicidial|AST_admin_log_display.php|0
+vicidial|AST_timeonVDADallSUMMARY.php|0
+vicidial|inbound_popup.php|0
+vicidial|AST_inboundEXTstats.php|0
+vicidial|welcome.php|0
+***TRANSLATIONS***||||
+### special translations that should stay at the top of the file ###
+BORDER|BORDER|
+VALUE=SUBMIT|VALUE=VALIDER|
+TYPE=SUBMIT|TYPE=Submit|
+\.\/images\/|../agc/images/|
+help.gif|help.gif|
+### BEGIN translation phrases through 1.1.11 release ###
+English|Anglais|
+Spanish|Espagnol|
+French|Français|
+German|Allemand|
+Italian|Italien|
+You have now logged out. Thank you|Vous êtes maintenant déconnecté. Merci.|
+Invalid Username\/Password|Login ou mot de passe invalide|
+ASTERISK ADMIN: Administration|ASTERISK ADMIN: Administration|
+PHONES TABLE|TABLE DES TELEPHONES|
+Phone extension -<\/B> This field is where you put the phones name as it appears to Asterisk not including the protocol or slash at the beginning. For Example: for the SIP phone SIP\/test101 the Phone extension would be test101. Also, for IAX2 phones make sure you use the full phones name: IAX2\/IAXphone1@IAXphone1 would be IAXphone1@IAXphone1. For Zap phones make sure you put the full channel: Zap\/25-1 would be 25-1.  Another note, make sure you set the Protocol below correctly for your type of phone.|Extension du téléphone -</B> C'est dans ce champ qu'il faut mettre le nom du téléphone comme il apparait dans Asterisk sans mettre le protocole ou le slash du début. Par exemple: pour le téléphone SIP SIP/test101 l'extension sera test101. De même pour les téléphones IAX2 assurez vous d'utiliser le nom complet du téléphone : pour IAX2/IAXphone1@IAXphone1 ce sera IAXphone1@IAXphone1. Pour les téléphones ZAP assurez vous de mettre le channel complet: pour Zap/25-1 ce sera 25-1. De plus, assurez vous d'avoir mis le bon protocole en dessous pour votre téléphone.|
+Dial Plan Number -<\/B> This field is for the number you dial to have the phone ring. This number is defined in the extensions.conf file of your Asterisk server|Numéro dans le Dial Plan -</B> Ce champ est pour le numéro utilisé pour appeler ce téléphone. Ce numéro est défini dans le fichier extensions.conf du serveur Asterisk|
+Voicemail Box -<\/B> This field is for the voicemail box that the messages go to for the user of this phone. We use this to check for voicemail messages and for the user to be able to use the VOICEMAIL button on astGUIclient app|Boîte vocale -</B> Ce champ est pour la boîte vocale vers laquelle iront les messages pour l'utilisateur de ce téléphone. Il est utilisé pour vérifier la présence de messages et pour permettre à l'utilisateur d'utiliser le bouton VOICEMAIL dans l'application astGUIclient|
+Outbound CallerID -<\/B> This field is where you would enter the callerID number that you would like to appear on outbound calls placed form the astguiclient web-client. This does not work on RBS, non-PRI, T1\/E1s|CallerID sortant -</B> Ce champ est celui dans lequel vous entrez le numéro callerID que vous souhaitez voir apparaître lors d'appels externes passés depuis le client web astguiclient. Cela ne fonctionne pas avec RBS, non-PRI, T1/E1s|
+Phone IP address -<\/B> This field is for the phone's IP address if it is a VOIP phone. This is an optional field|Adresse IP du téléphone -</B> Ce champ est pour l'adresse IP du téléphone si c'est un téléphone VOIP. Ce champ est optionnel|
+Computer IP address -<\/B> This field is for the user's computer IP address. This is an optional field|Adresse IP de l'ordinateur -</B> Ce champ est pour l'adresse IP de l'ordinateur. C'est un champ optionel|
+Server IP -<\/B> This menu is where you select which server the phone is active on|IP du serveur -</B> Ce champ est celui où vous choisissez le serveur sur lequel est activé le téléphone|
+Login -<\/B> The login used for the phone user to get to admin functions|Login -</B> Le login utilisé par l'utilsateur du téléphone pour accéder aux fonctions d'administration|
+Password -<\/B> The password used for the phone user to get to admin functions|Mot de Passe -</B> Le mot de passe utilisé par l'utilisateur du téléphone pour accéder aux fonctions d'administration|
+Status -<\/B> The status of the phone in the system, ACTIVE and ADMIN allow for GUI clients to work. ADMIN allows access to this administrative web site. All other statuses do not allow GUI or Admin web access|Statut -</B> C'est le statut du téléphone dans le système, ACTIVE et ADMIN autorisent les clients graphiques à fonctionner. ADMIN autorise l'acces à l'administration de ce site. Tous les autres statuts n'autorisent pas l'accès aux clients graphiques ou à l'administration|
+Active Account -<\/B> Whether the phone is active to put it in the list in the GUI client|Compte actif -</B> Indique si le téléphone est actif pour le mettre dans la liste dans le client GUI|
+Phone Type -<\/B> Purely for administrative notes|Type de téléphone -</B> Seuelement pour les notes administratives|
+Full Name -<\/B> Used by the GUIclient in the list of active phones|Nom complet -</B> Utilisé par le client GUI dans la liste des téléphones actifs|
+Company -<\/B> Purely for administrative notes|Compagnie -</B> Seulement pour les notes administratives|
+Picture -<\/B> Not yet Implemented|Image -</B> Pas encore implémenté|
+New Messages -<\/B> Number of new voicemail messages for this phone on the Asterisk server|Nouveaux messages -</B> Nombre de nouveaux messages vocaux pour ce téléphone sur le serveur Asterisk|
+Old Messages -<\/B> Number of old voicemail messages for this phone on the Asterisk server|Anciens messages -</B> Nombre d'anciens messages vocaux pour ce téléphone sur le serveur Asterisk|
+Client Protocol -<\/B> The protocol that the phone uses to connect to the Asterisk server: SIP, IAX2, Zap . Also, there is EXTERNAL for remote dial numbers or speed dial numbers that you want to list as phones|Protocole client -</B> Le protocole que le téléphone utilise pour se connecter au serveur Asterisk: SIP, IAX2, Zap. Il y a également EXTERNAL pour les numéros distants et les numérotation rapide que vous voulez lister comme téléphone|
+Local GMT -<\/B> The difference from Greenwich Mean time, or ZULU time where the phone is located. DO NOT ADJUST FOR DAYLIGHT SAVINGS TIME. This is used by the VICIDIAL campaign to accurately display the time and customer time|GMT local -</B> La différence entre l'heure de Greenwich, ou l'heure ZULU et le fuseau horaire du téléphone. NE PAS AJUSTER POUR LES DAYLIGHT SAVINGS TIME. Ceci est utilisé par les campagnes VICIDIAL pour afficher correctement l'heure et l'heure du client|
+Manager Login -<\/B> This is the login that the GUI clients for this phone will use to access the Database where the server data resides|Login du manager -</B> C'est le login que les clients GUI de ce téléphones vont utiliser pour accéder à la base de données dans laquelle sont stockées les données du serveur|
+Manager Secret -<\/B> This is the password that the GUI clients for this phone will use to access the Database where the server data resides|Mot de passe du manager -</B> C'est le mot de passe que les clients GUI de ce téléphone vont utiliser pour accéder à la base de données dans laquelle sont stockées les données du serveur|
+VICIDIAL Default User -<\/B> This is to place a default value in the VICIDIAL user field whenever this phone user opens the astVICIDIAL client app. Leave blank for no user|Utilisateur par défaut de VICIDIAL -</B> Permet de remplir une valeur par défaut dans le champ utilisateur de VICIDIAL quand l'utilisateur de ce téléphone ouvre l'application client astVICIDIAL. Laisser vide pour ne pas l'utiliser|
+VICIDIAL Default Pass -<\/B> This is to place a default value in the VICIDIAL password field whenever this phone user opens the astVICIDIAL client app. Leave blank for no pass|Mot de passe par défaut de VICIDIAL -</B> Permet de remplir une valeur par défaut dans le champ mot de passe de VICIDIAL quand l'utilisateur de ce téléphone ouvre l'application client astVICIDIAL. Laisser vide pour ne pas l'utiliser|
+VICIDIAL Default Campaign -<\/B> This is to place a default value in the VICIDIAL campaign field whenever this phone user opens the astVICIDIAL client app. Leave blank for no campaign|Campagne par défaut de VICIDIAL -</B> Permet de remplir une valeur par défaut dans le champ campagne de VICIDIAL quand l'utilisateur de ce téléphone ouvre l'application client astVICIDIAL. Laisser vide pour ne pas l'utiliser|
+Park Exten -<\/B> This is the default Parking extension for the client apps. Verify that a different one works before you change this|Exten de mise en attente -</B> C'est l'exten par défaut utilisé pour la mise en attente dans l'application client. Verifiez qu'il fonctionne avant de le changer|
+Conf Exten -<\/B> This is the default Conference park extension for the client apps. Verify that a different one works before you change this|Exten pour mise en attente de la conférence -</B> C'est l'exten par défaut utilisé pour la mise en attente de la conférence dans l'appilcation client. Verifiez qu'il autre fonctionne avant de le changer|
+VICIDIAL Park Exten -<\/B> This is the default Parking extension for VICIDIAL client app. Verify that a different one works before you change this|Exten de mise en attente VICIDIAL -</B> C'est l'exten par defaut utilisé pour la mise en attente pour l'appilcation cliente VICIDIAL. Avant de changer ce champ verifiez que le nouveau fonctionne|
+VICIDIAL Park File -<\/B> This is the default VICIDIAL park extension file name for the client apps. Verify that a different one works before you change this. limited to 10 characters|VICIDIAL Park File -</B> C'est le nom du fichier par defaut pour la mise en attente de VICIDIAL. Avant de le changer verifiez que le nouveau fonctionne. Limité a 10 caractères|
+Monitor Prefix -<\/B> This is the dial plan prefix for monitoring of Zap channels automatically within the astGUIclient app. Only change according to the extensions.conf ZapBarge extensions records|Prefix de Moniteur -</B> C'est le prefix du monitoring des Channels Zap automatiquement contenu dans l'appication astguiclient. Ne changez qu'en accord avec les enregistrement des extensions ZapBarge|
+Recording Exten -<\/B> This is the dial plan extension for the recording extension that is used to drop into meetme conferences to record them. It usually lasts upto one hour if not stopped. verify with extensions.conf file before changing|Exten d'enregistrement -</B> C'est l'extension dans le dial plan pour l'enregistrement utilisé pour enregistrer les conférences. C'est habituellement stoppé au bout d'une heure. Verifiez le fichier extentions.conf avant tout changement|
+VMAIL Main Exten -<\/B> This is the dial plan extension going to check your voicemail. verify with extensions.conf file before changing|Exten principal pour VMAIL -</B> C'est l'extension du dial plan utilisé pour verifier la boîte vocale. Verifiez le fichier extensions.conf avant tout changement|
+VMAIL Dump Exten -<\/B> This is the dial plan prefix used to send calls directly to a user's voicemail from a live call in the astGUIclient app. verify with extensions.conf file before changing|VMAIL Dump Exten -</B> C'est le préfix du dial plan utilisé pour lancer des appels directement vers la boite vocale de l'utilisateur depuis un un appelen cours dans l'application astGUIclient app. Avant tout changement verifiez le fichier extensions.conf|
+Exten Context -<\/B> This is the dial plan context that this phone primarily uses. It is assumed that all numbers dialed by the client apps are using this context so it is a good idea to make sure this is the most wide context possible. verify with extensions.conf file before changing|Exten Contexte -</B> C'est le contexte du dial plan que les téléphones utilisent principalement. Ce qui suppose que tous les numéros appelés par l'application cliente sont accessibles depuis ce contexte, assurez vous donc que ce contexte soit le plus large possible. Verifiez le fichier extension.conf avant toutes modifications|
+DTMF send Channel -<\/B> This is the channel string used to send DTMF sounds into meetme conferences from the client apps. Verify the exten and context with the extensions.conf file|Cannal d'envoi de DTMF -</B> C'est le channel utilisé pour envoyer les sons DTMF dans les conférences meetme depuis l'application cliente. Verifiez le fichier extentions.conf avant tout changement|
+Outbound Call Group -<\/B> This is the channel group that outbound calls from this phone are placed out of. There are a couple routines in the client apps that use this. For Zap channels you want to use something like Zap\/g2 , for IAX2 trunks you would want to use the full IAX prefix like IAX2\/VICItest1:secret@10.10.10.15:4569. Verify the trunks with the extensions.conf file, it is usually what you have defined as the TRUNK global variable at the top of the file|Groupe d'appel sortant -<\/B> C'est le groupe de canal hors duquel seront placés les appels passés depuis ce téléphone. Il y a des routines dans l'application cliente qui l'utilisent. Pour les cannal Zap vous devriez utiliser quelque chose comme Zap/g2, pour les trunks IAX vous devriez utiliser un préfixe entier IAX comme IAX2/VICItet1:secret@10.10.10.15:4569. Vérifiez les trunks dans le fichier extensions.conf, il est courant que vous avez défini comme variable globale TRUNK au début du fichier|
+Browser Location -<\/B> This is applicable to only UNIX\/LINUX clients, the absolute path to Mozilla or Firefox browser on the machine. verify this by launching it manually|Emplacement du Navigateur -</B> C'est le chemin absolu pour le navigateur Mozilla ou firefox, ceci n'est applicable que pour les clients UNIX/LINUX. Vérifiez en le lançant manuellement|
+Install Directory -<\/B> This is the place where the astGUIclient and astVICIDIAL scripts are located on your machine. For Win32 it should be something like C:\\AST_VICI and for UNIX it should be something like \/usr\/local\/perl_TK. verify this manually|Répertoire d'installation -</B> C'est l'endroit où astGUIclient et les scripts astVICUDUAL sont installés sur la machine. Pour Win32 cela doit être quelque chose comme C:\\AST_VICI and for UNIX cela doit être quelque chose comme /usr/local/perl_TK. Vérifiez cela manuellement|
+CallerID URL -<\/B> This is the web address of the page used to do custom callerID lookups. default testing address is: http:\/\/astguiclient.sf.net\/test_callerid_output.php|URL du CallerID -</B> C'est l'adresse web de la page utilisée pour faire une verification personnalisée du CallerId. L'adresse des test par defaut est : http://astguiclient.sf.net/test_callerid_output.php|
+VICIDIAL Default URL -<\/B> This is the web address of the page used to do custom VICIDIAL Web Form queries. default testing address is: http:\/\/astguiclient.sf.net\/test_VICIDIAL_output.php|URL par defaut de VICIDIAL -</B> C'est l'adresse web de la page utilisée pour faire des requêtes Web VICIDIAL personnalisées. L'adresse par defaut est: http://astguiclient.sf.net/test_VICIDIAL_output.php|
+Call Logging -<\/B> This is set to true if the call_log.agi file is in place in the extensions.conf file for all outbound and hang up 'h' extensions to log all calls. This should always be 1 because it is manditory for many astGUIclient and VICIDIAL features to work properly|Log des appels -</B> Mettez à true si le fichier call_log.agi est placé dans le fichier extension.conf pour tout les appels sortants ainsi que l'extension de racrochage 'h' pour logger tout les appels. Il devrait toujours être à 1 car cela est nécessaire pour que certaines des fonctionnalités d'astGUIclient et de VICIDIAL fonctionnent proprement|
+User Switching -<\/B> Set to true to allow user to switch to another user account. NOTE: If user switches they can initiate recording on the new user's phone conversation|Changement d'utilisateur -</B> Mettez à true pour autoriser un utilisateur à changer pour un autre compte utilisateur. NOTE: Si l'utilisateur commute, il peut initier l'enregistrement sur la nouvelle conversation téléphonique du nouvel utilisateur|
+Conferencing -<\/B> Set to true to allow user to start conference calls with upto six external lines|Conferencing -</B> Mettez à true pour autoriser un utilisateur a démarrer une conférence avec plus de 6 lignes externs|
+Admin Hang Up -<\/B> Set to true to allow user to be able to hang up any line at will through astGUIclient. Good idea only to enable this for Admin users|Racrochage administateur-</B> Mettre à true pour autoriser l'utilisateur à racrocher n'importe quelle ligne à travers astGUIclient. C'est une bonne idée de l'activer pour les administarteurs|
+Admin Hijack -<\/B> Set to true to allow user to be able to grab and redirect to their extension any line at will through astGUIclient. Good idea only to enable this for Admin users. But is very useful for Managers|Détournement adminisrateur -<\/B> Mettre à true pour autoriser l'utilisateur à pouvoir intercepter et rediriger vers son extention n'importe quelle ligne à travers Astguiclient. C'est une bonne idée de l'activer pour les administrateurs. Mais c'est aussi très utile pour les managers|
+Admin Monitor -<\/B> Set to true to allow user to be able to grab and redirect to their extension any line at will through astGUIclient. Good idea only to enable this for Admin users. But is very useful for Managers and as a training tool|Moniteur adminisrateur -</B> Mettre à true pour autoriser l'utilisateur à intercepter et rediriger vers son extension certaines lignes à partir de astGUIclient. C'est une bonne idée de l'activer pour les adiministrateurs.  Mais c'est aussi très utile pour les managers et comme outil d'entrainement|
+Call Park -<\/B> Set to true to allow user to be able to park calls on astGUIclient hold to be picked up by any other astGUIclient user on the system. Calls stay on hold for upto a half hour then hang up. Usually enabled for all|Parc d'appels -<\/B> Mettez à true pour autoriser l'utilisateur à parquer des appels dans astGUIclient pour être pris par n'importe quel utilisateur astGUIcient sur le système. Les appels sont mis en attente jusqu'à 30 minutes puis sont raccrochés. Habituellement activé pour tous|
+Updater Check -<\/B> Set to true to display a popup warning that the updater time has not changed in 20 seconds. Useful for Admin users|Vérification de mise à jour -</B> Mettre à true pour afficher une popup avertissant que le temps de mise à jour n'a pas changé en 20 secondes. Utile pour les administrateurs|
+AF Logging -<\/B> Set to true to log many actions of astGUIclient usage to a text file on the user's computer|Log des AF -</B> Mettre à true pour logguer les actions de astGUIclient dans un fichier texte sur l'ordinateur de l'utilisateur|
+Queue Enabled -<\/B> Set to true to have client apps use the Asterisk Central Queue system. Required for VICIDIAL and recommended for all users|Activer la queue -</B> Mettre à true pour que les applications clientes utilisent le systeme central de queue d'asterisk. Requis pour VICIDIAL et recommandé pour tout les utilisateurs|
+CallerID Popup -<\/B> Set to true to allow for numbers defined in the extensions.conf file to send CallerID popup screens to astGUIclient users|Popup sur le CallerID -</B> Mettre à true pour autoriser, pour les numéros définis dans le fichier extensions.conf, à afficher des popup concernat le CallerID aux utilisateurs d'astGUIclient|
+VMail Button -<\/B> Set to true to display the VOICEMAIL button and the messages count display on astGUIclient|Bouton de boîte vocale -</B> Mettre à true pour afficher le bouton VOICEMAIL et le nombre de messages dans astGUIclient|
+Fast Refresh -<\/B> Set to true to enable a new rate of refresh of call information for the astGUIclient. Default disabled rate is 1000 ms ,1 second. Can increase system load if you lower this number|Rafraichissement rapide -</B> Mettre à true pour activer un nouveau taux de rafraichissement de l'information dans astGUIclient. Par défaut ce taux est de 1000ms, 1 seconde. Si vous diminuez ce taux cela peu augmenter la charge système|
+Fast Refresh Rate -<\/B> in milliseconds. Only used if Fast Refresh is enabled. Default disabled rate is 1000 ms ,1 second. Can increase system load if you lower this number|Taux de rafraichissement rapide -</B> en millisecondes. Utiliser seulement si le rafraichissement rapide est activé. Par défaut le taux est de 1000ms , 1 seconde. La diminution de ce taux peux augmenter la charge système|
+Persistant MySQL -<\/B> If enabled the astGUIclient connection will remain connected instead of connecting every second. Useful if you have a fast refresh rate set. It will increase the number of connections on your MySQL machine|MySQL persistant -<\/B> Si activé, alors la connection à MYSQL sera maintenue au lieu d'être reconnectée chaque seconde. Utile si vous avez un taux de rafraichissement rapide. Cela va augmenter le nombre de connections au seveur MYSQL|
+Auto Dial Next Number -<\/B> If enabled the VICIDIAL client will dial the next number on the list automatically upon disposition of a call unless they selected to "Stop Dialing" on the disposition screen|Appel automatique du numéro suivant -</B> Si activé, le client VICIDIAL appelera automatiquement le numéro suivant dans la liste selon la disposition d'un appel à moins qu'ils aient choisi "Stop Dialing" sur l'écran de disposition|
+Stop Rec after each call -<\/B> If enabled the VICIDIAL client will stop whatever recording is going on after each call has been dispositioned. Useful if you are doing a lot of recording or you are using a web form to trigger recording|Stoper l'enregistrement après chaque appel -</B> Si activé, le client VICIDIAL stopera chaque enregistrement à la fin de l'appel. Utile si vous faites beaucoup d'enregistrements et si vous utiliser un formulaire web pour déclancher l'enregistrement|
+DBX Server -<\/B> The MySQL database server that this user should be connecting to|Serveur DBX -</B> Le serveur de la base de données MYSQL auquel cette utilisateur se connecte|
+DBX Database -<\/B> The MySQL database that this user should be connecting to. Default is asterisk|Base de données DBX -</B> Base de données à laquelle cet utilisateur ce connecte. La valeur par défault est asterisk|
+DBX User -<\/B> The MySQL user login that this user should be using when connecting. Default is cron|Utilisateur DBX -</B> Login utilisateur de la base de données utilisé pour la connection. La valeur par défaut est cron|
+DBX Pass -<\/B> The MySQL user password that this user should be using when connecting. Default is 1234|Mot de passe DBX -</B> Mot de pass de la connetion MYSLQ. La valeur par défaut est 1234|
+DBX Port -<\/B> The MySQL TCP port that this user should be using when connecting. Default is 3306|Port DBX -</B> Port de la connection à la base de données. La valeur par défaut est 3306|
+DBY Server -<\/B> The MySQL database server that this user should be connecting to|Serveur DBY -</B> Le serveur de base de données auquel cet utilisateur ce connecte|
+DBY Database -<\/B> The MySQL database that this user should be connecting to. Default is asterisk|Base de données DBY -</B> La base de données MYSQL à laquelle cette utilisateur se connecte. La valeur par défaut est asterisk|
+DBY User -<\/B> The MySQL user login that this user should be using when connecting. Default is cron|Utilisateur DBY -</B> Login utilisateur avec lequel cet utilisateur ce connecte à la base de données. La valeur par défaut est cron|
+DBY Pass -<\/B> The MySQL user password that this user should be using when connecting. Default is 1234|Mot de passe DBY -</B> Mot de passe avec lequel cet utilisateur ce connecte à MYSQL. La valeur par defaut est 1234|
+DBY Port -<\/B> The MySQL TCP port that this user should be using when connecting. Default is 3306|DBY port -</B> Port TCP de la connection MYSQL utilisée par cet utilisateur. La valeur par défaut est 3306|
+Redirect command sent for channel|Commande de redirection envoyée pour le cannal|
+Look up this customer in Customer Service System|Rechercher ce client dans le Système de Service Client|
+Redirect command FAILED for channel|La commande de redirection a échoué pour le cannal|
+PLEASE SELECT A NUMBER AND DATE ABOVE AND CLICK SUBMIT|VEUILLEZ SELECTIONNER UN NUMERO ET UNE DATE CI-DESSUS ET CLIQUEZ SUR VALIDER|
+Total Calls That came into this number|Total des appels reçus par ce numéro|
+Average Call Length(seconds) for all Calls|Durée moyenne des appels(en secondes) pour tous les appels|
+Total DROP Calls:   (less than 10 seconds)|Total des appels abandonnés: (moins de 10 secondes)|
+Average Call Length(seconds) for DROP Calls|Durée moyenne des appels(en secondes) pour les appels abandonnés|
+GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS|GRAPHIQUE INCREMENTE PAR TRANCHE DE 15 MINUTES DU TOTAL DES APPELS|
+Click on the channel below that you would like to have directed to your phone|Cliquez sur le cannal vers lequel vous voulez diriger votre téléphone|
+LAST 1000 CALLS FOR DATE RANGE|1000 DERNIERS APPELS POUR UNE PERIODE|
+Click here to see what leads are in the hopper right now|Cliquez ici pour voir quelles fiches sont dans le distributeur à l'instant|
+CUSTOM STATUSES WITHIN THIS CAMPAIGN|STATUTS PERSONNALISES DANS CETTE CAMPAGNE|
+PLEASE SELECT A CAMPAIGN ABOVE AND CLICK SUBMIT|VEUILLEZ SELECTIONNER UNE CAMPAGNE CI-DESSUS ET CLIQUEZ SUR VALIDER|
+PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT|VEUILLEZ SELECTIONNER UNE CAMPAGNE ET UNE DATE CI-DESSUS ET CLIQUEZ SUR VALIDER|
+GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS PLACED FROM THIS CAMPAIGN|GRAPHIQUE INCREMENTE PAR TRANCHE DE 15 MINUTES POUR LE TOTAL DES APPELS PLACES DEPUIS CETTE CAMPAGNE|
+ERROR: The file does not have the required number of fields to process it|ERREUR: Le fichier n'a pas le nombre de champs requis pour l'utiliser|
+ERROR: File exceeds the 8MB limit|ERREUR: Le fichier dépasse la limmite de 8Mo|
+Please enter the group you want to get hourly stats for|Veuillez entrez le groupe pour lequel vous souhaitez avoir les statistiques horaires |
+The search variables you entered are not active in the system|Les variables de recherche que vous avez entré ne sont pas actives dans le système|
+Please go back and double check the information you entered and submit again|Veuillez revenir en arrière et verifier les informations que vous avez saisi et valider de nouveau|
+Click here to see the Lead Details|Cliquer ici pour voir le détail de la fiche|
+SERVERS TABLE|TABLE DES SERVEURS|
+Server ID -<\/B> This field is where you put the Asterisk servers name, doesnt have to be an official domain sub, just a nickname to identify the server to Admin users|ID du Sevreur -</B> C'est ici que vous mettez le nom du serveur Asterisk, il n'est pas obligatoire de mettre le sous dommaine, juste un nom pour identifier le seveur pour les administrateurs|
+Server Description -<\/B> The field where you use a small phrase to describe the Asterisk server|Descritpion du serveur -</B> Petite description du serveur asterisk|
+Server IP Address -<\/B> The field where you put the Network IP address of the Asterisk server|Adresse IP du serveur -</B> Le champs dans lequel vous mettez l'adresse IP du serveur Asterisk|
+Active -<\/B> Set whether the Asterisk server is active or inactive|Actif -</B> Mettre si le serveur Asterisk est actif ou non|
+Asterisk Version -<\/B> Set the version of Asterisk that you have installed on this server. Examples: '1.2', '1.0.8', '1.0.7', 'CVS_HEAD', 'REALLY OLD', etc... This is used because versions 1.0.8 and 1.0.9 have a different method of dealing with Local\/ channels, a bug that has been fixed in CVS v1.0, and need to be treated differently when handling their Local\/ channels. Also, current CVS_HEAD and the 1.2 release tree uses different manager and command output so it must be treated differently as well|Version d'Asterisk -</B> Mettre la version d'asterisk que vous avez installé sur ce serveur. Examples: ' 1.2 ', ' 1.0.8 ', ' 1.0.7 ', 'CVS_HEAD', 'REALLY OLD', etc... Ceci est utilisé car les versions 1.0.8 et 1.0.9 ont une methode differente pour gérer les canaux Local/, un bug qui a été fixé dans le CVS v1.0, et qui nescessite d'être traité differement quand les canaux Local/ sont manipulés. Aussi, la version courante CVS_HEAD et l'arbre 1.2 utilisent des managers et des commandes différentes, qui doivent donc être traités différemment.|
+Max VICIDIAL Trunks -<\/B> This field will determine the maximum number of lines that the VICIDIAL auto-dialer will attempt to call on this server. If you want to dedicate two full PRI T1s to VICIDIALing on a server then you would set this to 46. Default is 96|Nombre maximum de trunks VICIDIAL -</B> Ce champ détermine le nombre maximum de lignes que l'appel automatique de VICIDIAL essayera d'appeler sur ce serveur. Si vous voulez consacrer pleinement deux PRI T1s à VICIDIAL sur un serveur vous devriez mettre ce champ à 46. La valeur par defaut est 96|
+Telnet Host -<\/B> This is the address or name of the Asterisk server and is how the manager applications connect to it from where they are running. If they are running on the Asterisk server, then the default of 'localhost' is fine|Hôte telnet -</B> C'est l'adresse ou le nom du serveur Asterisk et c'est comme cela que les applications managers se connectent au sevreur quand elle sont lancées. Si les applications managers sont lancées sur le serveur Asterisk, alors la valeur par defaut 'localhost' fonctionne bien |
+Telnet Port -<\/B> This is the port of the Asterisk server Manager connection and is how the manager applications connect to it from where they are running. The default of '5038' is fine for a standard install|Port telnet -</B> C'est le port de connection au manager du serveur Asterisk c'est par ceului-ci que les applications managers se connectent. La valeur par defaut '5038' fonctionne bien avec une installation standard|
+Manager User -<\/B> The username or login used to connect genericly to the Asterisk server manager. Default is 'cron'|Utilisateur du manager -</B> C'est l'utilisateur utilisé pour la connection au manager Asterisk. La valeur par défaut est 'cron'|
+Manager Secret -<\/B> The secret or password used to connect genericly to the Asterisk server manager. Default is '1234'|Mot de passe du manager -</B> Le secret ou mot de passe utilisé pour ce connecter au manager Asterisk. La valeur par defaut est '1234'|
+Manager Update User -<\/B> The username or login used to connect to the Asterisk server manager optimized for the Update scripts. Default is 'updatecron' and assumes the same secret as the generic user|Utilisateur du manager pour les mises à jour -</B> Le nom d'utilisateur ou le login utilisé pour se connecter au manager d'Asterisk, optimisé pour les scripts de mise à jour. La valeur par defaut est 'updatecron' et a le même secret que l'utilisateur générique|
+Manager Listen User -<\/B> The username or login used to connect to the Asterisk server manager optimized for scripts that only listen for output. Default is 'listencron' and assumes the same secret as the generic user|Utilisateur du manager pour l'écoute -</B> Le nom d'utilisateur ou le login utilisé pour se connecter au manager d'Asterisk,  optimisé pour les scripts qui écoutent la sortie seulement. La valeur par défaut est 'listencron' et a le même secret que l'utilisateur générique|
+Manager Send User -<\/B> The username or login used to connect to the Asterisk server manager optimized for scripts that only send Actions to the manager. Default is 'sendcron' and assumes the same secret as the generic user|Utilisateur du manager pour l'envoi -</B> Le nom d'utilisateur ou le login utilisé pour se connecter au manager d'Asterisk, optimisé pour les scripts qui envoient des actions au manager.  La valeur par défaut est 'sendcron' et a le même secret que l'utilisateur générique|
+Server GMT offset -<\/B> The difference in hours from GMT time not adjusted for Daylight-Savings-Time of the server. Default is '-5'|Décalage GMT du serveur -</B>La difference en heure par rapport à l'heure GMT non ajustée pour Les Daylight-Savings-Time du serveur. Par defaut '-5'|
+VMail Dump Exten -<\/B> The extension prefix used on this server to send calls directly through agc to a specific voicemail box. Default is '85026666666666'|Exten VMail Dump -</B> Le prefix de l'extention utilisé sur ce serveur pour lancer des appels directement depuis agc vers une boite vocale spécifique. La valeur par defaut est '85026666666666'|
+VICIDIAL AD extension -<\/B> The default extension if none is present in the campaign to send calls to for VICIDIAL auto dialing. Default is '8365'|Extension de VICIDIAL AD -</B> L'extension par défaut si personne n'est présent dans la campagne qui permet de lancer des appels pour l'appel automatique de VICIDIAL. La valeur par defaut est '8365'|
+Default Context -<\/B> The default dial plan context used for scripts that operate for this server. Default is 'default'|Contexte par défaut -</B> Le contexte par defaut utilisé par les scripts qui opèrent sur ce serveur. La valeur par défaut est 'default'|
+User ID -<\/B> This field is where you put the VICIDIAL users ID number, can be up to 8 digits in length, Must be at least 2 characters in length|ID Utilisateur -</B> C'est ici que vous mettez le numéro ID de l'utilisateur VICIDIAL, entre 2 et 8 caractères|
+Password -<\/B> This field is where you put the VICIDIAL users password. Must be at least 2 characters in length|Mot de passe -</B> Mot de passe de l'utilisateur VICIDIAL. Doit contenir au moins 2 caractères|
+Full Name -<\/B> This field is where you put the VICIDIAL users full name. Must be at least 2 characters in length|Nom complet -</B> C'est dans ce champ que vous mettez le nom complet de l'utilisateur VICIDIAL. Doit contenir au moins 2 caractères|
+User Level -<\/B> This menu is where you select the VICIDIAL users user level. Must be a level of 1 to log into VICIDIAL, Must be level greater than 2 to log in as a closer, Must be user level 8 or greater to get into admin web section|Niveau de l'utilisateur -</B> C'est ici que vous sélectionnez le niveau de l'utilisateur. Le niveau doit être de 1 pour pouvoir ce connecter à VICIDIAL, plus grand que 2 pour se connecter à une campagne de type Closer, doit être superieur ou égal à 8 pour accéder à la section web administrateur|
+User Group -<\/B> This menu is where you select the VICIDIAL users group that this user will belong to. This does not have any restrictions at this time, this is just to subdivide users and allow for future features based upon it|Groupe d'utilisateur -</B> C'est dans ce menu que vous selectionnez le groupe utilisateur dans lequel sera cet utilisateur. Pour l'instant il n'y a pas de restriction, ce n'est que pour répartir les utilisateurs et autoriser les futures fonctions basées sur ceci|
+Phone Login -<\/B> Here is where you can set a default phone login value for when the user logs into vicidial.php. This value will populate the phone_login automatically when the user logs in with their user-pass-campaign in the vicidial.php login screen|Login du téléphone -</B> C'est ici que vous mettez le login par  défaut du téléphone pour quand cette utilisateur se connecte dans vicidial.php. Le champ phone_login sera automatiquement rempli par cette valeur quand l'utilisateur se connectera avec son utilisateur-mot_de_passe_passe-campagne dans l'écran de connection vicidial.php |
+Phone Pass -<\/B> Here is where you can set a default phone pass value for when the user logs into vicidial.php. This value will populate the phone_pass automatically when the user logs in with their user-pass-campaign in the vicidial.php login screen|Mot de passe du téléphone -</B> C'est ici que vous mettez le mot de passe par defaut du téléphone pour quand l'utisateur se connecte dans vicidial.php. Le champ phone_pass sera rempli automatiquement avec cette valeur quand l'utilisateur se connectera avec utilislateur-passe-campagne dans l'écran de conncetion vicidial.php|
+Delete Users -<\/B> This option if set to 1 allows the user to delete other users of equal or lesser user level from the system|Effacer des utilisateurs -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer d'autres utilisateurs qui ont un niveau inférieur ou égal depuis le système|
+Delete User Groups -<\/B> This option if set to 1 allows the user to delete user groups from the system|Supprimer des groupes d'utilisateurs -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer les groupes d'utilisateurs depuis le système|
+Delete Lists -<\/B> This option if set to 1 allows the user to delete vicidial lists from the system|Supprimer des listes -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer des listes depuis le système|
+Delete Campaigns -<\/B> This option if set to 1 allows the user to delete vicidial campaigns from the system|Supprimer des campagnes -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer des campagnes vicidial depuis le système|
+Delete In-Groups -<\/B> This option if set to 1 allows the user to delete vicidial In-Groups from the system|Supprimer des In-groups -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer des In-groups vicidial depuis le système|
+Delete Remote Agents -<\/B> This option if set to 1 allows the user to delete vicidial remote agents from the system|Supprimer des agents distants -</B> Cette option et mise à 1 pour autoriser l'utilisateur à effacer des agents distants vicidial depuis le système|
+Load Leads -<\/B> This option if set to 1 allows the user to load vicidial leads into the vicidial_list table by way of the web based lead loader|Charger des fiches -</B> Cette option et mise à 1 pour autoriser l'utilisateur à charger des fiches dans la table vicidial_list en utilisant le chargeur de fiches web|
+Campaign Detail -<\/B> This option if set to 1 allows the user to view and modify the campaign detail screen elements|Details de la campagne-</B> Cette option et mise à 1 pour autoriser l'utilisateur à voir et modifier les éléments de l'écran de details de la campagne|
+AGC Admin Access -<\/B> This option if set to 1 allows the user to login to the astGUIclient admin pages|Accès administrateur AGC -</B> Cette option et mise à 1 pour autoriser l'utilisateur à se connecter aux pages d'administration de astGUIclient|
+AGC Delete Phones -<\/B> This option if set to 1 allows the user to delete phone entries in the astGUIclient admin pages|Supprimer des téléphones AGC -</B> Cette option est mise à 1 pour autoriser l'utilisateur à effacer des téléphones dans les pages d'aministration d'astGUIclient|
+Delete Scripts -<\/B> This option if set to 1 allows the user to delete Campaign scripts in the script modification screen|Supprimer des scripts -</B> Cette option si elle est mise à 1 autorise l'utilisateur à supprimer des scripts de campagne dans l'écran de modification du script|
+Script ID -<\/B> This is the short name of a Vicidial Script. This needs to be a unique identifier. Try not to use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|Id du script -</B> C'est le nom court d'un Script Vicidal. Il doit être unique. Ne pas utiliser d'espace ni de ponctuation pour ce champ. Doit être composé de 2 à 10 caractères|
+Script Name -<\/B> This is the title of a Vicidial Script. This is a short summary of the script. max 50 characters, minimum of 2 characters. There should be no spaces or punctuation of any kind in theis field|Nom du ccript -</B> C'est le titre du script Vicidial. C'est une courte description du script. Maximum 50 caractères, minimum 2. Il ne doit pas avoir d'espace ou de ponctuation de quelque sorte dans ce champ|
+Script Comments -<\/B> This is where you can place comments for a Vicidial Script such as -changed to free upgrade on Sept 23-.  max 255 characters, minimum of 2 characters|Commentaires du script  -</B> C'est ici que vous entrez un commentaire pour le script Vicidial comme -changed to free upgrade on Sept 23- Max 255 caractères , min 2 caractères|
+Script Text -<\/B> This is where you place the content of a Vicidial Script. Minimum of 2 characters. You can have customer information be auto-populated in this script using --A--field--B-- where field is one of the following fieldnames: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments. For example, this sentence would print the persons name in it----<BR><BR>  Hello, can I speak with --A--first_name--B-- --A--last_name--B-- please? Well hello --A--title--B-- --A--last_name--B-- how are you today?<BR><BR> This would read----<BR><BR>Hello, can I speak with John Doe please? Well hello Mr. Doe how are you today?|Texte du script -</B> C'est ici que vous placez le contenu du script Vicidial. Minimum 2 caractères. Vous pouvez avoir des informations sur le client insérés automatiquement dans le script en utilisant --A--field--B-- où field est un des noms de champs suivant: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments. Par exemple, cette phrase devrait afficher le nom des personnes dans celui-ci ----<BR><BR>  Bonjour, pourais-je parler à --A--first_name--B-- --A--last_name--B-- s'il vous plait? Bonjour --A--title--B-- --A--last_name--B-- comment allez vous aujourd'hui?<BR><BR> Vous devriez alors lire----<BR><BR> Bonjour, pourais-je parler à John Doe si il vous plait? Bonjour Mr. Doe comment allez vous aujourd'hui?|
+Active -<\/B> This determines whether this script can be selected to be used by a campaign|Activé -</B> Cela determine si ce script peut être selectionné pour être utilisé dans une campagne|
+Campaign ID -<\/B> This is the short name of the campaign, it is not editable after initial submission, cannot contain spaces and must be between 2 and 8 characters in lengt|ID de la campagne -</B> C'est un nom court pour la campagne, il n'est pas modifiable après validation, il ne peut contenir d'espaces et doit contenir entre 2 et 8 caractères|
+Campaign Name -<\/B> This is the description of the campaign, it must be between 6 and 40 characters in length|Nom de la campagne -</B> C'est la description de la campagne, elle doit contenir entre 6 et 40 caractères|
+Active -<\/B> This is where you set the campaign to Active or Inactive. If Inactive, noone can log into it|Active -</B> C'est ici que vous indiquez si la campagne est active ou non. Si elle est inactive personne ne peut se connecter à cette campagne|
+Park Extension -<\/B> This is where you can customize the on-hold music for VICIDIAL. Make sure the extension is in place in the extensions.conf and that it points to the filename below|Extension de mise en attente-</B> C'est ici que vous pouvez personnaliser la musique d'attente pour VICIDIAL. Assurez vous que l'extension est en place dans le fichier extension.conf et qu'elle pointe sur le fichier suivant|
+Park File Name -<\/B> This is where you can customize the on-hold music for VICIDIAL. Make sure the filename is 10 characters in length or less and that the file is in place in the /var/lib/asterisk/sounds directory|Fichier de mise en attente-</B> C'est ici que vous pouvez personnaliser la musique d'attente pour VICIDIAL. Assurez vous que le nom du fichier fasse moins de 10 caractères et qu'il soit bien en place dans le répertoire /var/lib/asterisk/sounds|
+Web Form -<\/B> This is where you can set the custom web page that will be opened when the user clicks on the WEB FORM button|Formulaire Web -</B> C'est ici que que vous pouvez mettre une page web personnalisée qui sera ouverte quand l'utilisateur cliquera sur le bouton FORMULAIRE WEB|
+Allow Closers -<\/B> This is where you can set whether the users of this campaign will have the option to send the call to a closer|Autoriser les Closers -</B> C'est ici que vous pouvez définir si les utilisateurs de cette campagne pouront envoyer l'appel vers une campagne de type closer|
+Dial Status -<\/B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below|Statut de l'appel -<\/B> C'est ici que vous indiquez les statuts que vous voulez appeler dans les listes actives pour la campagne suivante|
+List Order -</B> This menu is where you select how the leads that match the statuses selected above will be put in the lead hopper|Ordre de la liste -</B> C'est dans ce menu que vous selectionnez comment les fiches qui correspondent aux statuts selectionnés ci-dessus seront mises dans le distributeur de fiches|
+select the first leads loaded into the vicidial_list table|selectionne les premières fiches chargées dans la table vicidial_list|
+select the last leads loaded into the vicidial_list table|selectionne les dernières fiches chargées dans la table vicidial_list|
+select the highest phone number and works its way down|selectionne le plus grand numéro de téléphone et continue vers le bas|
+select the lowest phone number and works its way up|selectionne le plus petit numéro de téléphone et continue vers le haut|
+starts with last names starting with Z and works its way down|commence avec les noms commençant pas Z et continue vers le bas|
+starts with last names starting with A and works its way up|commence avec les noms commençant par A et continue vers le haut|
+starts with most called leads and works its way down|commence avec les fiches les plus appelées et continue en descendant|
+starts with least called leads and works its way up inserting a NEW lead in every other lead - Must NOT have NEW selected in the dial statuses|commence avec les fiches les moins appelées et continue en montant en insérant une fiche NEW à chaque autre fiche - Ne doit PAS avoir NEW selectionné dans les statuts d'appel|
+starts with least called leads and works its way up inserting a NEW lead in every third lead - Must NOT have NEW selected in the dial statuses|commence avec les fiches les moins appelées et continue en augmentant en insérant une fiche NEW toutes les 3 fiches - Ne doit PAS avoir NEW selectionné dans les statuts d'appel|
+starts with least called leads and works its way up inserting a NEW lead in every forth lead - Must NOT have NEW selected in the dial statuses|commence avec les fiches les moins appelées et continue en augmentant en insérant une fiche NEW toutes les 4 fiches - Ne doit PAS avoir NEW selectionné dans les statuts d'appel|
+starts with least called leads and works its way up|commence avec les fiches les moins appelées et continue en augmentant|
+Hopper Level -<\/B> This is how many leads the VDhopper script tries to keep in the vicidial_hopper table for this campaign. If running VDhopper script every minute, make this slightly greater than the number of leads you go through in a minute|Niveau du distributeur -</B> C'est le nombre de fiches que le script VDhopper essaye de garder dans la table vicidial_hopper  pour cette campagne. Si l'on lance le script VDhopper chaque minute, mettez juste au dessus du nombre de fiches que vous voulez traiter par minute|
+Force Reset of Hopper -<\/B> This allows you to wipe out the hopper contents upon form submission. It should be filled again when the VDhopper script runs|Forcer la réinitialisation du distributeur -</B> Cela vous autorise à éliminer le contenu du distributeur depuis un formulaire de validation. Il devrait être rempli une nouvelle fois quand le quand VDhopper se lance|
+Auto Dial Level -<\/B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow|Niveau de l'appel automatique -</B> C'est ici que vous mettez combien de lignes VICIDIAL devrait utiliser par agent. 0 veut dire que l'appel automatique est désactivé et que l'agent doit cliquer pour appeler chaque numéro. Autrement VICIDIAL maintiendra le nombre de lignes égale au nombre d'agents actifs  multiplié par le niveau de l'appel automatique pour arriver au nombres de lignes que cette campagne devrait permettre sur chaque serveur |
+Next Agent Call -<\/B> This determines which agent receives the next call that is available|Appel de l'agent suivant -</B> Cela determine quel agent recevra l'appel suivant quand c'est possible|
+orders by the random update value in the vicidial_live_agents table|ordonne par la valeur aléatoire de mise à jour dans la table vicidial_live_agents|
+orders by the last time an agent was sent a call. Results in agents receiving about the same number of calls overall|ordonne par la dernière date à laquelle un agent a passé un appel. Résultats des agents recevant globalement un nombre à peu près identique d'appels |
+orders by the last time an agent finished a call. AKA agent waiting longest receives first call|ordonne suivant la dernière date à laquelle un agent a terminé un appel. L'agent AKA attendant le plus longtemps reçoit le premier appel|
+Local Call Time -<\/B> This is where you set during which hours you would like to dial, as determined by the local time in the are in which you are calling. This is controlled by area code and is adjusted for Daylight Savings time if applicable. General Guidelines in the USA for Business to Business is 9am to 5pm and Business to Consumer calls is 9am to 9pm|Temps d'appel local -<\/B> C'est ici que vous indiquez pendant quelles heures vous voulez appeler, comme déterminé par l'heure locale dans la région dans laquelle vous voulez appeler. C'est controlé par le code de la région et est ajusté pendant le temps des Daylight Savings si c'est approprié. Les habitudes générales aux Etat-Unis, de Buisness à Buisness, sont de 9h00 à 17h00 et de Buisness à particulier de 9h00 à 21h00|
+Voicemail -<\/B> If defined, calls that would normally DROP would instead be directed to this voicemail box to hear and leave a message|Boîte vocale -</B> Si elle est définie, les appels qui sont normalement abandonné seront redirigés vers une boîte vocale pour écouter et laisser un message|
+Dial Timeout -<\/B> If defined, calls that would normally hang up after the timeout defined in extensions.conf would instead timeout at this amount of seconds if it is less than the extensions.conf timeout. This allows for quickly changing dial timeouts from server to server and limiting the effects to a single campaign. If you are having a lot of Answering Machine or Voicemail calls you may want to try changing this value to between 21-26 and see if results improve|Délai d'appel -<\/B> Si défini, les appels qui seraient normalement raccrochés après le délai défini dans extensions.conf le seront après ce nombre de secondes si c'est moins que le délai dans extensions.conf. Cela autorise des délais de changement d'appel rapide de serveur à serveur et limite les effets à une simple campagne. Si vous avez beaucoup de répondeur et de boîte vocales, vous devriez essayer de mettre une valeur entre 21 et 26 et voir si les résultats s'améliorent|
+Dial Prefix -<\/B> This field allows for more easily changing a path of dialing to go out through a different method without doing a reload in Asterisk. Default is 9 based upon a 91NXXNXXXXXX in the dial plan - extensions.conf|Préfixe d'appel -</B> Ce champ autorise plus facilement à changer un chemin d'appel vers l'exterieur à travers une méthode differente sans devoir recharger Asterisk. La valeur par défaut 9 est basée sur 91NXXNXXXXXX dans le dial plan du fichier extensions.conf |
+Campaign CallerID -<\/B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID|CallerID de la campagne -</B> Ce champ autorise à envoyer un numéro de callerId personnalisé sur les appels sortants. C'est le numéro de callerId que vous voullez montrer à la personne que vous appellez. La valeur par défaut est UNKNOW. Si vous utilisez des T1 ou E1s pour appeler vers l'extérieur cette option est seulement valable si vous utilisez des PRIs - ISDN T1s ou E1s - qui ont la fonction CallerId personnalisable activée, cela ne fonctionne pas avec le service Robbed-bit et les circuits -RBS-. Cela fonctionne aussi avec la plupart des fournisseurs VOIP -SIP ou trunks IAX- qui autorisent un callerId de sortie dynamique. Le callerID personnalisé ne s'applique qu'aux appels passés directement depuis la campagne VICIDIAL, n'importe quel appel avec une tierce personne ou transféré n'enverra pas le callerId personnalisé. NOTE: Parfois en mettant UNKWOWN ou PRIVATE dans ce champ c'est le callerId par défaut de votre ligne qui sera transmis pour les appels. Vous pouvez tester cela et mettre 0000000000 à la place dans le champs calleID si vous ne voulez pas envoyer votre CallerID|
+Campaign VDAD extension -<\/B> This field allows for a custom VDAD transfer extension. This allows you to use different VDADtransfer...agi scripts depending upon your campaign. The default transfer AGI - exten 8365 agi-VDADtransfer.agi - just immediately sends the calls on to agents as soon as they are picked up. An additional sample political survey AGI is also now included - 8366 agi-VDADtransferSURVEY.agi - that plays a message to the called person and allows them to make a choice by pressing buttons - effectively pre-screening the lead - . Please note that except for surveys, political calls and charities this form of calling is illegal in the United States|Extension de la campagne VDAD -</B> Ce champ autorise une extension personaliséz pour un transfert VDAD. Cela vous autorise à utiliser différents VDADtransfer...scripts agi en fonction de votre campagne. Le transfert AGI par défaut - exten 8365 agi-VDADtransfer.agi - envoie immédiatement les appels aux agents dès qu'ils sont connectés. Un exemple d'ajout d'un AGI de politique de surveillance est aussi inclu dans - 8366 agi-VDADtransferSURVEY.agi - qui joue un message à la personne appelée et l'autorise à faire un choix en pressant les boutons - effectively  pre-screening the lead - . Veuillez notez que excepté pour les surveillances, les appels politiques et de charités, cette forme d'appel est illégale aux Etats-Unis|
+Campaign Rec extension -<\/B> This field allows for a custom recording extension to be used with VICIDIAL. This allows you to use different extensions depending upon how long you want to allow a maximum recording and what type of codec you want to record in. The default exten is 8309 which if you follow the SCRATCH_INSTALL examples will record in the WAV format for upto one hour. Another option included in the examples is 8310 which will record in GSM format for upto one hour|Extention d'enregistrement -</B> Ce champs autorise à avoir une extension personnalisée d'enregistrement pour l'utiliser avec VICIDIAL. Cela autorise à utiliser différentes extensions selon le temps maximum d'enregistrement que vous voulez autoriser et le type de codec que vous voulez utiliser. L'exten par defaut est 8309 qui, si vous avez suivi les exemples de la SCRATCH_INSTALL, enregistrera dans le format WAV jusqu'à une heure. Une autre option incluse dans les exemples est 8310 qui enregistrera dans le format GSM jusqu'à une heure|
+Campaign Recording -<\/B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent|Enregistrement de campagne -</B> Ce menu vous autorise à choisir quel niveau d'enregistrement est autorisé pour cette campagne. NEVER désactivera l'enregistrement sur le client. ONDEMAND est la valeur par défaut et autorise l'agent à démarrer et arrêter l'enregistrement au besoin. ALLCALLS démarera l'enregistrement sur le client quand un appel est lancé par un agent|
+Campaign Rec Filename -<\/B> This field allows you to customize the name of the recording when Campaign recording is ONDEMAND or ALLCALLS. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212|Nom du fichier d'enregistrement de la campagne -</B> Ce champs vous permet de personnaliser le nom de fichier pour l'enregistrement quand l'enregistrement de la campage est sur ONEDEMAND ou ALLCALLS. Les variables autorisées sont CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. La valeur par defaut est FULLDATE_AGENT et le nom du fichier ressemblerait à ceci : 20051020-103108_6666. Un autre exemple est CAMPAIGN_TINYDATE_CUSTPHONE ce qui ressemblerait à ceci : TESTCAMP_51020103108_3125551212 |
+Campaign Script -<\/B> This menu allows you to choose the script that will appear on the agents screen for this campaign. Select NONE to show no script for this campaign|Script campagne ->/B> Ce menu vous permet de choisir le script qui apparaîtra sur l'écran des agents pour cette campagne. Mettez NONE pour ne pas montrer de script pour cette campagne|
+Get Call Launch -<\/B> This menu allows you to choose whether you want to auto-launch the web-form page in a separate window, auto-switch to the SCRIPT tab or do nothing when a call is sent to the agent for this campaign|Consigne de lancement d'appel -</B> Ce menu vous permet de choisir si vous voulez lancer automatiquement la page de web-form dans une fenêtre séparée, passer automatiquement sur l'onglet de script ou ne rien faire quand un appel est envoyé par un agent dans cette campagne|
+Answering Machine Message -<\/B> This field is for entering in an extension to blind transfer calls to when the agent gets an answering machine and clicks on the Answering Machine Message button in the transfer conference frame. You must set this exten up in the dial plan - extensions.conf - and make sure it plays an audio file then hangs up|Message de répondeur -</B> Entrez dans ce champ l'extension pour tranferer aveuglement des appels pour quand l'agent tombe sur un répondeur et qu'il clique sur le bouton Answering Machine Message dans la fenêtre de transfert de conférence. Vous devez placer cet exten dans le Dial Plan - extensions.conf - et vous assurer qu'il joue un fichier audio puis raccroche|
+List ID -<\/B> This is the numerical name of the list, it is not editable after initial submission, must contain only numbers and must be between 2 and 8 characters in length|ID de la liste -</B> C'est le nom numérique de la liste, il n'est pas éditable après la première validation, il ne doit contenir que des nombres et contenir entre 2 et 8 caractères|
+List Name -<\/B> This is the description of the list, it must be between 2 and 20 characters in length|Nom de la liste -</B> C'est la description de la liste, elle doit contenir entre 2 et 20 caractères|
+Campaign -<\/B> This is the campaign that this list belongs to. A list can only be dialed on a single campaign at one time|Campagne -</B> C'est la campagne à laquelle cette liste appartient. Une liste ne peut etre appelée que depuis une seule campagne à la fois|
+Active -<\/B> This defines whether the list is to be dialed on or not|Active -</B> Cela définie si la liste peut etre appelée ou non|
+Reset Lead-Called-Status for this list -<\/B> This resets all leads in this list to N for \"not called since last reset\" and means that any lead can now be called if it is the right status as defined in the campaign screen|Réinisialiser le Lead-Called-Status pour cette liste -</B> Cela réinitialise les fiches dans cette liste à N pour "not called since last reset" et signifie que n'importe quelle fiche peut maintenant être appelée si ce statut est défini dans l'écran de campagne|
+Group ID -<\/B> This is the short name of the inbound group, it is not editable after initial submission, must not contain any spaces and must be between 2 and 20 characters in length|ID du groupe -</B> C'est le nom court du group entrant, il n'est pas éditable après la première initialisation, il doit contenir entre 2 est 20 caractères|
+Group Name -<\/B> This is the description of the group, it must be between 2 and 30 characters in length. Cannot include dashes, plusses or spaces|Nom du groupe -</B> C'est la déscription du groupe, il doit contenir entre 2 et 30 caractères et ne doit pas contenir de tirets, de plus ou d'espaces|
+Group Color -<\/B> This is the color that displays in the VICIDIAL client app when a call comes in on this group. It must be between 2 and 7 characters long. If this is a hex color definition you must remember to put a # at the beginning of the string or VICIDIAL will not work properly|Couleur du groupe </B> C'est la couleur que est affichée dans l'application cliente VICIDIAL quand un appel arrive dans ce groupe. Il doit contenir entre 2 et 7 caractères. Si c'est une couleur en hexadecimal vous devez mettre un # au début de la chaîne de caractères ou VICIDIAL ne fonctionnera pas proprement|
+Active -<\/B> This determines whether this group show up in the selection box when a VICIDIAL agent logs in|Active -</B> Cela détermine si ce groupe sera visible dans la boîte de sélection quand un agent se connecte à VICIDIAL|
+Web Form -<\/B> This is the custom address that clicking on the WEB FORM button in VICIDIAL will take you to for calls that come in on this group|Formulaire Web -</B> C'est l'adresse personnalisée qui, en cliquant sur le boutton WEB FORM dans VICIDIAL, sera prise pour les appels qui arrivent dans ce groupe|
+Voicemail -<\/B> If defined, this is the Voicemail box that calls will go to instead of being dropped if no agents are available after the hold time is up|Boîte vocale -</B> Si définie, c'est la boîte vocale vers laquelle les appels seront redirigés au lieu d'être abandonnés si aucun agent n'est disponible une fois le temps limite atteint|
+Fronter Display -<\/B> This field determines whether the inbound VICIDIAL agent would have the fronter name - if there is one - displayed in the Status field when the call comes to the agent|Affichage de l'enseigne -<\/B> Ce champ détermine si l'agent VICIDIAL sortant doit avoir l'enseigne - si il y en a une - affichée dans le champ Statut quand l'appel est passé à l'agent|
+User ID Start -<\/B> This is the starting User ID that is used when the remote agent entries are inserted into the system. If the Number of Lines is set higher than 1, this number is incremented by one until each line has an entry. Make sure you create a new VICIDIAL user account with a user level of 4 or great if you want them to be able to use the vdremote.php page for remote web access of this account|ID utilisateur de départ -</B> C'est l'ID utilisateur de départ qui est utilisé quand un entrée d'agent distant est inserée dans le système. Si le nombre de lignes est plus grand que 1, ce nombre est incrementé de un pour chaque ligne qui a une entrée. Assurez vous d'avoir créer un nouveau compte utilisateur VICIDIAL avec un niveau de 4 ou plus si vous voulez qu'il puisse utiliser la page vdremote.php pour pour un accès web distant pour ce compte|
+Number of Lines -<\/B> This defines how many remote agent entries the system creates, and determines how many lines it thinks it can safely send to the number below|Numéro de lignes -</B> Cela définie combien d'entrées d'agent distants le système crée, et détermine combien de lignes peuvent être envoyées sans soucis au numéro ci-dessus|
+Server IP -<\/B> A remote agent entry is only good for one specific server, here is where you select which server you want|IP du serveur -</B> Une entrée d'agent distant est seulement valide pour un serveur spécifique, c'est ici que vous sélectionnez quel serveur vous voulez|
+External Extension -<\/B> This is the number that you want the calls forwarded to. Make sure that it is a full dial plan number and that if you need a 9 at the beginning you put it in here. Test by dialing this number from a phone on the system|Extension externe -</B> C'est le numéro vers lequel vous voulez faire suivre l'appel. Assurez vous que c'est un numéro du dial plan et si vous avez besoin d'un 9 au début mettez le ici. Testez en appelant ce numéro depuis un téléphone du système|
+Status -<\/B> Here is where you turn the remote agent on and off. As soon as the agent is Active the system assumes that it can send calls to it. It may take up to 30 seconds once you change the status to Inactive to stop receiving calls|Etat -</B> C'est ici que vous activez ou desacivez l'agent distant. Dès que l'agent est actif le systeme permet que des appels puissent lui être envoyés. Cela peu prendre plus de 30 secondes à partir du moment où vous avez desactivé l'agent jusqu'à l'arrêt de la réception des appels|
+Campaign -<\/B> Here is where you select the campaign that these remote agents will be logged into. Inbound needs to use the CLOSER campaign and select the inbound campaigns below that you want to receive calls from|Campagne -</B> C'est ici que vous choisissez la campagne dans laquelle ces agents distants ce connecteront. Les appels entrants ont besoin d'une campagne de type CLOSER et de selectionner les campagnes entrantes ci-dessus dans laquelle vous voulez recevoir des appels|
+Inbound Groups -<\/B> Here is where you select the inbound groups you want to receive calls from if you have selected the CLOSER campaign|Groupes entrants -</B> C'est ici que vous selectionnez les groupes entrants depuis lesquels vous voulez recevoir des appels si vous avez selectionné une campagne de type CLOSER|
+The lists within this campaign are listed here, whether they are active is denoted by the Y or N and you can go to the list screen by clicking on the list ID in the first column|Les listes de cette campagne sont énumérées ici, leur activité est dénotée par le Y ou N et vous pouvez aller à l'écran de la liste en cliquant sur l'ID de la liste dans la première colonne|
+Through the use of custom campaign statuses, you can have statuses that only exist for a specific campaign. The Status must be 1-8 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as a disposition|En utilisant des statuts de campagne personnalisés, vous pouvez utiliser des statuts qui n'existent que pour une campagne spécifique. Le statut doit contenir entre 1 et 8 caractères , la description entre 2 et 30 et Selectionnable définit si il apparaît dans VICIDIAL comme disposition|
+Through the use of custom campaign hot keys, agents that use the vicidial web-client can hang up and disposition calls just by pressing a single key on their keyboard|En utilisant des raccourcis clavier personnalisés, les agents utilisant le client web VICIDIAL peuvent raccrocher et statuer les appels juste en pressant une seule touche du clavier|
+User Group -<\/B> This is the short name of a Vicidial User group, try not to use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters|Groupe d'utilisateurs -</B> C'est le nom court d'un groupe d'utilisateurs Vicidial, n'utilisez ni espaces ni ponctuation pour ce champ. Max 20 caractère min 2|
+Group Name -<\/B> This is the description of the vicidial user group max of 40 characters|Nom du Groupe -</B> C'est la description du groupe d'utilisateurs vicidial. Max 40 caractères|
+Xfer-Conf DTMF -<\/B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed|DTMF pour le transfert de conférence -<\/B> Ces quatre champs vous permettent de définir deux préselection DTMF pour les transferts de conférences. Quand l'appel ou la campagne est chargée, le script vicidial.php montrera deux boutons dans la fenêtre transfert-conference et remplira automatiquement les champs numéro-à-appeler et envoyer-dtmf quand ils sont pressés|
+AMD send to vm exten -<\/B> This menu allows you to define whether a message is left on an answering machine when it is detected. the call will be immediately forwarded to the Answering-Machine-Message extension if AMD is active and it is determined that the call is an answering machine|AMD envoyé au vm exten -<\/B> Ce menu vous permet de définir si un message est laissé sur un répondeur quand il est détecté. L'appel sera immédiatement transmis à l'extention Answering-Machine-Message si AMD est actif et si il est déterminé que l'appel est un répondeur|
+Modify Leads -<\/B> This option if set to 1 allows the user to modify leads in the admin section lead search results page|Modifier les fiches -</B> Si cette otpion est à 1 elle autorise l'utilisateur à modifier les fiches dans la page des résultats de la recherche de fiches dans la section d'administration|
+Hot Keys Active -<\/B> This option if set to 1 allows the user to use the Hot Keys quick-dispositioning function in|Raccourcis clavier actifs -</B> Si cette option est à 1 elle autorise l'utilisateur à utiliser les raccourcis clavier|
+Change Agent Campaign -<\/B> This option if set to 1 allows the user to alter the campaign that an agent is logged into while they are logged into it|Changer l'agent de campagne -</B> Cette option, si elle est mise à 1, permet à l'utilisateur de changer la campagne dans laquelle est connecté un agent alors qu'il y est connecté|
+Agent Choose Ingroups -<\/B> This option if set to 1 allows the user to choose the ingroups that they will receive calls from when they login to a CLOSER or INBOUND campaign. Otherwise the Manager will need to set this in their user detail screen of the admin page|Choix des Ingroups -<\/B> Cette option, si elle est mise à 1 autorise l'utilisateur à choisir les ingroups depuis lesquels il recevra des appels quand il est connecté dans une campagne de type CLOSER ou INBOUND sinon le manager devra le définir dans l'écran de détails de l'utiliseur sur la page d'amiministration|
+Lead Filter -<\/B> This is a method of filtering your leads using a fragment of a SQL query. Use this feature with caution, it is easy to stop dialing accidentally with the slightest alteration to the SQL statement. Default is NONE|Filtre de fiches -</B> C'est une méthode de filtrage de vos fiches utilisant un fragment de requête SQL. Utilisez cette fonction avec précaution, il est facile de stoper une comunication accidentellement avec le plus petit changement du statement SQL. La valeur par défaut est NONE|
+Filter ID -<\/B> This is the short name of a Vicidial Lead Filter. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|ID du Filtre -</B> C'est le nom court du filtre de fiches Vicidial. Il doit être unique. N'utilisez ni espace ni ponctuation. Max 10 caractères min 2|
+Filter Name -<\/B> This is a more descriptive name of the Filter. This is a short summary of the filter. max 30 characters, minimum of 2 characters|Nom du Filtre -</B> C'est un nom plus descrtiptif du filtre. C'est un court resumé du filtre. Max 30 caractères Min 2|
+Filter Comments -<\/B> This is where you can place comments for a Vicidial Filter such as -calls all California leads-.  max 255 characters, minimum of 2 characters|Commentaire du filtre -</B> C'est ici que vous placez les commmentaire du filtre vicidial comme -Appel toutes les fiches de Californie- max 255 characters, min 2|
+Filter SQL -<\/B> This is where you place the SQL query fragment that you want to filter by. do not begin or end with an AND, that will be added by the hopper cron script automatically. an example SQL query that would work here is- called_count \> 4 and called_count \< 8 -|Filtre SQL -</B> C'est ici que vous mettez le fragment de requête SQL que vous voulez utiliser pour filtrer. Ne commencez pas ni ne finissez pas par AND, cela est automatiquement ajouté par le script cron. Exemple : called_count > 4 and called_count < 8 |
+Agent Alt Num Dialing -<\/B> This option allows an agent to manually dial the alternate phone number or address3 field after the main number has been called|Appel du numéro alternatif pour l'agent -</B> Cette option permet à l'agent d'appeler le numéro de téléphone alternatif ou le champ adresse3 après que le numéro de téléphone principal ait été appelé|
+Scheduled Callbacks -<\/B> This option allows an agent to disposition a call as CALLBK and choose the data and time at which the lead will be re-activated|Rappels programmés -</B> Cette option autorise un agent à statuer un appel comme CALLBK et à choisir une date et une heure à laquelle la fiche sera réactivée|
+Agent-Only Callbacks -<\/B> This option allows an agent to set a callback so that they are the only Agent that can call the customer back. This also allows the agent to see their callback listings and call them back any time they want to|Rappel Agent-Seulement -</B> Cette option autorise un agent à assigner un rappel pour lequel il sera le seul a pouvoir rappeler le client. Cela autorise aussi l'agent à voir sa liste de rappel quand il le désire|
+Agent Call Manual -<\/B> This option allows an agent to manually enter a new lead into the system and call them. This also allows the calling of any phone number from their vicidial screen and puts that call into their session. Use this option with caution|Appel manuel pour l'agent-</B> Cette option autorise un agent à entrer manuellement une nouvelle fiche et à l'appeler. Elle autorise aussi l'appel de n'importe quel numéro de téléphone depuis vicidial et met cette appel dans sa session. Utilisez cette option avec précaution|
+Vicidial Recording -<\/B> This option can prevent an agent from doing any recordings after they log in to vicidial. This option must be on for vicidial to follow the campaign recording session|Enregistrement vicidial -</B> Cette otpion peut empêcher un agent de faire un enregistrement après qu'il se soit connecté à vicidial. Cette option doit être activée pour que vicidial suive la session d'enregistrement de la campagne|
+Vicidial Transfers -<\/B> This option can prevent an agent from opening the transfer - conference session of vicidial. If this is disabled, the agent cannot third party call or blind transfer any calls|Transferts Vicidial  -</B> Cette option peut empêcher un agent d'ouvrir un transfert - conférence dans vicidial. Si c'est desactivé, l'agent ne pourra pas appeler une tierce personne ou transferer l'appel|
+Delete Filters -<\/B> This option allows the user to be able to delete vicidial lead filters from the system|Supprimer des filtres -</B> Cette option autorise l'utilisateur à supprimer les filtres de fiches du système|
+Alter Agent Interface Options -<\/B> This option if set to 1 allows the administrative user to modify the Agents interface options in admin.php|Modifier les options de l'interface agent -</B> Cette option, si elle est à 1, autorise l'utilisateur administrateur à modifier les otpions de l'interface Agent dans admin.php|
+Closer Default Blended -<\/B> This option simply defaults the Blended checkbox on a CLOSER login screen|Closer Default Blended -<\/B> Cette option coche simplement par défaut la checbox Blended sur un écran de connection d'une campagne de type CLOSER|
+FILTER NOT ADDED - there is already a filter entry with this ID|FILTRE NON AJOUTE - il y a déjà un filtre avec cet identifiant|
+Filter ID, name and SQL must be at least 2 characters in length|Identifiant du filtre, le nom et le SQL doivent au moins contenir 2 caractères|
+Filter ID must be at least 2 characters in length|L'identifiant du filtre doit contenir au moins 2 caractères|
+Please go back and look at the data you entered|Veuillez retourner en arrière et vérifier les données que vous avez saisies|
+CLICK HERE TO GO TO THE SUPER LEAD LOADER|CLIQUEZ ICI POUR ALLER AU SUPER CHARGEUR DE FICHES|
+BACK TO ADMIN|RETOUR A L'ADMINISTRATION|
+File layout to use|Disposition du fichier à utiliser|
+Standard VICIDIAL|VICIDIAL standard|
+Custom layout|Disposition personnalisée|
+CLICK HERE TO GO TO THE BASIC LEAD LOADER|CLIQUEZ ICI POUR ALLER AU CHARGEUR DE FICHES BASIQUE|
+SUPER LIST LOADER|SUPER CHARGEUR DE LISTES|
+OK TO PROCESS|PRET A TRAITER|
+File data|Données du fichier|
+short description of the filter|courte description du filtre|
+Alter Agent Interface Options: |Changer les options de l'interface de l'agent: |
+Click here to delete filter |Cliquez ici pour effacer le filtre|
+FILTER DELETION COMPLETED:|EFFACEMENT DU FILTRE TERMINE:|
+ADMIN INTERFACE OPTIONS:|OPTIONS DE L'INTERFACE D'ADMINISTRATION:|
+AGENT INTERFACE OPTIONS:|OPTIONS DE L'INTERFACE DE L'AGENT:|
+Closer Default Blended:|Closer Default Blended:|
+Agent Alt Num Dialing:|Composition du numéro alternatif de l'agent:|
+Scheduled Callbacks:|Rappels de service programmés:|
+Agent-Only Callbacks:|Rappels de service d'agent-seulement:|
+New Filter Addition|Ajout d'un nouveau filtre|
+LEAD FILTER LISTINGS:|LISTE DES FILTRES DE FICHES:|
+FILTER NOT MODIFIED|FILTRE NON MODIFIE|
+FILTER NOT DELETED|FILTRE NON SUPPRIME|
+DELETE THIS FILTER|SUPPRIMER CE FILTRE|
+FILTER NOT ADDED|FILTRE NON AJOUTE|
+Filter Comments: |Commentaires du filtre:|
+FILTER MODIFIED|FILTRE MODIFIE|
+MODIFY A FILTER|MODIFIER UN FILTRE|
+ADD NEW FILTER|AJOUTER UN NOUVEAU FILTRE|
+Add New Filter|Ajouter un nouveau filtre|
+Modify Filter|Modifier le filtre|
+Delete Filter|Supprimer le filtre|
+Filter Name: |Nom du filtre:|
+FILTER ADDED:|FILTRE AJOUTE:|
+VIEW FILTERS|VOIR LES FILTRES|
+Lead Filter:|Filtre sur les fiches:|
+Filter SQL:|Filtre Sql:|
+Users List|Liste des utilisateurs|
+Filter ID: |ID du filtre:|
+Filters|Filtres|
+Agent Call Manual|Appel manuel de l'agent|
+Vicidial Recording|Enregistrement Vicidial|
+Vicidial Transfers|Transferts Vicidial|
+Click here for user time sheet|Cliquez ici pour la feuille de présence de l'utilisateur|
+Click here for user status|Cliquez ici pour les statuts utilisateur|
+Click here for user CallBack Holds|Cliquez ici pour les rappels reservés à cet utilisateur|
+Lead Filter|Filtre de la fiche|
+Click here to see all CallBack Holds in this campaign|Cliquez ici pour voir les rappels réservés de cette campagne|
+STATUS NAME|NOM DU STATUT|
+Script ID|ID du script|
+Script Name|Nom du script|
+Script Comments|Commentaires du script|
+Script Text|Texte du script|
+ADD FILTER|AJOUTER LE FILTRE|
+overall_user_level: orders by the user_level of the agent as defined in the vicidial_users table a higher user_level will receive more calls|overall_user_level: ordonne par le user_level de l'agent comme défini dans la table vicidial_users, un user_level plus élévé recevra plus d'appels|
+VICIDIAL LIST LOADER FUNCTIONALITY|FONCTIONNALITES DU CHARGEUR DE FICHES DE VICIDIAL|
+The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. There is also a new beta version super lead loader that allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation or check for duplicates in itself or other lists, so that is something you need to do before you load the leads. Also, make sure that you have created the list that these leads are to be under so that you can use them. There is also the matter of time-zone-coding these leads. You may want to increase the frequency that the ADMIN_adjust_GMTnow_on_leads.pl is being run in the cron on your Asterisk server so that any loaded leads can be coded faster. Here is a list of the fields in their proper order for the lead files|Le chargeur de fiche web VICIDIAL basique est désigné simplement pour prendre un fichier de fiches - jusqu'à 8MB - qui sont délimités soit par des tabultaions soit par des pipes et les charges dans la table vicidial_list. Il y a aussi une nouvelle version super beta qui permet le choix des champs et l'utilisation des formats TXT- Plain Text, CSV- Comma Separated Value et XLS- format Excel. Le chargeur de fiches ne fait pas de validation des données ou de vérification des doublons dans le fichier ou dans d'autres listes, donc c'est quelquechose que vous devez faire avant de charger les fiches. De plus, vérifiez que vous avez créer la liste dans laquelle doivent être ces fiches. Il y a égalament le soucis de time-zone-coding de ces fiches. Vous pouvez vouloir augmenter la fréquence à laquelle le script ADMIN_adjust_GMTnow_on_leads.pl est lancé dans le cron sur votre serveur asterisk de sorte que toutes les fiches chargées puissent être codées plus rapidement. Voici une liste des champs dans l'ordre pour les fichiers de fiches|
+NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /home/cron/AST_SERVER_conf.pl file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file|NOTES: La fonctionnalité Excel du chargeur de fiches est activée par une série de scripts perl et nécessite que le fichier /home/cron/AST_SERVER_conf.pl soit correctement configuré. De plus, certains modules perl doivent être chargés pour que cela fonctionne correctement - OLE-Storage_Lite et Spreadsheet-ParseExcel. Vous pouvez vérifier les erreurs de runtime dans le fichier error_log de apache|
+Vendor Lead Code - shows up in the Vendor ID field of the GUI|Code vendeur de la fiche - montre dans le champ dID du vendeur de l'interface graphique|
+Source Code - internal use only for admins and DBAs|Code source - usage interne uniquement pour les administrateurs et les administrateurs de la base de données|
+List ID - the list number that these leads will show up under|Identifiant de la liste - le numéro de la liste dans laquelle seront ces fiches|
+Phone Code - the prefix for the phone number - 1 for US, 01144 for UK, 01161 for AUS, etc|Code du téléphone - le préfixe pour le numéro de téléphone - 1 pour les USA, 0144 pour le Royaume-Uni, 01161 pour l'Australie, etc|
+Phone Number - must be at least 8 digits long|Numéro de téléphone - doit contenir au moins 8 chiffres|
+Title - title of the customer - Mr. Ms. Mrs, etc...|Titre - titre du client - Mr. Mme. Mlle., etc...|
+NOTE: It can take up to 30 seconds for changes submitted on this screen to go live|NOTE: Il peut prendre jusqu'à 30 secondes pour que les chagements soumis sur cette écran soient pris en compte|
+USER NOT ADDED - there is already a user in the system with this user number|UTILISATEUR NON AJOUTE - il y a déjà un utilisateur dans le système avec ce numéro d'utilisateur|
+USER NOT ADDED - Please go back and look at the data you entered|UTILISATEUR NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+user id must be between 2 and 8 characters long|l'identifiant de l'utilisateur doit contenir entre 2 et 8 caractères|
+full name and password must be at least 2 characters long|le nom et le mot de passe doivent contenir au moins 2 caractères|
+CAMPAIGN NOT ADDED - there is already a campaign in the system with this ID|CAMPAGNE NON AJOUTEE - il existe déjà une campagne dans le système avec cet ID|
+CAMPAIGN NOT ADDED - Please go back and look at the data you entered|CAMPAGNE NON AJOUTEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+campaign ID must be between 2 and 8 characters in length|l'ID de la campagne doit contenir entre 2 et 8 caractères|
+campaign name must be between 6 and 40 characters in length|le nom de la campagne doit contenir entre 6 et 40 caractères|
+CAMPAIGN STATUS NOT ADDED - there is already a campaign-status in the system with this name|STATUT DE LA CAMPAGNE NON AJOUTE - il y a déjà un statut de campagne dans le système avec ce nom|
+CAMPAIGN STATUS NOT ADDED - there is already a global-status in the system with this name|STATUT DE LA CAMPAGNE NON AJOUTE - il y a déjà un statut global dans le système avec ce nom|
+CAMPAIGN STATUS NOT ADDED - Please go back and look at the data you entered|STATUT DE LA CAMPAGNE NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+status must be between 1 and 8 characters in length|le statut doit contenir entre 1 et 8 caractères|
+status name must be between 2 and 30 characters in length|le nom du statut doit contenir entre 2 et 30 caractères|
+CAMPAIGN HOT KEY NOT ADDED - there is already a campaign hot key in the system with this hot key|RACCOURCI CLAVIER DE LA CAMPAGNE NON AJOUTE - il y a déjà un raccourci clavier pour la campagne dans le système avec ce raccourci|
+CAMPAIGN HOT KEY NOT ADDED - Please go back and look at the data you entered|RACCOURCI CLAVIER DE LA CAMPAGNE NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+hot key must be a single character between 1 and 9|le raccourci clavier doit être un seul caractère entre 1 et 9|
+LIST NOT ADDED - there is already a list in the system with this ID|LISTE NON AJOUTEE - il y a déjà une liste avec ce nom dans le système|
+LIST NOT ADDED - Please go back and look at the data you entered|LISTE NON AJOUTEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+List ID must be between 2 and 8 characters in length|L'ID de la liste doit contenir entre 2 et 8 caractères|
+List name must be at least 2 characters in length|Le nom de la liste doit contenir au moins 2 caractères|
+GROUP NOT ADDED - there is already a group in the system with this ID|GROUPE NON AJOUTE - il y a déjà un groupe dans le système avec cet identifiant|
+GROUP NOT ADDED - Please go back and look at the data you entered|GROUPE NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+Group ID must be between 2 and 20 characters in length and contain no|L'ID du groupe doit contenir entre 2 et 20 caractères et ne contenir aucun|
+Group name and group color must be at least 2 characters in length|Le nom et la couleur du groupe doivent contenir au moins 2 caractères|
+REMOTE AGENTS NOT ADDED - there is already a remote agents entry starting with this userID|AGENT DISTANT NON AJOUTE - il y a déjà un agent distant avec cet identifiant|
+REMOTE AGENTS NOT ADDED - Please go back and look at the data you entered|AGENT DISTANT NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+User ID start and external extension must be at least 2 characters in length|Le début de l'ID de l'utilisateur et l'extension externe doivent contenir au moins 2 caractères|
+USER GROUP NOT ADDED - there is already a user group entry with this name|GROUP D'UTILISATEURS NON AJOUTE - il y a déjà un groupe d'utilisateurs avec ce nom|
+USER GROUP NOT ADDED - Please go back and look at the data you entered|GROUPE D'UTILISATEURS NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+Group name and description must be at least 2 characters in length|Le nom et la description du groupe doivent contenir au moins 2 caractères|
+USER NOT MODIFIED - Please go back and look at the data you entered|UTILISATEUR NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+Password and Full Name each need ot be at least 2 characters in length|Le mot de passe et le nom complet doivent chacun contenir au moins 2 caractères|
+CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered|CAMPAGNE NON MODIFIEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+the campaign name needs to be at least 6 characters in length|le nom de la campagne doit contenir au moins 6 caractères|
+RESETTING CAMPAIGN LEAD HOPPER|REINITIALISATION DU DISTRIBUTEUR DE FICHES DE LA CAMPAGNE|
+Wait 1 minute before dialing next number|Attendre 1 minute avant l'appel du numéro suivant|
+CAMPAIGN STATUS NOT MODIFIED - Please go back and look at the data you entered|STAUT DE LA CAMPAGNE NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+the campaign id needs to be at least 2 characters in length|L'ID de la campagne doit contenir au moins 2 caractères|
+the campaign status needs to be at least 1 characters in length|Le statut de la campagne doit contenir au moins 1 caractère|
+CUSTOM CAMPAIGN STATUS DELETED|STATUT PERSONNALISE DE LA CAMPAGNE SUPPRIME|
+CAMPAIGN HOT KEY NOT MODIFIED - Please go back and look at the data you entered|RACCOURCI CLAVIER DE LA CAMPAGNE NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+the campaign hot key needs to be at least 1 characters in length|le raccourci clavier doit contenir au moins 1 caractère|
+CUSTOM CAMPAIGN HOT KEY DELETED|RACCOURCI CLAVIER PERSONNALISE DE LA CAMPAGNE SUPPRIME|
+CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered|CAMPAGNE NON MODIFIEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+the campaign name needs to be at least 6 characters in length|le nom de la campagne doit contenir au moins 6 caractères|
+LIST NOT MODIFIED - Please go back and look at the data you entered|LISTE NON MODIFIEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+list name must be at least 2 characters in length|le nom de la liste doit contenir au moins 2 caractères|
+REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER|ENLEVER LES FICHES DU VIEUX DISTRIBUTEUR DE FICHES DE LA CAMAPGNE|
+GROUP NOT MODIFIED - Please go back and look at the data you entered|GROUPE NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+group name and group color must be at least 2 characters in length|le nom et la couleur du groupe doivent contenir au moins 2 caractères|
+REMOTE AGENTS NOT MODIFIED - Please go back and look at the data you entered|AGENT DISTANT NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+User ID Start and External Extension must be at least 2 characters in length|Le début de l'ID de l'utilisateur et l'extension externe doivent contenir au moins 2 caractères|
+REMOTE AGENTS MODIFIED|AGENTS DISTANTS MODIFIES|
+USER GROUP NOT MODIFIED - Please go back and look at the data you entered|GROUPE D'UTILISATEURS NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+Group name and description must be at least 2 characters in length|Le nom et la description du groupe doivent contenir au moins 2 caractères|
+MODIFY A USERS RECORD|MODIFIER UN ENREGISTREMENT D'UTILISATEURS|
+Click here for user stats|Cliquez ici pour les statistiques de l'utilisateur|
+MODIFY A CAMPAIGNS RECORD|MODIFIER UN ENREGISTREMENT DE CAMPAGNES|
+CONFERENCES TABLE|TABLE DES CONFERENCES|
+Conference Number -<\/B> This field is where you put the meetme conference dialpna number. It is also recommended that the meetme number in meetme.conf matches this number for each entry. This is for the conferences in astGUIclient and is used for leave-3way-call functionality in VICIDIAL|Numéro de la conférence -</B> Ce champ permet de mettre le numéro du meetme pour les conférences. Il est aussi recommandé que le numéro du meetme dans meetme.conf corresponde à ce numéro pour chaque entrée. C'est pour les conférences dans astGUIclient et est utilisé pour la fonction leave-3way-call dans VICIDIAL|
+Server IP -<\/B> The menu where you select the Asterisk server that this conference will be on|IP du serveur -</B> C'est le menu dans lequel vous choisissez le serveur Asterisk sur lequel sera cette conférence|
+PHONE NOT ADDED - there is already a Phone in the system with this extension\/server|TELEPHONE NON AJOUTE - il y a déjà un téléphone dans le systéme avec cette extension/serveur|
+PHONE NOT ADDED - Please go back and look at the data you entered|TELEPHONE NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+PHONE ADDED|TELEPHONE AJOUTE|
+SERVER NOT ADDED - there is already a server in the system with this ID|SERVEUR NON AJOUTE - il y a déjà un serveur dans le système avec cet ID|
+SERVER NOT ADDED - Please go back and look at the data you entered|SERVEUR NON AJOUTE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+SERVER ADDED|SERVEUR AJOUTE|
+CONFERENCE NOT ADDED - there is already a conference in the system with this ID and server|CONFERENCE NON AJOUTEE - il y a déjà une conférence dans le système avec cet ID|
+CONFERENCE NOT ADDED - Please go back and look at the data you entered|CONFERENCE NON AJOUTEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+CONFERENCE ADDED|CONFERENCE AJOUTEE|
+PHONE NOT MODIFIED - there is already a Phone in the system with this extension\/server|TELEPHONE NON MODIFIE - il y a déjà un téléphone dans le système avec cette extension/server|
+PHONE NOT MODIFIED - Please go back and look at the data you entered|TELEPHONE NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+PHONE MODIFIED|TELEPHONE MODIFIE|
+SERVER NOT MODIFIED - there is already a server in the system with this server_ip|SERVEUR NON MODIFIE - il y a déjà un serveur dans le système avec cet ID|
+SERVER NOT MODIFIED - Please go back and look at the data you entered|SERVEUR NON MODIFIE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+SERVER MODIFIED|SERVEUR MODIFIE|
+CONFERENCE NOT MODIFIED - there is already a Conference in the system with this extension-server|CONFERENCE NON MODIFIEE - il y a déjà une conférence dans le système avec cette extension-serveur|
+CONFERENCE NOT MODIFIED - Please go back and look at the data you entered|CONFERENCE NON MODIFIEE - Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+You do not have permissions to modify this user|Vous n'avez pas les permissions pour modifier cet utilisateur|
+Click here to delete user|Cliquez ici pour supprimer cet utilisateur|
+Please go back and look at the data you entered|Veuillez revenir en arrière et vérifier les données que vous avez saisies|
+Click here to delete campaign|Cliquez ici pour supprimer cette campagne|
+Click here to delete list and all of its leads|Cliquez ici pour supprimer cette liste et toutes ses fiches|
+REMOVING LIST LEADS FROM VICIDIAL_LIST TABLE|SUPPRIMER LES FICHES DE LA LISTE DE LA TABLE VICIDIAL_LIST|
+Click here to delete in-group|Cliquer ici pour supprimer le in-group|
+Click here to delete remote agent|Cliquez ici pour supprimer l'agent distant|
+Click here to delete user group|Cliquez ici pour supprimer le groupe d'utilisateurs|
+Click here to delete phone|Cliquez ici pour supprimer le téléphone|
+there is already a script entry with this name|il y a déjà un script existant avec ce nom|
+Script name, description and text must be at least 2 characters in length|Les nom, description et texte du script doivent contenir au moins 2 caractères|
+Click here to delete script|Cliquez ici pour supprimer le script|
+Phone Login|Login du téléphone|
+Phone Pass|Mot de passe du téléphone|
+Delete Users|Supprimer les utilisateurs|
+Delete User Groups|Supprimer les groupes utilisateurs|
+Delete Lists|Supprimer les listes|
+Delete Campaigns|Supprimer les campagnes|
+Delete In-Groups|Supprimer les in-groups|
+Delete Remote Agents|Supprimer les agents distants|
+Delete Script|Supprimer les scripts|
+Load Leads|Charger des fiches|
+Campaign Detail|Détails de la campagne|
+AGC Admin Access|Accès administateur de l'AGC|
+AGC Delete Phones|Supprimer les téléphones AGC|
+SCRIPT NOT ADDED|SCRIPT NON AJOUTE|
+SCRIPT ADDED|SCRIPT AJOUTE|
+SCRIPT NOT MODIFIED|SCRIPT NON MODIFIE|
+SCRIPT MODIFIED|SCRIPT MODIFIE|
+DELETE THIS USER|SUPPRIMER CET UTILISATEUR|
+DELETE THIS CAMPAIGN|SUPPRIMER CETTE CAMPAGNE|
+DELETE THIS LIST|SUPPRIMER CETTE LISTE|
+DELETE THIS IN-GROUP|SUPPRIMER CE IN-GROUP|
+DELETE THIS REMOTE AGENT|SUPPRIMER CET AGENT DISTANT|
+DELETE THIS USER GROUP|SUPPRIMER CE GROUPE |
+DELETE THIS PHONE|SUPPRIMER CE TELEPHONE|
+DELETE THIS SCRIPT|SUPPRIMER CE SCRIPT|
+USER NOT DELETED|UTILISATEUR NON SUPPRIME|
+CAMPAIGN NOT DELETED|CAMPAGNE NON SUPPRIMEE|
+LIST NOT DELETED|LISTE NON SUPPRIMEE|
+IN-GROUP NOT DELETED|IN-GROUP NON SUPPRIME|
+REMOTE AGENT NOT DELETED|AGENT DISTANT NON SUPPRIME|
+USER GROUP NOT DELETED|GROUPE D'UTILISATEUR NON SUPPRIME|
+PHONE NOT DELETED|TELEPHONE NON SUPPRIME|
+SCRIPT NOT DELETED|SCRIPT NON SUPPRIME|
+USER DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DE L'UTILISATEUR|
+USER DELETION COMPLETED|SUPPRESSION DE L'UTILISATEUR CONFIRMEE|
+CAMPAIGN DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DE LA CAMPAGNE|
+CAMPAIGN DELETION COMPLETED|SUPRESSION DE LA CAMPAGNE CONFIRMEE|
+Logout Agents|Déconnecter les agents|
+AGENTS NOT LOGGED OUT OF CAMPAIGN|AGENTS NON DECONNECTES DE LA CAMPAGNE|
+AGENT LOGOUT CONFIRMATION|CONFIRMATION DE LA DECONNECTION DE L'AGENT|
+Click here to log all agents out of|Cliquez ici pour déconnecter tous les agents de|
+AGENT LOGOUT COMPLETED|Déconnection des agents terminée|
+LOG ALL AGENTS OUT OF THIS CAMPAIGN|DECONNECTER TOUS LES AGENTS DE CETTE CAMPAGNE|
+LIST DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DE LA LISTE|
+LIST DELETION COMPLETED|SUPPRESSION DE LA LISTE CONFIRMEE|
+IN-GROUP DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DU IN-GROUP|
+IN-GROUP DELETION COMPLETED|SUPPRESSION DU IN-GROUP TERMINEE|
+REMOTE AGENT DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DE L'AGENT DISTANT|
+REMOTE AGENT DELETION COMPLETED|SUPPRESSION DE L'AGENT DISTANT CONFIRMEE|
+USER GROUP DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DU GROUPE D'UTILISATEURS|
+USER GROUP DELETION COMPLETED|SUPPRESSION DU GROUPE D'UTILISATEURS TERMINEE|
+PHONE DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DU TELEPHONE|
+PHONE DELETION COMPLETED|SUPPRESSION DU TELEPHONE TERMINEE|
+SCRIPT DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DU SCRIPT|
+SCRIPT DELETION COMPLETED|SUPPRESSION DU SCRIPT TERMINEE|
+Preview Script|Prévisualisation du script|
+MODIFY A SCRIPT|MODIFIER UN SCRIPT|
+title of the script|titre du script|
+CONFERENCE MODIFIED|CONFERENCE MODIFIEE|
+MODIFY A PHONE RECORD|MODIFIER UN TELEPHONE|
+THE END|LA FIN|
+LIST ALL PHONES|LISTER TOUS LES TELEPHONES|
+ADD A NEW PHONE|AJOUTER UN NOUVEAU TELEPHONE|
+SEARCH FOR A PHONE|RECHERCHER UN TELEPHONE|
+ADD A SERVER|AJOUTER UN SERVEUR|
+LIST ALL SERVERS|LISTER TOUS LES SERVEURS|
+SHOW ALL CONFERENCES|VOIR TOUTES LES CONFERENCES|
+ADD A NEW CONFERENCE|AJOUTER UNE NOUVELLE CONFERENCE|
+AMD Send to VM exten|AMD envoyé au VM exten|
+Transfer-Conf DTMF|DTMF Transfert-Conf|
+Transfer-Conf Number|numéro de Transfer-Conf|
+Hot Keys Active|Racourccis clavier actifs|
+Modify Leads|Modifier les fiches|
+Change Agent Campaign|Changer l'agent de campagne|
+Agent Choose Ingroups|L'agent choisit les Ingroups|
+CallBacks Within Campaign|Rappels dans la campagne |
+CallBacks Within List|Rappels dans la liste|
+CallBacks Within Agent|Rappels de l'agent|
+Phone extension|Extension du téléphone|
+Dial Plan Number|Nuémro dans le dial plan|
+digits only|chiffres seulement|
+Voicemail Box|Boite vocale|
+Outbound CallerID|CallerID sortant|
+Phone IP address|Adresse IP du téléphone|
+Computer IP address|Adresse IP de l'ordinateur|
+Server IP Address|Adresse IP du serveur|
+Server IP|IP du serveur|
+Login: |Login: |
+Password: |Mot de passe:|
+Status: |Etat: |
+Active Account|Compte actif|
+Phone Type|Type de téléphone|
+Full Name|Nom complet|
+Company: |Compagnie: |
+Picture: |Image: |
+Client Protocol|Protocole client|
+Local GMT|GMT local|
+Do NOT Adjust for DST|Ne PAS ajuster pour DST|
+VALUE=SUBMIT|VALUE=VALIDER|
+ADD A NEW SERVER|AJOUTER UN NOUVEAU SERVEUR|
+Server ID|ID du serveur|
+Server Description|Description du serveur|
+Active: |Actif: |
+Asterisk Version|Version d'Asterisk|
+Conference Number|Numéro de la conférence|
+New Messages|Nouveaux messages|
+Old Messages|Anciens messages|
+Manager Login|Login du manager|
+Manager Secret|Mot de passe du manager|
+VICIDIAL Default User|Utilisateur par défaut de VICIDIAL|
+VICIDIAL Default Pass|Mot de passe par défaut de VICIDIAL|
+VICIDIAL Default Campaign|Campagne par défaut de VICIDIAL|
+Park Extension|Extension du parc|
+Park Exten|Extension du parc|
+Conf Extension|Extension de la conférence|
+Conf Exten|Extension de la conférence|
+VICIDIAL Park Exten|Extension du parc VICIDIAL|
+VICIDIAL Park File|Fichier du parc VICIDIAL|
+Monitor Prefix|Préfixe du moniteur|
+Recording Exten|Extension d'enregistrement|
+VMailMain Exten|Extension de la boîte vocale|
+VMailDump Exten|Extension de VmailDump|
+Exten Context|Extension du context|
+DTMFSend Channel|Cannal d'envoi DTMF|
+Outbound Call Group|Groupe d'appels sortants|
+Browser Location|Localisation du navigateur|
+Install Directory|Répertoire d'installation|
+CallerID URL|URL du CallerID|
+VICIDIAL Default URL|URL par défaut de VICIDIAL|
+Call Logging|Log des appels|
+User Switching|Changement d'utilisateur|
+Conferencing|En conférence|
+Admin Hang Up|Raccrochage administrateur|
+Admin Hijack|Détournement administrateur|
+Admin Monitor|Moniteur administrateur|
+Call Park|Parc d'appel|
+Updater Check|Contrôle de mise à jour|
+AF Logging|Log AF|
+Queue Enabled|Queue activée|
+CallerID Popup|Popup du CallerID|
+VMail Button|Bouton de la boîte vocale|
+Fast Refresh|Rafraichissement rapide|
+Fast Refresh Rate|Taux du rafraichissement rapide|
+Persistant MySQL|MySQL persistant|
+Auto Dial Next Number|Appel automatique du numéro suivant|
+Stop Rec after each call|Arrêter l'enregistrement après chaque appel|
+Primary |Primaire|
+Secondary |Secondaire|
+DBX Server|Serveur DBX|
+DBX Database|Base de données DBX|
+DBX User|Utilisateur DBX|
+DBX Pass|Mot de passe DBX|
+DBX Port|Port DBX|
+DBY Server|Serveur DBY|
+DBY Database|Base de données DBY|
+DBY User|Utilisateur DBY|
+DBY Pass|Mot de passe DBY|
+DBY Port|Port DBY|
+MODIFY A SERVER RECORD|MODIFIER UN SERVEUR|
+Max VICIDIAL Trunks|Nombre max de trunks VICIDIAL|
+Telnet Host|Hôte telnet|
+Telnet Port|Port telnet|
+Manager User|Utilisateur manager|
+Manager Update User|Utilisateur de mise à jour manager|
+Manager Listen User|Utilisateur manager pour l'écoute|
+Manager Send User|Utilisateur manager pour l'envoi|
+VMail Dump Exten|VMail Dump Exten|
+VICIDIAL AD extension|Extension AD de VICIDIAL|
+Default Context|Contexte par défaut|
+PHONES WITHIN THIS SERVER|TELEPHONES SUR CE SERVEUR|
+>EXTENSION<|>EXTENSION<|
+>NAME<|>NOM<|
+>ACTIVE<|>ACTIF<|
+>MODIFY<|>MODIFIER<|
+This server has|Ce serveur a|
+active phones and|téléphones actifs et|
+inactive phones|téléphones inactifs|
+MODIFY A CONFERENCE RECORD|MODIFIER UNE CONFERENCE|
+Conference: |Conférence: |
+Current Extension|Extension courante|
+extension: |extension: |
+SEARCH RESULTS|RESULTATS DE LA RECHERCHE|
+PHONE LISTINGS|LISTE DES TELEPHONES|
+SERVER LISTINGS|LISTE DES SERVEURS|
+CONFERENCE LISTINGS|LISTE DES CONFERENCES|
+script runtime|temps d'exécution du script|
+ADD NEW PHONE|AJOUTER UN NOUVEAU TELEPEHONE|
+ADD NEW SERVER|AJOUTER UN NOUVEAU SERVEUR|
+ADD NEW CONFERENCE|AJOUTER UNE NOUVELLE CONFERENCE|
+ADD SCRIPT|AJOUTER UN SCRIPT|
+VIEW SCRIPTS|VOIR LES SCRIPTS|
+SCRIPTS LISTINGS|LISTE DES SCRIPTS|
+ADDING NEW PHONE|AJOUTER UN NOUVEAU TELEPHONE|
+ADDING NEW SERVER|AJOUTER UN NOUVEAU SERVEUR|
+ADDING NEW CONFERENCE|AJOUT D'UNE NOUVELLE CONFERENCE|
+MODIFY PHONE|MODIFIER LE TELEPHONE|
+MODIFY SERVER|MODIFIER LE SERVEUR|
+MODIFY CONFERENCE|MODIFIER LA CONFERENCE|
+MODIFYING PHONE|MODIFICATION DU TELEPHONE|
+MODIFYING SERVER|MODIFIANT LE SERVEUR|
+MODIFYING CONFERENCE|MODIFIANT LA CONFERENCE|
+SEARCH PHONES|RECHERCHER DES TELEPHONES|
+SEARCH PHONES RESULTS|RESULTATS DE LA RECHERCHE DE TELEPHONES|
+PHONE LIST|LISTE DE TELEPHONES|
+SERVER LIST|LISTE DE SERVEURS|
+CONFERENCE LIST|LISTE DE CONFERENCES|
+HELP|AIDE|
+Click here for phone stats|Cliquez ici pour les statistiques des téléphones|
+REMOTE INBOUND: Main|ENTRANTS DISTANTS: Principal|
+REMOTE INBOUND: Popup|ENTRANTS DISTANTS: Popup|
+CALLS SENT TO|APPELS ENVOYES A|
+Phone Stats|Statistiques du téléphone|
+CALL TIME AND CHANNELS|TEMPS D'APPEL ET CANAUX|
+CHANNEL GROUP|GROUPE DE CANAUX|
+HOURS:MINUTES|HEURES:MINUTES|
+TOTAL CALLS|TOTAL DES APPELS|
+>NUMBER|>NUMERO|
+DATE<|DATE<|
+Close this window|Fermer cette fenêtre|
+Inbound Calls Stats|Statistiques des appels entrants|
+Add New User|Ajouter un nouvel utilisateur|
+Add New Campaign|Ajouter une nouvelle campagne|
+Add New List|Ajouter une nouvelle liste|
+Add New In-Group|Ajouter un nouveau in-group|
+Add New Remote Agents|Ajouter de nouveaux agents distants|
+Add New Users Group|Ajouter de nouveaux groupes d'utilisateurs|
+Add New Script|Ajouter un nouveau script|
+New User Addition|Ajout d'un nouvel utilisateur|
+New Campaign Addition|Ajout d'une nouvelle campagne|
+New Campaign Status Addition|Ajout d'un nouveau statut de campagne|
+New Campaign Hot Key Addition|Ajout d'un nouvel racourci clavier de campagne|
+New List Addition|Ajout d'une nouvelle liste|
+New In-Group Addition|Ajout d'un nouvel In-Group|
+New Remote Agents Addition|Ajout d'un nouvel agent distant|
+New Users Group Addition|Ajout d'un nouveau groupe d'utilisateurs|
+New Script Addition|Ajout d'un nouveau script|
+Modify User|Modifier un utilisateur|
+Modify Campaign - Basic View|Modifier une Campagne - Vue Basique|
+Modify Campaign|Modifier la campagne|
+Modify List|Modifier la liste|
+Modify In-Group|Modifier le In-Group|
+Modify Remote Agents|Modifier les agents distants|
+Modify Users Groups|Modifier les groupes d'utilisateurs|
+Modify Script|Modifier le script|
+Welcome|Bienvenue|
+Campaigns|Campagnes|
+Lists|Listes|
+In-Groups|In-Groups|
+Remote Agents|Agents distants|
+User Groups|Groupes d'utilisateurs|
+Search Form|Formulaire de recherche|
+Search Results|Résultats de la recherche|
+VICIDIAL ADMIN|ADMINISTRATION DE VICIDIAL|
+TABLE|TABLE|
+First Name|Nom|
+Middle Initial|Initiales|
+Last Name|Prénom|
+Address Line 1|Adresse Ligne 1|
+Address Line 2|Adresse Ligne 2|
+Address Line 3|Adresse Ligne 3|
+City|Ville|
+State - limited to 2 characters|Etat - Limité à 2 caractères|
+Province|Province|
+Postal Code|Code Postal|
+Country|Pays|
+Gender|Sexe|
+Date of Birth|Date de naissance|
+Alternate Phone Number|Numero de téléphone alternatif|
+Email Address|Adresse mail|
+Security Phrase|Phrase de sécurité|
+Comments|Commentaires|
+THE END|LA FIN|
+Logout|Déconnection|
+LIST USERS|LISTE DES UTILISATEURS|
+ADD A NEW USER|AJOUTEZ UN NOUVEL UTILISATEUR|
+SEARCH FOR A USER|RECHERCHER UN UTILISATEUR|
+ADD USER GROUP|AJOUTER UN GROUPE D'UTILISATEURS|
+LIST USER GROUPS|LISTE DES GROUPES D'UTILISATEURS|
+ADD CAMPAIGN|AJOUTER UNE CAMPAGNE|
+LIST CAMPAIGNS|LISTE DES CAMPAGNES|
+SHOW LISTS|VOIR LES LISTES|
+ADD NEW LIST|AJOUTER UNE NOUVELLE LISTE|
+LOAD NEW LEADS|CHARGER DES NOUVELLES FICHES|
+SHOW IN-GROUPS|VOIR LES IN-GROUPS|
+ADD NEW IN-GROUP|AJOUTER UN NOUVEL IN-GROUP|
+SHOW REMOTE AGENTS|VOIR LES AGENTS DISTANTS|
+ADD NEW REMOTE AGENTS|AJOUTER UN NOUVEL AGENT DISTANT|
+SERVER STATS|STATISTIQUES DES SERVEURS|
+PARK REPORT|RAPPORT DE MISE EN ATTENTE|
+VDAD REPORT|RAPPORT DE VDAD|
+CLOSER REPORT|RAPPORT SUR LES CLOSERS|
+SEARCH FOR A LEAD|RECHERCHER UNE FICHE|
+GROUP HOURLY|GROUPE PAR HEURE|
+User Number|Numéro d'utilisateur |
+Full Name|Nom complet|
+User Level|Niveau de l'utilisateur|
+User Group|Groupe utilisateur|
+ADD A NEW CAMPAIGN|AJOUTER UNE NOUVELLE CAMPAGNE|
+ADD A NEW INBOUND GROUP|AJOUTER UN NOUVEAU GROUPE ENTRANT|
+ADD NEW USERS GROUP|AJOUTER UN NOUVEAU GROUPE D'UTILISATEUR|
+Campaign ID|ID de la campagne|
+Campaign Name|Nom de la campagne|
+Park Extension|Extension de la mise en attente|
+Park Filename|Nom du fichier de mise en attente|
+Web Form|Formulaire Web|
+Allow Closers|Autoriser les closers|
+Hopper Level|Niveau du distributeur de fiches|
+Auto Dial Level|Niveau de l'appel automatique|
+Next Agent Call|Appeler l'agent suivant |
+Local Call Time|Heure d'appel locale|
+Voicemail|Boîte vocale|
+SUBMIT|VALIDER|
+List ID|ID de la liste|
+List Name|Nom de la liste|
+Campaign|Campagne|
+Group ID|ID du groupe|
+Group Name|Nom du groupe|
+Group Color|Couleur du groupe|
+Fronter Display|Affichage de l'enseigne|
+User ID Start|Début des ID utilisateurs|
+Number of Lines|Nombre de lignes|
+External Extension|Extension externe|
+Inbound Groups|Groupes entrants|
+Group: |Groupe: |
+Description: |Description: |
+USER ADDED|UTILISATEUR AJOUTE|
+CAMPAIGN ADDED|CAMPAGNE AJOUTEE|
+CAMPAIGN STATUS ADDED|STATUT DE LA CAMPAGNE AJOUTE|
+CAMPAIGN HOT KEY ADDED|RACOURCI CLAVIER DE LA CAMPAGNE AJOUTE|
+LIST ADDED|LISTE AJOUTEE|
+GROUP ADDED|GROUPE AJOUTE|
+REMOTE AGENTS ADDED|AGENT DISTANT AJOUTE|
+USER GROUP ADDED|GROUPE D'UTILISATEURS AJOUTE|
+USER MODIFIED|UTILISATEUR MODIFIE|
+CAMPAIGN MODIFIED|CAMPAGNE MODIFIEE|
+GROUP MODIFIED|GROUPE MODIFIE|
+CAMPAIGN MODIFIED|CAMPAGNE MODIFIEE|
+LIST MODIFIED|LISTE MODIFIEE|
+USER GROUP MODIFIED|GROUPE D'UTILISATEURS MODIFIE|
+RESETTING LIST-CALLED-STATUS|REINITIALISATION LIST-CALLED-STATUS|
+Dial status |Statut de l'appel |
+List Order|Ordre de la liste|
+Hopper Level|Niveau du distributeur de fiches|
+Force Reset of Hopper|Forcer la réinitialisation du distributeur de fiches|
+Dial Timeout|Délai de tentative d'appel|
+Dial Prefix|Préfixe de numérotation|
+Campaign CallerID|CallerID de la campagne|
+Campaign VDAD exten|Exten VDAD de la campagne|
+Campaign Rec exten|Extension d'enregistrement de la campagne|
+Campaign Recording|Enregistrement de la campagne|
+Campaign Rec Filename|Nom du fichier d'enregistrement de la campagne|
+LISTS WITHIN THIS CAMPAIGN|LISTES DANS CETTE CAMPAGNE|
+LIST ID|ID DE LA LISTE|
+LIST NAME|NOM DE LA LISTE|
+>ACTIVE<|>ACTIVE<|
+This campaign has |Cette campagne a |
+active lists and |listes actives et |
+inactive lists|listes inactives|
+leads to be dialed in those lists|fiches à appeler dans ces listes|
+leads in the dial hopper|fiches dans le distributeur de fiches|
+>STATUS<|>ETAT<|
+>DESCRIPTION<|>DESCRIPTION<|
+>SELECTABLE<|>SELECTIONABLE<|
+>DELETE<|>SUPPRIMER<|
+ADD NEW CUSTOM CAMPAIGN STATUS|AJOUTER UN NOUVEAU STATUT DE CAMPAGNE PERSONNALISE|
+Selectable: |Selectionnable: |
+value=ADD|value=AJOUTER|
+CUSTOM HOT KEYS WITHIN THIS CAMPAIGN|PERSONNALISER LES RACCOURCIS CLAVIER DE CETTE CAMPAGNE|
+>HOT KEY<|>RACCOURCI CLAVIER<|
+ADD NEW CUSTOM CAMPAIGN HOT KEY|AJOUTER UN NOUVEAU RACCOURCI CLAVIER PERSONNALISE|
+Hot key: |Raccourci clavier:|
+Basic View|Vue basique|
+Detail View|Vue détaillée|
+MODIFY A LISTS RECORD|MODIFIER UN ENREGISTREMENT DE LA LISTE|
+Reset Lead-Called-Status for this list|Réinitialiser les statuts des fiches appelées pour cette liste|
+STATUSES WITHIN THIS LIST|STATUTS DANS CETTE LISTE|
+>CALLED<|>APPELE<|
+>NOT CALLED<|>NON APPELE<|
+>SUBTOTALS<|>SOUS TOTAUX<|
+>SUBTOTAL<|>SOUS TOTAL<|
+TIME ZONES WITHIN THIS LIST|ZONES DE TEMPS DANS CETTE LISTE|
+GMT OFFSET NOW|GMT OFFSET NOW|
+local time|heure locale|
+>TOTAL<|>TOTAL<|
+CALLED COUNTS WITHIN THIS LIST|NOMBRE D'APPELES DANS CETTE LISTE|
+MODIFY A GROUPS RECORD|MODIFIER UN ENREGISTREMENT DE GROUPES|
+MODIFY A REMOTE AGENTS ENTRY|MODIFIER UN ENREGISTREMENT D'AGENT DISTANT|
+numbers only|nombres seulement|
+dial plan number dialed to reach agents|numéro du dial plan pour atteindre les agents|
+MODIFY A USERS GROUP ENTRY|MODIFIER UN ENREGISTREMENT DE GROUPE D'UTILISATEURS|
+no spaces or punctuation|pas d'espace ni de ponctuation|
+description of group|Description du groupe|
+SEARCH FOR A USER|RECHERCHER UN UTILISATEUR|
+SEARCH RESULTS|RESULTATS DE LA RECHERCHE|
+>STATS<|>STATISTIQUES<|
+USER LISTINGS|LISTE DES UTILISATEURS|
+CAMPAIGN LISTINGS|LISTE DES CAMPAGNES|
+LIST LISTINGS|LISTE DES LISTES|
+INBOUND GROUP LISTINGS|LISTE DES GROUPES ENTRANTS|
+REMOTE AGENTS LISTINGS|LISTE DES AGENTS DISTANTS|
+USER GROUPS LISTINGS|LISTE DES GROUPES D'UTILISATEURS|
+script runtime|runtime du script|
+Hopper List|Liste des distributeurs de fiches|
+Live Current Hopper List|Liste des distributeurs de fiches en cours|
+Total leads in hopper right now|Total de fiches dans le distributeur de fiches à l'instant|
+Server Stats|Statistiques du serveur|
+Total Calls placed from this Campaign:       |Total des appels placés dans cette campagne:|
+Average Call Length for all Calls in seconds:|Durée moyenne des appels pour tous les appels en secondes:|
+Total DROP Calls:                            |Total des appels abandonnés:|
+Average Length for DROP Calls in seconds:    |Durée moyenne pour les appels abandonnés en secondes:   |
+Total NA calls -Busy,Disconnect,BTvoicemail: |Total NA calls -Busy,Disconnect,BTvoicemail: |
+Average Call Length for NA Calls in seconds: |Durée moyenne des appels pour les appels NA en secondes: |
+---------- DROPS|---------- ABANDONNES|
+AUTO-DIAL NO ANSWERS|APPELS AUTOMATIQUES SANS REPONSES|
+---------- USER STATS|---------- STATISTIQUES UTILISATEURS|
+---------- TIME STATS|---------- STATISTIQUE TEMPORELLES|
+USER                    |UTILISATEUR                |
+Agents Time On Calls                 |Temps des agents en appel|
+agents logged in on server|agents connectés sur ce serveur|
+Paused agents|Agents en pause|
+5 minutes or more on call|En appel depuis 5 minutes ou plus|
+Over 10 minutes on call|En appel depuis plus de 10 minutes|
+NO AGENTS ON CALLS |AUCUN AGENT EN APPEL|
+calls being placed on server|appels étant placés sur ce serveur|
+LIVE CALL WAITING|APPEL EN ATTENTE|
+NO LIVE CALLS WAITING |PAS D'APPEL EN ATTENTE|
+START OVER|RECHARGER|
+Lead Loader Module|Module de chargement de fiches|
+Current file status|Statut du fichier courant|
+Load leads from this file|Charger les fiches depuis ce fichier|
+Answering Machine Message|Message de répondeur|
+Processing |En cours|
+TALK TIME AND STATUS|TEMPS DE CONVERSATION ET ETAT|
+>COUNT<|>NOMBRE<|
+>HOURS:MINUTES<|>HEURES:MINUTES<|
+TOTAL CALLS |TOTAL DES APPELS|
+LOGIN/LOGOUT TIME|HEURE DE CONNECTION/DECONNECTION|
+>EVENT <|>EVENEMENT<|
+> CAMPAIGN<|> CAMPAGNE<|
+CAMPAIGN: |CAMPAGNE: |
+LAST 50 CALLS|50 DERNIERS APPELS|
+VICIDIAL REMOTE: Call Disposition|VICIDIAL DISTANT: Disposition des appels|
+Call has been dispositioned|L'appel a été dispositionné|
+Close This Window|Fermer cette fenêtre|
+Call information|Informations sur l'appel|
+lead lookup FAILED for lead_id|ECHEC de la vérification de la fiche pour l'id|
+DISPO CALL|APPEL DISPO|
+>Address |>Adresse|
+>City |>Ville |
+>State:|>Etat:|
+Postal Code:|Code postal:|
+>Province |>Province|
+>Country |>Pays   |
+>Alt Phone |>Téléphone alternatif |
+>Email |>Email |
+>Security |>Sécurité|
+>Comments |>Commentaires |
+>Disposition:|>Disposition:|
+Group Hourly Stats|Statistiques du groupe par heures|
+TSR HOUR COUNTS|NOMBRE D'HEURES DE TSR|
+Lead Search|Recherche de fiches|
+Lead Lookup|Contrôle de fiches|
+Please enter a:|Veuillez entrer un:|
+a Home Phone Number:|un numéro de téléphone du domicile:|
+vendor lead code|code vendeur de la fiche|
+a lead ID:|ID de la fiche:|
+>NEW SEARCH<|>NOUVELLE RECHERCHE<|
+Lead record modification|Modification de l'enregistrement de la fiche|
+information modified|Informations modifiées|
+CALLS TO THIS LEAD|APPELS VERS CETTE FICHE|
+VDAD Closer Stats|Statistiques VDAD Closer|
+Auto-dial Closer Stats|Statistiques appel-automatique CLOSER|
+VICIDIAL REMOTE AGENTS|AGENTS DISTANTS VICIDIAL|
+INBOUND STATS|SATISTIQUES EN ENTREE|
+REMOTE AGENTS ERROR - Please go back and look at the data you entered|ERREUR AGENTS DISTANT - Veuillez revenir en arrière et verifier les données que vous avez saisies|
+- WAITING - |- PATIENTEZ -|
+Remote Agent inbound stats         |Statistiques des agents distants en entrée|
+Total calls taken |Total des appels pris |
+Total talk time on |Temps total de conversation|
+Call list for |Liste d'appel pour |
+NO CALLS ON THIS DAY |PAS D'APPELS CE JOUR|
+Scripts|Scripts|
+Script:|Script:|
+Get Call Launch|Lancer l'appel|
+not used currently|pas utilisé actuellement|
+VERSION|VERSION|
+BUILD|CONSTRUCTION|
+REPORTS|RAPPORTS|
+USERS|UTILISATEURS|
+CAMPAIGNS|CAMPAGNES|
+LISTS|LISTES|
+SCRIPTS|SCRIPTS|
+FILTERS|FILTRES|
+IN-GROUPS|IN-GROUPS|
+USER GROUPS|GROUPES D'UTILISATEURS|
+REMOTE AGENTS|AGENTS DISTANTS|
+Column|Colonne|
+PERFORMANCE|PERFORMANCE|
+AGENT |AGENT |
+SERVER |SERVEUR |
+### END translation phrases through 1.1.11 release ###
+Drop Call Seconds -<\/B> The number of seconds from the time the customer line is picked up until the call is considered a DROP, only applies to outbound calls|Secondes avant abandon de l'appel -<\/B> C'est le nombre de secondes depuis le moment où la ligne du client est prise jusqu'à ce que l'appel soit considéré comme abandonné, s'applique seulement aux appels sortants|
+Safe Harbor Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Message de port sûr -<\/B> Si défini à Y un message sera joué au client si le timeout d'abadon d'appel est atteind sans être transférer au client. Cette option surcharge celle qui envoi vers la boite vocale si elle est définie à Y|
+Safe Harbor Exten -<\/B> This is the dial plan extension that the desired Safe Harbor audio file is located at on your server|Extension du port sûr -<\/B> C'est l'extension du dial plan où le fichier audio désiré est localisé sur le serveur|
+Drop Message -<\/B> If set to Y will play a message to customer after the Drop Call Seconds timeout is reached without being transferred to an agent. This setting will override sending to a voicemail box if this is set to Y|Message d'abandon -<\/B> Si défini à Y un message sera jouer au client après que le timeout d'abandon d'appel soit atteind sans être transféré à un agent. Cette option surcharge le transfert vers la boite vocale si défini à Y|
+Drop Exten -<\/B> This is the dial plan extension that the desired Dropped call audio file is located at on your server|Extension d'abandon -<\/B> C'est l'extension du dial plan où le fichier audio désiré est localisé sur le serveur|
+Call Time ID -<\/B> This is the short name of a Vicidial Call Time Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters|Identifiant de la période d'appel -</B> C'est le nom court de la période d'appel de VICIDIAL. Il doit être unique. N'utilisez pas d'espace ou de ponctuation. 10 caractères maximum et 2 minimum|
+Call Time Name -<\/B> This is a more descriptive name of the Call Time Definition. This is a short summary of the Call Time definition. max 30 characters, minimum of 2 characters|Nom de la période d'appel -</B> C'est un nom plus descriptif de la période d'appel. Une courte description. 30 caractères maximum et 2 minimum|
+Call Time Comments -<\/B> This is where you can place comments for a Vicidial Call Time Definition such as -10am to 4pm with extra call state restrictions-.  max 255 characters|Commentaires de la période d'appel -</B> Vous pouvez y placer des commentaires sur la période d'appel de Vicidial comme-de 10h00 à 16h00 avec des restrictions-. Max 255 caractères|
+Default Start and Stop Times -<\/B> This is the default time that calling will be allowed to be started or stopped within this call time definition if the day-of-the-week start time is not defined. 0 is midnight. To prevent calling completely set this field to 2400 and set the Default Stop time to 2400. To allow calling 24 hours a day set the start time to 0 and the stop time to 2400|Heures de début et de fin par défaut -</B> Ce sont les heures par défaut pendant lesquelles un appel est autorisé si l'heure de début de day-of-the-week n'est pas définie. 0 est minuit. Pour interdir complétement les appels mettez 2400 et mettez 2400 à l'heure de fin par défaut. Pour autoriser les appels 24h/24, remplissez les champs avec 0 pour le début et 2400 pour la fin|
+Weekday Start and Stop Times -<\/B> These are the custom times per day that can be set for the call time definition. same rules apply as with the Default start and stop times|Heures de début et de fin pour un jour -</B> Ce sont les heures de début et de fin personnalisés pour un jour. Les mêmes règles s'appliquent qu'aux heures de début et de fin par défaut|
+State Call Time Definitions -<\/B> This is the list of State specific call time definitions that are followed in this Call Time Definition|Définitions des états des périodes d'appel -<\/B> C'est la liste des définitions spécifiques des périodes d'appels des états qui sont suivies dans cette définition de période d'appels|
+State Call Time State -<\/B> This is the two letter code for the state that this calling time definition is for. For this to be in effect the local call time that is set in the campaign must have this state call time record in it as well as all of the leads having two letter state codes in them|State Call Time State -<\/B> Ce sont les deux lettres code pour l'état auquel cette définition de période d'appels correspond. Pour que cela prenne effet, la période d'appel locale qui est définie dans la campagne doit avoir cette enregistrement d'état de période d'appel aussi bien que toutes les fiches ayant ces deux lettre codes d'état|
+Delete Call Times -<\/B> This option allows the user to be able to delete vicidial call times records and vicidial state call times records from the system|Suppression des périodes d'appels -<\/B> Cette option permet à l'utilisateur de supprimer les enregistrements des périodes d'appels vicidial et les enregistrement des périodes d'appels d'état de ce système|
+Modify Call Times -<\/B> This option allows the user to view and modify the call times and state call times records. A user doesn't need this option enabled if they only need to change the call times option on the campaigns screen|Modification des périodes d'appels -<\/B> Cette option autorise l'utilisateur à voir et modifier les périodes d'appels et les périodes d'appels d'état. Un utilisateur n'a pas besoin de cette option si il a seulement besoin de changer les options des périodes d'appels sur l'écran de campagne|
+Wrap Up Seconds -<\/B> The number of seconds to force an agent to wait before allowing them to receive or dial another call. The timer begins as soon as an agent hangs up on their customer - or in the case of alternate number dialing when the agent finishes the lead - Default is 0 seconds. If the timer runs out before the agent has dispositioned the call, the agent still will NOT move on to the next call until they select a disposition|Temps de conclusion -<\/B> Nombre de secondes pendant lesquelles l'agent est forcé à attendre avant de pouvoir recevoir ou passer un nouvel appel. Le timer commence dès que l'agent à raccrocher - ou dans le cas de l'appel du numéro alternatif quand l'agent à terminer la fiche - La valeur par défaut est 0. Si le timer se termine avant que l'agent n'ait statué l'appel, l'agent ne passera pas à l'appel suivant tant qu'il n'a pas sélectionné un statut|
+Wrap Up Message -<\/B> This is a campaign-specific message to be displayed on the wrap up screen if wrap up seconds is set|Message de conclusion -<\/B> C'est un message spécifique à la campagne à afficher si le temps de conclusion est défini|
+You are not authorized to view this page. Please go back|Vous n'êtes pas autorisé à voir cette page. Veuillez revenir en arrière|
+Day and time options will appear once you have created the Call Time Definition|Les options pour l'heure et le jour apparaitront une fois que vous aurez créé la période d'appels|
+State Call Time ID, name and state must be at least 2 characters in length|L'ID, le nom et l'état de l'appel doivent contenir au moins 2 caractères|
+Call Time ID and name must be at least 2 characters in length|L'ID et le nom de la période d'appel doivent contenir au moins 2 caractères|
+Active State Call Time Definitions for this Record|Activer les définitions des états des périodes d'appels pour cet enregistrement|
+there is already a call time entry with this ID|il existe déjà une période d'appel avec cet ID|
+CALL TIMES USING THIS STATE CALL TIME|PERIODE D'APPELS UTILISANT CET ETAT DE PERIODE D'APPELS|
+STATE CALL TIME DEFINITION NOT ADDED|DEFINITION DE LA PERIODE D'APPELS DE L'ETAT NON AJOUTE|
+DELETE THIS STATE CALL TIME DEFINITION|SUPPRIMER CETTE DEFINITION DE PERIODE D'APPEL D'ETAT|
+Modify Call Time State Definitions List|Modifier la liste des définitions des périodes d'appels d'état|
+CALL TIME DEFINITION NOT ADDED|DEFINITION DE LA PERIODE D'APPEL NON AJOUTEE|
+DELETE THIS CALL TIME DEFINITION|SUPPRIMER CETTE DEFINITION DE PERIODE D'APPEL|
+short description of the call time|courte description de la période d'appel|
+CAMPAIGNS USING THIS CALL TIME|CAMPAGNES UTILISANT CETTE PERIODE D'APPELS|
+STATE CALL TIME NOT MODIFIED|PERIODE D'APPELS D'ETAT NON MODIFIEE|
+CALL TIME NOT MODIFIED|PERIODE D'APPELS NON MODIFIEE|
+STATE CALL TIME MODIFIED|PERIODE D'APPELS D'ETAT MODIFIEE|
+CALL TIME MODIFIED|PERIODE D'APPELS MODIFIEE|
+Default Start:|Début par défaut:|
+Default Stop:|Fin par défaut:|
+Sunday Start:|Début le dimanche:|
+Sunday Stop:|Fin le dimanche:|
+Monday Start:|Début le lundi:|
+Monday Stop:|Fin le lundi:|
+Tuesday Start:|Début le mardi:|
+Tuesday Stop:|Fin le mardi:|
+Wednesday Start:|Début le mercredi:|
+Wednesday Stop:|Fin le mercredi:|
+Thursday Stop:|Fin le jeudi:|
+Friday Start:|Début le vendredi:|
+Friday Stop:|Fin le vendredi:|
+Saturday Start:|Début le samedi:|
+Saturday Stop:|Fin le samedi:|
+State Rule Added|Règle d'état ajoutée|
+State Rule Removed|Règle d'état supprimée|
+STATE CALL TIME LISTINGS|LISTE DES PERIODES D'APPELS D'ETAT|
+CALL TIME LISTINGS|LISTE DES PERIODES D'APPELS|
+STATE CALL TIME ADDED|PERIODE D'APPELS D'ETAT AJOUTEE|
+CALL TIME ADDED|PERIODE D'APPELS AJOUTEE|
+Drop Call Seconds|Temps avant abandon de l'appel|
+Use Safe Harbor Message|Utiliser le message de port sûr|
+Safe Harbor Exten|Extension du port sûr|
+Use Drop Message|Utiliser le message d'abandon|
+Drop Exten|Extension d'abandon|
+SIP Listen Version|Version du listener SIP|
+Add New Call Time|Ajouter une nouvelle période d'appels|
+Add New State Call Time|Ajouter une nouvelle période d'appels d'état|
+New Call Time Addition|Ajout d'une nouvelle période d'appels|
+New State Call Time Addition|Ajout d'une nouvelle période d'appels d'état|
+Modify Call Time|Modifier la période d'appels|
+MODIFY A CALL TIME|MODIFIER UNE PERIODE D'APPELS|
+Modify State Call Time|Modifier la période d'appels d'état|
+MODIFY A STATE CALL TIME|MODIFIER UNE PERIODE D'APPELS D'ETAT|
+Delete State Call Time|Supprimer la période d'appels d'état|
+State Call Times|Périodes d'appels d'états|
+State Call Time ID|Identifiant de la période d'appels d'état|
+State Call Time Name|Nom de la période d'appels d'état|
+State Call Time Comments|Commentaires de la période d'appels d'état|
+STATE CALL TIME NOT DELETED|PERIODE D'APPELS D'ETAT NON SUPPRIMEE|
+CALL TIME DELETION COMPLETED|SUPPRESSION DE LA PERIODE D'APPELS TERMINEE|
+STATE CALL TIME DELETION COMPLETED|SUPPRESSION DE LA PERIODE D'APPELS D'ETAT TERMINEE|
+CALL TIME NOT DELETED|PERIODE D'APPELS NON SUPPRIMEE|
+Call Time ID must be at least 2 characters in length|L'ID de la période d'appels doit contenir au moins 2 caractères|
+STATE CALL TIME DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESSION DE LA PERIODE D'APPELS D'ETAT|
+CALL TIME DELETION CONFIRMATION|CONFIRMATION DE LA SUPPRESION DE LA PERIODE D'APPELS|
+Call Times|Périodes d'appels|
+CALL TIMES|PERIODES D'APPELS|
+SHOW CALL TIMES|VOIR LES PERIODES D'APPELS|
+ADD NEW CALL TIME|AJOUTER UNE NOUVELLE PERIODE D'APPELS|
+SHOW STATE CALL TIMES|VOIR LES PERIODES D'APPELS D'ETATS|
+ADD NEW STATE CALL TIME|AJOUTER UNE NOUVELLE PERIODE D'APPELS D'ETAT|
+Call Time ID|Identifiant de la période d'appels|
+Call Time Name|Nom de la période d'appels|
+Call Time Comments|Commentaires de la période d'appels|
+short description of the call time|courte description de la période d'appels|
+HIDE|CACHER|
+SHOW|MONTRER|
+Show Dialable Leads Count|Montrer le nombre de fiches désactivées|
+Dialable Lead Count|Nombre de fiches désavtivées|
+TEST ON CAMPAIGN|TEST SUR LA CAMPAGNE|
+Wrap Up Seconds:|Temps de conclusion:|
+Wrap Up Message:|Message de conclusion:|
+Alt Number Dialing|Appel du numéro alternatif|
+no active lists selected for this campaign|pas de listes actives pour cette campagne|
+Real-Time Screen|Ecran temps réel|
+Allowable Inbound Groups -<\/B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound-outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups|Groupes entrants possibles -</B> Uniquement pour les campagnes de type CLOSER. C'est ici que vous choisissez les groupes entrants dont vous voulez que les agents puissent prendre des appels depuis cette campagne. Il est important pour les campagnes entrantes-sortantes BLENDED de sélectionner seulement les groupes entrants qui sont utilisées pour les agents dans cette campagne. Les appales passés vers les groupes entrants sélectionnées ici seront comptés comme des appels actifs pour un campagne mixte même si tous les agents de la campagne ne sont pas connectés pour recevoir des appels de tous ces groupes entrants sélectionnés|
+Allowed Inbound Groups|Groupes entrants autorisés|
+ADD NUMBER TO DNC|AJOUTER LE NUMERO A LA LISTE DNC|
+ADD A NUMBER TO THE DNC LIST|AJOUTER UN NUMERO A LA LISTE DNC|
+Add New DNC|Ajouter un nouveau DNC|
+Phone Number|Numéro de téléphone|
+VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add a number to this list so that it will not be called by campaigns that use the internal DNC list|Liste DNC de VICIDIAL -</B> Cette liste Do Not Call (Ne pas appeler) contient toutes les listes qui ont un statut DNC dans le système. Depuis les LISTS - la page AJOUTER UN NUMERO A LA LISTE DNC vous pouvez ajouter manuellement un nombre à cette liste afin qu'il ne soit pas appelé par les campagnes qui utilisent la liste interne DNC|
+DNC NOT ADDED - This phone number is already in the Do Not Call List|DNC NON AJOUTE - Ce numéro de téléphone est déjà dans la liste Do Not Call|
+DNC ADDED|DNC AJOUTE|
+Use Internal DNC List -<\/B> This defines whether this campaign is to filter leads against the Internal DNC list. If it is set to Y, the hopper will look for each phone number in the DNC list before placing it in the hopper. If it is in the DNC list then it will change that lead status to DNCL so it cannot be dialed. Default is N|Utiliser la liste DNC interne -</B> Cela défini si cette campagne doit filter les fiches par rapport à la liste DNC. Si ce champ est à Y alors le distributeur de fiches recherchera chaque numéro de téléphone dans la liste DNC avant de la placer dans le distributeur de fiches. Si il est dans la liste DNC alors le statut de la fiche sera changer en DNCL, il ne pour donc pas être appelé. La valeur par défaut est N|
+Use Internal DNC List|Utiliser la liste DNC interne|
+Campaign CallerID -<\/B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service(RBS) circuits. This will also work through most VOIP(SIP or IAX trunks) providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID|CallerID de la campagne -</B> Ce champ permet de personnaliser le numéro de l'appelant pour les appels externes passés. C'est le numéro que la personne appelé voit. La valeur pas défaut est UNKNOWN. Si vous utilisez une carte T1 ou E1 pour appeler cette option est seulement valable si vous utilisez des PRI - ISDN T1s ou E1s - qui on l'option callerid personnalisable activée, cela ne fonctionnera pas avec les circuits Robbed-bit service(RBS). Cela fonctionne avec la plupart des fournisseurs VOIP (SIP ou IAX) qui autorise les callerid dynamiques. Le numéro personnalisé ne sera valable que pour les appels passés directement depuis cette campagne, tout transfert ou tierce personne appelé n'utilisera pas ce numéro personnalisé. NOTE: Parfois l'utilisation de UNKNOWN ou PRIVATE utilisera le callerid du fournisseur. Vous pouvez tester et mettre 0000000000 si vous ne voulez pas envoyé votre callerID|
+Login -<\/B> The login used for the phone user to login to the client applications|Login -</B> login utilisé par l'utilisateur du téléphone pour se connecter aux applications clientes|
+Password -<\/B>  The password used for the phone user to login to the client applications|Mot de passe -</B> Le mot de passe utilisé par l'utilisateur du téléphone pour se connecter aux applications clientes|
+New Campaign Lead Recycle Addition|New Campaign Lead Recycle Addition|
+Modify Campaign Lead Recycle|Modify Campaign Lead Recycle|
+Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links. This feature only works in auto-dial mode, where dial level is greater than 0|A travers l'utilisation du recyclage de fiches, vous pouvez appelé des fiches avec un statut spécifiques encore à un interval spécifique sans réinitialisation la liste complète. Le recyclage de fiches est spécifique à la campagne et n'a pas a être un statut appelable selectionné dans votre campagne. Le champ de délai de tentative est le nombre de secondes avant que la fiche puisse être remise dans le distributeur de fiches, ce nombre doit être supérieur ou égale à 120 secondes. Le champ tentatives maximum est le nombre de fois maximum que la fiche de ce statut peut être reéessayer avant que la liste est besoin d'être réinitialisé, ce nombre peut être de 1 à 10. Vous pouvez activer et desactiver le recyclage d'une fiche avec les liens fournis. Cette fonctionnalité fontionne uniquement en mode appel automatique, quand le niveau d'appel est supérieur à 0|
+CAMPAIGN LEAD RECYCLE NOT ADDED - there is already a lead-recycle for this campaign with this status|RECYCLAGE DE FICHES DE LA CAMPAGNE NON AJOUTE - il y a déjà un recyclage de fiches pour cette campagne avec ce statut|
+status must be between 1 and 6 characters in length|le statut doit contenir entre 1 et 6 caractères|
+attempt delay must be at least 120 seconds|le délai d'attente doit être au moins 120 secondes|
+maximum attempts must be from 1 to 10|le nombre d'essais maximum doit être compris entre 1 et 10|
+CAMPAIGN LEAD RECYCLE ADDED|RECYCLAGE DES FICHES DE LA CAMPAGNE AJOUTE|
+CAMPAIGN LEAD RECYCLE NOT DELETED|RECYCLAGE DES FICHES DE LA CAMPAGNE NON SUPPRIME|
+CAMPAIGN LEAD RECYCLE DELETED|RECYCLAGE DES FICHES DE LA CAMPAGNE SUPPRIME|
+Delete Lead Recycle|Supprimer le recyclage des fiches|
+LEAD RECYCLING WITHIN THIS CAMPAIGN|FICHES EN RECYCLAGES DANS CETTE CAMPAGNE|
+ATTEMPT DELAY|DELAI DE TENTATIVE|
+ATTEMPT MAXIMUM|NOMBRE MAX DE TENTATIVES|
+ADD NEW CAMPAIGN LEAD RECYCLE|AJOUTER UN NOUVEAU RECYCLAGE DE FICHES DE LA CAMAPGNE|
+Attempt Delay|Délai d'attente|
+Attempt Maximum|Nombre max de tentatives|
+If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dial string will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field|Si vous voulez autoriser les transferts de consultation, de fronter à closer, vous pouvez placer CXFER comme une des préselection du nombre-à-appeler et la chaîne d'appel approprié sera envoyé pour faire un tranfert de consultation locale, puis l'agent peu juste quitter l'appel à 3 ou continuer sur l'appel suivant. Si vous voulez autoriser les transferts à l'aveugle d'un client vers un script AGI VICIDIAL pour le log ou un IRV, placez AXFER dans le  champ numéro-à-appeler. Vous pouvez aussi specifier une extention personnalisée après AXFER ou CXFER, par exemple si vous voulez faire un transfert de consultation interne à la place d'un local vous devriez mettre CXFER90009 dans le champ numéro à appelé|
+System Performance -<\/B> Setting this option to Y will enable logging of system performance stats for the server machine including system load, system processes and Asterisk channels in use. Default is N|Performances du système -</B> Mettre cette option à Y permet de loger les statistiques des performances du système, incluant la charge du système, les processus et les canaux Asterisk utilisés. La valeur par défaut est N|
+Server Logs -<\/B> Setting this option to Y will enable logging of all VICIDIAL related scripts to their text log files. Setting this to N will stop writing logs to files for these processes, also the screen logging of asterisk will be disabled if this is set to N when Asterisk is started. Default is Y|Logs du serveur -</B> Mettre cette option à Y permet de loger tous les scripts liés à Asterisk dans leurs fichiers textes de log. Mettre cette option à N arrête le logs dans les fichiers pour ces processus, et de ce fait désactive l'écran de log de Asterisk si cette option est à N quand Asterisk démarre. La valeur par défaut est Y|
+AGI Output -<\/B> Setting this option to NONE will disable output from all VICIDIAL related AGI scripts. Setting this to STDERR will send the AGI output to the Asterisk CLI. Setting this to FILE will send the output to a file in the logs directory. Setting this to BOTH will send output to both the Asterisk CLI and a log file. Default is FILE|Sortie des scripts AGI -</B> Mettre cette option à NONE désactive toutes les sorties des scripts AGI de VICIDIAL. La mettre à STDERR enverra les sorties des scripts AGI à la CLI Asterisk. Mettre cette option à FILE enverra les sorties dans un fichiers dans le répertoire des logs. Mettre cette option à BOTH enverra les sorties à la fois vers la CLI Asterisk et dans le fichier de log. La valeur par défaut est FILE|
+Recording Delay -<\/B> For ALLCALLS and ALLFORCE recording only. This setting will delay the starting of the recording on all calls for the number of seconds specified in this field. Default is 0|Délai d'enregistrement -</B> Uniquement pour les enregistrements ALLCALLS et ALLFORCE. Cette valeur est le nombre de secondes après lesquelles commence l'enregistrement des appels. La valeur par défaut est 0|
+Omit Phone Code -<\/B> This field allows you to leave out the phone_code field while dialing within VICIDIAL. For instance if you are dialing in the UK from the UK you would have 44 in as your phone_code field for all leads, but you just want to dial 10 digits in your dial plan extensions.conf to place calls instead of 44 then 10 digits. Default is N|Omettre le Phone Code -</B> Ce champ permet de ne pas utiliser le champ phone_code lors d'appels passés depuis VICIDIAL. Par exemple si vous appelez de France vers la France vous devriez avoir 33 dans le champ phone_code de chaque fiche, mais vous voulez utiliser 10 chiffres dans le dial plan extensions.conf au lieu de 33 puis 10 chiffres. La valeur par défaut est N|
+Campaign Recording -<\/B> This menu allows you to choose what level of recording is allowed on this campaign. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load|Enregistrement de la campagne -</B> Ce menu permet de choisir le niveau d'enregistrement autorisé pour cette campagne. NEVER désactive l'enregistrement sur l'application client. ONDEMAND est la valeur par défaut et permet à l'agent de démarrer et arrêter l'enregistrement si nécessaire. ALLCALLS démarrera l'enregistrement pour tous les appels passés vers un agent. ALLFORCE démarrera l'enregistrement à chaque appel passés vers un agent sans donné la possibilité à l'agent de stopper l'enregistrement. Pour ALLCALLS et ALLFORCE il y a une option pour utiliser un délai d'enregistrement afin de réduire les enregistrements et la charge système|
+Dial Method -<\/B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. You cannot change the Auto Dial Level if you are in any of the ADAPT dial methods. Only the Dialer can change the dial level when in predictive dialing mode|Méthode d'appel -</B> Ce champ permet de définir la façon dont sont passés les appels. Si c'est MANUAL alors le auto_dial_level sera bloqué à 0 à moins que le méthode d'appel ne change. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. You cannot change the Auto Dial Level if you are in any of the ADAPT dial methods. Only the Dialer can change the dial level when in predictive dialing mode|
+Available Only Tally -<\/B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N|Valable seulement pour les contrôles -</B> Si ce champ est à Y les agents ayant pour statut INCALL ou QUEUE seront omis pour le calcul des appels à passer quand le mode d'appel n'est pas MANUAL. La valeur par défaut est N|
+Drop Percentage Limit -<\/B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO|Pourcentage limite d'abandon -</B> Ce champ permet de définir le pourcentage limite d'appels abandonnés voulu lors de l'utilisation de méthode d'appel adaptive-predictive, pas MANUAL ni RATIO|
+Maximum Adapt Dial Level -<\/B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0|Niveau maximum d'adaptation d'appel -</B> Ce champ permet de définir la limite du nombre de lignes que vous voulez composer par agent lors de l'utilisation d'une méthode d'appel adaptive-predictive, pas MANUAL ni RATIO. Ce nombre peut être plus grand que le Auto Dial Level de votre matériel ci celui-ci le supporte. La valeur doit être un nombre positif plus grand que 1 qui peut être décimal. La valeur par défaut est 3.0|
+Latest Server Time -<\/B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling|Heure maximum du serveur -</B> Ce champ est seulement utilisé par la méthode d'appel ADAPT_TAPERED. Vous devez y saisir l'heure à laquelle vous allez arrêter d'appeler pour cette campagne, 2100 veut dire que vous arrêterez d'appeler pour cette campagne à 21h00. Cela autorise l'algorithme Tapered de décider comment appeler agressivement en fonction du temps restant avant d'arrêter d'appeler|
+Adapt Intensity Modifier -<\/B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods|Adapter le modifieur d'intensité -<\/B> Ce champ est utilisé pour ajuster l'intensité prédictive à la fois plus haut ou plus bas. Plus vous selectionnez un nombre positif grand, plus l'appeleur augmentera considérablement l'appel quand il monte et plus l'appeleur dimunera lentement l'appel quand il descend. Plus le chiffre négatif que vous selectionnez est petit, plus l'appeleur augmentera lentement l'appel et plus l'appeleur diminuera rapidement l'appel quand il descend. La valeur par défaut est 0. Ce champ n'est pas utilisé par les méthodes d'appels MANUAL et RATIO|
+Dial Level Difference Target -<\/B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods|Différence cible du niveau d'appel -<\/B> Ce champ est utilisé pour définir quel nombre spécifique d'agents vous désiser avoir en attente d'appels ou d'appels en attente d'agents. Par exemple, si vous voulez avoir toujours en moyenne un agent de libre pour prendre des appels immediatement vous devriez mettre ceci à -1, si vous ciblez d'avoir un appel gardé en attente d'un agent vous devriez mettre ceci à 1. La valeur par default est 0. Ce champ n'est pas utilisé par les méthodes d'appels MANUAL et RATIO|
+System Performance|Performances du système|
+Server Logs|Logs du serveur|
+AGI Output|Sortie des AGI|
+Recording Delay|Délai d'enregistrement|
+Omit Phone Code|Omettre le phone code|
+Campaign Recording|Enregistrement de la campagne|
+Dial Method|Méthode d'appel|
+Available Only Tally|Valable seulement pour les contrôles|
+Drop Percentage Limit|Pourcentage limite d'abandon|
+Maximum Adapt Dial Level|Adaptation maximum du niveau de l'appel|
+Latest Server Time|Heure max du serveur|
+Adapt Intensity Modifier|Adapter le modificateur d'intensité|
+Dial Level Difference Target|Différence cible du niveau d'appel|
+### START translations for 2.0.2 release ###
+VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting|Les trunks du serveur VICIDIAL vous permettent de limiter les lignes sortantes qui sont utilisées sur ce serveur sur une base par-campagne. Vous avez la possibilité de reserver un nombre spécifique de lignes à utiliser par seulement une campagne aussi bien que permettre à cette campagne d'utiliser plus de lignes que celles reservées si il en reste de libre, tant que le nombre maximum de ligne utilisées par Vicidial sur ce serveur est inférieur au nombre de trunks VICIDIAL maximum défini. Avoir aucun de ces réglages permet à la campagne qui appel en premier d'avoir autant de lignes qu'elle le peut sous le nombre max de lignes VICIDIAL défini|
+VICIDIAL Balance Dialing -<\/B> Setting this field to Y will allow the server to place balance calls for campaigns in VICIDIAL so that the defined dial level can be met even if there are no agents logged into that campaign on this server. Default is N|Appel équilibré VICIDIAL -<\/B> Définir ce champ à Y permettra au serveur de placer des appels équilibrés pour les campagnes dans VICIDIAL de sorte que le niveau d'appel défini puisse être atteint même s'il n'y a aucun agent connecté dans cette campagne sur ce serveur. La valeur par défaut est N|
+VICIDIAL Balance Offlimits -<\/B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0|Limite de l'équilibrage VICIDIAL -<\/B> Cette option définit le nombre de trunks à ne pas utiliser pour l'équilibrage des appels VICIDIAL. Par exemple si vous avez 40 trunks vicidial et la limite d'équilibrage VICIDIAL définie à 10 vous ne pourrez utiliser que 30 trunks pour l'équilibrage VICIDIAL. La valeur par défaut est 0|
+Allowed Campaigns -<\/B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system|Campagnes autorisés -</B> C'est une liste de campagnes dans lesquelles les utilisateurs de ce groupes pourront se connecter. L'option TOUTES LES CAMPAGNES autorise les utilisateurs de ce groupe à voir et se connecter à toutes les campagnes sur le système|
+VICIDIAL SERVER TRUNK RECORD NOT ADDED|TRUNK DU SERVEUR VICIDIAL NON AJOUTE|
+there is already a server-trunk record for this campaign|il y a déjà un trunk-serveur enregistré pour cette campagne|
+the number of vicidial trunks is too high|le nombre de trunks vicidial est trop important|
+VICIDIAL SERVER TRUNK RECORD ADDED|TRUNK DU SERVEUR VICIDIAL AJOUTE|
+VICIDIAL SERVER TRUNK RECORD NOT MODIFIED|TRUNK DU SERVEUR VICIDIAL NON MODIFIE|
+VICIDIAL SERVER TRUNK RECORD MODIFIED|TRINK DU SERVEUR VICIDIAL MODIFIE|
+VICIDIAL SERVER TRUNK RECORD NOT DELETED|TRUNK DU SERVEUR VICIDIAL NON SUPPRIME|
+VICIDIAL SERVER TRUNK RECORD DELETED|TRUNK DU SERVEUR VICIDIAL SUPPRIME|
+campaign must be between 3 and 8 characters in length|la campagne doit contenir entre 3 et 8 caractères|
+server_ip delay must be at least 7 characters|le délai du server_ip doit contenir au moins 7 caractères|
+trunks must be a digit from 0 to 9999|les trunks doivent être un nombre entre 0 et 9999|
+VICIDIAL Balance Dialing|Equilibrage des appels VICIDIAL|
+VICIDIAL Balance Offlimits|Limite de l'équilibrage VICIDIAL|
+ADDING NEW SERVER VICIDIAL TRUNK RECORD|AJOUT D'UN NOUVEAU TRUNK VERS UN SERVEUR VICIDIAL|
+ADD NEW SERVER VICIDIAL TRUNK RECORD|AJOUTER UN NOUVEAU TRUNK SERVEUR VICIDIAL|
+MODIFY SERVER VICIDIAL TRUNK RECORD|MODIFIER LE TRUNK SERVEUR VICIDIAL|
+DELETE SERVER VICIDIAL TRUNK RECORD|SUPPRIMER LE TRUNK SERVEUR VICIDIAL|
+VICIDIAL TRUNKS FOR THIS SERVER|LES TRUNKS VICIDIAL POUR CE SERVEUR|
+RESTRICTION |RESTRICTION |
+TRUNKS |TRUNKS|
+Emergency VDAC Jam Clear|Emergency VDAC Jam Clear|
+VDAC NOT CLEARED FOR CAMPAIGN|VDAC NON EFFACE POUR LA CAMPAGNE|
+LAST VDAC RECORD CLEARED FOR CAMPAIGN|DERNIER ENREGISTREMENT VDAC DE LA CAMPAGNE EFFACE|
+VDAC CLEAR CONFIRMATION|CONFIRMATION DE L'EFFACEMENT DE VDAC|
+Click here to delete the oldest LIVE record in VDAC for|Cliquez ici pour effacer les plus vieux enregistrements LIVE dans VDAC pour|
+Allowed Campaigns|Campagnes autorisées|
+USERS CAN VIEW ANY CAMPAIGN|LES UTILISATEURS PEUVENT VOIR CHAQUE CAMPAGNE|
+Campaign Not Allowed|Camapagne non autorisée|
+### START translations for 2.0.3 release ###
+ADAPT OVERRIDE|ADAPTER LE DEPASSEMENT|
+The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.|La checkbox ADAPTER LE DEPASSEMENT vous permet de forcer un nouveau niveau d'appel même si la méthode d'appel est ADAPT. C'est utile s'il y a une variation dramatique dans la qualité des fiches et que vous voulez changer rigoureusement le dial_level manuellement. |
+There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead|Il y a deux raccourcis claviers que vous pouvez utiliser en même temps que l'appel du numéro alternatif, ALTPH2 - Alternate Phone Hot Dial et ADDR3 - Adresse3 qui permet à un agent d'utiliser un raccourci pour raccocher l'appel, rester sur la fiche et appeler un autre numéro de la fiche|
+Concurrent Transfers|Transferts concurents|
+Concurrent Transfers -<\/B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method|Transferts concurents -</B> Ce champ permet de définir le nombre d'appels qui peuvent être envoyés à un agent simultanément. Il est recommandé de laisser AUTO. Le champ n'est pas utilisé si la méthode est MANUAL|
+Auto Alt-Number Dialing -<\/B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method|Appeler automatiquement le numéro alternatif -</B> Ce champ est utilisé pour appeler automatiquement le numéro alternatif si les méthodes d'appels RATIO ou ADAPT sont utilisées quand il n'y pas de réponse au numéro de téléphone principale d'une fiche, les statuts NA, B, DC et N. Cette option n'est pas utilisée pour la méthode d'appel MANUAL|
+Auto Alt-Number Dialing|Appeler automatiquement le numéro alternatif|
+View Reports -<\/B> This option allows the user to view the VICIDIAL reports.|Voir les rapports -</B> Cette option autorise l'utilisateur à voir les rapports VICIDIAL.|
+Modify Sections -<\/B> These options allow the user to view and modify each sections records. If set to 0, the user will be able to see the section list, but not the detail or modification screen of a record in that section|Modifications des sections -</B> Cette option autorise l'utilisateur à voir et modifier chaque enregistrement de section. Si cette option a pour valeur 0, l'utilisateur pourra voir la liste des sections, mais pas le détail et ne pourra pas modifier les enregistrements dans cette section|
+VICIDIAL AUTO ALT DIAL STATUSES|STATUTS VICIDIAL DE L'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF|
+If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set|Si le champ Appel automatique du numéro alternatif est défini, alors les fiches diposées sous ces statuts d'appels automatiques du numéro alternatif auront leurs champs numéro alternatif et/ou adresse3 appelés après n'importe quel statut de non-réponse|
+AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN|APPEL AUTOMATIQUE DU NUMERO ALTERNATIF POUR CETTE CAMPAGNE|
+ADD NEW AUTO ALT NUMBER DIALING STATUS|AJOUTER UN NOUVEAU STATUT D'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF|
+AUTO ALT DIAL STATUS NOT ADDED|STATUT D'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF NON AJOUTE|
+there is already an entry for this campaign with this status|il y a déjà un entrée pour cette campagne avec ce statut|
+AUTO ALT DIAL STATUS ADDED|STATUT D'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF AJOUTE|
+AUTO ALT DIAL STATUS NOT DELETED|STATUT D'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF NON SUPPRIME|
+AUTO ALT DIAL STATUS DELETED|STATUT D'APPEL AUTOMATIQUE DU NUMERO ALTERNATIF SUPPRIME|
+this auto alt dial status is not in this campaign|ce statut d'appel automatique du numéro alternatif n'est pas dans cette campagne|
+New Auto Alt Dial Status|Nouveau statut d'appel automatique du numéro alternatif|
+Delete Auto Alt Dial Status|Supprimer ce statut d'appel automatique du numéro alternatif|
+Users |Utilisateurs |
+Campaigns |Campagnes |
+Lists |Listes |
+Scripts |Scripts |
+Filters |Filtres |
+In-Groups |In-Groups |
+User Groups |Groupes d'utilisateurs |
+Remote Agents |Agents distants |
+Admin |Admin |
+Reports |Rapports |
+Show Users |Voir les utilisateurs |
+Add A New User |Ajouter un nouvel utilisateur |
+Search For A User |Rechercher un utilisateur |
+Show Campaigns |Voir les campagnes |
+Add A New Campaign |Ajouter une nouvelle campagne |
+Real-Time Campaigns Summary |Menu temps-réel des campagnes |
+Show Lists |Voir les listes |
+Add A New List |Ajouter une nouvelle liste |
+Search For A Lead |Rechercher une fiche |
+Add Number To DNC |Ajouter un numéro à la liste DNC |
+Load New Leads |Charger de nouvelles fiches |
+Show Scripts |Voir les scripts |
+Add A New Script |Ajouter un nouveau script |
+Show Filters |Voir les filtres |
+Add A New Filter |Ajouter un nouveau filtre |
+Show In-Groups |Voir les In-Groups |
+Add A New In-Group |Ajouter un nouveau In-Group |
+Show User Groups |Voir les groupes d'utilisateurs |
+Add A New User Group |Ajouter un nouveau groupe d'utilisateurs |
+Group Hourly Report |Rapport horaire du groupe |
+Show Remote Agents |Voir les agents distants |
+Add New Remote Agents |Ajouter un nouvel agent distant |
+Call Times |Période d'appels |
+Phones |Téléphones |
+Conferences |Conférences |
+Servers |Serveurs |
+Show Call Times |Voir les périodes d'appels |
+Add A New Call Time |Ajouter une période d'appels |
+Show State Call Times |Voir les périodes d'appels d'états |
+Add A New State Call Time |Ajouter une nouvelle période d'appels d'état |
+Show Phones |Voir les téléphones |
+Add A New Phone |Ajouter un nouveau téléphone |
+Show Conferences |Voir les conférences |
+Add A New Conference |Ajouter une nouvelle conférence |
+Show VICIDIAL Conferences |Voir les conférences VICIDIAL |
+Add A New VICIDIAL Conference |Ajouter une nouvelle conférence VICIDIAL |
+Show Servers |Voir les serveurs |
+Add A New Server |Ajouter un nouveau serveur |
+CallBacks Within User Group|Rappels de service dans le groupe d'utilisateurs|
+USERS WITHIN THIS USER GROUP|UTILISATEURS APPARTENANT A CE GROUPE D'UTILISATEURS|
+Modify Users: |Modifier les utilisateurs: |
+Modify Campaigns: |Modifier les campagnes: |
+Modify Lists: |Modifier les listes: |
+Modify Scripts: |Modifier les scripts: |
+Modify Filters: |Modifier les filtres: |
+Modify In-Groups: |Modifier les In-Groups: |
+Modify User Groups: |Modifier les groupes d'utilisateurs: |
+Modify Remote Agents: |Modifier les agents distants: |
+Modify Servers: |Modifier les serveurs: |
+View Reports: |Voir les rapports: |
+You do not have permission to view this page|Vous n'avez pas la permission de voir cette page|
+Lead Time Zone Lookup: |Consultation du fuseau horaire de la fiche:|
+Lead Duplicate Check: |Vérification des doublons dans les fiches:|
+Agent Pause Codes Active -<\/B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N|Activer les codes de la pause des agents -</B> Autorise les agents à sélectionner un code de pause quand il clique sur le bouton PAUSE dans vicidial.php. Les codes de pause sont définissable par campagne dans le bas de la vue détaillée de la campagne et sont stockés dans la table vicidial_agent_log. La valeur par défaut est N|
+AGENT PAUSE CODES|CODES PAUSE DES AGENTS|
+If the Agent Pause Codes Active field is set to active then the agents will be able to select from these pause codes when they click on the PAUSE button on their screens. This data is then stored in the vicidial agent log. The Pause code must contain only letters and numbers and be less than 7 characters long. The pause code name can be no longer than 30 characters.|Si les codes de pause des agents sont activés alors les agents pourront en selectionner un parmi ces codes quand ils cliquent sur le bouton PAUSE. Cette donnée est ensuite stockée dans les log sur les agents vicidial. Un code de pause doit contenir uniquement des lettres et des chiffres et doit contenir moins de 7 caractères. Le nom du code ne doit pas contenir plus de 30 caractères.|
+AGENT PAUSE CODES FOR THIS CAMPAIGN|CODES DE PAUSE DES AGENTS POUR CETTE CAMPAGNE|
+PAUSE CODES|CODES DE PAUSE|
+BILLABLE|FACTURABLE|
+ADD NEW AGENT PAUSE CODE|AJOUTER UN NOUVEAU CODE DE PAUSE|
+Pause Code: |Code de pause: |
+Pause Code Name: |Nom du code de pause: |
+Billable: |Facturable: |
+New Agent Pause Code|Nouveau code de pause|
+Modify Agent Pause Code|Modifier le code de pause|
+Delete Agent Pause Code|Supprimer le code de pause|
+AGENT PAUSE CODE NOT ADDED|CODE DE PAUSE NON AJOUTE|
+there is already an entry for this campaign with this  pause code|hay ya una entrada para esta campaÃ±a con este code|| de la pausa|
+AGENT PAUSE CODE ADDED|CODE DE PAUSE AJOUTE|
+AGENT PAUSE CODE NOT MODIFIED|CODE DE PAUSE NON MODIFIE|
+CAMPAIGN PAUSE CODE NOT DELETED|CODE DE PAUSE DE LA CAMPAGNE NON SUPPRIME|
+Campaign Description -<\/B> This is a memo field for the campaign, it is optional and can be a maximum of 255 characters in length|Description de la campagne -</B> C'est un champ de note pour la campagne, il est optionel et ne peut contenir plus de 255 caractères|
+Campaign Change Date -<\/B> This is the last time that the settings for this campaign were modified in any way|Date de changement de la campagne -</B> C'est la dernière fois que les réglages de la campagne ont été modifié|
+Campaign Stats Refresh -<\/B> This checkbox will allow you to force a vicidial stats refresh, even if the campaign is not active|Rafraichissement des statistiques de la campagne -</B> Cette checkbox permet de forcer un rafraichissement des statistiques de vicidial, même si la campagne n'est pas active|
+Last Campaign Login Date -<\/B> This is the last time that an agent was logged into this campaign|Date de la dernière connection à la campagne -</B> C'est la dernière fois qu'un agent s'est connecté à la campagne|
+List Description -<\/B> This is the memo field for the list, it is optional|Description de la liste -</B> C'est un champ de note pour la liste, il est optionnel|
+List Change Date -<\/B> This is the last time that the settings for this list were modified in any way|Dernier changement de la liste -</B> C'est la dernière fois que les réglages de la liste ont été modifié|
+List Last Call Date -<\/B> This is the last time that lead was dialed from this list|Date du dernier appel de la liste -</B> C'est la dernière fois qu'une fiche de cette liste a été appelée|
+List Description: |Description de la liste: |
+List Change Date: |Date de changement de la liste: |
+Campaign Description: |Description de la campagne: |
+VICIDIAL Recording Override -<\/B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load|Ecrasement de l'enregistrement de VICIDIAL -</B> Cette option va écraser l'option d'enregistrement de la campagne quelle qu'elle soit. DISABLED n'écrasera pas les réglages d'enregistrement de la campagne. NEVER désactivera l'enregistrement sur le client. ONDEMAND est la valeur par défaut et autorise l'agent à démarrer ou arrêter l'enregistrement si nécessaire. ALLCALLS démarrera l'enregistrment à chaque fois qu'un appel est passé à un agent. ALLFORCE démarrera l'enregistrement à chaque fois qu'un appel à un agent est passé sans permettre à l'agent d'arrêter l'enregistrement. Pour les valeurs ALLCALLS et ALLFORCE il possible d'utiliser l'option 'Délai d'enregistrement' pour réduire la taille des enregistrments et la charge du système|
+VICIDIAL Recording Override: |Ecrasement de l'enregistrment VICIDIAL:|
+MODIFY VICIDIAL SYSTEM SETTINGS|MODIFIER LES REGLAGES DU SYSTEME VICIDIAL|
+System Settings |Réglages du système|
+VICIDIAL SYSTEM SETTINGS MODIFIED|REGLAGES DU SYSTEME VICIDIAL MODIFIES|
+Version: |Version: |
+Use Non-Latin: |Utiliser Non-Latin: |
+Webroot Writable: |Webroot éditable: |
+Enable QueueMetrics Logging: |Activer le log des QueueMetrics: |
+QueueMetrics Server IP: |IP du serveur QueueMetrics: |
+QueueMetrics DB Name: |Nom de la base de données QueueMetrics: |
+QueueMetrics DB Login: |Login de la base de données QueueMetrics: |
+QueueMetrics DB Password: |Mot de passe de la base de données QueueMetrics: |
+Use Non-Latin -<\/B> This option allows you to default the web display script to use UTF8 characters and not do any latin-character-family regular expression filtering or display formatting. Default is 0|Utiliser Non-Latin -</B> Cette option vous permet d'utiliser les caractères UTF8 pour l'affichage web des scripts, et de ne pas utiliser des filtres d'expressions régulières latin-character-family ou de formater l'affichage. La valeur par défaut est 0|
+Webroot Writable -<\/B> This setting allows you to define whether temp files and authentication files should be placed in the webroot on your web server. Default is 1|Webroot éditable -</B> Cette option vous permet de définir si les fichiers temporaires et les fichiers d'authentification doivent être placés dans le webroot sur le serveur web. La valeur par défaut est 1|
+Enable QueueMetrics Logging -<\/B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0|Activer le log des QueueMetrics -</B> Cette option vous permet de définir si VICIDIAL va insérer les données des logs dans la table queue_log comme le fait Asterisk. QueueMetrics est un programme d'analyse de statistiques autonome et non open-source. Vous devez avoir installé et configuré QueueMetrics pour activer cette option. La valeur par défaut est 0|
+QueueMetrics Server IP -<\/B> This is the IP address of the database for your QueueMetrics installation|IP du serveur QueueMetrics -</B> C'est l'adresse IP de la base de données pour votre installation de QueueMetrics|
+QueueMetrics Database Name -<\/B> This is the database name for your QueueMetrics database|Nom de la base de données de QueueMetrics -</B> C'est le nom de la base de données de QueueMetrics|
+QueueMetrics Database Login -<\/B> This is the user name used to log in to your QueueMetrics database|Login de la base de données de QueueMetrics -</B> C'est le login utilisé pour se connecter à la base de données QueueMetrics|
+QueueMetrics Database Password -<\/B> This is the password used to log in to your QueueMetrics database|Mot de passe de la base de données de QueueMetrics -</B> C'est le mot de passe utilisé pour se connecter à la base de données QueueMetrics|
+QueueMetrics URL -<\/B> This is the URL or web site address used to get to your QueueMetrics installation|URL de QueueMetrics -</B> C'est l'URL ou l'adresse du site web utilisé pour atteindre QueueMetrics|
+QueueMetrics Log ID -<\/B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record|Identifiant des log de QueueMetrics -</B> C'est l'identifiant du serveur que tout les logs VICIDIAL dans la base de données de QueueMetrics vont utiliser pour chaque enregistrement|
+QueueMetrics Log ID: |Identifiant des log de QueueMetrics: |
+Campaign Dial Status Added|Statut d'appel pour la campagne ajouté|
+Campaign Dial Status Removed|Statut d'appel pour la campagne supprimé|
+To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove|Pour ajouter un autre statut d'appel, selectionnez le dans la liste déroulante et cliquez sur AJOUTER. Pour supprimer un de ces statuts, cliquez sur le lien SUPPRIMER à côté du statut que vous voulez supprimer|
+CAMPAIGN DIAL STATUS NOT ADDED|STATUT D'APPEL DE LA CAMPAGNE NON AJOUTE|
+CAMPAIGN DIAL STATUS ADDED|STATUT D'APPEL POUR LA CAMPAGNE AJOUTE|
+this dial status is not selected for this campaign|ce statut d'appel n'est pas selectionné pour cette campagne|
+CAMPAIGN DIAL STATUS NOT REMOVED|STATUT D'APPEL POUR CETTE CAMPAGNE NON SUPPRIME|
+CAMPAIGN DIAL STATUS REMOVED|STATUT D'APPEL POUR CETTE CAMPAGNE SUPPRIME|
+>REMOVE<|>SUPPRIMER<|
+Dial Status |Statut d'appel|
+no dial statuses selected for this campaign|aucun statut d'appel selectionnés pour cette campagne|
+QueueMetrics EnterQueue Prepend -<\/B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything|QueueMetrics EnterQueue Prepend -<\/B> Ce champ est utilisé pour autorisé à ajouter un des champs des données de vicidial_list devant le numéro de téléphone du client pour personnaliser les rapports QueueMetrics. La valeur par défaut est NONE pour ne pas peupler n'importe quoi|
+QueueMetrics EnterQueue Prepend: |Préfixe EnterQueue QueueMetrics: |
+VICIDIAL Agent Disable Display -<\/B> This field is used to select when to show an agent when their session has been disabled by the system, a manager action or by an external measure. The NOT_ACTIVE setting will disable the message on the agents screen. The LIVE_AGENT setting will only display the disabled message when the agents vicidial_auto_calls record has been removed, such as during a force logout or emergency logout|Affichage de la désactivation d'un agent VICIDIAL -</B> Ce champ est utilisé pour selectionné quand montrer à un agent que ça session à été désactivée par le système, une action du manager ou par une mesure externe. NOT_ACTIVE désactivera l'affichage d'un message sur l'écran de l'agent. LIVE_AGENTS affichera seulement le message de désactivation quand les enregistrements vicidial_auto_calls des agents ont été modifiés, comme lors d'une déconnection forcée ou d'une déconnection de secours|
+VICIDIAL Agent Disable Display: |Affichage de la désactivation d'un agent VICIDIAL: |
+Disable Alter Customer Data -<\/B> If set to Y, does not change any of the customer data record when an agent dispositions the call. Default is N|Désactiver la modification des données du client -</B> Si défini à Y alors les données de la fiche d'un client ne sont pas modifiées quand un agent passe l'appel. La valeur pas défaut est N|
+Disable Alter Customer Data: |Désactiver la modification des données d'un client|
+Agent Alter Customer Data Override -<\/B> This option will override whatever the option is in the campaign for altering of customer data. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer data, no matter what the campaign setting is. Default is NOT_ACTIVE|Modifications des données des clients pour l'agent -</B> Cette option permet de surcharger, pour un agent précis, l'option de la campagne concernant la modification des données du clients. NOT_ACTIVE utilisera la valeur présente dans l'option de la campagne. ALLOW_ALTER autorisera toujours à cet agent de modifier les données du client quelque soit la valeur de l'option dans la campagne. La valeur par défaut est NOT_ACTIVE|
+Agent Alter Customer Data Override: |Modifications des données des clients pour l'agent: |
+Allow No-Hopper-Leads Logins -<\/B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N|Autoriser la connection aux distributeurs de fiches vides -</B> Si défini à Y, autorise les agents à se connecter à la campagne même si il n'y a pas de fiches chargées dans le distributeur pour cette campagne. Cette fonction est nécessaire pour les campagne de type CLOSER. La valeur par défaut est N|
+Allow No-Hopper-Leads Logins: |Autoriser la connection dans les distributeurs vides: |
+Enable SIPSAK Messages -<\/B> If enabled the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. Feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0|Activer les messages SIPSAK -</B> Si activé alors le serveur enverra des messages au téléphone SIP à afficher sur l'écran du téléphone quand il est connecté à VICIDIAL. Cette fonction ne fonctionne seulement avec les téléphones SIP et nécessite que sipsak soit installé sur le serveur web. La valeur par défaut est 0|
+Enable SIPSAK Messages: |Activer les messages SIPSAK: |
+Allow SIPSAK Messages -<\/B> If set to 1, this will allow the phones table setting to work properly, the server will send messages to the SIP phone to display on the phone LCD display when logged into VICIDIAL. This feature only works with SIP phones and requires sipsak application to be installed on the web server. Default is 0|Autoriser les messages SIPSAK -</B> Si défini à 1, cela permettra aux téléphones à fonctionner correctement, le serveur enverra des messages à afficher sur l'écran du téléphone quand il est connecté à VICIDIAL. Cette fonction fonctionne seulement avec des téléphones SIP et nécessite que sipsak soit installé sur le serveur web. La valeur par défaut est 0|
+Allow SIPSAK Messages: |Autoriser les messages SIPSAK: |
+Admin Home URL -<\/B> This is the URL or web site address that you will go to if you click on the HOME link at the top of the admin.php page|URL de l'acceuil de l'administration -</B> C'est l'URL ou l'adresse du site web ou vous voulez aller quand vous cliquez sur le lien ACCUEIL en haut de la page admin.php|
+Admin Home URL: |URL de l'accueil de l'administration: |
+>HOME<|>ACCUEIL<|
+Welcome |Bienvenue |
