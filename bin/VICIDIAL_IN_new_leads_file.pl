@@ -23,6 +23,7 @@
 # 61127-1132 - Added new DST methods
 # 61128-1037 - Added postal codes GMT lookup option
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
+# 70801-0912 - Added called count and status to import leads format (fields 24 and 25)
 #
 
 $secX = time();
@@ -114,8 +115,8 @@ if (length($ARGV[0])>1)
 	print "  [-h] = this help screen\n\n";
 	print "\n";
 	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
-	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS\n\n";
-	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS\n\n";
+	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count\n\n";
+	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS|2\n\n";
 
 	exit;
 	}
@@ -322,7 +323,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$email =				$m[20];
 		$security_phrase =		$m[21];
 		$comments =				$m[22];
-
+		$called_count =			$m[23];		$called_count =~ s/\D|\r|\n|\t//gi; if (length($called_count)<1) {$called_count=0;}
+		$status =				$m[24];		$status =~ s/ |\r|\n|\t//gi;  if (length($status)<1) {$status='NEW';}
 
 		if (length($forcelistid) > 0)
 			{
@@ -441,7 +443,6 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			# set default values
 			$entry_date =			"$pulldate0";
 			$modify_date =			"";
-			$status =				"NEW";
 			$user =					"";
 			$called_since_last_reset='N';
 			$gmt_offset =			'0';
@@ -644,7 +645,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			if ($multi_insert_counter > 8)
 				{
 				### insert good deal into pending_transactions table ###
-				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','0');";
+				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count');";
 						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
 						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
 
@@ -654,7 +655,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				}
 			else
 				{
-				$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','0'),";
+				$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count'),";
 				$multi_insert_counter++;
 				}
 
