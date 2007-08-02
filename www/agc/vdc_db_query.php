@@ -130,10 +130,11 @@
 # 70322-1545 - Added sipsak display ability
 # 70413-1253 - Fixed bug for outbound call time in CLOSER-type blended campaigns
 # 70424-1100 - Fixed bug for fronter/closer calls that would delete vdac records
+# 70802-1729 - Fixed bugs with pause_sec and wait_sec under certain call handling 
 #
 
-$version = '2.0.57';
-$build = '70424-1100';
+$version = '2.0.4-58';
+$build = '70802-1729';
 
 require("dbconnect.php");
 
@@ -2098,14 +2099,23 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	else
 		{
 		$pause_sec=0;
-		$stmt = "select pause_epoch,pause_sec from vicidial_agent_log where agent_log_id='$agent_log_id';";
+		$stmt = "select pause_epoch,pause_sec,wait_epoch,wait_sec,dispo_epoch from vicidial_agent_log where agent_log_id='$agent_log_id';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$VDpr_ct = mysql_num_rows($rslt);
 		if ($VDpr_ct > 0)
 			{
 			$row=mysql_fetch_row($rslt);
-			$pause_sec = (($StarTtime - $row[0]) + $row[1]);
+			$wait_sec=0;
+			if ($row[2] > 0)
+				{
+				$wait_sec = (($StarTtime - $row[2]) + $row[3]);
+				}
+			if ( (eregi("NULL",$row[4])) or ($row[4] < 1000) )
+				{$pause_sec = (($StarTtime - $row[0]) + $row[1]);}
+			else
+				{$pause_sec = (($row[4] - $row[0]) + $row[1]);}
+
 			}
 		if ($ACTION == 'VDADready')
 			{
@@ -2115,7 +2125,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		if ($ACTION == 'VDADpause')
 			{
-			$stmt="UPDATE vicidial_agent_log set pause_sec='$pause_sec',pause_epoch='$StarTtime' where agent_log_id='$agent_log_id';";
+			$stmt="UPDATE vicidial_agent_log set pause_epoch='$StarTtime',wait_sec='$wait_sec' where agent_log_id='$agent_log_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
