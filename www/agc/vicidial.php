@@ -159,10 +159,11 @@
 # 70320-1501 - Added option to allow retry of leave-3way-call from dispo screen
 # 70322-1545 - Added sipsak display ability
 # 70510-1319 - Added onUnload force Logout
+# 70806-1530 - Added Presets Dial links above agent mute button
 #
 
-$version = '2.0.130';
-$build = '70510-1319';
+$version = '2.0.131';
+$build = '70806-1530';
 
 require("dbconnect.php");
 
@@ -241,6 +242,7 @@ $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from origi
 $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
+$PreseT_DiaL_LinKs		= '1';	# set to 1 to show a DIAL link for Dial Presets
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -4690,6 +4692,20 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.vicidial_form.conf_dtmf.value = CalL_XC_b_Dtmf;
 		document.vicidial_form.xfernumber.value = CalL_XC_b_NuMber;
 		}
+
+	function DtMf_PreSet_a_DiaL()
+		{
+		document.vicidial_form.conf_dtmf.value = CalL_XC_a_Dtmf;
+		document.vicidial_form.xfernumber.value = CalL_XC_a_NuMber;
+		basic_originate_call(CalL_XC_a_NuMber,'NO','YES',session_id,'YES');
+		}
+	function DtMf_PreSet_b_DiaL()
+		{
+		document.vicidial_form.conf_dtmf.value = CalL_XC_b_Dtmf;
+		document.vicidial_form.xfernumber.value = CalL_XC_b_NuMber;
+		basic_originate_call(CalL_XC_b_NuMber,'NO','YES',session_id,'YES');
+		}
+
 // ################################################################################
 // Show message that customer has hungup the call before agent has
 	function CustomerChanneLGone()
@@ -5986,7 +6002,17 @@ echo "</head>\n";
 <span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:680px;top:370px;z-index:22;" id="AgentMuteButton"><font class="body_text">
+<span style="position:absolute;left:680px;top:330px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
+	<?
+	if ($PreseT_DiaL_LinKs)
+		{
+		echo "<a href=\"#\" onclick=\"DtMf_PreSet_a_DiaL();return false;\"><font class=\"body_tiny\">D1 - DIAL</font></a>\n";
+		echo "<BR>\n";
+		echo "<a href=\"#\" onclick=\"DtMf_PreSet_b_DiaL();return false;\"><font class=\"body_tiny\">D2 - DIAL</font></a>\n";
+		}
+	else {echo "<BR>\n";}
+	?>
+<BR><BR>
 <span id="AgentMuteSpan"></span> <BR>
 </font></span>
 
@@ -6060,16 +6086,17 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	<span STYLE="background-color: #CCCCCC" id="CloserCode"><IMG SRC="./images/vdc_XB_code.gif" border=0 alt="CODE"> <input type=text size=1 name=xfercode maxlength=2 class="cust_form"></span>
 	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="./images/vdc_XB_hangupxferline_OFF.gif" border=0 alt="Hangup Xfer Line"></span>
 	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="./images/vdc_XB_hangupbothlines.gif" border=0 alt="Hangup Both Lines"></a></span>
-	
+
 	<BR>
 
 	<IMG SRC="./images/vdc_XB_number.gif" border=0 alt="Number to call"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
 	<IMG SRC="./images/vdc_XB_seconds.gif" border=0 alt="seconds"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
 	<IMG SRC="./images/vdc_XB_channel.gif" border=0 alt="channel"> <input type=text size=12 name=xferchannel maxlength=100 class="cust_form"> 
 	<input type=hidden name=xferuniqueid>
-	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny">OVERRIDE</font> &nbsp;
+	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny">DIAL OVERRIDE</font> &nbsp;
 	<a href="#" onclick="DtMf_PreSet_a();return false;"><font class="body_tiny">D1</font></a> 
 	<a href="#" onclick="DtMf_PreSet_b();return false;"><font class="body_tiny">D2</font></a>
+
 	<BR>
 
 	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="./images/vdc_XB_dialwithcustomer.gif" border=0 alt="Dial With Customer"></a></span> 
