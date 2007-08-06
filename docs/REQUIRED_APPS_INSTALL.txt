@@ -355,3 +355,37 @@ mv -f leave.h apps/leave.h
 make clean
 make
 make install
+
+
+
+############# INSTRUCTIONS FOR Asterik 1.4 release ####################
+
+mkdir /usr/src/asterisk-1.4
+cd /usr/src/asterisk-1.4
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.9.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.4.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.1.tar.gz
+gunzip asterisk-1.4.9.tar.gz
+tar xvf asterisk-1.4.9.tar
+gunzip zaptel-1.4.4.tar.gz
+tar xvf zaptel-1.4.4.tar
+gunzip libpri-1.4.1.tar.gz
+tar xvf libpri-1.4.1.tar
+cd ./zaptel-1.4.4
+./configure
+make
+make install
+cd ../libpri-1.4.1
+make clean
+make
+make install
+cd ../asterisk-1.4.9
+wget http://www.eflo.net/files/enter.h
+wget http://www.eflo.net/files/leave.h
+mv -f enter.h apps/enter.h
+mv -f leave.h apps/leave.h
+./configure
+make
+make install
+
+
