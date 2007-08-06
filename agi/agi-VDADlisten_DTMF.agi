@@ -33,9 +33,12 @@
 # 60731-1536 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
 # 60817-1113 - added output options check from database
+# 70806-1619 - added HeavyDTMF check and filter
 #
 
 $script = 'agi-VDADlisten_DTMF.agi';
+
+$heavyDTMFcheck = 1;	# set to 1 to check for heavy DTMF double-tones
 
 ### set defaults for testing
 $referring_extension =	'83009';
@@ -97,6 +100,7 @@ foreach(@conf)
 if (!$VARDB_port) {$VARDB_port='3306';}
 if (!$AGILOGfile) {$AGILOGfile = "$PATHlogs/agiout.$year-$mon-$mday";}
 
+use Time::HiRes qw(gettimeofday);
 use DBI;
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
@@ -218,6 +222,8 @@ exit;
 
 sub enter_pin_number
 {
+$lastdigit='';
+$lastdigittime='';
 
 $AGI->stream_file('beep');
 
@@ -226,9 +232,29 @@ while ( ($digit_loop_counter < 4) )
 	$digit = chr($AGI->wait_for_digit('30000'));  # wait 30 seconds for input or until the pound key is pressed
 	if ($digit =~ /\d/)
 		{
-		$totalDTMF = "$totalDTMF$digit";
-		if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
-	#	$AGI->say_digits("$digit");
+		# get seconds and microseconds since the epoch
+		  ($s, $usec) = gettimeofday();
+		  $Susec = sprintf("%06s", $usec);
+		  $utime = "$s$Susec";
+ 
+		  if (length($lastdigittime)<1) {$lastdigittime = $utime;  $lastdigit = 99;  $difftime = 0;}
+		  else
+			{
+			$difftime = ($utime - $lastdigittime);
+			}
+		  print STDERR "$s$Susec - $digit - $lastdigittime - $difftime\n";
+		if ( ($difftime < 200000) && ($digit == $lastdigit) && ($heavyDTMFcheck>0) )
+			{
+			print STDERR "HEAVY DTMF DETECTED AND IGNORED: $digit - $lastdigit - $difftime\n";
+			$digit_loop_counter = ($digit_loop_counter - 1);
+			}
+		else
+			{
+			$totalDTMF = "$totalDTMF$digit";
+			if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
+		#	$AGI->say_digits("$digit");
+			}
+		$lastdigittime = $utime;   $lastdigit = $digit;
 		undef $digit;
 		}
 	else
