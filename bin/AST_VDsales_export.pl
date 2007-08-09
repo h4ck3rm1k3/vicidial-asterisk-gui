@@ -104,7 +104,7 @@ if (length($ARGV[0])>1)
 				{print "\n----- FTP TRANSFER MODE -----\n\n";}
 			$ftp_transfer=1;
 			}
-		if ($args =~ /-t/i)
+		if ($args =~ /--test/i)
 		{
 		$T=1;   $TEST=1;
 		print "\n----- TESTING -----\n\n";
@@ -194,13 +194,16 @@ if ($output_format =~ /^pipe-vici$/)
 	if ($sale_statuses =~ /---ALL---/)
 		{
 		$sale_statusesSQL='';
+		$close_statusesSQL='';
 		}
 	else
 		{
 		$sale_statusesSQL = $sale_statuses;
 		$sale_statusesSQL =~ s/-/','/gi;
 		$sale_statusesSQL = "'$sale_statusesSQL'";
+		$close_statusesSQL = $sale_statusesSQL;
 		$sale_statusesSQL = " and vicidial_log.status IN($sale_statusesSQL)";
+		$close_statusesSQL = " and vicidial_closer_log.status IN($close_statusesSQL)";
 		}
 
 	$with_inboundSQL = $with_inbound;
@@ -282,7 +285,7 @@ if (length($with_inboundSQL)>3)
 	###########################################################################
 	########### CURRENT DAY SALES GATHERING inbound-only: vicidial_closer_log  ######
 	###########################################################################
-	$stmtA = "select vicidial_closer_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_closer_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_closer_log.list_id,campaign_id from vicidial_list,vicidial_closer_log,vicidial_users where campaign_id IN($with_inboundSQL) and vicidial_closer_log.status IN($sale_statusesSQL) and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_closer_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_closer_log.user;";
+	$stmtA = "select vicidial_closer_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_closer_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_closer_log.list_id,campaign_id from vicidial_list,vicidial_closer_log,vicidial_users where campaign_id IN($with_inboundSQL) $close_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_closer_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_closer_log.user;";
 	if ($DB) {print "|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
