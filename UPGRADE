@@ -33,6 +33,16 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 6. Added option for shorter enter and leave sounds(done during Asterisk build)
 	BASE/SCRATCH_INSTALL or extras/Changed_meetme_sounds for more details
 
+7. Added patch to meetme in Asterisk 1.2.X that will allow for better DTMF 
+	passthru. Need to use the "F" flag to enable on Meetme in 
+	extensiosn.conf. Feature is backported from Asterisk 1.4.X
+
+8. Changed the FastAGI_log process to consolidate the "h" exten hangup process
+	into one executed function instead of two. Because of this, the h exten 
+	needs to be changed to the following:
+	exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
+
+
 
 
 

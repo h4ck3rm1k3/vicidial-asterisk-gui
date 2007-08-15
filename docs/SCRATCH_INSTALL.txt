@@ -1764,8 +1764,7 @@ effected extension groups are show):
 
 ##### This 'h' exten is VERY important for VICIDIAL usage, 
 ##### you will have problems if it is not in your dialplan!
-exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log)
-exten => h,2,DeadAGI(agi://127.0.0.1:4577/VD_hangup--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
 
 ; Extension 3429 - Inbound 800 number (1-800-555-3429)
 exten => _**3429,1,Ringing

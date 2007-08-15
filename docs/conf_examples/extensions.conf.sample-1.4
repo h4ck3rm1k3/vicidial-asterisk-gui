@@ -110,8 +110,7 @@ exten => 4001,2,Voicemail,u4001         ; Send to voicemail...
 
 
 ; FastAGI for VICIDIAL/astGUIclient call logging
-exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log)
-exten => h,2,DeadAGI(agi://127.0.0.1:4577/VD_hangup--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
 ; Standard AGI for VICIDIAL/astGUIclient call logging
 ;exten => h,1,DeadAGI(call_log.agi,${EXTEN}) ; DeadAGI is new
 ;exten => h,2,DeadAGI(VD_hangup.agi,PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
