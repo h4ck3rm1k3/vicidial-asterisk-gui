@@ -363,7 +363,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		if ($dupcheck > 0)
 			{
 			$dup_lead=0;
-			$stmtA = "select llst_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
+			$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
