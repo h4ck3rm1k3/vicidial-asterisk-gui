@@ -7,7 +7,7 @@
 #
 # run every time you load leads into the vicidial_list table
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 #
 # CHANGES
@@ -19,6 +19,7 @@
 # 61110-1204 - added new DST scheme for Brazil
 # 61128-1034 - added postal code GMT lookup option
 # 61219-1106 - fixed updating for NULL gmt_offset records
+# 70823-1633 - added ability to restrict by list_id
 #
 
 $MT[0]='';
@@ -41,6 +42,7 @@ if (length($ARGV[0])>1)
 	print "  [--debug] = debugging messages\n";
 	print "  [--debugX] = Super debugging messages\n";
 	print "  [--postal-code-gmt] = Attempt postal codes lookup for timezones\n";
+	print "  [--singlelistid=XXX] = Only lookup and alter leads in one list_id\n";
 	print "\n";
 
 	exit;
@@ -71,6 +73,16 @@ if (length($ARGV[0])>1)
 		$searchPOST=1;
 		print "\n----- DO POSTAL CODE LOOKUP -----\n\n";
 		}
+		if ($args =~ /-singlelistid=/i)
+		{
+		@data_in = split(/-singlelistid=/,$args);
+			$singlelistid = $data_in[1];
+		print "\n----- SINGLE LISTID OVERRIDE: $singlelistid -----\n\n";
+		}
+		else
+			{$singlelistid = '';}
+
+
 	}
 }
 else
@@ -186,8 +198,9 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 if ($isdst) {$LOCAL_GMT_OFF++;} 
 if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOCAL GMT OFFSET NOW: $LOCAL_GMT_OFF\n";}
 
-
-	$stmtA = "select distinct phone_code from vicidial_list;";
+if (length($singlelistid)> 0) {$listSQL = "where list_id='$singlelistid'";  $XlistSQL=" and list_id='$singlelistid' ";}
+else {$listSQL = '';  $XlistSQL='';}
+	$stmtA = "select distinct phone_code from vicidial_list $listSQL;";
 	if($DBX){print STDERR "\n|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -289,7 +302,7 @@ foreach (@phone_codes)
 					}
 				if ($DBX) {print "PROCESSING THIS LINE: $codefile[$e]\n";}
 				
-				$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match;";
+				$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match $XlistSQL;";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
 				
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -387,7 +400,7 @@ foreach (@phone_codes)
 
 				if ($AC_processed)
 					{
-					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
+					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL;";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -404,7 +417,7 @@ foreach (@phone_codes)
 						}
 					else
 						{
-						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
+						$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL;";
 						if($DBX){print STDERR "\n|$stmtA|\n";}
 						if (!$T) 
 							{
@@ -450,7 +463,7 @@ foreach (@phone_codes)
 					$AC_match = " and postal_code LIKE \"$postal_code%\"";
 					if ($DBX) {print "PROCESSING THIS LINE: $postalfile[$e]\n";}
 					
-					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match;";
+					$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match $XlistSQL;";
 					if($DBX){print STDERR "\n|$stmtA|\n";}
 					
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -548,7 +561,7 @@ foreach (@phone_codes)
 
 					if ($AC_processed)
 						{
-						$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
+						$stmtA = "select count(*) from vicidial_list where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL;";
 							if($DBX){print STDERR "\n|$stmtA|\n";}
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -565,7 +578,7 @@ foreach (@phone_codes)
 							}
 						else
 							{
-							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL);";
+							$stmtA = "update vicidial_list set gmt_offset_now='$area_GMT' where phone_code='$match_code_ORIG' $AC_match and (gmt_offset_now != '$area_GMT' or gmt_offset_now IS NULL) $XlistSQL;";
 							if($DBX){print STDERR "\n|$stmtA|\n";}
 							if (!$T) 
 								{
