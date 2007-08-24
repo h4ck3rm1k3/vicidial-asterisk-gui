@@ -160,10 +160,11 @@
 # 70322-1545 - Added sipsak display ability
 # 70510-1319 - Added onUnload force Logout
 # 70806-1530 - Added Presets Dial links above agent mute button
+# 70823-2118 - Fixed XMLHTTPRequest, HotKeys and Scheduled Callbacks issues with MSIE
 #
 
-$version = '2.0.131';
-$build = '70806-1530';
+$version = '2.0.132';
+$build = '70823-2118';
 
 require("dbconnect.php");
 
@@ -1190,6 +1191,17 @@ else
 		exit;
 		}
 
+	if (ereg('MSIE',$browser)) 
+		{
+		$useIE=1;
+		print "<!-- client web browser used: MSIE |$browser|$useIE| -->\n";
+		}
+	else 
+		{
+		$useIE=0;
+		print "<!-- client web browser used: W3C-Compliant |$browser|$useIE| -->\n";
+		}
+
 	$StarTtimE = date("U");
 	$NOW_TIME = date("Y-m-d H:i:s");
 	##### Agent is going to log in so insert the vicidial_agent_log entry now
@@ -2005,215 +2017,216 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Check to see if there are any channels live in the agent's conference meetme room
 	function check_for_conf_calls(taskconfnum,taskforce)
 		{
-		custchannellive--;
-		if (agentcallsstatus == '1')
-			{
-			campagentstatct++;
-			if (campagentstatct > campagentstatctmax) 
+		if (typeof(xmlhttprequestcheckconf) == "undefined") {
+			//alert (xmlhttprequestcheckconf == xmlhttpSendConf);
+			custchannellive--;
+			if (agentcallsstatus == '1')
 				{
-				campagentstatct=0;
-				var campagentstdisp = 'YES';
+				campagentstatct++;
+				if (campagentstatct > campagentstatctmax) 
+					{
+					campagentstatct=0;
+					var campagentstdisp = 'YES';
+					}
+				else
+					{
+					var campagentstdisp = 'NO';
+					}
 				}
 			else
 				{
 				var campagentstdisp = 'NO';
 				}
-			}
-		else
-			{
-			var campagentstdisp = 'NO';
-			}
-		var xmlhttp=false;
-		/*@cc_on @*/
-		/*@if (@_jscript_version >= 5)
-		// JScript gives us Conditional compilation, we can cope with old IE versions.
-		// and security blocked creation of the objects.
-		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		 } catch (e) {
-		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  } catch (E) {
-		   xmlhttp = false;
-		  }
-		 }
-		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
-			{
-			xmlhttp = new XMLHttpRequest();
-			}
-		if (xmlhttp) 
-			{ 
-			checkconf_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&client=vdc&conf_exten=" + taskconfnum + "&auto_dial_level=" + auto_dial_level + "&campagentstdisp=" + campagentstdisp;
-			xmlhttp.open('POST', 'conf_exten_check.php'); 
-			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(checkconf_query); 
-			xmlhttp.onreadystatechange = function() 
+
+			xmlhttprequestcheckconf=false;
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
+			// JScript gives us Conditional compilation, we can cope with old IE versions.
+			// and security blocked creation of the objects.
+			 try {
+			  xmlhttprequestcheckconf = new ActiveXObject("Msxml2.XMLHTTP");
+			 } catch (e) {
+			  try {
+			   xmlhttprequestcheckconf = new ActiveXObject("Microsoft.XMLHTTP");
+			  } catch (E) {
+			   xmlhttprequestcheckconf = false;
+			  }
+			 }
+			@end @*/
+			//alert ("1");
+			if (!xmlhttprequestcheckconf && typeof XMLHttpRequest!='undefined')
+				{
+				xmlhttprequestcheckconf = new XMLHttpRequest();
+				}
+			if (xmlhttprequestcheckconf) 
 				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
-					{
-					var check_conf = null;
-					var LMAforce = taskforce;
-					check_conf = xmlhttp.responseText;
-				//	alert(checkconf_query);
-				//	alert(xmlhttp.responseText);
-					var check_ALL_array=check_conf.split("\n");
-					var check_time_array=check_ALL_array[0].split("|");
-					var Time_array = check_time_array[1].split("UnixTime: ");
-					 UnixTime = Time_array[1];
-					 UnixTime = parseInt(UnixTime);
-					 UnixTimeMS = (UnixTime * 1000);
-					t.setTime(UnixTimeMS);
-					if ( (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
+				checkconf_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&client=vdc&conf_exten=" + taskconfnum + "&auto_dial_level=" + auto_dial_level + "&campagentstdisp=" + campagentstdisp;
+				xmlhttprequestcheckconf.open('POST', 'conf_exten_check.php'); 
+				xmlhttprequestcheckconf.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+				xmlhttprequestcheckconf.send(checkconf_query); 
+				xmlhttprequestcheckconf.onreadystatechange = function() 
+					{ 
+					if (xmlhttprequestcheckconf.readyState == 4 && xmlhttprequestcheckconf.status == 200) 
 						{
-						var Astatus_array = check_time_array[2].split("Status: ");
-						var AGStatuS = Astatus_array[1];
-						var CamPCalLs_array = check_time_array[3].split("CampCalls: ");
-						var CamPCalLs = CamPCalLs_array[1];
-						if (AGStatuS != 'N')
+						var check_conf = null;
+						var LMAforce = taskforce;
+						check_conf = xmlhttprequestcheckconf.responseText;
+					//	alert(checkconf_query);
+					//	alert(xmlhttprequestcheckconf.responseText);
+						var check_ALL_array=check_conf.split("\n");
+						var check_time_array=check_ALL_array[0].split("|");
+						var Time_array = check_time_array[1].split("UnixTime: ");
+						 UnixTime = Time_array[1];
+						 UnixTime = parseInt(UnixTime);
+						 UnixTimeMS = (UnixTime * 1000);
+						t.setTime(UnixTimeMS);
+						if ( (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
 							{
-							document.getElementById("AgentStatusStatus").innerHTML = AGStatuS;
-							}
-						if (CamPCalLs != 'N')
-							{
-							document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
-							}
-						if ( (AGStatuS == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
-							{
-							showDiv('AgenTDisablEBoX');
-							}
-						if ( (AGStatuS == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
-							{
-							showDiv('AgenTDisablEBoX');
-							}
-						}
-					var check_conf_array=check_ALL_array[1].split("|");
-					var live_conf_calls = check_conf_array[0];
-					var conf_chan_array = check_conf_array[1].split(" ~");
-					if ( (conf_channels_xtra_display == 1) || (conf_channels_xtra_display == 0) )
-						{
-						if (live_conf_calls > 0)
-							{
-							var loop_ct=0;
-							var ARY_ct=0;
-							var LMAalter=0;
-							var LMAcontent_change=0;
-							var LMAcontent_match=0;
-							var conv_start=-1;
-				//			var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN THIS CONFERENCE:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">XFER</TD></TR>";
-							var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
-							if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
+							var Astatus_array = check_time_array[2].split("Status: ");
+							var AGStatuS = Astatus_array[1];
+							var CamPCalLs_array = check_time_array[3].split("CampCalls: ");
+							var CamPCalLs = CamPCalLs_array[1];
+							if (AGStatuS != 'N')
 								{
-								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
-								LMAcount=0;   LMAcontent_change++;
+								document.getElementById("AgentStatusStatus").innerHTML = AGStatuS;
 								}
-							while (loop_ct < live_conf_calls)
+							if (CamPCalLs != 'N')
 								{
-								loop_ct++;
-								loop_s = loop_ct.toString();
-								if (loop_s.match(/1$|3$|5$|7$|9$/)) 
-									{var row_color = '#DDDDFF';}
-								else
-									{var row_color = '#CCCCFF';}
-								var conv_ct = (loop_ct + conv_start);
-								var channelfieldA = conf_chan_array[conv_ct];
-								if (volumecontrol_active!=1)
+								document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
+								}
+							if ( (AGStatuS == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
+								{
+								showDiv('AgenTDisablEBoX');
+								}
+							if ( (AGStatuS == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
+								{
+								showDiv('AgenTDisablEBoX');
+								}
+							}
+						var check_conf_array=check_ALL_array[1].split("|");
+						var live_conf_calls = check_conf_array[0];
+						var conf_chan_array = check_conf_array[1].split(" ~");
+						if ( (conf_channels_xtra_display == 1) || (conf_channels_xtra_display == 0) )
+							{
+							if (live_conf_calls > 0)
+								{
+								var loop_ct=0;
+								var ARY_ct=0;
+								var LMAalter=0;
+								var LMAcontent_change=0;
+								var LMAcontent_match=0;
+								var conv_start=-1;
+								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
+								if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 									{
-									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
+									LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
+									LMAcount=0;   LMAcontent_change++;
 									}
-								else
+								while (loop_ct < live_conf_calls)
 									{
-									live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
-									}
-			//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
-
-								if (channelfieldA == lastcustchannel) {custchannellive++;}
-								else
-									{
-									if(customerparked == 1)
-										{custchannellive++;}
-									// allow for no customer hungup errors if call from another server
-									if(server_ip == lastcustserverip)
-										{var nothing='';}
+									loop_ct++;
+									loop_s = loop_ct.toString();
+									if (loop_s.match(/1$|3$|5$|7$|9$/)) 
+										{var row_color = '#DDDDFF';}
 									else
-										{custchannellive++;}
-									}
-
-								if (volumecontrol_active > 0)
-									{
-									if (protocol != 'EXTERNAL') 
+										{var row_color = '#CCCCFF';}
+									var conv_ct = (loop_ct + conv_start);
+									var channelfieldA = conf_chan_array[conv_ct];
+									if (volumecontrol_active!=1)
 										{
-										var regAGNTchan = new RegExp(protocol + '/' + extension,"g");
-										if  ( (channelfieldA.match(regAGNTchan)) && (agentchannel != channelfieldA) )
-											{
-											agentchannel = channelfieldA;
-
-											document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
-											}
+										live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
 										}
 									else
 										{
-										if (agentchannel.length < 3)
-											{
-											agentchannel = channelfieldA;
+										live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
+										}
+				//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
 
-											document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+									if (channelfieldA == lastcustchannel) {custchannellive++;}
+									else
+										{
+										if(customerparked == 1)
+											{custchannellive++;}
+										// allow for no customer hungup errors if call from another server
+										if(server_ip == lastcustserverip)
+											{var nothing='';}
+										else
+											{custchannellive++;}
+										}
+
+									if (volumecontrol_active > 0)
+										{
+										if (protocol != 'EXTERNAL') 
+											{
+											var regAGNTchan = new RegExp(protocol + '/' + extension,"g");
+											if  ( (channelfieldA.match(regAGNTchan)) && (agentchannel != channelfieldA) )
+												{
+												agentchannel = channelfieldA;
+
+												document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+												}
+											}
+										else
+											{
+											if (agentchannel.length < 3)
+												{
+												agentchannel = channelfieldA;
+
+												document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
+												}
 											}
 										}
-									}
 
-			//		document.getElementById("debugbottomspan").innerHTML = debugspan + '<BR>' + channelfieldA + '|' + lastcustchannel + '|' + custchannellive + '|' + LMAcontent_change + '|' + LMAalter;
+				//		document.getElementById("debugbottomspan").innerHTML = debugspan + '<BR>' + channelfieldA + '|' + lastcustchannel + '|' + custchannellive + '|' + LMAcontent_change + '|' + LMAalter;
 
-								if (!LMAe[ARY_ct]) 
-									{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
-								else
-									{
-									if (LMAe[ARY_ct].length < 1) 
+									if (!LMAe[ARY_ct]) 
 										{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
 									else
 										{
-										if (LMAe[ARY_ct] == channelfieldA) {LMAcontent_match++;}
-										 else {LMAcontent_change++;   LMAe[ARY_ct] = channelfieldA;}
+										if (LMAe[ARY_ct].length < 1) 
+											{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
+										else
+											{
+											if (LMAe[ARY_ct] == channelfieldA) {LMAcontent_match++;}
+											 else {LMAcontent_change++;   LMAe[ARY_ct] = channelfieldA;}
+											}
 										}
+									if (LMAalter > 0) {LMAcount++;}
+									
+									ARY_ct++;
 									}
-								if (LMAalter > 0) {LMAcount++;}
-								
-								ARY_ct++;
+		//	var debug_LMA = LMAcontent_match+"|"+LMAcontent_change+"|"+LMAcount+"|"+live_conf_calls+"|"+LMAe[0]+LMAe[1]+LMAe[2]+LMAe[3]+LMAe[4]+LMAe[5];
+		//							document.getElementById("confdebug").innerHTML = debug_LMA + "<BR>";
+
+								live_conf_HTML = live_conf_HTML + "</table>";
+
+								if (LMAcontent_change > 0)
+									{
+									if (conf_channels_xtra_display == 1)
+										{document.getElementById("outboundcallsspan").innerHTML = live_conf_HTML;}
+									}
+								nochannelinsession=0;
 								}
-	//	var debug_LMA = LMAcontent_match+"|"+LMAcontent_change+"|"+LMAcount+"|"+live_conf_calls+"|"+LMAe[0]+LMAe[1]+LMAe[2]+LMAe[3]+LMAe[4]+LMAe[5];
-	//							document.getElementById("confdebug").innerHTML = debug_LMA + "<BR>";
-
-							live_conf_HTML = live_conf_HTML + "</table>";
-
-							if (LMAcontent_change > 0)
+							else
 								{
+								LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
+								LMAcount=0;
 								if (conf_channels_xtra_display == 1)
 									{
-							//		document.getElementById("MainPanel").style.overflow = 'visible';
-									document.getElementById("outboundcallsspan").innerHTML = live_conf_HTML;
-							//		document.getElementById("MainPanel").style.overflow = 'auto';
+									if (document.getElementById("outboundcallsspan").innerHTML.length > 2)
+										{
+										document.getElementById("outboundcallsspan").innerHTML = '';
+										}
 									}
+								custchannellive = -99;
+								nochannelinsession++;
 								}
-							nochannelinsession=0;
 							}
-						else
-							{
-							LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
-							LMAcount=0;
-							if (conf_channels_xtra_display == 1)
-								{
-								if (document.getElementById("outboundcallsspan").innerHTML.length > 2)
-									{
-									document.getElementById("outboundcallsspan").innerHTML = '';
-									}
-								}
-							custchannellive = -99;
-							nochannelinsession++;
-							}
+							xmlhttprequestcheckconf = undefined; 
+							delete xmlhttprequestcheckconf;						
 						}
 					}
 				}
-			delete xmlhttp;
 			}
 		}
 
@@ -3598,275 +3611,277 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Check to see if there is a call being sent from the auto-dialer to agent conf
 	function check_for_auto_incoming()
 		{
-		all_record = 'NO';
-		all_record_count=0;
-		document.vicidial_form.lead_id.value = '';
-		var xmlhttp=false;
-		/*@cc_on @*/
-		/*@if (@_jscript_version >= 5)
-		// JScript gives us Conditional compilation, we can cope with old IE versions.
-		// and security blocked creation of the objects.
-		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-		 } catch (e) {
-		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-		  } catch (E) {
-		   xmlhttp = false;
-		  }
-		 }
-		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+		if (typeof(xmlhttprequestcheckauto) == "undefined") 
 			{
-			xmlhttp = new XMLHttpRequest();
-			}
-		if (xmlhttp) 
-			{ 
-			checkVDAI_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=VDADcheckINCOMING" + "&agent_log_id=" + agent_log_id;
-			xmlhttp.open('POST', 'vdc_db_query.php'); 
-			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(checkVDAI_query); 
-			xmlhttp.onreadystatechange = function() 
+			all_record = 'NO';
+			all_record_count=0;
+			document.vicidial_form.lead_id.value = '';
+			var xmlhttprequestcheckauto=false;
+			/*@cc_on @*/
+			/*@if (@_jscript_version >= 5)
+			// JScript gives us Conditional compilation, we can cope with old IE versions.
+			// and security blocked creation of the objects.
+			 try {
+			  xmlhttprequestcheckauto = new ActiveXObject("Msxml2.XMLHTTP");
+			 } catch (e) {
+			  try {
+			   xmlhttprequestcheckauto = new ActiveXObject("Microsoft.XMLHTTP");
+			  } catch (E) {
+			   xmlhttprequestcheckauto = false;
+			  }
+			 }
+			@end @*/
+			if (!xmlhttprequestcheckauto && typeof XMLHttpRequest!='undefined')
+				{
+				xmlhttprequestcheckauto = new XMLHttpRequest();
+				}
+			if (xmlhttprequestcheckauto) 
 				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
-					{
-					var check_incoming = null;
-					check_incoming = xmlhttp.responseText;
-				//	alert(checkVDAI_query);
-				//	alert(xmlhttp.responseText);
-					var check_VDIC_array=check_incoming.split("\n");
-					if (check_VDIC_array[0] == '1')
+				checkVDAI_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=VDADcheckINCOMING" + "&agent_log_id=" + agent_log_id;
+				xmlhttprequestcheckauto.open('POST', 'vdc_db_query.php'); 
+				xmlhttprequestcheckauto.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+				xmlhttprequestcheckauto.send(checkVDAI_query); 
+				xmlhttprequestcheckauto.onreadystatechange = function() 
+					{ 
+					if (xmlhttprequestcheckauto.readyState == 4 && xmlhttprequestcheckauto.status == 200) 
 						{
-				//		alert(xmlhttp.responseText);
-						AutoDialWaiting = 0;
-
-						var VDIC_data_VDAC=check_VDIC_array[1].split("|");
-						VDIC_web_form_address = VICIDiaL_web_form_address
-						var VDIC_fronter='';
-
-						var VDIC_data_VDIG=check_VDIC_array[2].split("|");
-						if (VDIC_data_VDIG[0].length > 5)
-							{VDIC_web_form_address = VDIC_data_VDIG[0];}
-						var VDCL_group_name			= VDIC_data_VDIG[1];
-						var VDCL_group_color		= VDIC_data_VDIG[2];
-						var VDCL_fronter_display	= VDIC_data_VDIG[3];
-						 VDCL_group_id				= VDIC_data_VDIG[4];
-						 CalL_ScripT_id				= VDIC_data_VDIG[5];
-						 CalL_AutO_LauncH			= VDIC_data_VDIG[6];
-						 CalL_XC_a_Dtmf				= VDIC_data_VDIG[7];
-						 CalL_XC_a_NuMber			= VDIC_data_VDIG[8];
-						 CalL_XC_b_Dtmf				= VDIC_data_VDIG[9];
-						 CalL_XC_b_NuMber			= VDIC_data_VDIG[10];
-
-						var VDIC_data_VDFR=check_VDIC_array[3].split("|");
-						if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
-							{VDIC_fronter = "  Fronter: " + VDIC_data_VDFR[0] + " - " + VDIC_data_VDFR[1];}
-						
-						document.vicidial_form.lead_id.value		= VDIC_data_VDAC[0];
-						document.vicidial_form.uniqueid.value		= VDIC_data_VDAC[1];
-						CIDcheck									= VDIC_data_VDAC[2];
-						CalLCID										= VDIC_data_VDAC[2];
-						document.vicidial_form.callchannel.value	= VDIC_data_VDAC[3];
-						lastcustchannel = VDIC_data_VDAC[3];
-						document.vicidial_form.callserverip.value	= VDIC_data_VDAC[4];
-						lastcustserverip = VDIC_data_VDAC[4];
-						if( document.images ) { document.images['livecall'].src = image_livecall_ON.src;}
-						document.vicidial_form.SecondS.value		= 0;
-
-						VD_live_customer_call = 1;
-						VD_live_call_secondS = 0;
-
-						// INSERT VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
-					//	DialLog("start");
-
-						custchannellive=1;
-
-						LasTCID											= check_VDIC_array[4];
-						LeaDPreVDispO									= check_VDIC_array[6];
-						fronter											= check_VDIC_array[7];
-						document.vicidial_form.vendor_lead_code.value	= check_VDIC_array[8];
-						document.vicidial_form.list_id.value			= check_VDIC_array[9];
-						document.vicidial_form.gmt_offset_now.value		= check_VDIC_array[10];
-						document.vicidial_form.phone_code.value			= check_VDIC_array[11];
-						document.vicidial_form.phone_number.value		= check_VDIC_array[12];
-						document.vicidial_form.title.value				= check_VDIC_array[13];
-						document.vicidial_form.first_name.value			= check_VDIC_array[14];
-						document.vicidial_form.middle_initial.value		= check_VDIC_array[15];
-						document.vicidial_form.last_name.value			= check_VDIC_array[16];
-						document.vicidial_form.address1.value			= check_VDIC_array[17];
-						document.vicidial_form.address2.value			= check_VDIC_array[18];
-						document.vicidial_form.address3.value			= check_VDIC_array[19];
-						document.vicidial_form.city.value				= check_VDIC_array[20];
-						document.vicidial_form.state.value				= check_VDIC_array[21];
-						document.vicidial_form.province.value			= check_VDIC_array[22];
-						document.vicidial_form.postal_code.value		= check_VDIC_array[23];
-						document.vicidial_form.country_code.value		= check_VDIC_array[24];
-						document.vicidial_form.gender.value				= check_VDIC_array[25];
-						document.vicidial_form.date_of_birth.value		= check_VDIC_array[26];
-						document.vicidial_form.alt_phone.value			= check_VDIC_array[27];
-						document.vicidial_form.email.value				= check_VDIC_array[28];
-						document.vicidial_form.security_phrase.value	= check_VDIC_array[29];
-						var REGcommentsNL = new RegExp("!N","g");
-						check_VDIC_array[30] = check_VDIC_array[30].replace(REGcommentsNL, "\n");
-						document.vicidial_form.comments.value			= check_VDIC_array[30];
-						document.vicidial_form.called_count.value		= check_VDIC_array[31];
-						CBentry_time									= check_VDIC_array[32];
-						CBcallback_time									= check_VDIC_array[33];
-						CBuser											= check_VDIC_array[34];
-						CBcomments										= check_VDIC_array[35];
-						dialed_number									= check_VDIC_array[36];
-						dialed_label									= check_VDIC_array[37];
-
-						lead_dial_number = document.vicidial_form.phone_number.value;
-						document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
-
-						if (LeaDPreVDispO == 'CALLBK')
+						var check_incoming = null;
+						check_incoming = xmlhttprequestcheckauto.responseText;
+					//	alert(checkVDAI_query);
+					//	alert(xmlhttprequestcheckauto.responseText);
+						var check_VDIC_array=check_incoming.split("\n");
+						if (check_VDIC_array[0] == '1')
 							{
-							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS CALLBACK </B>";
-							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Last Call: </b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comments: </b><br>" + CBcomments;
-							showDiv('CBcommentsBox');
-							}
+					//		alert(xmlhttprequestcheckauto.responseText);
+							AutoDialWaiting = 0;
 
-						if (VDIC_data_VDIG[1].length > 0)
-							{
-							if (VDIC_data_VDIG[2].length > 2)
+							var VDIC_data_VDAC=check_VDIC_array[1].split("|");
+							VDIC_web_form_address = VICIDiaL_web_form_address
+							var VDIC_fronter='';
+
+							var VDIC_data_VDIG=check_VDIC_array[2].split("|");
+							if (VDIC_data_VDIG[0].length > 5)
+								{VDIC_web_form_address = VDIC_data_VDIG[0];}
+							var VDCL_group_name			= VDIC_data_VDIG[1];
+							var VDCL_group_color		= VDIC_data_VDIG[2];
+							var VDCL_fronter_display	= VDIC_data_VDIG[3];
+							 VDCL_group_id				= VDIC_data_VDIG[4];
+							 CalL_ScripT_id				= VDIC_data_VDIG[5];
+							 CalL_AutO_LauncH			= VDIC_data_VDIG[6];
+							 CalL_XC_a_Dtmf				= VDIC_data_VDIG[7];
+							 CalL_XC_a_NuMber			= VDIC_data_VDIG[8];
+							 CalL_XC_b_Dtmf				= VDIC_data_VDIG[9];
+							 CalL_XC_b_NuMber			= VDIC_data_VDIG[10];
+
+							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
+							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
+								{VDIC_fronter = "  Fronter: " + VDIC_data_VDFR[0] + " - " + VDIC_data_VDFR[1];}
+							
+							document.vicidial_form.lead_id.value		= VDIC_data_VDAC[0];
+							document.vicidial_form.uniqueid.value		= VDIC_data_VDAC[1];
+							CIDcheck									= VDIC_data_VDAC[2];
+							CalLCID										= VDIC_data_VDAC[2];
+							document.vicidial_form.callchannel.value	= VDIC_data_VDAC[3];
+							lastcustchannel = VDIC_data_VDAC[3];
+							document.vicidial_form.callserverip.value	= VDIC_data_VDAC[4];
+							lastcustserverip = VDIC_data_VDAC[4];
+							if( document.images ) { document.images['livecall'].src = image_livecall_ON.src;}
+							document.vicidial_form.SecondS.value		= 0;
+
+							VD_live_customer_call = 1;
+							VD_live_call_secondS = 0;
+
+							// INSERT VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
+						//	DialLog("start");
+
+							custchannellive=1;
+
+							LasTCID											= check_VDIC_array[4];
+							LeaDPreVDispO									= check_VDIC_array[6];
+							fronter											= check_VDIC_array[7];
+							document.vicidial_form.vendor_lead_code.value	= check_VDIC_array[8];
+							document.vicidial_form.list_id.value			= check_VDIC_array[9];
+							document.vicidial_form.gmt_offset_now.value		= check_VDIC_array[10];
+							document.vicidial_form.phone_code.value			= check_VDIC_array[11];
+							document.vicidial_form.phone_number.value		= check_VDIC_array[12];
+							document.vicidial_form.title.value				= check_VDIC_array[13];
+							document.vicidial_form.first_name.value			= check_VDIC_array[14];
+							document.vicidial_form.middle_initial.value		= check_VDIC_array[15];
+							document.vicidial_form.last_name.value			= check_VDIC_array[16];
+							document.vicidial_form.address1.value			= check_VDIC_array[17];
+							document.vicidial_form.address2.value			= check_VDIC_array[18];
+							document.vicidial_form.address3.value			= check_VDIC_array[19];
+							document.vicidial_form.city.value				= check_VDIC_array[20];
+							document.vicidial_form.state.value				= check_VDIC_array[21];
+							document.vicidial_form.province.value			= check_VDIC_array[22];
+							document.vicidial_form.postal_code.value		= check_VDIC_array[23];
+							document.vicidial_form.country_code.value		= check_VDIC_array[24];
+							document.vicidial_form.gender.value				= check_VDIC_array[25];
+							document.vicidial_form.date_of_birth.value		= check_VDIC_array[26];
+							document.vicidial_form.alt_phone.value			= check_VDIC_array[27];
+							document.vicidial_form.email.value				= check_VDIC_array[28];
+							document.vicidial_form.security_phrase.value	= check_VDIC_array[29];
+							var REGcommentsNL = new RegExp("!N","g");
+							check_VDIC_array[30] = check_VDIC_array[30].replace(REGcommentsNL, "\n");
+							document.vicidial_form.comments.value			= check_VDIC_array[30];
+							document.vicidial_form.called_count.value		= check_VDIC_array[31];
+							CBentry_time									= check_VDIC_array[32];
+							CBcallback_time									= check_VDIC_array[33];
+							CBuser											= check_VDIC_array[34];
+							CBcomments										= check_VDIC_array[35];
+							dialed_number									= check_VDIC_array[36];
+							dialed_label									= check_VDIC_array[37];
+
+							lead_dial_number = document.vicidial_form.phone_number.value;
+							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
+
+							if (LeaDPreVDispO == 'CALLBK')
 								{
-								document.getElementById("MainStatuSSpan").style.background = VDIC_data_VDIG[2];
+								document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS CALLBACK </B>";
+								document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
+								document.getElementById("CBcommentsBoxA").innerHTML = "<b>Last Call: </b>" + CBentry_time;
+								document.getElementById("CBcommentsBoxB").innerHTML = "<b>CallBack: </b>" + CBcallback_time;
+								document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
+								document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comments: </b><br>" + CBcomments;
+								showDiv('CBcommentsBox');
 								}
-							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
+
+							if (VDIC_data_VDIG[1].length > 0)
+								{
+								if (VDIC_data_VDIG[2].length > 2)
+									{
+									document.getElementById("MainStatuSSpan").style.background = VDIC_data_VDIG[2];
+									}
+								document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
+								}
+
+							document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_LB_parkcall.gif\" border=0 alt=\"Park Call\"></a>";
+
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
+
+							document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
+
+							document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
+
+							document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_internalcloser.gif\" border=0 alt=\"INTERNAL CLOSER\"></a>";
+
+							document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Dial Blind Transfer\"></a>";
+
+							document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
+		
+							if (lastcustserverip == server_ip)
+							{
+								document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
+								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
 							}
 
-						document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_LB_parkcall.gif\" border=0 alt=\"Park Call\"></a>";
+							document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
 
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
+							if (VDCL_group_id.length > 1)
+								{var group = VDCL_group_id;}
+							else
+								{var group = campaign;}
+							if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
-						document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
+							web_form_vars = 
+							"lead_id=" + document.vicidial_form.lead_id.value + 
+							"&vendor_id=" + document.vicidial_form.vendor_lead_code.value + 
+							"&list_id=" + document.vicidial_form.list_id.value + 
+							"&gmt_offset_now=" + document.vicidial_form.gmt_offset_now.value + 
+							"&phone_code=" + document.vicidial_form.phone_code.value + 
+							"&phone_number=" + document.vicidial_form.phone_number.value + 
+							"&title=" + document.vicidial_form.title.value + 
+							"&first_name=" + document.vicidial_form.first_name.value + 
+							"&middle_initial=" + document.vicidial_form.middle_initial.value + 
+							"&last_name=" + document.vicidial_form.last_name.value + 
+							"&address1=" + document.vicidial_form.address1.value + 
+							"&address2=" + document.vicidial_form.address2.value + 
+							"&address3=" + document.vicidial_form.address3.value + 
+							"&city=" + document.vicidial_form.city.value + 
+							"&state=" + document.vicidial_form.state.value + 
+							"&province=" + document.vicidial_form.province.value + 
+							"&postal_code=" + document.vicidial_form.postal_code.value + 
+							"&country_code=" + document.vicidial_form.country_code.value + 
+							"&gender=" + document.vicidial_form.gender.value + 
+							"&date_of_birth=" + document.vicidial_form.date_of_birth.value + 
+							"&alt_phone=" + document.vicidial_form.alt_phone.value + 
+							"&email=" + document.vicidial_form.email.value + 
+							"&security_phrase=" + document.vicidial_form.security_phrase.value + 
+							"&comments=" + document.vicidial_form.comments.value + 
+							"&user=" + user + 
+							"&pass=" + pass + 
+							"&campaign=" + campaign + 
+							"&phone_login=" + phone_login + 
+							"&phone_pass=" + phone_pass + 
+							"&fronter=" + fronter + 
+							"&closer=" + user + 
+							"&group=" + group + 
+							"&channel_group=" + group + 
+							"&SQLdate=" + SQLdate + 
+							"&epoch=" + UnixTime + 
+							"&uniqueid=" + document.vicidial_form.uniqueid.value + 
+							"&customer_zap_channel=" + lastcustchannel + 
+							"&customer_server_ip=" + lastcustserverip +
+							"&server_ip=" + server_ip + 
+							"&SIPexten=" + extension + 
+							"&session_id=" + session_id + 
+							"&phone=" + document.vicidial_form.phone_number.value + 
+							"&parked_by=" + document.vicidial_form.lead_id.value +
+							"&dispo=" + LeaDDispO + '' +
+							"&dialed_number=" + dialed_number + '' +
+							"&dialed_label=" + dialed_label + '' +
+							webform_session;
+							
+							var regWFspace = new RegExp(" ","ig");
+							web_form_vars = web_form_vars.replace(regWF, '');
+							var regWF = new RegExp("\\`|\\~|\\:|\\;|\\#|\\'|\\\"|\\{|\\}|\\(|\\)|\\*|\\^|\\%|\\$|\\!|\\%|\\r|\\t|\\n","ig");
+							web_form_vars = web_form_vars.replace(regWFspace, '+');
+							web_form_vars = web_form_vars.replace(regWF, '');
 
-						document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
+							var regWFAvars = new RegExp("\\?","ig");
+							if (VDIC_web_form_address.match(regWFAvars))
+								{web_form_vars = '&' + web_form_vars}
+							else
+								{web_form_vars = '?' + web_form_vars}
 
-						document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_internalcloser.gif\" border=0 alt=\"INTERNAL CLOSER\"></a>";
+							document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"./images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
 
-						document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Dial Blind Transfer\"></a>";
+							if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
+								{all_record = 'YES';}
 
-						document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
-	
-						if (lastcustserverip == server_ip)
-						{
-							document.getElementById("VolumeUpSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('UP','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a>";
-							document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
-						}
+							if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
+								{
+								// test code for scripts output
+								URLDecode(scriptnames[CalL_ScripT_id],'NO');
+								var textname = decoded;
+								URLDecode(scripttexts[CalL_ScripT_id],'YES');
+								var texttext = decoded;
+								var testscript = "<B>" + textname + "</B>\n\n<BR><BR>\n\n" + texttext;
+								document.getElementById("ScriptContents").innerHTML = testscript;
+								}
 
-						document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+							if (CalL_AutO_LauncH == 'SCRIPT')
+								{
+								ScriptPanelToFront();
+								}
 
-						if (VDCL_group_id.length > 1)
-							{var group = VDCL_group_id;}
+							if (CalL_AutO_LauncH == 'WEBFORM')
+								{
+								window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								}
+
+							}
 						else
-							{var group = campaign;}
-						if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
-
-						web_form_vars = 
-						"lead_id=" + document.vicidial_form.lead_id.value + 
-						"&vendor_id=" + document.vicidial_form.vendor_lead_code.value + 
-						"&list_id=" + document.vicidial_form.list_id.value + 
-						"&gmt_offset_now=" + document.vicidial_form.gmt_offset_now.value + 
-						"&phone_code=" + document.vicidial_form.phone_code.value + 
-						"&phone_number=" + document.vicidial_form.phone_number.value + 
-						"&title=" + document.vicidial_form.title.value + 
-						"&first_name=" + document.vicidial_form.first_name.value + 
-						"&middle_initial=" + document.vicidial_form.middle_initial.value + 
-						"&last_name=" + document.vicidial_form.last_name.value + 
-						"&address1=" + document.vicidial_form.address1.value + 
-						"&address2=" + document.vicidial_form.address2.value + 
-						"&address3=" + document.vicidial_form.address3.value + 
-						"&city=" + document.vicidial_form.city.value + 
-						"&state=" + document.vicidial_form.state.value + 
-						"&province=" + document.vicidial_form.province.value + 
-						"&postal_code=" + document.vicidial_form.postal_code.value + 
-						"&country_code=" + document.vicidial_form.country_code.value + 
-						"&gender=" + document.vicidial_form.gender.value + 
-						"&date_of_birth=" + document.vicidial_form.date_of_birth.value + 
-						"&alt_phone=" + document.vicidial_form.alt_phone.value + 
-						"&email=" + document.vicidial_form.email.value + 
-						"&security_phrase=" + document.vicidial_form.security_phrase.value + 
-						"&comments=" + document.vicidial_form.comments.value + 
-						"&user=" + user + 
-						"&pass=" + pass + 
-						"&campaign=" + campaign + 
-						"&phone_login=" + phone_login + 
-						"&phone_pass=" + phone_pass + 
-						"&fronter=" + fronter + 
-						"&closer=" + user + 
-						"&group=" + group + 
-						"&channel_group=" + group + 
-						"&SQLdate=" + SQLdate + 
-						"&epoch=" + UnixTime + 
-						"&uniqueid=" + document.vicidial_form.uniqueid.value + 
-						"&customer_zap_channel=" + lastcustchannel + 
-						"&customer_server_ip=" + lastcustserverip +
-						"&server_ip=" + server_ip + 
-						"&SIPexten=" + extension + 
-						"&session_id=" + session_id + 
-						"&phone=" + document.vicidial_form.phone_number.value + 
-						"&parked_by=" + document.vicidial_form.lead_id.value +
-						"&dispo=" + LeaDDispO + '' +
-						"&dialed_number=" + dialed_number + '' +
-						"&dialed_label=" + dialed_label + '' +
-						webform_session;
-						
-						var regWFspace = new RegExp(" ","ig");
-						web_form_vars = web_form_vars.replace(regWF, '');
-						var regWF = new RegExp("\\`|\\~|\\:|\\;|\\#|\\'|\\\"|\\{|\\}|\\(|\\)|\\*|\\^|\\%|\\$|\\!|\\%|\\r|\\t|\\n","ig");
-						web_form_vars = web_form_vars.replace(regWFspace, '+');
-						web_form_vars = web_form_vars.replace(regWF, '');
-
-						var regWFAvars = new RegExp("\\?","ig");
-						if (VDIC_web_form_address.match(regWFAvars))
-							{web_form_vars = '&' + web_form_vars}
-						else
-							{web_form_vars = '?' + web_form_vars}
-
-						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"./images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
-
-						if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
-							{all_record = 'YES';}
-
-						if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
 							{
-							// test code for scripts output
-							URLDecode(scriptnames[CalL_ScripT_id],'NO');
-							var textname = decoded;
-							URLDecode(scripttexts[CalL_ScripT_id],'YES');
-							var texttext = decoded;
-							var testscript = "<B>" + textname + "</B>\n\n<BR><BR>\n\n" + texttext;
-							document.getElementById("ScriptContents").innerHTML = testscript;
+							// do nothing
 							}
-
-						if (CalL_AutO_LauncH == 'SCRIPT')
-							{
-							ScriptPanelToFront();
-							}
-
-						if (CalL_AutO_LauncH == 'WEBFORM')
-							{
-							window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
-							}
-
-
-						}
-					else
-						{
-						// do nothing
+							xmlhttprequestcheckauto = undefined;
+							delete xmlhttprequestcheckauto;
 						}
 					}
 				}
-			delete xmlhttp;
 			}
 		}
-
 
 // ################################################################################
 // refresh the content of the web form URL
@@ -5013,9 +5028,59 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 
 		}
-
+<?
+if ($useIE > 0)
+{
+?>
 // ################################################################################
-// hotkeypress function to bind hotkeys defined in the campaign to dispositions
+// MSIE-only hotkeypress function to bind hotkeys defined in the campaign to dispositions
+	function hotkeypress(evt)
+		{
+		enter_disable();
+		if ( (hot_keys_active==1) && (VD_live_customer_call==1) )
+			{
+			var e = evt? evt : window.event;
+			if(!e) return;
+			var key = 0;
+			if (e.keyCode) { key = e.keyCode; } // for moz/fb, if keyCode==0 use 'which'
+			else if (typeof(e.which)!= 'undefined') { key = e.which; }
+
+			var HKdispo = hotkeys[String.fromCharCode(key)];
+		//	alert("|" + key + "|" + HKdispo + "|");
+			if (HKdispo) 
+				{
+			//	document.vicidial_form.inert_button.focus();
+			//	document.vicidial_form.inert_button.blur();
+				CustomerData_update();
+				var HKdispo_ary = HKdispo.split(" ----- ");
+				if ( (HKdispo_ary[0] == 'ALTPH2') || (HKdispo_ary[0] == 'ADDR3') )
+					{
+					if (document.vicidial_form.DiaLAltPhonE.checked==true)
+						{
+						dialedcall_send_hangup('NO', 'YES', HKdispo_ary[0]);
+						}
+					}
+				else
+					{
+					HKdispo_display = 4;
+					HKfinish=1;
+					document.getElementById("HotKeyDispo").innerHTML = HKdispo_ary[0] + " - " + HKdispo_ary[1];
+					showDiv('HotKeyActionBox');
+					hideDiv('HotKeyEntriesBox');
+					document.vicidial_form.DispoSelection.value = HKdispo_ary[0];
+					dialedcall_send_hangup('NO', 'YES', HKdispo_ary[0]);
+					}
+				}
+			}
+		}
+
+<?
+}
+else
+{
+?>
+// ################################################################################
+// W3C-compliant hotkeypress function to bind hotkeys defined in the campaign to dispositions
 	function hotkeypress(evt)
 		{
 		enter_disable();
@@ -5059,6 +5124,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		}
 
+<?
+}
+### end of onkeypress functions
+?>
 // ################################################################################
 // disable enter/return keys to not clear out vars on customer info
 	function enter_disable(evt)
@@ -5337,9 +5406,47 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{alert("You must choose a date");}
 		else
 			{
+
+<?
+if ($useIE > 0)
+{
+?>
+
+			var CallBackTimEHouRFORM = document.getElementById('CBT_hour');
+			var CallBackTimEHouR = CallBackTimEHouRFORM[CallBackTimEHouRFORM.selectedIndex].text;
+		//	var CallBackTimEHouRIDX = CallBackTimEHouRFORM.value;
+
+			var CallBackTimEMinuteSFORM = document.getElementById('CBT_minute');
+			var CallBackTimEMinuteS = CallBackTimEMinuteSFORM[CallBackTimEMinuteSFORM.selectedIndex].text;
+		//	var CallBackTimEMinuteSIDX = CallBackTimEMinuteSFORM.value;
+
+			var CallBackTimEAmpMFORM = document.getElementById('CBT_ampm');
+			var CallBackTimEAmpM = CallBackTimEAmpMFORM[CallBackTimEAmpMFORM.selectedIndex].text;
+		//	var CallBackTimEAmpMIDX = CallBackTimEAmpMFORM.value;
+
+		//	alert (CallBackTimEHouR + "|" + CallBackTimEHouRFORM + "|" + CallBackTimEHouRIDX + "|");
+		//	alert (CallBackTimEMinuteS + "|" + CallBackTimEMinuteSFORM + "|" + CallBackTimEMinuteSIDX + "|");
+		//	alert (CallBackTimEAmpM + "|" + CallBackTimEAmpMFORM + "|" + CallBackTimEAmpMIDX + "|");
+
+			CallBackTimEHouRFORM.selectedIndex = '0';
+			CallBackTimEMinuteSFORM.selectedIndex = '0';
+			CallBackTimEAmpMFORM.selectedIndex = '1';
+<?
+}
+else
+{
+?>
 			CallBackTimEHouR = document.vicidial_form.CBT_hour.value;
 			CallBackTimEMinuteS = document.vicidial_form.CBT_minute.value;
 			CallBackTimEAmpM = document.vicidial_form.CBT_ampm.value;
+
+			document.vicidial_form.CBT_hour.value = '01';
+			document.vicidial_form.CBT_minute.value = '00';
+			document.vicidial_form.CBT_ampm.value = 'PM';
+
+<?
+}
+?>
 			if (CallBackTimEHouR == '12')
 				{
 				if (CallBackTimEAmpM == 'AM')
@@ -5357,13 +5464,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			CallBackDatETimE = CallBackDatEForM + " " + CallBackTimEHouR + ":" + CallBackTimEMinuteS + ":00";
 
-			document.getElementById("CallBackDatEPrinT").innerHTML = "Select a Date Below";
-			document.vicidial_form.CallBackDatESelectioN.value = '';
-			document.vicidial_form.CallBackCommenTsField.value = '';
-			document.vicidial_form.CBT_hour.value = '01';
-			document.vicidial_form.CBT_minute.value = '00';
-			document.vicidial_form.CBT_ampm.value = 'PM';
-
 			if (document.vicidial_form.CallBackOnlyMe.checked==true)
 				{
 				CallBackrecipient = 'USERONLY';
@@ -5372,7 +5472,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				CallBackrecipient = 'ANYONE';
 				}
+			document.getElementById("CallBackDatEPrinT").innerHTML = "Select a Date Below";
 			document.vicidial_form.CallBackOnlyMe.checked=false;
+			document.vicidial_form.CallBackDatESelectioN.value = '';
+			document.vicidial_form.CallBackCommenTsField.value = '';
 
 		//	alert(CallBackDatETimE + "|" + CallBackCommenTs);
 
@@ -6221,12 +6324,12 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 <span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
-	<input type=hidden name=CallBackDatESelectioN>
-	<input type=hidden name=CallBackTimESelectioN>
+	<input type=hidden name=CallBackDatESelectioN ID="CallBackDatESelectioN">
+	<input type=hidden name=CallBackTimESelectioN ID="CallBackTimESelectioN">
 	<span id="CallBackDatEPrinT">Select a Date Below</span> &nbsp;
 	<span id="CallBackTimEPrinT"></span> &nbsp; &nbsp;
 	Hour: 
-	<SELECT SIZE=1 NAME="CBT_hour">
+	<SELECT SIZE=1 NAME="CBT_hour" ID="CBT_hour">
 	<option>01</option>
 	<option>02</option>
 	<option>03</option>
@@ -6241,20 +6344,20 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	<option>12</option>
 	</select> &nbsp;
 	Minutes: 
-	<SELECT SIZE=1 NAME="CBT_minute">
+	<SELECT SIZE=1 NAME="CBT_minute" ID="CBT_minute">
 	<option>00</option>
 	<option>30</option>
 	</select> &nbsp;
 
-	<SELECT SIZE=1 NAME="CBT_ampm">
+	<SELECT SIZE=1 NAME="CBT_ampm" ID="CBT_ampm">
 	<option>AM</option>
 	<option selected>PM</option>
 	</select> &nbsp;<BR>
 	<?
 	if ($agentonly_callbacks)
-		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> MY CALLBACK ONLY <BR>";}
+		{echo "<input type=checkbox name=CallBackOnlyMe id=CallBackOnlyMe size=1 value=\"0\"> MY CALLBACK ONLY <BR>";}
 	?>
-	CB Comments: <input type=text name="CallBackCommenTsField" size=50><BR><BR>
+	CB Comments: <input type=text name="CallBackCommenTsField" id="CallBackCommenTsField" size=50><BR><BR>
 
 	<a href="#" onclick="CallBackDatE_submit();return false;">SUBMIT</a><BR><BR>
 	<span id="CallBackDateContent"><?echo"$CCAL_OUT"?></span>
