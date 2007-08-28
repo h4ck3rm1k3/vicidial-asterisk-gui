@@ -3,13 +3,15 @@ INOUND/CLOSER proces flow					  2007-05-02
 ** THIS FULLY REDONE INBOUND-CLOSER PROSESS IS PLANNED FOR THE 2.0.4 RELEASE **
 
 This will outline the process I have thought through in my head for rewriting the inbound and closer call queueing and handling processes within VICIDIAL. The objective is to add the following features to make VICIDIAL a more well-rounded product:
+- consolidate the 9 VDAD inbound scripts into one script with CLI options
+- custom hold music per in-group
+- put call_times into effect for in-groups allowing calls coming in after hours to be directed to another extension or voicemail box
+- add concurrent-transfers options to inbound groups
 - announce estimated time on hold
 - announce place in line
-- custom hold music per in-group
 - option for customer to leave the queue and leave a message while still keeping their place in line
 - allow agent to search for customer lead in system after they have been connected
 - for closer transfers, allow fronter to send calls to any in-group by a pull-down list
-- put call_times into effect for in-groups allowing calls coming in after hours to be directed to another extension or voicemail box
 
 
 
