@@ -161,10 +161,11 @@
 # 70510-1319 - Added onUnload force Logout
 # 70806-1530 - Added Presets Dial links above agent mute button
 # 70823-2118 - Fixed XMLHTTPRequest, HotKeys and Scheduled Callbacks issues with MSIE
+# 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 #
 
-$version = '2.0.132';
-$build = '70823-2118';
+$version = '2.0.133';
+$build = '70828-1443';
 
 require("dbconnect.php");
 
@@ -1619,6 +1620,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var manual_auto_hotkey = 0;
 	var dialed_number = '';
 	var dialed_label = '';
+	var source_id = '';
 	var DispO3waychannel = '';
 	var DispO3wayXtrAchannel = '';
 	var DispO3wayCalLserverip = '';
@@ -3193,6 +3195,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						"&dispo=" + LeaDDispO + '' +
 						"&dialed_number=" + dialed_number + '' +
 						"&dialed_label=" + dialed_label + '' +
+						"&source_id=" + source_id + '' +
 						webform_session;
 						
 // $VICIDIAL_web_QUERY_STRING =~ s/ /+/gi;
@@ -3731,6 +3734,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							CBcomments										= check_VDIC_array[35];
 							dialed_number									= check_VDIC_array[36];
 							dialed_label									= check_VDIC_array[37];
+							source_id										= check_VDIC_array[38];
 
 							lead_dial_number = document.vicidial_form.phone_number.value;
 							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + document.vicidial_form.phone_number.value + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
@@ -3830,6 +3834,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							"&dispo=" + LeaDDispO + '' +
 							"&dialed_number=" + dialed_number + '' +
 							"&dialed_label=" + dialed_label + '' +
+							"&source_id=" + source_id + '' +
 							webform_session;
 							
 							var regWFspace = new RegExp(" ","ig");
@@ -3940,6 +3945,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		"&dispo=" + LeaDDispO + '' +
 		"&dialed_number=" + dialed_number + '' +
 		"&dialed_label=" + dialed_label + '' +
+		"&source_id=" + source_id + '' +
 		webform_session;
 		
 		var regWFspace = new RegExp(" ","ig");
@@ -5158,7 +5164,7 @@ else
 	   if (scriptformat == 'YES')
 		{
 		var SCvendor_lead_code = document.vicidial_form.vendor_lead_code.value;
-		var SCsource_id = "";
+		var SCsource_id = source_id;
 		var SClist_id = document.vicidial_form.list_id.value;
 		var SCgmt_offset_now = document.vicidial_form.gmt_offset_now.value;
 		var SCcalled_since_last_reset = "";
@@ -5185,6 +5191,7 @@ else
 		var SCfullname = LOGfullname;
 		var SCfronter = fronter;
 		var SCuser = user;
+		var SCpass = pass;
 		var SClead_id = document.vicidial_form.lead_id.value;
 		var SCcampaign = campaign;
 		var SCphone_login = phone_login;
@@ -5228,6 +5235,7 @@ else
 			SCfullname = SCfullname.replace(RGplus,'+');
 			SCfronter = SCfronter.replace(RGplus,'+');
 			SCuser = SCuser.replace(RGplus,'+');
+			SCpass = SCpass.replace(RGplus,'+');
 			SClead_id = SClead_id.replace(RGplus,'+');
 			SCcampaign = SCcampaign.replace(RGplus,'+');
 			SCphone_login = SCphone_login.replace(RGplus,'+');
@@ -5268,6 +5276,7 @@ else
 		var RGfullname = new RegExp("--A--fullname--B--","g");
 		var RGfronter = new RegExp("--A--fronter--B--","g");
 		var RGuser = new RegExp("--A--user--B--","g");
+		var RGpass = new RegExp("--A--pass--B--","g");
 		var RGlead_id = new RegExp("--A--lead_id--B--","g");
 		var RGcampaign = new RegExp("--A--campaign--B--","g");
 		var RGphone_login = new RegExp("--A--phone_login--B--","g");
@@ -5309,6 +5318,7 @@ else
 		encoded = encoded.replace(RGfullname, SCfullname);
 		encoded = encoded.replace(RGfronter, SCfronter);
 		encoded = encoded.replace(RGuser, SCuser);
+		encoded = encoded.replace(RGpass, SCpass);
 		encoded = encoded.replace(RGlead_id, SClead_id);
 		encoded = encoded.replace(RGcampaign, SCcampaign);
 		encoded = encoded.replace(RGphone_login, SCphone_login);

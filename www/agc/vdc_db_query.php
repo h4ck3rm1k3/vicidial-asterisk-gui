@@ -131,10 +131,11 @@
 # 70413-1253 - Fixed bug for outbound call time in CLOSER-type blended campaigns
 # 70424-1100 - Fixed bug for fronter/closer calls that would delete vdac records
 # 70802-1729 - Fixed bugs with pause_sec and wait_sec under certain call handling 
+# 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 #
 
-$version = '2.0.4-58';
-$build = '70802-1729';
+$version = '2.0.4-59';
+$build = '70828-1443';
 
 require("dbconnect.php");
 
@@ -502,6 +503,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$dispo			= trim("$row[3]");
 				$tsr			= trim("$row[4]");
 				$vendor_id		= trim("$row[5]");
+				$source_id		= trim("$row[6]");
 				$list_id		= trim("$row[7]");
 				$gmt_offset_now	= trim("$row[8]");
 				$phone_code		= trim("$row[10]");
@@ -649,6 +651,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LeaD_InfO .=	$CBcomments . "\n";
 			$LeaD_InfO .=	$phone_number . "\n";
 			$LeaD_InfO .=	"MAIN\n";
+			$LeaD_InfO .=	$source_id . "\n";
 
 			echo $LeaD_InfO;
 
@@ -1387,6 +1390,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$dispo			= trim("$row[3]");
 			$tsr			= trim("$row[4]");
 			$vendor_id		= trim("$row[5]");
+			$source_id		= trim("$row[6]");
 			$list_id		= trim("$row[7]");
 			$gmt_offset_now	= trim("$row[8]");
 			$phone_code		= trim("$row[10]");
@@ -1615,6 +1619,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$LeaD_InfO .=	$CBcomments . "\n";
 		$LeaD_InfO .=	$dialed_number . "\n";
 		$LeaD_InfO .=	$dialed_label . "\n";
+		$LeaD_InfO .=	$source_id . "\n";
 
 		echo $LeaD_InfO;
 
