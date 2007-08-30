@@ -181,15 +181,17 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if ($output_format =~ /^pipe-standard$/) 
-	{$DLT = '|';   $txt='.txt';}
+	{$DLT = '|';   $txt='.txt';   print "---- pipe-standard ----\n";}
 if ($output_format =~ /^csv-standard$/) 
-	{$DLT = "','";   $txt='.csv';}
+	{$DLT = "','";   $txt='.csv';   print "---- csv-standard ----\n";}
 if ($output_format =~ /^tab-standard$/) 
-	{$DLT = "\t";   $txt='.txt';}
+	{$DLT = "\t";   $txt='.txt';   print "---- tab-standard ----\n";}
 if ($output_format =~ /^pipe-triplep$/) 
-	{$DLT = '';   $txt='.txt';}
+	{$DLT = '';   $txt='.txt';   print "---- pipe-triplep ----\n";}
 if ($output_format =~ /^pipe-vici$/) 
-	{$DLT = '|';   $txt='.txt';}
+	{$DLT = '|';   $txt='.txt';   print "---- pipe-vici ----\n";}
+if ($output_format =~ /^html-rec$/) 
+	{$DLT = ' ';   $txt='.html';   print "---- html-rec ----\n";}
 
 	if ($sale_statuses =~ /---ALL---/)
 		{
@@ -388,7 +390,7 @@ $ivr_id = '0';
 $ivr_filename = '';
 
 
-$stmtB = "select recording_id,filename from recording_log where lead_id='$lead_id' and start_time > '$shipdate 00:00:01' and start_time < '$shipdate 23:59:59' order by length_in_sec desc limit 1;";
+$stmtB = "select recording_id,filename,location from recording_log where lead_id='$lead_id' and start_time > '$shipdate 00:00:01' and start_time < '$shipdate 23:59:59' order by length_in_sec desc limit 1;";
 $sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 $sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 $sthBrows=$sthB->rows;
@@ -398,6 +400,7 @@ while ($sthBrows > $rec_countB)
 	@aryB = $sthB->fetchrow_array;
 	$ivr_id = $aryB[0];
 	$ivr_filename = $aryB[1];
+	$ivr_location = $aryB[2];
 	$rec_countB++;
 	}
 $sthB->finish();
@@ -462,6 +465,10 @@ if ($output_format =~ /^pipe-vici$/)
 	{
 	$str = "VDAD|$agent_name|$first_name|$last_name|$address1|$address2|$city|$state|$postal_code|$phone_number|$ivr_id|DU|$UPSELL|N|||$security|$comments||||||$call_date|CBDISC|$email\r\n";
 	}
+if ($output_format =~ /^html-rec$/) 
+	{
+	$str = "$user|$agent_name|$closer|$closer_name|$call_date|$status|$first_name|$last_name|$phone_number|$address1|$address2|$city|$state|$postal_code|$comments|$security|$email|$vendor_id|$source_id|$lead_id|$list_id|$campaign|$campaign_id|<a href=\"$ivr_location\">$ivr_id</a>|\n";
+	}
 
 
 
@@ -471,8 +478,4 @@ if ($DBX) {print "$str\n";}
 $rec_count++;
 
 }
-
-
-
-
 
