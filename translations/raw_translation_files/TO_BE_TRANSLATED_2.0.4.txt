@@ -80,6 +80,8 @@ LIST MIX DELETED: ||
 SET TO ACTIVE||
 LIST MIX NOT ACTIVATED||
 LIST MIX ACTIVATED||
+Enable Agent Transfer Logfile -<\/B> This option will log to a text logfile on the webserver every time a call is transferred to an agent. Default is 0, disabled||
+Enable Agent Transfer Logfile||
 
 
 ############################################################ CLIENT

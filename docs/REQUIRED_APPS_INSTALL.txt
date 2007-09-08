@@ -369,11 +369,11 @@ make install
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.10.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.11.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.4.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.1.tar.gz
-gunzip asterisk-1.4.10.tar.gz
-tar xvf asterisk-1.4.10.tar
+gunzip asterisk-1.4.11.tar.gz
+tar xvf asterisk-1.4.11.tar
 gunzip zaptel-1.4.4.tar.gz
 tar xvf zaptel-1.4.4.tar
 gunzip libpri-1.4.1.tar.gz
@@ -386,7 +386,7 @@ cd ../libpri-1.4.1
 make clean
 make
 make install
-cd ../asterisk-1.4.10
+cd ../asterisk-1.4.11
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h

@@ -531,6 +531,26 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 			$called_count++;
 
+			##### check if system is set to generate logfile for transfers
+			$stmt="SELECT enable_agc_xfer_log FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$enable_agc_xfer_log_ct = mysql_num_rows($rslt);
+			if ($enable_agc_xfer_log_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$enable_agc_xfer_log =$row[0];
+				}
+
+			if ( ($WeBRooTWritablE > 0) and ($enable_agc_xfer_log > 0) )
+				{
+				#	DATETIME|campaign|lead_id|phone_number|user|type
+				#	2007-08-22 11:11:11|TESTCAMP|65432|3125551212|1234|M
+				$fp = fopen ("./xfer_log.txt", "a");
+				fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|M\n");
+				fclose($fp);
+				}
+
 			##### if lead is a callback, grab the callback comments
 			$CBentry_time =		'';
 			$CBcallback_time =	'';
@@ -1344,6 +1364,7 @@ if ($ACTION == 'VDADREcheckINCOMING')
 ################################################################################
 if ($ACTION == 'VDADcheckINCOMING')
 {
+	$Ctype = 'A';
 	$MT[0]='';
 	$row='';   $rowx='';
 	$channel_live=1;
@@ -1517,6 +1538,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$stmt = "UPDATE vicidial_live_agents set comments='INBOUND' where user='$user' and server_ip='$server_ip';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
+
+				$Ctype = 'I';
 				}
 			else
 				{
@@ -1647,7 +1670,27 @@ if ($ACTION == 'VDADcheckINCOMING')
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			}
-		
+
+		##### check if system is set to generate logfile for transfers
+		$stmt="SELECT enable_agc_xfer_log FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$enable_agc_xfer_log_ct = mysql_num_rows($rslt);
+		if ($enable_agc_xfer_log_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_agc_xfer_log =$row[0];
+			}
+
+		if ( ($WeBRooTWritablE > 0) and ($enable_agc_xfer_log > 0) )
+			{
+			#	DATETIME|campaign|lead_id|phone_number|user|type
+			#	2007-08-22 11:11:11|TESTCAMP|65432|3125551212|1234|A
+			$fp = fopen ("./xfer_log.txt", "a");
+			fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|$Ctype\n");
+			fclose($fp);
+			}
+
 		}
 		else
 		{
