@@ -396,3 +396,21 @@ make
 make install
 
 
+
+
+
+
+
+#### pureftpd
+
+cd /usr/local
+wget ftp://ftp.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.20.tar.gz
+gunzip pure-ftpd-1.0.20.tar.gz
+tar xvf pure-ftpd-1.0.20.tar
+cd pure-ftpd-1.0.20
+groupadd ftpgroup
+useradd -g ftpgroup -d /dev/null -s /etc ftpuser
+./configure --with-everything --with-largefile --with-virtualchroot
+make install-strip
+pure-pw useradd cron -u ftpuser -d /home/cron
+/usr/local/sbin/pure-ftpd &

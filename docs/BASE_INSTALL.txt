@@ -620,6 +620,15 @@ AST_CRON_mix_recordings_BASIC.pl file in it's place)
 ### VICIDIAL agent time log weekly summary report generation
 2 0 * * 0 /usr/share/astguiclient/AST_agent_week.pl
 
+### remove old recordings more than 7 days old
+/usr/bin/find /var/spool/asterisk/monitor -maxdepth 2 -type f -mtime +7 -print | xargs rm -f
+
+### remove old vicidial logs and asterisk logs more than 2 days old
+/usr/bin/find /var/log/astguiclient -maxdepth 1 -type f -mtime +2 -print | xargs rm -f
+/usr/bin/find /var/log/asterisk -maxdepth 3 -type f -mtime +2 -print | xargs rm -f
+
+
+
    - once your system starts up you can attach to the screen running asterisk by 
 typing "screen -r <screen>" find which screen by typing "screen -r" and 
 looking for the lowest screen number. Then to detach again from the screen 
