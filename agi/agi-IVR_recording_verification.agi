@@ -45,6 +45,7 @@
 # CHANGELOG
 # 70912-1105 - First build, non-functional
 # 70916-2331 - functional alpha version, reads all prompts and logs data, no recording yet
+# 70921-1110 - full beta version with recording working
 #
 
 &get_time_now;
@@ -218,6 +219,7 @@ if ($extension =~ /^832\d\d\*/)
 #	length_in_sec SMALLINT(5) UNSIGNED default '0',
 #	inbound_number VARCHAR(12),
 #	recording_id INT(9) UNSIGNED,
+#	recording_filename VARCHAR(50),
 #	company_id VARCHAR(12),
 #	phone_number VARCHAR(12),
 #	lead_id INT(9) UNSIGNED,
@@ -270,46 +272,6 @@ if ($AGILOG) {$agi_string = "IVR START- $ivr_id   $inbound_number|$record_call|$
 
 $AGI->stream_file('beep');
 
-
-### if set to record this session, start recording ###
-if ($record_call =~ /Y/)
-{
-$filename = "$ivr_id";
-### code to record call goes here ###
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### insert record into recording_log table ###
-$stmtA = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,length_in_sec,filename,lead_id,user) values('$channel','$server_ip','$inbound_number','$now_date','start_epoch','0','$ivr_id','$lead_id','$user');";
-$affected_rows = $dbhA->do($stmtA);
-$cbc=0;
-$stmtA = "select LAST_INSERT_ID() LIMIT 1;";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-while ($sthArows > $cbc)
-	{
-	@aryA = $sthA->fetchrow_array;
-	$recording_id = "$aryA[0]";
-	$cbc++;
-	}
-$sthA->finish();	
-}
-
-
 ### if set to ask for company ID, run that subroutine ###
 if ($company_ID_ask =~ /Y/)
 {
@@ -333,12 +295,6 @@ if ($user_ID_ask =~ /Y/)
 $stmtA = "UPDATE vicidial_ivr SET user='$user_ID', length_in_sec='$length_in_sec' where ivr_id='$ivr_id';";
 	if ($AGILOG) {$agi_string = "IVR- $ivr_id     user: $user_ID   length: $length_in_sec";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($record_call =~ /Y/)
-	{
-	$stmtA = "UPDATE recording_log SET user='$user_ID', length_in_sec='$length_in_sec' where recording_id='$recording_id';";
-	if ($AGILOG) {$agi_string = "RECORDING- $recording_id     user: $user_ID   length: $length_in_sec";   &agi_output;}
-	$affected_rows = $dbhA->do($stmtA);
-	}
 }
 
 
@@ -355,6 +311,35 @@ $affected_rows = $dbhA->do($stmtA);
 }
 
 
+### if set to record this session, start recording ###
+if ($record_call =~ /Y/)
+{
+$filename = "$inbound_number$US$phone_number$US$ivr_id";
+### code to record call goes here ###
+
+$AGI->exec("Monitor wav|/var/spool/asterisk/monitor/$inbound_number$US$phone_number$US$ivr_id|m"); 
+
+### insert record into recording_log table ###
+$stmtA = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,length_in_sec,filename,lead_id,user,location) values('$channel','$server_ip','$inbound_number','$now_date','start_epoch','0','$filename','$lead_id','$user','$ivr_id');";
+$affected_rows = $dbhA->do($stmtA);
+$cbc=0;
+$stmtA = "select LAST_INSERT_ID() LIMIT 1;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$recording_id = "$aryA[0]";
+	$cbc++;
+	}
+$sthA->finish();
+
+$stmtA = "UPDATE vicidial_ivr SET recording_id='$recording_id', recording_filename='$filename' where ivr_id='$ivr_id';";
+	if ($AGILOG) {$agi_string = "RECORDING- $recording_id $ivr_id START    filename: $filename";   &agi_output;}
+$affected_rows = $dbhA->do($stmtA);
+
+}
 
    
 ##### Go through the propmts one at a time until done #####
@@ -362,12 +347,13 @@ $affected_rows = $dbhA->do($stmtA);
 	$prompts_count = $#prompts_list;
 
 $i=0;
-while($prompts_count > $i)
+$j=1;
+while($prompts_count >= $i)
 {
-	$prompt = $prompt_list[$i];
+	$prompt = $prompts_list[$i];
 	$response = '';
-	$$prompt = "prompt_audio_$i";
-	$$response = "prompt_response_$i";
+	$prompt_name = "prompt_audio_$j";
+	$response_name = "prompt_response_$j";
 
 	&prompt_gather_response;
 	  $response = $totalDTMF;
@@ -375,12 +361,13 @@ while($prompts_count > $i)
 	&get_time_now;
 	  $length_in_sec = ($now_date_epoch - $start_epoch);
 
-	$stmtA = "UPDATE vicidial_ivr SET $$prompt='$prompt', $$response='$response', length_in_sec='$length_in_sec' where ivr_id='$ivr_id';";
+	$stmtA = "UPDATE vicidial_ivr SET $prompt_name='$prompt', $response_name='$response', length_in_sec='$length_in_sec' where ivr_id='$ivr_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "IVR- $ivr_id $i   prompt: $prompt   response: $response   length: $length_in_sec";   &agi_output;}
 
 	$i++;
+	$j++;
 }
 
 ##### Play the last prompt and say the IVR number #####
@@ -394,7 +381,7 @@ while($prompts_count > $i)
 	$stmtA = "UPDATE vicidial_ivr SET length_in_sec='$length_in_sec' where ivr_id='$ivr_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "IVR- $ivr_id $i   prompt: $prompt   response: $response   length: $length_in_sec";   &agi_output;}
+	if ($AGILOG) {$agi_string = "IVR- $ivr_id END   prompt: $last_prompt   length: $length_in_sec";   &agi_output;}
 
 	if ($record_call =~ /Y/)
 		{
@@ -472,6 +459,7 @@ while ($digit_loop_counter < $company_ID_length)
 	
 	$digit_loop_counter++;
 	}
+}
 ##### END collect the company ID ###############################################
 
 
@@ -525,6 +513,7 @@ while ($digit_loop_counter < $user_ID_length)
 	
 	$digit_loop_counter++;
 	}
+}
 ##### END collect the user ID ##################################################
 
 
@@ -576,6 +565,7 @@ while ($digit_loop_counter < $cust_phone_length)
 	
 	$digit_loop_counter++;
 	}
+}
 ##### END collect the customer phone number ####################################
 
 
@@ -610,7 +600,7 @@ if ($interrupt_digit > 1)
 	$digit_loop_counter++;
 	}
 
-while ($digit_loop_counter < $cust_phone_length)
+while ($digit_loop_counter < 1)
 	{
 	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input
 	if ($digit =~ /\d/)
@@ -622,11 +612,12 @@ while ($digit_loop_counter < $cust_phone_length)
 		}
 	else
 		{
-		$digit_loop_counter=$cust_phone_length;
+		$digit_loop_counter=1;
 		}
 	
 	$digit_loop_counter++;
 	}
+}
 ##### END collect the response to a prompt #####################################
 
 

@@ -40,8 +40,44 @@ ALTER TABLE vicidial_campaign_stats ADD status_category_count_4 INT(9) UNSIGNED 
 ALTER TABLE system_settings ADD enable_agc_xfer_log ENUM('0','1') default '0';
 
 
+CREATE TABLE vicidial_ivr (
+ivr_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+entry_time DATETIME,
+length_in_sec SMALLINT(5) UNSIGNED default '0',
+inbound_number VARCHAR(12),
+recording_id INT(9) UNSIGNED,
+recording_filename VARCHAR(50),
+company_id VARCHAR(12),
+phone_number VARCHAR(12),
+lead_id INT(9) UNSIGNED,
+campaign_id VARCHAR(20),			
+product_code VARCHAR(20),
+user VARCHAR(20),
+prompt_audio_1 VARCHAR(20),
+prompt_response_1 TINYINT(1) UNSIGNED default '0',
+prompt_audio_2 VARCHAR(20),
+prompt_response_2 TINYINT(1) UNSIGNED default '0',
+prompt_audio_3 VARCHAR(20),
+prompt_response_3 TINYINT(1) UNSIGNED default '0',
+prompt_audio_4 VARCHAR(20),
+prompt_response_4 TINYINT(1) UNSIGNED default '0',
+prompt_audio_5 VARCHAR(20),
+prompt_response_5 TINYINT(1) UNSIGNED default '0',
+prompt_audio_6 VARCHAR(20),
+prompt_response_6 TINYINT(1) UNSIGNED default '0',
+prompt_audio_7 VARCHAR(20),
+prompt_response_7 TINYINT(1) UNSIGNED default '0',
+prompt_audio_8 VARCHAR(20),
+prompt_response_8 TINYINT(1) UNSIGNED default '0',
+prompt_audio_9 VARCHAR(20),
+prompt_response_9 TINYINT(1) UNSIGNED default '0',
+prompt_audio_10 VARCHAR(20),
+prompt_response_10 TINYINT(1) UNSIGNED default '0',
+index (phone_number),
+index (entry_time)
+);
 
-
+ALTER TABLE vicidial_ivr AUTO_INCREMENT = 1000000;
 
 #!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
 #
