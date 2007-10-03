@@ -171,7 +171,8 @@ if (length($ARGV[0])>1)
 }
 
 $|=1;
-while(<STDIN>) {
+while(<STDIN>) 
+{
 	chomp;
 	last unless length($_);
 	if ($AGILOG)
@@ -188,6 +189,7 @@ while(<STDIN>) {
 	if (/^agi_type\:\s+(.*)$/)		{$type = $1;}
 	if (/^agi_callerid\:\s+(.*)$/)		{$callerid = $1;}
 	if (/^agi_calleridname\:\s+(.*)$/)	{$calleridname = $1;}
+}
 
 	if ( ($callerid =~ /\".*\"/) && ( (!$calleridname) or ($calleridname =~ /unknown/) ) )
 		{
@@ -326,6 +328,7 @@ if ($call_handle_method =~ /LOOKUP/)
 			}
 		$sthA->finish();
 	}
+}
 
 else
 {
@@ -656,6 +659,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 		if ($AGILOG) {$agi_string = "WWWWW VDAD XFER BALANCE WAIT: |$rec_countWAITrem|$channel_group|$channel|$callerid|$uniqueid|";   &agi_output;}
 		}
 
+}
 if ($hold_message_counter > 30)
 	{
 	$AGI->stream_file('generic_hold');
@@ -859,8 +863,11 @@ sub checkresult {
 	#	print STDERR "FAIL (unexpected result '$res')\n";
 		$fail++;
 	}
+}
 
-sub leading_zero($) {
+
+sub leading_zero($) 
+{
     $_ = $_[0];
     s/^(\d)$/0$1/;
     s/^(\d\d)$/0$1/;
