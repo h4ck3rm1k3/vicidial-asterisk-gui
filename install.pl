@@ -5,6 +5,10 @@
 # Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 
+# CHANGES
+# 71004-1155 - Added FTP and REPORT connection variables
+# 
+
 ############################################
 # install.pl - puts server files in the right places and creates conf file
 #
@@ -34,6 +38,19 @@ $VARDB_pass =	'1234';
 $VARDB_port =	'3306';
 # default keepalive processes: 
 $VARactive_keepalives =		'123456';
+# default recording FTP archive variables:
+$VARFTP_host = '10.0.0.4';
+$VARFTP_user = 'cron';
+$VARFTP_pass = 'test';
+$VARFTP_port = '21';
+$VARFTP_dir  = 'RECORDINGS';
+$VARHTTP_path = 'http://10.0.0.4';
+# default report FTP variables:
+$VARREPORT_host = '10.0.0.4';
+$VARREPORT_user = 'cron';
+$VARREPORT_pass = 'test';
+$VARREPORT_port = '21';
+$VARREPORT_dir  = 'REPORTS';
 # defaults for FastAGI Server PreFork
 $VARfastagi_log_min_servers =	'3';
 $VARfastagi_log_max_servers =	'16';
@@ -58,6 +75,17 @@ $CLIDB_user=0;
 $CLIDB_pass=0;
 $CLIDB_port=0;
 $CLIVARactive_keepalives=0;
+$CLIFTP_host=0;
+$CLIFTP_user=0;
+$CLIFTP_pass=0;
+$CLIFTP_port=0;
+$CLIFTP_dir=0;
+$CLIHTTP_path=0;
+$CLIREPORT_host=0;
+$CLIREPORT_user=0;
+$CLIREPORT_pass=0;
+$CLIREPORT_port=0;
+$CLIREPORT_dir=0;
 $CLIVARfastagi_log_min_servers=0;
 $CLIVARfastagi_log_max_servers=0;
 $CLIVARfastagi_log_min_spare_servers=0;
@@ -111,7 +139,7 @@ if (length($ARGV[0])>1)
 	print "  [--monitor=/path/from/root] = define monitor path from root at runtime\n";
 	print "  [--server_ip=192.168.0.1] = define server IP address at runtime\n";
 	print "  [--DB_server=localhost] = define database server IP address at runtime\n";
-	print "  [--DB_database=localhost] = define database name at runtime\n";
+	print "  [--DB_database=asterisk] = define database name at runtime\n";
 	print "  [--DB_user=cron] = define database user login at runtime\n";
 	print "  [--DB_pass=1234] = define database user password at runtime\n";
 	print "  [--DB_port=3306] = define database connection port at runtime\n";
@@ -125,6 +153,17 @@ if (length($ARGV[0])>1)
 	print "     6 - FastAGI_log\n";
 	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 	print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
+	print "  [--FTP_host=192.168.0.2] = define recording archive server IP address at runtime\n";
+	print "  [--FTP_user=cron] = define archive server name at runtime\n";
+	print "  [--FTP_pass=test] = define archive server user login at runtime\n";
+	print "  [--FTP_port=21] = define archive server user password at runtime\n";
+	print "  [--FTP_dir=RECORDINGS] = define archive server connection port at runtime\n";
+	print "  [--HTTP_path=http://192.168.0.2] = define archive web root at runtime\n";
+	print "  [--REPORT_host=192.168.0.2] = define report server IP address at runtime\n";
+	print "  [--REPORT_user=cron] = define report server name at runtime\n";
+	print "  [--REPORT_pass=test] = define report server user login at runtime\n";
+	print "  [--REPORT_port=21] = define report server user password at runtime\n";
+	print "  [--REPORT_dir=REPORTS] = define report server connection port at runtime\n";
 	print "  [--fastagi_log_min_servers=3] = define FastAGI log min servers\n";
 	print "  [--fastagi_log_max_servers=16] = define FastAGI log max servers\n";
 	print "  [--fastagi_log_min_spare_servers=2] = define FastAGI log min spare servers\n";
@@ -314,6 +353,139 @@ if (length($ARGV[0])>1)
 			print "  CLI active keepalive procs: $VARactive_keepalives\n";
 			}
 		}
+		if ($args =~ /--FTP_host=/i) # CLI defined archive server address
+		{
+		@CLIFTP_hostARY = split(/--FTP_host=/,$args);
+		@CLIFTP_hostARX = split(/ /,$CLIFTP_hostARY[1]);
+		if (length($CLIFTP_hostARX[0])>2)
+			{
+			$VARFTP_host = $CLIFTP_hostARX[0];
+			$VARFTP_host =~ s/\/$| |\r|\n|\t//gi;
+			$CLIFTP_host=1;
+			print "  CLI defined FTP host:       $VARFTP_host\n";
+			}
+		}
+		if ($args =~ /--FTP_user=/i) # CLI defined archive FTP user
+		{
+		@CLIFTP_userARY = split(/--FTP_user=/,$args);
+		@CLIFTP_userARX = split(/ /,$CLIFTP_userARY[1]);
+		if (length($CLIFTP_userARX[0])>2)
+			{
+			$VARFTP_user = $CLIFTP_userARX[0];
+			$VARFTP_user =~ s/\/$| |\r|\n|\t//gi;
+			$CLIFTP_user=1;
+			print "  CLI defined FTP user:       $VARFTP_user\n";
+			}
+		}
+		if ($args =~ /--FTP_pass=/i) # CLI defined archive FTP pass
+		{
+		@CLIFTP_passARY = split(/--FTP_pass=/,$args);
+		@CLIFTP_passARX = split(/ /,$CLIFTP_passARY[1]);
+		if (length($CLIFTP_passARX[0])>2)
+			{
+			$VARFTP_pass = $CLIFTP_passARX[0];
+			$VARFTP_pass =~ s/\/$| |\r|\n|\t//gi;
+			$CLIFTP_pass=1;
+			print "  CLI defined FTP pass:       $VARFTP_pass\n";
+			}
+		}
+		if ($args =~ /--FTP_port=/i) # CLI defined archive FTP port
+		{
+		@CLIFTP_portARY = split(/--FTP_port=/,$args);
+		@CLIFTP_portARX = split(/ /,$CLIFTP_portARY[1]);
+		if (length($CLIFTP_portARX[0])>2)
+			{
+			$VARFTP_port = $CLIFTP_portARX[0];
+			$VARFTP_port =~ s/\/$| |\r|\n|\t//gi;
+			$CLIFTP_port=1;
+			print "  CLI defined FTP port:       $VARFTP_port\n";
+			}
+		}
+		if ($args =~ /--FTP_dir=/i) # CLI defined archive FTP directory
+		{
+		@CLIFTP_dirARY = split(/--FTP_dir=/,$args);
+		@CLIFTP_dirARX = split(/ /,$CLIFTP_dirARY[1]);
+		if (length($CLIFTP_dirARX[0])>2)
+			{
+			$VARFTP_dir = $CLIFTP_dirARX[0];
+			$VARFTP_dir =~ s/\/$| |\r|\n|\t//gi;
+			$CLIFTP_dir=1;
+			print "  CLI defined FTP dir:        $VARFTP_dir\n";
+			}
+		}
+		if ($args =~ /--HTTP_path=/i) # CLI defined archive HTTP path
+		{
+		@CLIHTTP_pathARY = split(/--HTTP_path=/,$args);
+		@CLIHTTP_pathARX = split(/ /,$CLIHTTP_pathARY[1]);
+		if (length($CLIHTTP_pathARX[0])>2)
+			{
+			$VARHTTP_path = $CLIHTTP_pathARX[0];
+			$VARHTTP_path =~ s/\/$| |\r|\n|\t//gi;
+			$CLIHTTP_path=1;
+			print "  CLI defined HTTP path:      $VARHTTP_path\n";
+			}
+		}
+		if ($args =~ /--REPORT_host=/i) # CLI defined archive server address
+		{
+		@CLIREPORT_hostARY = split(/--REPORT_host=/,$args);
+		@CLIREPORT_hostARX = split(/ /,$CLIREPORT_hostARY[1]);
+		if (length($CLIREPORT_hostARX[0])>2)
+			{
+			$VARREPORT_host = $CLIREPORT_hostARX[0];
+			$VARREPORT_host =~ s/\/$| |\r|\n|\t//gi;
+			$CLIREPORT_host=1;
+			print "  CLI defined REPORT host:    $VARREPORT_host\n";
+			}
+		}
+		if ($args =~ /--REPORT_user=/i) # CLI defined archive REPORT user
+		{
+		@CLIREPORT_userARY = split(/--REPORT_user=/,$args);
+		@CLIREPORT_userARX = split(/ /,$CLIREPORT_userARY[1]);
+		if (length($CLIREPORT_userARX[0])>2)
+			{
+			$VARREPORT_user = $CLIREPORT_userARX[0];
+			$VARREPORT_user =~ s/\/$| |\r|\n|\t//gi;
+			$CLIREPORT_user=1;
+			print "  CLI defined REPORT user:    $VARREPORT_user\n";
+			}
+		}
+		if ($args =~ /--REPORT_pass=/i) # CLI defined archive REPORT pass
+		{
+		@CLIREPORT_passARY = split(/--REPORT_pass=/,$args);
+		@CLIREPORT_passARX = split(/ /,$CLIREPORT_passARY[1]);
+		if (length($CLIREPORT_passARX[0])>2)
+			{
+			$VARREPORT_pass = $CLIREPORT_passARX[0];
+			$VARREPORT_pass =~ s/\/$| |\r|\n|\t//gi;
+			$CLIREPORT_pass=1;
+			print "  CLI defined REPORT pass:    $VARREPORT_pass\n";
+			}
+		}
+		if ($args =~ /--REPORT_port=/i) # CLI defined archive REPORT port
+		{
+		@CLIREPORT_portARY = split(/--REPORT_port=/,$args);
+		@CLIREPORT_portARX = split(/ /,$CLIREPORT_portARY[1]);
+		if (length($CLIREPORT_portARX[0])>2)
+			{
+			$VARREPORT_port = $CLIREPORT_portARX[0];
+			$VARREPORT_port =~ s/\/$| |\r|\n|\t//gi;
+			$CLIREPORT_port=1;
+			print "  CLI defined REPORT port:    $VARREPORT_port\n";
+			}
+		}
+		if ($args =~ /--REPORT_dir=/i) # CLI defined archive REPORT directory
+		{
+		@CLIREPORT_dirARY = split(/--REPORT_dir=/,$args);
+		@CLIREPORT_dirARX = split(/ /,$CLIREPORT_dirARY[1]);
+		if (length($CLIREPORT_dirARX[0])>2)
+			{
+			$VARREPORT_dir = $CLIREPORT_dirARX[0];
+			$VARREPORT_dir =~ s/\/$| |\r|\n|\t//gi;
+			$CLIREPORT_dir=1;
+			print "  CLI defined REPORT dir:     $VARREPORT_dir\n";
+			}
+		}
+
 		if ($args =~ /--copy_sample_conf_files/i) # CLI defined conf files
 		{
 		$CLIcopy_conf_files='y';
@@ -453,6 +625,28 @@ if (-e "$PATHconf")
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
 			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
+			{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
+			{$VARFTP_user = $line;   $VARFTP_user =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_pass/) && ($CLIFTP_pass < 1) )
+			{$VARFTP_pass = $line;   $VARFTP_pass =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_port/) && ($CLIFTP_port < 1) )
+			{$VARFTP_port = $line;   $VARFTP_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_dir/) && ($CLIFTP_dir < 1) )
+			{$VARFTP_dir = $line;   $VARFTP_dir =~ s/.*=//gi;}
+		if ( ($line =~ /^VARHTTP_path/) && ($CLIHTTP_path < 1) )
+			{$VARHTTP_path = $line;   $VARHTTP_path =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
+			{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
+			{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
+			{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
+			{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_dir/) && ($CLIREPORT_dir < 1) )
+			{$VARREPORT_dir = $line;   $VARREPORT_dir =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
 			{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
@@ -1046,6 +1240,234 @@ else
 			}
 		##### END copy asterisk sample conf files prompt #####
 
+		##### BEGIN FTP_host prompting and check #####
+		if (length($VARFTP_host)<7)
+			{	
+			$VARFTP_host = 'localhost';
+			}
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFTP host address or press enter for default: [$VARFTP_host] ");
+			$PROMPTFTP_host = <STDIN>;
+			chomp($PROMPTFTP_host);
+			if (length($PROMPTFTP_host)>6)
+				{
+				$PROMPTFTP_host =~ s/ |\n|\r|\t|\/$//gi;
+				$VARFTP_host=$PROMPTFTP_host;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END FTP_host prompting and check  #####
+
+		##### BEGIN FTP_user prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFTP user login or press enter for default: [$VARFTP_user] ");
+			$PROMPTFTP_user = <STDIN>;
+			chomp($PROMPTFTP_user);
+			if (length($PROMPTFTP_user)>1)
+				{
+				$PROMPTFTP_user =~ s/ |\n|\r|\t|\/$//gi;
+				$VARFTP_user=$PROMPTFTP_user;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END FTP_user prompting and check  #####
+
+		##### BEGIN FTP_pass prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFTP user password or press enter for default: [$VARFTP_pass] ");
+			$PROMPTFTP_pass = <STDIN>;
+			chomp($PROMPTFTP_pass);
+			if (length($PROMPTFTP_pass)>1)
+				{
+				$PROMPTFTP_pass =~ s/ |\n|\r|\t|\/$//gi;
+				$VARFTP_pass=$PROMPTFTP_pass;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END FTP_pass prompting and check  #####
+
+		##### BEGIN FTP_port prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFTP connection port or press enter for default: [$VARFTP_port] ");
+			$PROMPTFTP_port = <STDIN>;
+			chomp($PROMPTFTP_port);
+			if (length($PROMPTFTP_port)>1)
+				{
+				$PROMPTFTP_port =~ s/ |\n|\r|\t|\/$//gi;
+				$VARFTP_port=$PROMPTFTP_port;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END FTP_port prompting and check  #####
+
+		##### BEGIN FTP_dir prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nFTP directory or press enter for default: [$VARFTP_dir] ");
+			$PROMPTFTP_dir = <STDIN>;
+			chomp($PROMPTFTP_dir);
+			if (length($PROMPTFTP_dir)>1)
+				{
+				$PROMPTFTP_dir =~ s/ |\n|\r|\t|\/$//gi;
+				$VARFTP_dir=$PROMPTFTP_dir;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END FTP_dir prompting and check  #####
+
+		##### BEGIN HTTP_path prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nHTTP path for archive or press enter for default: [$VARHTTP_path] ");
+			$PROMPTHTTP_path = <STDIN>;
+			chomp($PROMPTHTTP_path);
+			if (length($PROMPTHTTP_path)>1)
+				{
+				$PROMPTHTTP_path =~ s/ |\n|\r|\t|\/$//gi;
+				$VARHTTP_path=$PROMPTHTTP_path;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END HTTP_path prompting and check  #####
+
+		##### BEGIN REPORT_host prompting and check #####
+		if (length($VARREPORT_host)<7)
+			{	
+			$VARREPORT_host = 'localhost';
+			}
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nREPORT host address or press enter for default: [$VARREPORT_host] ");
+			$PROMPTREPORT_host = <STDIN>;
+			chomp($PROMPTREPORT_host);
+			if (length($PROMPTREPORT_host)>6)
+				{
+				$PROMPTREPORT_host =~ s/ |\n|\r|\t|\/$//gi;
+				$VARREPORT_host=$PROMPTREPORT_host;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END REPORT_host prompting and check  #####
+
+		##### BEGIN REPORT_user prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nREPORT user login or press enter for default: [$VARREPORT_user] ");
+			$PROMPTREPORT_user = <STDIN>;
+			chomp($PROMPTREPORT_user);
+			if (length($PROMPTREPORT_user)>1)
+				{
+				$PROMPTREPORT_user =~ s/ |\n|\r|\t|\/$//gi;
+				$VARREPORT_user=$PROMPTREPORT_user;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END REPORT_user prompting and check  #####
+
+		##### BEGIN REPORT_pass prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nREPORT user password or press enter for default: [$VARREPORT_pass] ");
+			$PROMPTREPORT_pass = <STDIN>;
+			chomp($PROMPTREPORT_pass);
+			if (length($PROMPTREPORT_pass)>1)
+				{
+				$PROMPTREPORT_pass =~ s/ |\n|\r|\t|\/$//gi;
+				$VARREPORT_pass=$PROMPTREPORT_pass;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END REPORT_pass prompting and check  #####
+
+		##### BEGIN REPORT_port prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nREPORT connection port or press enter for default: [$VARREPORT_port] ");
+			$PROMPTREPORT_port = <STDIN>;
+			chomp($PROMPTREPORT_port);
+			if (length($PROMPTREPORT_port)>1)
+				{
+				$PROMPTREPORT_port =~ s/ |\n|\r|\t|\/$//gi;
+				$VARREPORT_port=$PROMPTREPORT_port;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END REPORT_port prompting and check  #####
+
+		##### BEGIN REPORT_dir prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nREPORT directory or press enter for default: [$VARREPORT_dir] ");
+			$PROMPTREPORT_dir = <STDIN>;
+			chomp($PROMPTREPORT_dir);
+			if (length($PROMPTREPORT_dir)>1)
+				{
+				$PROMPTREPORT_dir =~ s/ |\n|\r|\t|\/$//gi;
+				$VARREPORT_dir=$PROMPTREPORT_dir;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END REPORT_dir prompting and check  #####
+
 		##### BEGIN fastagi_log_min_servers prompting and check #####
 		$continue='NO';
 		while ($continue =~/NO/)
@@ -1200,8 +1622,19 @@ else
 		print "  defined DB_user:          $VARDB_user\n";
 		print "  defined DB_pass:          $VARDB_pass\n";
 		print "  defined DB_port:          $VARDB_port\n";
-		print "  defined active_keepalives $VARactive_keepalives\n";
-		print "  defined copying conf files:            $PROMPTcopy_conf_files\n";
+		print "  defined active_keepalives      $VARactive_keepalives\n";
+		print "  defined copying conf files:    $PROMPTcopy_conf_files\n";
+		print "  defined FTP_host:         $VARFTP_host\n";
+		print "  defined FTP_user:         $VARFTP_user\n";
+		print "  defined FTP_pass:         $VARFTP_pass\n";
+		print "  defined FTP_port:         $VARFTP_port\n";
+		print "  defined FTP_dir:          $VARFTP_dir\n";
+		print "  defined HTTP_path:        $VARHTTP_path\n";
+		print "  defined REPORT_host:      $VARREPORT_host\n";
+		print "  defined REPORT_user:      $VARREPORT_user\n";
+		print "  defined REPORT_pass:      $VARREPORT_pass\n";
+		print "  defined REPORT_port:      $VARREPORT_port\n";
+		print "  defined REPORT_dir:       $VARREPORT_dir\n";
 		print "  defined fastagi_log_min_servers:       $VARfastagi_log_min_servers\n";
 		print "  defined fastagi_log_max_servers:       $VARfastagi_log_max_servers\n";
 		print "  defined fastagi_log_min_spare_servers: $VARfastagi_log_min_spare_servers\n";
@@ -1257,6 +1690,21 @@ print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one
 print conf "#  6 - FastAGI_log\n";
 print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
+print conf "\n";
+print conf "# FTP recording archive connection information\n";
+print conf "VARFTP_host => $VARFTP_host\n";
+print conf "VARFTP_user => $VARFTP_user\n";
+print conf "VARFTP_pass => $VARFTP_pass\n";
+print conf "VARFTP_port => $VARFTP_port\n";
+print conf "VARFTP_dir => $VARFTP_dir\n";
+print conf "VARHTTP_path => $VARHTTP_path\n";
+print conf "\n";
+print conf "# REPORT server connection information\n";
+print conf "VARREPORT_host => $VARREPORT_host\n";
+print conf "VARREPORT_user => $VARREPORT_user\n";
+print conf "VARREPORT_pass => $VARREPORT_pass\n";
+print conf "VARREPORT_port => $VARREPORT_port\n";
+print conf "VARREPORT_dir => $VARREPORT_dir\n";
 print conf "\n";
 print conf "# Settings for FastAGI logging server\n";
 print conf "VARfastagi_log_min_servers => $VARfastagi_log_min_servers\n";

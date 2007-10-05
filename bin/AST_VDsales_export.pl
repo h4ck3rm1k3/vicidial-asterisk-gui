@@ -12,16 +12,19 @@
 # 70503-2137 - Added upsell
 # 70611-1154 - Added CLI options
 # 70709-1411 - Added FTP transfer option
+# 71005-0054 - Altered script to use astguiclient.conf for settings
+# 
 
 $txt = '.txt';
 $US = '_';
 $MT[0] = '';
 
-# optional FTP account variables
-$FTP_host = '10.0.0.4';
-$FTP_user = 'cron';
-$FTP_pass = 'test';
-$FTP_dir  = 'REPORTS';
+# Default FTP account variables
+$VARREPORT_host = '10.0.0.4';
+$VARREPORT_user = 'cron';
+$VARREPORT_pass = 'test';
+$VARREPORT_port = '21';
+$VARREPORT_dir  = 'REPORTS';
 
 # default CLI values
 $campaign = 'TESTCAMP';
@@ -174,6 +177,16 @@ foreach(@conf)
 		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
+		{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
+		{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
+		{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
+		{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_dir/) && ($CLIREPORT_dir < 1) )
+		{$VARREPORT_dir = $line;   $VARREPORT_dir =~ s/.*=//gi;}
 	$i++;
 	}
 
@@ -349,9 +362,9 @@ if ($ftp_transfer > 0)
 	use Net::FTP;
 
 	if (!$Q) {print "Sending File Over FTP: $outfile\n";}
-	$ftp = Net::FTP->new("$FTP_host", Port => 21);
-	$ftp->login("$FTP_user","$FTP_pass");
-	$ftp->cwd("$FTP_dir");
+	$ftp = Net::FTP->new("$VARREPORT_host", Port => $VARREPORT_port);
+	$ftp->login("$VARREPORT_user","$VARREPORT_pass");
+	$ftp->cwd("$VARREPORT_dir");
 	$ftp->put("$PATHweb/vicidial/server_reports/$outfile", "$outfile");
 	$ftp->quit;
 }

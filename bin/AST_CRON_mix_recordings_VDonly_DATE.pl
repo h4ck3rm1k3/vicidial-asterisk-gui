@@ -31,14 +31,16 @@
 # 60807-1308 - Modified to use /etc/astguiclient.conf for settings 
 # 70702-1139 - Removed mixing, and added dated folder storage on FTP server 
 # 71004-1124 - Changed to not move ORIG recordings if FTP server does not Ping
+# 71005-0049 - Altered script to use astguiclient.conf for settings
 #
 
-# Customize variables for FTP
-$FTP_host = '10.0.0.4';
-$FTP_user = 'cron';
-$FTP_pass = 'test';
-$FTP_dir  = 'RECORDINGS';
-$HTTP_path = 'http://10.0.0.4';
+# Default variables for FTP
+$VARFTP_host = '10.0.0.4';
+$VARFTP_user = 'cron';
+$VARFTP_pass = 'test';
+$VARFTP_port = '21';
+$VARFTP_dir  = 'RECORDINGS';
+$VARHTTP_path = 'http://10.0.0.4';
 
 
 # default path to astguiclient configuration file:
@@ -76,6 +78,18 @@ foreach(@conf)
 		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
+		{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
+	if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
+		{$VARFTP_user = $line;   $VARFTP_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARFTP_pass/) && ($CLIFTP_pass < 1) )
+		{$VARFTP_pass = $line;   $VARFTP_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARFTP_port/) && ($CLIFTP_port < 1) )
+		{$VARFTP_port = $line;   $VARFTP_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARFTP_dir/) && ($CLIFTP_dir < 1) )
+		{$VARFTP_dir = $line;   $VARFTP_dir =~ s/.*=//gi;}
+	if ( ($line =~ /^VARHTTP_path/) && ($CLIHTTP_path < 1) )
+		{$VARHTTP_path = $line;   $VARHTTP_path =~ s/.*=//gi;}
 	$i++;
 	}
 
@@ -144,20 +158,20 @@ foreach(@FILES)
 		if ($v) {print "|$INfile|     |$ALLfile|     |$recording_id|$start_date|\n";}
 	### BEGIN Remote file transfer
 			$p = Net::Ping->new();
-			$ping_good = $p->ping("$FTP_host");
+			$ping_good = $p->ping("$VARFTP_host");
 
 			if ($ping_good)
 				{
-				$ftp = Net::FTP->new("$FTP_host", Port => 21);
-				$ftp->login("$FTP_user","$FTP_pass");
-				$ftp->cwd("$FTP_dir");
+				$ftp = Net::FTP->new("$VARFTP_host", Port => $VARFTP_port);
+				$ftp->login("$VARFTP_user","$VARFTP_pass");
+				$ftp->cwd("$VARFTP_dir");
 				$ftp->mkdir("$start_date");
 				$ftp->cwd("$start_date");
 				$ftp->binary();
 				$ftp->put("$dir1/$INfile", "$ALLfile");
 				$ftp->quit;
 
-				$stmtA = "UPDATE recording_log set location='$HTTP_path/$start_date/$ALLfile' where recording_id='$recording_id';";
+				$stmtA = "UPDATE recording_log set location='$VARHTTP_path/$start_date/$ALLfile' where recording_id='$recording_id';";
 					if($DB){print STDERR "\n|$stmtA|\n";}
 				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 

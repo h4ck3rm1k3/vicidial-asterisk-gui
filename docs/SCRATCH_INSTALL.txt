@@ -354,6 +354,7 @@ NOTE: a minimum of MySQL server 4.0.X is required
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
+		# http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.41.tar.gz
 	- gunzip mysql-4.0.27.tar.gz
 	- tar xvf mysql-4.0.27.tar
 	- cd mysql-4.0.27
