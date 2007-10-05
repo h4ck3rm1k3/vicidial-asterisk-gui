@@ -30,6 +30,7 @@
 # 60318-0921 - Added ability to mix gsm audio files
 # 60807-1308 - Modified to use /etc/astguiclient.conf for settings 
 # 70702-1139 - Removed mixing, and added dated folder storage on FTP server 
+# 71004-1124 - Changed to not move ORIG recordings if FTP server does not Ping
 #
 
 # Customize variables for FTP
@@ -155,19 +156,18 @@ foreach(@FILES)
 				$ftp->binary();
 				$ftp->put("$dir1/$INfile", "$ALLfile");
 				$ftp->quit;
+
+				$stmtA = "UPDATE recording_log set location='$HTTP_path/$start_date/$ALLfile' where recording_id='$recording_id';";
+					if($DB){print STDERR "\n|$stmtA|\n";}
+				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+
+				if (!$T)
+					{
+					`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
+					`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
+					}
 				}
 	### END Remote file transfer
-
-			$stmtA = "UPDATE recording_log set location='$HTTP_path/$start_date/$ALLfile' where recording_id='$recording_id';";
-				if($DB){print STDERR "\n|$stmtA|\n";}
-			$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
-
-			if (!$T)
-				{
-				`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-				`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-				}
-
 			}
 		}
 	$i++;

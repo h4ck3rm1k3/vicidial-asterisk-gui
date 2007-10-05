@@ -44,6 +44,7 @@
 # 60616-1027 - Modified to convert to MP3 format
 #            - Creates Directory on target FTP server based on <Todays Date>.
 # 60807-1308 - Modified to use /etc/astguiclient.conf for settings 
+# 71004-1124 - Changed to not move ORIG recordings if FTP server does not Ping
 #
 
 #verbose
@@ -163,33 +164,33 @@ foreach(@FILES)
 			$MP3file = $ALLfile;
 			$MP3file =~ s/-all\.wav/-all.mp3/gi;
 
-		if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
-
-			`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
-		if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
-			if (!$T)
-				{
-				`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-				`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-				`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
-				}
-			else
-				{
-				`cp -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
-				}
-
-			`$lamebin -b 16 -m m --silent "$dir1/DONE/$ALLfile" "$dir1/DONE/$MP3file"`;
-
-
-			if($DB){print STDERR "\n|$lamebin -b 16 -m m --silent \"$dir1/DONE/$ALLfile\" \"$dir1/DONE/$MP3file\"\n";}
-		chmod 0755, "$dir1/DONE/$MP3file";
-
 	### BEGIN Remote file transfer
-	#		$p = Net::Ping->new();
-	#		$ping_good = $p->ping("$FTP_host");
+			$p = Net::Ping->new();
+			$ping_good = $p->ping("$FTP_host");
 
-	#		if ($ping_good)
-	#			{
+			if ($ping_good)
+				{
+				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
+
+					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
+				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
+					if (!$T)
+						{
+						`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
+						`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
+						`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+						}
+					else
+						{
+						`cp -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+						}
+
+					`$lamebin -b 16 -m m --silent "$dir1/DONE/$ALLfile" "$dir1/DONE/$MP3file"`;
+
+
+					if($DB){print STDERR "\n|$lamebin -b 16 -m m --silent \"$dir1/DONE/$ALLfile\" \"$dir1/DONE/$MP3file\"\n";}
+				chmod 0755, "$dir1/DONE/$MP3file";
+
 				$ftp = Net::FTP->new("$FTP_host", Port => $FTP_port, Debug => ($v? 1 : 0),  Passive => 1);
 				$ftp->login("$FTP_user","$FTP_pass");
 				#$ftp->cwd("$FTP_dir");
@@ -198,18 +199,17 @@ foreach(@FILES)
 				$ftp->binary();
 				$ftp->put("$dir1/DONE/$MP3file", "$MP3file");
 				$ftp->quit;
-	#			}
-	### END Remote file transfer
-	
-			# clean up
-			if (!$T)
-				{
-				`rm -f "$dir1/ORIG/$INfile"`;
-				`rm -f "$dir1/ORIG/$OUTfile"`;
-				`rm -f "$dir1/DONE/$ALLfile"`;
-				`rm -f "$dir1/DONE/$MP3file"`;
-				}
 
+				# clean up
+				if (!$T)
+					{
+					`rm -f "$dir1/ORIG/$INfile"`;
+					`rm -f "$dir1/ORIG/$OUTfile"`;
+					`rm -f "$dir1/DONE/$ALLfile"`;
+					`rm -f "$dir1/DONE/$MP3file"`;
+					}
+				}
+	### END Remote file transfer
 			}
 		}
 	$i++;

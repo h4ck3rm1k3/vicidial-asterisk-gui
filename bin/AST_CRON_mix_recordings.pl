@@ -31,6 +31,7 @@
 # 51122-1458 - Added soxmix binary path check
 # 60318-0921 - Added ability to mix gsm audio files
 # 60807-1308 - Modified to use /etc/astguiclient.conf for settings 
+# 71004-1124 - Changed to not move ORIG recordings if FTP server does not Ping
 #
 
 
@@ -133,21 +134,21 @@ foreach(@FILES)
 
 		if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
 
-			`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
-		if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
-			if (!$T)
-				{
-				`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-				`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-				`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
-				}
-
 	### BEGIN Remote file transfer
 			$p = Net::Ping->new();
 			$ping_good = $p->ping("$FTP_host");
 
 			if ($ping_good)
 				{
+					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
+				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
+					if (!$T)
+						{
+						`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
+						`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
+						`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+						}
+
 				$ftp = Net::FTP->new("$FTP_host", Port => 21);
 				$ftp->login("$FTP_user","$FTP_pass");
 				$ftp->cwd("$FTP_dir");
