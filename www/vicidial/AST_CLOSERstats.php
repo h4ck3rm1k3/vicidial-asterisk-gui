@@ -8,6 +8,7 @@
 # 60619-1714 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 60905-1326 - Added queue time stats
+# 71008-1436 - Added shift to be defined in dbconnect.php
 #
 
 require("dbconnect.php");
@@ -19,6 +20,8 @@ if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
+if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
+	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
@@ -26,6 +29,8 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
+
+if (strlen($shift)<2) {$shift='ALL';}
 
 	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
 	if ($DB) {echo "|$stmt|\n";}
@@ -85,6 +90,13 @@ echo "<SELECT SIZE=1 NAME=group>\n";
 		$o++;
 	}
 echo "</SELECT>\n";
+echo "<SELECT SIZE=1 NAME=shift>\n";
+echo "<option selected value=\"$shift\">$shift</option>\n";
+echo "<option value=\"\">--</option>\n";
+echo "<option value=\"AM\">AM</option>\n";
+echo "<option value=\"PM\">PM</option>\n";
+echo "<option value=\"ALL\">ALL</option>\n";
+echo "</SELECT>\n";
 echo "<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
 echo "</FORM>\n\n";
@@ -100,14 +112,37 @@ echo "PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT\n";
 
 else
 {
+if ($shift == 'AM') 
+	{
+	$time_BEGIN=$AM_shift_BEGIN;
+	$time_END=$AM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
+	}
+if ($shift == 'PM') 
+	{
+	$time_BEGIN=$PM_shift_BEGIN;
+	$time_END=$PM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
+	}
+if ($shift == 'ALL') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
+	}
+$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_END = "$query_date $time_END";
+
 
 
 echo "VICIDIAL: Auto-dial Closer Stats                      $NOW_TIME\n";
 
 echo "\n";
+echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- TOTALS\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -128,7 +163,7 @@ echo "Average Call Length for all Calls:            $average_hold_seconds second
 echo "\n";
 echo "---------- DROPS\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP' and (length_in_sec <= 999 or length_in_sec is null);";
+$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP' and (length_in_sec <= 999 or length_in_sec is null);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -157,7 +192,7 @@ echo "Average hold time for DROP Calls:             $average_hold_seconds second
 echo "\n";
 echo "---------- QUEUE STATS\n";
 
-$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -208,7 +243,7 @@ echo "+--------------------------+------------+----------+--------+\n";
 echo "| AGENT                    | CALLS      | TIME M   | AVRG M |\n";
 echo "+--------------------------+------------+----------+--------+\n";
 
-$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date 00:00:01' and call_date <= '$query_date 23:59:59' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
+$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -251,6 +286,7 @@ while ($i < $users_to_print)
 	$i++;
 	}
 
+if (!$TOTcalls) {$TOTcalls = 1;}
 $TOTavg = ($TOTtime / $TOTcalls);
 $TOTavg = round($TOTavg, 0);
 $TOTavg_M = ($TOTavg / 60);

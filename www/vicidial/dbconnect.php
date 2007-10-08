@@ -45,5 +45,8 @@ $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
 $non_latin = '0';	# set to 1 for UTF rules
-
+$AM_shift_BEGIN = '03:45:00';
+$AM_shift_END = '17:45:00';
+$PM_shift_BEGIN = '17:45:01';
+$PM_shift_END = '23:59:59';
 ?>

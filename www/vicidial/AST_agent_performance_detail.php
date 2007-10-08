@@ -9,6 +9,7 @@
 #            - Added required user/pass to gain access to this page
 # 70118-1705 - Added user_group filtering option
 # 70201-1207 - Added non_latin UTF8 output code, widened USER ID to 8 chars
+# 71008-1436 - Changed shift to be defined in dbconnect.php
 #
 
 require("dbconnect.php");
@@ -141,25 +142,25 @@ else
 {
 if ($shift == 'AM') 
 	{
-	$query_date_BEGIN = "$query_date 03:45:00";   
-	$query_date_END = "$query_date 15:15:00";
-	$time_BEGIN = "03:45:00";   
-	$time_END = "15:15:00";
+	$time_BEGIN=$AM_shift_BEGIN;
+	$time_END=$AM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
 	}
 if ($shift == 'PM') 
 	{
-	$query_date_BEGIN = "$query_date 15:15:00";   
-	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:15:00";   
-	$time_END = "23:15:00";
+	$time_BEGIN=$PM_shift_BEGIN;
+	$time_END=$PM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
 if ($shift == 'ALL') 
 	{
-	$query_date_BEGIN = "$query_date 00:00:00";   
-	$query_date_END = "$query_date 23:59:59";
-	$time_BEGIN = "00:00:00";   
-	$time_END = "23:59:59";
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
+$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_END = "$query_date $time_END";
 
 if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
 else {$ugSQL='';}
