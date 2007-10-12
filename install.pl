@@ -7,6 +7,7 @@
 
 # CHANGES
 # 71004-1155 - Added FTP and REPORT connection variables
+# 71012-1251 - Added PATHDONEmonitor setting
 # 
 
 ############################################
@@ -30,6 +31,8 @@ $PATHweb =		'/usr/local/apache2/htdocs';
 $PATHsounds =	'/var/lib/asterisk/sounds';
 # default path to asterisk recordings directory: 
 $PATHmonitor =	'/var/spool/asterisk/monitor';
+# default path to asterisk recordings DONE directory: 
+$PATHDONEmonitor =	'/var/spool/asterisk/monitorDONE';
 # default database server variables: 
 $VARDB_server =	'localhost';
 $VARDB_database =	'asterisk';
@@ -137,6 +140,7 @@ if (length($ARGV[0])>1)
 	print "  [--web=/path/from/root] = define webroot path from root at runtime\n";
 	print "  [--sounds=/path/from/root] = define sounds path from root at runtime\n";
 	print "  [--monitor=/path/from/root] = define monitor path from root at runtime\n";
+	print "  [--DONEmonitor=/path/from/root] = define monitor DONE path from root at runtime\n";
 	print "  [--server_ip=192.168.0.1] = define server IP address at runtime\n";
 	print "  [--DB_server=localhost] = define database server IP address at runtime\n";
 	print "  [--DB_database=asterisk] = define database name at runtime\n";
@@ -267,6 +271,18 @@ if (length($ARGV[0])>1)
 			$PATHmonitor =~ s/\/$| |\r|\n|\t//gi;
 			$CLImonitor=1;
 			print "  CLI defined monitor path:   $PATHmonitor\n";
+			}
+		}
+		if ($args =~ /--DONEmonitor=/i) # CLI defined DONEmonitor path
+		{
+		@CLIDONEmonitorARY = split(/--DONEmonitor=/,$args);
+		@CLIDONEmonitorARX = split(/ /,$CLIDONEmonitorARY[1]);
+		if (length($CLIDONEmonitorARX[0])>2)
+			{
+			$PATHDONEmonitor = $CLIDONEmonitorARX[0];
+			$PATHDONEmonitor =~ s/\/$| |\r|\n|\t//gi;
+			$CLIDONEmonitor=1;
+			print "  CLI defined DONEmonitor:    $PATHDONEmonitor\n";
 			}
 		}
 		if ($args =~ /--server_ip=/i) # CLI defined server IP address
@@ -611,6 +627,8 @@ if (-e "$PATHconf")
 			{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 		if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 			{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+		if ( ($line =~ /^PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+			{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 		if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 			{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -1031,6 +1049,65 @@ else
 				}
 			}
 		##### END asterisk monitor directory prompting and existence check #####
+
+		##### BEGIN asterisk DONEmonitor directory prompting and existence check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print("\nasterisk DONEmonitor path or press enter for default: [$PATHDONEmonitor] ");
+			$PROMPTDONEmonitor = <STDIN>;
+			chomp($PROMPTDONEmonitor);
+			if (length($PROMPTDONEmonitor)>2)
+				{
+				$PROMPTDONEmonitor =~ s/ |\n|\r|\t|\/$//gi;
+				if (!-e "$PROMPTDONEmonitor")
+					{
+					print("$PROMPTDONEmonitor does not exist, would you like me to create it?(y/n) [y] ");
+					$createPROMPTDONEmonitor = <STDIN>;
+					chomp($createPROMPTDONEmonitor);
+					if ($createPROMPTDONEmonitor =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PROMPTDONEmonitor`;
+							print "     $PROMPTDONEmonitor directory created\n";
+						$PATHDONEmonitor=$PROMPTDONEmonitor;
+						$continue='YES';
+						}
+					}
+				else
+					{
+					$PATHDONEmonitor=$PROMPTDONEmonitor;
+					$continue='YES';
+					}
+				}
+			else
+				{
+				if (!-e "$PATHDONEmonitor")
+					{
+					print("$PATHDONEmonitor does not exist, would you like me to create it?(y/n) [y] ");
+					$createPATHDONEmonitor = <STDIN>;
+					chomp($createPATHDONEmonitor);
+					if ($createPATHDONEmonitor =~ /n/i)
+						{
+						$continue='NO';
+						}
+					else
+						{
+						`mkdir -p $PATHDONEmonitor`;
+						print "     $PATHDONEmonitor directory created\n";
+						$continue='YES';
+						}
+					}
+				else
+					{
+					$continue='YES';
+					}
+				}
+			}
+		##### END asterisk DONEmonitor directory prompting and existence check #####
 
 		##### BEGIN server_ip prompting and check #####
 		if (length($VARserver_ip)<7)
@@ -1616,6 +1693,7 @@ else
 		print "  defined webroot path:     $PATHweb\n";
 		print "  defined sounds path:      $PATHsounds\n";
 		print "  defined monitor path:     $PATHmonitor\n";
+		print "  defined DONEmonitor path: $PATHDONEmonitor\n";
 		print "  defined server_ip:        $VARserver_ip\n";
 		print "  defined DB_server:        $VARDB_server\n";
 		print "  defined DB_database:      $VARDB_database\n";
@@ -1668,6 +1746,7 @@ print conf "PATHagi => $PATHagi\n";
 print conf "PATHweb => $PATHweb\n";
 print conf "PATHsounds => $PATHsounds\n";
 print conf "PATHmonitor => $PATHmonitor\n";
+print conf "PATHDONEmonitor => $PATHDONEmonitor\n";
 print conf "\n";
 print conf "# The IP address of this machine\n";
 print conf "VARserver_ip => $VARserver_ip\n";
@@ -1730,9 +1809,10 @@ if ($WEBONLY < 1)
 
 	print "Creating $PATHmonitor directories...\n";
 	`mkdir $PATHmonitor`;
-	`mkdir $PATHmonitor/ORIG`;
-	`mkdir $PATHmonitor/DONE`;
+	`mkdir $PATHDONEmonitor`;
+	`mkdir $PATHDONEmonitor/ORIG`;
 	`chmod -R 0766 $PATHmonitor`;
+	`chmod -R 0766 $PATHDONEmonitor`;
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;

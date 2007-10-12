@@ -367,6 +367,24 @@ make install
 
 ############# INSTRUCTIONS FOR Asterik 1.4 release ####################
 
+### If upgrading from 1.2.X Asterisk, run the following lines first:
+rm -f /usr/lib/asterisk/modules/app_curl.so
+rm -f /usr/lib/asterisk/modules/app_cut.so
+rm -f /usr/lib/asterisk/modules/app_enumlookup.so
+rm -f /usr/lib/asterisk/modules/app_eval.so
+rm -f /usr/lib/asterisk/modules/app_groupcount.so
+rm -f /usr/lib/asterisk/modules/app_math.so
+rm -f /usr/lib/asterisk/modules/app_md5.so
+rm -f /usr/lib/asterisk/modules/app_setcidname.so
+rm -f /usr/lib/asterisk/modules/app_setcidnum.so
+rm -f /usr/lib/asterisk/modules/app_setrdnis.so
+rm -f /usr/lib/asterisk/modules/app_txtcidname.so
+rm -f /usr/lib/asterisk/modules/chan_features.so
+rm -f /usr/lib/asterisk/modules/format_au.so
+rm -f /usr/lib/asterisk/modules/format_pcm_alaw.so
+rm -f /usr/lib/asterisk/modules/pbx_functions.so
+
+
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
 wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.11.tar.gz

@@ -16,6 +16,7 @@
 #
 # changes:
 # 60918-1042 - First build
+# 71012-1239 - changed method for getting areacode
 #
 
 $script = 'agi-VDADselective_CID.agi';
@@ -92,13 +93,7 @@ while(<STDIN>)
 	   else {$VLcomments = '';}
 }
 
-$areacode = $extension;
-if (length($areacode) > 10)
-	{
-	$areacode =~ s/^91|^991|^981|^971|^961|^951//gi;
-	$areacode =~ s/^1//gi;
-	}
-$areacode =~ s/\d\d\d\d\d\d\d$//gi;
+$areacode = substr($extension, -10, 3);
 
 
 foreach $i (sort keys %AGI) 
@@ -122,14 +117,16 @@ if ($areacode !~ /$clear_area_codes/)
 	## use these two lines for Asterisk 1.0 tree
 #	print "SET CALLERID \"$calleridname\" <0000000000>\n";
 #	print "SET CALLERIDNAME \"$calleridname\"\n";
+
+	print STDERR "Setting CID \"$newcallerid\"\n";
 	checkresult($result);
 	if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" \<0000000000\>";   &agi_output;}
 
-	if ($FD > 0) {print STDERR "callerID changed:     \"$calleridname\" \<0000000000\>\n";}
+	if ($FD > 0) {print STDERR "callerID changed:     \"$calleridname\" \<0000000000\> |$areacode|\n";}
 }
 else
 {
-	if ($FD > 0) {print STDERR "callerID NOT changed: \"$calleridname\" <$callerid>\n";}
+	if ($FD > 0) {print STDERR "callerID NOT changed: \"$calleridname\" <$callerid> |$areacode|\n";}
 
 }
 if ($AGILOG) {$agi_string = "AGI Variables: |$extension|$areacode|$callerid|$calleridname|";   &agi_output;}
