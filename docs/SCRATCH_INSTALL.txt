@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.3               2007-04-27
+Asterisk/astguiclient install from scratch.    v.2.0.4               2007-11-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -213,6 +213,13 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	ATA/ATAPI/MFM/RLL support  --->
 	  <*> SCSI emulation support
 	    (needed for SATA drives, also further down check chipset drivers)
+	Block devices  --->
+	  <*> Loopback device support
+	  <*> RAM disk support
+	  (1)   Default number of RAM disks
+	  (128000) Default RAM disk size (kbytes)
+	  [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
+	     (ONLY USE THE ABOVE 4 SETTINGS IF YOU WILL BE SETTING UP A RAM DRIVE FOR RECORDING)
 	SCSI device support  --->
 	  <*> RAID Transport Class
 	    (needed if you are using a RAID)
@@ -2752,6 +2759,10 @@ SUBPHASE 6.4: setting up asterisk and helper applications for startup
    - on the command line type:
 	- vi /etc/rc.d/rc.local
 	   - add the following entries(here's what we used):
+
+### uncomment If kernel RAM drive is enabled
+# mke2fs -m 0 /dev/ram0
+# mount /dev/ram0 /var/spool/asterisk/monitor
 
 ### Path to local asterisk-perl_0.08 module if needed
 PERL5LIB="/usr/share/astguiclient/libs"; export PERL5LIB
