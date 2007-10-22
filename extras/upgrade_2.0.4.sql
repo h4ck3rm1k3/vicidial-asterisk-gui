@@ -79,30 +79,61 @@ index (entry_time)
 
 ALTER TABLE vicidial_ivr AUTO_INCREMENT = 1000000;
 
+ALTER TABLE vicidial_inbound_groups ADD call_time_id VARCHAR(20) default '24hours';
+ALTER TABLE vicidial_inbound_groups ADD after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL') default 'MESSAGE';
+ALTER TABLE vicidial_inbound_groups ADD after_hours_message_filename VARCHAR(50) default 'vm-goodbye';
+ALTER TABLE vicidial_inbound_groups ADD after_hours_exten VARCHAR(20) default '8300';
+ALTER TABLE vicidial_inbound_groups ADD after_hours_voicemail VARCHAR(20);
+ALTER TABLE vicidial_inbound_groups ADD welcome_message_filename VARCHAR(50) default '---NONE---';
+ALTER TABLE vicidial_inbound_groups ADD moh_context VARCHAR(50) default 'default';
+ALTER TABLE vicidial_inbound_groups ADD onhold_prompt_filename VARCHAR(50) default 'generic_hold';
+ALTER TABLE vicidial_inbound_groups ADD prompt_interval SMALLINT(5) UNSIGNED default '60';
+ALTER TABLE vicidial_inbound_groups ADD agent_alert_exten VARCHAR(20) default '8304';
+ALTER TABLE vicidial_inbound_groups ADD agent_alert_delay INT(6) default '1000';
+
+ALTER TABLE vicidial_list MODIFY called_count SMALLINT(5) UNSIGNED default '0';
+
+CREATE TABLE vicidial_inbound_group_agents (
+user VARCHAR(20),
+group_id VARCHAR(20),			
+group_rank TINYINT(1) default '0',
+group_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
+index (group_id),
+index (user)
+);
+
+
+
 #!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
 #
 #
 #ALTER TABLE vicidial_hopper ADD priority TINYINT(2) default '50';
 #
-#ALTER TABLE vicidial_inbound_groups ADD moh_extension VARCHAR(20);
-#ALTER TABLE vicidial_inbound_groups ADD prompt_interval SMALLINT(5) UNSIGNED default '60';
 #ALTER TABLE vicidial_inbound_groups ADD announce_place_in_line ENUM('Y','N') default 'N';
 #ALTER TABLE vicidial_inbound_groups ADD announce_estimate_hold_time ENUM('Y','N') default 'N';
 #ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_place ENUM('Y','N') default 'N';
 #ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_message ENUM('Y','N') default 'N';
-#ALTER TABLE vicidial_inbound_groups ADD callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK');
-#ALTER TABLE vicidial_inbound_groups ADD call_time VARCHAR(20);
-#ALTER TABLE vicidial_inbound_groups ADD after_hours ENUM('HANGUP','VOICEMAIL','EXTENSION') default 'EXTENSION';
-#ALTER TABLE vicidial_inbound_groups ADD after_hours_exten VARCHAR(20);
+#ALTER TABLE vicidial_inbound_groups ADD callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK','NONE');
 #
-#ALTER TABLE servers ADD hold_queue_prompt_exten VARCHAR(20) default '8359';
-#
-#ALTER TABLE vicidial_auto_calls ADD last_prompt_time DATETIME;
-#ALTER TABLE vicidial_auto_calls ADD random_id INT(9) UNSIGNED;
-#ALTER TABLE vicidial_auto_calls ADD recording_id INT(10) UNSIGNED;
+#ALTER TABLE servers ADD hold_queue_prompt_filename VARCHAR(50) default 'park';
 #
 #ALTER TABLE vicidial_user_groups ADD allowable_xfer_inbound_groups TEXT
 #ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
+#
+# CREATE TABLE vicidial_live_inbound_agents (
+# user VARCHAR(20),
+# group_id VARCHAR(20),			
+# group_weight TINYINT(1) default '0',
+# calls_today SMALLINT(5) UNSIGNED default '0';
+# last_call_time DATETIME,
+# last_call_finish DATETIME,
+# random_id INT(8) UNSIGNED,
+# index (group_id),
+# index (group_weight)
+# );
+# 
+
 
 
 

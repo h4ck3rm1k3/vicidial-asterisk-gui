@@ -41,11 +41,15 @@
 #
 # changes:
 # 70828-0924 - First Build
+# 71013-0310 - Added use of default Music-on-hold instead of generic on-hold message
+# 71020-1714 - fixed issues with MoH and stream_file messages
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 
 $DROP_TIME = 360;	### default number of seconds to wait until you drop a waiting call
+$start_moh=1;
+$at='@';
 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -56,6 +60,9 @@ if ($mday < 10) {$mday = "0$mday";}
 if ($hour < 10) {$Fhour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
+
+$hm = "$hour$min";
+$hm = ($hm + 0);
 
 $now_date_epoch = time();
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
@@ -237,13 +244,6 @@ foreach $i (sort keys %AGI)
 if ($AGILOG) {$agi_string = "AGI Variables: |$unique_id|$channel|$extension|$type|$callerid|";   &agi_output;}
 
 
-$AGI->stream_file('beep');
-
-if ($call_handle_method =~ /DIGITID$/)
-{
-	&enter_pin_number;
-}
-
 if (length($pin) < 1) {$pin=$inbound_number;}
 
 $fronter = $pin;
@@ -269,22 +269,147 @@ while ($sthArows > $cbc)
 	{
 	@aryA = $sthA->fetchrow_array;
 	
-	$DBvoicemail_dump_exten	= "$aryA[0]";
-	$DBext_context		= "$aryA[1]";
-	$DBanswer_transfer_agent	= "$aryA[2]";
-	$DBSERVER_GMT		= "$aryA[3]";
-	$DBasterisk_version	= "$aryA[4]";
-	$DBmax_vicidial_trunks	= "$aryA[5]";
+	$DBvoicemail_dump_exten	=		"$aryA[0]";
+	$DBext_context		=			"$aryA[1]";
+	$DBanswer_transfer_agent	=	"$aryA[2]";
+	$DBSERVER_GMT		=			"$aryA[3]";
+	$DBasterisk_version	=			"$aryA[4]";
+	$DBmax_vicidial_trunks	=		"$aryA[5]";
 	if ($DBvoicemail_dump_exten)	{$voicemail_dump_exten = $DBvoicemail_dump_exten;}
-	if ($DBext_context)		{$ext_context = $DBext_context;}
+	if ($DBext_context)				{$ext_context = $DBext_context;}
 	if ($DBanswer_transfer_agent)	{$answer_transfer_agent = $DBanswer_transfer_agent;}
-	if ($DBSERVER_GMT)		{$SERVER_GMT = $DBSERVER_GMT;}
-	if ($DBasterisk_version)	{$AST_ver = $DBasterisk_version;}
-	if ($DBmax_vicidial_trunks)	{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
+	if ($DBSERVER_GMT)				{$SERVER_GMT = $DBSERVER_GMT;}
+	if ($DBasterisk_version)		{$AST_ver = $DBasterisk_version;}
+	if ($DBmax_vicidial_trunks)		{$max_vicidial_trunks = $DBmax_vicidial_trunks;}
 	$cbc++;
 	}
-$sthA->finish();  
+$sthA->finish();
 
+### Grab inbound groups values from the database
+$cbc=0;
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+while ($sthArows > $cbc)
+	{
+	@aryA = $sthA->fetchrow_array;
+	
+	$call_time_id	=				"$aryA[0]";
+	$after_hours_action	=			"$aryA[1]";
+	$after_hours_message_filename	=	"$aryA[2]";
+	$after_hours_exten	=			"$aryA[3]";
+	$after_hours_voicemail	=		"$aryA[4]";
+	$welcome_message_filename	=	"$aryA[5]";
+	$moh_context	=				"$aryA[6]";
+	$onhold_prompt_filename	=		"$aryA[7]";
+	$prompt_interval	=			"$aryA[8]";
+	$agent_alert_exten	=			"$aryA[9]";
+	$agent_alert_delay	=			"$aryA[10]";
+	$cbc++;
+	}
+$sthA->finish();
+
+if ($wday==0) {$daySQL=',ct_sunday_start,ct_sunday_stop';}
+if ($wday==1) {$daySQL=',ct_monday_start,ct_monday_stop';}
+if ($wday==2) {$daySQL=',ct_tuesday_start,ct_tuesday_stop';}
+if ($wday==3) {$daySQL=',ct_wednesday_start,ct_wednesday_stop';}
+if ($wday==4) {$daySQL=',ct_thursday_start,ct_thursday_stop';}
+if ($wday==5) {$daySQL=',ct_friday_start,ct_friday_stop';}
+if ($wday==6) {$daySQL=',ct_saturday_start,ct_saturday_stop';}
+
+### Grab call_times values from the database
+$stmtA = "SELECT ct_default_start,ct_default_stop $daySQL FROM vicidial_call_times where call_time_id = '$call_time_id';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+@aryA = $sthA->fetchrow_array;
+$ct_default_start	=		"$aryA[0]";
+$ct_default_stop	=		"$aryA[1]";
+$ct_day_start	=			"$aryA[2]";
+$ct_day_stop	=			"$aryA[3]";
+$sthA->finish();
+
+if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )  
+	{
+	$ct_default_start	=	$ct_day_start;
+	$ct_default_stop	=	$ct_day_stop;
+	}
+
+### check for after hours
+if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
+	{
+	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
+
+	if ($after_hours_action =~ /EXTENSION|VOICEMAIL/)
+		{
+		if ($after_hours_action =~ /EXTENSION/)
+			{
+			$DROPexten = "$after_hours_exten";
+			}
+		if ($after_hours_action =~ /VOICEMAIL/)
+			{
+			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
+			}
+		if (length($DROPexten)>0)
+			{	### if DROP extension is defined then send the dropped call there instead of hangup
+			if ($AGILOG) {$agi_string = "exiting the VDAD app after hours, transferring call to $DROPexten";   &agi_output;}
+			print "SET CONTEXT $ext_context\n";
+				checkresult($result);
+			print "SET EXTENSION $DROPexten\n";
+				checkresult($result);
+			print "SET PRIORITY 1\n";
+				checkresult($result);
+			}
+		}
+		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
+
+		$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds' where lead_id = '$new_lead_id' order by start_epoch desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$new_lead_id|\n|$stmtA|";   &agi_output;}
+
+		$stmtA = "UPDATE vicidial_list set status='XDROP' where lead_id = '$new_lead_id';";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$new_lead_id|\n|$stmtA|";   &agi_output;}
+
+	if ($after_hours_action =~ /HANGUP/)
+		{
+		### insert a NEW record to the vicidial_manager table to hangup the channel
+		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
+		$affected_rows = $dbhA->do($stmtA);  
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		}
+	if ($after_hours_action =~ /MESSAGE/)
+		{
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file("$after_hours_message_filename");
+		sleep(1);
+
+		### insert a NEW record to the vicidial_manager table to hangup the channel
+		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
+		$affected_rows = $dbhA->do($stmtA);  
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		}
+
+	$dbhA->disconnect();
+
+	exit;
+
+	}
+
+$AGI->stream_file('beep');
+
+if ($welcome_message_filename !~ /---NONE---/)
+	{
+	$AGI->stream_file("$welcome_message_filename");
+	}
+
+if ($call_handle_method =~ /DIGITID$/)
+{
+	&enter_pin_number;
+}
 
 if ($call_handle_method =~ /LOOKUP/)
 {
@@ -408,7 +533,7 @@ $VDADlead_id = $new_lead_id;
 
 $drop_timer=0;
 $drop_seconds=0;
-$hold_message_counter=25;
+$hold_message_counter=($prompt_interval - 10);
 $hold_tone_counter=0;
 
 while ($drop_timer <= $DROP_TIME)
@@ -510,6 +635,19 @@ if ($call_handle_method =~ /DIGITID$/)
 			$stmtA = "UPDATE vicidial_closer_log set user='$VDADuser' where lead_id='$new_lead_id' order by call_date desc limit 1;";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    closer log : |$affected_rows|$new_lead_id\n|$stmtA|";   &agi_output;}
+
+			### if agent alert exten is not disabled, then trigger the alert and wait
+			if ($agent_alert_exten !~ /X/i)
+				{
+				$VHqueryCID = "VH$CIDdate$VDADconf_exten";
+
+				### insert a NEW record to the vicidial_manager table to play the alert message to the agent
+				$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$VHqueryCID','Exten: $agent_alert_exten','Context: $ext_context','Channel: Local/7$VDADconf_exten$at$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: 10','','','','')";
+				$affected_rows = $dbhA->do($stmtA);  
+				if ($AGILOG) {$agi_string = "--    VDCL agent alert: |$VHqueryCID|7$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+
+				usleep(1 * $agent_alert_delay * 1000);
+				}
 
 			if ($AGILOG) {$agi_string = "exiting VDAD app, transferring call to $VDADconf_exten";   &agi_output;}
 			print "SET CONTEXT $ext_context\n";
@@ -618,7 +756,22 @@ if ($agent_search_method =~ /^LO|^LB/)
 				$d = leading_zero($4);
 				$VDADremDIALstr = "$a$S$b$S$c$S$d$S";
 				}
+			$alertVDADremDIALstr = "$VDADremDIALstr";
+			$alertVDADremDIALstr .= "7$VDADconf_exten";
 			$VDADremDIALstr .= "$VDADconf_exten";
+
+			### if agent alert exten is not disabled, then trigger the alert and wait
+			if ($agent_alert_exten !~ /X/i)
+				{
+				$VHqueryCID = "VH$CIDdate$VDADconf_exten";
+
+				### insert a NEW record to the vicidial_manager table to play the alert message to the agent
+				$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$VHqueryCID','Exten: $agent_alert_exten','Context: $ext_context','Channel: Local/$alertVDADremDIALstr$at$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: 10','','','','')";
+				$affected_rows = $dbhA->do($stmtA);  
+				if ($AGILOG) {$agi_string = "--    VDCL agent alert: |$VHqueryCID|$alertVDADremDIALstr|$channel|insert to vicidial_manager";   &agi_output;}
+
+				usleep(1 * $agent_alert_delay * 1000);
+				}
 
 			if ($AGILOG) {$agi_string = "exiting VDAD app, transferring call to $VDADremDIALstr";   &agi_output;}
 			print "SET CONTEXT $ext_context\n";
@@ -660,15 +813,16 @@ if ($agent_search_method =~ /^LO|^LB/)
 		}
 
 }
-if ($hold_message_counter > 30)
+if ($hold_message_counter > $prompt_interval)
 	{
-	$AGI->stream_file('generic_hold');
+	$AGI->stream_file('sip-silence'); # stop music-on-hold process
+	$AGI->stream_file("$onhold_prompt_filename");
 	$hold_message_counter = 0;
+	$start_moh=1;
 	}
   else {$hold_message_counter++;}
 if ($hold_tone_counter > 3)
 	{
-	$AGI->stream_file('hold_tone');
 	$hold_tone_counter = 0;
 	}
   else {$hold_tone_counter++;}
@@ -681,6 +835,12 @@ if ($drop_timer < 3)
 	}
 else
 	{
+	if ($start_moh > 0) 
+		{
+		$start_moh=0;
+		print "SET MUSIC ON $moh_context\n";
+			checkresult($result);
+		}
 	### sleep for 99 hundredths of a second
 	usleep(1*990*1000);
 
@@ -692,6 +852,17 @@ $affected_rows = $dbhA->do($stmtA);
 #if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
 
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 if ($drop_timer >= $DROP_TIME)

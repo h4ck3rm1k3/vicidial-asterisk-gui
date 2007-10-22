@@ -288,15 +288,15 @@ make install
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
 wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.23.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.20.1.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.21.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
 gunzip asterisk-1.2.23.tar.gz
 tar xvf asterisk-1.2.23.tar
-gunzip zaptel-1.2.20.1.tar.gz
-tar xvf zaptel-1.2.20.1.tar
+gunzip zaptel-1.2.21.tar.gz
+tar xvf zaptel-1.2.21.tar
 gunzip libpri-1.2.5.tar.gz
 tar xvf libpri-1.2.5.tar
-cd ./zaptel-1.2.20.1
+cd ./zaptel-1.2.21
 wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
@@ -362,6 +362,24 @@ mv -f leave.h apps/leave.h
 make clean
 make
 make install
+
+
+cd /var/lib/asterisk/mohmp3/
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-sunshine.mp3 > /var/lib/asterisk/mohmp3/fpm-sunshine.raw
+sox -r 44100 -w -s -c 1 fpm-sunshine.raw -r 8000 -c 1 fpm-sunshine.wav
+sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
+sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-calm-river.mp3 > /var/lib/asterisk/mohmp3/fpm-calm-river.raw
+sox -r 44100 -w -s -c 1 fpm-calm-river.raw -r 8000 -c 1 fpm-calm-river.wav
+sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
+sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-world-mix.mp3 > /var/lib/asterisk/mohmp3/fpm-world-mix.raw
+sox -r 44100 -w -s -c 1 fpm-world-mix.raw -r 8000 -c 1 fpm-world-mix.wav
+sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
+sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
+rm -f *.raw
+mkdir ../orig-mp3
+mv -f *.mp3 ../orig-mp3/
 
 
 

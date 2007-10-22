@@ -520,6 +520,10 @@ exten => 8302,1,Answer
 exten => 8302,2,Playback(conf)
 exten => 8302,3,Hangup
 
+exten => 8304,1,Answer
+exten => 8304,2,Playback(ding)
+exten => 8304,3,Hangup
+
 ; default audio for safe harbor 2-second-after-hello message then hangup
 ;    create a GSM formatted audio file complies with safe harbor rules
 ;    and put it in /var/lib/asterisk/sounds then change filename below

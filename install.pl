@@ -1869,6 +1869,7 @@ if ($PROMPTcopy_conf_files =~ /y/i)
 	`cp -f ./docs/conf_examples/extensions.conf.sample /etc/asterisk/extensions.conf`;
 	`cp -f ./docs/conf_examples/meetme.conf.sample /etc/asterisk/meetme.conf`;
 	`cp -f ./docs/conf_examples/manager.conf.sample /etc/asterisk/manager.conf`;
+	`cp -f ./docs/conf_examples/musiconhold.conf.sample /etc/asterisk/musiconhold.conf`;
 	`cp -f ./docs/conf_examples/voicemail.conf.sample /etc/asterisk/voicemail.conf`;
 	`cp -f ./docs/conf_examples/sip.conf.sample /etc/asterisk/sip.conf`;
 	`cp -f ./docs/conf_examples/logger.conf.sample /etc/asterisk/logger.conf`;

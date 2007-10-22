@@ -1,0 +1,16 @@
+;
+; Music on Hold -- Sample Configuration
+;
+
+[default]
+mode=files
+directory=/var/lib/asterisk/mohmp3
+
+; valid mode options:
+; quietmp3      -- default
+; mp3           -- loud
+; mp3nb         -- unbuffered
+; quietmp3nb    -- quiet unbuffered
+; custom        -- run a custom application
+; files         -- read files from a directory in any Asterisk supported format
+

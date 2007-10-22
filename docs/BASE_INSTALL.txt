@@ -100,8 +100,9 @@ make
 make install
 make samples		# this makes sample conf files (only use for new installs)
 
-	- (1.2 tree) EXPERIMENTAL!!! If you want to use app_conference
-	instead of meetme for VICIDIAL then follow these instructions
+	- (1.2 tree) EXPERIMENTAL AND NOT RECOMMENDED!!! If you want to use 
+	app_conference instead of meetme for VICIDIAL then follow these
+	instructions:
 	cd /usr/src/asterisk
 	wget http://www.eflo.net/files/VD_app_conference_0.6.zip
 	unzip VD_app_conference_0.6.zip
@@ -203,7 +204,7 @@ package(as of this writing it is 2.0.3)
    - for SVN 2.0 trunk:
 	mkdir /usr/src/astguiclient
 	cd /usr/src/astguiclient
-	svn checkout svn://205.201.151.21:43690/agc_2-X/trunk
+	svn checkout svn://svn.eflo.net:43690/agc_2-X/trunk
 	cd trunk
 	perl install.pl
 	    select to do interactive setup and customize to your server

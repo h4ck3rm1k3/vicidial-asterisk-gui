@@ -152,6 +152,7 @@ if (length($ARGV[0])>1)
 		{
 		@data_in = split(/-forcelistid=/,$args);
 			$forcelistid = $data_in[1];
+			$forcelistid =~ s/ .*//gi;
 		print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";
 		}
 		else
@@ -276,7 +277,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	$multi_insert_counter=0;
 	$multistmt='';
 
-	while (<infile>)
+if ($DB)
+#	while (<infile>)
 	{
 
 #		print "$a| $number\n";
@@ -327,6 +329,13 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$called_count =			$m[23];		$called_count =~ s/\D|\r|\n|\t//gi; if (length($called_count)<1) {$called_count=0;}
 		$status =				$m[24];		$status =~ s/ |\r|\n|\t//gi;  if (length($status)<1) {$status='NEW';}
 		$insert_date =			$m[25];	$insert_date =~ s/\r|\n|\t|[a-zA-Z]//gi;  if (length($insert_date)<6) {$insert_date=$pulldate0;}
+			if ($insert_date =~ /\//) 
+				{
+				@iD = split(/\//, $insert_date);
+				$iD[0] = sprintf("%02d", $iD[0]);
+				$iD[1] = sprintf("%02d", $iD[1]);
+				$insert_date = "$iD[2]-$iD[0]-$iD[1]";
+				}
 
 		if (length($forcelistid) > 0)
 			{

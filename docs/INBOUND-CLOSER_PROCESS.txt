@@ -78,3 +78,25 @@ PLACE - this status is a placeholder for the customer after they choose the opti
 
 
 MORE TO COME...
+
+
+
+- optionally make native audio files for Music On Hold:
+
+cd /var/lib/asterisk/mohmp3/
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-sunshine.mp3 > /var/lib/asterisk/mohmp3/fpm-sunshine.raw
+sox -r 44100 -w -s -c 1 fpm-sunshine.raw -r 8000 -c 1 fpm-sunshine.wav
+sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
+sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-calm-river.mp3 > /var/lib/asterisk/mohmp3/fpm-calm-river.raw
+sox -r 44100 -w -s -c 1 fpm-calm-river.raw -r 8000 -c 1 fpm-calm-river.wav
+sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
+sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
+mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-world-mix.mp3 > /var/lib/asterisk/mohmp3/fpm-world-mix.raw
+sox -r 44100 -w -s -c 1 fpm-world-mix.raw -r 8000 -c 1 fpm-world-mix.wav
+sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
+sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
+rm -f *.raw
+mkdir ../orig-mp3
+mv -f *.mp3 ../orig-mp3/
+

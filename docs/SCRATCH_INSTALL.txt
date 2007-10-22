@@ -501,6 +501,7 @@ to be loaded to use that option.
    - you are done
 
 
+
 Screen is a terminal emulator that allows you to run a process as command line 
 and be able to detach from them('Ctrl+a' then 'd') and log all output of the 
 terminal to a screenlog file if desired(add a '-L' to the launching command). 
@@ -918,8 +919,9 @@ with the following patch:
 	- make install
 	- make samples		# this makes sample conf files (only use for new installs)
 
-		- (1.2 tree) EXPERIMENTAL!!! If you want to use app_conference
-		instead of meetme for VICIDIAL then follow these instructions
+	- (1.2 tree) EXPERIMENTAL AND NOT RECOMMENDED!!! If you want to use 
+		app_conference instead of meetme for VICIDIAL then follow these
+		instructions:
 		- cd /usr/src/asterisk
 		- wget http://www.eflo.net/files/VD_app_conference_0.6.zip
 		- unzip VD_app_conference_0.6.zip
@@ -1610,8 +1612,8 @@ package(as of this writing it is 2.0.3)
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- svn checkout svn://205.201.151.21:43690/agc_2-X
-	- cd agc_2-X/trunk/
+	- svn checkout svn://svn.eflo.net:43690/agc_2-X/trunk
+	- cd trunk
 	- perl install.pl
 	    select to do interactive setup and customize to your server
    - there is one more file you need that's not included with the download 
@@ -2417,6 +2419,10 @@ exten => 8303,4,Hangup
 exten => 8302,1,Answer
 exten => 8302,2,Playback(conf)
 exten => 8302,3,Hangup
+
+exten => 8304,1,Answer
+exten => 8304,2,Playback(ding)
+exten => 8304,3,Hangup
 
 ; default audio for safe harbor 2-second-after-hello message then hangup
 ;    create a GSM formatted audio file complies with safe harbor rules

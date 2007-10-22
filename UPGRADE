@@ -45,6 +45,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 9. Moved the audio transfer script and report generating scripts settings to 
 	/etc/astguiclient.conf settings file
 
+10. Added agent alert, music-on-hold and several other parameters to inbound 
+	groups. Make sure you have musiconhold working properly before using 
+	in production.
+
+
+
 
 
 

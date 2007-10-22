@@ -82,6 +82,29 @@ LIST MIX NOT ACTIVATED||
 LIST MIX ACTIVATED||
 Enable Agent Transfer Logfile -<\/B> This option will log to a text logfile on the webserver every time a call is transferred to an agent. Default is 0, disabled||
 Enable Agent Transfer Logfile||
+Call Time -<\/B> This is the call time scheme to use for this inbound group. Keep in mind that the time is based on the server time. Default is 24hours||
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field. Default is MESSAGE||
+After Hours Message Filename -<\/B> The audio file located on the server to be played if the Action is set to MESSAGE. Default is vm-goodbye||
+After Hours Extension -<\/B> The dialplan extension to send the call to if the Action is set to EXTENSION. Default is 8300||
+After Hours Voicemail -<\/B> The voicemail box to send the call to if the Action is set to VOICEMAIL||
+Welcome Message Filename -<\/B> The audio file located on the server to be played when the call comes in. If set to ---NONE--- then no message will be played. Default is ---NONE---||
+Music On Hold Context -<\/B> The music on hold context to use when the customer is placed on hold. Default is default||
+On Hold Prompt Filename -<\/B> The audio file located on the server to be played at a regular interval when the customer is on hold. Default is generic_hold||
+On Hold Prompt Interval -<\/B> The length of time in seconds to wait before playing the on hold prompt. Default is 60||
+Agent Alert Extension -<\/B> The extension to send into the agent session to announce that a call is coming to the agent. This extension should have a Playback of an audio file. To not use this function set this to X. Default is X||
+Agent Alert Delay -<\/B> The length of time in milliseconds to wait before sending the call to the agent after playing the on Agent Alert Extension. Default is 1000||
+Call Time: ||
+After Hours Action: ||
+After Hours Message Filename: ||
+After Hours Extension: ||
+After Hours Voicemail: ||
+Welcome Message Filename: ||
+Music On Hold Context: ||
+On Hold Prompt Filename: ||
+On Hold Prompt Interval: ||
+Agent Alert Extension: ||
+Agent Alert Delay: ||
+You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent||
 
 
 ############################################################ CLIENT

@@ -599,7 +599,18 @@ xferconf_b_dtmf VARCHAR(50),
 xferconf_b_number VARCHAR(50),
 drop_call_seconds SMALLINT(4) unsigned default '360',
 drop_message ENUM('Y','N') default 'N',
-drop_exten VARCHAR(20)  default '8307'
+drop_exten VARCHAR(20)  default '8307',
+call_time_id VARCHAR(20) default '24hours',
+after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL') default 'MESSAGE',
+after_hours_message_filename VARCHAR(50) default 'vm-goodbye',
+after_hours_exten VARCHAR(20) default '8300',
+after_hours_voicemail VARCHAR(20),
+welcome_message_filename VARCHAR(50) default '---NONE---',
+moh_context VARCHAR(50) default 'default',
+onhold_prompt_filename VARCHAR(50) default 'generic_hold',
+prompt_interval SMALLINT(5) UNSIGNED default '60',
+agent_alert_exten VARCHAR(20) default '8304',
+agent_alert_delay INT(6) default '1000'
 );
 
 CREATE TABLE vicidial_stations (
