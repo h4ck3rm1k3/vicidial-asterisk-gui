@@ -9,6 +9,7 @@
 #            - Added required user/pass to gain access to this page
 # 60905-1326 - Added queue time stats
 # 71008-1436 - Added shift to be defined in dbconnect.php
+# 71025-0021 - Added status breakdown
 #
 
 require("dbconnect.php");
@@ -188,6 +189,86 @@ else
 
 echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
+
+
+
+##############################
+#########  CALL STATUS STATS
+
+$TOTALcalls = 0;
+
+echo "\n";
+echo "---------- CALL STATUS STATS\n";
+echo "+--------+----------------------+------------+\n";
+echo "| STATUS | DESCRIPTION          | CALLS      |\n";
+echo "+--------+----------------------+------------+\n";
+
+$stmt="SELECT * from vicidial_statuses order by status";
+$rslt=mysql_query($stmt, $link);
+$statuses_to_print = mysql_num_rows($rslt);
+$statuses_list='';
+
+$o=0;
+while ($statuses_to_print > $o) 
+	{
+	$rowx=mysql_fetch_row($rslt);
+	$statname_list["$rowx[0]"] = "$rowx[1]";
+	$o++;
+	}
+
+$stmt="SELECT * from vicidial_campaign_statuses order by status";
+$rslt=mysql_query($stmt, $link);
+$Cstatuses_to_print = mysql_num_rows($rslt);
+
+$o=0;
+while ($Cstatuses_to_print > $o) 
+	{
+	$rowx=mysql_fetch_row($rslt);
+	$statname_list["$rowx[0]"] = "$rowx[1]";
+	$o++;
+	}
+
+$stmt="select count(*),status from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$TOTALcalls = ($TOTALcalls + $row[0]);
+
+	$STATUScount =	sprintf("%10s", $row[0]);while(strlen($STATUScount)>10) {$STATUScount = substr("$STATUScount", 0, -1);}
+	$RAWstatus = $row[1];
+	$status =	sprintf("%-6s", $row[1]);while(strlen($status)>6) {$status = substr("$status", 0, -1);}
+
+	if ($non_latin < 1)
+		{
+		 $status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
+		 while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
+		}
+	else
+		{
+		 $status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
+		 while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
+		}
+
+
+	echo "| $status | $status_name | $STATUScount |\n";
+
+	$i++;
+	}
+
+$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+
+echo "+--------+----------------------+------------+\n";
+echo "| TOTAL:                        | $TOTALcalls |\n";
+echo "+-------------------------------+------------+\n";
+
+
+
 
 echo "\n";
 echo "---------- QUEUE STATS\n";
