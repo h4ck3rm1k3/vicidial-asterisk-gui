@@ -5594,11 +5594,15 @@ if ($ADD==42)
 			$stmt="DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
 			$rslt=mysql_query($stmt, $link);
 
+			$stmtA="DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmtA, $link);
+
+
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
 				fclose($fp);
 				}
 			}
@@ -6747,11 +6751,14 @@ if ($ADD==421111111111111)
 			$stmt="DELETE FROM vicidial_statuses where status='$status';";
 			$rslt=mysql_query($stmt, $link);
 
+			$stmtA="DELETE FROM vicidial_campaign_hotkeys where status='$status';";
+			$rslt=mysql_query($stmtA, $link);
+
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
 				fclose($fp);
 				}
 			}

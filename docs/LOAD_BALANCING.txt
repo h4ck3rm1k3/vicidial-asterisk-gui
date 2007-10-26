@@ -77,10 +77,15 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
   	[default]
 	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 
 	exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*015*78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*016*78600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
   SERVER TWO(ASTtest2-10.10.10.16) 
     extensions.conf:
@@ -90,10 +95,15 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
   	[default]
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*78600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX,1,Goto(default,${EXTEN:16},1)
 
 	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*015*78600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
 5. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed:
 
@@ -241,11 +251,18 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _010*010*010*017*8600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*78600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
 
 	exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _010*010*010*017*8600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*015*78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*016*78600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*78600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
   SERVER TWO(ASTtest2-10.10.10.16) 
     extensions.conf:
@@ -257,11 +274,18 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX,1,Goto(default,${EXTEN:16},1)
 	exten => _010*010*010*017*8600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _010*010*010*015*78600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*017*78600XXX,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
 
 	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
 	exten => _010*010*010*017*8600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*015*78600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _010*010*010*017*78600XXX*.,1,Dial(${TRUNKIAX3}/${EXTEN:16},55,o)
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
   SERVER THREE(ASTtest3-10.10.10.17) 
     extensions.conf:
@@ -273,8 +297,11 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 	exten => _010*010*010*017*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*78600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*78600XXX,1,Goto(default,${EXTEN:16},1)
 
-	exten => _010*010*010*015*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*017*8600XXX*.,1,Goto(default,${EXTEN:16},1)                  
-	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _010*010*010*015*78600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*017*78600XXX*.,1,Goto(default,${EXTEN:16},1)                  
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)

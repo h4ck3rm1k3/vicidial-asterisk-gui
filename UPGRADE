@@ -43,12 +43,17 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
 
 9. Moved the audio transfer script and report generating scripts settings to 
-	/etc/astguiclient.conf settings file
+	/etc/astguiclient.conf settings file. FTP and reports login info.
 
 10. Added agent alert, music-on-hold and several other parameters to inbound 
 	groups. Make sure you have musiconhold working properly before using 
 	in production.
 
+11. REQUIRED CHANGE! in your dialplan you must now add lines for load balancing
+	even if you only have one server, and you must have lines with the 7
+	prefix for silent insertion into the meetme conference:
+		exten => _010*010*010*015*78600XXX,...
+	See LOAD_BALANCING.txt and extensions.conf.sample for more information
 
 
 

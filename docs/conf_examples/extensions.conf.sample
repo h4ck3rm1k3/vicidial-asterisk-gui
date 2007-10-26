@@ -223,7 +223,10 @@ exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
 
 exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
 exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
+exten => _010*010*010*015*78600XXX*.,1,Goto(default,${EXTEN:16},1)
 exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
 ; ### server 2 extens:
 ; exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
