@@ -20,23 +20,24 @@
 # ; 2. record this call(Y|N)
 # ; 3. ask for a company code(Y|N) with the number of digits in that company code and the prompt
 # ; 4. ask for a user code(Y|N) with the number of digits in that user code and the prompt
-# ; 5. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt
-# ; 6. a dash-delimited list of prompts that expect responses
-# ; 7. a "your recording ID is..." prompt
-# ; 8. logging/output (FILE|STDERR|BOTH|NONE)
+# ; 5. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt (Y-10-85100001)
+# ; 6. speak the current date (Y|N)
+# ; 7. a dash-delimited list of prompts that expect responses(85100002-85100003)
+# ; 8. a "your recording ID is..." prompt (85100004)
+# ; 9. logging/output (FILE|STDERR|BOTH|NONE)
 #
 # ;inbound IVR call:
-#exten => 1234,1,Ringing                 ; call ringing
-#exten => 1234,2,Wait(1)                 ; Wait 1 second for CID delivery from PRI
-#exten => 1234,3,Answer                  ; Answer the line
-#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---85100002-85100003---85100004---BOTH)
+#exten => 1234,1,Ringing	; call ringing
+#exten => 1234,2,Wait(1)	; Wait 1 second for CID delivery from PRI
+#exten => 1234,3,Answer		; Answer the line
+#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---Y---85100002-85100003---85100004---BOTH)
 #exten => 1234,5,Hangup
 #
 # ;inbound IVR call from a VICIDIAL transfer:
-#exten => _83002*,1,Ringing                 ; call ringing
-#exten => _83002*,2,Wait(1)                 ; Wait 1 second for CID delivery
-#exten => _83002*,3,Answer                  ; Answer the line
-#exten => _83002*,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---85100002-85100003---85100004---BOTH)
+#exten => _83002*,1,Ringing		; call ringing
+#exten => _83002*,2,Wait(1)		; Wait 1 second for CID delivery
+#exten => _83002*,3,Answer		; Answer the line
+#exten => _83002*,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---N---85100002-85100003---85100004---BOTH)
 #exten => _83002*,5,Hangup
 #
 #
@@ -46,12 +47,16 @@
 # 70912-1105 - First build, non-functional
 # 70916-2331 - functional alpha version, reads all prompts and logs data, no recording yet
 # 70921-1110 - full beta version with recording working
+# 71028-1122 - added say datetime as an option
 #
 
 &get_time_now;
   $start_epoch = $now_date_epoch;
 
 $script = 'agi-IVR_recording_verification.agi';
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -122,9 +127,10 @@ if (length($ARGV[0])>1)
 	$company_ID_ask =	$ARGV_vars[2];
 	$user_ID_ask =		$ARGV_vars[3];
 	$cust_phone_ask =	$ARGV_vars[4];
-	$prompts =			$ARGV_vars[5];
-	$last_prompt =		$ARGV_vars[6];
-	$AGI_output =		$ARGV_vars[7];
+	$say_date =			$ARGV_vars[5];
+	$prompts =			$ARGV_vars[6];
+	$last_prompt =		$ARGV_vars[7];
+	$AGI_output =		$ARGV_vars[8];
 	@prompts_list = split(/-/, $prompts);
 	$prompts_count = $#prompts_list;
 		if ($company_ID_ask =~ /Y/)
@@ -341,7 +347,17 @@ $affected_rows = $dbhA->do($stmtA);
 
 }
 
-   
+
+### if set, say the current date ###
+if ($say_date =~ /Y/)
+{
+	sleep(1);
+	if ($AGILOG) {$agi_string = "SAYING DATETIME $now_date_epoch";   &agi_output;}
+	$AGI->exec("SayUnixtime"); 
+	sleep(1);
+}
+
+
 ##### Go through the propmts one at a time until done #####
 	@prompts_list = split(/-/, $prompts);
 	$prompts_count = $#prompts_list;
