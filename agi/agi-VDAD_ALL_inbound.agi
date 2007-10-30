@@ -47,6 +47,7 @@
 # 71024-2153 - Added CLOSER functionality for calls coming from VICIDIAL fronters
 # 71029-1726 - Changed CLOSER-type campaigns to use new campaign_allow_inbound field
 # 71030-0713 - fixed after-hours logging
+# 71030-0939 - fixed issue where MoH was still playing, added ding and wait before transfer
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -499,6 +500,11 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 			}
 		if (length($DROPexten)>0)
 			{	### if DROP extension is defined then send the dropped call there instead of hangup
+
+			$AGI->stream_file('ding'); # stop music-on-hold process
+
+			sleep(1);
+
 			if ($AGILOG) {$agi_string = "exiting the VDAD app after hours, transferring call to $DROPexten";   &agi_output;}
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
@@ -715,6 +721,11 @@ if ($agent_search_method =~ /^SO|^LO/)
 				}
 
 			if ($AGILOG) {$agi_string = "exiting VDAD app, transferring call to $VDADconf_exten";   &agi_output;}
+
+			$AGI->stream_file('ding'); # stop music-on-hold process
+
+			sleep(1);
+
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
 			print "SET EXTENSION $VDADconf_exten\n";
@@ -845,6 +856,11 @@ if ($agent_search_method =~ /^LO|^LB/)
 				}
 
 			if ($AGILOG) {$agi_string = "exiting VDAD app, transferring call to $VDADremDIALstr";   &agi_output;}
+
+			$AGI->stream_file('ding'); # stop music-on-hold process
+
+			sleep(1);
+
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
 			print "SET EXTENSION $VDADremDIALstr\n";
@@ -982,6 +998,11 @@ if ($drop_seconds < 1)
 
 	if (length($DROPexten)>0)
 		{	### if DROP extension is defined then send the dropped call there instead of hangup
+
+			$AGI->stream_file('ding'); # stop music-on-hold process
+
+			sleep(1);
+
 		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
 		print "SET CONTEXT $ext_context\n";
 			checkresult($result);
