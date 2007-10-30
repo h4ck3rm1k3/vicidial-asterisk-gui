@@ -163,10 +163,11 @@
 # 70823-2118 - Fixed XMLHTTPRequest, HotKeys and Scheduled Callbacks issues with MSIE
 # 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 # 71022-1427 - Added formatting of the customer phone number in the main status bar
+# 71029-1848 - Changed CLOSER-type campaign to not use campaign_id restrictions
 #
 
-$version = '2.0.4-134';
-$build = '71022-1427';
+$version = '2.0.4-135';
+$build = '71029-1848';
 
 require("dbconnect.php");
 
@@ -621,40 +622,41 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
-			   $park_ext =					$row[0];
-			   $park_file_name =			$row[1];
-			   $web_form_address =			$row[2];
-			   $allow_closers =				$row[3];
-			   $auto_dial_level =			$row[4];
-			   $dial_timeout =				$row[5];
-			   $dial_prefix =				$row[6];
-			   $campaign_cid =				$row[7];
-			   $campaign_vdad_exten =		$row[8];
-			   $campaign_rec_exten =		$row[9];
-			   $campaign_recording =		$row[10];
-			   $campaign_rec_filename =		$row[11];
-			   $campaign_script =			$row[12];
-			   $get_call_launch =			$row[13];
-			   $campaign_am_message_exten = $row[14];
-			   $xferconf_a_dtmf =			$row[15];
-			   $xferconf_a_number =			$row[16];
-			   $xferconf_b_dtmf =			$row[17];
-			   $xferconf_b_number =			$row[18];
-			   $alt_number_dialing =		$row[19];
-			   $VC_scheduled_callbacks =	$row[20];
-			   $wrapup_seconds =			$row[21];
-			   $wrapup_message =			$row[22];
-			   $closer_campaigns =			$row[23];
-			   $use_internal_dnc =			$row[24];
-			   $allcalls_delay =			$row[25];
-			   $omit_phone_code =			$row[26];
-			   $agent_pause_codes_active =	$row[27];
-			   $no_hopper_leads_logins =	$row[28];
+				$park_ext =					$row[0];
+				$park_file_name =			$row[1];
+				$web_form_address =			$row[2];
+				$allow_closers =			$row[3];
+				$auto_dial_level =			$row[4];
+				$dial_timeout =				$row[5];
+				$dial_prefix =				$row[6];
+				$campaign_cid =				$row[7];
+				$campaign_vdad_exten =		$row[8];
+				$campaign_rec_exten =		$row[9];
+				$campaign_recording =		$row[10];
+				$campaign_rec_filename =	$row[11];
+				$campaign_script =			$row[12];
+				$get_call_launch =			$row[13];
+				$campaign_am_message_exten = $row[14];
+				$xferconf_a_dtmf =			$row[15];
+				$xferconf_a_number =		$row[16];
+				$xferconf_b_dtmf =			$row[17];
+				$xferconf_b_number =		$row[18];
+				$alt_number_dialing =		$row[19];
+				$VC_scheduled_callbacks =	$row[20];
+				$wrapup_seconds =			$row[21];
+				$wrapup_message =			$row[22];
+				$closer_campaigns =			$row[23];
+				$use_internal_dnc =			$row[24];
+				$allcalls_delay =			$row[25];
+				$omit_phone_code =			$row[26];
+				$agent_pause_codes_active =	$row[27];
+				$no_hopper_leads_logins =	$row[28];
+				$campaign_allow_inbound =	$row[29];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -699,7 +701,7 @@ $VDloginDISPLAY=0;
 
 			##### grab the inbound groups to choose from if campaign contains CLOSER
 			$VARingroups="''";
-			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign))
+			if ($campaign_allow_inbound == 'Y')
 				{
 				$VARingroups='';
 				$stmt="select group_id from vicidial_inbound_groups where active = 'Y' and group_id IN($closer_campaigns) order by group_id limit 20;";
@@ -960,7 +962,7 @@ else
 	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 
-	if ( (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign)) || ($campaign_leads_to_call > 0) || (ereg('Y',$no_hopper_leads_logins)) )
+	if ( ($campaign_allow_inbound == 'Y') || ($campaign_leads_to_call > 0) || (ereg('Y',$no_hopper_leads_logins)) )
 		{
 		### insert an entry into the user log for the login event
 		$stmt = "INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$VD_login','LOGIN','$VD_campaign','$NOW_TIME','$StarTtimE','$VU_user_group')";
@@ -1025,6 +1027,13 @@ else
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- old vicidial_live_agents records cleared: |$affected_rows| -->\n";
+
+		$stmt="DELETE from vicidial_live_inbound_agents where user ='$VD_login';";
+		if ($DB) {echo "$stmt\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		$affected_rows = mysql_affected_rows($link);
+		print "<!-- old vicidial_live_inbound_agents records cleared: |$affected_rows| -->\n";
 
 	#	print "<B>You have logged in as user: $VD_login on phone: $SIP_user to campaign: $VD_campaign</B><BR>\n";
 		$VICIDiaL_is_logged_in=1;
@@ -1108,7 +1117,7 @@ else
 				}
 
 
-			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $VD_campaign))
+			if ($campaign_allow_inbound == 'Y')
 				{
 				print "<!-- CLOSER-type campaign -->\n";
 				}

@@ -33,8 +33,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 6. Added option for shorter enter and leave sounds(done during Asterisk build)
 	BASE/SCRATCH_INSTALL or extras/Changed_meetme_sounds for more details
 
-7. Added patch to meetme in Asterisk 1.2.X that will allow for better DTMF 
-	passthru. Need to use the "F" flag to enable on Meetme in 
+7. Added optional patch to meetme in Asterisk 1.2.X that will allow for better 
+	DTMF passthru. Need to use the "F" flag to enable on Meetme in 
 	extensiosn.conf. Feature is backported from Asterisk 1.4.X
 
 8. Changed the FastAGI_log process to consolidate the "h" exten hangup process
@@ -55,6 +55,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 		exten => _010*010*010*015*78600XXX,...
 	See LOAD_BALANCING.txt and extensions.conf.sample for more information
 
+12. Inbound, Blended and Closer-type campaigns are no longer required to have
+	campaign_id incude specific words or characters to be treated as such.
+	There is now a new campaign_allow_inbound field where this is set.
 
 
 

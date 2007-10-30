@@ -27,7 +27,8 @@
 # 70123-1151 - Added non_latin options for substr in display variables, thanks Marin Blu
 # 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
 # 70619-1339 - Added Status Category tally display
-#
+# 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
+# 
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -214,6 +215,10 @@ $F=''; $FG=''; $B=''; $BG='';
  </STYLE>
 
 <? 
+$stmt = "select count(*) from vicidial_campaigns where campaign_id='$group' and campaign_allow_inbound='Y';";
+$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$campaign_allow_inbound = $row[0];
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay\">\n";
@@ -466,7 +471,7 @@ echo "</FORM>\n\n";
 ###################################################################################
 ###### OUTBOUND CALLS
 ###################################################################################
-if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
+if ($campaign_allow_inbound > 0)
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 if ($non_latin > 0)
@@ -523,7 +528,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		if ($out_live > 9) {$F='<FONT class="r3">'; $FG='</FONT>';}
 		if ($out_live > 14) {$F='<FONT class="r4">'; $FG='</FONT>';}
 
-		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$group))
+		if ($campaign_allow_inbound > 0)
 			{echo "$NFB$out_total$NFE current active calls&nbsp; &nbsp; &nbsp; \n";}
 		else
 			{echo "$NFB$out_total$NFE calls being placed &nbsp; &nbsp; &nbsp; \n";}

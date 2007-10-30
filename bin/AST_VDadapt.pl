@@ -23,6 +23,7 @@
 # 70409-1219 - Removed CLOSER-type campaign restriction
 # 70521-1038 - Fixed bug when no live campaigns are running, define $vicidial_log
 # 70619-1339 - Added Status Category tally calculations
+# 71029-1906 - Changed CLOSER-type campaign_id restriction
 #
 
 # constants
@@ -345,7 +346,7 @@ if ($CLIcampaign)
 	}
 else
 	{
-	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,UNIX_TIMESTAMP(campaign_changedate),campaign_stats_refresh from vicidial_campaigns where ( (active='Y') or (campaign_stats_refresh='Y') )";
+	$stmtA = "SELECT campaign_id,lead_order,hopper_level,auto_dial_level,local_call_time,lead_filter_id,use_internal_dnc,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,UNIX_TIMESTAMP(campaign_changedate),campaign_stats_refresh,campaign_allow_inbound from vicidial_campaigns where ( (active='Y') or (campaign_stats_refresh='Y') )";
 	}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -373,6 +374,7 @@ while ($sthArows > $rec_count)
 	$adaptive_dl_diff_target[$rec_count] =		$aryA[13];
 	$campaign_changedate[$rec_count] =			$aryA[14];
 	$campaign_stats_refresh[$rec_count] =		$aryA[15];
+	$campaign_allow_inbound[$rec_count] =		$aryA[16];
 
 	$rec_count++;
 	}
@@ -1129,7 +1131,7 @@ $VCSagents_active[$i] = ($VCSINCALL[$i] + $VCSREADY[$i] + $VCSCLOSER[$i]);
 
 ### END - GATHER STATS FOR THE vicidial_campaign_stats TABLE ###
 
-if ($campaign_id[$i] =~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
+if ($campaign_allow_inbound[$i] =~ /Y/)
 	{
 	# GET AVERAGES FROM THIS CAMPAIGN
 	$stmtA = "SELECT differential_onemin,agents_average_onemin from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";

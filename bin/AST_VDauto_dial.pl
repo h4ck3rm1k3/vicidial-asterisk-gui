@@ -63,7 +63,8 @@
 # 70215-1123 - Added queue_log ABANDON logging
 # 70302-1412 - Fixed max_vicidial_trunks update if set to 0
 # 70320-1458 - Fixed several errors in calculating trunk shortage for campaigns
-# 
+# 71029-1909 - Changed CLOSER-type campaign_id restriction
+#
 
 
 ### begin parsing run-time options ###
@@ -437,7 +438,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -464,6 +465,7 @@ while($one_day_interval > 0)
 							$active_only=1;
 							}
 					$DBIPautoaltdial[$user_CIPct] =	"$aryA[10]";
+					$DBIPcampaign_allow_inbound[$user_CIPct] =	"$aryA[11]";
 				$rec_count++;
 				}
 			$sthA->finish();
@@ -498,7 +500,7 @@ while($one_day_interval > 0)
 			### see how many calls are alrady active per campaign per server and 
 			### subtract that number from goalcalls to determine how many new 
 			### calls need to be placed in this loop
-			if ($DBIPcampaign[$user_CIPct] =~ /(CLOSER|BLEND|INBND|_C$|_B$|_I$)/)
+			if ($DBIPcampaign_allow_inbound[$user_CIPct] =~ /Y/)
 			   {
 				if (length($DBIPclosercamp[$user_CIPct]) > 2)
 				   {

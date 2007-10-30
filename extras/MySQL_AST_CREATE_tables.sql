@@ -268,7 +268,7 @@ alt_phone VARCHAR(12),
 email VARCHAR(70),
 security_phrase VARCHAR(100),
 comments VARCHAR(255),
-called_count INT(8) UNSIGNED NOT NULL default '0',
+called_count SMALLINT(5) UNSIGNED default '0',
 index (phone_number),
 index (list_id),
 index (called_since_last_reset),
@@ -965,6 +965,30 @@ index (entry_time)
 );
 
 ALTER TABLE vicidial_ivr AUTO_INCREMENT = 1000000;
+
+CREATE TABLE vicidial_inbound_group_agents (
+user VARCHAR(20),
+group_id VARCHAR(20),			
+group_rank TINYINT(1) default '0',
+group_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
+index (group_id),
+index (user)
+);
+
+CREATE TABLE vicidial_live_inbound_agents (
+user VARCHAR(20),
+group_id VARCHAR(20),			
+group_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0';
+last_call_time DATETIME,
+last_call_finish DATETIME,
+index (group_id),
+index (group_weight)
+);
+
+
+INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
 

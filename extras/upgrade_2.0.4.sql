@@ -77,7 +77,7 @@ index (phone_number),
 index (entry_time)
 );
 
-ALTER TABLE vicidial_ivr AUTO_INCREMENT = 1000000;
+ALTER TABLE vicidial_ivr AUTO_INCREMENT = 1357091;
 
 ALTER TABLE vicidial_inbound_groups ADD call_time_id VARCHAR(20) default '24hours';
 ALTER TABLE vicidial_inbound_groups ADD after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL') default 'MESSAGE';
@@ -105,6 +105,27 @@ index (user)
 
 
 
+
+
+CREATE TABLE vicidial_live_inbound_agents (
+user VARCHAR(20),
+group_id VARCHAR(20),			
+group_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
+last_call_time DATETIME,
+last_call_finish DATETIME,
+index (group_id),
+index (group_weight)
+);
+
+ALTER TABLE vicidial_campaigns ADD campaign_allow_inbound ENUM('Y','N') default 'N';
+
+UPDATE vicidial_campaigns SET campaign_allow_inbound='Y' where campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)';
+
+INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
+
+
+
 #!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
 #
 #
@@ -116,22 +137,9 @@ index (user)
 #ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_message ENUM('Y','N') default 'N';
 #ALTER TABLE vicidial_inbound_groups ADD callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK','NONE');
 #
-#ALTER TABLE servers ADD hold_queue_prompt_filename VARCHAR(50) default 'park';
-#
 #ALTER TABLE vicidial_user_groups ADD allowable_xfer_inbound_groups TEXT
 #ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
 #
-# CREATE TABLE vicidial_live_inbound_agents (
-# user VARCHAR(20),
-# group_id VARCHAR(20),			
-# group_weight TINYINT(1) default '0',
-# calls_today SMALLINT(5) UNSIGNED default '0';
-# last_call_time DATETIME,
-# last_call_finish DATETIME,
-# random_id INT(8) UNSIGNED,
-# index (group_id),
-# index (group_weight)
-# );
 # 
 
 

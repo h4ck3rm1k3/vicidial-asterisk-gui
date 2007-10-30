@@ -44,6 +44,7 @@
 # 60925-1330 - Fixed recycling leads issues
 # 61110-1513 - Changed Xth NEW to fill to hopper_level with standard if not enough NEW
 # 70219-1247 - Changed to use dial_statuses field instead of dial_status_x fields
+# 71029-1929 - Added 5th and 6th NEW to list order
 #
 
 # constants
@@ -982,7 +983,7 @@ foreach(@campaign_id)
 			}
 		$sthA->finish();
 
-		if ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW/)
+		if ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/)
 			{
 			$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN('NEW') and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1001,10 +1002,10 @@ foreach(@campaign_id)
 			}
 
 		##### IF no NEW leads to be called, error out of this campaign #####
-		if ( ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW/) && ($NEW_campaign_leads_to_call[$i] > 0) ) {$GOOD=1;}
+		if ( ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/) && ($NEW_campaign_leads_to_call[$i] > 0) ) {$GOOD=1;}
 		else
 			{
-			if ($lead_order[$i] !~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW/)
+			if ($lead_order[$i] !~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/)
 				{
 				if ($DB) {print "     NO SHUFFLE-NEW-LEADS INTO HOPPER DEFINED FOR LEAD ORDER\n";}
 				}
@@ -1065,6 +1066,8 @@ foreach(@campaign_id)
 			if ($lead_order[$i] eq "DOWN COUNT 2nd NEW") {$NEW_count = 2;}
 			if ($lead_order[$i] eq "DOWN COUNT 3rd NEW") {$NEW_count = 3;}
 			if ($lead_order[$i] eq "DOWN COUNT 4th NEW") {$NEW_count = 4;}
+			if ($lead_order[$i] eq "DOWN COUNT 5th NEW") {$NEW_count = 5;}
+			if ($lead_order[$i] eq "DOWN COUNT 6th NEW") {$NEW_count = 6;}
 
 		### BEGIN recycle grab leads ###
 			$REC_rec_countLEADS=0;

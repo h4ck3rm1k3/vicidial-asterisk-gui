@@ -132,10 +132,11 @@
 # 70424-1100 - Fixed bug for fronter/closer calls that would delete vdac records
 # 70802-1729 - Fixed bugs with pause_sec and wait_sec under certain call handling 
 # 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
+# 71029-1855 - removed campaign_id naming restrictions for CLOSER-type campaigns
 #
 
-$version = '2.0.4-59';
-$build = '70828-1443';
+$version = '2.0.4-60';
+$build = '71029-1855';
 
 require("dbconnect.php");
 
@@ -379,6 +380,33 @@ if ($ACTION == 'regCLOSER')
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
+
+	$in_groups = explode(" ",$closer_choice);
+	$in_groups_ct = count($in_groups);
+	$k=1;
+	while ($k < $in_groups_ct)
+		{
+		$stmt="SELECT group_weight,calls_today FROM vicidial_inbound_group_agents where user='$user' and group_id='$in_groups[$k]';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$viga_ct = mysql_num_rows($rslt);
+		if ($viga_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$group_weight = $row[0];
+			$calls_today =	$row[1];
+			}
+		else
+			{
+			$group_weight = 0;
+			$calls_today =	0;
+			}
+		$stmt="INSERT INTO vicidial_live_inbound_agents set user='$user',group_id='$in_groups[$k]',group_weight='$group_weight',calls_today='$calls_today',last_call_time='$NOW_TIME',last_call_finish='$NOW_TIME';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		$k++;
+		}
+
 	}
 	echo "Closer In Group Choice $closer_choice has been registered to user $user\n";
 }
@@ -907,7 +935,11 @@ if ($stage == "end")
 		{
 		if ($start_epoch < 1000)
 			{
-			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
 				{
 				##### look for the start epoch in the vicidial_closer_log table
 				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
@@ -930,7 +962,11 @@ if ($stage == "end")
 				{
 				$length_in_sec = 0;
 				}
-			if ( ($length_in_sec < 1) and (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign)) )
+			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+			if ( ($length_in_sec < 1) and ($row[0] > 0) )
 				{
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
 				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
@@ -951,7 +987,11 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
-		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
 			{
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec',status='DONE' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
@@ -1478,7 +1518,11 @@ if ($ACTION == 'VDADcheckINCOMING')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
-		if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
 			{
 			### update the vicidial_closer_log user to INCALL
 			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' order by closecallid desc limit 1;";
@@ -1749,6 +1793,12 @@ else
 	$rslt=mysql_query($stmt, $link);
 	$vla_delete = mysql_affected_rows($link);
 
+	##### Delete the vicidial_live_inbound_agents records for this session
+	$stmt="DELETE from vicidial_live_inbound_agents where user ='$user';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+	$vlia_delete = mysql_affected_rows($link);
+
 	##### Delete the web_client_sessions
 	$stmt="DELETE from web_client_sessions where server_ip='$server_ip' and session_name ='$session_name';";
 	if ($DB) {echo "$stmt\n";}
@@ -1852,7 +1902,7 @@ else
 				}
 			}
 
-	echo "$vul_insert|$vc_remove|$vla_delete|$wcs_delete|$agent_channel\n";
+	echo "$vul_insert|$vc_remove|$vla_delete|$wcs_delete|$agent_channel|$vlia_delete\n";
 	}
 }
 
@@ -1880,7 +1930,11 @@ if ($ACTION == 'updateDISPO')
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 
-	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+	$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
 		{
 		$stmt = "UPDATE vicidial_closer_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 		if ($DB) {echo "$stmt\n";}

@@ -633,7 +633,7 @@ exten => 8368,5,Hangup
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 exten => 8369,1,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => 8369,1,AGI(call_log.agi,${EXTEN})
-exten => 8369,2,AMD(3500|1500|300|5000|120|50|5|256)
+exten => 8369,2,AMD(2000|2000|1000|5000|120|50|4|256)
 exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
 exten => 8369,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
@@ -695,7 +695,7 @@ exten => 8372,5,Hangup
 ;exten => 8369,1,Playback(sip-silence)
 ;exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
 ;;exten => 8369,2,AGI(call_log.agi,${EXTEN})
-;exten => 8369,3,AMD(3500|1500|300|5000|120|50|5|256)
+;exten => 8369,3,AMD(2000|2000|1000|5000|120|50|4|256)
 ;exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
 ;exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 ;exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})

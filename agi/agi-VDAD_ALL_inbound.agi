@@ -45,7 +45,8 @@
 # 71013-0310 - Added use of default Music-on-hold instead of generic on-hold message
 # 71020-1714 - fixed issues with MoH and stream_file messages
 # 71024-2153 - Added CLOSER functionality for calls coming from VICIDIAL fronters
-#
+# 71029-1726 - Changed CLOSER-type campaigns to use new campaign_allow_inbound field
+# 
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 
@@ -544,6 +545,22 @@ else
 }
 
 
+$vci=0;
+$INBOUNDcampsSQL='';
+$stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+	while ($sthArows > $vci)
+	{
+	@aryA = $sthA->fetchrow_array;
+	if ($vci==0) {$INBOUNDcampsSQL	.= "'$aryA[0]'";}
+	else {$INBOUNDcampsSQL	.= ",'$aryA[0]'";}
+	$vci++;
+	}
+$sthA->finish();
+
 $new_lead_id = $insert_lead_id;
 if ($AGILOG) {$agi_string = "|$stmtA|$new_lead_id|";   &agi_output;}
 
@@ -636,13 +653,13 @@ if ($agent_search_method =~ /^SO|^LO/)
 
 	if ($rec_countWAIT < 1)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 		my $affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
 		if ($affected_rows > 0)
 			{
 			$cbc=0;	
-			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -757,13 +774,13 @@ if ($agent_search_method =~ /^LO|^LB/)
 	
 	if ($rec_countWAITrem < 1)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$new_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 		my $affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
 		if ($affected_rows > 0)
 			{
 			$cbc=0;	
-			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)' and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

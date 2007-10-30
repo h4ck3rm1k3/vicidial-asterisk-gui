@@ -105,6 +105,8 @@ On Hold Prompt Interval: ||
 Agent Alert Extension: ||
 Agent Alert Delay: ||
 You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent||
+Allow Inbound and Blended -<\/B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N||
+Allow Inbound and Blended: ||
 
 
 ############################################################ CLIENT
