@@ -46,7 +46,8 @@
 # 71020-1714 - fixed issues with MoH and stream_file messages
 # 71024-2153 - Added CLOSER functionality for calls coming from VICIDIAL fronters
 # 71029-1726 - Changed CLOSER-type campaigns to use new campaign_allow_inbound field
-# 
+# 71030-0713 - fixed after-hours logging
+#
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 
@@ -381,69 +382,6 @@ if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )
 	$ct_default_stop	=	$ct_day_stop;
 	}
 
-### check for after hours
-if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
-	{
-	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
-
-	if ($after_hours_action =~ /EXTENSION|VOICEMAIL/)
-		{
-		if ($after_hours_action =~ /EXTENSION/)
-			{
-			$DROPexten = "$after_hours_exten";
-			}
-		if ($after_hours_action =~ /VOICEMAIL/)
-			{
-			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
-			}
-		if (length($DROPexten)>0)
-			{	### if DROP extension is defined then send the dropped call there instead of hangup
-			if ($AGILOG) {$agi_string = "exiting the VDAD app after hours, transferring call to $DROPexten";   &agi_output;}
-			print "SET CONTEXT $ext_context\n";
-				checkresult($result);
-			print "SET EXTENSION $DROPexten\n";
-				checkresult($result);
-			print "SET PRIORITY 1\n";
-				checkresult($result);
-			}
-		}
-		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
-
-		$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
-
-		$stmtA = "UPDATE vicidial_list set status='XDROP' where lead_id = '$insert_lead_id';";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
-
-	if ($after_hours_action =~ /HANGUP/)
-		{
-		### insert a NEW record to the vicidial_manager table to hangup the channel
-		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-		$affected_rows = $dbhA->do($stmtA);  
-		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
-		}
-	if ($after_hours_action =~ /MESSAGE/)
-		{
-		$AGI->stream_file('sip-silence');
-		$AGI->stream_file("$after_hours_message_filename");
-		sleep(1);
-
-		### insert a NEW record to the vicidial_manager table to hangup the channel
-		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-		$affected_rows = $dbhA->do($stmtA);  
-		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
-		}
-
-	$dbhA->disconnect();
-
-	exit;
-
-	}
-
 $AGI->stream_file('beep');
 
 if ($welcome_message_filename !~ /---NONE---/)
@@ -541,6 +479,74 @@ else
 	$sthA->finish();
 	}
 }
+
+
+
+##### BEGIN AFTER HOURS CHECK #####
+if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
+	{
+	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
+
+	if ($after_hours_action =~ /EXTENSION|VOICEMAIL/)
+		{
+		if ($after_hours_action =~ /EXTENSION/)
+			{
+			$DROPexten = "$after_hours_exten";
+			}
+		if ($after_hours_action =~ /VOICEMAIL/)
+			{
+			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
+			}
+		if (length($DROPexten)>0)
+			{	### if DROP extension is defined then send the dropped call there instead of hangup
+			if ($AGILOG) {$agi_string = "exiting the VDAD app after hours, transferring call to $DROPexten";   &agi_output;}
+			print "SET CONTEXT $ext_context\n";
+				checkresult($result);
+			print "SET EXTENSION $DROPexten\n";
+				checkresult($result);
+			print "SET PRIORITY 1\n";
+				checkresult($result);
+			}
+		}
+		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
+
+		$stmtA = "INSERT INTO vicidial_closer_log set status='DROP',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='AFTER HOURS DROP';";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vcl insert: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$insert_lead_id';";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+	if ($after_hours_action =~ /HANGUP/)
+		{
+		### insert a NEW record to the vicidial_manager table to hangup the channel
+		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
+		$affected_rows = $dbhA->do($stmtA);  
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		}
+	if ($after_hours_action =~ /MESSAGE/)
+		{
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file("$after_hours_message_filename");
+		sleep(1);
+
+		### insert a NEW record to the vicidial_manager table to hangup the channel
+		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
+		$affected_rows = $dbhA->do($stmtA);  
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup after hours: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		}
+
+	$dbhA->disconnect();
+
+	exit;
+
+	}
+##### END AFTER HOURS CHECK #####
+
+
 
 
 $vci=0;
