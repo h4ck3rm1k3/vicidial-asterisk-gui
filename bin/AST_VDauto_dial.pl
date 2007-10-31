@@ -64,6 +64,7 @@
 # 70302-1412 - Fixed max_vicidial_trunks update if set to 0
 # 70320-1458 - Fixed several errors in calculating trunk shortage for campaigns
 # 71029-1909 - Changed CLOSER-type campaign_id restriction
+# 71030-2054 - Added hopper priority sorting
 #
 
 
@@ -693,7 +694,7 @@ while($one_day_interval > 0)
 			my $UDaffected_rows=0;
 			if ($call_CMPIPct < $DBIPmakecalls[$user_CIPct])
 				{
-				$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
+				$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
 				print "|$stmtA|\n";
 			   $UDaffected_rows = $dbhA->do($stmtA);
 				print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
@@ -703,7 +704,7 @@ while($one_day_interval > 0)
 					$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
 						while ($call_CMPIPct < $UDaffected_rows)
 						{
-						$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' LIMIT 1";
+						$stmtA = "SELECT lead_id,alt_dial FROM vicidial_hopper where campaign_id='$DBIPcampaign[$user_CIPct]' and status='QUEUE' and user='VDAD_$server_ip' order by priority desc,hopper_id LIMIT 1";
 						print "|$stmtA|\n";
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1059,7 +1060,7 @@ while($one_day_interval > 0)
 								$sthA->finish();
 								if (length($VD_alt_phone)>5)
 									{
-									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='';";
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='',priority='25';";
 									$affected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
 									}
@@ -1086,7 +1087,7 @@ while($one_day_interval > 0)
 								$sthA->finish();
 								if (length($VD_address3)>5)
 									{
-									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='';";
+									$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='',priority='20';";
 									$affected_rows = $dbhA->do($stmtA);
 									if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
 									}

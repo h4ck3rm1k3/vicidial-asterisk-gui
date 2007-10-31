@@ -12,6 +12,7 @@
 # CHANGES
 # 60717-1242 - changed to DBI by Marin Blu
 # 60718-1645 - changed to use /etc/astguiclient.conf for configs
+# 71030-2020 - Added deletions of stats and inbound live agents
 #
 
 # default path to astguiclient configuration file:
@@ -236,6 +237,39 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 				 }
 
 	$stmtA = "optimize table vicidial_hopper;";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "delect from vicidial_campaign_stats;";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "delect from vicidial_campaign_server_stats;";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "delect from vicidial_live_inbound_agents;";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

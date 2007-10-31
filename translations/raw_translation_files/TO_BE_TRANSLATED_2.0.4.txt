@@ -107,6 +107,8 @@ Agent Alert Delay: ||
 You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent||
 Allow Inbound and Blended -<\/B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N||
 Allow Inbound and Blended: ||
+Manual Dial List ID -<\/B> The default list_id to be used when an agent placces a manual call and a new lead record is created in vicidial_list. Default is 999. This field can contain digits only||
+Manual Dial List ID: ||
 
 
 ############################################################ CLIENT

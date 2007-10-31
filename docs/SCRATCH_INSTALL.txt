@@ -2852,8 +2852,13 @@ AST_CRON_mix_recordings_BASIC.pl file in it's place)
 ## adjust time on the server with ntp
 30 * * * * /usr/local/bin/ntpdate -u 18.145.0.30 2>/dev/null 1>&2
 
-### VICIDIAL agent time log weekly summary report generation
+### VICIDIAL agent time log weekly and daily summary report generation
 2 0 * * 0 /usr/share/astguiclient/AST_agent_week.pl
+22 0 * * * /usr/share/astguiclient/AST_agent_day.pl
+
+### VICIDIAL campaign export scripts (OPTIONAL)
+#32 0 * * * /usr/share/astguiclient/AST_VDsales_export.pl
+#42 0 * * * /usr/share/astguiclient/AST_sourceID_summary_export.pl
 
 ### remove old recordings more than 7 days old
 24 0 * * * /usr/bin/find /var/spool/asterisk/monitor -maxdepth 2 -type f -mtime +7 -print | xargs rm -f
@@ -2870,6 +2875,12 @@ typing "screen -r <screen>" find which screen by typing "screen -r" and
 looking for the lowest screen number. Then to detach again from the screen 
 while you are in it type 'Ctrl+a' then 'd'
    - you are done
+
+NOTES:
+- The AST_agent_day.pl and AST_agent_week.pl scripts create an ASCII fixed-length report of all agent activity on the system
+- The AST_VDsales_export.pl script allows for the exporting(into several different formats) of specified vicidial_list data based on status and campaign as well as inbound group
+- The AST_sourceID_summary_export.pl script summarizes leads in the system by source_id and generates a text report
+
 
 
 

@@ -287,6 +287,7 @@ list_id BIGINT(14) UNSIGNED NOT NULL,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 state VARCHAR(2) default '',
 alt_dial ENUM('NONE','ALT','ADDR3') default 'NONE',
+priority TINYINT(2) default '0',
 index (lead_id)
 );
 
@@ -525,7 +526,9 @@ campaign_logindate DATETIME,
 dial_statuses VARCHAR(255) default ' NEW -',
 disable_alter_custdata ENUM('Y','N') default 'N',
 no_hopper_leads_logins ENUM('Y','N') default 'N',
-list_order_mix VARCHAR(20) default 'DISABLED'
+list_order_mix VARCHAR(20) default 'DISABLED',
+campaign_allow_inbound ENUM('Y','N') default 'N',
+manual_dial_list_id BIGINT(14) UNSIGNED
 );
 
  CREATE TABLE vicidial_lists (

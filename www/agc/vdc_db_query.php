@@ -133,10 +133,11 @@
 # 70802-1729 - Fixed bugs with pause_sec and wait_sec under certain call handling 
 # 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 # 71029-1855 - removed campaign_id naming restrictions for CLOSER-type campaigns
+# 71030-2047 - added hopper priority for auto alt dial entries
 #
 
-$version = '2.0.4-60';
-$build = '71029-1855';
+$version = '2.0.4-61';
+$build = '71030-2047';
 
 require("dbconnect.php");
 
@@ -1064,8 +1065,8 @@ if ($stage == "end")
 					else {$alt_phone = '';}
 					if (strlen($alt_phone)>5)
 						{
-						### insert record into vicidial_hopper for address3 call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ALT',user='';";
+						### insert record into vicidial_hopper for alt_phone call attempt
+						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ALT',user='',priority='25';";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_query($stmt, $link);
 						}
@@ -1088,7 +1089,7 @@ if ($stage == "end")
 					if (strlen($address3)>5)
 						{
 						### insert record into vicidial_hopper for address3 call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ADDR3',user='';";
+						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ADDR3',user='',priority='20';";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_query($stmt, $link);
 						}

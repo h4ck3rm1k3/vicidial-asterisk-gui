@@ -9,6 +9,7 @@
 #            - Added required user/pass to gain access to this page
 # 70115-1614 - Added ALT field for vicidial_hopper alt_dial column
 # 71029-0852 - Added list_id to the output
+# 71030-2118 - Added priority to display
 #
 
 require("dbconnect.php");
@@ -124,11 +125,11 @@ echo "Total leads in hopper right now:       $TOTALcalls\n";
 
 echo "\n";
 echo "---------- LEADS IN HOPPER\n";
-echo "+------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
-echo "|      | LEAD_ID   | LIST ID    | PHONE NUM  | STATE | STATUS | COUNT | GMT    | ALT   |\n";
-echo "+------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
+echo "+------+--------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
+echo "|ORDER |PRIORITY| LEAD ID   | LIST ID    | PHONE NUM  | STATE | STATUS | COUNT | GMT    | ALT   |\n";
+echo "+------+--------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
 
-$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id,alt_dial,vicidial_hopper.list_id from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by hopper_id limit 2000;";
+$stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id,alt_dial,vicidial_hopper.list_id,vicidial_hopper.priority from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by priority desc,hopper_id limit 2000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -147,14 +148,15 @@ while ($i < $users_to_print)
 	$hopper_id =	sprintf("%-6s", $row[6]);
 	$alt_dial =		sprintf("%-5s", $row[7]);
 	$list_id =		sprintf("%-10s", $row[8]);
+	$priority =		sprintf("%-6s", $row[9]);
 
-if ($DB) {echo "| $FMT_i | $lead_id | $list_id | $phone_number | $state | $status | $count | $gmt | $hopper_id |\n";}
-else {echo "| $FMT_i | $lead_id | $list_id | $phone_number | $state | $status | $count | $gmt | $alt_dial |\n";}
+if ($DB) {echo "| $FMT_i | $priority | $lead_id | $list_id | $phone_number | $state | $status | $count | $gmt | $hopper_id |\n";}
+else {echo "| $FMT_i | $priority | $lead_id | $list_id | $phone_number | $state | $status | $count | $gmt | $alt_dial |\n";}
 
 	$i++;
 	}
 
-echo "+------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
+echo "+------+--------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
 
 
 }

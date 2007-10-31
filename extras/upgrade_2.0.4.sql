@@ -103,8 +103,15 @@ index (group_id),
 index (user)
 );
 
+ALTER TABLE vicidial_campaigns ADD campaign_allow_inbound ENUM('Y','N') default 'N';
 
+UPDATE vicidial_campaigns SET campaign_allow_inbound='Y' where campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)';
 
+INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
+
+ALTER TABLE vicidial_campaigns ADD manual_dial_list_id BIGINT(14) UNSIGNED default '999';
+
+ALTER TABLE vicidial_hopper ADD priority TINYINT(2) default '0';
 
 
 CREATE TABLE vicidial_live_inbound_agents (
@@ -118,18 +125,9 @@ index (group_id),
 index (group_weight)
 );
 
-ALTER TABLE vicidial_campaigns ADD campaign_allow_inbound ENUM('Y','N') default 'N';
-
-UPDATE vicidial_campaigns SET campaign_allow_inbound='Y' where campaign_id REGEXP '(CLOSER|BLEND|INBND|_C\$|_B\$|_I\$)';
-
-INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
-
 
 
 #!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
-#
-#
-#ALTER TABLE vicidial_hopper ADD priority TINYINT(2) default '50';
 #
 #ALTER TABLE vicidial_inbound_groups ADD announce_place_in_line ENUM('Y','N') default 'N';
 #ALTER TABLE vicidial_inbound_groups ADD announce_estimate_hold_time ENUM('Y','N') default 'N';

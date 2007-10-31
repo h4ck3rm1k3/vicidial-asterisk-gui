@@ -622,7 +622,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -657,6 +657,7 @@ $VDloginDISPLAY=0;
 				$agent_pause_codes_active =	$row[27];
 				$no_hopper_leads_logins =	$row[28];
 				$campaign_allow_inbound =	$row[29];
+				$manual_dial_list_id =		$row[30];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -1603,7 +1604,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var reselect_preview_dial = 0;
 	var reselect_alt_dial = 0;
 	var alt_dial_active = 0;
-	var mdnLisT_id = '999';
+	var mdnLisT_id = '<? echo $manual_dial_list_id ?>';
 	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>';
 	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>';
 	var agentcall_manual = '<? echo $agentcall_manual ?>';
@@ -6177,7 +6178,7 @@ echo "</head>\n";
 		echo "Note: a dial prefix of $dial_prefix will be added to the beginning of this number<BR>\n";
 		}
 	?>
-	Note: all new manual dial leads will go into list 999<BR><BR>
+	Note: all new manual dial leads will go into list <? echo $manual_dial_list_id ?><BR><BR>
 	<table><tr>
 	<td align=right><font class="body_text"> Dial Code: </td>
 	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (This is usually a 1 in the USA-Canada)</td>

@@ -47,6 +47,7 @@
 # 70708-1218 - Start of List-Mix-aware version of the hopper script
 # 70709-2033 - Functional Beta of List-Mix-aware version of the hopper script
 # 71029-1929 - Added 5th and 6th NEW to list order
+# 71030-2043 - Added hopper priority for callbacks
 #
 
 # constants
@@ -362,7 +363,7 @@ if ($CBHOLD_count > 0)
 				$event_string = "|CALLBACKS LISTACT|$affected_rows|";
 				&event_logger;
 
-			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]';";
+			$stmtA = "INSERT INTO $vicidial_hopper SET lead_id='$CA_lead_id[$CAu]',campaign_id='$CA_campaign_id[$CAu]',list_id='$CA_list_id[$CAu]',gmt_offset_now='$CA_gmt_offset_now[$CAu]',user='',state='$CA_state[$CAu]',priority='50';";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($DB) {print "ANYONE Scheduled Callback Inserted into hopper:  $affected_rows|$CA_lead_id[$CAu]\n";}
 			$CAu++;
@@ -1382,7 +1383,7 @@ foreach(@campaign_id)
 						}
 					if ($DNClead == '0')
 						{
-						$stmtA = "INSERT INTO $vicidial_hopper (lead_id,campaign_id,status,user,list_id,gmt_offset_now,state) values('$leads_to_hopper[$h]','$campaign_id[$i]','READY','','$lists_to_hopper[$h]','$gmt_to_hopper[$h]','$state_to_hopper[$h]');";
+						$stmtA = "INSERT INTO $vicidial_hopper (lead_id,campaign_id,status,user,list_id,gmt_offset_now,state,priority) values('$leads_to_hopper[$h]','$campaign_id[$i]','READY','','$lists_to_hopper[$h]','$gmt_to_hopper[$h]','$state_to_hopper[$h]','0');";
 						$affected_rows = $dbhA->do($stmtA);
 						if ($DBX) {print "LEAD INSERTED: $affected_rows|$leads_to_hopper[$h]|\n";}
 						}

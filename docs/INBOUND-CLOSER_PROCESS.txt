@@ -3,9 +3,10 @@ INOUND/CLOSER proces flow					  2007-05-02
 ** THIS FULLY REDONE INBOUND-CLOSER PROSESS IS PLANNED FOR THE 2.0.4 RELEASE **
 
 This will outline the process I have thought through in my head for rewriting the inbound and closer call queueing and handling processes within VICIDIAL. The objective is to add the following features to make VICIDIAL a more well-rounded product:
-- consolidate the 9 VDAD inbound scripts into one script with CLI options
+- consolidate the 12 VDAD inbound and closer scripts into one script with CLI options
 - custom hold music per in-group
 - put call_times into effect for in-groups allowing calls coming in after hours to be directed to another extension or voicemail box
+- allow any campaign to take inbound calls, removing the restriction on campaign_id name for that purpose
 - add concurrent-transfers options to inbound groups
 - announce estimated time on hold
 - announce place in line
@@ -53,6 +54,8 @@ ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
 
 The Server Side:
 For inbound and closer transfers, the agi_VDAD... scripts will still run as they normally do now, but after 5 seconds, without a transfer to an agent, the customer will be put into the new call-queue manager which will consist of a constantly running perl script(we will call it "AST_VD_hold_queue.pl") that will keep track of the call while it is still active and before it gets sent to an agent, and an AGI script(we will call this one agi-VD_queue_prompts.agi) that will perform the dynamic functions of speaking the customer's place in line, estimated hold time and offer the option to press a DTMF digit and either leave a message for the agent to take the call or leave a callback number to be called back when their turn arrives. This script will also have to somehow keep the vicidial_auto_calls records active even after a customer has hung up in order to preserve place-in-line and allow for playing of a customer message or callback to a customer.
+
+*** This section to be removed due to change in architecture it was not implemented ***
 
 Here is a process flow explanation of how a call would move through the hold queue:
 - Call comes in to the agi_VDADcloser... script and cannot find an agent to send the call to within 5 seconds

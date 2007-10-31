@@ -18,6 +18,7 @@
 # 61115-1246 - First build, framework setup, non-functional
 # 61120-2008 - second alpha version, functional and tested in production
 # 70205-1425 - Added code for last called date update
+# 71030-2054 - Added hopper priority sorting
 #
 
 
@@ -540,7 +541,7 @@ while($one_day_interval > 0)
 							my $UDaffected_rows=0;
 							if ($call_CMPIPct < $DB_camp_server_trunks_to_dial[$server_CIPct])
 								{
-								$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct]";
+								$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DB_camp_server_trunks_to_dial[$server_CIPct]";
 								print "|$stmtA|\n";
 							   $UDaffected_rows = $dbhA->do($stmtA);
 								print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
@@ -550,7 +551,7 @@ while($one_day_interval > 0)
 									$lead_id=''; $phone_code=''; $phone_number=''; $called_count='';
 										while ($call_CMPIPct < $UDaffected_rows)
 										{
-										$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' LIMIT 1";
+										$stmtA = "SELECT lead_id FROM vicidial_hopper where campaign_id='$DBfill_campaign[$camp_CIPct]' and status='QUEUE' and user='VDAD_$DB_camp_server_server_ip[$server_CIPct]' order by priority desc,hopper_id LIMIT 1";
 										print "|$stmtA|\n";
 											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

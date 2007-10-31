@@ -32,7 +32,8 @@
 # 70116-1619 - Added Auto Alt Dial code
 # 70215-1258 - Added queue_log entry when deleting vac record
 # 70808-1425 - Moved VD_hangup section to the call_log end stage to improve efficiency
-# 
+# 71030-2039 - Added priority to hopper insertions
+#
 
 
 # defaults for PreFork
@@ -812,7 +813,7 @@ sub process_request {
 							$sthA->finish();
 							if (length($VD_alt_phone)>5)
 								{
-								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='';";
+								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='',priority='25';";
 								$affected_rows = $dbhA->do($stmtA);
 								if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
 								}
@@ -839,7 +840,7 @@ sub process_request {
 							$sthA->finish();
 							if (length($VD_address3)>5)
 								{
-								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='';";
+								$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$VD_lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='',priority='20';";
 								$affected_rows = $dbhA->do($stmtA);
 								if ($AGILOG) {$agi_string = "--    VDH record inserted: |$affected_rows|   |$stmtA|";   &agi_output;}
 								}

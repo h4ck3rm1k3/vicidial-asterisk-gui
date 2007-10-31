@@ -1,10 +1,12 @@
 Microsoft Internet Explorer Incompatibilities with VICIDIAL Agent Interface	2007-06-13
 
+*** AS OF RELEASE 2.0.4 VICIDIAL IS COMPATIBLE WITH IE 6.0 ***
+
 There are quite a few issues with using Microsoft Internet Explorer(IE) with VICIDIAL because of incompatibilites with the W3C standards as well as stability and architectural issues.
 
-The decision was made to stop testing on IE because of time constraints as well as the lack of cross-compatibility of IE and lack of compatibility with standards. Firefox meets both of those requirements which is why that is the recommended platform for VICIDIAL agents.
+The decision was made to stop testing on IE because of time constraints as well as the lack of cross-compatibility of IE and lack of compatibility with standards, even between IE versions. Firefox meets all compatibility requirements which is why that is the recommended platform for VICIDIAL agents.
 
-If enough time is available during developent of 2.0.4, there will be some time put into addressing these IE incompatibilities.
+As of release 2.0.4 of astguiclient, IE 5.0 and 5.5 compatibility was broken to make VICIDIAL fully compatible with IE 6.0. Along with this change, all of the memory issues were fixed, along with several features that were not working before in IE like HotKeys.
 
 
 Some of the issues include the following:
