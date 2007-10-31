@@ -571,7 +571,6 @@ $sthArows=$sthA->rows;
 	}
 $sthA->finish();
 
-$insert_lead_id = $insert_lead_id;
 if ($AGILOG) {$agi_string = "|$stmtA|$insert_lead_id|";   &agi_output;}
 
 $PADlead_id = sprintf("%09s", $insert_lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
