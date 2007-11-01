@@ -164,10 +164,11 @@
 # 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 # 71022-1427 - Added formatting of the customer phone number in the main status bar
 # 71029-1848 - Changed CLOSER-type campaign to not use campaign_id restrictions
+# 71101-1204 - Fixed bug in callback calendar with DST
 #
 
-$version = '2.0.4-135';
-$build = '71029-1848';
+$version = '2.0.4-136';
+$build = '71101-1204';
 
 require("dbconnect.php");
 
@@ -1295,7 +1296,7 @@ if ($Cmonth > 12)
 	$Cmonth = ($Cmonth - 12);
 	$CYyear++;
 	}
-$Cstart= mktime(0,0,0,$Cmonth,1,$CYyear);
+$Cstart= mktime(11,0,0,$Cmonth,1,$CYyear);
 $CfirstdayARY = getdate($Cstart);
 #echo "|$Cmon|$Cmonth|$CINC|\n";
 $CPRNTDAY = date("Y-m", $Cstart);
