@@ -247,7 +247,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 					$sthA->finish();
 				 }
 
-	$stmtA = "delect from vicidial_campaign_stats;";
+	$stmtA = "delete from vicidial_campaign_stats;";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -258,7 +258,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 					$sthA->finish();
 				 }
 
-	$stmtA = "delect from vicidial_campaign_server_stats;";
+	$stmtA = "delete from vicidial_campaign_server_stats;";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -269,7 +269,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 					$sthA->finish();
 				 }
 
-	$stmtA = "delect from vicidial_live_inbound_agents;";
+	$stmtA = "delete from vicidial_live_inbound_agents;";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
