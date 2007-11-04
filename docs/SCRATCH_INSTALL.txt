@@ -1648,8 +1648,8 @@ to use our new mysql script file to add the tables to the database:
 ######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
 create database asterisk;
 
-GRANT SELECT,INSERT,UPDATE,DELETE on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
-GRANT SELECT,INSERT,UPDATE,DELETE on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
+GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
+GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
 
 # NOTE: if using MySQL 4.1.12 or higher you may need to run this query too:
 UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
@@ -1659,9 +1659,6 @@ use asterisk;
 \. /usr/src/astguiclient/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
-
-GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
-GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
 
 insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.17');
 

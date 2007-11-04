@@ -242,18 +242,14 @@ to use our new mysql script file to add the tables to the database:
 
 create database asterisk;
 
-GRANT SELECT,INSERT,UPDATE,DELETE on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
-GRANT SELECT,INSERT,UPDATE,DELETE on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
+GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
+GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
 
 use asterisk;
 
 \. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
-
-GRANT SELECT on asterisk.phones TO idcheck@'%' IDENTIFIED BY '1234';
-GRANT SELECT on asterisk.phones TO idcheck@localhost IDENTIFIED BY '1234';
-
 
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using

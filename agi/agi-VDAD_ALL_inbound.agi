@@ -48,6 +48,7 @@
 # 71029-1726 - Changed CLOSER-type campaigns to use new campaign_allow_inbound field
 # 71030-0713 - fixed after-hours logging
 # 71030-0939 - fixed issue where MoH was still playing, added ding and wait before transfer
+# 71103-2305 - added group rank and fewest calls options to next_agent_call
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -348,10 +349,10 @@ while ($sthArows > $cbc)
 	$agent_alert_exten	=			"$aryA[9]";
 	$agent_alert_delay	=			"$aryA[10]";
 	$drop_call_seconds	=			"$aryA[11]";
-	$drop_message =					"$aryA[11]";
-	$drop_exten	=					"$aryA[12]";
-	$CAMP_callorder	=				"$aryA[13]";
-	$VDADvoicemail_ext =			"$aryA[14]";
+	$drop_message =					"$aryA[12]";
+	$drop_exten	=					"$aryA[13]";
+	$CAMP_callorder	=				"$aryA[14]";
+	$VDADvoicemail_ext =			"$aryA[15]";
 		$VDADvoicemail_ext =~ s/\D//gi;
 	$cbc++;
 	}
@@ -631,15 +632,18 @@ if ($channel_status < 1)
 		}
 	}
 
-	$agent_call_order='order by last_call_finish';
-	if ($CAMP_callorder =~ /overall_user_level/i) {$agent_call_order = 'order by user_level desc,last_call_finish';}
-	if ($CAMP_callorder =~ /oldest_call_start/i) {$agent_call_order = 'order by last_call_time';}
-	if ($CAMP_callorder =~ /oldest_call_finish/i) {$agent_call_order = 'order by last_call_finish';}
-	if ($CAMP_callorder =~ /random/i) {$agent_call_order = 'order by random_id';}
-	
-	$rec_countCUSTDATA=0;    
+	$rec_countCUSTDATA=0;
 	$rec_countWAIT=0;
 	$cbc=0;
+	$aco_sub=0;
+	$agent_call_order='order by last_call_finish';
+	if ($CAMP_callorder =~ /overall_user_level/i)	{$agent_call_order = 'order by user_level desc,last_call_finish';}
+	if ($CAMP_callorder =~ /oldest_call_start/i)	{$agent_call_order = 'order by last_call_time';}
+	if ($CAMP_callorder =~ /oldest_call_finish/i)	{$agent_call_order = 'order by last_call_finish';}
+	if ($CAMP_callorder =~ /random/i)				{$agent_call_order = 'order by random_id';}
+	if ($CAMP_callorder =~ /inbound_group_rank/i)	{$aco_sub=1;	$agent_call_order = 'order by group_weight desc';}
+	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today';}
+	
 
 ##### Attempt to send call to an agent on this server only #####
 if ($agent_search_method =~ /^SO|^LO/)
@@ -660,29 +664,68 @@ if ($agent_search_method =~ /^SO|^LO/)
 
 	if ($rec_countWAIT < 1)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
-		my $affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
-		if ($affected_rows > 0)
+		if ($aco_sub>0)
 			{
-			$cbc=0;	
-			$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "LOCK TABLES vicidial_live_agents WRITE, vicidial_live_inbound_agents WRITE;";
+			my $LOCKaffected_rows = $dbhA->do($stmtA);
+
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and server_ip='$VARserver_ip' and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
-			$rec_countCUSTDATA=0;
-				while ($sthArows > $cbc)
+				if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
 
 				$VDADconf_exten	= "$aryA[0]";
 				$VDADuser	= "$aryA[1]";
 				$VDADextension	= "$aryA[2]";
-			
-				$cbc++;
 				}
 			$sthA->finish();
+
+				if ($sthArows > 0)
+				{
+				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where user='$VDADuser';";
+				my $affected_rows = $dbhA->do($stmtA);
+				}
+				else
+				{
+				$affected_rows=0;
+				}
+
+			$stmtA = "UNLOCK TABLES;";
+			my $LOCKaffected_rows = $dbhA->do($stmtA);
+			}
+		else
+			{
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			my $affected_rows = $dbhA->do($stmtA);
+			}
+		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
+		if ($affected_rows > 0)
+			{
+			if ($aco_sub<1)
+				{
+				$cbc=0;	
+				$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_countCUSTDATA=0;
+					while ($sthArows > $cbc)
+					{
+					@aryA = $sthA->fetchrow_array;
+
+					$VDADconf_exten	= "$aryA[0]";
+					$VDADuser	= "$aryA[1]";
+					$VDADextension	= "$aryA[2]";
+				
+					$cbc++;
+					}
+				$sthA->finish();
+				}
 
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER', stage='CLOSER-$drop_timer' where callerid='$callerid';";
 			$affected_rows = $dbhA->do($stmtA);
@@ -694,7 +737,6 @@ if ($agent_search_method =~ /^SO|^LO/)
 					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 				}
 
-			
 		if ($call_handle_method =~ /CLOSER|DIGITID$/)
 		{
 			$stmtA = "UPDATE vicidial_xfer_log set closer='$VDADuser' where lead_id = '$insert_lead_id' order by call_date desc limit 1;";
@@ -723,7 +765,30 @@ if ($agent_search_method =~ /^SO|^LO/)
 
 			$AGI->stream_file('ding'); # stop music-on-hold process
 
-			sleep(1);
+			### update calls_today for vicidial_live_inbound_agents ###
+			$stmtA = "SELECT calls_today from vicidial_inbound_group_agents WHERE user='$VDADuser' and group_id='$channel_group';";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$calls_today	= "$aryA[0]";
+				$calls_today++;
+				}
+			$sthA->finish();
+
+				if ($sthArows > 0)
+				{
+				$stmtA = "UPDATE vicidial_live_inbound_agents set calls_today='$calls_today' WHERE user='$VDADuser' and group_id='$channel_group';";
+				my $affected_rows = $dbhA->do($stmtA);
+				$stmtA = "UPDATE vicidial_inbound_group_agents set calls_today='$calls_today' WHERE user='$VDADuser' and group_id='$channel_group';";
+				my $affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) {$agi_string = "--    VDLIA agent calls: |$calls_today|$VDADuser|$channel_group|";   &agi_output;}
+				}
+
+			usleep(1*500*1000);
 
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
@@ -786,29 +851,69 @@ if ($agent_search_method =~ /^LO|^LB/)
 	
 	if ($rec_countWAITrem < 1)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
-		my $affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
-		if ($affected_rows > 0)
+		if ($aco_sub>0)
 			{
-			$cbc=0;	
-			$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+			$stmtA = "LOCK TABLES vicidial_live_agents WRITE, vicidial_live_inbound_agents WRITE;";
+			my $LOCKaffected_rows = $dbhA->do($stmtA);
+
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
 			$rec_countCUSTDATA=0;
-			while ($sthArows > $cbc)
+				if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
+
 				$VDADconf_exten	= "$aryA[0]";
 				$VDADuser	= "$aryA[1]";
 				$VDADextension	= "$aryA[2]";
 				$VDADserver_ip	= "$aryA[3]";
-				$cbc++;
 				}
 			$sthA->finish();
 
+				if ($sthArows > 0)
+				{
+				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where user='$VDADuser';";
+				my $affected_rows = $dbhA->do($stmtA);
+				}
+				else
+				{
+				$affected_rows=0;
+				}
+
+			$stmtA = "UNLOCK TABLES;";
+			my $LOCKaffected_rows = $dbhA->do($stmtA);
+			}
+		else
+			{
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			my $affected_rows = $dbhA->do($stmtA);
+			}
+		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
+		if ($affected_rows > 0)
+			{
+			if ($aco_sub<1)
+				{
+				$cbc=0;	
+				$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_countCUSTDATA=0;
+				while ($sthArows > $cbc)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$VDADconf_exten	= "$aryA[0]";
+					$VDADuser	= "$aryA[1]";
+					$VDADextension	= "$aryA[2]";
+					$VDADserver_ip	= "$aryA[3]";
+					$cbc++;
+					}
+				$sthA->finish();
+				}
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER', stage='CLOSER-$drop_timer' where callerid='$callerid';";
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDCL XFER REMOTE: |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
@@ -858,7 +963,30 @@ if ($agent_search_method =~ /^LO|^LB/)
 
 			$AGI->stream_file('ding'); # stop music-on-hold process
 
-			sleep(1);
+			### update calls_today for vicidial_live_inbound_agents ###
+			$stmtA = "SELECT calls_today from vicidial_inbound_group_agents WHERE user='$VDADuser' and group_id='$channel_group';";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$calls_today	= "$aryA[0]";
+				$calls_today++;
+				}
+			$sthA->finish();
+
+				if ($sthArows > 0)
+				{
+				$stmtA = "UPDATE vicidial_live_inbound_agents set calls_today='$calls_today' WHERE user='$VDADuser' and group_id='$channel_group';";
+				my $affected_rows = $dbhA->do($stmtA);
+				$stmtA = "UPDATE vicidial_inbound_group_agents set calls_today='$calls_today' WHERE user='$VDADuser' and group_id='$channel_group';";
+				my $affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) {$agi_string = "--    VDLIA agent calls: |$calls_today|$VDADuser|$channel_group|";   &agi_output;}
+				}
+
+			usleep(1*500*1000);
 
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);

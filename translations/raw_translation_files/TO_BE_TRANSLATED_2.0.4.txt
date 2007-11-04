@@ -109,6 +109,8 @@ Allow Inbound and Blended -<\/B> This is where you can set whether the users of 
 Allow Inbound and Blended: ||
 Manual Dial List ID -<\/B> The default list_id to be used when an agent placces a manual call and a new lead record is created in vicidial_list. Default is 999. This field can contain digits only||
 Manual Dial List ID: ||
+inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest||
+fewest_calls: orders by the number of calls received by an agent for that specific inbound group. Least calls first||
 
 
 ############################################################ CLIENT

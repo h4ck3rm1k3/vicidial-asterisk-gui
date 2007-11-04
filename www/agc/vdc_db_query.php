@@ -382,29 +382,33 @@ if ($ACTION == 'regCLOSER')
 		$rslt=mysql_query($stmt, $link);
 		}
 
-	$in_groups = explode(" ",$closer_choice);
+	$in_groups_pre = preg_replace('/-$/','',$closer_choice);
+	$in_groups = explode(" ",$in_groups_pre);
 	$in_groups_ct = count($in_groups);
 	$k=1;
 	while ($k < $in_groups_ct)
 		{
-		$stmt="SELECT group_weight,calls_today FROM vicidial_inbound_group_agents where user='$user' and group_id='$in_groups[$k]';";
-		$rslt=mysql_query($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
-		$viga_ct = mysql_num_rows($rslt);
-		if ($viga_ct > 0)
+		if (strlen($in_groups[$k])>1)
 			{
-			$row=mysql_fetch_row($rslt);
-			$group_weight = $row[0];
-			$calls_today =	$row[1];
+			$stmt="SELECT group_weight,calls_today FROM vicidial_inbound_group_agents where user='$user' and group_id='$in_groups[$k]';";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$viga_ct = mysql_num_rows($rslt);
+			if ($viga_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$group_weight = $row[0];
+				$calls_today =	$row[1];
+				}
+			else
+				{
+				$group_weight = 0;
+				$calls_today =	0;
+				}
+			$stmt="INSERT INTO vicidial_live_inbound_agents set user='$user',group_id='$in_groups[$k]',group_weight='$group_weight',calls_today='$calls_today',last_call_time='$NOW_TIME',last_call_finish='$NOW_TIME';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
 			}
-		else
-			{
-			$group_weight = 0;
-			$calls_today =	0;
-			}
-		$stmt="INSERT INTO vicidial_live_inbound_agents set user='$user',group_id='$in_groups[$k]',group_weight='$group_weight',calls_today='$calls_today',last_call_time='$NOW_TIME',last_call_finish='$NOW_TIME';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
 		$k++;
 		}
 
