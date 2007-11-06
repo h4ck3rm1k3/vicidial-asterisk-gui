@@ -390,6 +390,10 @@ NOTE: a minimum of MySQL server 4.0.X is required
 		- cp /usr/local/mysql-5.0.27/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
    - you are done
 
+   ** INSTALLATION NOTE **
+   If you are having Linuxthreads problems upon onfigure, just execute the following command:
+   echo '/* Linuxthreads */' >> /usr/include/pthread.h
+
    ***** NOTE: if you will be using any of the DBI perl scripts: *****
    Every machine that you will be using the newer BDI perl scripts on will need
    to have the perl modules DBI and DBD::mysql installed on them. To do this
@@ -632,10 +636,10 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.6p1.tar.gz
-	- gunzip openssh-4.6p1.tar.gz
-	- tar xvf openssh-4.6p1.tar
-	- cd openssh-4.6p1
+        - wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.7p1.tar.gz
+	- gunzip openssh-4.7p1.tar.gz
+	- tar xvf openssh-4.7p1.tar
+	- cd openssh-4.7p1
 	- ./configure
 	- make
 	- make install
@@ -650,10 +654,10 @@ your locally installed copy of Apache web server)
 9. Go to http://www.openssl.org/ and download the linux source for openssl
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://www.openssl.org/source/openssl-0.9.8e.tar.gz
-	- gunzip openssl-0.9.8e.tar.gz
-	- tar xvf openssl-0.9.8e.tar
-	- cd openssl-0.9.8e
+	- wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz
+	- gunzip openssl-0.9.8g.tar.gz
+	- tar xvf openssl-0.9.8g.tar
+	- cd openssl-0.9.8g
 	- ./config
 	- make
 	- make install

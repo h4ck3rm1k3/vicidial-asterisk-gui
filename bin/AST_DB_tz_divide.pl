@@ -1,0 +1,142 @@
+#!/usr/bin/perl
+#
+# AST_DB_tz_divide.pl version 2.0.4   *DBI-version*
+#
+# DESCRIPTION:
+# OPTIONAL!!! CUSTOMIZE THIS SCRIPT FIRST!!!
+# separates leads into two different lists
+#
+# It is recommended that you run this program on the local Asterisk machine
+#
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+# CHANGES
+# 71106-0250 - first build
+#
+
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+		{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+		{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+		{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+
+
+if ($isdst) {$TZmove = "'-6.00','-7.00','-8.00','-9.00','-10.00'";}
+else {$TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";}
+
+	$stmtA = "UPDATE vicidial_list set list_id='222' where list_id='111' and gmt_offset_now IN($TZmove);";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "UPDATE vicidial_list set list_id='12021' where list_id='11315' and gmt_offset_now IN($TZmove);";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+$secX = time();
+
+$XDtarget = ($secX - 2678400);
+($Xsec,$Xmin,$Xhour,$Xmday,$Xmon,$Xyear,$Xwday,$Xyday,$Xisdst) = localtime($XDtarget);
+$Xyear = ($Xyear + 1900);
+$Xmon++;
+if ($Xmon < 10) {$Xmon = "0$Xmon";}
+if ($Xmday < 10) {$Xmday = "0$Xmday";}
+if ($Xhour < 10) {$Xhour = "0$Xhour";}
+if ($Xmin < 10) {$Xmin = "0$Xmin";}
+if ($Xsec < 10) {$Xsec = "0$Xsec";}
+	$XDSQLdate = "$Xyear-$Xmon-$Xmday $Xhour:$Xmin:$Xsec";
+
+$TDtarget = ($secX - 5356800);
+($Tsec,$Tmin,$Thour,$Tmday,$Tmon,$Tyear,$Twday,$Tyday,$Tisdst) = localtime($TDtarget);
+$Tyear = ($Tyear + 1900);
+$Tmon++;
+if ($Tmon < 10) {$Tmon = "0$Tmon";}
+if ($Tmday < 10) {$Tmday = "0$Tmday";}
+if ($Thour < 10) {$Thour = "0$Thour";}
+if ($Tmin < 10) {$Tmin = "0$Tmin";}
+if ($Tsec < 10) {$Tsec = "0$Tsec";}
+	$TDSQLdate = "$Tyear-$Tmon-$Tmday $Thour:$Tmin:$Tsec";
+
+	$stmtA = "UPDATE vicidial_list set list_id='999999' where list_id IN('11315','12021','111','222') and entry_date < \"$XDSQLdate\";";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "DELETE from vicidial_list WHERE list_id='999999' and entry_date < \"$TDSQLdate\";";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+
+		$dbhA->disconnect();
+
+exit;

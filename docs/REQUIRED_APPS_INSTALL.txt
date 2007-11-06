@@ -138,20 +138,20 @@ cd zlib-1.2.3
 make
 make install
 cd /usr/local
-wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.6p1.tar.gz
-gunzip openssh-4.6p1.tar.gz
-tar xvf openssh-4.6p1.tar
-cd openssh-4.6p1
+wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.7p1.tar.gz
+gunzip openssh-4.7p1.tar.gz
+tar xvf openssh-4.7p1.tar
+cd openssh-4.7p1
 ./configure
 make
 make install
 
 
 cd /usr/local
-wget http://www.openssl.org/source/openssl-0.9.8e.tar.gz
-gunzip openssl-0.9.8e.tar.gz
-tar xvf openssl-0.9.8e.tar
-cd openssl-0.9.8e
+wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz
+gunzip openssl-0.9.8g.tar.gz
+tar xvf openssl-0.9.8g.tar
+cd openssl-0.9.8g
 ./config
 make
 make install
