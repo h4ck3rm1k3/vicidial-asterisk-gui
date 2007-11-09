@@ -12,7 +12,44 @@
 #
 # CHANGES
 # 71106-0250 - first build
+# 71106-1235 - fixed bugs and made debug function properly
 #
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	$i++;
+	}
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	}
+	else
+	{
+		if ($args =~ /-debug/i)
+		{
+		$DB=1; # Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
+		}
+		if ($args =~ /-t/i)
+		{
+		$TEST=1;
+		$T=1;
+		}
+	}
+}
+else
+{
+print "no command line options set\n";
+	$loop_delay = '2500';
+	$DB=1;
+}
+### end parsing run-time options ###
+
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -71,23 +108,15 @@ else {$TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";}
 	$stmtA = "UPDATE vicidial_list set list_id='222' where list_id='111' and gmt_offset_now IN($TZmove);";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-   					$sthArows=$sthA->rows;
-					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
-					$sthA->finish();
+				$affected_rows = $dbhA->do($stmtA);
+				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
 
 	$stmtA = "UPDATE vicidial_list set list_id='12021' where list_id='11315' and gmt_offset_now IN($TZmove);";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-   					$sthArows=$sthA->rows;
-					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
-					$sthA->finish();
+				$affected_rows = $dbhA->do($stmtA);
+				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
 
 $secX = time();
@@ -117,23 +146,15 @@ if ($Tsec < 10) {$Tsec = "0$Tsec";}
 	$stmtA = "UPDATE vicidial_list set list_id='999999' where list_id IN('11315','12021','111','222') and entry_date < \"$XDSQLdate\";";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-   					$sthArows=$sthA->rows;
-					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
-					$sthA->finish();
+				$affected_rows = $dbhA->do($stmtA);
+				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
 
 	$stmtA = "DELETE from vicidial_list WHERE list_id='999999' and entry_date < \"$TDSQLdate\";";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-   					$sthArows=$sthA->rows;
-					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
-					$sthA->finish();
+				$affected_rows = $dbhA->do($stmtA);
+				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
 
 

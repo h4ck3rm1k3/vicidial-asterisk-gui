@@ -841,15 +841,15 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.17.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.16.tar.gz
-	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.4.tar.gz
-	- gunzip asterisk-1.2.17.tar.gz
-	- tar xvf asterisk-1.2.17.tar
-	- gunzip zaptel-1.2.16.tar.gz
-	- tar xvf zaptel-1.2.16.tar
-	- gunzip libpri-1.2.4.tar.gz
-	- tar xvf libpri-1.2.4.tar
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.24.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.21.tar.gz
+	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
+	- gunzip asterisk-1.2.24.tar.gz
+	- tar xvf asterisk-1.2.24.tar
+	- gunzip zaptel-1.2.21.tar.gz
+	- tar xvf zaptel-1.2.21.tar
+	- gunzip libpri-1.2.5.tar.gz
+	- tar xvf libpri-1.2.5.tar
    B. if you want latest SVN_1.2 version (release tree with new patches)
 	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
 	- svn checkout http://svn.digium.com/svn/zaptel/branches/1.2 zaptel-1.2
@@ -872,15 +872,15 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.16
+	- cd ./zaptel-1.2.21
 	- make clean
 	- make
 	- make install
-	- cd ../libpri-1.2.4
+	- cd ../libpri-1.2.5
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.17
+	- cd ../asterisk-1.2.24
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -895,7 +895,7 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
-		*OPTIONAL*(1.2.12.1 thru 1.2.17) apply the meetme volume control patch
+		*OPTIONAL*(1.2.12.1 thru 1.2.24) apply the meetme volume control patch
 			*Different patches available for 1.2.7.1 through 1.2.14
 		- wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 		- patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -907,7 +907,7 @@ with the following patch:
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
 
-		*OPTIONAL*(1.2.14 thru 1.2.18) rewrite of waitforsilence
+		*OPTIONAL*(1.2.14 thru 1.2.24) rewrite of waitforsilence
 		- wget http://www.eflo.net/files/app_waitforsilence.c
 		- mv app_waitforsilence.c apps/app_waitforsilence.c
 
@@ -922,17 +922,6 @@ with the following patch:
 	- make
 	- make install
 	- make samples		# this makes sample conf files (only use for new installs)
-
-	- (1.2 tree) EXPERIMENTAL AND NOT RECOMMENDED!!! If you want to use 
-		app_conference instead of meetme for VICIDIAL then follow these
-		instructions:
-		- cd /usr/src/asterisk
-		- wget http://www.eflo.net/files/VD_app_conference_0.6.zip
-		- unzip VD_app_conference_0.6.zip
-		- cd app_conference
-		- make clean
-		- make
-		- make install
 
 	- modprobe zaptel	# this loads the zaptel module
 	- install the module for the digium device that you are using, we are 
@@ -961,7 +950,7 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-2.3.4-13.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.1.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 
@@ -999,6 +988,26 @@ NOTE: you can get an X100P through ebay for $10-$30 that will work with Asterisk
 	# Load zaptel drivers for x100p
 	modprobe zaptel
 	modprobe wcfxo
+
+If you will be doing native music-on-hold for your inbound calls, you will need 
+musiconhold audio files to be converted to native formats like GSM, ULAW and ALAW:
+
+	cd /var/lib/asterisk/mohmp3/
+	mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-sunshine.mp3 > /var/lib/asterisk/mohmp3/fpm-sunshine.raw
+	sox -r 44100 -w -s -c 1 fpm-sunshine.raw -r 8000 -c 1 fpm-sunshine.wav
+	sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
+	sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
+	mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-calm-river.mp3 > /var/lib/asterisk/mohmp3/fpm-calm-river.raw
+	sox -r 44100 -w -s -c 1 fpm-calm-river.raw -r 8000 -c 1 fpm-calm-river.wav
+	sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
+	sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
+	mpg123 -s --rate 44100 --mono /var/lib/asterisk/mohmp3/fpm-world-mix.mp3 > /var/lib/asterisk/mohmp3/fpm-world-mix.raw
+	sox -r 44100 -w -s -c 1 fpm-world-mix.raw -r 8000 -c 1 fpm-world-mix.wav
+	sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
+	sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
+	rm -f *.raw
+	mkdir ../orig-mp3
+	mv -f *.mp3 ../orig-mp3/
 
 
 
@@ -1660,7 +1669,7 @@ UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
 
 use asterisk;
 
-\. /usr/src/astguiclient/MySQL_AST_CREATE_tables.sql
+\. /usr/share/astguiclient/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 

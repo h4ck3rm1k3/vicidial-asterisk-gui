@@ -287,11 +287,11 @@ make install
 
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.23.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.24.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.21.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
-gunzip asterisk-1.2.23.tar.gz
-tar xvf asterisk-1.2.23.tar
+gunzip asterisk-1.2.24.tar.gz
+tar xvf asterisk-1.2.24.tar
 gunzip zaptel-1.2.21.tar.gz
 tar xvf zaptel-1.2.21.tar
 gunzip libpri-1.2.5.tar.gz
@@ -314,7 +314,7 @@ cd ../libpri-1.2.5
 make clean
 make
 make install
-cd ../asterisk-1.2.23
+cd ../asterisk-1.2.24
 cd apps
 wget http://www.eflo.net/files/app_amd2.c
 mv app_amd2.c app_amd.c
