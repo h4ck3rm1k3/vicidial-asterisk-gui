@@ -19,7 +19,8 @@
 # 61120-2008 - second alpha version, functional and tested in production
 # 70205-1425 - Added code for last called date update
 # 71030-2054 - Added hopper priority sorting
-#
+# 71111-2349 - fixed overdialing bug
+# 
 
 
 ### begin parsing run-time options ###
@@ -499,6 +500,7 @@ while($one_day_interval > 0)
 						$temp_tally = ($DBfill_needed[$camp_CIPct] - $DBfill_tally[$camp_CIPct]);
 						$temp_avail = ( ($DB_camp_server_max_vicidial_trunks[$server_CIPct] - $VAC_server_camp) -  $VAC_server_NONcamp);
 						$DB_camp_server_available[$server_CIPct] = ($DB_camp_server_available[$server_CIPct] - $VAC_server_BALcamp);
+						if ($DB_camp_server_available[$server_CIPct] < 0) {$DB_camp_server_available[$server_CIPct]=0;}
 
 						if($DB) {print "TEMPVALS:  |$temp_tally|$temp_avail|$DB_camp_server_available[$server_CIPct]||\n";}
 						if ($DB_camp_server_available[$server_CIPct] >= $temp_tally)
