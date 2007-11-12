@@ -49,6 +49,7 @@
 # 71030-0713 - fixed after-hours logging
 # 71030-0939 - fixed issue where MoH was still playing, added ding and wait before transfer
 # 71103-2305 - added group rank and fewest calls options to next_agent_call
+# 71112-0058 - fixed multi-logging bug on CLOSER calls
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -205,17 +206,19 @@ while(<STDIN>)
 }
 
 
-	if ( ($callerid =~ /\".*\"/) && ( (!$calleridname) or ($calleridname =~ /unknown/) ) )
-		{
-		$calleridname = $callerid;
-		$calleridname =~ s/\<\d\d\d\d\d\d\d\d\d\d\>//gi;
-		$calleridname =~ s/\"|\" //gi;
-		}
+if ( ($callerid =~ /\".*\"/) && ( (!$calleridname) or ($calleridname =~ /unknown/) ) )
+	{
+	$calleridname = $callerid;
+	$calleridname =~ s/\<\d\d\d\d\d\d\d\d\d\d\>//gi;
+	$calleridname =~ s/\"|\" //gi;
+	}
 
-		$callerid =~ s/\D//gi;
-		$calleridname =~ s/unknown//gi;
-	if ( (!$callerid) or ($callerid =~ /unknown/) )
-		{$callerid = $calleridname;}
+	$callerid =~ s/\D//gi;
+	$calleridname =~ s/unknown//gi;
+if ( (!$callerid) or ($callerid =~ /unknown/) )
+	{$callerid = $calleridname;}
+
+
 
 if ($call_handle_method =~ /^CLOSER/)
 {
@@ -349,6 +352,7 @@ while ($sthArows > $cbc)
 	$agent_alert_exten	=			"$aryA[9]";
 	$agent_alert_delay	=			"$aryA[10]";
 	$drop_call_seconds	=			"$aryA[11]";
+		$DROP_TIME = $drop_call_seconds;
 	$drop_message =					"$aryA[12]";
 	$drop_exten	=					"$aryA[13]";
 	$CAMP_callorder	=				"$aryA[14]";
@@ -688,6 +692,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 				{
 				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where user='$VDADuser';";
 				my $affected_rows = $dbhA->do($stmtA);
+				$found_agents=$affected_rows;
 				}
 				else
 				{
@@ -701,9 +706,10 @@ if ($agent_search_method =~ /^SO|^LO/)
 			{
 			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
+			$found_agents=$affected_rows;
 			}
 		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
-		if ($affected_rows > 0)
+		if ($found_agents > 0)
 			{
 			if ($aco_sub<1)
 				{
@@ -877,6 +883,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 				{
 				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where user='$VDADuser';";
 				my $affected_rows = $dbhA->do($stmtA);
+				$found_agents=$affected_rows;
 				}
 				else
 				{
@@ -890,9 +897,10 @@ if ($agent_search_method =~ /^LO|^LB/)
 			{
 			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
+			$found_agents=$affected_rows;
 			}
-		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
-		if ($affected_rows > 0)
+		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|$found_agents|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
+		if ($found_agents > 0)
 			{
 			if ($aco_sub<1)
 				{
@@ -1085,7 +1093,7 @@ if ($affected_rows < 1)
 
 
 
-if ($drop_timer >= $DROP_TIME)
+if ($drop_timer > $DROP_TIME)
 {
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
