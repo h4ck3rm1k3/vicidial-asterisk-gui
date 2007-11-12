@@ -21,7 +21,7 @@
 # ; 3. ask for a company code(Y|N) with the number of digits in that company code and the prompt
 # ; 4. ask for a user code(Y|N) with the number of digits in that user code and the prompt
 # ; 5. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt (Y-10-85100001)
-# ; 6. speak the current date (Y|N)
+# ; 6. speak the current date (Y|N) with prompt announcing the date
 # ; 7. a dash-delimited list of prompts that expect responses(85100002-85100003)
 # ; 8. a "your recording ID is..." prompt (85100004)
 # ; 9. logging/output (FILE|STDERR|BOTH|NONE)
@@ -30,7 +30,7 @@
 #exten => 1234,1,Ringing	; call ringing
 #exten => 1234,2,Wait(1)	; Wait 1 second for CID delivery from PRI
 #exten => 1234,3,Answer		; Answer the line
-#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---Y---85100002-85100003---85100004---BOTH)
+#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7274506620---Y---Y-1-85100016---N---N---Y-85100007---85100009-600--85100012-30--85100013---85100004---BOTH)
 #exten => 1234,5,Hangup
 #
 # ;inbound IVR call from a VICIDIAL transfer:
@@ -48,6 +48,7 @@
 # 70916-2331 - functional alpha version, reads all prompts and logs data, no recording yet
 # 70921-1110 - full beta version with recording working
 # 71028-1122 - added say datetime as an option
+# 71112-0238 - added prompt delays and date announcement message
 #
 
 &get_time_now;
@@ -150,6 +151,11 @@ if (length($ARGV[0])>1)
 		@cust_phone_ID = split(/-/, $cust_phone_ask);
 		$cust_phone_length = $cust_phone_ID[1];
 		$cust_phone_prompt = $cust_phone_ID[2];
+		}
+		if ($say_date =~ /Y/)
+		{
+		@say_date_ID = split(/-/, $say_date);
+		$say_date_prompt = $say_date_ID[1];
 		}
 	if ($AGI_output =~ /STDERR/)	{$AGILOG = '1';}
 	if ($AGI_output =~ /FILE/)	{$AGILOG = '2';}
@@ -353,20 +359,26 @@ if ($say_date =~ /Y/)
 {
 	sleep(1);
 	if ($AGILOG) {$agi_string = "SAYING DATETIME $now_date_epoch";   &agi_output;}
+	if (length($say_date_prompt)>0) {$AGI->stream_file("$say_date_prompt");}
+	sleep(1);
 	$AGI->exec("SayUnixtime"); 
 	sleep(1);
 }
 
 
 ##### Go through the propmts one at a time until done #####
-	@prompts_list = split(/-/, $prompts);
+	@prompts_list = split(/--/, $prompts);
 	$prompts_count = $#prompts_list;
 
 $i=0;
 $j=1;
 while($prompts_count >= $i)
 {
-	$prompt = $prompts_list[$i];
+	$prompt_ary = $prompts_list[$i];
+		@prompts_specs = split(/-/, $prompt_ary);
+		$prompt = $prompts_specs[0];
+		$wait_sec = $prompts_specs[1];
+		if ($wait_sec < 1) {$wait_sec=10;}
 	$response = '';
 	$prompt_name = "prompt_audio_$j";
 	$response_name = "prompt_response_$j";
@@ -380,7 +392,7 @@ while($prompts_count >= $i)
 	$stmtA = "UPDATE vicidial_ivr SET $prompt_name='$prompt', $response_name='$response', length_in_sec='$length_in_sec' where ivr_id='$ivr_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "IVR- $ivr_id $i   prompt: $prompt   response: $response   length: $length_in_sec";   &agi_output;}
+	if ($AGILOG) {$agi_string = "IVR- $ivr_id $i   prompt: $prompt - $wait_sec   response: $response   length: $length_in_sec";   &agi_output;}
 
 	$i++;
 	$j++;
@@ -618,7 +630,8 @@ if ($interrupt_digit > 1)
 
 while ($digit_loop_counter < 1)
 	{
-	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input
+	$wait_ms = ($wait_sec * 1000);
+	$digit = chr($AGI->wait_for_digit("$wait_ms"));  # wait number of milli-seconds for input
 	if ($digit =~ /\d/)
 		{
 		$totalDTMF = "$totalDTMF$digit";
