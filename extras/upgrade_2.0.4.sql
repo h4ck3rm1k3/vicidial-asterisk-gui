@@ -129,6 +129,29 @@ ALTER TABLE vicidial_inbound_groups MODIFY next_agent_call ENUM('random','oldest
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
 
+CREATE TABLE vicidial_campaign_agents (
+user VARCHAR(20),
+campaign_id VARCHAR(20),			
+campaign_rank TINYINT(1) default '0',
+campaign_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
+index (campaign_id),
+index (user)
+);
+
+ALTER TABLE vicidial_live_agents ADD campaign_weight TINYINT(1) default '0';
+ALTER TABLE vicidial_live_agents ADD calls_today SMALLINT(5) UNSIGNED default '0';
+
+
+
+
+
+
+
+
+
+
+
 
 #!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
 #

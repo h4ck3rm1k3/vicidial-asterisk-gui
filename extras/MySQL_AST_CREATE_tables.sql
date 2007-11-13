@@ -311,6 +311,8 @@ closer_campaigns TEXT,
 call_server_ip VARCHAR(15),
 user_level INT(2) default '0',
 comments VARCHAR(20),
+campaign_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -988,6 +990,16 @@ last_call_time DATETIME,
 last_call_finish DATETIME,
 index (group_id),
 index (group_weight)
+);
+
+CREATE TABLE vicidial_campaign_agents (
+user VARCHAR(20),
+campaign_id VARCHAR(20),			
+campaign_rank TINYINT(1) default '0',
+campaign_weight TINYINT(1) default '0',
+calls_today SMALLINT(5) UNSIGNED default '0',
+index (campaign_id),
+index (user)
 );
 
 

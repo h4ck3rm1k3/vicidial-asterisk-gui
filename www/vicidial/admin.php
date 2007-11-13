@@ -657,6 +657,10 @@ if (isset($_GET["campaign_allow_inbound"]))				{$campaign_allow_inbound=$_GET["c
 	elseif (isset($_POST["campaign_allow_inbound"]))	{$campaign_allow_inbound=$_POST["campaign_allow_inbound"];}
 if (isset($_GET["manual_dial_list_id"]))				{$manual_dial_list_id=$_GET["manual_dial_list_id"];}
 	elseif (isset($_POST["manual_dial_list_id"]))		{$manual_dial_list_id=$_POST["manual_dial_list_id"];}
+if (isset($_GET["campaign_rank"]))				{$campaign_rank=$_GET["campaign_rank"];}
+	elseif (isset($_POST["campaign_rank"]))		{$campaign_rank=$_POST["campaign_rank"];}
+if (isset($_GET["source_campaign_id"]))				{$source_campaign_id=$_GET["source_campaign_id"];}
+	elseif (isset($_POST["source_campaign_id"]))	{$source_campaign_id=$_POST["source_campaign_id"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -798,6 +802,7 @@ $manual_dial_list_id = ereg_replace("[^0-9]","",$manual_dial_list_id);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
+$campaign_rank = ereg_replace("[^-0-9]","",$campaign_rank);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -923,6 +928,7 @@ $category = ereg_replace("[^-\_0-9a-zA-Z]","",$category);
 $vsc_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vsc_id);
 $moh_context = ereg_replace("[^-\_0-9a-zA-Z]","",$moh_context);
 $agent_alert_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_alert_exten);
+$source_campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_campaign_id);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -1118,12 +1124,14 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 #            - Added 5th NEW and 6th NEW to the dial order options
 # 71030-2010 - Added Manual Dial List ID field to campaigns table
 # 71103-2207 - Added inbound_group_rank and fewest_calls to the inbound groups call order options
+# 71113-1521 - Added campaign_rank to agent options
+#            - Added ability to Copy a campaign's setting to a new campaign
 #
 # 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-114';
-$build = '71103-2207';
+$admin_version = '2.0.4-115';
+$build = '71113-1521';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1243,6 +1251,7 @@ if (!isset($ADD))   {$ADD=0;}
 
 if ($ADD==1)			{$hh='users';		echo "Add New User";}
 if ($ADD==11)			{$hh='campaigns';	$sh='basic';	echo "Add New Campaign";}
+if ($ADD==12)			{$hh='campaigns';	$sh='basic';	echo "Copy Campaign";}
 if ($ADD==111)			{$hh='lists';		echo "Add New List";}
 if ($ADD==121)			{$hh='lists';		echo "Add New DNC";}
 if ($ADD==1111)			{$hh='ingroups';	echo "Add New In-Group";}
@@ -1257,6 +1266,7 @@ if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
 if ($ADD==2)			{$hh='users';		echo "New User Addition";}
+if ($ADD==20)			{$hh='campaigns';	$sh='basic';	echo "New Copied Campaign Addition";}
 if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "New Campaign Addition";}
 if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "New Campaign Status Addition";}
 if ($ADD==23)			{$hh='campaigns';	$sh='hotkey';	echo "New Campaign HotKey Addition";}
@@ -1471,19 +1481,113 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$o++;
 		}
 
-	##### get campaigns listing for dynamic pulldown
+	##### BEGIN get campaigns listing for rankings #####
+
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
 	$campaigns_to_print = mysql_num_rows($rslt);
 	$campaigns_list='';
+	$campaigns_value='';
+	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
 
 	$o=0;
 	while ($campaigns_to_print > $o)
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$campaign_id_values[$o] = $rowx[0];
+		$campaign_name_values[$o] = $rowx[1];
 		$o++;
 		}
+
+	$o=0;
+	while ($campaigns_to_print > $o)
+		{
+		$stmt="SELECT campaign_rank,calls_today from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
+		$rslt=mysql_query($stmt, $link);
+		$ranks_to_print = mysql_num_rows($rslt);
+		if ($ranks_to_print > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$SELECT_campaign_rank = $row[0];
+			$calls_today = $row[1];
+			}
+		else
+			{$calls_today=0;   $SELECT_campaign_rank=0;}
+		if ( ($ADD=="4A") or ($ADD=="4B") )
+			{
+			if (isset($_GET["RANK_$campaign_id_values[$o]"]))			{$campaign_rank=$_GET["RANK_$campaign_id_values[$o]"];}
+				elseif (isset($_POST["RANK_$campaign_id_values[$o]"]))	{$campaign_rank=$_POST["RANK_$campaign_id_values[$o]"];}
+
+			if ($ranks_to_print > 0)
+				{
+				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+			else
+				{
+				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+
+			$stmt="UPDATE vicidial_live_agents set campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+			$rslt=mysql_query($stmt, $link);
+			}
+		else {$campaign_rank = $SELECT_campaign_rank;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		# disable non user-group allowable campaign ranks
+		$stmt="SELECT user_group from vicidial_users where user='$user';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$user_group =	$row[0];
+
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$allowed_campaigns =	$row[0];
+		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
+		$UGcampaigns = explode(" ", $allowed_campaigns);
+
+		$p=0;   $RANK_camp_active=0;
+		if (eregi('-ALL-CAMPAIGNS-',$allowed_campaigns))
+			{$RANK_camp_active++;}
+		else
+			{
+			$UGcampaign_ct = count($UGcampaigns);
+			while ($p < $campaign_ct)
+				{
+				if ($campaign_id_values[$o] == $UGcampaigns[$p]) 
+					{$RANK_camp_active++;}
+				$p++;
+				}
+			}
+		if ($RANK_camp_active < 1) {$CR_disabled = 'DISABLED';}
+		else {$CR_disabled = '';}
+
+		$RANKcampaigns_list .= "<tr $bgcolor><td>";
+		$campaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] <BR>\n";
+		$RANKcampaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] </td>";
+		$RANKcampaigns_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$campaign_id_values[$o] $CR_disabled>\n";
+		$h="9";
+		while ($h>=-9)
+			{
+			$RANKcampaigns_list .= "<option value=\"$h\"";
+			if ($h==$campaign_rank)
+				{$RANKcampaigns_list .= " SELECTED";}
+			$RANKcampaigns_list .= ">$h</option>";
+			$h--;
+			}
+		$RANKcampaigns_list .= "</select></td>\n";
+		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$o++;
+		}
+	##### END get campaigns listing for rankings #####
+
 
 	##### BEGIN get inbound groups listing for checkboxes #####
 	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
@@ -1561,6 +1665,9 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
+
+			$stmt="UPDATE vicidial_live_inbound_agents set group_weight='$group_rank' where group_id='$group_id_values[$o]' and user='$user';";
+			$rslt=mysql_query($stmt, $link);
 			}
 		else {$group_rank = $SELECT_group_rank;}
 
@@ -1586,14 +1693,14 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
 		$RANKgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] </td>";
 		$RANKgroups_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$group_id_values[$o]>\n";
-		$h="-9";
-		while ($h<=9)
+		$h="9";
+		while ($h>=-9)
 			{
 			$RANKgroups_list .= "<option value=\"$h\"";
 			if ($h==$group_rank)
 				{$RANKgroups_list .= " SELECTED";}
 			$RANKgroups_list .= ">$h</option>";
-			$h++;
+			$h--;
 			}
 		$RANKgroups_list .= "</select></td>\n";
 		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
@@ -1615,7 +1722,6 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$allowed_campaigns =	$row[0];
 		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
 		$campaigns = explode(" ", $allowed_campaigns);
-		echo "<!--  $allowed_campaigns -->";
 		}
 
 	$campaigns_value='';
@@ -3662,7 +3768,7 @@ $admin_home_url_LU =	$row[0];
 
 ?>
 <CENTER>
-<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
 
 <TR BGCOLOR=#015B91>
 <TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Users </a></TD>
@@ -3723,7 +3829,7 @@ if (strlen($campaigns_hh) > 1)
 	<?
 	if (strlen($list_sh) > 1) { 
 		?>
-	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Show Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Add A New Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Real-Time Campaigns Summary </a></TD></TR>
+	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Show Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Add A New Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Copy Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Real-Time Campaigns Summary </a></TD></TR>
 		<? } 
 
 	} 
@@ -3812,7 +3918,7 @@ if($LOGast_admin_access < 1)
 } 
 if (strlen($reports_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </TD></TR>
+<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </B></TD></TR>
 <? } ?>
 
 
@@ -3917,6 +4023,49 @@ if ($ADD==11)
 	echo "$scripts_list";
 	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=12 display the COPY CAMPAIGN FORM SCREEN
+######################
+
+if ($ADD==12)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>COPY A CAMPAIGN<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=20>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Source Campaign: </td><td align=left><select size=1 name=source_campaign_id>\n";
+
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+		$rslt=mysql_query($stmt, $link);
+		$campaigns_to_print = mysql_num_rows($rslt);
+		$campaigns_list='';
+
+		$o=0;
+		while ($campaigns_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$campaigns_list";
+	echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+	
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -4506,6 +4655,63 @@ if ($ADD==21)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
 				fwrite ($fp, "$date|ADD A NEW CAMPAIGN  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			}
+		}
+$ADD=31;
+}
+
+######################
+# ADD=20 adds copied new campaign to the system
+######################
+
+if ($ADD==20)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>CAMPAIGN NOT ADDED - there is already a campaign in the system with this ID\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 8) )
+			{
+			 echo "<br>CAMPAIGN NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>campaign ID must be between 2 and 8 characters in length\n";
+			 echo "<br>source campaign ID must be between 2 and 8 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
+
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id) SELECT campaign_name,\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_hotkeys (status,hotkey,status_name,selectable,campaign_id) SELECT status,hotkey,status_name,selectable,\"$campaign_id\" from vicidial_campaign_hotkeys where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_lead_recycle (status,attempt_delay,attempt_maximum,active,campaign_id) SELECT status,attempt_delay,attempt_maximum,active,\"$campaign_id\" from vicidial_lead_recycle where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_pause_codes (pause_code,pause_code_name,billable,campaign_id) SELECT pause_code,pause_code_name,billable,\"$campaign_id\" from vicidial_pause_codes where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			echo "<!-- $stmt -->";
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|COPY TO NEW CAMPAIGN|$PHP_AUTH_USER|$ip|$campaign_id|$source_campaign_id|$stmt|$stmtA|\n");
 				fclose($fp);
 				}
 
@@ -7319,6 +7525,39 @@ if ($ADD==61)
 		$stmt="DELETE from vicidial_campaigns where campaign_id='$campaign_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
+		$stmt="DELETE from vicidial_campaign_agents where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_live_agents where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_statuses where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_hotkeys where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_callbacks where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_stats where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_lead_recycle where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_server_stats where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_server_trunks where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_pause_codes where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaigns_list_mix where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br>REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER ($campaign_id)\n";
 		$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
@@ -7667,6 +7906,12 @@ if ($ADD==6111)
 	 else
 		{
 		$stmt="DELETE from vicidial_inbound_groups where group_id='$group_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_inbound_group_agents where group_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_live_inbound_agents where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -8204,6 +8449,11 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>Closer Default Blended: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Recording Override: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Customer Data Override: </td><td align=left><select size=1 name=alter_custdata_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custdata_override</option></select>$NWB#vicidial_users-alter_custdata_override$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Campaign Ranks: $NWB#vicidial_users-closer_campaigns$NWE<BR>\n";
+			echo "<table border=0>\n";
+			echo "$RANKcampaigns_list";
+			echo "</table>\n";
+			echo "</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Inbound Groups: $NWB#vicidial_users-closer_campaigns$NWE<BR>\n";
 			echo "<table border=0>\n";
 			echo "$RANKgroups_list";
@@ -9323,6 +9573,32 @@ if ($ADD==34)
 		echo "</b></center>\n";
 
 		echo "<br>\n";
+
+		### list of agent rank or skill-level for this campaign
+		echo "<center>\n";
+		echo "<br><b>AGENT RANKS FOR THIS CAMPAIGN:</b><br>\n";
+		echo "<TABLE width=400 cellspacing=3>\n";
+		echo "<tr><td>USER</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS TODAY</td></tr>\n";
+
+			$stmt="SELECT user,campaign_rank,calls_today from vicidial_campaign_agents where campaign_id='$campaign_id'";
+			$rsltx=mysql_query($stmt, $link);
+			$users_to_print = mysql_num_rows($rsltx);
+
+			$o=0;
+			while ($users_to_print > $o) {
+				$rowx=mysql_fetch_row($rsltx);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td></tr>\n";
+			}
+
+		echo "</table></center><br>\n";
+
 
 		echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">LOG ALL AGENTS OUT OF THIS CAMPAIGN</a><BR><BR>\n";
 
