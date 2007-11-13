@@ -326,10 +326,11 @@ $affected_rows = $dbhA->do($stmtA);
 ### if set to record this session, start recording ###
 if ($record_call =~ /Y/)
 {
-$filename = "$inbound_number$US$phone_number$US$ivr_id";
+#$filename = "$inbound_number$US$phone_number$US$ivr_id";
+$filename = "$ivr_id";
 ### code to record call goes here ###
 
-$AGI->exec("Monitor wav|/var/spool/asterisk/monitor/$inbound_number$US$phone_number$US$ivr_id|m"); 
+$AGI->exec("Monitor wav|/var/spool/asterisk/monitor/$filename|m"); 
 
 ### insert record into recording_log table ###
 $stmtA = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,length_in_sec,filename,lead_id,user,location) values('$channel','$server_ip','$inbound_number','$now_date','start_epoch','0','$filename','$lead_id','$user','$ivr_id');";
