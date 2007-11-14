@@ -196,6 +196,8 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	  (if you have more than 900MB of System RAM move upto 4GB)
 	->Timer frequency (1000 HZ)
 	  (change to 1000Hz if using ztdummy for timer)
+	->Preemption Model (No Forced Preemption (Server))
+	  (This one is very important!!!)
      Power management options (ACPI, APM)  --->
 	->ACPI (Advanced Configuration and Power Interface) Support
 	  (enable all down to Processor and thermal zone)
@@ -674,14 +676,14 @@ installation on another machine)
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.59.tar.gz
-	- gunzip httpd-2.0.59.tar.gz
-	- tar xvf httpd-2.0.59.tar
+	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.61.tar.gz
+	- gunzip httpd-2.0.61.tar.gz
+	- tar xvf httpd-2.0.61.tar
 	- wget http://us2.php.net/distributions/php-4.4.7.tar.gz
 		NOTE: PHP 5.1.1 has also been tested with this release
 	- gunzip php-4.4.7.tar.gz
 	- tar xvf php-4.4.7.tar
-	- cd httpd-2.0.59
+	- cd httpd-2.0.61
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install

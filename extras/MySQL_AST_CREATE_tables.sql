@@ -985,7 +985,7 @@ CREATE TABLE vicidial_live_inbound_agents (
 user VARCHAR(20),
 group_id VARCHAR(20),			
 group_weight TINYINT(1) default '0',
-calls_today SMALLINT(5) UNSIGNED default '0';
+calls_today SMALLINT(5) UNSIGNED default '0',
 last_call_time DATETIME,
 last_call_finish DATETIME,
 index (group_id),
