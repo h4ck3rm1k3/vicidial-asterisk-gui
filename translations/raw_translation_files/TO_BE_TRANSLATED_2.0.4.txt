@@ -117,6 +117,13 @@ Copy Campaign||
 COPY A CAMPAIGN||
 Source Campaign: ||
 New Copied Campaign Addition||
+Copy In-Group||
+New Copied In-Group Addition||
+Copy User||
+New Copied User Addition||
+COPY USER||
+Copy In-Group||
+COPY INBOUND GROUP||
 
 
 ############################################################ CLIENT

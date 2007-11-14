@@ -61,7 +61,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 13. Call distribution by agent ranking per in-group and total calls to in-group
 
-14. Added ability to copy the settings of one campaign to a new campaign
+14. Added ability to copy the settings campaigns, users and in-groups to new records
+
 
 
 

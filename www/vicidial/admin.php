@@ -661,6 +661,10 @@ if (isset($_GET["campaign_rank"]))				{$campaign_rank=$_GET["campaign_rank"];}
 	elseif (isset($_POST["campaign_rank"]))		{$campaign_rank=$_POST["campaign_rank"];}
 if (isset($_GET["source_campaign_id"]))				{$source_campaign_id=$_GET["source_campaign_id"];}
 	elseif (isset($_POST["source_campaign_id"]))	{$source_campaign_id=$_POST["source_campaign_id"];}
+if (isset($_GET["source_user_id"]))				{$source_user_id=$_GET["source_user_id"];}
+	elseif (isset($_POST["source_user_id"]))	{$source_user_id=$_POST["source_user_id"];}
+if (isset($_GET["source_group_id"]))			{$source_group_id=$_GET["source_group_id"];}
+	elseif (isset($_POST["source_group_id"]))	{$source_group_id=$_POST["source_group_id"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -929,6 +933,8 @@ $vsc_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vsc_id);
 $moh_context = ereg_replace("[^-\_0-9a-zA-Z]","",$moh_context);
 $agent_alert_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_alert_exten);
 $source_campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_campaign_id);
+$source_user_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_user_id);
+$source_group_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_group_id);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -1126,12 +1132,13 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 71103-2207 - Added inbound_group_rank and fewest_calls to the inbound groups call order options
 # 71113-1521 - Added campaign_rank to agent options
 #            - Added ability to Copy a campaign's setting to a new campaign
-#
+# 71113-2225 - Added ability to copy user and in-group settings to new users and in-groups
+# 
 # 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-115';
-$build = '71113-1521';
+$admin_version = '2.0.4-116';
+$build = '71113-2225';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1249,12 +1256,14 @@ echo "<title>VICIDIAL ADMIN: ";
 
 if (!isset($ADD))   {$ADD=0;}
 
-if ($ADD==1)			{$hh='users';		echo "Add New User";}
+if ($ADD=="1")			{$hh='users';		echo "Add New User";}
+if ($ADD=="1A")			{$hh='users';		echo "Copy User";}
 if ($ADD==11)			{$hh='campaigns';	$sh='basic';	echo "Add New Campaign";}
 if ($ADD==12)			{$hh='campaigns';	$sh='basic';	echo "Copy Campaign";}
 if ($ADD==111)			{$hh='lists';		echo "Add New List";}
 if ($ADD==121)			{$hh='lists';		echo "Add New DNC";}
 if ($ADD==1111)			{$hh='ingroups';	echo "Add New In-Group";}
+if ($ADD==1211)			{$hh='ingroups';	echo "Copy In-Group";}
 if ($ADD==11111)		{$hh='remoteagent';	echo "Add New Remote Agents";}
 if ($ADD==111111)		{$hh='usergroups';	echo "Add New Users Group";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Add New Script";}
@@ -1265,7 +1274,8 @@ if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
-if ($ADD==2)			{$hh='users';		echo "New User Addition";}
+if ($ADD=="2")			{$hh='users';		echo "New User Addition";}
+if ($ADD=="2A")			{$hh='users';		echo "New Copied User Addition";}
 if ($ADD==20)			{$hh='campaigns';	$sh='basic';	echo "New Copied Campaign Addition";}
 if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "New Campaign Addition";}
 if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "New Campaign Status Addition";}
@@ -1277,6 +1287,7 @@ if ($ADD==28)			{$hh='campaigns';	$sh='dialstat';	echo "Campaign Dial Status Add
 if ($ADD==29)			{$hh='campaigns';	$sh='listmix';	echo "Campaign List Mix Added";}
 if ($ADD==211)			{$hh='lists';		echo "New List Addition";}
 if ($ADD==2111)			{$hh='ingroups';	echo "New In-Group Addition";}
+if ($ADD==2011)			{$hh='ingroups';	echo "New Copied In-Group Addition";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "New Remote Agents Addition";}
 if ($ADD==211111)		{$hh='usergroups';	echo "New Users Group Addition";}
 if ($ADD==2111111)		{$hh='scripts';		echo "New Script Addition";}
@@ -3785,7 +3796,7 @@ $admin_home_url_LU =	$row[0];
 
 <? if (strlen($users_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Users </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a></TD></TR>
+<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Users </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a></TD></TR>
 <? } 
 if (strlen($campaigns_hh) > 1) 
 	{ 
@@ -3847,7 +3858,7 @@ if (strlen($filters_hh) > 1) {
 <? } 
 if (strlen($ingroups_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show In-Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New In-Group </a></TD></TR>
+<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show In-Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New In-Group </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1211"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy In-Group </a></TD></TR>
 <? } 
 if (strlen($usergroups_hh) > 1) { 
 	?>
@@ -3942,7 +3953,7 @@ if (strlen($reports_hh) > 1) {
 # ADD=1 display the ADD NEW USER FORM SCREEN
 ######################
 
-if ($ADD==1)
+if ($ADD=="1")
 {
 	if ($LOGmodify_users==1)
 	{
@@ -3981,6 +3992,53 @@ if ($ADD==1)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
 	echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=1 display the COPY USER FORM SCREEN
+######################
+
+if ($ADD=="1A")
+{
+	if ($LOGmodify_users==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>COPY USER<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=2A>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+
+	if ($LOGuser_level==9) {$levelMAX=10;}
+	else {$levelMAX=$LOGuser_level;}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Source User: </td><td align=left><select size=1 name=source_user_id>\n";
+
+		$stmt="SELECT user,full_name from vicidial_users where user_level < $levelMAX order by full_name;";
+		$rslt=mysql_query($stmt, $link);
+		$Uusers_to_print = mysql_num_rows($rslt);
+		$Uusers_list='';
+
+		$o=0;
+		while ($Uusers_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$Uusers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$Uusers_list";
+	echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -4191,6 +4249,50 @@ if ($ADD==1111)
 	echo "$scripts_list";
 	echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=1211 display the ADD NEW INBOUND GROUP SCREEN
+######################
+
+if ($ADD==1211)
+{
+	if ($LOGmodify_ingroups==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>COPY INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=2011>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Source Group ID: </td><td align=left><select size=1 name=source_group_id>\n";
+
+		$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+		$rslt=mysql_query($stmt, $link);
+		$groups_to_print = mysql_num_rows($rslt);
+		$groups_list='';
+
+		$o=0;
+		while ($groups_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$groups_list";
+	echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -4583,7 +4685,7 @@ if ($ADD==11111111111111)
 # ADD=2 adds the new user to the system
 ######################
 
-if ($ADD==2)
+if ($ADD=="2")
 {
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
@@ -4615,7 +4717,56 @@ if ($ADD==2)
 				}
 			}
 		}
+
 $ADD=3;
+}
+
+######################
+# ADD=2A adds the copied new user to the system
+######################
+
+if ($ADD=="2A")
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_users where user='$user';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>USER NOT ADDED - there is already a user in the system with this user number\n";}
+	else
+		{
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+			{
+			 echo "<br>USER NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>user id must be between 2 and 8 characters long\n";
+			 echo "<br>full name and password must be at least 2 characters long\n";
+			}
+		 else
+			{
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override from vicidial_users where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_agents (user,campaign_id,campaign_rank,campaign_weight,calls_today) SELECT \"$user\",campaign_id,campaign_rank,campaign_weight,\"0\" from vicidial_campaign_agents where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmtA, $link);
+
+			echo "<br><B>USER COPIED: $user copied from $source_user_id</B>\n";
+			echo "<br><br>\n";
+			echo "<a href=\"$PHP_SELF?ADD=3&user=$user\">Click here to go to the user record</a>\n";
+			echo "<br><br>\n";
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A COPIED USER   |$PHP_AUTH_USER|$ip|$user|$source_user_id|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+exit;
 }
 
 ######################
@@ -5067,6 +5218,46 @@ if ($ADD==2111)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
 				fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=3111;
+}
+
+
+######################
+# ADD=2011 adds copied inbound group to the system
+######################
+
+if ($ADD==2011)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>GROUP NOT ADDED - there is already a group in the system with this ID\n";}
+	else
+		{
+		 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
+			{
+			 echo "<br>GROUP NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>Group ID must be between 2 and 20 characters in length and contain no ' -+'.\n";
+			 echo "<br>Group name and group color must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay) SELECT \"$group_id\",\"$group_name\",group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>GROUP ADDED: $group_id</B>\n";
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|COPIED TO NEW GROUP |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
