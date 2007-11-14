@@ -1890,43 +1890,43 @@ exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
 exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
 
+; parameters for agi-VDAD_ALL_inbound.agi (9 fields separated by five dashes "-----"):
+;  1. the method of call handling for the script:
+; 	- CID - 	CID received, add record with phone number
+; 	- CIDLOOKUP - 	Lookup CID to find record in whole system
+; 	- CIDLOOKUPRL -	Restrict lookup to one list
+;	- CLOSER -      Closer calls from VICIDIAL fronters
+; 	- ANI - 	ANI received, add record with phone number
+; 	- ANILOOKUP - 	Lookup ANI to find record in whole system
+; 	- ANILOOKUPRL -	Restrict lookup to one list
+; 	- 3DIGITID - 	Enter 3 digit code to go to agent
+; 	- 4DIGITID - 	Enter 4 digit code to go to agent
+; 	- 5DIGITID - 	Enter 5 digit code to go to agent
+; 	- 10DIGITID - 	Enter 10 digit code to go to agent
+; 2. the method of searching for an available agent:
+; 	- LO - Load Balance Overflow only (priority to home server)
+; 	- LB - <default> Load Balance total system
+; 	- SO - Home server only
+; 3. the full name of the IN GROUP to be used in vicidial for the inbound call
+; 4. the phone number that was called, for the log entry
+; 5. the callerID or lead_id of the person that called(usually overridden)
+; 6. the park extension audio file name if used
+; 7. the status of the call initially(usually not used)
+; 8. the list_id to insert the new lead under if it is new (and CID/ANI available)
+; 9. the phone dialing code to insert with the new lead if new (and CID/ANI available)
+; inbound VICIDIAL call with CID delivery through T1 PRI
+exten => 1234,1,Answer                  ; Answer the line
+exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----CL_GALLERIA-----7274515134-----Closer-----park----------999-----1)
+exten => 1234,3,Hangup
 
-; parameters for agi-VDADcloser.agi (2 fields separated by five dashes "-----"):
-; 1. the full extension formatted by VICIDIAL for internal transfers * separated
-; 2. the word START to denote the beginning of the acceptance of the transfer
-; inbound VICIDIAL transfer calls [can arrive through PRI T1 crossover or IAX channel]
+; inbound VICIDIAL transfer calls [can arrive through PRI T1 crossover, IAX or SIP channel]
 exten => _90009.,1,Answer                  ; Answer the line
-exten => _90009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
+exten => _90009.,2,AGI(agi-VDAD_ALL_inbound.agi,CLOSER-----LB-----CL_TESTCAMP-----7275551212-----Closer-----park----------999-----1)
 exten => _90009.,3,Hangup
 exten => _990009.,1,Answer                  ; Answer the line
-exten => _990009.,2,AGI(agi-VDADcloser.agi,${EXTEN}-----START)
+exten => _990009.,2,AGI(agi-VDAD_ALL_inbound.agi,CLOSER-----LB-----CL_TESTCAMP-----7275551212-----Closer-----park----------999-----1)
 exten => _990009.,3,Hangup
 
-; parameters for agi-VDADcloser_inbound....agi (7 fields separated by five dashes "-----"):
-; 1. the full name of the IN GROUP to be used in vicidial for the inbound call
-; 2. the phone number that was called, for the log entry
-; 3. the callerID or lead_id of the person that called(usually overridden)
-; 4. the park extension audio file name if used
-; 5. the status of the call initially(usually not used)
-; 6. the list_id to insert the new lead under if it is new (and callerID available)
-; 7. the phone dialing code to insert with the new lead if new (and callerID available)
-
-; inbound VICIDIAL call with CID delivery through T1 PRI
-exten => 1234,1,Ringing                 ; call ringing
-exten => 1234,2,Wait(1)                 ; Wait 1 second for CID delivery from PRI
-exten => 1234,3,Answer                  ; Answer the line
-exten => 1234,4,AGI(agi-VDADcloser_inboundCID.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
-exten => 1234,5,Hangup
-
-; inbound VICIDIAL call with ANI delivery through robbed-bit T1 (*NXXNXXXXXX*DNIS)
-exten => 1234,1,Answer                  ; Answer the line
-exten => 1234,2,AGI(agi-VDADcloser_inboundANI.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
-exten => 1234,3,Hangup
-
-; inbound VICIDIAL call with prompt for 4-digit fronter code
-exten => 1234,1,Answer                  ; Answer the line
-exten => 1234,2,AGI(agi-VDADcloser_inbound.agi,CL_GALLERIA-----7275555134-----Closer-----park----------999-----1)
-exten => 1234,3,Hangup
 
 ### follow these instructions if you plan to have VICIDIAL agents take inbound or closer calls:
 	1. create a new campaign in VICIDIAL  called "CLOSER"
@@ -2948,6 +2948,7 @@ insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINE
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
 insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
+insert into vicidial_statuses values('AM','Answering Machine Auto','N','N','UNDEFINED');
 insert into vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');
