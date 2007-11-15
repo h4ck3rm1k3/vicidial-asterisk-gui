@@ -12,6 +12,7 @@
 # CHANGES
 # 60517-1100 - First version
 # 60715-2325 - changed to use /etc/astguiclient.conf for configs
+# 71115-0231 - added Pipe-delimited file output
 #
 
 $txt = '.txt';
@@ -85,6 +86,7 @@ $secX = time();
 print "\n\n\n\n\n\n\n\n\n\n\n\n-- AST_agent_day.pl --\n\n";
 print "This program is designed to print stats to a file for agents' activity for the previous day. \n\n";
 
+$TDoutfile  = '';
 $TLoutfile  = '';
 $TLoutfile .= "TODAY:          $day     $shipdate\n\n";
 
@@ -131,10 +133,13 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
 $outfile = "AGENT_DAY_$shipdate$txt";
+$Doutfile = "AGENT_DAY_PIPE_$shipdate$txt";
 
 ### open the X out file for writing ###
 open(out, ">$PATHweb/vicidial/agent_reports/$outfile")
 		|| die "Can't open $outfile: $!\n";
+open(Dout, ">$PATHweb/vicidial/agent_reports/$Doutfile")
+		|| die "Can't open $Doutfile: $!\n";
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -153,6 +158,7 @@ $vicidial_agent_log = 'vicidial_agent_log';
 ###########################################################################
 ########### PAST WEEK STAT GATHERING LOOP #################################
 ###########################################################################
+print Dout "DATE|AGENT|USER|CALLS|TALK|PAUSE|WAIT|DISPO|ACTIVE|LOGTIME|FIRST|LAST\n";
 print out "AGENT                USER     CALLS  TALK     PAUSE    WAIT     DISPO    ACTIVE   LOGTIME  FIRST                LAST                    \n";
 print  "AGENT                USER     CALLS  TALK     PAUSE    WAIT     DISPO    ACTIVE   LOGTIME  FIRST                LAST                    \n";
 
@@ -165,6 +171,9 @@ while ($sthArows > $rec_count)
 	{
 	@aryA = $sthA->fetchrow_array;
 
+	$Dcalls = 	$aryA[0];
+	$Dname = 	$aryA[1];
+	$Duser = 	$aryA[2];
 	$calls = 	sprintf("%7s", $aryA[0]);
 	$name = 	sprintf("%-20s", $aryA[1]); while(length($name)>20) {chop($name);}
 	$user = 	sprintf("%-8s", $aryA[2]);
@@ -179,6 +188,7 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Dactive = $TIME_HMS;
 	$active =	sprintf("%9s", $TIME_HMS);
 
 	### TOTAL TALK TIME
@@ -190,6 +200,7 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Dtalk = $TIME_HMS;
 	$talk =	sprintf("%9s", $TIME_HMS);
 
 	### TOTAL PAUSE TIME
@@ -201,6 +212,7 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Dpause = $TIME_HMS;
 	$pause =	sprintf("%9s", $TIME_HMS);
 
 	### TOTAL WAIT TIME
@@ -212,6 +224,7 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Dwait = $TIME_HMS;
 	$wait =	sprintf("%9s", $TIME_HMS);
 
 	### TOTAL DISPO TIME
@@ -223,20 +236,25 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Ddispo = $TIME_HMS;
 	$dispo =	sprintf("%9s", $TIME_HMS);
 
 	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$shipdate 00:00:00' and user='$aryA[2]' order by event_time limit 1;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtA ", $dbhB->errstr;
 	@aryB = $sthB->fetchrow_array;
+	$Dfirst_time = $aryB[0];
 	$first_time = sprintf("%21s", $aryB[0]);
+	$Dfirst_log = $aryB[1];
 	$first_log = $aryB[1];
 
 	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$shipdate 00:00:00' and user='$aryA[2]' order by event_time desc limit 1;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtA ", $dbhB->errstr;
 	@aryB = $sthB->fetchrow_array;
+	$Dlast_time = $aryB[0];
 	$last_time = sprintf("%21s", $aryB[0]);
+	$Dlast_log = $aryB[1];
 	$last_log = $aryB[1];
 
 	$TIME_S = ($last_log - $first_log);
@@ -247,10 +265,12 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$Dlogin_time = $TIME_HMS;
 	$login_time =	sprintf("%9s", $TIME_HMS);
 
 
 	
+	print Dout "$shipdate|$Dname|$Duser|$Dcalls|$Dtalk|$Dpause|$Dwait|$Ddispo|$Dactive|$Dlogin_time|$Dfirst_time|$Dlast_time\n"; 
 	print out "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
 	print "$name$user$calls$talk$pause$wait$dispo$active$login_time$first_time$last_time\n"; 
 
@@ -261,6 +281,7 @@ $sthA->finish();
 
 
 
+close(Dout);
 close(out);
 
 ### calculate time to run script ###
