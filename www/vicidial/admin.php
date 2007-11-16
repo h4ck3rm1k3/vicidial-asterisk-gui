@@ -7686,14 +7686,20 @@ if ($ADD==6)
 		}
 	 else
 		{
-		$stmt="DELETE from vicidial_users where user='$user' limit 1;";
+		$stmtA="DELETE from vicidial_users where user='$user' limit 1;";
+		$rslt=mysql_query($stmtA, $link);
+
+		$stmt="DELETE from vicidial_campaign_agents where user='$user';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_inbound_group_agents where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING USER!!!!|$PHP_AUTH_USER|$ip|user='$user'|\n");
+			fwrite ($fp, "$date|!!!DELETING USER!!!!|$PHP_AUTH_USER|$ip|$user|$stmtA|$stmt|\n");
 			fclose($fp);
 			}
 		echo "<br><B>USER DELETION COMPLETED: $user</B>\n";
