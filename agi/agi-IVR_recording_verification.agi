@@ -358,7 +358,6 @@ $affected_rows = $dbhA->do($stmtA);
 ### if set, say the current date ###
 if ($say_date =~ /Y/)
 {
-	sleep(1);
 	if ($AGILOG) {$agi_string = "SAYING DATETIME $now_date_epoch";   &agi_output;}
 	if (length($say_date_prompt)>0) {$AGI->stream_file("$say_date_prompt");}
 	sleep(1);
@@ -401,7 +400,6 @@ while($prompts_count >= $i)
 
 ##### Play the last prompt and say the IVR number #####
 	$AGI->stream_file("$last_prompt");
-	sleep(1);
 	$AGI->say_digits("$ivr_id");
 
 	&get_time_now;

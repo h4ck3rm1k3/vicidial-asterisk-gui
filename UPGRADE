@@ -53,6 +53,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	even if you only have one server, and you must have lines with the 7
 	prefix for silent insertion into the meetme conference:
 		exten => _010*010*010*015*78600XXX,...
+		exten => _010*010*010*015*78600XXX*.,...
 	See LOAD_BALANCING.txt and extensions.conf.sample for more information
 
 12. Inbound, Blended and Closer-type campaigns are no longer required to have
@@ -62,6 +63,14 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 13. Call distribution by agent ranking per in-group and total calls to in-group
 
 14. Added ability to copy the settings campaigns, users and in-groups to new records
+
+15. REQUIRED CHANGE! Old inbound and Closer AGI scripts have all been consolidated
+	into a single script: agi-VDAD_inbound.agi
+	Please look at the script header or the SCRATCH_INSTALL doc for more
+	info on how to alter your extenions.conf to use the new script.
+	The old agi-VDAD_closer... scripts have all been depricated and moved
+	to the extras/old_agi/ directory.
+
 
 
 

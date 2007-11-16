@@ -497,7 +497,7 @@ to be loaded to use that option.
 2. Go to http://lame.sourceforge.net/ and download the lame package
    - to install this directly on the command line type:
 	- cd /usr/local
-	-wget http://umn.dl.sourceforge.net/sourceforge/lame/lame-3.96.1.tar.gz
+	-wget http://easynews.dl.sourceforge.net/sourceforge/lame/lame-3.96.1.tar.gz
 	-gunzip lame-3.96.1.tar.gz
 	-tar xvf lame-3.96.1.tar
 	-cd lame-3.96.1
@@ -2797,6 +2797,12 @@ PERL5LIB="/usr/share/astguiclient/libs"; export PERL5LIB
 
 ### start up the apache web server
 /usr/local/apache2/bin/apachectl start
+
+### roll the Asterisk logs upon reboot
+/usr/share/astguiclient/ADMIN_restart_roll_logs.pl
+
+### clear the server-related records from the database
+/usr/share/astguiclient/AST_reset_mysql_vars.pl
 
 ### load digium tormenta 4xT1 drivers into system
 modprobe zaptel
