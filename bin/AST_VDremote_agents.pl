@@ -239,8 +239,21 @@ while($one_day_interval > 0)
 		$event_string = "|     lagged call vla agent DELETED $affected_rows";
 		 &event_logger;
 
+		##### grab number of calls today in this campaign and increment
+		$stmt="SELECT calls_today FROM vicidial_live_agents WHERE extension LIKE \"R/%\";";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$vla_cc_ct = mysql_num_rows($rslt);
+		if ($vla_cc_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$calls_today =$row[0];
+			}
+		else
+			{$calls_today ='0';}
+		$calls_today++;
 
-		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
+		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE',calls_today='$calls_today' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
 		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     QUEUEd call listing vla UPDATEd $affected_rows";

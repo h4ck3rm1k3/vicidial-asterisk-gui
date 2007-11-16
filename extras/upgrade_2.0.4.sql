@@ -142,8 +142,9 @@ index (user)
 ALTER TABLE vicidial_live_agents ADD campaign_weight TINYINT(1) default '0';
 ALTER TABLE vicidial_live_agents ADD calls_today SMALLINT(5) UNSIGNED default '0';
 
+ALTER TABLE vicidial_inbound_groups MODIFY next_agent_call ENUM('random','oldest_call_start','oldest_call_finish','overall_user_level','inbound_group_rank','campaign_rank','fewest_calls','fewest_calls_campaign') default 'oldest_call_finish';
 
-
+ALTER TABLE vicidial_campaigns MODIFY next_agent_call ENUM('random','oldest_call_start','oldest_call_finish','campaign_rank','overall_user_level','fewest_calls') default 'oldest_call_finish';
 
 
 

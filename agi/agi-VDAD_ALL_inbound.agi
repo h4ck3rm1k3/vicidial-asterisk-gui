@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_ALL_inbound.agi version 2.0.4-1   *DBI-version*
+# agi-VDAD_ALL_inbound.agi version 2.0.4   *DBI-version*
 # 
 # runs when a call comes in from an inbound call. This script will 
 # send the calls out to the closers that are logged in.
@@ -50,6 +50,7 @@
 # 71030-0939 - fixed issue where MoH was still playing, added ding and wait before transfer
 # 71103-2305 - added group rank and fewest calls options to next_agent_call
 # 71112-0058 - fixed multi-logging bug on CLOSER calls
+# 71116-1045 - added fewest_calls_campaign agent call routing option
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -645,9 +646,11 @@ if ($channel_status < 1)
 	if ($CAMP_callorder =~ /oldest_call_start/i)	{$agent_call_order = 'order by last_call_time';}
 	if ($CAMP_callorder =~ /oldest_call_finish/i)	{$agent_call_order = 'order by last_call_finish';}
 	if ($CAMP_callorder =~ /random/i)				{$agent_call_order = 'order by random_id';}
+	if ($CAMP_callorder =~ /campaign_rank/i)		{$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
+	if ($CAMP_callorder =~ /fewest_calls_campaign/i) {$agent_call_order = 'order by calls_today,last_call_finish';}
 	if ($CAMP_callorder =~ /inbound_group_rank/i)	{$aco_sub=1;	$agent_call_order = 'order by group_weight desc';}
 	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today';}
-	
+
 
 ##### Attempt to send call to an agent on this server only #####
 if ($agent_search_method =~ /^SO|^LO/)

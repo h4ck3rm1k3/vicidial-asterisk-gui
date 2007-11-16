@@ -124,6 +124,7 @@ New Copied User Addition||
 COPY USER||
 Copy In-Group||
 COPY INBOUND GROUP||
+campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest||
 
 
 ############################################################ CLIENT

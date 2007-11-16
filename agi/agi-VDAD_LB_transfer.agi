@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_LB_transfer.agi version 2.0.3   *DBI-version*
+# agi-VDAD_LB_transfer.agi version 2.0.4   *DBI-version*
 #	Load Balanced - when a call comes in on this server the script looks for an agent
 #	on any server on the network on the same campaign to send call to.
 #
@@ -37,6 +37,7 @@
 # 70215-1052 - Added QueueMetrics optional logging
 # 70223-1101 - Added QueueMetrics ENTERQUEUE prepend option
 # 70305-1251 - Fixed problems where the same call will run this script twice
+# 71116-1045 - added fewest_calls and campaign_weight agent call routing options
 #
 
 $script = 'agi-VDAD_LB_transfer.agi';
@@ -467,6 +468,8 @@ if ($CAMP_callorder =~ /overall_user_level/i) {$agent_call_order = 'order by use
 if ($CAMP_callorder =~ /oldest_call_start/i) {$agent_call_order = 'order by last_call_time';}
 if ($CAMP_callorder =~ /oldest_call_finish/i) {$agent_call_order = 'order by last_call_finish';}
 if ($CAMP_callorder =~ /random/i) {$agent_call_order = 'order by random_id';}
+if ($CAMP_callorder =~ /campaign_rank/i) {$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
+if ($CAMP_callorder =~ /fewest_calls/i) {$agent_call_order = 'order by calls_today,last_call_finish';}
 
 	 $rec_countWAIT=0;
 $stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$VDADlead_id';";

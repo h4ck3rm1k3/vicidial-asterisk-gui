@@ -165,10 +165,11 @@
 # 71022-1427 - Added formatting of the customer phone number in the main status bar
 # 71029-1848 - Changed CLOSER-type campaign to not use campaign_id restrictions
 # 71101-1204 - Fixed bug in callback calendar with DST
+# 71116-0957 - Added campaign_weight and calls_today to the vla table insertion
 #
 
-$version = '2.0.4-136';
-$build = '71101-1204';
+$version = '2.0.4-137';
+$build = '71116-0957';
 
 require("dbconnect.php");
 
@@ -1087,8 +1088,32 @@ else
 			{
 			print "<!-- campaign is set to auto_dial_level: $auto_dial_level -->\n";
 
+			##### grab the campaign_weight and number of calls today on that campaign for the agent
+			$stmt="SELECT campaign_weight,calls_today FROM vicidial_campaign_agents where user='$VD_login' and campaign_id = '$VD_campaign';";
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$vca_ct = mysql_num_rows($rslt);
+			if ($vca_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$campaign_weight =	$row[0];
+				$calls_today =		$row[1];
+				$i++;
+				}
+			else
+				{
+				$campaign_weight =	'0';
+				$calls_today =		'0';
+				$stmt="INSERT INTO vicidial_campaign_agents (user,campaign_id,campaign_rank,campaign_weight,calls_today) values('$VD_login','$VD_campaign','0','0','$calls_today');";
+				if ($DB) {echo "$stmt\n";}
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $link);
+				$affected_rows = mysql_affected_rows($link);
+				print "<!-- new vicidial_campaign_agents record inserted: |$affected_rows| -->\n";
+				}
 			$closer_chooser_string='';
-			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$closer_chooser_string','$user_level');";
+			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,closer_campaigns,user_level,campaign_weight,calls_today) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$closer_chooser_string','$user_level','$campaign_weight','$calls_today');";
 			if ($DB) {echo "$stmt\n";}
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);

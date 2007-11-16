@@ -134,10 +134,11 @@
 # 70828-1443 - Added source_id to output of SCRIPTtab-IFRAME and WEBFORM
 # 71029-1855 - removed campaign_id naming restrictions for CLOSER-type campaigns
 # 71030-2047 - added hopper priority for auto alt dial entries
+# 71116-1011 - added calls_today count updating of the vicidial_live_agents upon INCALL
 #
 
-$version = '2.0.4-61';
-$build = '71030-2047';
+$version = '2.0.4-62';
+$build = '71116-1011';
 
 require("dbconnect.php");
 
@@ -436,6 +437,21 @@ if ($ACTION == 'manDiaLnextCaLL')
 	}
 	else
 	{
+
+	##### grab number of calls today in this campaign and increment
+	$stmt="SELECT calls_today FROM vicidial_live_agents WHERE user='$user' and campaign_id='$campaign';";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$vla_cc_ct = mysql_num_rows($rslt);
+	if ($vla_cc_ct > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$calls_today =$row[0];
+		}
+	else
+		{$calls_today ='0';}
+	$calls_today++;
+
 	### check if this is a callback, if it is, skip the grabbing of a new lead and mark the callback as INACTIVE
 	if ( (strlen($callback_id)>0) and (strlen($lead_id)>0) )
 		{
@@ -662,7 +678,12 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$rslt=mysql_query($stmt, $link);
 
 				### update the agent status to INCALL in vicidial_live_agents
-				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL' where user='$user' and server_ip='$server_ip';";
+				$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL',calls_today='$calls_today' where user='$user' and server_ip='$server_ip';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+
+				### update calls_today count in vicidial_campaign_agents
+				$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -765,6 +786,20 @@ if ($ACTION == 'manDiaLonly')
 	}
 	else
 	{
+		##### grab number of calls today in this campaign and increment
+		$stmt="SELECT calls_today FROM vicidial_live_agents WHERE user='$user' and campaign_id='$campaign';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$vla_cc_ct = mysql_num_rows($rslt);
+		if ($vla_cc_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$calls_today =$row[0];
+			}
+		else
+			{$calls_today ='0';}
+		$calls_today++;
+
 		### prepare variables to place manual call from VICIDiaL
 		$CCID_on=0;   $CCID='';
 		$local_DEF = 'Local/';
@@ -802,7 +837,11 @@ if ($ACTION == 'manDiaLonly')
 		$rslt=mysql_query($stmt, $link);
 
 		### update the agent status to INCALL in vicidial_live_agents
-		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL' where user='$user' and server_ip='$server_ip';";
+		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',callerid='$MqueryCID',lead_id='$lead_id',comments='MANUAL',calls_today='$calls_today' where user='$user' and server_ip='$server_ip';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+	
+		$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
@@ -1439,8 +1478,26 @@ if ($ACTION == 'VDADcheckINCOMING')
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 		echo "1\n" . $lead_id . '|' . $uniqueid . '|' . $callerid . '|' . $channel . '|' . $call_server_ip . "|\n";
 
+		##### grab number of calls today in this campaign and increment
+		$stmt="SELECT calls_today FROM vicidial_live_agents WHERE user='$user' and campaign_id='$campaign';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$vla_cc_ct = mysql_num_rows($rslt);
+		if ($vla_cc_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$calls_today =$row[0];
+			}
+		else
+			{$calls_today ='0';}
+		$calls_today++;
+
 		### update the agent status to INCALL in vicidial_live_agents
-		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',comments='AUTO' where user='$user' and server_ip='$server_ip';";
+		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',comments='AUTO',calls_today='$calls_today' where user='$user' and server_ip='$server_ip';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADtransferBROADCAST.agi version 0.6   *DBI-version*
+# agi-VDADtransferBROADCAST.agi version 2.0.4   *DBI-version*
 # 
 # runs when a call comes in from the VICIDIAL_auto_dialer. This script will 
 # send the calls out to the reps that are logged in.
@@ -14,7 +14,7 @@
 # exten => 8365,1,AGI(call_log.agi,${EXTEN})
 # exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 50322-1246 - changed callerid handling to allow for custom callerid
@@ -26,6 +26,7 @@
 #            - changed look for agent every 0.5 second for first 4 sec on hold
 # 60905-1047 - changed look for agent every 0.25 second for first 4 sec on hold
 # 61110-1625 - added change of vicidial_list, vicidial_log to PU once this script runs
+# 71116-1045 - added fewest_calls and campaign_weight agent call routing options
 #
 
 $script = 'agi-VDADtransferBROADCAST.agi';
@@ -352,6 +353,8 @@ if ($CAMP_callorder =~ /overall_user_level/i) {$agent_call_order = 'order by use
 if ($CAMP_callorder =~ /oldest_call_start/i) {$agent_call_order = 'order by last_call_time';}
 if ($CAMP_callorder =~ /oldest_call_finish/i) {$agent_call_order = 'order by last_call_finish';}
 if ($CAMP_callorder =~ /random/i) {$agent_call_order = 'order by random_id';}
+if ($CAMP_callorder =~ /campaign_rank/i) {$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
+if ($CAMP_callorder =~ /fewest_calls/i) {$agent_call_order = 'order by calls_today,last_call_finish';}
 
 	 $rec_countWAIT=0;
 $stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$VDADlead_id';";

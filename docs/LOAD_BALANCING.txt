@@ -155,6 +155,13 @@ If you have any questions or problems please post to the astguiclient-users list
 - AST_VDadapt.pl
 - AST_VDauto_dial_FILL.pl
 
+8. On all servers but one you should DELETE the following line from your extensions.conf:
+	; prompt recording AGI script, ID is 4321
+	exten => 8168,1,Answer
+	exten => 8168,2,AGI(agi-record_prompts.agi)
+	exten => 8168,3,Hangup
+This should help to prevent overwriting of prompts that are copied over from the one server that is used to do prompt creation.
+
 
 
 
