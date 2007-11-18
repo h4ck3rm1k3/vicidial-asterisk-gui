@@ -386,6 +386,11 @@ mv -f *.mp3 ../orig-mp3/
 
 ############# INSTRUCTIONS FOR Asterik 1.4 release ####################
 
+NOTE: If you want to use Asterisk 1.4, you will need to make sure that you set
+the servers table "asterisk_version" field to the proper version number and you
+can use the docs/conf_examples/extensions.conf.sample-1.4 file for your default
+dialplan
+
 ### If upgrading from 1.2.X Asterisk, run the following lines first:
 rm -f /usr/lib/asterisk/modules/app_curl.so
 rm -f /usr/lib/asterisk/modules/app_cut.so
@@ -406,24 +411,24 @@ rm -f /usr/lib/asterisk/modules/pbx_functions.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.11.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.4.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.1.tar.gz
-gunzip asterisk-1.4.11.tar.gz
-tar xvf asterisk-1.4.11.tar
-gunzip zaptel-1.4.4.tar.gz
-tar xvf zaptel-1.4.4.tar
-gunzip libpri-1.4.1.tar.gz
-tar xvf libpri-1.4.1.tar
-cd ./zaptel-1.4.4
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.14.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.6.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.2.tar.gz
+gunzip asterisk-1.4.14.tar.gz
+tar xvf asterisk-1.4.14.tar
+gunzip zaptel-1.4.6.tar.gz
+tar xvf zaptel-1.4.6.tar
+gunzip libpri-1.4.2.tar.gz
+tar xvf libpri-1.4.2.tar
+cd ./zaptel-1.4.6
 ./configure
 make
 make install
-cd ../libpri-1.4.1
+cd ../libpri-1.4.2
 make clean
 make
 make install
-cd ../asterisk-1.4.11
+cd ../asterisk-1.4.14
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h
@@ -437,8 +442,7 @@ make install
 
 
 
-
-#### pureftpd
+#### pureftpd FTP server installation instructions ####
 
 cd /usr/local
 wget ftp://ftp.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.20.tar.gz

@@ -89,7 +89,7 @@ After Hours Extension -<\/B> The dialplan extension to send the call to if the A
 After Hours Voicemail -<\/B> The voicemail box to send the call to if the Action is set to VOICEMAIL||
 Welcome Message Filename -<\/B> The audio file located on the server to be played when the call comes in. If set to ---NONE--- then no message will be played. Default is ---NONE---||
 Music On Hold Context -<\/B> The music on hold context to use when the customer is placed on hold. Default is default||
-On Hold Prompt Filename -<\/B> The audio file located on the server to be played at a regular interval when the customer is on hold. Default is generic_hold||
+On Hold Prompt Filename -<\/B> The audio file located on the server to be played at a regular interval when the customer is on hold. Default is generic_hold. This audio file MUST be 9 seconds or less in length.||
 On Hold Prompt Interval -<\/B> The length of time in seconds to wait before playing the on hold prompt. Default is 60||
 Agent Alert Extension -<\/B> The extension to send into the agent session to announce that a call is coming to the agent. This extension should have a Playback of an audio file. To not use this function set this to X. Default is X||
 Agent Alert Delay -<\/B> The length of time in milliseconds to wait before sending the call to the agent after playing the on Agent Alert Extension. Default is 1000||

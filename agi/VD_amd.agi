@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VD_amd.agi version 0.5   *DBI-version*
+# VD_amd.agi version 2.0.4   *DBI-version*
 #
 # NOTE: This script is only needed with app_amd enabled systems
 # 
@@ -18,8 +18,7 @@
 # exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 # exten => 8369,7,Hangup
 # 
-#
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 60206-1434 first build
@@ -28,7 +27,8 @@
 # 60731-1407 - changed to use DBI-DBD::mysql
 #            - changed to use /etc/astguiclient.conf for configs
 # 60815-1310 - added output options check from database
-#
+# 71118-0252 - compatibility with Asterisk 1.4, added AA and AM statuses
+# 
 
 $script = 'VD_amd.agi';
 
@@ -243,9 +243,12 @@ if ($A)
 if ($AGILOG) {$agi_string = "AAAAA AMD results: |$AMDSTATUS|$AMDCAUSE|";   &agi_output;}
 }
 
+# Asterisk 1.2.X
 # AAAAA AMD results: |AMD_PERSON|AMD_HUMAN-300-300|
 # AAAAA AMD results: |AMD_MACHINE|AMD_LONGGREETING-1500-1500|
-
+# Asterisk 1.4.X:
+# AAAAA AMD results: |HUMAN|HUMAN-1000-1000|0000000000| 
+# AAAAA AMD results: |MACHINE|MAXWORDS-4-4|0000000000| 
 
 if ($AMD_LOG) 
 	{
@@ -258,7 +261,7 @@ if ($AMD_LOG)
 
 ##################################################################################
 ########## AMD says it's a person so exit and go on to transfer scripts ##########
-if ($AMDSTATUS =~ /PERSON|NOTSURE|HANGUP/)
+if ($AMDSTATUS =~ /PERSON|HUMAN|NOTSURE|HANGUP/)
 {
 	if ($A) 
 	{
@@ -310,7 +313,7 @@ $sthA->finish();
 
 
 ########## UPDATE vicidial_list ##########
-$stmtA = "UPDATE vicidial_list set status='A' where lead_id = '$VD_lead_id';";
+$stmtA = "UPDATE vicidial_list set status='AA' where lead_id = '$VD_lead_id';";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id";   &agi_output;}
@@ -339,14 +342,14 @@ if (!$epc_countCUSTDATA)
 	{
 	if ($AGILOG) {$agi_string = "no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
 	$end_epoch = ($now_date_epoch + 3);
-	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$uniqueid','$VD_lead_id','$VD_campaign_id','$now_date','$now_date_epoch','A','$VD_phone_code','$VD_phone_number','VDAD','N','3','$end_epoch')";
+	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,length_in_sec,end_epoch) values('$uniqueid','$VD_lead_id','$VD_campaign_id','$now_date','$now_date_epoch','AA','$VD_phone_code','$VD_phone_number','VDAD','N','3','$end_epoch')";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 	}
 else
 	{
 	$VD_seconds = ($now_date_epoch - $VD_start_epoch);
-	$stmtA = "UPDATE vicidial_log set status='A',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid='$uniqueid' and  lead_id='$VD_lead_id' order by call_date desc limit 1;";
+	$stmtA = "UPDATE vicidial_log set status='AA',end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid='$uniqueid' and  lead_id='$VD_lead_id' order by call_date desc limit 1;";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|";   &agi_output;}

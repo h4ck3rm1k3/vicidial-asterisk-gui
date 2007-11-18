@@ -827,10 +827,15 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.17) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.17. These instructions are how we get 
+this writing the official release is 1.2.24) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.24. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
+
+NOTE: If you want to use Asterisk 1.4, you will need to make sure that you set
+the servers table "asterisk_version" field to the proper version number and you
+can use the docs/conf_examples/extensions.conf.sample-1.4 file for your default
+dialplan
 
 NOTE: If you want to use release 1.0.8 or 9 we would recommend either using the 
 CVS_v1-0 branch where the issues are fixed, or patching your 1.0.8/1.0.9 code
@@ -856,7 +861,7 @@ with the following patch:
 	- svn checkout http://svn.digium.com/svn/asterisk/branches/1.2 asterisk-1.2
 	- svn checkout http://svn.digium.com/svn/zaptel/branches/1.2 zaptel-1.2
 	- svn checkout http://svn.digium.com/svn/libpri/branches/1.2 libpri-1.2
-   C. if you want latest SVN_DEV version (not recommended) [1.5 tree]
+   C. if you want latest SVN_DEV version (not recommended) [1.6 tree]
 	- svn checkout http://svn.digium.com/svn/asterisk/trunk asterisk
 	- svn checkout http://svn.digium.com/svn/zaptel/trunk zaptel
 	- svn checkout http://svn.digium.com/svn/libpri/trunk libpri
@@ -897,6 +902,10 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
+		*OPTIONAL*(1.2.23 thru 1.2.24) apply the meetme DTMF passthru patch
+		- wget http://www.eflo.net/files/meetme_DTMF_passthru-1.2.23.patch
+		- patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
+		- File to patch: app_meetme.c
 		*OPTIONAL*(1.2.12.1 thru 1.2.24) apply the meetme volume control patch
 			*Different patches available for 1.2.7.1 through 1.2.14
 		- wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
@@ -2954,7 +2963,9 @@ insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINE
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
 insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
-insert into vicidial_statuses values('AM','Answering Machine Auto','N','N','UNDEFINED');
+insert into vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
+insert into vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');
+insert into vicidial_statuses values('AL','Answering Machine Msg Played','N','N','UNDEFINED');
 insert into vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');

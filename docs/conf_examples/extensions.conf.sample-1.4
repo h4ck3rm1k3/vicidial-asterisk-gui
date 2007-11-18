@@ -225,8 +225,8 @@ exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG---
 ; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
 exten => 7275551212,1,Ringing
 exten => 7275551212,2,Wait(1)
-exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
-;exten => 7275551212,3,AGI(call_logCID.agi,${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
+exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----{CALLERID(all)}-----${CALLERID(num)}-----${CALLERID(name)})
+;exten => 7275551212,3,AGI(call_logCID.agi,${EXTEN}-----{CALLERID(all)}-----${CALLERID(num)}-----${CALLERID(name)})
 exten => 7275551212,4,Answer
 exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001|30|to
 exten => 7275551212,6,Voicemail,u2000
@@ -647,14 +647,14 @@ exten => 8307,3,Hangup
 ; this is used for recording conference calls, the client app sends the filename
 ;    value as a callerID recordings go to /var/spool/asterisk/monitor (WAV)
 exten => 8309,1,Answer
-exten => 8309,2,Monitor(wav,${CALLERIDNAME})
+exten => 8309,2,Monitor(wav,${CALLERID(name)})
 exten => 8309,3,Wait,3600
 exten => 8309,4,Hangup
 
 ; this is used for recording conference calls, the client app sends the filename
 ;    value as a callerID recordings go to /var/spool/asterisk/monitor (GSM)
 exten => 8310,1,Answer
-exten => 8310,2,Monitor(gsm,${CALLERIDNAME})
+exten => 8310,2,Monitor(gsm,${CALLERID(name)})
 exten => 8310,3,Wait,3600
 exten => 8310,4,Hangup
 
@@ -682,7 +682,7 @@ exten => _851XXXXX,3,Hangup
 
 ; this is used to allow the GUI to send you directly into voicemail
 ;     don't forget to set GUI variable $voicemail_exten to this extension
-exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
+exten => 8501,1,VoicemailMain(s${{CALLERID(num)}(num)})
 exten => 8501,2,Hangup
 
 ; this is used to allow the GUI to send live calls directly into voicemail

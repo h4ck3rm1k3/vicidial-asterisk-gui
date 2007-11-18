@@ -73,6 +73,10 @@ cd ../asterisk-1.2.24
 	wget http://www.eflo.net/files/amd2.conf
 	mkdir /etc/asterisk
 	mv amd2.conf /etc/asterisk/amd.conf
+	*OPTIONAL*(1.2.23 thru 1.2.24) apply the meetme DTMF passthru patch
+	wget http://www.eflo.net/files/meetme_DTMF_passthru-1.2.23.patch
+	patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
+		- File to patch: app_meetme.c
 	*OPTIONAL*(1.2.12.1 thru 1.2.24) apply the meetme volume control patch
 		*Different patches available for 1.2.7.1 through 1.2.14
 	wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
@@ -471,7 +475,9 @@ insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINE
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
 insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
-insert into vicidial_statuses values('AM','Answering Machine Auto','N','N','UNDEFINED');
+insert into vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
+insert into vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');
+insert into vicidial_statuses values('AL','Answering Machine Msg Played','N','N','UNDEFINED');
 insert into vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
 insert into vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');

@@ -834,7 +834,26 @@ if ($agent_search_method =~ /^SO|^LO/)
 		}
 	else
 		{
-		if ($AGILOG) {$agi_string = "WWWWW VDAD XFER LOCAL WAIT: |$rec_countWAIT|$channel_group|$channel|$callerid|$uniqueid|";   &agi_output;}
+		### For Debugging purposes display the call ahead of this call
+		if ( ($rec_countWAIT == '1') && ($drop_timer > 3) && ($AGILOG) )
+			{
+			$stmtA = "SELECT call_time,campaign_id,last_update_time,callerid,status,channel FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$insert_lead_id';";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$r=0;
+			$agi_string="\n";
+				while ($sthArows > $r)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$agi_string .= "|$aryA[0]|$aryA[1]|$aryA[2]|$aryA[3]|$aryA[4]|$aryA[5]|\n";
+				$r++;
+				}
+			$sthA->finish();
+			&agi_output;
+			}
+		if ($AGILOG) {$agi_string = "WWWWW VDAD XFER LOCAL WAIT: |$rec_countWAIT|$channel_group|$channel|$callerid|$uniqueid|$drop_timer|";   &agi_output;}
 		}
 }
 
@@ -1034,7 +1053,26 @@ if ($agent_search_method =~ /^LO|^LB/)
 		}
 	else
 		{
-		if ($AGILOG) {$agi_string = "WWWWW VDAD XFER BALANCE WAIT: |$rec_countWAITrem|$channel_group|$channel|$callerid|$uniqueid|";   &agi_output;}
+		if ( ($rec_countWAITrem == '1') && ($drop_timer > 3) && ($AGILOG) )
+			{
+			$stmtA = "SELECT call_time,campaign_id,last_update_time,callerid,status,channel FROM vicidial_auto_calls where status = 'LIVE' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$insert_lead_id';";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$r=0;
+			$agi_string="\n";
+				while ($sthArows > $r)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$agi_string .= "|$aryA[0]|$aryA[1]|$aryA[2]|$aryA[3]|$aryA[4]|$aryA[5]|\n";
+				$r++;
+				}
+			$sthA->finish();
+			&agi_output;
+			}
+
+		if ($AGILOG) {$agi_string = "WWWWW VDAD XFER BALANCE WAIT: |$rec_countWAITrem|$channel_group|$channel|$callerid|$uniqueid|$drop_timer|";   &agi_output;}
 		}
 
 }

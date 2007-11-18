@@ -17,6 +17,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	use asterisk
 	\. /path/from/root/extras/upgrade_2.0.4.sql
 	quit
+	NOTE: If you do not use the standard "cron" database login, you will
+	need to add "LOCK TABLES" to the permissions to your db login
 
 3. add the "server_reports" directory to your Web Path:
 	mkdir $PATHweb/vicidial/server_reports/
