@@ -1556,9 +1556,9 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$stmt="SELECT user_group from vicidial_users where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
-		$user_group =	$row[0];
+		$Ruser_group =	$row[0];
 
-		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$Ruser_group';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$allowed_campaigns =	$row[0];
@@ -5894,7 +5894,7 @@ if ($ADD==4)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass' where user='$user'|\n");
+			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		}

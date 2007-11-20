@@ -13,7 +13,7 @@
 #  - $pass
 # optional variables:
 #  - $format - ('text','debug')
-#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit')
+#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit','LogiNCamPaigns')
 #  - $stage - ('start','finish','lookup','new')
 #  - $closer_choice - ('CL_TESTCAMP_L CL_OUT123_L -')
 #  - $conf_exten - ('8600011',...)
@@ -135,10 +135,11 @@
 # 71029-1855 - removed campaign_id naming restrictions for CLOSER-type campaigns
 # 71030-2047 - added hopper priority for auto alt dial entries
 # 71116-1011 - added calls_today count updating of the vicidial_live_agents upon INCALL
+# 71120-1520 - added LogiNCamPaigns to show only allowed campaigns for agents upon login
 #
 
-$version = '2.0.4-62';
-$build = '71116-1011';
+$version = '2.0.4-63';
+$build = '71120-1520';
 
 require("dbconnect.php");
 
@@ -294,40 +295,46 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 $MT[0]='';
 $agents='@agents';
 
-$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
-if ($DB) {echo "|$stmt|\n";}
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$auth=$row[0];
-
-if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
-{
-echo "Invalid Username/Password: |$user|$pass|\n";
-exit;
-}
-else
-{
-
-if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
+if ($ACTION == 'LogiNCamPaigns')
 	{
-	echo "Invalid server_ip: |$server_ip|  or  Invalid session_name: |$session_name|\n";
-	exit;
+	$skip_user_validation=1;
 	}
 else
 	{
-	$stmt="SELECT count(*) from web_client_sessions where session_name='$session_name' and server_ip='$server_ip';";
+	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$SNauth=$row[0];
-	  if($SNauth==0)
+	$auth=$row[0];
+
+	if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
+	{
+	echo "Invalid Username/Password: |$user|$pass|\n";
+	exit;
+	}
+	else
+	{
+	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Invalid session_name: |$session_name|$server_ip|\n";
+		echo "Invalid server_ip: |$server_ip|  or  Invalid session_name: |$session_name|\n";
 		exit;
 		}
-	  else
+	else
 		{
-		# do nothing for now
+		$stmt="SELECT count(*) from web_client_sessions where session_name='$session_name' and server_ip='$server_ip';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$SNauth=$row[0];
+		  if($SNauth==0)
+			{
+			echo "Invalid session_name: |$session_name|$server_ip|\n";
+			exit;
+			}
+		  else
+			{
+			# do nothing for now
+			}
 		}
 	}
 }
@@ -342,6 +349,63 @@ echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 }
+
+
+
+################################################################################
+### LogiNCamPaigns - generates an HTML SELECT list of allowed campaigns for a 
+###                  specific agent on the login screen
+################################################################################
+if ($ACTION == 'LogiNCamPaigns')
+{
+	if ( (strlen($user)<1) )
+	{
+	echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+	echo "<option value=\"\">-- ERROR --</option>\n";
+	echo "</select>\n";
+	exit;
+	}
+	else
+	{
+	echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
+	echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
+
+	$stmt="SELECT user_group from vicidial_users where user='$user' and pass='$pass'";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$VU_user_group=$row[0];
+
+	$LOGallowed_campaignsSQL='';
+
+	$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
+		{
+		$LOGallowed_campaignsSQL = eregi_replace(' -','',$row[0]);
+		$LOGallowed_campaignsSQL = eregi_replace(' ',"','",$LOGallowed_campaignsSQL);
+		$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
+		}
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	$camps_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($camps_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		echo "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "</select>\n";
+	exit;
+	}
+}
+
 
 
 ################################################################################

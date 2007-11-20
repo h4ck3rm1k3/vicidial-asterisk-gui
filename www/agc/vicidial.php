@@ -166,10 +166,11 @@
 # 71029-1848 - Changed CLOSER-type campaign to not use campaign_id restrictions
 # 71101-1204 - Fixed bug in callback calendar with DST
 # 71116-0957 - Added campaign_weight and calls_today to the vla table insertion
+# 71120-1719 - Added XMLHTPRequest lookup of allowable campaigns for agents during login
 #
 
-$version = '2.0.4-137';
-$build = '71116-0957';
+$version = '2.0.4-138';
+$build = '71120-1719';
 
 require("dbconnect.php");
 
@@ -249,6 +250,7 @@ $clientDST				= '1';	# set to 1 to check for DST on server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
 $PreseT_DiaL_LinKs		= '1';	# set to 1 to show a DIAL link for Dial Presets
+$LogiNAJAX				= '1';	# set to 1 to do lookups
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -284,10 +286,31 @@ echo "<!-- VERSION: $version     BUILD: $build -->\n";
 
 if ($campaign_login_list > 0)
 {
-$camp_form_code  = "<select size=1 name=VD_campaign>\n";
+$camp_form_code  = "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
 $camp_form_code .= "<option value=\"\"></option>\n";
 
-$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' order by campaign_id";
+$LOGallowed_campaignsSQL='';
+if ($relogin == 'YES')
+{
+	$stmt="SELECT user_group from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$VU_user_group=$row[0];
+
+	$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
+		{
+		$LOGallowed_campaignsSQL = eregi_replace(' -','',$row[0]);
+		$LOGallowed_campaignsSQL = eregi_replace(' ',"','",$LOGallowed_campaignsSQL);
+		$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
+		}
+}
+
+$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 $camps_to_print = mysql_num_rows($rslt);
@@ -319,6 +342,62 @@ $camp_form_code = "<INPUT TYPE=TEXT NAME=VD_campaign SIZE=10 MAXLENGTH=20 VALUE=
 }
 
 
+if ($LogiNAJAX > 0)
+{
+?>
+
+<script language="Javascript">
+
+// ################################################################################
+// Send Request for allowable campaigns to populate the campaigns pull-down
+	function login_allowable_campaigns() 
+		{
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			logincampaign_query = "&user=" + document.vicidial_form.VD_login.value + "&pass=" + document.vicidial_form.VD_pass.value + "&ACTION=LogiNCamPaigns&format=html";
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(logincampaign_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					Nactiveext = null;
+					Nactiveext = xmlhttp.responseText;
+				//	alert(logincampaign_query);
+				//	alert(xmlhttp.responseText);
+					document.getElementById("LogiNCamPaigns").innerHTML = Nactiveext;
+					document.getElementById("LogiNReseT").innerHTML = "<INPUT TYPE=BUTTON VALUE=\"Refresh Campaign List\" OnClick=\"login_allowable_campaigns()\">";
+					document.getElementById("VD_campaign").focus();
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+</script>
+
+<?
+}
+
 
 if ($relogin == 'YES')
 {
@@ -328,7 +407,7 @@ echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
-echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+echo "<FORM NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
@@ -364,7 +443,7 @@ if ($user_login_first == 1)
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 	echo "</TR></TABLE>\n";
-	echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
@@ -379,8 +458,9 @@ if ($user_login_first == 1)
 	echo "<TR><TD ALIGN=RIGHT>User Password:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 	echo "<TR><TD ALIGN=RIGHT>Campaign:  </TD>";
-	echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+	echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+	echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -406,7 +486,7 @@ if ($user_login_first == 1)
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 		echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 		echo "</TR></TABLE>\n";
-		echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+		echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 		echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
@@ -422,8 +502,9 @@ if ($user_login_first == 1)
 		echo "<TR><TD ALIGN=RIGHT>User Password:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 		echo "<TR><TD ALIGN=RIGHT>Campaign:  </TD>";
-		echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+		echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
+		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+		echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
 		echo "</TABLE>\n";
 		echo "</FORM>\n\n";
@@ -443,7 +524,7 @@ echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
-echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
@@ -454,7 +535,8 @@ echo "<TR><TD ALIGN=RIGHT>Phone Login: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 MAXLENGTH=20 VALUE=\"\"></TD></TR>\n";
 echo "<TR><TD ALIGN=RIGHT>Phone Password:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 MAXLENGTH=20 VALUE=\"\"></TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
@@ -518,7 +600,7 @@ $VDloginDISPLAY=0;
 		$row=mysql_fetch_row($rslt);
 		$LOGallowed_campaigns		=$row[0];
 
-		if ( (!eregi("$VD_campaign",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) )
+		if ( (!eregi(" $VD_campaign ",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) )
 			{
 			echo "<title>VICIDIAL web client: VICIDIAL Campaign Login</title>\n";
 			echo "</head>\n";
@@ -533,8 +615,9 @@ $VDloginDISPLAY=0;
 			echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 			echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 MAXLENGTH=20 VALUE=\"$VD_login\">\n<br>";
 			echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"><br>\n";
-			echo "Campaign: $camp_form_code<br>\n";
-			echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
+			echo "Campaign: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+			echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+			echo "<span id=\"LogiNReseT\"></span>\n";
 			echo "</FORM>\n\n";
 			echo "</body>\n\n";
 			echo "</html>\n\n";
@@ -758,7 +841,7 @@ $VDloginDISPLAY=0;
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 	echo "</TR></TABLE>\n";
-	echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
@@ -773,8 +856,9 @@ $VDloginDISPLAY=0;
 	echo "<TR><TD ALIGN=RIGHT>User Password:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 	echo "<TR><TD ALIGN=RIGHT>Campaign:  </TD>";
-	echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+	echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+	echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
@@ -798,7 +882,7 @@ if (!$authphone)
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 	echo "</TR></TABLE>\n";
-	echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
+	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
@@ -1199,8 +1283,9 @@ else
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 		echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 MAXLENGTH=20 VALUE=\"$VD_login\">\n<br>";
 		echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"><br>\n";
-		echo "Campaign: $camp_form_code<br>\n";
-		echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
+		echo "Campaign: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+		echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+		echo "<span id=\"LogiNReseT\"></span>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
 		echo "</html>\n\n";
@@ -1221,8 +1306,9 @@ else
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 		echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 MAXLENGTH=20 VALUE=\"$VD_login\">\n<br>";
 		echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"><br>\n";
-		echo "Campaign: $camp_form_code<br>\n";
-		echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT>\n";
+		echo "Campaign: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+		echo "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+		echo "<span id=\"LogiNReseT\"></span>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
 		echo "</html>\n\n";
