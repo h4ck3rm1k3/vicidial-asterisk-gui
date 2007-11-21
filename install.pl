@@ -8,7 +8,8 @@
 # CHANGES
 # 71004-1155 - Added FTP and REPORT connection variables
 # 71012-1251 - Added PATHDONEmonitor setting
-# 
+# 71121-1048 - Added -p flag to mkdir to not show errors
+#
 
 ############################################
 # install.pl - puts server files in the right places and creates conf file
@@ -1801,16 +1802,16 @@ print "\nSTARTING ASTGUICLIENT INSTALLATION PHASE...\n";
 if ($WEBONLY < 1)
 	{
 	print "Creating $PATHhome/LEADS_IN/DONE directories...\n";
-	`mkdir $PATHhome/libs`;
-	`mkdir $PATHhome/libs/Asterisk`;
-	`mkdir $PATHhome/LEADS_IN`;
-	`mkdir $PATHhome/LEADS_IN/DONE`;
+	`mkdir -p $PATHhome/libs`;
+	`mkdir -p $PATHhome/libs/Asterisk`;
+	`mkdir -p $PATHhome/LEADS_IN`;
+	`mkdir -p $PATHhome/LEADS_IN/DONE`;
 	`chmod -R 0766 $PATHhome/LEADS_IN`;
 
 	print "Creating $PATHmonitor directories...\n";
-	`mkdir $PATHmonitor`;
-	`mkdir $PATHDONEmonitor`;
-	`mkdir $PATHDONEmonitor/ORIG`;
+	`mkdir -p $PATHmonitor`;
+	`mkdir -p $PATHDONEmonitor`;
+	`mkdir -p $PATHDONEmonitor/ORIG`;
 	`chmod -R 0766 $PATHmonitor`;
 	`chmod -R 0766 $PATHDONEmonitor`;
 
@@ -1841,12 +1842,12 @@ if ($WEBONLY < 1)
 if ($NOWEB < 1)
 	{
 	print "Creating $PATHweb web directories...\n";
-	`mkdir $PATHweb/agc/`;
-	`mkdir $PATHweb/astguiclient/`;
-	`mkdir $PATHweb/vicidial/`;
-	`mkdir $PATHweb/vicidial/ploticus/`;
-	`mkdir $PATHweb/vicidial/agent_reports/`;
-	`mkdir $PATHweb/vicidial/server_reports/`;
+	`mkdir -p $PATHweb/agc/`;
+	`mkdir -p $PATHweb/astguiclient/`;
+	`mkdir -p $PATHweb/vicidial/`;
+	`mkdir -p $PATHweb/vicidial/ploticus/`;
+	`mkdir -p $PATHweb/vicidial/agent_reports/`;
+	`mkdir -p $PATHweb/vicidial/server_reports/`;
 
 	print "Copying web files...\n";
 	`cp -f -R ./www/* $PATHweb/`;

@@ -323,6 +323,7 @@ exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
 
+; BE SURE TO CHANGE THESE FOR YOUR IP ADDRESS!
 exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
 exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
 exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)

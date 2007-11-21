@@ -2389,31 +2389,6 @@ exten => _68600XXX,1,Meetme,${EXTEN:1}|mq
 
 ######------ END extensions.conf changes for VD conf ------######
 
-NOTE: If you want to use app_conference instead of meetme and you already have 
-it installed, you will need to do the following:
-
-In your extensions.conf file you would replace these lines:
-exten => 8600051,1,Meetme,8600051
-exten => 8600052,1,Meetme,8600052
-...continue through 8600100...
-exten => 78600051,1,Meetme,8600051|q
-exten => 78600052,1,Meetme,8600052|q
-...continue through 78600100...
-exten => 68600051,1,Meetme,8600051|mq
-exten => 68600052,1,Meetme,8600052|mq
-...continue through 68600100...
-
-with these lines:
-exten => 8600051,1,Conference(8600051)
-exten => 8600052,1,Conference(8600052)
-...continue through 8600100...
-exten => 78600051,1,Conference(8600051|q)
-exten => 78600052,1,Conference(8600052|q)
-...continue through 78600100...
-exten => 68600051,1,Conference(8600051|Lq)
-exten => 68600052,1,Conference(8600052|Lq)
-...continue through 68600100...
-
 NOTE: If you want to do DTMF passthru with app_conference bee sure to add the
 "i" and "t" flags to the 8600XX lines: Conference(8600051|it)
 
@@ -2601,16 +2576,22 @@ exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,5,Hangup
 
-### OPTIONAL IAX Load Balance extens to allow for Overflow and Balanced VDAD
-### In this setup, the serverIP is the prefix followed by agent conf_exten
-### If you have more than 1 server doing VICIDIAL outbound, these lines are
-### REQUIRED for Load Balancing to work properly
-### server 1 extens:
+; MANDITORY VDAD extens:
+; In this setup, the serverIP is the prefix followed by agent conf_exten
+; These lines are REQUIRED for VICIDIAL to work properly
+; local server extens:
+	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
+	exten => _010*010*010*015*78600XXX*.,1,Goto(default,${EXTEN:16},1)
+	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+
+; OPTIONAL server 2 extens, needed for load balancing:
 	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*8600XXX,2,Hangup
-### server 2 extens:
-	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-	exten => _010*010*010*015*8600XXX,2,Hangup
+	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*78600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 
 
 SUBPHASE 6.3: adding entries to your MySQL "asterisk" database for vicidial 
