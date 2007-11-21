@@ -1,11 +1,13 @@
 <? 
-### AST_agent_stats.php
+### AST_agent_performance_detail.php
 ### 
 ### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # CHANGES
 #
 # 71119-2359 - First build
+# 71121-0144 - Replace existing AST_agent_performance_detail.php script with this one
+#            - Fixed zero division bug
 #
 
 require("dbconnect.php");
@@ -279,12 +281,16 @@ while ($m < $k)
 	$TOTtotPAUSE=($TOTtotPAUSE + $Spause_sec);
 	$TOTtotDISPO=($TOTtotDISPO + $Sdispo_sec);
 	$Stime = ($Stalk_sec + $Spause_sec + $Swait_sec + $Sdispo_sec);
-	$Stalk_avg = ($Stalk_sec/$Scalls);
-	$Spause_avg = ($Spause_sec/$Scalls);
-	$Swait_avg = ($Swait_sec/$Scalls);
-	$Sdispo_avg = ($Sdispo_sec/$Scalls);
+	if ( ($Scalls > 0) and ($Stalk_sec > 0) ) {$Stalk_avg = ($Stalk_sec/$Scalls);}
+		else {$Stalk_avg=0;}
+	if ( ($Scalls > 0) and ($Spause_sec > 0) ) {$Spause_avg = ($Spause_sec/$Scalls);}
+		else {$Spause_avg=0;}
+	if ( ($Scalls > 0) and ($Swait_sec > 0) ) {$Swait_avg = ($Swait_sec/$Scalls);}
+		else {$Swait_avg=0;}
+	if ( ($Scalls > 0) and ($Sdispo_sec > 0) ) {$Sdispo_avg = ($Sdispo_sec/$Scalls);}
+		else {$Sdispo_avg=0;}
 
-	$Scalls =	sprintf("%-6s", $Scalls);
+	$Scalls =	sprintf("%6s", $Scalls);
 
 	if ($non_latin < 1)
 	{
@@ -433,7 +439,7 @@ while ($n < $j)
 ### END loop through each status ###
 
 
-	$TOTcalls =	sprintf("%-7s", $TOTcalls);
+	$TOTcalls =	sprintf("%7s", $TOTcalls);
 	$TOT_AGENTS = sprintf("%-4s", $m);
 
 	$TOTtime_M = ($TOTtime / 60);
