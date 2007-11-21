@@ -18,26 +18,27 @@
 #
 # ; 1. the DNIS or inbound number called 
 # ; 2. record this call(Y|N)
-# ; 3. ask for a company code(Y|N) with the number of digits in that company code and the prompt
-# ; 4. ask for a user code(Y|N) with the number of digits in that user code and the prompt
-# ; 5. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt (Y-10-85100001)
-# ; 6. speak the current date (Y|N) with prompt announcing the date
-# ; 7. a dash-delimited list of prompts that expect responses(85100002-85100003)
-# ; 8. a "your recording ID is..." prompt (85100004)
-# ; 9. logging/output (FILE|STDERR|BOTH|NONE)
+# ; 3. play the recording ID (Y|N) with prompt leading up to it
+# ; 4. ask for a company code(Y|N) with the number of digits in that company code and the prompt
+# ; 5. ask for a user code(Y|N) with the number of digits in that user code and the prompt
+# ; 6. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt (Y-10-85100001)
+# ; 7. speak the current date (Y|N) with prompt announcing the date
+# ; 8. a dash-delimited list of prompts that expect responses(85100002-85100003)
+# ; 9. a "your recording ID is..." prompt (85100004)
+# ; 10. logging/output (FILE|STDERR|BOTH|NONE)
 #
 # ;inbound IVR call:
 #exten => 1234,1,Ringing	; call ringing
 #exten => 1234,2,Wait(1)	; Wait 1 second for CID delivery from PRI
 #exten => 1234,3,Answer		; Answer the line
-#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7274506620---Y---Y-1-85100016---N---N---Y-85100007---85100009-600--85100012-30--85100013---85100004---BOTH)
+#exten => 1234,4,AGI(agi-IVR_recording_verification.agi,7274506620---Y-85100004---Y---Y-1-85100016---N---N---Y-85100007---85100009-600--85100012-30--85100013---85100004---BOTH)
 #exten => 1234,5,Hangup
 #
 # ;inbound IVR call from a VICIDIAL transfer:
 #exten => _83002*,1,Ringing		; call ringing
 #exten => _83002*,2,Wait(1)		; Wait 1 second for CID delivery
 #exten => _83002*,3,Answer		; Answer the line
-#exten => _83002*,4,AGI(agi-IVR_recording_verification.agi,7275551234---Y---N---N---Y-10-85100001---N---85100002-85100003---85100004---BOTH)
+#exten => _83002*,4,AGI(agi-IVR_recording_verification.agi,7275551234---N---Y---N---N---Y-10-85100001---N---85100002-85100003---85100004---BOTH)
 #exten => _83002*,5,Hangup
 #
 #
@@ -49,6 +50,7 @@
 # 70921-1110 - full beta version with recording working
 # 71028-1122 - added say datetime as an option
 # 71112-0238 - added prompt delays and date announcement message
+# 71120-1337 - added playing of recording ID at beginning of session
 #
 
 &get_time_now;
@@ -124,16 +126,22 @@ if (length($ARGV[0])>1)
 	@ARGV_vars = split(/---/, $ARGV[0]);
 
 	$inbound_number =	$ARGV_vars[0];
-	$record_call =		$ARGV_vars[1];
-	$company_ID_ask =	$ARGV_vars[2];
-	$user_ID_ask =		$ARGV_vars[3];
-	$cust_phone_ask =	$ARGV_vars[4];
-	$say_date =			$ARGV_vars[5];
-	$prompts =			$ARGV_vars[6];
-	$last_prompt =		$ARGV_vars[7];
-	$AGI_output =		$ARGV_vars[8];
+	$play_ID =			$ARGV_vars[1];
+	$record_call =		$ARGV_vars[2];
+	$company_ID_ask =	$ARGV_vars[3];
+	$user_ID_ask =		$ARGV_vars[4];
+	$cust_phone_ask =	$ARGV_vars[5];
+	$say_date =			$ARGV_vars[6];
+	$prompts =			$ARGV_vars[7];
+	$last_prompt =		$ARGV_vars[8];
+	$AGI_output =		$ARGV_vars[9];
 	@prompts_list = split(/-/, $prompts);
 	$prompts_count = $#prompts_list;
+		if ($play_ID =~ /Y/)
+		{
+		@play_IDary = split(/-/, $play_ID);
+		$play_ID_prompt = $play_IDary[1];
+		}
 		if ($company_ID_ask =~ /Y/)
 		{
 		@company_ID = split(/-/, $company_ID_ask);
@@ -283,6 +291,17 @@ if ($AGILOG) {$agi_string = "IVR START- $ivr_id   $inbound_number|$record_call|$
 
 
 $AGI->stream_file('beep');
+
+### if set to play ID at beginning of session ###
+if ($play_ID =~ /Y/)
+{
+$AGI->stream_file("$play_ID_prompt");
+$AGI->say_digits("$ivr_id");
+sleep(1);
+$AGI->stream_file('beep');   
+$AGI->say_digits("$ivr_id");
+sleep(1);
+}
 
 ### if set to ask for company ID, run that subroutine ###
 if ($company_ID_ask =~ /Y/)
@@ -471,7 +490,7 @@ if ($interrupt_digit > 1)
 
 while ($digit_loop_counter < $company_ID_length)
 	{
-	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input
+	$digit = chr($AGI->wait_for_digit('100000'));  # wait 100 seconds for input
 	if ($digit =~ /\d/)
 		{
 		$totalDTMF = "$totalDTMF$digit";
@@ -525,7 +544,7 @@ if ($interrupt_digit > 1)
 
 while ($digit_loop_counter < $user_ID_length)
 	{
-	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input
+	$digit = chr($AGI->wait_for_digit('100000'));  # wait 100 seconds for input
 	if ($digit =~ /\d/)
 		{
 		$totalDTMF = "$totalDTMF$digit";
@@ -577,7 +596,7 @@ if ($interrupt_digit > 1)
 
 while ($digit_loop_counter < $cust_phone_length)
 	{
-	$digit = chr($AGI->wait_for_digit('10000'));  # wait 10 seconds for input
+	$digit = chr($AGI->wait_for_digit('100000'));  # wait 100 seconds for input
 	if ($digit =~ /\d/)
 		{
 		$totalDTMF = "$totalDTMF$digit";
