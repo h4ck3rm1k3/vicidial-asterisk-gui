@@ -167,10 +167,11 @@
 # 71101-1204 - Fixed bug in callback calendar with DST
 # 71116-0957 - Added campaign_weight and calls_today to the vla table insertion
 # 71120-1719 - Added XMLHTPRequest lookup of allowable campaigns for agents during login
+# 71122-0256 - Added auto-pause notification
 #
 
-$version = '2.0.4-138';
-$build = '71120-1719';
+$version = '2.0.4-139';
+$build = '71122-0256';
 
 require("dbconnect.php");
 
@@ -1749,6 +1750,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var DispO3wayCalLserverip = '';
 	var DispO3wayCalLxfernumber = '';
 	var DispO3wayCalLcamptail = '';
+	var PausENotifYCounTer = 0;
 	var phone_ip = '<? echo $phone_ip ?>';
 	var enable_sipsak_messages = '<? echo $enable_sipsak_messages ?>';
 	var allow_sipsak_messages = '<? echo $allow_sipsak_messages ?>';
@@ -2207,27 +2209,41 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						t.setTime(UnixTimeMS);
 						if ( (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
 							{
-							var Astatus_array = check_time_array[2].split("Status: ");
-							var AGStatuS = Astatus_array[1];
+							var Alogin_array = check_time_array[2].split("Logged-in: ");
+							var AGLogiN = Alogin_array[1];
 							var CamPCalLs_array = check_time_array[3].split("CampCalls: ");
 							var CamPCalLs = CamPCalLs_array[1];
-							if (AGStatuS != 'N')
+							if (AGLogiN != 'N')
 								{
-								document.getElementById("AgentStatusStatus").innerHTML = AGStatuS;
+								document.getElementById("AgentStatusStatus").innerHTML = AGLogiN;
 								}
 							if (CamPCalLs != 'N')
 								{
 								document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
 								}
-							if ( (AGStatuS == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
+							if ( (AGLogiN == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
 								{
 								showDiv('AgenTDisablEBoX');
 								}
-							if ( (AGStatuS == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
+							if ( (AGLogiN == 'DEAD_EXTERNAL') && ( (vicidial_agent_disable == 'EXTERNAL') || (vicidial_agent_disable == 'ALL') ) )
 								{
 								showDiv('AgenTDisablEBoX');
 								}
 							}
+						var VLAStatuS_array = check_time_array[4].split("Status: ");
+						var VLAStatuS = VLAStatuS_array[1];
+						if ( (VLAStatuS == 'PAUSED') && (AutoDialWaiting == 1) )
+							{
+							if (PausENotifYCounTer > 10)
+								{
+								alert('Your session has been paused');
+								AutoDial_ReSume_PauSe('VDADpause');
+								PausENotifYCounTer=0;
+								}
+							else {PausENotifYCounTer++;}
+							}
+						else {PausENotifYCounTer=0;}
+
 						var check_conf_array=check_ALL_array[1].split("|");
 						var live_conf_calls = check_conf_array[0];
 						var conf_chan_array = check_conf_array[1].split(" ~");
