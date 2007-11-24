@@ -391,11 +391,6 @@ if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )
 
 $AGI->stream_file('beep');
 
-if ($welcome_message_filename !~ /---NONE---/)
-	{
-	$AGI->stream_file("$welcome_message_filename");
-	}
-
 if ($call_handle_method =~ /DIGITID$/)
 {
 	&enter_pin_number;
@@ -558,6 +553,13 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 	}
 ##### END AFTER HOURS CHECK #####
 
+
+
+##### PLAY WELCOME MESSAGE #####
+if ($welcome_message_filename !~ /---NONE---/)
+	{
+	$AGI->stream_file("$welcome_message_filename");
+	}
 
 
 
