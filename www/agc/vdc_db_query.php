@@ -136,10 +136,11 @@
 # 71030-2047 - added hopper priority for auto alt dial entries
 # 71116-1011 - added calls_today count updating of the vicidial_live_agents upon INCALL
 # 71120-1520 - added LogiNCamPaigns to show only allowed campaigns for agents upon login
+# 71125-1751 - Added inbound-group default inbound group sending to vicidial.php
 #
 
-$version = '2.0.4-63';
-$build = '71120-1520';
+$version = '2.0.4-64';
+$build = '71125-1751';
 
 require("dbconnect.php");
 
@@ -1703,6 +1704,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_xferconf_a_number	= $row[11];
 				$VDCL_xferconf_b_dtmf	= $row[12];
 				$VDCL_xferconf_b_number	= $row[13];
+				$VDCL_default_xfer_group= $row[28];
 
 				### update the comments in vicidial_live_agents record
 				$stmt = "UPDATE vicidial_live_agents set comments='INBOUND' where user='$user' and server_ip='$server_ip';";
@@ -1730,8 +1732,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 				}
 
 			### if web form is set then send on to vicidial.php for override of WEB_FORM address
-			if (strlen($VDCL_group_web)>5) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n";}
-			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n";}
+			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|\n";}
+			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|\n";}
 
 			$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 			if ($DB) {echo "$stmt\n";}

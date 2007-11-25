@@ -147,8 +147,11 @@ ALTER TABLE vicidial_inbound_groups MODIFY next_agent_call ENUM('random','oldest
 ALTER TABLE vicidial_campaigns MODIFY next_agent_call ENUM('random','oldest_call_start','oldest_call_finish','campaign_rank','overall_user_level','fewest_calls') default 'oldest_call_finish';
 
 
+ALTER TABLE vicidial_campaigns ADD default_xfer_group VARCHAR(20) default '---NONE---';
 
+ALTER TABLE vicidial_inbound_groups ADD default_xfer_group VARCHAR(20) default '---NONE---';
 
+ALTER TABLE vicidial_campaigns ADD xfer_groups  TEXT default '';
 
 
 

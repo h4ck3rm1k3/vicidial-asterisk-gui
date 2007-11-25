@@ -78,6 +78,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 16. AST_agent_performance_detail.php report script has been completely rewritten
 
+17. REQUIRED CHANGE! If you use Fronter/Closer campaigns where an agent is sending
+	calls to a closer, you will need to define the new "Default Transfer Group"
+	field with the inbound group that you want to take the calls. Transfers
+	are now allowed from a list of definable in-groups that you have to set
+	in the campaign detail screen.
 
 
 

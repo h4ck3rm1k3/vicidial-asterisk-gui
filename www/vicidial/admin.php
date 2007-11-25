@@ -324,6 +324,8 @@ if (isset($_GET["group_name"]))	{$group_name=$_GET["group_name"];}
 	elseif (isset($_POST["group_name"]))	{$group_name=$_POST["group_name"];}
 if (isset($_GET["groups"]))	{$groups=$_GET["groups"];}
 	elseif (isset($_POST["groups"]))	{$groups=$_POST["groups"];}
+if (isset($_GET["XFERgroups"]))	{$XFERgroups=$_GET["XFERgroups"];}
+	elseif (isset($_POST["XFERgroups"]))	{$XFERgroups=$_POST["XFERgroups"];}
 if (isset($_GET["HKstatus"]))	{$HKstatus=$_GET["HKstatus"];}
 	elseif (isset($_POST["HKstatus"]))	{$HKstatus=$_POST["HKstatus"];}
 if (isset($_GET["hopper_level"]))	{$hopper_level=$_GET["hopper_level"];}
@@ -665,6 +667,8 @@ if (isset($_GET["source_user_id"]))				{$source_user_id=$_GET["source_user_id"];
 	elseif (isset($_POST["source_user_id"]))	{$source_user_id=$_POST["source_user_id"];}
 if (isset($_GET["source_group_id"]))			{$source_group_id=$_GET["source_group_id"];}
 	elseif (isset($_POST["source_group_id"]))	{$source_group_id=$_POST["source_group_id"];}
+if (isset($_GET["default_xfer_group"]))				{$default_xfer_group=$_GET["default_xfer_group"];}
+	elseif (isset($_POST["default_xfer_group"]))	{$default_xfer_group=$_POST["default_xfer_group"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -935,6 +939,7 @@ $agent_alert_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_alert_exten);
 $source_campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_campaign_id);
 $source_user_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_user_id);
 $source_group_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_group_id);
+$default_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$default_xfer_group);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -1134,12 +1139,14 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 #            - Added ability to Copy a campaign's setting to a new campaign
 # 71113-2225 - Added ability to copy user and in-group settings to new users and in-groups
 # 71116-0942 - Added campaign_rank and fewest_calls as methods for agent call routing
+# 71122-1135 - Added default transfer group for campaigns and inbound groups
+# 71125-1751 - Added allowable transfer groups to campaign detail screen
 #
 # 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-117';
-$build = '71116-0942';
+$admin_version = '2.0.4-119';
+$build = '71125-1751';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1565,13 +1572,13 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
 		$UGcampaigns = explode(" ", $allowed_campaigns);
 
-		$p=0;   $RANK_camp_active=0;
+		$p=0;   $RANK_camp_active=0;   $CR_disabled = '';
 		if (eregi('-ALL-CAMPAIGNS-',$allowed_campaigns))
 			{$RANK_camp_active++;}
 		else
 			{
 			$UGcampaign_ct = count($UGcampaigns);
-			while ($p < $campaign_ct)
+			while ($p < $UGcampaign_ct)
 				{
 				if ($campaign_id_values[$o] == $UGcampaigns[$p]) 
 					{$RANK_camp_active++;}
@@ -1579,7 +1586,6 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				}
 			}
 		if ($RANK_camp_active < 1) {$CR_disabled = 'DISABLED';}
-		else {$CR_disabled = '';}
 
 		$RANKcampaigns_list .= "<tr $bgcolor><td>";
 		$campaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] <BR>\n";
@@ -1602,14 +1608,34 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 
 
 	##### BEGIN get inbound groups listing for checkboxes #####
+	$xfer_groupsSQL='';
 	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
 	{
-	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
+	$stmt="SELECT closer_campaigns,xfer_groups from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns =	$row[0];
-	$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
-	$groups = explode(" ", $closer_campaigns);
+		$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
+		$groups = explode(" ", $closer_campaigns);
+	$xfer_groups =	$row[1];
+		$xfer_groups = preg_replace("/ -$/","",$xfer_groups);
+		$XFERgroups = explode(" ", $xfer_groups);
+	$xfer_groupsSQL = preg_replace("/^ | -$/","",$xfer_groups);
+	$xfer_groupsSQL = preg_replace("/ /","','",$xfer_groupsSQL);
+	$xfer_groupsSQL = "WHERE group_id IN('$xfer_groupsSQL')";
+	}
+	if ($ADD==41)
+	{
+	$p=0;
+	$XFERgroup_ct = count($XFERgroups);
+	while ($p < $XFERgroup_ct)
+		{
+		$xfer_groups .= " $XFERgroups[$p]";
+		$p++;
+		}
+	$xfer_groupsSQL = preg_replace("/^ | -$/","",$xfer_groups);
+	$xfer_groupsSQL = preg_replace("/ /","','",$xfer_groupsSQL);
+	$xfer_groupsSQL = "WHERE group_id IN('$xfer_groupsSQL')";
 	}
 
 	if ( (($ADD==31111) or ($ADD==31111)) and (count($groups)<1) )
@@ -1637,6 +1663,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$groups_to_print = mysql_num_rows($rslt);
 	$groups_list='';
 	$groups_value='';
+	$XFERgroups_list='';
 	$RANKgroups_list="<tr><td>INBOUND GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
 
 	$o=0;
@@ -1689,6 +1716,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
 		$groups_list .= "<input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_values[$o]\"";
+		$XFERgroups_list .= "<input type=\"checkbox\" name=\"XFERgroups[]\" value=\"$group_id_values[$o]\"";
 		$RANKgroups_list .= "<tr $bgcolor><td><input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_values[$o]\"";
 		$p=0;
 		$group_ct = count($groups);
@@ -1702,7 +1730,19 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				}
 			$p++;
 			}
+		$p=0;
+		$XFERgroup_ct = count($XFERgroups);
+		while ($p < $XFERgroup_ct)
+			{
+			if ($group_id_values[$o] == $XFERgroups[$p]) 
+				{
+				$XFERgroups_list .= " CHECKED";
+				$XFERgroups_value .= " $group_id_values[$o]";
+				}
+			$p++;
+			}
 		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
+		$XFERgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
 		$RANKgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] </td>";
 		$RANKgroups_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$group_id_values[$o]>\n";
 		$h="9";
@@ -1719,6 +1759,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$o++;
 		}
 	if (strlen($groups_value)>2) {$groups_value .= " -";}
+	if (strlen($XFERgroups_value)>2) {$XFERgroups_value .= " -";}
 	}
 	##### END get inbound groups listing for checkboxes #####
 
@@ -2068,6 +2109,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-allow_closers">
 <BR>
 <B>Allow Closers -</B> This is where you can set whether the users of this campaign will have the option to send the call to a closer.
+
+<BR>
+<A NAME="vicidial_campaigns-default_xfer_group">
+<BR>
+<B>Default Transfer Group -</B> This field is the default In-Group that will be automatically selected when the agent goes to the transfer-conference frame in their agent interface.
+
+<BR>
+<A NAME="vicidial_campaigns-xfer_groups">
+<BR>
+<B>Allowed Transfer Groups -</B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_allow_inbound">
@@ -2526,6 +2577,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_inbound_groups-agent_alert_delay">
 <BR>
 <B>Agent Alert Delay -</B> The length of time in milliseconds to wait before sending the call to the agent after playing the on Agent Alert Extension. Default is 1000.
+
+<BR>
+<A NAME="vicidial_inbound_groups-default_xfer_group">
+<BR>
+<B>Default Transfer Group -</B> This field is the default In-Group that will be automatically selected when the agent goes to the transfer-conference frame in their agent interface.
 
 
 
@@ -4789,31 +4845,39 @@ if ($ADD==21)
 		{echo "<br>CAMPAIGN NOT ADDED - there is already a campaign in the system with this ID\n";}
 	else
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
+		$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>CAMPAIGN NOT ADDED - there is already an inbound group in the system with this ID\n";}
+		else
 			{
-			 echo "<br>CAMPAIGN NOT ADDED - Please go back and look at the data you entered\n";
-			 echo "<br>campaign ID must be between 2 and 8 characters in length\n";
-			 echo "<br>campaign name must be between 6 and 40 characters in length\n";
-			}
-		 else
-			{
-			echo "<br><B>CAMPAIGN ADDED: $campaign_id</B>\n";
-
-			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh,list_order_mix) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y','DISABLED');";
-			$rslt=mysql_query($stmt, $link);
-
-			$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
-			$rslt=mysql_query($stmt, $link);
-
-			echo "<!-- $stmt -->";
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW CAMPAIGN  |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				 echo "<br>CAMPAIGN NOT ADDED - Please go back and look at the data you entered\n";
+				 echo "<br>campaign ID must be between 2 and 8 characters in length\n";
+				 echo "<br>campaign name must be between 6 and 40 characters in length\n";
 				}
+			 else
+				{
+				echo "<br><B>CAMPAIGN ADDED: $campaign_id</B>\n";
 
+				$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh,list_order_mix) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y','DISABLED');";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+				$rslt=mysql_query($stmt, $link);
+
+				echo "<!-- $stmt -->";
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW CAMPAIGN  |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				}
 			}
 		}
 $ADD=31;
@@ -4844,7 +4908,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -5205,25 +5269,33 @@ if ($ADD==2111)
 		{echo "<br>GROUP NOT ADDED - there is already a group in the system with this ID\n";}
 	else
 		{
-		 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2)  or (strlen($group_color) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
+		$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>GROUP NOT ADDED - there is already a campaign in the system with this ID\n";}
+		else
 			{
-			 echo "<br>GROUP NOT ADDED - Please go back and look at the data you entered\n";
-			 echo "<br>Group ID must be between 2 and 20 characters in length and contain no ' -+'.\n";
-			 echo "<br>Group name and group color must be at least 2 characters in length\n";
-			}
-		 else
-			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
-			$rslt=mysql_query($stmt, $link);
-
-			echo "<br><B>GROUP ADDED: $group_id</B>\n";
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2)  or (strlen($group_color) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				 echo "<br>GROUP NOT ADDED - Please go back and look at the data you entered\n";
+				 echo "<br>Group ID must be between 2 and 20 characters in length and contain no ' -+'.\n";
+				 echo "<br>Group name and group color must be at least 2 characters in length\n";
+				}
+			 else
+				{
+				$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
+				$rslt=mysql_query($stmt, $link);
+
+				echo "<br><B>GROUP ADDED: $group_id</B>\n";
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
 				}
 			}
 		}
@@ -5253,7 +5325,7 @@ if ($ADD==2011)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>GROUP ADDED: $group_id</B>\n";
@@ -5959,7 +6031,7 @@ if ($ADD==41)
 		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
 			{$hopper_level='100';}
 
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id' where campaign_id='$campaign_id';";
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -6608,7 +6680,7 @@ if ($ADD==4111)
 		{
 		echo "<br><B>GROUP MODIFIED: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_message='$drop_message',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_message='$drop_message',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -8760,6 +8832,7 @@ if ($ADD==31)
 		$dial_status_d = $row[6];
 		$dial_status_e = $row[7];
 		$lead_order = $row[8];
+		$allow_closers = $row[12];
 		$hopper_level = $row[13];
 		$auto_dial_level = $row[14];
 		$next_agent_call = $row[15];
@@ -8815,6 +8888,7 @@ if ($ADD==31)
 		$list_order_mix = $row[64];
 		$campaign_allow_inbound = $row[65];
 		$manual_dial_list_id = $row[66];
+		$default_xfer_group = $row[67];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -8885,6 +8959,31 @@ if ($ADD==31)
 	$Dstatuses = explode(" ", $dial_statuses);
 	$Ds_to_print = (count($Dstatuses) -1);
 
+	##### get in-groups listings for dynamic pulldown list menu
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups $xfer_groupsSQL order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Xgroups_to_print = mysql_num_rows($rslt);
+	$Xgroups_menu='';
+	$Xgroups_selected=0;
+	$o=0;
+	while ($Xgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Xgroups_menu .= "<option ";
+		if ($default_xfer_group == "$rowx[0]") 
+			{
+			$Xgroups_menu .= "SELECTED ";
+			$Xgroups_selected++;
+			}
+		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Xgroups_selected < 1) 
+		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+
+
 	if ($SUB<1)		{$camp_detail_color=$subcamp_color;}
 		else		{$camp_detail_color=$campaigns_color;}
 	if ($SUB==22)	{$camp_statuses_color=$subcamp_color;}
@@ -8931,7 +9030,7 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$row[12]</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$allow_closers</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
 		$o=0;
@@ -9109,14 +9208,23 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Manual Dial List ID: </td><td align=left><input type=text name=manual_dial_list_id size=15 maxlength=12 value=\"$manual_dial_list_id\">$NWB#vicidial_campaigns-manual_dial_list_id$NWE</td></tr>\n";
 
-		$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and campaign_allow_inbound='Y'";
-		$rslt=mysql_query($stmt, $link);
-		$row=mysql_fetch_row($rslt);
-		if ($row[0] > 0)
+		if ($campaign_allow_inbound == 'Y')
 			{
 			echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Inbound Groups: <BR>";
 			echo " $NWB#vicidial_campaigns-closer_campaigns$NWE</td><td align=left>\n";
 			echo "$groups_list";
+			echo "</td></tr>\n";
+			}
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Default Transfer Group: </td><td align=left><select size=1 name=default_xfer_group>";
+		echo "$Xgroups_menu";
+		echo "</select>$NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
+
+		if ($allow_closers == 'Y')
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Transfer Groups: <BR>";
+			echo " $NWB#vicidial_campaigns-xfer_groups$NWE</td><td align=left>\n";
+			echo "$XFERgroups_list";
 			echo "</td></tr>\n";
 			}
 
@@ -9524,6 +9632,9 @@ if ($ADD==34)
 		$campaign_logindate = $row[60];
 		$dial_statuses = $row[61];
 		$list_order_mix = $row[64];
+		$default_xfer_group = $row[67];
+		$campaign_allow_inbound = $row[65];
+		$default_xfer_group = $row[67];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -9634,6 +9745,8 @@ if ($ADD==34)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Default Transfer Group: </td><td align=left>$default_xfer_group $NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
 		$o=0;
 		while ($Ds_to_print > $o) 
@@ -10811,6 +10924,32 @@ if ($ADD==3111)
 	$prompt_interval =			$row[25];
 	$agent_alert_exten =		$row[26];
 	$agent_alert_delay =		$row[27];
+	$default_xfer_group =		$row[28];
+
+	##### get in-groups listings for dynamic pulldown
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Xgroups_to_print = mysql_num_rows($rslt);
+	$Xgroups_menu='';
+	$Xgroups_selected=0;
+	$o=0;
+	while ($Xgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Xgroups_menu .= "<option ";
+		if ($default_xfer_group == "$rowx[0]") 
+			{
+			$Xgroups_menu .= "SELECTED ";
+			$Xgroups_selected++;
+			}
+		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Xgroups_selected < 1) 
+		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+
 
 	echo "<br>MODIFY A GROUPS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=4111>\n";
@@ -10870,6 +11009,10 @@ if ($ADD==3111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alert Extension: </td><td align=left><input type=text name=agent_alert_exten size=10 maxlength=20 value=\"$agent_alert_exten\">$NWB#vicidial_inbound_groups-agent_alert_exten$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alert Delay: </td><td align=left><input type=text name=agent_alert_delay size=6 maxlength=6 value=\"$agent_alert_delay\">$NWB#vicidial_inbound_groups-agent_alert_delay$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Default Transfer Group: </td><td align=left><select size=1 name=default_xfer_group>";
+	echo "$Xgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-default_xfer_group$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";

@@ -168,10 +168,11 @@
 # 71116-0957 - Added campaign_weight and calls_today to the vla table insertion
 # 71120-1719 - Added XMLHTPRequest lookup of allowable campaigns for agents during login
 # 71122-0256 - Added auto-pause notification
+# 71125-1751 - Changed Transfer section to allow for selection of in-groups to send calls to
 #
 
-$version = '2.0.4-139';
-$build = '71122-0256';
+$version = '2.0.4-140';
+$build = '71125-1751';
 
 require("dbconnect.php");
 
@@ -708,7 +709,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the statuses to be dialed for your campaign as well as other campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -744,6 +745,8 @@ $VDloginDISPLAY=0;
 				$no_hopper_leads_logins =	$row[28];
 				$campaign_allow_inbound =	$row[29];
 				$manual_dial_list_id =		$row[30];
+				$default_xfer_group =		$row[31];
+				$xfer_groups =				$row[32];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -791,7 +794,7 @@ $VDloginDISPLAY=0;
 			if ($campaign_allow_inbound == 'Y')
 				{
 				$VARingroups='';
-				$stmt="select group_id from vicidial_inbound_groups where active = 'Y' and group_id IN($closer_campaigns) order by group_id limit 20;";
+				$stmt="select group_id from vicidial_inbound_groups where active = 'Y' and group_id IN($closer_campaigns) order by group_id limit 60;";
 				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -805,6 +808,32 @@ $VDloginDISPLAY=0;
 					$INgrpCT++;
 					}
 				$VARingroups = substr("$VARingroups", 0, -1); 
+				}
+
+			##### grab the allowable inbound groups to choose from for transfer options
+			$xfer_groups = preg_replace("/^ | -$/","",$xfer_groups);
+			$xfer_groups = preg_replace("/ /","','",$xfer_groups);
+			$xfer_groups = "'$xfer_groups'";
+			$VARxfergroups="''";
+			if ($allow_closers == 'Y')
+				{
+				$VARxfergroups='';
+				$stmt="select group_id,group_name from vicidial_inbound_groups where active = 'Y' and group_id IN($xfer_groups) order by group_id limit 60;";
+				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$xfer_ct = mysql_num_rows($rslt);
+				$XFgrpCT=0;
+				while ($XFgrpCT < $xfer_ct)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VARxfergroups = "$VARxfergroups'$row[0]',";
+					$VARxfergroupsnames = "$VARxfergroupsnames'$row[1]',";
+					if ($row[0] == "$default_xfer_group") {$default_xfer_group_name = $row[1];}
+					$XFgrpCT++;
+					}
+				$VARxfergroups = substr("$VARxfergroups", 0, -1); 
+				$VARxfergroupsnames = substr("$VARxfergroupsnames", 0, -1); 
 				}
 
 			##### grab the number of leads in the hopper for this campaign
@@ -1539,6 +1568,12 @@ $CCAL_OUT .= "</table>";
 	var VD_statuses_ct = '<? echo $VD_statuses_ct ?>';
 	VARingroups = new Array(<? echo $VARingroups ?>);
 	var INgroupCOUNT = '<? echo $INgrpCT ?>';
+	VARxfergroups = new Array(<? echo $VARxfergroups ?>);
+	VARxfergroupsnames = new Array(<? echo $VARxfergroupsnames ?>);
+	var XFgroupCOUNT = '<? echo $XFgrpCT ?>';
+	var default_xfer_group = '<? echo $default_xfer_group ?>';
+	var default_xfer_group_name = '<? echo $default_xfer_group_name ?>';
+	var LIVE_default_xfer_group = '<? echo $default_xfer_group ?>';
 	var HK_statuses_camp = '<? echo $HK_statuses_camp ?>';
 	HKhotkeys = new Array(<? echo $HKhotkeys ?>);
 	HKstatuses = new Array(<? echo $HKstatuses ?>);
@@ -1997,8 +2032,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			var Ctasknum = tasknum_string.replace(regCXFvars, '');
 			if (Ctasknum.length < 2)
 				{Ctasknum = '990009';}
-			var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
-			tasknum = Ctasknum + "*CL_" + campaign + '' + closerxfercamptail + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+			var XfeRSelecT = document.getElementById("XfeRGrouP");
+			tasknum = Ctasknum + "*" + XfeRSelecT.value + '*CXFER*' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
 
 			CustomerData_update();
 
@@ -2568,10 +2603,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (taskvar == 'XfeRLOCAL')
 				{
-				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+				var XfeRSelecT = document.getElementById("XfeRGrouP");
 				var queryCID = "XLvdcW" + epoch_sec + user_abb;
-				// 		 "90009*CL_$campaign$park_exten_suffix**$lead_id**$phone_number*$user*";
-				var redirectdestination = closerxferinternal + '90009*CL_' + campaign + '' + closerxfercamptail + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+				// 		 "90009*$group**$lead_id**$phone_number*$user*";
+				var redirectdestination = closerxferinternal + '90009*' + XfeRSelecT.value + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
 
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectVD&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS;
 				}
@@ -2601,7 +2636,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var redirectdestination = "NEXTAVAILABLE";
 				var redirectXTRAvalue = XDchannel;
 				var redirecttype_test = document.vicidial_form.xfernumber.value;
-				var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+				var XfeRSelecT = document.getElementById("XfeRGrouP");
 				var regRXFvars = new RegExp("CXFER","g");
 				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
 					{var redirecttype = 'RedirectXtraCX';}
@@ -2613,7 +2648,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
 				DispO3wayCalLcamptail = document.vicidial_form.xfercode.value;
 
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value+ "&filename=" + taskdebugnote + "&campaign=CL_" + campaign + '' + closerxfercamptail;
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value+ "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value;
 
 				if (taskdebugnote == 'FIRST') 
 					{
@@ -3155,8 +3190,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
 
 								document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
-
-								document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_internalcloser.gif\" border=0 alt=\"INTERNAL CLOSER\"></a>";
 
 								document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Dial Blind Transfer\"></a>";
 
@@ -3826,6 +3859,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							 CalL_XC_a_NuMber			= VDIC_data_VDIG[8];
 							 CalL_XC_b_Dtmf				= VDIC_data_VDIG[9];
 							 CalL_XC_b_NuMber			= VDIC_data_VDIG[10];
+							if (VDIC_data_VDIG[11].length > 0)
+								{LIVE_default_xfer_group = VDIC_data_VDIG[11];}
+							else
+								{LIVE_default_xfer_group = default_xfer_group;}
 
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
@@ -3923,8 +3960,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
 
 							document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
-
-							document.getElementById("InternalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRINTERNAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_internalcloser.gif\" border=0 alt=\"INTERNAL CLOSER\"></a>";
 
 							document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"./images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Dial Blind Transfer\"></a>";
 
@@ -4306,7 +4341,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_hangupcustomer_OFF.gif\" border=0 alt=\"Hangup Customer\">";
 			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_transferconf_OFF.gif\" border=0 alt=\"Transfer - Conference\">";
 			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"./images/vdc_XB_localcloser_OFF.gif\" border=0 alt=\"LOCAL CLOSER\">";
-			document.getElementById("InternalCloser").innerHTML = "<IMG SRC=\"./images/vdc_XB_internalcloser_OFF.gif\" border=0 alt=\"INTERNAL CLOSER\">";
 			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"./images/vdc_XB_blindtransfer_OFF.gif\" border=0 alt=\"Dial Blind Transfer\">";
 			document.getElementById("DialBlindVMail").innerHTML = "<IMG SRC=\"./images/vdc_XB_ammessage_OFF.gif\" border=0 alt=\"Blind Transfer VMail Message\">";
 			document.getElementById("VolumeUpSpan").innerHTML = "<IMG SRC=\"./images/vdc_volume_up_off.gif\" BORDER=0>";
@@ -5714,7 +5748,6 @@ else
 				}
 			if (VICIDiaL_allow_closers < 1)
 				{
-				document.getElementById("InternalCloser").style.visibility = 'hidden';
 				document.getElementById("LocalCloser").style.visibility = 'hidden';
 				}
 			document.getElementById("sessionIDspan").innerHTML = session_id;
@@ -5757,6 +5790,7 @@ else
 				DispoSelectContent_create('','ReSET');
 				WaitingForNextStep=1;
 				open_dispo_screen=0;
+				LIVE_default_xfer_group = default_xfer_group;
 				document.getElementById("DispoSelectPhonE").innerHTML = document.vicidial_form.phone_number.value;
 				if (auto_dial_level == 0)
 					{
@@ -6137,6 +6171,19 @@ else
 				HKbutton_allowed = 0;
 				showDiv('TransferMain');
 				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"./images/vdc_LB_transferconf.gif\" border=0 alt=\"Transfer - Conference\"></a>";
+				var loop_ct = 0;
+				var live_XfeR_HTML = '';
+				var XfeR_SelecT = '';
+				while (loop_ct < XFgroupCOUNT)
+					{
+					if (VARxfergroups[loop_ct] == LIVE_default_xfer_group)
+						{XfeR_SelecT = 'SELECTED ';}
+					else {XfeR_SelecT = '';}
+					live_XfeR_HTML = live_XfeR_HTML + "<option " + XfeR_SelecT + "value=\"" + VARxfergroups[loop_ct] + "\">" + VARxfergroups[loop_ct] + " - " + VARxfergroupsnames[loop_ct] + "</option>\n";
+					loop_ct++;
+					}
+
+				document.getElementById("XfeRGrouPLisT").innerHTML = "<select size=1 name=XfeRGrouP class=\"cust_form\" id=XfeRGrouP>" + live_XfeR_HTML + "</select>";
 				}
 			else
 				{
@@ -6272,7 +6319,7 @@ echo "</head>\n";
 <span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:680px;top:330px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
+<span style="position:absolute;left:700px;top:330px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
 	<?
 	if ($PreseT_DiaL_LinKs)
 		{
@@ -6345,40 +6392,64 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </font></span>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <span style="position:absolute;left:5px;top:310px;z-index:21;" id="TransferMain">
 	<table bgcolor="#CCCCFF" width=750><tr>
 	<td align=left>
 	<div class="text_input" id="TransferMaindiv">
 	<font class="body_text">
 	 <IMG SRC="./images/vdc_XB_header.gif" border=0 alt="Transfer - Conference"><BR>
-	<span STYLE="background-color: #CCCCCC" id="InternalCloser"><IMG SRC="./images/vdc_XB_internalcloser.gif" border=0 alt="INTERNAL CLOSER"></span>
+	<span id="XfeRGrouPLisT"><select size=1 name=XfeRGrouP class="cust_form"><option>-- SELECT A GROUP TO SEND YOUR CALL TO --</option></select></span>
+
 	<span STYLE="background-color: #CCCCCC" id="LocalCloser"><IMG SRC="./images/vdc_XB_localcloser_OFF.gif" border=0 alt="LOCAL CLOSER"></span> 
-	<span STYLE="background-color: #CCCCCC" id="CloserCode"><IMG SRC="./images/vdc_XB_code.gif" border=0 alt="CODE"> <input type=text size=1 name=xfercode maxlength=2 class="cust_form"></span>
 	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="./images/vdc_XB_hangupxferline_OFF.gif" border=0 alt="Hangup Xfer Line"></span>
 	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="./images/vdc_XB_hangupbothlines.gif" border=0 alt="Hangup Both Lines"></a></span>
 
 	<BR>
 
 	<IMG SRC="./images/vdc_XB_number.gif" border=0 alt="Number to call"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
-	<IMG SRC="./images/vdc_XB_seconds.gif" border=0 alt="seconds"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
-	<IMG SRC="./images/vdc_XB_channel.gif" border=0 alt="channel"> <input type=text size=12 name=xferchannel maxlength=100 class="cust_form"> 
 	<input type=hidden name=xferuniqueid>
 	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny">DIAL OVERRIDE</font> &nbsp;
+	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="./images/vdc_XB_leave3waycall_OFF.gif" border=0 alt="LEAVE 3-WAY CALL"></span> 
+	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="./images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Dial Blind Transfer"></span>
 	<a href="#" onclick="DtMf_PreSet_a();return false;"><font class="body_tiny">D1</font></a> 
 	<a href="#" onclick="DtMf_PreSet_b();return false;"><font class="body_tiny">D2</font></a>
 
 	<BR>
 
+	<IMG SRC="./images/vdc_XB_seconds.gif" border=0 alt="seconds"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
+	<IMG SRC="./images/vdc_XB_channel.gif" border=0 alt="channel"> <input type=text size=12 name=xferchannel maxlength=100 class="cust_form"> 
 	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="./images/vdc_XB_dialwithcustomer.gif" border=0 alt="Dial With Customer"></a></span> 
 	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="./images/vdc_XB_parkcustomerdial.gif" border=0 alt="Park Customer Dial"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="./images/vdc_XB_leave3waycall_OFF.gif" border=0 alt="LEAVE 3-WAY CALL"></span> 
-	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="./images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Dial Blind Transfer"></span>
 	<span STYLE="background-color: #CCCCCC" id="DialBlindVMail"><IMG SRC="./images/vdc_XB_ammessage_OFF.gif" border=0 alt="Blind Transfer VMail Message"></span>
 	</font>
 	</div>
 	</td>
 	</tr></table>
 </span>
+
+
+
+
+
+
+
+
+
 
 <span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyActionBox">
     <table border=0 bgcolor="#FFDD99" width=740 height=70>

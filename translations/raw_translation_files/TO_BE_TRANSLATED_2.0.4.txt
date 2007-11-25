@@ -125,6 +125,10 @@ COPY USER||
 Copy In-Group||
 COPY INBOUND GROUP||
 campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest||
+Default Transfer Group -<\/B> This field is the default In-Group that will be automatically selected when the agent goes to the transfer-conference frame in their agent interface||
+Default Transfer Group: ||
+Allowed Transfer Groups: ||
+Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up||
 
 
 ############################################################ CLIENT

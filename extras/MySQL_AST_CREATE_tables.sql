@@ -530,7 +530,9 @@ disable_alter_custdata ENUM('Y','N') default 'N',
 no_hopper_leads_logins ENUM('Y','N') default 'N',
 list_order_mix VARCHAR(20) default 'DISABLED',
 campaign_allow_inbound ENUM('Y','N') default 'N',
-manual_dial_list_id BIGINT(14) UNSIGNED
+manual_dial_list_id BIGINT(14) UNSIGNED,
+default_xfer_group VARCHAR(20) default '---NONE---',
+xfer_groups  TEXT default ''
 );
 
  CREATE TABLE vicidial_lists (
@@ -615,7 +617,8 @@ moh_context VARCHAR(50) default 'default',
 onhold_prompt_filename VARCHAR(50) default 'generic_hold',
 prompt_interval SMALLINT(5) UNSIGNED default '60',
 agent_alert_exten VARCHAR(20) default '8304',
-agent_alert_delay INT(6) default '1000'
+agent_alert_delay INT(6) default '1000',
+default_xfer_group VARCHAR(20) default '---NONE---'
 );
 
 CREATE TABLE vicidial_stations (
