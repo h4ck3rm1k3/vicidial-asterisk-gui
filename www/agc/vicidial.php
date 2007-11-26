@@ -253,6 +253,7 @@ $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
 $PreseT_DiaL_LinKs		= '1';	# set to 1 to show a DIAL link for Dial Presets
 $LogiNAJAX				= '1';	# set to 1 to do lookups
+$HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "session calls"
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1789,6 +1790,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var phone_ip = '<? echo $phone_ip ?>';
 	var enable_sipsak_messages = '<? echo $enable_sipsak_messages ?>';
 	var allow_sipsak_messages = '<? echo $allow_sipsak_messages ?>';
+	var HidEMonitoRSessionS = '<? echo $HidEMonitoRSessionS ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2044,7 +2046,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			var Ctasknum = tasknum_string.replace(regAXFvars, '');
 			if (Ctasknum.length < 2)
 				{Ctasknum = '83009';}
-			var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+			var closerxfercamptail = '_L';
 			if (closerxfercamptail.length < 3)
 				{closerxfercamptail = 'IVR';}
 			tasknum = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
@@ -2308,13 +2310,20 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{var row_color = '#CCCCFF';}
 									var conv_ct = (loop_ct + conv_start);
 									var channelfieldA = conf_chan_array[conv_ct];
-									if (volumecontrol_active!=1)
+									if ( (HidEMonitoRSessionS==1) && (channelfieldA.match(/68600/)) )
 										{
-										live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
+										var hide_channel=1;
 										}
 									else
 										{
-										live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
+										if (volumecontrol_active!=1)
+											{
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
+											}
+										else
+											{
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
+											}
 										}
 				//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
 
@@ -2555,7 +2564,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var Ctasknum = blindxferdialstring.replace(regAXFvars, '');
 						if (Ctasknum.length < 2)
 							{Ctasknum = '83009';}
-						var closerxfercamptail = '_L' + document.vicidial_form.xfercode.value;
+						var closerxfercamptail = '_L';
 						if (closerxfercamptail.length < 3)
 							{closerxfercamptail = 'IVR';}
 						blindxferdialstring = Ctasknum + '*' + document.vicidial_form.phone_number.value + '*' + document.vicidial_form.lead_id.value + '*' + campaign + '*' + closerxfercamptail + '*' + user + '*';
@@ -2646,7 +2655,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				DispO3wayXtrAchannel = redirectXTRAvalue;
 				DispO3wayCalLserverip = redirectserverip;
 				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
-				DispO3wayCalLcamptail = document.vicidial_form.xfercode.value;
+				DispO3wayCalLcamptail = '';
 
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value+ "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value;
 
@@ -4188,7 +4197,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	{
 	XDchannel = DispO3wayXtrAchannel;
 	document.vicidial_form.xfernumber.value = DispO3wayCalLxfernumber;
-	document.vicidial_form.xfercode.value = DispO3wayCalLcamptail;
 	MDchannel = DispO3waychannel;
 	lastcustserverip = DispO3wayCalLserverip;
 

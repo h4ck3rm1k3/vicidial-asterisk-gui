@@ -17,8 +17,8 @@
 # automated outbound surveys as well. Feature under development.
 #
 # ; 1. the DNIS or inbound number called 
-# ; 2. record this call(Y|N)
-# ; 3. play the recording ID (Y|N) with prompt leading up to it
+# ; 2. play the recording ID (Y|N) with prompt leading up to it
+# ; 3. record this call(Y|N)
 # ; 4. ask for a company code(Y|N) with the number of digits in that company code and the prompt
 # ; 5. ask for a user code(Y|N) with the number of digits in that user code and the prompt
 # ; 6. ask for the customer phone number(Y|N) with the number of digits in that phone number and the prompt (Y-10-85100001)
@@ -169,16 +169,6 @@ if (length($ARGV[0])>1)
 	if ($AGI_output =~ /FILE/)	{$AGILOG = '2';}
 	if ($AGI_output =~ /BOTH/)	{$AGILOG = '3';}
 
-	if ($AGILOG) 
-		{
-		$agi_string = "Perl Environment Dump:";   &agi_output;
-		$i=0;
-		while ($#ARGV >= $i)
-			{
-			$agi_string = "$i|$ARGV[$i]";   &agi_output;
-			$i++;
-			}
-		}
 	}
 }
 
@@ -219,7 +209,7 @@ $phone_number=$callerid;
 
 
 ### allow for VICIDIAL transfer data string "83002*3125551212*10000123*TESTCAMP*ABC*1234*"
-if ($extension =~ /^832\d\d\*/)
+if ($extension =~ /^832\d\d\*|^833\d\d\*/)
 	{
 	@EXT_vars = split(/\*/, $extension);
 	
