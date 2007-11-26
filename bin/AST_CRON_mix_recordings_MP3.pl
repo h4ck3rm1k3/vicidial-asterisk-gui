@@ -68,6 +68,8 @@ foreach(@conf)
 		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+		{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -100,6 +102,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 ### directory where in/out recordings are saved to by Asterisk
 $dir1 = "$PATHmonitor";
+$dir2 = "$PATHDONEmonitor";
 
 $soxmixbin = '';
 if ( -e ('/usr/bin/soxmix')) {$soxmixbin = '/usr/bin/soxmix';}
@@ -165,34 +168,29 @@ foreach(@FILES)
 
 			if ($ping_good)
 				{
-					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
+					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir2/$ALLfile"`;
 				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
 
-					`$lamebin -b 16 -m m --silent "$dir1/$ALLfile" "$dir1/$MP3file"`;
+					`$lamebin -b 16 -m m --silent "$dir2/$ALLfile" "$dir2/$MP3file"`;
 
 					if($DB){print STDERR "\n|/usr/bin/sox $live_folder/$filename[$k]$WAV $arch_folder/$filename[$k]$GSM|\n";}
-				chmod 0755, "$dir1/DONE/$MP3file";
+				chmod 0755, "$dir2/$MP3file";
 
 				$ftp = Net::FTP->new("$VARFTP_host", Port => $VARFTP_port, Debug => 0,  Passive => 1);
 				$ftp->login("$VARFTP_user","$VARFTP_pass");
 				$ftp->cwd("$VARFTP_dir");
 				$ftp->binary();
-				$ftp->put("$dir1/DONE/$MP3file", "$MP3file");
+				$ftp->put("$dir2/$MP3file", "$MP3file");
 				$ftp->quit;
 
 				if (!$T)
 					{
-					`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-					`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-					`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
-					}
-				else
-					{
-					`cp -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+					`mv -f "$dir1/$INfile" "$dir2/ORIG/$INfile"`;
+					`mv -f "$dir1/$OUTfile" "$dir2/ORIG/$OUTfile"`;
 					}
 				if (!$T)
 					{
-					`rm -f "$dir1/DONE/$ALLfile"`;
+					`rm -f "$dir2/$ALLfile"`;
 					}
 
 				}

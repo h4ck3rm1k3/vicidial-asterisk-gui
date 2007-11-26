@@ -68,6 +68,8 @@ foreach(@conf)
 		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+		{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -100,6 +102,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 ### directory where in/out recordings are saved to by Asterisk
 $dir1 = "$PATHmonitor";
+$dir2 = "$PATHDONEmonitor";
 
 $soxmixbin = '';
 if ( -e ('/usr/bin/soxmix')) {$soxmixbin = '/usr/bin/soxmix';}
@@ -153,20 +156,19 @@ foreach(@FILES)
 
 			if ($ping_good)
 				{
-					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
+					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir2/$ALLfile"`;
 				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
 					if (!$T)
 						{
-						`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-						`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-						`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+						`mv -f "$dir1/$INfile" "$dir2/ORIG/$INfile"`;
+						`mv -f "$dir1/$OUTfile" "$dir2/ORIG/$OUTfile"`;
 						}
 
 				$ftp = Net::FTP->new("$VARFTP_host", Port => 21);
 				$ftp->login("$VARFTP_user","$VARFTP_pass");
 				$ftp->cwd("$VARFTP_dir");
 				$ftp->binary();
-				$ftp->put("$dir1/DONE/$ALLfile", "$ALLfile");
+				$ftp->put("$dir2/$ALLfile", "$ALLfile");
 				$ftp->quit;
 				}
 	### END Remote file transfer

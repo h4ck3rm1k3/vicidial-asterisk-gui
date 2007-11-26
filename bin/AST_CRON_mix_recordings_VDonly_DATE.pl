@@ -66,6 +66,8 @@ foreach(@conf)
 		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+		{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -105,6 +107,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 ### directory where in/out recordings are saved to by Asterisk
 $dir1 = "$PATHmonitor";
+$dir2 = "$PATHDONEmonitor";
 
 use Net::Ping;
 use Net::FTP;
@@ -177,8 +180,8 @@ foreach(@FILES)
 
 				if (!$T)
 					{
-					`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-					`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
+					`mv -f "$dir1/$INfile" "$dir2/ORIG/$INfile"`;
+					`mv -f "$dir1/$OUTfile" "$dir2/ORIG/$OUTfile"`;
 					}
 				}
 	### END Remote file transfer

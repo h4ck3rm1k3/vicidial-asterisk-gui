@@ -84,6 +84,8 @@ foreach(@conf)
 		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+	if ( ($line =~ /PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+		{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -116,6 +118,7 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 ### directory where in/out recordings are saved to by Asterisk
 $dir1 = "$PATHmonitor";
+$dir2 = "$PATHDONEmonitor";
 
 # get current date in the format YYYYMMDD for use in directory name on the storage server
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -185,24 +188,19 @@ foreach(@FILES)
 				{
 				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
 
-					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir1/$ALLfile"`;
+					`$soxmixbin "$dir1/$INfile" "$dir1/$OUTfile" "$dir2/$ALLfile"`;
 				if ($v) {print "|$INfile|    |$OUTfile|     |$ALLfile|\n\n";}
 					if (!$T)
 						{
-						`mv -f "$dir1/$INfile" "$dir1/ORIG/$INfile"`;
-						`mv -f "$dir1/$OUTfile" "$dir1/ORIG/$OUTfile"`;
-						`mv -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
-						}
-					else
-						{
-						`cp -f "$dir1/$ALLfile" "$dir1/DONE/$ALLfile"`;
+						`mv -f "$dir1/$INfile" "$dir2/ORIG/$INfile"`;
+						`mv -f "$dir1/$OUTfile" "$dir2/ORIG/$OUTfile"`;
 						}
 
-					`$lamebin -b 16 -m m --silent "$dir1/DONE/$ALLfile" "$dir1/DONE/$MP3file"`;
+					`$lamebin -b 16 -m m --silent "$dir2/$ALLfile" "$dir2/$MP3file"`;
 
 
-					if($DB){print STDERR "\n|$lamebin -b 16 -m m --silent \"$dir1/DONE/$ALLfile\" \"$dir1/DONE/$MP3file\"\n";}
-				chmod 0755, "$dir1/DONE/$MP3file";
+					if($DB){print STDERR "\n|$lamebin -b 16 -m m --silent \"$dir2/$ALLfile\" \"$dir2/$MP3file\"\n";}
+				chmod 0755, "$dir2/$MP3file";
 
 				$ftp = Net::FTP->new("$VARFTP_host", Port => $VARFTP_port, Debug => ($v? 1 : 0),  Passive => 1);
 				$ftp->login("$VARFTP_user","$VARFTP_pass");
@@ -210,16 +208,16 @@ foreach(@FILES)
 				$ftp->mkdir("$VARFTP_dir/$today", 1);
 				$ftp->cwd("$VARFTP_dir/$today");
 				$ftp->binary();
-				$ftp->put("$dir1/DONE/$MP3file", "$MP3file");
+				$ftp->put("$dir2/$MP3file", "$MP3file");
 				$ftp->quit;
 
 				# clean up
 				if (!$T)
 					{
-					`rm -f "$dir1/ORIG/$INfile"`;
-					`rm -f "$dir1/ORIG/$OUTfile"`;
-					`rm -f "$dir1/DONE/$ALLfile"`;
-					`rm -f "$dir1/DONE/$MP3file"`;
+					`rm -f "$dir2/ORIG/$INfile"`;
+					`rm -f "$dir2/ORIG/$OUTfile"`;
+					`rm -f "$dir2/$ALLfile"`;
+					`rm -f "$dir2/$MP3file"`;
 					}
 				}
 	### END Remote file transfer
