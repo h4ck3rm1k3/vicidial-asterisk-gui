@@ -169,10 +169,11 @@
 # 71120-1719 - Added XMLHTPRequest lookup of allowable campaigns for agents during login
 # 71122-0256 - Added auto-pause notification
 # 71125-1751 - Changed Transfer section to allow for selection of in-groups to send calls to
+# 71127-0408 - Added height and width settings for easier modification of screen size
 #
 
-$version = '2.0.4-140';
-$build = '71125-1751';
+$version = '2.0.4-141';
+$build = '71127-0408';
 
 require("dbconnect.php");
 
@@ -257,11 +258,41 @@ $HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
+$BROWSER_HEIGHT			= 500;	# set to the minimum browser height, default=500
+$BROWSER_WIDTH			= 770;	# set to the minimum browser width, default=770
+
+
 # options now set in DB:
 #$alt_phone_dialing		= '1';	# allow agents to call alt phone numbers
 #$scheduled_callbacks	= '1';	# set to 1 to allow agent to choose scheduled callbacks
 #   $agentonly_callbacks	= '1';	# set to 1 to allow agent to choose agent-only scheduled callbacks
 #$agentcall_manual		= '1';	# set to 1 to allow agent to make manual calls during autodial session
+
+### SCREEN WIDTH AND HEIGHT CALCULATIONS ###
+### DO NOT EDIT! ###
+$MASTERwidth=($BROWSER_WIDTH - 340);
+$MASTERheight=($BROWSER_HEIGHT - 200);
+if ($MASTERwidth < 430) {$MASTERwidth = '430';} 
+if ($MASTERheight < 300) {$MASTERheight = '300';} 
+
+$CAwidth =  ($MASTERwidth + 340);	# 770 - cover all (none-in-session, customer hunngup, etc...)
+$MNwidth =  ($MASTERwidth + 330);	# 760 - main frame
+$XFwidth =  ($MASTERwidth + 320);	# 750 - transfer/conference
+$HCwidth =  ($MASTERwidth + 310);	# 740 - hotkeys and callbacks
+$AMwidth =  ($MASTERwidth + 270);	# 700 - agent mute and preset-dial links
+$SSwidth =  ($MASTERwidth + 176);	# 606 - scroll script
+$SDwidth =  ($MASTERwidth + 170);	# 600 - scroll script, customer data and calls-in-session
+$HKwidth =  ($MASTERwidth + 70);	# 500 - Hotkeys button
+$HSwidth =  ($MASTERwidth + 1);		# 431 - Header spacer
+
+$HKheight =  ($MASTERheight + 105);	# 405 - HotKey active Button
+$AMheight =  ($MASTERheight + 100);	# 400 - Agent mute and preset dial links
+$MBheight =  ($MASTERheight + 65);	# 365 - Manual Dial Buttons
+$CBheight =  ($MASTERheight + 50);	# 350 - Agent Callback, pause code, volume control Buttons and agent status
+$SSheight =  ($MASTERheight + 31);	# 331 - script content
+$HTheight =  ($MASTERheight + 10);	# 310 - transfer frame, callback comments and hotkey
+$BPheight =  ($MASTERheight - 250);	# 50 - bottom buffer
+
 
 $US='_';
 $CL=':';
@@ -2294,7 +2325,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var LMAcontent_change=0;
 								var LMAcontent_match=0;
 								var conv_start=-1;
-								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=600><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
+								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=<?=$SDwidth ?>><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
 								if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 									{
 									LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -6143,7 +6174,7 @@ else
 		else
 			{
 			conf_channels_xtra_display = 0;
-			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Show conference call channel information</a>";
+			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Show conference call channel information</a><BR><BR>&nbsp;";
 			document.getElementById("outboundcallsspan").innerHTML = '';
 			LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 			LMAcount=0;
@@ -6172,7 +6203,7 @@ else
 			{
 			if (showxfervar == 'ON')
 				{
-				var xfer_height = 310;
+				var xfer_height = <?=$HTheight ?>;
 				if (alt_phone_dialing>0) {xfer_height = (xfer_height + 20);}
 				if ( (auto_dial_level == 0) && (manual_dial_preview == 1) ) {xfer_height = (xfer_height + 20);}
 				document.getElementById("TransferMain").style.top = xfer_height;
@@ -6215,6 +6246,7 @@ else
 	function MainPanelToFront(resumevar)
 		{
 		document.getElementById("MainTable").style.backgroundColor="#E0C2D6";
+		document.getElementById("MaiNfooter").style.backgroundColor="#E0C2D6";
 		hideDiv('ScriptPanel');
 		showDiv('MainPanel');
 		if (resumevar != 'NO')
@@ -6251,6 +6283,7 @@ else
 		{
 		showDiv('ScriptPanel');
 		document.getElementById("MainTable").style.backgroundColor="#FFE7D0";
+		document.getElementById("MaiNfooter").style.backgroundColor="#FFE7D0";
 		panel_bgcolor='#FFE7D0';
 		document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
 		}
@@ -6262,7 +6295,7 @@ else
 <!--
 	div.scroll_callback {height: 300px; width: 620px; overflow: scroll;}
 	div.scroll_list {height: 400px; width: 140px; overflow: scroll;}
-	div.scroll_script {height: 331px; width: 600px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
+	div.scroll_script {height: <?=$SSheight ?>px; width: <?=$SDwidth ?>px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
 	div.text_input {overflow: auto; font-size: 10px;  font-family: sans-serif;}
    .body_text {font-size: 13px;  font-family: sans-serif;}
    .preview_text {font-size: 13px;  font-family: sans-serif; background: #CCFFCC}
@@ -6290,7 +6323,7 @@ echo "</head>\n";
 <BODY onload="begin_all_refresh();"  onunload="BrowserCloseLogout();">
 <FORM name=vicidial_form>
 <span style="position:absolute;left:0px;top:0px;z-index:2;" id="Header">
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=760 MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=<?=$MNwidth ?> MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=3 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
@@ -6300,11 +6333,11 @@ echo "</head>\n";
 </SPAN>
 
 <span style="position:absolute;left:0px;top:13px;z-index:1;" id="Tabs">
-    <table border=0 bgcolor="#FFFFFF" width=760 height=30>
+    <table border=0 bgcolor="#FFFFFF" width=<?=$MNwidth ?> height=30>
 <TR VALIGN=TOP ALIGN=LEFT>
 <TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="./images/vdc_tab_vicidial.gif" ALT="VICIDIAL" WIDTH=115 HEIGHT=30 BORDER=0></A></TD>
 <TD ALIGN=LEFT WIDTH=105><A HREF="#" onclick="ScriptPanelToFront();"><IMG SRC="./images/vdc_tab_script.gif" ALT="SCRIPT" WIDTH=105 HEIGHT=30 BORDER=0></A></TD>
-<TD WIDTH=431 VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; session ID: <span id=sessionIDspan></span></TD>
+<TD WIDTH=<?=$HSwidth ?> VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; session ID: <span id=sessionIDspan></span></TD>
 <TD WIDTH=109><IMG SRC="./images/agc_live_call_OFF.gif" NAME=livecall ALT="Live Call" WIDTH=109 HEIGHT=30 BORDER=0></TD>
 </TR></TABLE>
 </span>
@@ -6312,22 +6345,22 @@ echo "</head>\n";
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:3;" id="WelcomeBoxA">
-    <table border=0 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="WelcomeBoxAt">VICIDIAL</span></TD></TR></TABLE>
+    <table border=0 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=<?=$HKwidth ?>><TR><TD align=center><BR><span id="WelcomeBoxAt">VICIDIAL</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:300px;top:365px;z-index:12;" id="ManuaLDiaLButtons"><font class="body_text">
+<span style="position:absolute;left:300px;top:<?=$MBheight ?>px;z-index:12;" id="ManuaLDiaLButtons"><font class="body_text">
 <span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO');return false;">MANUAL DIAL</a></span> &nbsp; &nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST');return false;">FAST DIAL</a><BR>
 </font></span>
 
-<span style="position:absolute;left:300px;top:350px;z-index:13;" id="CallbacksButtons"><font class="body_text">
+<span style="position:absolute;left:300px;top:<?=$CBheight ?>px;z-index:13;" id="CallbacksButtons"><font class="body_text">
 <span id="CBstatusSpan">X ACTIVE CALLBACKS</span> <BR>
 </font></span>
 
-<span style="position:absolute;left:500px;top:350px;z-index:14;" id="PauseCodeButtons"><font class="body_text">
+<span style="position:absolute;left:500px;top:<?=$CBheight ?>px;z-index:14;" id="PauseCodeButtons"><font class="body_text">
 <span id="PauseCodeLinkSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:700px;top:330px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
+<span style="position:absolute;left:<?=$AMwidth ?>px;top:<?=$AMheight ?>px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
 	<?
 	if ($PreseT_DiaL_LinKs)
 		{
@@ -6342,7 +6375,7 @@ echo "</head>\n";
 </font></span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:38;" id="CallBacKsLisTBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CALLBACKS FOR AGENT <? echo $VD_login ?>:<BR>Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> CALLBACKS FOR AGENT <? echo $VD_login ?>:<BR>Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
 	<BR> &nbsp; 
@@ -6353,7 +6386,7 @@ echo "</head>\n";
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:39;" id="NeWManuaLDiaLBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> NEW MANUAL DIAL LEAD FOR <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Enter information below for the new lead you wish to call.
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> NEW MANUAL DIAL LEAD FOR <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Enter information below for the new lead you wish to call.
 	<BR>
 	<? 
 	if (eregi("X",dial_prefix))
@@ -6390,33 +6423,19 @@ echo "</head>\n";
 
 
 
-<span style="position:absolute;left:5px;top:352px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span>
+<span style="position:absolute;left:5px;top:<?=$CBheight ?>px;z-index:19;" id="VolumeControlSpan"><span id="VolumeUpSpan"><IMG SRC="./images/vdc_volume_up_off.gif" BORDER=0></span><BR><span id="VolumeDownSpan"><IMG SRC="./images/vdc_volume_down_off.gif" BORDER=0></span>
 </font></span>
 
 
 
-<span style="position:absolute;left:35px;top:350px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
+<span style="position:absolute;left:35px;top:<?=$CBheight ?>px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
 Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="AgentStatusCalls"></span> 
 </font></span>
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<span style="position:absolute;left:5px;top:310px;z-index:21;" id="TransferMain">
-	<table bgcolor="#CCCCFF" width=750><tr>
+<span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:21;" id="TransferMain">
+	<table bgcolor="#CCCCFF" width=<?=$XFwidth ?>><tr>
 	<td align=left>
 	<div class="text_input" id="TransferMaindiv">
 	<font class="body_text">
@@ -6451,24 +6470,16 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 
-
-
-
-
-
-
-
-
-<span style="position:absolute;left:5px;top:310px;z-index:23;" id="HotKeyActionBox">
-    <table border=0 bgcolor="#FFDD99" width=740 height=70>
+<span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:23;" id="HotKeyActionBox">
+    <table border=0 bgcolor="#FFDD99" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Lead Dispositioned As: </font><BR><BR><CENTER>
 	<font class="sd_text"><span id="HotKeyDispo"> - </span></font></CENTER>
 	</TD>
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:5px;top:310px;z-index:24;" id="HotKeyEntriesBox">
-    <table border=0 bgcolor="#FFDD99" width=740 height=70>
+<span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:24;" id="HotKeyEntriesBox">
+    <table border=0 bgcolor="#FFDD99" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Disposition Hot Keys: </font></td><td colspan=2>
 	<font class="body_small">When active, simply press the keyboard key for the desired disposition for this call. The call will then be hungup and dispositioned automatically:</font></td></tr><tr>
 	<TD width=200><font class="sk_text">
@@ -6483,8 +6494,8 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:5px;top:310px;z-index:25;" id="CBcommentsBox">
-    <table border=0 bgcolor="#FFFFCC" width=740 height=70>
+<span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:25;" id="CBcommentsBox">
+    <table border=0 bgcolor="#FFFFCC" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFFF66">
 	<TD align=left><font class="sh_text"> Previous Callback Information: </font></td>
 	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
@@ -6501,7 +6512,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:26;" id="NoneInSessionBox">
-    <table border=1 bgcolor="#CCFFFF" width=720 height=500><TR><TD align=center> Noone is in your session: <span id="NoneInSessionID"></span><BR>
+    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Noone is in your session: <span id="NoneInSessionID"></span><BR>
 	<a href="#" onclick="NoneInSessionOK();return false;">Go Back</a>
 	<BR><BR>
 	<a href="#" onclick="NoneInSessionCalL();return false;">Call Agent Again</a>
@@ -6509,7 +6520,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:27;" id="CustomerGoneBox">
-    <table border=1 bgcolor="#CCFFFF" width=770 height=500><TR><TD align=center> Customer has hung up: <span id="CustomerGoneChanneL"></span><BR>
+    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Customer has hung up: <span id="CustomerGoneChanneL"></span><BR>
 	<a href="#" onclick="CustomerGoneOK();return false;">Go Back</a>
 	<BR><BR>
 	<a href="#" onclick="CustomerGoneHangup();return false;">Finish and Disposition Call</a>
@@ -6518,7 +6529,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:28;" id="WrapupBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=550><TR><TD align=center> Call Wrapup: <span id="WrapupTimer"></span> seconds remaining in wrapup<BR><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=550><TR><TD align=center> Call Wrapup: <span id="WrapupTimer"></span> seconds remaining in wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
 	<a href="#" onclick="WrapupFinish();return false;">Finish Wrapup and Move On</a>
@@ -6527,12 +6538,12 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:29;" id="AgenTDisablEBoX">
-    <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
+    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
 </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:30;" id="LogouTBox">
-    <table border=1 bgcolor="#FFFFFF" width=770 height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
+    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:70px;z-index:31;" id="DispoButtonHideA">
@@ -6544,11 +6555,11 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:33;" id="DispoButtonHideC">
-    <table border=0 bgcolor="#CCFFCC" width=770 height=47><TR><TD align=center VALIGN=top>Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call. </TD></TR></TABLE>
+    <table border=0 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=47><TR><TD align=center VALIGN=top>Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call. </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:34;" id="DispoSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
 	<span id="DispoSelectContent"> End-of-call Disposition Selection </span>
 	<input type=hidden name=DispoSelection><BR>
 	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUSE AGENT DIALING <BR>
@@ -6561,7 +6572,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:40;" id="PauseCodeSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
 	<span id="PauseCodeSelectContent"> Pause Code Selection </span>
 	<input type=hidden name=PauseCodeSelection>
 	<BR><BR> &nbsp; 
@@ -6569,7 +6580,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBackSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN ID="CallBackDatESelectioN">
 	<input type=hidden name=CallBackTimESelectioN ID="CallBackTimESelectioN">
 	<span id="CallBackDatEPrinT">Select a Date Below</span> &nbsp;
@@ -6612,7 +6623,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="CloserSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=770 height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
 	<span id="CloserSelectContent"> Closer Inbound Group Selection </span>
 	<input type=hidden name=CloserSelectList><BR>
 	<input type=checkbox name=CloserSelectBlended size=1 value="0"> BLENDED CALLING(outbound activated) <BR>
@@ -6633,18 +6644,34 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 
-<span style="position:absolute;left:154px;top:65px;z-index:16;" id="ScriptPanel">
-    <table border=0 bgcolor="#FFE7D0" width=606 height=331><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
+<span style="position:absolute;left:154px;top:65px;z-index:17;" id="ScriptPanel">
+    <table border=0 bgcolor="#FFE7D0" width=<?=$SSwidth ?> height=<?=$SSheight ?>><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
 </span>
 
 
+<? if ( ($HK_statuses_camp > 0) && ( ($user_level>=$HKuser_level) or ($VU_hotkeys_active > 0) ) ) { ?>
+<span style="position:absolute;left:<?=$HKwidth ?>px;top:<?=$HKheight ?>px;z-index:16;" id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="./images/vdc_XB_hotkeysactive_OFF.gif" border=0 alt="HOT KEYS INACTIVE"></a></span>
+<? } ?>
 
 
+<span style="position:absolute;left:0px;top:<?=$HKheight ?>px;z-index:15;" id="MaiNfooterspan">
+<table BGCOLOR="#E0C2D6" id="MaiNfooter" width=<?=$MNwidth ?>><tr height=32><td height=32><font face="Arial,Helvetica" size=1>VICIDIAL web-client version: <? echo $version ?> &nbsp; &nbsp; BUILD: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
+<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Show conference call channel information</a><BR><BR>&nbsp;</span></font></td><td align=right height=32>
+</td></tr>
+<tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
+
+<tr><td colspan=3>
+<font class="body_small">
+<span id="debugbottomspan"></span>
+</font>
+</td></tr>
+</TABLE>
+</span>
 
 
 <!-- BEGIN *********   Here is the main VICIDIAL display panel -->
 <span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
-<TABLE border=0 BGCOLOR="#E0C2D6" width=760 id="MainTable">
+<TABLE border=0 BGCOLOR="#E0C2D6" width=<?=$MNwidth ?> id="MainTable">
 <TR><TD colspan=3><font class="body_text"> STATUS: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
 <tr><td width=150 align=left valign=top>
@@ -6681,7 +6708,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 </center>
 </font>
 </td>
-<td width=600 align=left valign=top>
+<td width=<?=$SDwidth ?> align=left valign=top>
 <input type=hidden name=lead_id value="">
 <input type=hidden name=list_id value="">
 <input type=hidden name=called_count value="">
@@ -6737,26 +6764,13 @@ else
 <td width=1 align=center>
 </td>
 </tr>
+<tr><td align=left colspan=3 height=<?=$BPheight ?>>
+&nbsp;</td></tr>
 <tr><td align=left colspan=3>
-&nbsp;<BR><BR>&nbsp;
+&nbsp;</td></tr>
 
 </td></tr>
 
-<tr><td align=left colspan=3>
-<table><tr height=32><td height=32><font face="Arial,Helvetica" size=1>VICIDIAL web-client version: <? echo $version ?> &nbsp; &nbsp; BUILD: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
-<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Show conference call channel information</a></span></font></td><td align=right height=32>
-<? if ( ($HK_statuses_camp > 0) && ( ($user_level>=$HKuser_level) or ($VU_hotkeys_active > 0) ) ) { ?>
-<span id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="./images/vdc_XB_hotkeysactive_OFF.gif" border=0 alt="HOT KEYS INACTIVE"></a></span>
-<? } ?>
-</td></tr>
-<tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
-
-<tr><td colspan=3>
-<font class="body_small">
-<span id="debugbottomspan"></span>
-</font>
-</td></tr>
-</TABLE>
 </span>
 <!-- END *********   Here is the main VICIDIAL display panel -->
 

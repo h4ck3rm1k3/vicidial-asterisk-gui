@@ -11516,9 +11516,21 @@ echo "<TABLE>\n";
 	$o=0;
 	while ($camps_to_print > $o) {
 		$row=mysql_fetch_row($rslt);
-		$CT_camp_id =		$row[1];
-		$CT_camp_name =		$row[2];
 		echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+		$o++;
+	}
+
+echo "</TABLE>\n";
+echo "<B>INBOUND GROUPS USING THIS CALL TIME:</B><BR>\n";
+echo "<TABLE>\n";
+
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where call_time_id='$call_time_id';";
+	$rslt=mysql_query($stmt, $link);
+	$camps_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($camps_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 		$o++;
 	}
 
