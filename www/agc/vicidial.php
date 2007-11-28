@@ -230,7 +230,7 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $tsNOW_TIME = date("YmdHis");
 $FILE_TIME = date("Ymd-His");
 $CIDdate = date("ymdHis");
-	$month_old = mktime(0, 0, 0, date("m"), date("d")-2,  date("Y"));
+	$month_old = mktime(11, 0, 0, date("m"), date("d")-2,  date("Y"));
 	$past_month_date = date("Y-m-d H:i:s",$month_old);
 
 

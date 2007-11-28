@@ -13,6 +13,7 @@
 # ; 	- CID - 	CID received, add record with phone number
 # ; 	- CIDLOOKUP - 	Lookup CID to find record in whole system
 # ; 	- CIDLOOKUPRL -	Restrict lookup to one list
+# ; 	- CIDLOOKUPRC -	Restrict lookup to one campaign's lists
 # ;     - CLOSER -      Closer calls from VICIDIAL fronters
 # ; 	- ANI - 	ANI received, add record with phone number
 # ; 	- ANILOOKUP - 	Lookup ANI to find record in whole system
@@ -32,10 +33,11 @@
 # ; 7. the status of the call initially(usually not used)
 # ; 8. the list_id to insert the new lead under if it is new (and CID/ANI available)
 # ; 9. the phone dialing code to insert with the new lead if new (and CID/ANI available)
+# ; 10. the campaign_id to search within lists if CIDLOOKUPRC
 #
 # ;inbound VICIDIAL calls:
 #exten => 1234,1,Answer                  ; Answer the line
-#exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----CL_GALLERIA-----7274515134-----Closer-----park----------999-----1)
+#exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----INB-----7274515134-----Closer-----park----------999-----1-----OUTB)
 #exten => 1234,3,Hangup
 #
 # Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
@@ -51,6 +53,7 @@
 # 71103-2305 - added group rank and fewest calls options to next_agent_call
 # 71112-0058 - fixed multi-logging bug on CLOSER calls
 # 71116-1045 - added fewest_calls_campaign agent call routing option
+# 71128-1758 - added CIDLOOKUPRC method to search all lists within a campaign
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -176,13 +179,14 @@ if (length($ARGV[0])>1)
 
 	$call_handle_method = 	$ARGV_vars[0];
 	$agent_search_method = 	$ARGV_vars[1];
-	$channel_group = 		$ARGV_vars[2];
-	$inbound_number = 		$ARGV_vars[3];
-	$parked_by = 			$ARGV_vars[4];
-	$park_extension = 		$ARGV_vars[5];
-	$status = 				$ARGV_vars[6];
-	$list_id = 				$ARGV_vars[7];
-	$phone_code = 			$ARGV_vars[8];
+	$channel_group = 	$ARGV_vars[2];
+	$inbound_number = 	$ARGV_vars[3];
+	$parked_by = 		$ARGV_vars[4];
+	$park_extension = 	$ARGV_vars[5];
+	$status = 		$ARGV_vars[6];
+	$list_id = 		$ARGV_vars[7];
+	$phone_code = 		$ARGV_vars[8];
+	$Scampaign_id = 	$ARGV_vars[9];
 }
 
 $|=1;
@@ -398,13 +402,37 @@ if ($call_handle_method =~ /DIGITID$/)
 
 if ($call_handle_method =~ /LOOKUP/)
 {
+	$listSQL = '';
 	if ($call_handle_method =~ /LOOKUPRL$/)
 		{$listSQL = "and list_id='$list_id'";}
 	else
-		{$listSQL = '';}
+		{
+		if ($call_handle_method =~ /LOOKUPRC$/)
+			{
+			### Grab all lists associated with Scampaign_id
+			$cbc=0;
+			$SlistsSQL='';
+			$stmtA = "SELECT list_id FROM vicidial_lists where campaign_id='$Scampaign_id' limit 100;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			while ($sthArows > $cbc)
+				{
+				@aryA = $sthA->fetchrow_array;	
+				$SlistsSQL	.= "'$aryA[0]',";
+				$cbc++;
+				}
+			$sthA->finish();
+			chop($SlistsSQL);
+
+			if (length($SlistsSQL)>3)
+				{$listSQL = "and list_id IN($SlistsSQL)";}
+			}
+		}
 
 	$cbc=0;
 	$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL order by modify_date limit 1;";
+		if ($AGILOG) {$agi_string = "VDAD vicidial_list search |$phone_number|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -417,7 +445,9 @@ if ($call_handle_method =~ /LOOKUP/)
 			$insert_lead_id = "$aryA[0]";
 		$cbc++;	
 		} 
-		$sthA->finish();  
+		$sthA->finish();
+
+		if ($AGILOG) {$agi_string = "VDAD vicidial_list found |$insert_lead_id|$stmtA|";   &agi_output;}
 	} 
 	else 
 	{
@@ -425,8 +455,8 @@ if ($call_handle_method =~ /LOOKUP/)
 		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments) values('$SQLdate','$tsSQLdate','INBND','$fronter','$inbound_number','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','-5.00','$VLcomments');";
 		$affected_rows = $dbhA->do($stmtA);
 		$cbc=0;
-		$stmtA = "select LAST_INSERT_ID() LIMIT 1;";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
+		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
 		while ($sthArows > $cbc)
@@ -436,6 +466,8 @@ if ($call_handle_method =~ /LOOKUP/)
 			$cbc++; 
 			}
 		$sthA->finish();
+
+		if ($AGILOG) {$agi_string = "VDAD vicidial_list insert |$insert_lead_id|$stmtA|";   &agi_output;}
 	}
 }
 
@@ -566,7 +598,6 @@ if ($welcome_message_filename !~ /---NONE---/)
 $vci=0;
 $INBOUNDcampsSQL='';
 $stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
-	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;

@@ -392,6 +392,8 @@ while($prompts_count >= $i)
 	$prompt_name = "prompt_audio_$j";
 	$response_name = "prompt_response_$j";
 
+	sleep(1);
+
 	&prompt_gather_response;
 	  $response = $totalDTMF;
 
