@@ -170,10 +170,11 @@
 # 71122-0256 - Added auto-pause notification
 # 71125-1751 - Changed Transfer section to allow for selection of in-groups to send calls to
 # 71127-0408 - Added height and width settings for easier modification of screen size
+# 71129-2025 - restricted callbacks count and list to campaign only
 #
 
-$version = '2.0.4-141';
-$build = '71127-0408';
+$version = '2.0.4-142';
+$build = '71129-2025';
 
 require("dbconnect.php");
 
@@ -2886,7 +2887,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			CBcount_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=CalLBacKCounT&format=text";
+			CBcount_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=CalLBacKCounT&campaign=" + campaign + "&format=text";
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(CBcount_query); 
@@ -2940,7 +2941,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (xmlhttp) 
 				{ 
-				var CBlist_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=CalLBacKLisT&format=text";
+				var CBlist_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=CalLBacKLisT&campaign=" + campaign + "&format=text";
 				xmlhttp.open('POST', 'vdc_db_query.php'); 
 				xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 				xmlhttp.send(CBlist_query); 

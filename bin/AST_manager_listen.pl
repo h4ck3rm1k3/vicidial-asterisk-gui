@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_listen.pl version 2.0.1   *DBI-version*
+# AST_manager_listen.pl version 2.0.4   *DBI-version*
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -39,6 +39,7 @@
 # 60720-1142 - added keepalive to MySQL connection every 50 seconds
 # 60814-1733 - added option for no logging to file
 # 60906-1714 - added updating for special vicidial conference calls
+# 71129-2004 - Fixed SQL error
 #
 
 # constants
@@ -351,7 +352,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[4];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
 
 								print STDERR "|$stmtA|\n";
 							    my $affected_rows = $dbhA->do($stmtA);
@@ -363,7 +364,7 @@ while($one_day_interval > 0)
 								$channel =~ s/Channel: |\s*$//gi;
 								$uniqueid = $command_line[2];
 								$uniqueid =~ s/Uniqueid: |\s*$//gi;
-								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%";
+								$stmtA = "UPDATE vicidial_manager set status='DEAD', channel='$channel' where server_ip = '$server_ip' and uniqueid = '$uniqueid' and callerid NOT LIKE \"DCagcW%\";";
 
 								print STDERR "|$stmtA|\n";
 							    my $affected_rows = $dbhA->do($stmtA);

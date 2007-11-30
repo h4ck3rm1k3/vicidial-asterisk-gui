@@ -267,7 +267,7 @@ use asterisk;
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.18');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.24');
 
 insert into server_updater values('10.10.10.15','');
 
@@ -570,6 +570,7 @@ PERL5LIB="/usr/share/astguiclient/libs"; export PERL5LIB
 /usr/local/apache2/bin/apachectl start
 
 ### load digium zaptel 4xT1 drivers into system
+# if using Sangoma card, put wanrouter start in place or modprobes
 modprobe zaptel
 modprobe wct4xxp
 /sbin/ztcfg -vvvvvvvvvvvv
@@ -577,8 +578,8 @@ modprobe wct4xxp
 ### sybsys local login
 touch /var/lock/subsys/local
 
-### sleep for 20 seconds before launching Asterisk
-sleep 20
+### sleep for 10 seconds before launching Asterisk
+sleep 10
 
 ### start up asterisk
 /usr/share/astguiclient/start_asterisk_boot.pl

@@ -137,10 +137,11 @@
 # 71116-1011 - added calls_today count updating of the vicidial_live_agents upon INCALL
 # 71120-1520 - added LogiNCamPaigns to show only allowed campaigns for agents upon login
 # 71125-1751 - Added inbound-group default inbound group sending to vicidial.php
+# 71129-2025 - restricted callbacks count and list to campaign only
 #
 
-$version = '2.0.4-64';
-$build = '71125-1751';
+$version = '2.0.4-65';
+$build = '71129-2025';
 
 require("dbconnect.php");
 
@@ -2471,7 +2472,7 @@ echo "Pause Code has been updated to $status for $agent_log_id\n";
 ################################################################################
 if ($ACTION == 'CalLBacKLisT')
 {
-$stmt = "select callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' and status NOT IN('INACTIVE','DEAD') order by callback_time;";
+$stmt = "select callback_id,lead_id,campaign_id,status,entry_time,callback_time,comments from vicidial_callbacks where recipient='USERONLY' and user='$user' and campaign_id='$campaign' and status NOT IN('INACTIVE','DEAD') order by callback_time;";
 if ($DB) {echo "$stmt\n";}
 $rslt=mysql_query($stmt, $link);
 if ($rslt) {$callbacks_count = mysql_num_rows($rslt);}
@@ -2509,7 +2510,7 @@ $loop_count=0;
 ################################################################################
 if ($ACTION == 'CalLBacKCounT')
 {
-$stmt = "select count(*) from vicidial_callbacks where recipient='USERONLY' and user='$user' and status NOT IN('INACTIVE','DEAD');";
+$stmt = "select count(*) from vicidial_callbacks where recipient='USERONLY' and user='$user' and campaign_id='$campaign' and status NOT IN('INACTIVE','DEAD');";
 if ($DB) {echo "$stmt\n";}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);

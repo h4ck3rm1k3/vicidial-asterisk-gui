@@ -73,8 +73,8 @@ itself to be a very uncluttered and stable platform for development.
 
 1.	Go to http://www.ultimatebootcd.com/ , download the latest bootcd and 
 burn it to a CD. This will be needed to partition the hard drive prior to 
-installation of Slackware linux. The latest version as of this writing is 4.0
-(If you have problems with your hardware booting some of the utilities with 4.0
+installation of Slackware linux. The latest version as of this writing is 4.1
+(If you have problems with your hardware booting some of the utilities with 4.1
 I suggest trying 1.7, that version has older utilities, but still gets the job 
 done and works on every machine I've tried it on).
 
@@ -88,9 +88,9 @@ partitions:
    - press F3 to exit and let it do it's thing, this will take an hour or so.
 
 4.	Go to http://www.slackware.com/getslack/ to download Slackware linux. 
-The most recent release as of this writing is 11.0. This release fits on 2 CDs. 
-Download both installation disks from any close server listed on the download 
-page and burn them both to CDs.
+The most recent release as of this writing is 12.0. This release fits on 3 CDs
+or 1 DVD. Download both installation disks from any close server listed on the
+download page and burn them both to CDs.
 
 5.	Insert Disk 1 of the Slackware installation CD and boot your computer. 
 If you have a simple computer with just an IDE drive just hit enter at the boot: 

@@ -25,7 +25,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	chmod 0777 $PATHweb/vicidial/server_reports/
 
 4. A new set of changes have been made to the statuses sections in the admin.php
-	pages allowing for categorizing statues and modifyig them without delete.
+	pages allowing for categorizing statues and modifying them without delete.
 	Also, the gathering of a tally of the statuses in these categories is 
 	now available on the timeonVDADall scripts.
 
@@ -83,6 +83,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	field with the inbound group that you want to take the calls. Transfers
 	are now allowed from a list of definable in-groups that you have to set
 	in the campaign detail screen.
+
+18. In the vicidial.php code, you can now modify the size of the elements on the
+	screen using the BROWSER_HEIGHT and BROWSER_WIDTH variables.
 
 
 

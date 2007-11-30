@@ -350,7 +350,7 @@ while ($i < $users_to_print)
 	$USERtotTALK_S = round($USERtotTALK_S, 0);
 	if ($USERtotTALK_S < 10) {$USERtotTALK_S = "0$USERtotTALK_S";}
 	$USERtotTALK_MS = "$USERtotTALK_M_int:$USERtotTALK_S";
-	$USERtotTALK_MS =		sprintf("%6s", $USERtotTALK_MS);
+	$USERtotTALK_MS =		sprintf("%8s", $USERtotTALK_MS);
 
 	$USERavgTALK_M = ($USERavgTALK / 60);
 	$USERavgTALK_M = round($USERavgTALK_M, 2);
@@ -362,7 +362,7 @@ while ($i < $users_to_print)
 	$USERavgTALK_MS = "$USERavgTALK_M_int:$USERavgTALK_S";
 	$USERavgTALK_MS =		sprintf("%6s", $USERavgTALK_MS);
 
-	echo "| $user - $full_name | $USERcalls |   $USERtotTALK_MS | $USERavgTALK_MS |\n";
+	echo "| $user - $full_name | $USERcalls | $USERtotTALK_MS | $USERavgTALK_MS |\n";
 
 	$i++;
 	}
