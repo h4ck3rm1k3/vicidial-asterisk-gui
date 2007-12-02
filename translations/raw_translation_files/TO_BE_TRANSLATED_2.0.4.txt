@@ -129,6 +129,8 @@ Default Transfer Group -<\/B> This field is the default In-Group that will be au
 Default Transfer Group: ||
 Allowed Transfer Groups: ||
 Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up||
+Campaign Ranks -<\/B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank||
+Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen||
 
 
 ############################################################ CLIENT
