@@ -228,7 +228,7 @@ if ( (!$callerid) or ($callerid =~ /unknown/) )
 if ($call_handle_method =~ /^CLOSER/)
 {
 	### allow for internal PRI/IAX/SIP transfer data string "90009*CL_uk3survy_*8301*10000123*universal***"
-	if ($extension =~ /^900\d\d\*/)
+	if ($extension =~ /^900\d\d\*|^9900\d\d\*/)
 		{
 		@EXT_vars = split(/\*/, $extension);
 		
