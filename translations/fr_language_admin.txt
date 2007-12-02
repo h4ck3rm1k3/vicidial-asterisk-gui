@@ -1290,3 +1290,135 @@ Admin Home URL -<\/B> This is the URL or web site address that you will go to if
 Admin Home URL: |URL de l'accueil de l'administration: |
 >HOME<|>ACCUEIL<|
 Welcome |Bienvenue |
+### START translations for 2.0.4 release ###
+CHECK FOR DUPLICATES BY PHONE IN ALL CAMPAIGN LISTS|EXAMINEZ POUR ASSURER LES REPRODUCTIONS PAR PHONE IN TOUTES LES LISTESDE CAMPAGNE|
+CHECK FOR DUPLICATES BY PHONE IN ENTIRE SYSTEM|VÉRIFIEZ LES REPRODUCTIONS PAR LE SYSTÈME ENTIER DE PHONE IN|
+PHONE CODE OVERRIDE FOR THIS FILE|DÉPASSEMENT DE CODE DE TÉLÉPHONE POUR CE DOSSIER|
+The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. The lead loader allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation, but it does allow you to check for duplicates in itself, within the campaign or within the entire system. Also, make sure that you have created the list that these leads are to be under so that you can use them. Here is a list of the fields in their proper order for the lead files:|Le chargeur enchaînement-basé de base de fil de VICIDIAL est conçusimplement pour prendre un dossier de fil - jusqu'à 8MB dans lataille qu'est l'étiquette ou la pipe délimitée et pour le chargerdans la table de vicidial_list. Le chargeur de fil tient compte duchamp choisissant et de TXT- le texte tout simplement, les valeursséparées par virgule de CSV- et les XLS- excellent des formats dedossier. Le chargeur de fil ne fait pas la validation de données,mais elle vous permet de vérifier les reproductions en soi, dans lacampagne ou dans le système entier. En outre, assurez-vous que vousavez créé la liste que ces fils doivent être dessous de sorte quevous puissiez les employer. Voici une liste des champs dans leurcommande appropriée pour les dossiers de fil :|
+NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /etc/astguiclient.conf file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file. Also, for duplication checks against gampaign lists, the list that has new leads going into it does need to be created in the system before you start to load the leads.|NOTES : La fonctionnalité de chargeur de fil d'exceler est permisepar une série de manuscrits de Perl et doit avoir un dossier en placecorrectement configuré de /etc/astguiclient.conf sur le web server.En outre, des modules d'un Perl de couples doivent être chargés pourelle pour travailler aussi bien - oLE-Storage_Lite-Storage_Lite et leBilan-ParseExcel. Vous pouvez vérifier les erreurs d'exécution dansces derniers en regardant votre dossier d'error_log d'apache. Enoutre, pour des contrôles de duplication contre le gampaignénumère, la liste qui a de nouveaux fils entrer dans lui doit êtrecréée dans le système avant que vous commenciez à charger lesfils.|
+Campaign List Mix Added|Le Mélange De Liste De Campagne S'est ajouté|
+Modify Campaign List Mix|Modifiez Le Mélange De Liste De Campagne|
+Campaign List Mix Removed|Mélange De Liste De Campagne Enlevé|
+Campaign Statuses|Statuts De Campagne|
+Campaign HotKeys|Campagne HotKeys|
+Campaign Lead Recycle Entries|Le Fil De Campagne Réutilisent Des Entrées|
+Campaign Auto Alt Dial Statuses|Statuts Automatiques De Cadran De la Campagne Alt|
+Campaign Agent Pause Codes|Codes De Pause D'Agent De Campagne|
+Campaign Dial Statuses|Statuts De Cadran De Campagne|
+Campaign List Mixes|Mlanges De Liste De Campagne|
+ Lead Recycle |Le Fil Réutilisent|
+ Auto-Alt Dial |Cadran Automobile-Alt|
+ Pause Codes |Codes De Pause|
+ List Mix |Mélange De Liste|
+ Campaigns Main |Campagnes Principales|
+List Order Mix -<\/B> Overrides the Lead Order and Dial Status fields. Will use the List and status parameters for the selected List Mix entry in the List Mix sub section instead. Default is DISABLED|Mélange d'ordre de liste - dépasse les champs d'ordre de fil et destatut de cadran. Emploiera les paramètres de liste et de statut pourl'entrée choisie de mélange de liste dans la section de sous-marinde mélange de liste à la place. Le défaut est HANDICAPÉ|
+List Mix ID -<\/B> ID of the list mix. Must be from 2-20 characters in length with no spaces or other special punctuation.|Identification de mélange de liste - identification du mélange deliste. Doit être de 2-20 caractères de longueur sans les espaces outoute autre ponctuation spéciale.|
+List Mix Name -<\/B> Descriptive name of the list mix. Must be from 2-50 characters in length|Nom de mélange de liste - nom descriptif du mélange de liste. Doitêtre de 2-50 caractères de longueur|
+List Mix Detail -<\/B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated|Détail de mélange de liste - la composition de l'entrée de mélangede liste. Contient l'identification de liste, l'ordre de mélange, lespourcentages et les statuts qui composent ce mélange de liste. Lespourcentages toujours doivent additionner jusqu'à 100, et toutes leslistes doivent être en activité et réglées à la campagne pour quel'entrée de mélange d'ordre soit activée|
+List Mix Method -<\/B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.|Méthode de mélange de liste - la méthode de mélanger toutes lesparties du détail de mélange de liste ensemble. EVEN_MIX mélangerades fils de chaque partie intercalée aux autres parties, comme ces1.2.3.1.2.3.1.2.3. IN_ORDER mettra les fils dans l'ordre dans lequelils sont énumérés dans l'écran 1.1.1.2.2.2.3.3.3 de détail demélange de liste. La volonté ALÉATOIRE les a mis dans l'ordreALÉATOIRE 1.3.2.1.1.3.2.1.3. Le défaut est IN_ORDER.|
+LIST MIXES FOR THIS CAMPAIGN: |MÉLANGES DE LISTE POUR CETTE CAMPAGNE :|
+The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls.|Human_answered le champ est employé en calculant le pourcentage debaisse, ou le taux d'abandon. L'arrangement human_answered à Yemploiera ce statut en comptant les appels humain-répondus.|
+HUMAN ANSWER|RÉPONSE HUMAINE|
+ADDING VICIDIAL SYSTEM STATUSES|AJOUTER DES STATUTS DE SYSTÈME DE VICIDIAL|
+MODIFY VICIDIAL SYSTEM STATUSES|MODIFIEZ LES STATUTS DE SYSTÈME DE VICIDIAL|
+SYSTEM STATUS NOT ADDED|STATUT DE SYSTÈME NON SUPPLÉMENTAIRE|
+SYSTEM STATUS ADDED|STATUT DE SYSTÈME SUPPLÉMENTAIRE|
+SYSTEM STATUS NOT DELETED|STATUT DE SYSTÈME NON SUPPRIMÉ|
+the system status cannot be a reserved status: |le statut de système ne peut pas être un statut réservé :|
+the system status needs to be at least 1 characters in length|le statut de système doit être au moins les caractères 1 delongueur|
+VICIDIAL STATUSES WITHIN THIS SYSTEM: |STATUTS DE VICIDIAL DANS CE SYSTÈME :|
+ADD NEW SYSTEM STATUS|AJOUTEZ LE NOUVEAU STATUT DE SYSTÈME|
+CUSTOM CAMPAIGN STATUSES LISTINGS:|LISTES FAITES SUR COMMANDE DE STATUTS DE CAMPAGNE :|
+CAMPAIGN HOTKEYS LISTINGS:|LISTES DE LA CAMPAGNE HOTKEYS :|
+CAMPAIGN LEAD RECYCLE LISTINGS:|LE FIL DE CAMPAGNE RÉUTILISENT DES LISTES :|
+LEAD RECYCLES|LE FIL RÉUTILISE|
+CAMPAIGN LEAD AUTO-ALT DIAL LISTINGS:|LISTES DE CADRAN DU FIL AUTO-ALT DE CAMPAGNE :|
+CAMPAIGN AGENT PAUSE CODE LISTINGS:|LISTES DES CODES DE PAUSE D'AGENT DE CAMPAGNE :|
+CAMPAIGN LIST MIX LISTINGS:|LISTES DE MÉLANGE DE LISTE DE CAMPAGNE :|
+The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.|L'option de catégorie vous permet de grouper plusieurs statuts dansun catogy qui peut être employé pour l'analyse statistique.|
+MODIFY VICIDIAL STATUS CATEGORIES|MODIFIEZ LES CATÉGORIES DE STATUT DE VICIDIAL|
+ADDING VICIDIAL STATUS CATEGORY|AJOUTER LA CATÉGORIE DE STATUT DE VICIDIAL|
+ Status Categories |Catégories De Statut|
+ System Statuses |Statuts De Système|
+MODIFY VICIDIAL SYSTEM STATUSES|MODIFIEZ LES STATUTS DE SYSTÈME DE VICIDIAL|
+MODIFY VICIDIAL STATUS CATEGORY|MODIFIEZ LA CATÉGORIE DE STATUT DE VICIDIAL|
+Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis|Par l'utilisation des statuts de système, vous pouvez avoir desstatuts qui existent pour la campagne et le dans-groupe. Le statutdoit être 1-6 caractères de longueur, la description doit être 2-30caractères de longueur et sélectionnable définit si elle apparaîtdans VICIDIAL comme disposition d'agent. Human_answered le champ estemployé en calculant le pourcentage de baisse, ou le taux d'abandon.L'arrangement human_answered à Y emploiera ce statut en comptant lesappels humain-répondus. L'option de catégorie vous permet de grouperplusieurs statuts dans un catogy qui peut être employé pourl'analyse statistique|
+Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report|Par l'utilisation des catégories de statut de système, vous pouvezgrouper ensemble des statuts pour tenir compte de l'analysestatistique sur un groupe de statuts. L'identification de catégoriedoit être 2-20 caractères de longueur sans les espaces, le nom doitêtre 2-50 caractères de longueur, la description est facultative etl'affichage de TimeonVDAD définit si ce statut sera un de jusqu'à 4statuts qui peuvent être calculés et montrés le temps sur lerapport de temps réel de VDAD|
+ADD NEW STATUS CATEGORY|AJOUTEZ LA NOUVELLE CATÉGORIE DE STATUT|
+STATUS CATEGORY NOT ADDED|CATÉGORIE DE STATUT NON SUPPLÉMENTAIRE|
+there is already a status category in the system with this ID|il y a déjà une catégorie de statut dans le système avec cetteidentification|
+ID must be between 2 and 20 characters in length|L'identification doit être entre 2 et 20 caractères de longueur|
+name name must be between 2 and 50 characters in length|le nom nommé doit être entre 2 et 50 caractères de longueur|
+STATUS CATEGORY NOT MODIFIED|CATÉGORIE DE STATUT NON MODIFIÉE|
+the status category cannot be a reserved category: |la catégorie de statut ne peut pas être une catégorie réservée :|
+the status category needs to be at least 2 characters in length|la catégorie de statut doit être au moins 2 caractères de longueur|
+STATUS CATEGORY DELETED|LA CATÉGORIE DE STATUT A SUPPRIMÉ|
+STATUS CATEGORY MODIFIED|LA CATÉGORIE DE STATUT A MODIFIÉ|
+Category: |Catégorie :|
+the system status name needs to be at least 1 characters in length|le nom de statut de système doit être au moins les caractères 1 delongueur|
+SYSTEM STATUS NOT MODIFIED|STATUT DE SYSTÈME NON MODIFIÉ|
+SYSTEM STATUS MODIFIED|LE STATUT DE SYSTÈME A MODIFIÉ|
+ERROR: There are already 4 Status Categories set to TimeOnVDAD Display|ERREUR : Il y a déjà ensemble de 4 catégories de statut àl'affichage de TimeOnVDAD|
+CUSTOM CAMPAIGN STATUS MODIFIED|LE STATUT FAIT SUR COMMANDE DE CAMPAGNE A MODIFIÉ|
+LIST MIX NOT MODIFIED|MÉLANGE DE LISTE NON MODIFIÉ|
+LIST MIX MODIFIED|LE MÉLANGE DE LISTE A MODIFIÉ|
+You cannot delete the last list_id entry from a list mix|Vous ne pouvez pas supprimer la dernière entrée de list_id d'unmélange de liste|
+LIST MIX ADDED: |MÉLANGE DE LISTE SUPPLÉMENTAIRE :|
+LIST MIX NOT ADDED |MÉLANGE DE LISTE NON SUPPLÉMENTAIRE|
+There is already a list mix with this ID in the system|Il y a déjà un mélange de liste avec cette identification dans lesystème|
+LIST MIX NOT DELETED|MÉLANGE DE LISTE NON SUPPRIMÉ|
+LIST MIX DELETED: |LE MÉLANGE DE LISTE A SUPPRIMÉ :|
+SET TO ACTIVE|PLACEZ À ACTIF|
+LIST MIX NOT ACTIVATED|MÉLANGE DE LISTE NON ACTIVÉ|
+LIST MIX ACTIVATED|MÉLANGE DE LISTE ACTIVÉ|
+Enable Agent Transfer Logfile -<\/B> This option will log to a text logfile on the webserver every time a call is transferred to an agent. Default is 0, disabled|Permettez le fichier journal de transfert d'agent - cette optionnotera à un fichier journal des textes sur le webserver chaque foisqu'un appel est transféré à un agent. Le défaut est 0,neutralisé|
+Enable Agent Transfer Logfile|Permettez Le Fichier journal De Transfert D'Agent|
+Call Time -<\/B> This is the call time scheme to use for this inbound group. Keep in mind that the time is based on the server time. Default is 24hours|Temps d'appel - c'est l'arrangement de temps d'appel à employer pource groupe d'arrivée. Maintenez dans l'esprit que le temps est basésur le temps de serveur. Le défaut est 24hours|
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field. Default is MESSAGE|Après action d'heures - l'action à exécuter si elle a lieu aprèsdes heures comme définie dans le moment d'appel pour ce grouped'arrivée. De DÉCROCHEMENT de volonté le décrochementimmédiatement l'appel, MESSASGE jouera le dossier dans après champde Filenam de message d'heures, la PROLONGATION enverra l'appel auaprès prolongation d'heures dans le dialplan et VOICEMAIL enverral'appel dans la boîte de voicemail énumérée dans après champ deVoicemail d'heures. Le défaut est MESSAGE|
+After Hours Message Filename -<\/B> The audio file located on the server to be played if the Action is set to MESSAGE. Default is vm-goodbye|Après nom de fichier de message d'heures - le dossier audio localisésur le serveur à jouer si l'action est placée au MESSAGE. Le défautest VM-AU revoir|
+After Hours Extension -<\/B> The dialplan extension to send the call to if the Action is set to EXTENSION. Default is 8300|Après prolongation d'heures - la prolongation dialplan pour envoyerl'appel si l'action est placée à la PROLONGATION. Le défaut est8300|
+After Hours Voicemail -<\/B> The voicemail box to send the call to if the Action is set to VOICEMAIL|Après des heures Voicemail - la boîte de voicemail pour envoyerl'appel si l'action est placée à VOICEMAIL|
+Welcome Message Filename -<\/B> The audio file located on the server to be played when the call comes in. If set to ---NONE--- then no message will be played. Default is ---NONE---|Nom de fichier bienvenu de message - le dossier audio localisé sur leserveur à jouer quand l'appel entre. Si ensemble à ---NONE --- alorsaucun message ne sera joué. Le défaut est ---NONE ---|
+Music On Hold Context -<\/B> The music on hold context to use when the customer is placed on hold. Default is default|Musique sur le contexte de prise - la musique sur le contexte de prisepour employer quand le client est placé sur la prise. Le défaut estdéfaut|
+On Hold Prompt Filename -<\/B> The audio file located on the server to be played at a regular interval when the customer is on hold. Default is generic_hold. This audio file MUST be 9 seconds or less in length.|Sur le nom de fichier de message de sollicitation de prise - ledossier audio localisé sur le serveur à jouer à un intervallerégulier quand le client est sur la prise. Le défaut estgeneric_hold. Ce dossier audio DOIT être de 9 secondes ou moins dansla longueur.|
+On Hold Prompt Interval -<\/B> The length of time in seconds to wait before playing the on hold prompt. Default is 60|Sur l'intervalle de message de sollicitation de prise - la durée ensecondes d'attendre avant de jouer dessus le message de sollicitationde tenir. Le défaut est 60|
+Agent Alert Extension -<\/B> The extension to send into the agent session to announce that a call is coming to the agent. This extension should have a Playback of an audio file. To not use this function set this to X. Default is X|Prolongation alerte d'agent - la prolongation à envoyer dans lasession d'agent pour annoncer qu'un appel vient à l'agent. Cetteprolongation devrait avoir un playback d'un dossier audio. Ne pasemployer cette fonction a placé ceci à X. Default est X|
+Agent Alert Delay -<\/B> The length of time in milliseconds to wait before sending the call to the agent after playing the on Agent Alert Extension. Default is 1000|L'alerte d'agent Retardent - la durée en millisecondesd'attendre avant d'envoyer l'appel à l'agent après avoir jouédessus la prolongation alerte d'agent. Le défaut est 1000|
+Call Time: |Temps D'Appel :|
+After Hours Action: |Après Action D'Heures :|
+After Hours Message Filename: |Après Nom de fichier De Message D'Heures :|
+After Hours Extension: |Après Prolongation D'Heures :|
+After Hours Voicemail: |Après Des Heures Voicemail :|
+Welcome Message Filename: |Nom de fichier Bienvenu De Message :|
+Music On Hold Context: |Musique Sur Le Contexte De Prise :|
+On Hold Prompt Filename: |Sur Le Nom de fichier De Message de sollicitation De Prise :|
+On Hold Prompt Interval: |Sur L'Intervalle De Message de sollicitation De Prise :|
+Agent Alert Extension: |Prolongation Alerte D'Agent :|
+Agent Alert Delay: |L'Alerte D'Agent Retardent :|
+You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent|Vous pourrez également placer le rang, ou le niveau de compétence,dans cette section pour chacun des groupes d'arrivée aussi bien quepouvoir voir le nombre d'appels reçus de chaque groupe d'arrivéepour cet agent spécifique|
+Allow Inbound and Blended -<\/B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N|Permettez d'arrivée et mélangé - c'est où vous pouvez placer siles utilisateurs de cette campagne auront l'option pour prendre desappels d'arrivée avec cette campagne. Si vous voulez faire d'arrivéeet en partance mélangés puis ceci doit être placé à Y. Si vousvoulez seulement faire composer en partance sur cette campagne placiezceci à N. Default est N|
+Allow Inbound and Blended: |Permettez d'arrivée et mélangé :|
+Manual Dial List ID -<\/B> The default list_id to be used when an agent placces a manual call and a new lead record is created in vicidial_list. Default is 999. This field can contain digits only|Identification manuelle de liste de cadran - le list_id de défaut àemployer quand des placces d'un agent un appel manuel et un nouveaudisque de fil est créés dans le vicidial_list. Le défaut est 999.Ce champ peut contenir des chiffres seulement|
+Manual Dial List ID: |Identification Manuelle De Liste De Cadran :|
+inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest|inbound_group_rank : ordres par le rang donné à l'agent pour legroupe d'arrivée spécifique. Le plus haut à le plus bas|
+fewest_calls: orders by the number of calls received by an agent for that specific inbound group. Least calls first|fewest_calls : ordres par le nombre d'appels reçus par un agent pource groupe d'arrivée spécifique. Moindres appels d'abord|
+Campaign Ranks: |Rangs De Campagne :|
+AGENT RANKS FOR THIS CAMPAIGN:|GRADES D'AGENT POUR CETTE CAMPAGNE :|
+Copy Campaign|Campagne De Copy|
+COPY A CAMPAIGN|Copy Une CAMPAGNE|
+Source Campaign: |Campagne De Source :|
+New Copied Campaign Addition|Nouvelle Addition Copiée De Campagne|
+Copy In-Group|Dans-Groupe De Copy|
+New Copied In-Group Addition|Nouvelle Addition Copiée De Dans-Groupe|
+Copy User|Utilisateur De Copy|
+New Copied User Addition|Nouvelle Addition Copiée D'Utilisateur|
+COPY USER|UTILISATEUR DE COPY|
+Copy In-Group|Dans-Groupe De Copy|
+COPY INBOUND GROUP|GROUPE D'ARRIVÉE DE COPY|
+campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest|campaign_rank : ordres par le rang donné à l'agent pour la campagne.Le plus haut à le plus bas|
+Default Transfer Group -<\/B> This field is the default In-Group that will be automatically selected when the agent goes to the transfer-conference frame in their agent interface|Groupe de transfert de défaut - ce champ est le Dans-Groupe dedéfaut qui sera automatiquement choisi quand l'agent va à l'armaturede transférer-conférence dans leur interface d'agent|
+Default Transfer Group: |Groupe De Transfert De Défaut :|
+Allowed Transfer Groups: |Groupes Laissés De Transfert :|
+Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up|Groupes laissés de transfert - avec ces listes de checkbox vouspouvez choisir les groupes aux lesquels les agents dans cette campagnepeuvent transférer des appels. Permettez Closers doit être permispour que cette option révèle|
+Campaign Ranks -<\/B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank|La campagne se range - dans cette section vous pouvez définir le rangque un agent aura pour chaque campagne. Ces rangs peuvent êtreemployés pour tenir compte du cheminement préféré d'appel quand leprochain appel d'agent est placé au campaign_rank|
+Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen|En outre dans cette section est la capacité de donner à l'agent unrang pour chaque groupe d'arrivée. Ces rangs peuvent être employéspour le cheminement préféré d'appel quand cette option est choisiedans l'écran de dans-groupe|

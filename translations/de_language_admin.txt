@@ -1282,3 +1282,135 @@ Admin Home URL -</B> This is the URL or web site address that you will go to if 
 Admin Home URL: |Admin Haupt-URL: |
 >HOME<|>HAUPT<|
  Welcome | Willkommen |
+### START translations for 2.0.4 release ###
+CHECK FOR DUPLICATES BY PHONE IN ALL CAMPAIGN LISTS|ÜBERPRÜFEN SIE AUF DUPLIKATE DURCH PHONE IN ALLE KAMPAGNE LISTEN|
+CHECK FOR DUPLICATES BY PHONE IN ENTIRE SYSTEM|ÜBERPRÜFEN SIE AUF DUPLIKATE DURCH PHONE IN GESAMTES SYSTEM|
+PHONE CODE OVERRIDE FOR THIS FILE|TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE|
+The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. The lead loader allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation, but it does allow you to check for duplicates in itself, within the campaign or within the entire system. Also, make sure that you have created the list that these leads are to be under so that you can use them. Here is a list of the fields in their proper order for the lead files:|Die VICIDIAL grundlegende Netz-gegründete Leitung Ladevorrichtung isteinfach entworfen, um eine Leitung Akte zu nehmen - bis zu 8MB in derGröße - die entweder Vorsprung oder das abgegrenzte Rohr und es indie vicidial_list Tabelle zu laden ist. Die Leitung Ladevorrichtungläßt auffangen das Wählen zu und TXT- deutlich Text, CSV-Komma getrennte Werte und XLS- übertreffen Akte Formate. Die LeitungLadevorrichtung tut nicht Datenprüfung, aber sie erlaubt Ihnen, aufDuplikate in sich, innerhalb der Kampagne oder innerhalb des gesamtenSystems zu überprüfen. Auch überprüfen Sie, ob Sie die Listeerstellt haben, daß diese Leitungen darunter sein sollen, damit Siesie benutzen können. Ist hier eine Liste von auffängt inihrem korrekten Auftrag für die Leitung Akten:|
+NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /etc/astguiclient.conf file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file. Also, for duplication checks against gampaign lists, the list that has new leads going into it does need to be created in the system before you start to load the leads.|ANMERKUNGEN: Die übertreffenleitung Ladevorrichtung Funktionalitätwird durch eine Reihe Perl Indexe ermöglicht und muß eine richtigzusammengebaute /etc/astguiclient.conf Akte im Platz auf dem webserver haben. Auch ein Paarperl Module müssen für sie, um außerdemzu arbeiten - OLE-Storage_Lite-Storage_Lite undVerteilungsbogen-ParseExcel geladen werden. Sie können aufLaufzeitfehler in diesen überprüfen, indem Sie Ihre Apache error_logAkte betrachten. Auch für Doppelprüfungen gegen gampaignverzeichnet, die Liste, die neue Leitungen hat, in es einzusteigenmuß im System verursacht werden, bevor Sie beginnen, die Leitungen zuladen.|
+Campaign List Mix Added|Kampagne Liste Mischung Fügte Hinzu|
+Modify Campaign List Mix|Ändern Sie Kampagne Liste Mischung|
+Campaign List Mix Removed|Kampagne Liste Mischung Entfernte|
+Campaign Statuses|Kampagne Status|
+Campaign HotKeys|Kampagne HotKeys|
+Campaign Lead Recycle Entries|Kampagne Leitung Bereiten Eintragungen Auf|
+Campaign Auto Alt Dial Statuses|Kampagne Selbstalt Vorwahlknopf-Status|
+Campaign Agent Pause Codes|Kampagne Mittel-Pause Codes|
+Campaign Dial Statuses|Kampagne Vorwahlknopf-Status|
+Campaign List Mixes|Kampagne Liste Mischungen|
+ Lead Recycle |Leitung Bereiten Auf|
+ Auto-Alt Dial |Vorwahlknopf Automobil-Alt|
+ Pause Codes |Pause Codes|
+ List Mix |Liste Mischung|
+ Campaigns Main |Kampagnen Hauptsächlich|
+List Order Mix -<\/B> Overrides the Lead Order and Dial Status fields. Will use the List and status parameters for the selected List Mix entry in the List Mix sub section instead. Default is DISABLED|Liste Auftrag Mischung - läuft den Leitung Auftrag über undVorwahlknopf-Status fängt auf. Verwendet die Liste undStatusparameter für die vorgewählte Liste Mischung Eintragung imListe Mischung Unterseebootabschnitt anstatt. Rückstellung istUNTAUGLICH|
+List Mix ID -<\/B> ID of the list mix. Must be from 2-20 characters in length with no spaces or other special punctuation.|Liste Mischung Identifikation - Identifikation der Liste Mischung.Muß von 2-20 Buchstaben lang ohne Räume oder andere spezielleInterpunktion sein.|
+List Mix Name -<\/B> Descriptive name of the list mix. Must be from 2-50 characters in length|Liste Mischung Name - beschreibender Name der Liste Mischung. Muß von2-50 Buchstaben lang sein|
+List Mix Detail -<\/B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated|Liste Mischung Detail - der Aufbau der Liste Mischung Eintragung.Enthält die Liste Identifikation, Mischung Auftrag, Prozentsätze undStatus, die diese Liste Mischung bilden. Die Prozentsätze müssen bis100 immer addieren, und alle Listen müssen aktiv und eingestellt aufdie Kampagne sein, damit die Auftrag Mischung Eintragung aktiviertwerden kann|
+List Mix Method -<\/B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.|Liste Mischung Methode - die Methode von alle Teile des Liste MischungDetails zusammen mischen. EVEN_MIX mischt Leitungen von jedem Teil,das mit den anderen Teilen, wie diese 1.2.3.1.2.3.1.2.3 durchgeschobenwird. IN_ORDER setzt die Leitungen in den Auftrag ein, in dem sie aufdem Liste Mischung Detailschirm 1.1.1.2.2.2.3.3.3 verzeichnet werden.GELEGENTLICHER Wille setzte sie in GELEGENTLICHEN Auftrag1.3.2.1.1.3.2.1.3 ein. Rückstellung ist IN_ORDER.|
+LIST MIXES FOR THIS CAMPAIGN: |LISTE MISCHUNGEN FÜR DIESE KAMPAGNE:|
+The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls.|Human_answered auffangen wird verwendet, als, denTropfenprozentsatz oder Ungezwungenheit Rate errechnend. Einstellunghuman_answered zu Y verwendet diesen Status, als, diemenschlich-geantworteten Anrufe zählend.|
+HUMAN ANSWER|MENSCHLICHE ANTWORT|
+ADDING VICIDIAL SYSTEM STATUSES|ADDIEREN VON VON VICIDIAL SYSTEMSTATUS|
+MODIFY VICIDIAL SYSTEM STATUSES|ÄNDERN SIE VICIDIAL SYSTEMSTATUS|
+SYSTEM STATUS NOT ADDED|SYSTEMSTATUS NICHT ADDIERT|
+SYSTEM STATUS ADDED|SYSTEMSTATUS ADDIERT|
+SYSTEM STATUS NOT DELETED|SYSTEMSTATUS NICHT GELÖSCHT|
+the system status cannot be a reserved status: |der Systemstatus kann nicht ein reservierter Status sein:|
+the system status needs to be at least 1 characters in length|der Systemstatus muß mindestens Buchstaben 1 lang sein|
+VICIDIAL STATUSES WITHIN THIS SYSTEM: |VICIDIAL STATUS INNERHALB DIESES SYSTEMS:|
+ADD NEW SYSTEM STATUS|ADDIEREN SIE NEUEN SYSTEMSTATUS|
+CUSTOM CAMPAIGN STATUSES LISTINGS:|KUNDENSPEZIFISCHE KAMPAGNE STATUS-AUFLISTUNGEN:|
+CAMPAIGN HOTKEYS LISTINGS:|KAMPAGNE HOTKEYS AUFLISTUNGEN:|
+CAMPAIGN LEAD RECYCLE LISTINGS:|KAMPAGNE LEITUNG BEREITEN AUFLISTUNGEN AUF:|
+LEAD RECYCLES|LEITUNG BEREITET AUF|
+CAMPAIGN LEAD AUTO-ALT DIAL LISTINGS:|KAMPAGNE LEITUNG AUTO-ALT VORWAHLKNOPF-AUFLISTUNGEN:|
+CAMPAIGN AGENT PAUSE CODE LISTINGS:|KAMPAGNE MITTEL-PAUSE CODE-AUFLISTUNGEN:|
+CAMPAIGN LIST MIX LISTINGS:|KAMPAGNE LISTE MISCHUNG AUFLISTUNGEN:|
+The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.|Die Kategorie Wahl erlaubt Ihnen, einige Status in ein catogy zugruppieren, das für statistische Analyse verwendet werden kann.|
+MODIFY VICIDIAL STATUS CATEGORIES|ÄNDERN SIE VICIDIAL STATUS-KATEGORIEN|
+ADDING VICIDIAL STATUS CATEGORY|ADDIEREN VON VON VICIDIAL STATUS-KATEGORIE|
+ Status Categories |Status-Kategorien|
+ System Statuses |Systemstatus|
+MODIFY VICIDIAL SYSTEM STATUSES|ÄNDERN SIE VICIDIAL SYSTEMSTATUS|
+MODIFY VICIDIAL STATUS CATEGORY|ÄNDERN SIE VICIDIAL STATUS-KATEGORIE|
+Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis|Durch den Gebrauch von Systemstatus, können Sie Status haben, diefür Kampagne und Ingruppe bestehen. Der Status muß 1-6 Buchstabenlang sein, muß die Beschreibung 2-30 Buchstaben lang sein undauswählbar definiert, ob es oben in VICIDIAL als Mitteleinteilungzeigt. Human_answered auffangen wird verwendet, als, denTropfenprozentsatz oder Ungezwungenheit Rate errechnend. Einstellunghuman_answered zu Y verwendet diesen Status, als, diemenschlich-geantworteten Anrufe zählend. Die Kategorie Wahl erlaubtIhnen, einige Status in ein catogy zu gruppieren, das fürstatistische Analyse verwendet werden kann|
+Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report|Durch den Gebrauch von Systemstatuskategorien, können Sie diezusammen gruppieren Status, um statistische Analyse auf einer GruppeStatus zuzulassen. Die Kategorie Identifikation muß 2-20 Buchstabenlang ohne Räume sein, muß der Name 2-50 Buchstaben lang sein, istdie Beschreibung wahlweise freigestellt und TimeonVDAD Anzeigedefiniert, ob dieser Status einer von bis zu 4 Status ist, die auf derZeit auf VDAD Realzeitreport errechnet werden und angezeigt werdenkönnen|
+ADD NEW STATUS CATEGORY|ADDIEREN SIE NEUE STATUS-KATEGORIE|
+STATUS CATEGORY NOT ADDED|STATUS-KATEGORIE NICHT ADDIERT|
+there is already a status category in the system with this ID|es gibt bereits eine Statuskategorie im System mit dieserIdentifikation|
+ID must be between 2 and 20 characters in length|Identifikation muß zwischen 2 und 20 Buchstaben lang sein|
+name name must be between 2 and 50 characters in length|Namensname muß zwischen 2 und 50 Buchstaben lang sein|
+STATUS CATEGORY NOT MODIFIED|STATUS-KATEGORIE NICHT GEÄNDERT|
+the status category cannot be a reserved category: |die Statuskategorie kann nicht eine reservierte Kategorie sein:|
+the status category needs to be at least 2 characters in length|die Statuskategorie muß mindestens 2 Buchstaben lang sein|
+STATUS CATEGORY DELETED|STATUS-KATEGORIE LÖSCHTE|
+STATUS CATEGORY MODIFIED|STATUS-KATEGORIE GEÄNDERT|
+Category: |Kategorie:|
+the system status name needs to be at least 1 characters in length|der Systemstatusname muß mindestens Buchstaben 1 lang sein|
+SYSTEM STATUS NOT MODIFIED|SYSTEMSTATUS NICHT GEÄNDERT|
+SYSTEM STATUS MODIFIED|SYSTEMSTATUS GEÄNDERT|
+ERROR: There are already 4 Status Categories set to TimeOnVDAD Display|STÖRUNG: Es gibt bereits 4 den Status-Kategorienkatalog zurTimeOnVDAD Anzeige|
+CUSTOM CAMPAIGN STATUS MODIFIED|KUNDENSPEZIFISCHER KAMPAGNE STATUS GEÄNDERT|
+LIST MIX NOT MODIFIED|LISTE MISCHUNG NICHT GEÄNDERT|
+LIST MIX MODIFIED|LISTE MISCHUNG ÄNDERTE|
+You cannot delete the last list_id entry from a list mix|Sie können nicht die letzte list_id Eintragung aus einer ListeMischung löschen|
+LIST MIX ADDED: |LISTE MISCHUNG ADDIERT:|
+LIST MIX NOT ADDED |LISTE MISCHUNG NICHT ADDIERT|
+There is already a list mix with this ID in the system|Es gibt bereits eine Liste Mischung mit dieser Identifikation imSystem|
+LIST MIX NOT DELETED|LISTE MISCHUNG NICHT GELÖSCHT|
+LIST MIX DELETED: |LISTE MISCHUNG LÖSCHTE:|
+SET TO ACTIVE|STELLEN SIE AUF AKTIVES EIN|
+LIST MIX NOT ACTIVATED|LISTE MISCHUNG NICHT AKTIVIERT|
+LIST MIX ACTIVATED|LISTE MISCHUNG AKTIVIERTE|
+Enable Agent Transfer Logfile -<\/B> This option will log to a text logfile on the webserver every time a call is transferred to an agent. Default is 0, disabled|Ermöglichen Sie Vertreter-Übergangsprotokolldatei - diese Wahlprotokolliert in einer Textprotokolldatei auf dem webserver, jedesmalwenn ein Anruf auf ein Mittel gebracht wird. Rückstellung ist 0,gesperrt|
+Enable Agent Transfer Logfile|Ermöglichen Sie Vertreter-Übergangsprotokolldatei|
+Call Time -<\/B> This is the call time scheme to use for this inbound group. Keep in mind that the time is based on the server time. Default is 24hours|Anruf-Zeit - dieses ist der für diese inbound Gruppe zu verwendenAnrufzeitentwurf. Halten Sie im Verstand, daß die Zeit auf derBedienerzeit basiert. Rückstellung ist 24hours|
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field. Default is MESSAGE|Nach Stunden Tätigkeit - die Tätigkeit zum durchzuführen, wenn sienach Stunden ist, wie in der Anrufzeit für diese inbound Gruppedefiniert. HÄNGEZUSTAND-Willenssofort Hängezustand der Anruf,MESSASGE spielt die Akte in nach Stunden Anzeige Filenamauffangen, schickt VERLÄNGERUNG den Anruf zu nach StundenVerlängerung im dialplan und VOICEMAIL schickt den Anruf zumvoicemail Kasten, der in nach Stunden Voicemail verzeichnet wird,auffangen. Rückstellung ist ANZEIGE|
+After Hours Message Filename -<\/B> The audio file located on the server to be played if the Action is set to MESSAGE. Default is vm-goodbye|Nach Stunden Anzeige Dateinamen - die Audioakte gelegen auf demgespielt zu werden Bediener, wenn die Tätigkeit auf ANZEIGEeingestellt wird. Rückstellung ist VM-Auf Wiedersehen|
+After Hours Extension -<\/B> The dialplan extension to send the call to if the Action is set to EXTENSION. Default is 8300|Nach Stunden Verlängerung - die dialplan Verlängerung, zum desAnrufs zu senden, wenn die Tätigkeit auf VERLÄNGERUNG eingestelltwird. Rückstellung ist 8300|
+After Hours Voicemail -<\/B> The voicemail box to send the call to if the Action is set to VOICEMAIL|Nach Stunden Voicemail - der voicemail Kasten, zum des Anrufs zusenden, wenn die Tätigkeit auf VOICEMAIL eingestellt wird|
+Welcome Message Filename -<\/B> The audio file located on the server to be played when the call comes in. If set to ---NONE--- then no message will be played. Default is ---NONE---|Willkommener Anzeige Dateiname - die Audioakte gelegen auf demgespielt zu werden Bediener, wenn der Anruf hereinkommt. Wenn Satz zu---NONE --- dann wird keine Anzeige gespielt. Rückstellung ist---NONE ---|
+Music On Hold Context -<\/B> The music on hold context to use when the customer is placed on hold. Default is default|Musik auf Einfluß-Kontext - die Musik auf dem Einflußkontext, zum zuverwenden, wann der Kunde auf Einfluß gesetzt wird. Rückstellung istRückstellung|
+On Hold Prompt Filename -<\/B> The audio file located on the server to be played at a regular interval when the customer is on hold. Default is generic_hold. This audio file MUST be 9 seconds or less in length.|Auf Einfluß-Aufforderung Dateinamen - die Audioakte gelegen auf demin einem regelmäßigen Abstand gespielt zu werden Bediener, wenn derKunde auf Einfluß ist. Rückstellung ist generic_hold. DieseAudioakte MUSS 9 Sekunden oder kleiner in der Länge sein.|
+On Hold Prompt Interval -<\/B> The length of time in seconds to wait before playing the on hold prompt. Default is 60|Auf Einfluß-Aufforderung Abstand - die Zeitspanne in den Sekunden, zuwarten, bevor an die haltenaufforderung gespielt wird. Rückstellungist 60|
+Agent Alert Extension -<\/B> The extension to send into the agent session to announce that a call is coming to the agent. This extension should have a Playback of an audio file. To not use this function set this to X. Default is X|Mittel-Alarmverlängerung - die, um zu verkünden, daß in denVertreterlernabschnitt zu senden Verlängerung, ein Anruf zum Mittelkommt. Diese Verlängerung sollte ein Playback einer Audioakte haben.Diese Funktion nicht zu verwenden stellte dieses auf X. Default ist Xein|
+Agent Alert Delay -<\/B> The length of time in milliseconds to wait before sending the call to the agent after playing the on Agent Alert Extension. Default is 1000|Mittel-Alarm verzögert - die Zeitspanne in den Millisekunden, zuwarten, bevor er den Anruf zum Mittel schickt, nachdem er an dieMittel-Alarmverlängerung gespielt hat. Rückstellung ist 1000|
+Call Time: |Anruf-Zeit:|
+After Hours Action: |Nach Stunden Tätigkeit:|
+After Hours Message Filename: |Nach Stunden Anzeige Dateinamen:|
+After Hours Extension: |Nach Stunden Verlängerung:|
+After Hours Voicemail: |Nach Stunden Voicemail:|
+Welcome Message Filename: |Willkommener Anzeige Dateiname:|
+Music On Hold Context: |Musik Auf Einfluß-Kontext:|
+On Hold Prompt Filename: |Auf Einfluß-Aufforderung Dateinamen:|
+On Hold Prompt Interval: |Auf Einfluß-Aufforderung Abstand:|
+Agent Alert Extension: |Mittel-Alarmverlängerung:|
+Agent Alert Delay: |Mittel-Alarm Verzögert:|
+You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent|SieSIND auch in der Lage, den Rank oder Fähigkeit Niveaueinzustellen, in diesem Abschnitt für jede der inbound Gruppen sowieIn der LageSEIN, die Zahl den Anrufen zu sehen, die von jeder inboundGruppe für dieses spezifische Mittel empfangen werden|
+Allow Inbound and Blended -<\/B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N|Erlauben Sie Inbound und gemischt - dieses ist, wo Sie einstellenkönnen, ob die Benutzer dieser Kampagne die Wahl haben, zum von voninbound Anrufen mit dieser Kampagne zu nehmen. Wenn Sie gemischtesinbound und outbound tun möchten dann, muß dieses auf Y eingestelltwerden. Wenn Sie nur das outbound Wählen auf dieser Kampagne tunmöchten einstellten dieses auf N. Default sind N|
+Allow Inbound and Blended: |Erlauben Sie Inbound und gemischt:|
+Manual Dial List ID -<\/B> The default list_id to be used when an agent placces a manual call and a new lead record is created in vicidial_list. Default is 999. This field can contain digits only|Manuelle Vorwahlknopf-Liste Identifikation - das verwendet zu werdenRückstellung list_id, wenn ein Mittel placces ein manueller Anruf undeine neue Leitung Aufzeichnung im vicidial_list verursacht wird.Rückstellung ist 999. Dieses fangen kann nur Stellenenthalten auf|
+Manual Dial List ID: |Manuelle Vorwahlknopf-Liste Identifikation:|
+inbound_group_rank: orders by the rank given to the agent for the specific inbound group. Highest to Lowest|inbound_group_rank: Aufträge durch den Rank gegeben zum Mittel fürdie spezifische inbound Gruppe. Stark zu am niedrigsten|
+fewest_calls: orders by the number of calls received by an agent for that specific inbound group. Least calls first|fewest_calls: Aufträge durch die Zahl den Anrufen empfangen durch einMittel für diese spezifische inbound Gruppe. Wenige Anrufe zuerst|
+Campaign Ranks: |Kampagne Rank:|
+AGENT RANKS FOR THIS CAMPAIGN:|MITTEL-RANK FÜR DIESE KAMPAGNE:|
+Copy Campaign|Copy Kampagne|
+COPY A CAMPAIGN|Copy Eine KAMPAGNE|
+Source Campaign: |Quellkampagne:|
+New Copied Campaign Addition|Neue Kopierte Kampagne Hinzufügung|
+Copy In-Group|Copy In-Gruppe|
+New Copied In-Group Addition|Neue Kopierte In-Gruppe Hinzufügung|
+Copy User|Copy Benutzer|
+New Copied User Addition|Neue Kopierte Benutzer-Hinzufügung|
+COPY USER|COPY BENUTZER|
+Copy In-Group|Copy In-Gruppe|
+COPY INBOUND GROUP|COPY INBOUND GRUPPE|
+campaign_rank: orders by the rank given to the agent for the campaign. Highest to Lowest|campaign_rank: Aufträge durch den Rank gegeben zum Mittel für dieKampagne. Stark zu am niedrigsten|
+Default Transfer Group -<\/B> This field is the default In-Group that will be automatically selected when the agent goes to the transfer-conference frame in their agent interface|Rückstellung Übergangsgruppe - dieses fangen ist dieRückstellung In-Gruppe auf, die automatisch vorgewählt wird, wenndas Mittel zum Bringenkonferenz Rahmen in ihrer Mittelschnittstellegeht|
+Default Transfer Group: |Rückstellung Übergangsgruppe:|
+Allowed Transfer Groups: |Gewährte Übergangsgruppen:|
+Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up|Gewährte Übergangsgruppen - mit diesen checkbox Auflistungen könnenSie die Gruppen vorwählen, denen Mittel in dieser Kampagne bringenkönnen Anrufe zu. Erlauben Sie Closers muß ermöglicht werden, damitdiese Wahl oben darstellt|
+Campaign Ranks -<\/B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank|Kampagne ordnet - in diesem Abschnitt können Sie den Rank definieren,den ein Mittel für jede Kampagne hat. Diese Rank können gewohntSEIN,bevorzugte Anrufwegewahl zuzulassen, wenn folgender Vertreter-Anrufauf campaign_rank eingestellt wird|
+Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen|Auch in diesem Abschnitt ist die Fähigkeit, dem Mittel einen Rankfür jede inbound Gruppe zu geben. Diese Rank können für bevorzugteAnrufwegewahl verwendet werden, wenn diese Wahl auf dem IngruppeSchirm vorgewählt wird|
