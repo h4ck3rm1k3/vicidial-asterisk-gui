@@ -8,10 +8,18 @@
 
 require("dbconnect.php");
 
-$page_width='750';
-$section_width='700';
+
+######################################################################################################
+######################################################################################################
+#######   static variable settings for display options
+######################################################################################################
+######################################################################################################
+
+$page_width='770';
+$section_width='720';
 $header_font_size='3';
 $subheader_font_size='2';
+$subcamp_font_size='2';
 $header_selected_bold='<b>';
 $header_nonselected_bold='';
 $users_color =		'#FFFF99';
@@ -34,11 +42,12 @@ $reports_color =	'#99FF33';
 #$filters_color =	'#FFFF99';
 #$admin_color =		'#FFFF99';
 #$reports_color =	'#FFFF99';
-	$times_color =		'#CCCC00';
-	$phones_color =		'#CCCC00';
-	$conference_color =	'#CCCC00';
-	$server_color =		'#CCCC00';
-	$settings_color = 	'#CCCC00';
+	$times_color =		'#FF33FF';
+	$phones_color =		'#FF33FF';
+	$conference_color =	'#FF33FF';
+	$server_color =		'#FF33FF';
+	$settings_color = 	'#FF33FF';
+	$status_color = 	'#FF33FF';
 $users_font =		'BLACK';
 $campaigns_font =	'BLACK';
 $lists_font =		'BLACK';
@@ -54,10 +63,20 @@ $reports_font =		'BLACK';
 	$conference_font =	'BLACK';
 	$server_font =		'BLACK';
 	$settings_font = 	'BLACK';
+	$status_font = 	'BLACK';
+$subcamp_color =	'#FF9933';
+$subcamp_font =		'BLACK';
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
+
+######################################################################################################
+######################################################################################################
+#######   Form variable declaration
+######################################################################################################
+######################################################################################################
+
 
 if (isset($_GET["DB"]))				{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))	{$DB=$_POST["DB"];}
@@ -73,7 +92,9 @@ if (isset($_GET["adaptive_latest_server_time"]))	{$adaptive_latest_server_time=$
 	elseif (isset($_POST["adaptive_latest_server_time"])){$adaptive_latest_server_time=$_POST["adaptive_latest_server_time"];}
 if (isset($_GET["adaptive_maximum_level"]))	{$adaptive_maximum_level=$_GET["adaptive_maximum_level"];}
 	elseif (isset($_POST["adaptive_maximum_level"]))	{$adaptive_maximum_level=$_POST["adaptive_maximum_level"];}
-if (isset($_GET["ADD"]))	{$ADD=$_GET["ADD"];}
+if (isset($_GET["SUB"]))			{$SUB=$_GET["SUB"];}
+	elseif (isset($_POST["SUB"]))	{$SUB=$_POST["SUB"];}
+if (isset($_GET["ADD"]))			{$ADD=$_GET["ADD"];}
 	elseif (isset($_POST["ADD"]))	{$ADD=$_POST["ADD"];}
 if (isset($_GET["admin_hangup_enabled"]))	{$admin_hangup_enabled=$_GET["admin_hangup_enabled"];}
 	elseif (isset($_POST["admin_hangup_enabled"]))	{$admin_hangup_enabled=$_POST["admin_hangup_enabled"];}
@@ -303,6 +324,8 @@ if (isset($_GET["group_name"]))	{$group_name=$_GET["group_name"];}
 	elseif (isset($_POST["group_name"]))	{$group_name=$_POST["group_name"];}
 if (isset($_GET["groups"]))	{$groups=$_GET["groups"];}
 	elseif (isset($_POST["groups"]))	{$groups=$_POST["groups"];}
+if (isset($_GET["XFERgroups"]))	{$XFERgroups=$_GET["XFERgroups"];}
+	elseif (isset($_POST["XFERgroups"]))	{$XFERgroups=$_POST["XFERgroups"];}
 if (isset($_GET["HKstatus"]))	{$HKstatus=$_GET["HKstatus"];}
 	elseif (isset($_POST["HKstatus"]))	{$HKstatus=$_POST["HKstatus"];}
 if (isset($_GET["hopper_level"]))	{$hopper_level=$_GET["hopper_level"];}
@@ -584,6 +607,68 @@ if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["all
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 if (isset($_GET["admin_home_url"]))				{$admin_home_url=$_GET["admin_home_url"];}
 	elseif (isset($_POST["admin_home_url"]))	{$admin_home_url=$_POST["admin_home_url"];}
+if (isset($_GET["list_order_mix"]))				{$list_order_mix=$_GET["list_order_mix"];}
+	elseif (isset($_POST["list_order_mix"]))	{$list_order_mix=$_POST["list_order_mix"];}
+if (isset($_GET["vcl_id"]))						{$vcl_id=$_GET["vcl_id"];}
+	elseif (isset($_POST["vcl_id"]))			{$vcl_id=$_POST["vcl_id"];}
+if (isset($_GET["vcl_name"]))					{$vcl_name=$_GET["vcl_name"];}
+	elseif (isset($_POST["vcl_name"]))			{$vcl_name=$_POST["vcl_name"];}
+if (isset($_GET["list_mix_container"]))				{$list_mix_container=$_GET["list_mix_container"];}
+	elseif (isset($_POST["list_mix_container"]))	{$list_mix_container=$_POST["list_mix_container"];}
+if (isset($_GET["mix_method"]))					{$mix_method=$_GET["mix_method"];}
+	elseif (isset($_POST["mix_method"]))		{$mix_method=$_POST["mix_method"];}
+if (isset($_GET["human_answered"]))				{$human_answered=$_GET["human_answered"];}
+	elseif (isset($_POST["human_answered"]))	{$human_answered=$_POST["human_answered"];}
+if (isset($_GET["category"]))					{$category=$_GET["category"];}
+	elseif (isset($_POST["category"]))			{$category=$_POST["category"];}
+if (isset($_GET["vsc_id"]))						{$vsc_id=$_GET["vsc_id"];}
+	elseif (isset($_POST["vsc_id"]))			{$vsc_id=$_POST["vsc_id"];}
+if (isset($_GET["vsc_name"]))					{$vsc_name=$_GET["vsc_name"];}
+	elseif (isset($_POST["vsc_name"]))			{$vsc_name=$_POST["vsc_name"];}
+if (isset($_GET["vsc_description"]))			{$vsc_description=$_GET["vsc_description"];}
+	elseif (isset($_POST["vsc_description"]))	{$vsc_description=$_POST["vsc_description"];}
+if (isset($_GET["tovdad_display"]))				{$tovdad_display=$_GET["tovdad_display"];}
+	elseif (isset($_POST["tovdad_display"]))	{$tovdad_display=$_POST["tovdad_display"];}
+if (isset($_GET["mix_container_item"]))				{$mix_container_item=$_GET["mix_container_item"];}
+	elseif (isset($_POST["mix_container_item"]))	{$mix_container_item=$_POST["mix_container_item"];}
+if (isset($_GET["enable_agc_xfer_log"]))			{$enable_agc_xfer_log=$_GET["enable_agc_xfer_log"];}
+	elseif (isset($_POST["enable_agc_xfer_log"]))	{$enable_agc_xfer_log=$_POST["enable_agc_xfer_log"];}
+if (isset($_GET["after_hours_action"]))				{$after_hours_action=$_GET["after_hours_action"];}
+	elseif (isset($_POST["after_hours_action"]))	{$after_hours_action=$_POST["after_hours_action"];}
+if (isset($_GET["after_hours_message_filename"]))			{$after_hours_message_filename=$_GET["after_hours_message_filename"];}
+	elseif (isset($_POST["after_hours_message_filename"]))	{$after_hours_message_filename=$_POST["after_hours_message_filename"];}
+if (isset($_GET["after_hours_exten"]))				{$after_hours_exten=$_GET["after_hours_exten"];}
+	elseif (isset($_POST["after_hours_exten"]))		{$after_hours_exten=$_POST["after_hours_exten"];}
+if (isset($_GET["after_hours_voicemail"]))			{$after_hours_voicemail=$_GET["after_hours_voicemail"];}
+	elseif (isset($_POST["after_hours_voicemail"]))	{$after_hours_voicemail=$_POST["after_hours_voicemail"];}
+if (isset($_GET["welcome_message_filename"]))			{$welcome_message_filename=$_GET["welcome_message_filename"];}
+	elseif (isset($_POST["welcome_message_filename"]))	{$welcome_message_filename=$_POST["welcome_message_filename"];}
+if (isset($_GET["moh_context"]))					{$moh_context=$_GET["moh_context"];}
+	elseif (isset($_POST["moh_context"]))			{$moh_context=$_POST["moh_context"];}
+if (isset($_GET["onhold_prompt_filename"]))				{$onhold_prompt_filename=$_GET["onhold_prompt_filename"];}
+	elseif (isset($_POST["onhold_prompt_filename"]))	{$onhold_prompt_filename=$_POST["onhold_prompt_filename"];}
+if (isset($_GET["prompt_interval"]))				{$prompt_interval=$_GET["prompt_interval"];}
+	elseif (isset($_POST["prompt_interval"]))		{$prompt_interval=$_POST["prompt_interval"];}
+if (isset($_GET["agent_alert_exten"]))				{$agent_alert_exten=$_GET["agent_alert_exten"];}
+	elseif (isset($_POST["agent_alert_exten"]))		{$agent_alert_exten=$_POST["agent_alert_exten"];}
+if (isset($_GET["agent_alert_delay"]))				{$agent_alert_delay=$_GET["agent_alert_delay"];}
+	elseif (isset($_POST["agent_alert_delay"]))		{$agent_alert_delay=$_POST["agent_alert_delay"];}
+if (isset($_GET["group_rank"]))					{$group_rank=$_GET["group_rank"];}
+	elseif (isset($_POST["group_rank"]))		{$group_rank=$_POST["group_rank"];}
+if (isset($_GET["campaign_allow_inbound"]))				{$campaign_allow_inbound=$_GET["campaign_allow_inbound"];}
+	elseif (isset($_POST["campaign_allow_inbound"]))	{$campaign_allow_inbound=$_POST["campaign_allow_inbound"];}
+if (isset($_GET["manual_dial_list_id"]))				{$manual_dial_list_id=$_GET["manual_dial_list_id"];}
+	elseif (isset($_POST["manual_dial_list_id"]))		{$manual_dial_list_id=$_POST["manual_dial_list_id"];}
+if (isset($_GET["campaign_rank"]))				{$campaign_rank=$_GET["campaign_rank"];}
+	elseif (isset($_POST["campaign_rank"]))		{$campaign_rank=$_POST["campaign_rank"];}
+if (isset($_GET["source_campaign_id"]))				{$source_campaign_id=$_GET["source_campaign_id"];}
+	elseif (isset($_POST["source_campaign_id"]))	{$source_campaign_id=$_POST["source_campaign_id"];}
+if (isset($_GET["source_user_id"]))				{$source_user_id=$_GET["source_user_id"];}
+	elseif (isset($_POST["source_user_id"]))	{$source_user_id=$_POST["source_user_id"];}
+if (isset($_GET["source_group_id"]))			{$source_group_id=$_GET["source_group_id"];}
+	elseif (isset($_POST["source_group_id"]))	{$source_group_id=$_POST["source_group_id"];}
+if (isset($_GET["default_xfer_group"]))				{$default_xfer_group=$_GET["default_xfer_group"];}
+	elseif (isset($_POST["default_xfer_group"]))	{$default_xfer_group=$_POST["default_xfer_group"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -595,7 +680,11 @@ if (strlen($dial_status) > 0)
 	$status = $dial_status;
 	}
 
-##### BEGIN VARIABLE FILTERING FOR SECURITY #####
+######################################################################################################
+######################################################################################################
+#######   Form variable filtering for security and data integrity
+######################################################################################################
+######################################################################################################
 
 if ($non_latin < 1)
 {
@@ -714,6 +803,14 @@ $webroot_writable = ereg_replace("[^0-9]","",$webroot_writable);
 $enable_queuemetrics_logging = ereg_replace("[^0-9]","",$enable_queuemetrics_logging);
 $enable_sipsak_messages = ereg_replace("[^0-9]","",$enable_sipsak_messages);
 $allow_sipsak_messages = ereg_replace("[^0-9]","",$allow_sipsak_messages);
+$mix_container_item = ereg_replace("[^0-9]","",$mix_container_item);
+$prompt_interval = ereg_replace("[^0-9]","",$prompt_interval);
+$agent_alert_delay = ereg_replace("[^0-9]","",$agent_alert_delay);
+$manual_dial_list_id = ereg_replace("[^0-9]","",$manual_dial_list_id);
+
+### DIGITS and DASHES
+$group_rank = ereg_replace("[^-0-9]","",$group_rank);
+$campaign_rank = ereg_replace("[^-0-9]","",$campaign_rank);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -736,6 +833,9 @@ $agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
 $campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 $disable_alter_custdata = ereg_replace("[^NY]","",$disable_alter_custdata);
 $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
+$human_answered = ereg_replace("[^NY]","",$human_answered);
+$tovdad_display = ereg_replace("[^NY]","",$tovdad_display);
+$campaign_allow_inbound = ereg_replace("[^NY]","",$campaign_allow_inbound);
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -754,6 +854,9 @@ $billable = ereg_replace("[^0-9a-zA-Z]","",$billable);
 $pause_code = ereg_replace("[^0-9a-zA-Z]","",$pause_code);
 $vicidial_recording_override = ereg_replace("[^0-9a-zA-Z]","",$vicidial_recording_override);
 $queuemetrics_log_id = ereg_replace("[^0-9a-zA-Z]","",$queuemetrics_log_id);
+$after_hours_action = ereg_replace("[^0-9a-zA-Z]","",$after_hours_action);
+$after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
+$after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -826,6 +929,17 @@ $dial_status = ereg_replace("[^-\_0-9a-zA-Z]","",$dial_status);
 $queuemetrics_eq_prepend = ereg_replace("[^-\_0-9a-zA-Z]","",$queuemetrics_eq_prepend);
 $vicidial_agent_disable = ereg_replace("[^-\_0-9a-zA-Z]","",$vicidial_agent_disable);
 $alter_custdata_override = ereg_replace("[^-\_0-9a-zA-Z]","",$alter_custdata_override);
+$list_order_mix = ereg_replace("[^-\_0-9a-zA-Z]","",$list_order_mix);
+$vcl_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vcl_id);
+$mix_method = ereg_replace("[^-\_0-9a-zA-Z]","",$mix_method);
+$category = ereg_replace("[^-\_0-9a-zA-Z]","",$category);
+$vsc_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vsc_id);
+$moh_context = ereg_replace("[^-\_0-9a-zA-Z]","",$moh_context);
+$agent_alert_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_alert_exten);
+$source_campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_campaign_id);
+$source_user_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_user_id);
+$source_group_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_group_id);
+$default_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$default_xfer_group);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -860,6 +974,9 @@ $wrapup_message = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$wrapup_message);
 $pause_code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$pause_code_name);
 $campaign_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_description);
 $list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
+$vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
+$vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
+$vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -874,9 +991,13 @@ $telnet_host = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$telnet_host);
 $queuemetrics_dbname = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_dbname);
 $queuemetrics_login = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_login);
 $queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pass);
+$after_hours_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$after_hours_message_filename);
+$welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_message_filename);
+$onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
+$list_mix_container = ereg_replace(";","",$list_mix_container);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
@@ -994,15 +1115,48 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 # 70319-1625 - Added option to allow agents to login to outbound campaigns with no leads in the hopper
 # 70322-1455 - Added sipsak messages parameters
 # 70402-1157 - Added HOME link and entry to system_settings table, added QM link on reports section
-
+# 70516-1628 - Started reformatting campaigns to use submenus to break up options
+# 70529-1653 - Added help for list mix
+# 70530-1354 - Added human_answered field to statuses, added system status modification
+# 70530-1714 - Added lists for all campaign subsections
+# 70531-1631 - Development on List mix admin interface
+# 70601-1629 - More development on List mix admin interface, formatting, and added some javascript
+# 70602-1300 - More development on List mix admin interface, more javascript
+# 70608-1459 - Added option to set LIVE Callbacks to INACTIVE after one month
+# 70612-1451 - Added Callback INACTIVE link for after one week, sort by user/group/entrydate
+# 70614-0231 - Added Status Categories, ability to Modify Statuses, moved system statuses to sub-section
+# 70623-1008 - List Mix section now allows modification of list mix entries
+# 70629-1721 - List Mix section adding and removing of list entries active
+# 70706-1636 - List Mix section cleanup and more error-checking
+# 70908-0941 - Added agc logile enable system_settings
+# 71020-1934 - Added inbound groups options: on-hold music, messages, call_times
+# 71022-1343 - Added inbound group ranks for users
+# 71029-1710 - Added option for campaign to be inbound and/or blended with no restrictions on the campaign_id name
+#            - Added 5th NEW and 6th NEW to the dial order options
+# 71030-2010 - Added Manual Dial List ID field to campaigns table
+# 71103-2207 - Added inbound_group_rank and fewest_calls to the inbound groups call order options
+# 71113-1521 - Added campaign_rank to agent options
+#            - Added ability to Copy a campaign's setting to a new campaign
+# 71113-2225 - Added ability to copy user and in-group settings to new users and in-groups
+# 71116-0942 - Added campaign_rank and fewest_calls as methods for agent call routing
+# 71122-1135 - Added default transfer group for campaigns and inbound groups
+# 71125-1751 - Added allowable transfer groups to campaign detail screen
+#
+# 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.95';
-$build = '70402-1157';
+$admin_version = '2.0.4-119';
+$build = '71125-1751';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
+$MT[0]='';
+$US='_';
 
+$month_old = mktime(0, 0, 0, date("m")-1, date("d"),  date("Y"));
+$past_month_date = date("Y-m-d H:i:s",$month_old);
+$week_old = mktime(0, 0, 0, date("m"), date("d")-7,  date("Y"));
+$past_week_date = date("Y-m-d H:i:s",$week_old);
 
 if ($force_logout)
 {
@@ -1095,6 +1249,13 @@ $browser = getenv("HTTP_USER_AGENT");
 		}
 	}
 
+######################################################################################################
+######################################################################################################
+#######   Header settings
+######################################################################################################
+######################################################################################################
+
+
 header ("Content-type: text/html; charset=utf-8");
 echo "<html>\n";
 echo "<head>\n";
@@ -1103,11 +1264,14 @@ echo "<title>ΔΙΑΧΕΙΡΙΣΗ: ";
 
 if (!isset($ADD))   {$ADD=0;}
 
-if ($ADD==1)			{$hh='users';		echo "Πρόσθεσε Νέο Χρήστη";}
-if ($ADD==11)			{$hh='campaigns';	echo "Πρόσθεσε Νέα Εκστρατεία";}
+if ($ADD=="1")			{$hh='users';		echo "Πρόσθεσε Νέο Χρήστη";}
+if ($ADD=="1A")			{$hh='users';		echo "Χρήστης αντιγράφων";}
+if ($ADD==11)			{$hh='campaigns';	$sh='basic';	echo "Πρόσθεσε Νέα Εκστρατεία";}
+if ($ADD==12)			{$hh='campaigns';	$sh='basic';	echo "Εκστρατεία αντιγράφων";}
 if ($ADD==111)			{$hh='lists';		echo "Πρόσθεσε Νέα Λίστα";}
 if ($ADD==121)			{$hh='lists';		echo "Προσθέστε νέο DNC";}
 if ($ADD==1111)			{$hh='ingroups';	echo "Πρόσθεσε Νέα Εισ-Ομάδα";}
+if ($ADD==1211)			{$hh='ingroups';	echo "$$$-ΟΜΑΔΑ αντιγράφων";}
 if ($ADD==11111)		{$hh='remoteagent';	echo "Πρόσθεσε Νέους Απομακρυσμένους Χειριστές";}
 if ($ADD==111111)		{$hh='usergroups';	echo "Πρόσθεσε Νέα Ομάδα Χρηστών";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Πρόσθεσε Νέο Βοηθό";}
@@ -1118,16 +1282,20 @@ if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ΠΡΟΣΘΕΣΕ ΝΕΟ
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΕΣΕ ΝΕΟ ΔΙΑΚΟΜΙΣΤΗ";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ΠΡΟΣΘΕΣΕ ΝΕΑ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
-if ($ADD==2)			{$hh='users';		echo "Προσθήκη Νέου Χρήστη";}
-if ($ADD==21)			{$hh='campaigns';	echo "Προσθήκη Νέας Εκστρατείας";}
-if ($ADD==22)			{$hh='campaigns';	echo "Προσθήκη Νέας Κατάστασης Εκστρατείας";}
-if ($ADD==23)			{$hh='campaigns';	echo "New Εκστρατεία HotKey Addition";}
-if ($ADD==25)			{$hh='campaigns';	echo "Νέα προσθήκη οδηγού ανακύκλωσης εκστρατείας";}
-if ($ADD==26)			{$hh='campaigns';	echo "Νέα αυτόματη θέση πινάκων ALT";}
-if ($ADD==27)			{$hh='campaigns';	echo "Νέος κώδικας μικρής διακοπής πρακτόρων";}
-if ($ADD==28)			{$hh='campaigns';	echo "Θέση πινάκων εκστρατείας προστιθέμενη";}
+if ($ADD=="2")			{$hh='users';		echo "Προσθήκη Νέου Χρήστη";}
+if ($ADD=="2A")			{$hh='users';		echo "Νέα αντιγραμμένη προσθήκη χρηστών";}
+if ($ADD==20)			{$hh='campaigns';	$sh='basic';	echo "Νέα αντιγραμμένη προσθήκη εκστρατείας";}
+if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "Προσθήκη Νέας Εκστρατείας";}
+if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "Προσθήκη Νέας Κατάστασης Εκστρατείας";}
+if ($ADD==23)			{$hh='campaigns';	$sh='hotkey';	echo "New Εκστρατεία HotKey Addition";}
+if ($ADD==25)			{$hh='campaigns';	$sh='recycle';	echo "Νέα προσθήκη οδηγού ανακύκλωσης εκστρατείας";}
+if ($ADD==26)			{$hh='campaigns';	$sh='autoalt';	echo "Νέα αυτόματη θέση πινάκων ALT";}
+if ($ADD==27)			{$hh='campaigns';	$sh='pause';	echo "Νέος κώδικας μικρής διακοπής πρακτόρων";}
+if ($ADD==28)			{$hh='campaigns';	$sh='dialstat';	echo "Θέση πινάκων εκστρατείας προστιθέμενη";}
+if ($ADD==29)			{$hh='campaigns';	$sh='listmix';	echo "Μίγμα καταλόγων εκστρατείας προστιθέμενο";}
 if ($ADD==211)			{$hh='lists';		echo "Προσθήκη Νέας Λίστας";}
 if ($ADD==2111)			{$hh='ingroups';	echo "Προσθήκη Νέας Εισ-Ομάδας";}
+if ($ADD==2011)			{$hh='ingroups';	echo "Νέα αντιγραμμένη προσθήκη-ΟΜΑΔΑΣ";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "Προσθήκη Νέων Απομακρυσμένων Χειριστών";}
 if ($ADD==211111)		{$hh='usergroups';	echo "Προσθήκη Νέας Ομάδας Χρηστών";}
 if ($ADD==2111111)		{$hh='scripts';		echo "Νέα προσθήκη Βοηθού";}
@@ -1139,10 +1307,28 @@ if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΗΚΗ ΝΕ�
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΕΤΕΙ ΝΕΑ ΕΓΓΡΑΦΗ ΕΞΥΠΗΡΕΤΗΤΗ ΚΟΡΜΟΥ";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΣΥΝΔΙΑΛΕΞΗΣ";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
+if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ΠΡΟΣΘΗΚΗ ΤΩΝ ΘΈΣΕΩΝ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
+if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo "ΠΡΟΣΘΗΚΗ ΤΗΣ ΚΑΤΗΓΟΡΊΑΣ ΘΈΣΗΣ VICIDIAL";}
 if ($ADD==3)			{$hh='users';		echo "Τροποποίηση Χρήστη";}
 if ($ADD==30)			{$hh='campaigns';	echo "Εκστρατεία δεν επιτρέπεται";}
-if ($ADD==31)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας";}
-if ($ADD==34)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
+if ($ADD==31)			
+				{
+				$hh='campaigns';	$sh='detail';	echo "Τροποποίηση Εκστρατείας - Detail - $campaign_id";
+				if ($SUB==22)	{echo " - Statuses";}
+				if ($SUB==23)	{echo " - HotKeys";}
+				if ($SUB==25)	{echo " -Μόλυβδος ανακύκλωσηςEntries";}
+				if ($SUB==26)	{echo " - Auto Alt Dial Statuses";}
+				if ($SUB==27)	{echo " - Agent Pause Codes";}
+				if ($SUB==29)	{echo " - List Mixes";}
+				}
+if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Θέσεις εκστρατείας";}
+if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Εκστρατεία HotKeys";}
+if ($ADD==34)			{$hh='campaigns';	$sh='basic';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
+if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Ανακύκλωσης καταχωρήσεις μολύβδου εκστρατείας";}
+if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Αυτόματες ALT θέσεις πινάκων εκστρατείας";}
+if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Κώδικες μικρής διακοπής πρακτόρων εκστρατείας";}
+if ($ADD==38)			{$hh='campaigns';	$sh='dialstat';	echo "Θέσεις πινάκων εκστρατείας";}
+if ($ADD==39)			{$hh='campaigns';	$sh='listmix';	echo "Μίγματα καταλόγων εκστρατείας";}
 if ($ADD==311)			{$hh='lists';		echo "Τροποποίηση Λίστας";}
 if ($ADD==3111)			{$hh='ingroups';	echo "Τροποποίηση Εισ-Ομάδων";}
 if ($ADD==31111)		{$hh='remoteagent';	echo "Τροποποίηση Απομακρυσμένων Χειριστών";}
@@ -1157,15 +1343,18 @@ if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "ΤΡΟΠΟΠΟΙΗΣΕ
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
+if ($ADD==321111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΘΈΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
+if ($ADD==331111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΗΝ ΚΑΤΗΓΟΡΊΑ ΘΈΣΗΣ VICIDIAL";}
 if ($ADD=="4A")			{$hh='users';		echo "Τροποποίηση Χρήστη - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Τροποποίηση Χρήστη - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Τροποποίηση Χρήστη";}
-if ($ADD==41)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας";}
-if ($ADD==42)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας Status";}
-if ($ADD==43)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας HotKey";}
-if ($ADD==44)			{$hh='campaigns';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
-if ($ADD==45)			{$hh='campaigns';	echo "Τροποποιήστε τον οδηγό εκστρατείας ανακύκλωσης";}
-if ($ADD==47)			{$hh='campaigns';	echo "Τροποποιήστε τον κώδικα μικρής διακοπής πρακτόρων";}
+if ($ADD==41)			{$hh='campaigns';	$sh='detail';	echo "Τροποποίηση Εκστρατείας";}
+if ($ADD==42)			{$hh='campaigns';	$sh='status';	echo "Τροποποίηση Εκστρατείας Status";}
+if ($ADD==43)			{$hh='campaigns';	$sh='hotkey';	echo "Τροποποίηση Εκστρατείας HotKey";}
+if ($ADD==44)			{$hh='campaigns';	$sh='basic';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
+if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Τροποποιήστε τον οδηγό εκστρατείας ανακύκλωσης";}
+if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Τροποποιήστε τον κώδικα μικρής διακοπής πρακτόρων";}
+if ($ADD==49)			{$hh='campaigns';	$sh='listmix';	echo "Τροποποιήστε το μίγμα καταλόγων εκστρατείας";}
 if ($ADD==411)			{$hh='lists';		echo "Τροποποίηση Λίστας";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Τροποποίηση Εισ-Ομάδων";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Τροποποίηση Απομακρυσμένων Χειριστών";}
@@ -1180,10 +1369,12 @@ if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "ΤΡΟΠΟΠΟΙΗΣΗ
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
+if ($ADD==421111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΘΈΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
+if ($ADD==431111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΚΑΤΗΓΟΡΊΕΣ ΘΈΣΗΣ VICIDIAL";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
-if ($ADD==51)			{$hh='campaigns';	echo "Delete Εκστρατεία";}
-if ($ADD==52)			{$hh='campaigns';	echo "Αποσυνδεμένοι Χειριστές";}
-if ($ADD==53)			{$hh='campaigns';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
+if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Εκστρατεία";}
+if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Αποσυνδεμένοι Χειριστές";}
+if ($ADD==53)			{$hh='campaigns';	$sh='detail';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
 if ($ADD==511)			{$hh='lists';		echo "Delete List";}
 if ($ADD==5111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==51111)		{$hh='remoteagent';	echo "Διάγραψε τους Απομακρυσμένους Χειριστές";}
@@ -1197,13 +1388,14 @@ if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
-if ($ADD==61)			{$hh='campaigns';	echo "Delete Εκστρατεία";}
-if ($ADD==62)			{$hh='campaigns';	echo "Αποσυνδεμένοι Χειριστές";}
-if ($ADD==63)			{$hh='campaigns';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
-if ($ADD==65)			{$hh='campaigns';	echo "Διαγράψτε τον οδηγό ανακύκλωσης";}
-if ($ADD==66)			{$hh='campaigns';	echo "Διαγράψτε την αυτόματη θέση πινάκων ALT";}
-if ($ADD==67)			{$hh='campaigns';	echo "Διαγράψτε τον κώδικα μικρής διακοπής πρακτόρων";}
-if ($ADD==68)			{$hh='campaigns';	echo "Θέση πινάκων εκστρατείας αφαιρούμενη";}
+if ($ADD==61)			{$hh='campaigns';	$sh='detail';	echo "Delete Εκστρατεία";}
+if ($ADD==62)			{$hh='campaigns';	$sh='detail';	echo "Αποσυνδεμένοι Χειριστές";}
+if ($ADD==63)			{$hh='campaigns';	$sh='detail';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
+if ($ADD==65)			{$hh='campaigns';	$sh='recycle';	echo "Διαγράψτε τον οδηγό ανακύκλωσης";}
+if ($ADD==66)			{$hh='campaigns';	$sh='autoalt';	echo "Διαγράψτε την αυτόματη θέση πινάκων ALT";}
+if ($ADD==67)			{$hh='campaigns';	$sh='pause';	echo "Διαγράψτε τον κώδικα μικρής διακοπής πρακτόρων";}
+if ($ADD==68)			{$hh='campaigns';	$sh='dialstat';	echo "Θέση πινάκων εκστρατείας αφαιρούμενη";}
+if ($ADD==69)			{$hh='campaigns';	$sh='listmix';	echo "Μίγμα καταλόγων εκστρατείας αφαιρούμενο";}
 if ($ADD==611)			{$hh='lists';		echo "Delete List";}
 if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Διάγραψε τους Απομακρυσμένους Χειριστές";}
@@ -1221,10 +1413,10 @@ if ($ADD==73)			{$hh='campaigns';	echo "Μετρητής Κληθέντων Οδ
 if ($ADD==7111111)		{$hh='scripts';		echo "Προεπισκόπιση Βοηθού";}
 if ($ADD==0)			{$hh='users';		echo "Λίστα Χρηστών";}
 if ($ADD==8)			{$hh='users';		echo "Επανακλήσεις μέσα στον χειριστή";}
-if ($ADD==81)			{$hh='campaigns';	echo "Επανακλήσεις μέσα στην εκστρατεία";}
+if ($ADD==81)			{$hh='campaigns';	$sh='list';	echo "Επανακλήσεις μέσα στην εκστρατεία";}
 if ($ADD==811)			{$hh='lists';	echo "Επανακλήσεις μέσα στην λίστα";}
 if ($ADD==8111)			{$hh='usergroups';	echo "CallBacks μέσα στην ομάδα χρηστών ";}
-if ($ADD==10)			{$hh='campaigns';	echo "Εκστρατείες";}
+if ($ADD==10)			{$hh='campaigns';	$sh='list';		echo "Εκστρατείες";}
 if ($ADD==100)			{$hh='lists';		echo "Λίστες";}
 if ($ADD==1000)			{$hh='ingroups';	echo "Εισ-Ομάδες";}
 if ($ADD==10000)		{$hh='remoteagent';	echo "Απομακρυσμένοι Χειριστές";}
@@ -1308,29 +1500,142 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$o++;
 		}
 
-	##### get campaigns listing for dynamic pulldown
+	##### BEGIN get campaigns listing for rankings #####
+
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
 	$campaigns_to_print = mysql_num_rows($rslt);
 	$campaigns_list='';
+	$campaigns_value='';
+	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
 
 	$o=0;
 	while ($campaigns_to_print > $o)
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$campaign_id_values[$o] = $rowx[0];
+		$campaign_name_values[$o] = $rowx[1];
 		$o++;
 		}
 
+	$o=0;
+	while ($campaigns_to_print > $o)
+		{
+		$stmt="SELECT campaign_rank,calls_today from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
+		$rslt=mysql_query($stmt, $link);
+		$ranks_to_print = mysql_num_rows($rslt);
+		if ($ranks_to_print > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$SELECT_campaign_rank = $row[0];
+			$calls_today = $row[1];
+			}
+		else
+			{$calls_today=0;   $SELECT_campaign_rank=0;}
+		if ( ($ADD=="4A") or ($ADD=="4B") )
+			{
+			if (isset($_GET["RANK_$campaign_id_values[$o]"]))			{$campaign_rank=$_GET["RANK_$campaign_id_values[$o]"];}
+				elseif (isset($_POST["RANK_$campaign_id_values[$o]"]))	{$campaign_rank=$_POST["RANK_$campaign_id_values[$o]"];}
+
+			if ($ranks_to_print > 0)
+				{
+				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+			else
+				{
+				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+
+			$stmt="UPDATE vicidial_live_agents set campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+			$rslt=mysql_query($stmt, $link);
+			}
+		else {$campaign_rank = $SELECT_campaign_rank;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		# disable non user-group allowable campaign ranks
+		$stmt="SELECT user_group from vicidial_users where user='$user';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$Ruser_group =	$row[0];
+
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$Ruser_group';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$allowed_campaigns =	$row[0];
+		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
+		$UGcampaigns = explode(" ", $allowed_campaigns);
+
+		$p=0;   $RANK_camp_active=0;   $CR_disabled = '';
+		if (eregi('-ALL-CAMPAIGNS-',$allowed_campaigns))
+			{$RANK_camp_active++;}
+		else
+			{
+			$UGcampaign_ct = count($UGcampaigns);
+			while ($p < $UGcampaign_ct)
+				{
+				if ($campaign_id_values[$o] == $UGcampaigns[$p]) 
+					{$RANK_camp_active++;}
+				$p++;
+				}
+			}
+		if ($RANK_camp_active < 1) {$CR_disabled = 'DISABLED';}
+
+		$RANKcampaigns_list .= "<tr $bgcolor><td>";
+		$campaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] <BR>\n";
+		$RANKcampaigns_list .= "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id_values[$o]\">$campaign_id_values[$o]</a> - $campaign_name_values[$o] </td>";
+		$RANKcampaigns_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$campaign_id_values[$o] $CR_disabled>\n";
+		$h="9";
+		while ($h>=-9)
+			{
+			$RANKcampaigns_list .= "<option value=\"$h\"";
+			if ($h==$campaign_rank)
+				{$RANKcampaigns_list .= " SELECTED";}
+			$RANKcampaigns_list .= ">$h</option>";
+			$h--;
+			}
+		$RANKcampaigns_list .= "</select></td>\n";
+		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$o++;
+		}
+	##### END get campaigns listing for rankings #####
+
+
 	##### BEGIN get inbound groups listing for checkboxes #####
+	$xfer_groupsSQL='';
 	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
 	{
-	$stmt="SELECT closer_campaigns from vicidial_campaigns where campaign_id='$campaign_id';";
+	$stmt="SELECT closer_campaigns,xfer_groups from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns =	$row[0];
-	$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
-	$groups = explode(" ", $closer_campaigns);
+		$closer_campaigns = preg_replace("/ -$/","",$closer_campaigns);
+		$groups = explode(" ", $closer_campaigns);
+	$xfer_groups =	$row[1];
+		$xfer_groups = preg_replace("/ -$/","",$xfer_groups);
+		$XFERgroups = explode(" ", $xfer_groups);
+	$xfer_groupsSQL = preg_replace("/^ | -$/","",$xfer_groups);
+	$xfer_groupsSQL = preg_replace("/ /","','",$xfer_groupsSQL);
+	$xfer_groupsSQL = "WHERE group_id IN('$xfer_groupsSQL')";
+	}
+	if ($ADD==41)
+	{
+	$p=0;
+	$XFERgroup_ct = count($XFERgroups);
+	while ($p < $XFERgroup_ct)
+		{
+		$xfer_groups .= " $XFERgroups[$p]";
+		$p++;
+		}
+	$xfer_groupsSQL = preg_replace("/^ | -$/","",$xfer_groups);
+	$xfer_groupsSQL = preg_replace("/ /","','",$xfer_groupsSQL);
+	$xfer_groupsSQL = "WHERE group_id IN('$xfer_groupsSQL')";
 	}
 
 	if ( (($ADD==31111) or ($ADD==31111)) and (count($groups)<1) )
@@ -1358,28 +1663,103 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$groups_to_print = mysql_num_rows($rslt);
 	$groups_list='';
 	$groups_value='';
+	$XFERgroups_list='';
+	$RANKgroups_list="<tr><td>INBOUND GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
 
 	$o=0;
 	while ($groups_to_print > $o)
 		{
 		$rowx=mysql_fetch_row($rslt);
-		$group_id_value = $rowx[0];
-		$group_name_value = $rowx[1];
-		$groups_list .= "<input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_value\"";
-		$p=0;
-		while ($p<100)
+		$group_id_values[$o] = $rowx[0];
+		$group_name_values[$o] = $rowx[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($groups_to_print > $o)
+		{
+		$stmt="SELECT group_rank,calls_today from vicidial_inbound_group_agents where user='$user' and group_id='$group_id_values[$o]'";
+		$rslt=mysql_query($stmt, $link);
+		$ranks_to_print = mysql_num_rows($rslt);
+		if ($ranks_to_print > 0)
 			{
-			if ($group_id_value == $groups[$p]) 
+			$row=mysql_fetch_row($rslt);
+			$SELECT_group_rank = $row[0];
+			$calls_today = $row[1];
+			}
+		else
+			{$calls_today=0;   $SELECT_group_rank=0;}
+		if ( ($ADD=="4A") or ($ADD=="4B") )
+			{
+			if (isset($_GET["RANK_$group_id_values[$o]"]))			{$group_rank=$_GET["RANK_$group_id_values[$o]"];}
+				elseif (isset($_POST["RANK_$group_id_values[$o]"]))	{$group_rank=$_POST["RANK_$group_id_values[$o]"];}
+
+			if ($ranks_to_print > 0)
+				{
+				$stmt="UPDATE vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank' where group_id='$group_id_values[$o]' and user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+			else
+				{
+				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+
+			$stmt="UPDATE vicidial_live_inbound_agents set group_weight='$group_rank' where group_id='$group_id_values[$o]' and user='$user';";
+			$rslt=mysql_query($stmt, $link);
+			}
+		else {$group_rank = $SELECT_group_rank;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		$groups_list .= "<input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_values[$o]\"";
+		$XFERgroups_list .= "<input type=\"checkbox\" name=\"XFERgroups[]\" value=\"$group_id_values[$o]\"";
+		$RANKgroups_list .= "<tr $bgcolor><td><input type=\"checkbox\" name=\"groups[]\" value=\"$group_id_values[$o]\"";
+		$p=0;
+		$group_ct = count($groups);
+		while ($p < $group_ct)
+			{
+			if ($group_id_values[$o] == $groups[$p]) 
 				{
 				$groups_list .= " CHECKED";
-				$groups_value .= " $group_id_value";
+				$RANKgroups_list .= " CHECKED";
+				$groups_value .= " $group_id_values[$o]";
 				}
 			$p++;
 			}
-		$groups_list .= "> $group_id_value - $group_name_value<BR>\n";
+		$p=0;
+		$XFERgroup_ct = count($XFERgroups);
+		while ($p < $XFERgroup_ct)
+			{
+			if ($group_id_values[$o] == $XFERgroups[$p]) 
+				{
+				$XFERgroups_list .= " CHECKED";
+				$XFERgroups_value .= " $group_id_values[$o]";
+				}
+			$p++;
+			}
+		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
+		$XFERgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
+		$RANKgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] </td>";
+		$RANKgroups_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$group_id_values[$o]>\n";
+		$h="9";
+		while ($h>=-9)
+			{
+			$RANKgroups_list .= "<option value=\"$h\"";
+			if ($h==$group_rank)
+				{$RANKgroups_list .= " SELECTED";}
+			$RANKgroups_list .= ">$h</option>";
+			$h--;
+			}
+		$RANKgroups_list .= "</select></td>\n";
+		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
 		$o++;
 		}
 	if (strlen($groups_value)>2) {$groups_value .= " -";}
+	if (strlen($XFERgroups_value)>2) {$XFERgroups_value .= " -";}
 	}
 	##### END get inbound groups listing for checkboxes #####
 
@@ -1395,7 +1775,6 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$allowed_campaigns =	$row[0];
 		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
 		$campaigns = explode(" ", $allowed_campaigns);
-		echo "<!--  $allowed_campaigns -->";
 		}
 
 	$campaigns_value='';
@@ -1464,6 +1843,15 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 
 $NWB = " &nbsp; <a href=\"javascript:openNewWindow('$PHP_SELF?ADD=99999";
 $NWE = "')\"><IMG SRC=\"help.gif\" WIDTH=20 HEIGHT=20 Border=0 ALT=\"ΒΟΗΘΕΙΑ\" ALIGN=TOP></A>";
+
+
+######################################################################################################
+######################################################################################################
+#######   9 series, HELP screen
+######################################################################################################
+######################################################################################################
+
+
 ######################
 # ADD=99999 display the HELP SCREENS
 ######################
@@ -1523,11 +1911,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Ο πράκτορας επιλέγει Ingroups -</B> εάν θέσετε σε 1 αυτή την επιλογή επιτρέπει στο χρήστη να επιλέξει τις εισ-ομάδες που θα λάβουν τις κλήσεις. Διαφορετικά ο Manager θα πρέπει να το θέσει αυτό στην σελίδα διαχείρισης.
 
 <BR>
-<A NAME="vicidial_users-closer_campaigns">
-<BR>
-<B>Εισερχόμενες Ομάδες -</B> Εδώ μπορείτε να επιλέξετε τις εισερχόμενες ομάδες που θέλετε να λαμβάνουν τις κλήσεις , εάν έχετε επιλέξει την εκστρατεία CLOSER.
-
-<BR>
 <A NAME="vicidial_users-scheduled_callbacks">
 <BR>
 <B>Προγραμματισμένες Επανακλήσεις -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να τερματίσει μία κλήση ως CALLBK και να επιλέξει τα δεδομένα και την ώρα κατά την οποία ο οδηγός θα ξανα-ενεργοποιηθεί.
@@ -1561,6 +1944,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_users-vicidial_recording_override">
 <BR>
 <B>VICIDIAL συμπληρωματική προμήθεια καταγραφής -</B> αυτή η επιλογήθα αγνοήσει οποιο δήποτε η επιλογή είναι στην εκστρατεία για τηνκαταγραφή. Τα ΑΤΟΜΑ ΜΕ ΕΙΔΙΚΈΣ ΑΝΑΓΚΕΣ δεν θα αγνοήσουν τηρύθμιση καταγραφής εκστρατείας. Δεν θα θέσει εκτός λειτουργίαςΠΟΤΕ την καταγραφή στον πελάτη.  ONDEMAND είναι η προεπιλογήκαι επιτρέπει στον πράκτορα για να αρχίσει και να σταματήσει όπωςαπαιτείται.  ALLCALLS θα αρχίσει την καταγραφή στον πελάτηόποτε μια κλήση στέλνεται σε έναν πράκτορα.  ALLFORCE θααρχίσει την καταγραφή στον πελάτη όποτε μια κλήση στέλνεται σεέναν πράκτορα που δεν δίνει στον πράκτορα καμία επιλογή νασταματήσει. Για ALLCALLS και ALLFORCE υπάρχει μια επιλογή ναχρησιμοποιηθεί η καθυστέρηση καταγραφής για να περικόψει στιςπολύ σύντομα καταγραφές και recude το φορτίο συστημάτων.
+
+<BR>
+<A NAME="vicidial_users-vicidial_users-campaign_ranks">
+<BR>
+<B>Τάξεις εκστρατείας - σε αυτό το τμήμα μπορείτε να καθορίσετε τηντάξη που ένας πράκτορας θα έχει για κάθε εκστρατεία. Αυτές οιτάξεις μπορούν να χρησιμοποιηθούν για να επιτρέψουν τηνπροτιμημένη κλήση καθοδηγώντας όταν τίθεται η επόμενη κλήσηπρακτόρων campaign_rank.
+
+<BR>
+<A NAME="vicidial_users-closer_campaigns">
+<BR>
+<B>Εισερχόμενες Ομάδες -</B> Εδώ μπορείτε να επιλέξετε τις εισερχόμενες ομάδες που θέλετε να λαμβάνουν τις κλήσεις , εάν έχετε επιλέξει την εκστρατεία CLOSER. Θα είστε σε θέση επίσης να θέσετε την τάξη, ή το επίπεδοικανότητας, σε αυτό το τμήμα κάθε μιας από τις εισερχόμενεςομάδες καθώς επίσης και όντας σε θέση να δείτε τοναριθμό κλήσεων που παραλαμβάνονται από κάθε εισερχόμενη ομάδαγια αυτόν τον συγκεκριμένο πράκτορα. Επίσης σε αυτό το τμήμα είναι η δυνατότητα να δοθεί στονπράκτορα μια τάξη για κάθε εισερχόμενη ομάδα. Αυτές οι τάξειςμπορούν να χρησιμοποιηθούν για την προτιμημένη κλήση καθοδηγώνταςόταν επιλέγεται εκείνη η επιλογή στην οθόνη-ΟΜΑΔΑΣ.
 
 <BR>
 <A NAME="vicidial_users-alter_custdata_override">
@@ -1723,6 +2116,21 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Επιτρέπει τους Closers -</B> Εδώ ορίζετε εάν οι χρήστες της εκστρατείας θα έχουν την επιλογή να στείλουν την κλήση σε έναν closer.
 
 <BR>
+<A NAME="vicidial_campaigns-default_xfer_group">
+<BR>
+<B>Ομάδα μεταφοράς προεπιλογής - αυτός ο τομέας είναι η-ΟΜΑΔΑπροεπιλογής που θα επιλεχτεί αυτόματα όταν πηγαίνει ο πράκτοραςστο πλαίσιο μεταφορά-διασκέψεων στη διεπαφή πρακτόρων τους.
+
+<BR>
+<A NAME="vicidial_campaigns-xfer_groups">
+<BR>
+<B>Ομάδες μεταφοράς - με αυτές τις λίστες τετραγωνιδίου μπορείτε ναεπιλέξετε τις ομάδες ότι οι πράκτορες σε αυτήν την εκστρατείαμπορούν να μεταφέρουν τις κλήσεις. Επιτρέψτε ότι Closersπρέπει να επιτραπεί για αυτήν την επιλογή να παρουσιάσει.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_allow_inbound">
+<BR>
+<B>Επιτρέψτε πλησίον και συνδύασε - αυτό είναι όπου μπορείτε ναθέσετε εάν οι χρήστες αυτής της εκστρατείας θα έχουν τηνεπιλογή να πάρουν τις εισερχόμενες κλήσεις με αυτήν τηνεκστρατεία. Εάν θέλετε να κάνετε συνδυασμένων εισερχόμενος καιεξερχόμενος έπειτα αυτό πρέπει να τεθεί το Υ. Εάν θέλετε μόνονα κάνετε τον εξερχόμενο σχηματισμό σε αυτήν την εκστρατείαθέστε αυτό σε Ν. Default είναι ν.
+
+<BR>
 <A NAME="vicidial_campaigns-dial_status">
 <BR>
 <B>Κατάσταση Κλήσης -</B> Εδώ ορίζετε τις καταστάσεις που θέλετε να κληθούν μέσα στις λίστες, οι οποίες είναι ενεργές για   την εκστρατεία παρακάτω. Να προσθέσει μια άλλη θέση στον πίνακα, να το επιλέξει από τονεξελισσόμενους κατάλογο και τον κρότο ΠΡΟΣΘΕΤΕΙ. Για να αφαιρέσετεμια από τις θέσεις πινάκων, χτυπήστε στη REMOVE σύνδεση δίπλαστη θέση που θέλετε να αφαιρέσετε.
@@ -1819,6 +2227,8 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
  <BR> &nbsp; - oldest_call_start: ταξινομημένο με την τελευταία φορά που σε ένα χρήστη στάλθηκε  μία κλήση. Με αποτέλεσμα, ο χρήστης να λαμβάνει συνολικά το ίδιο αριθό κλήσεων.
  <BR> &nbsp; - oldest_call_finish: ταξινομημένο με την τελευταία φορά που ένας χρήστης τελείωσε μία κλήση. Ο χρήστης που περιμένει περισσότερο λαμβάνει την πρώτη κλήση.
  <BR> &nbsp; - overall_user_level: οι διαταγές από το user_level του χειριστή όπως καθορίζεται στα vicidial_users παρουσιάζουν ένα υψηλότερο user_level θα άβουν περισσότερες κλήσεις.
+ <BR> &nbsp; - campaign_rank: διαταγές από την τάξη που δίνεται στον πράκτοραγια την εκστρατεία. Ο υψηλότερος σε χαμηλότερο.
+ <BR> &nbsp; - fewest_calls: διαταγές από τον αριθμό κλήσεων πουπαραλαμβάνονται από έναν πράκτορα για εκείνη την συγκεκριμένηεισερχόμενη ομάδα. Λιγότερες κλήσεις πρώτα.
 
 <BR>
 <A NAME="vicidial_campaigns-local_call_time">
@@ -1960,6 +2370,37 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins -</B> εάν θέστε τοΥ, επιτρέπει στους πράκτορες στη σύνδεση στην εκστρατεία ακόμα κιαν δεν υπάρχει κανένας μόλυβδος που φορτώνεται στη χοάνη γιαεκείνη την εκστρατεία. Αυτή η λειτουργία δεν απαιτείται στιςεκστρατείες στενός-τύπων. Η προεπιλογή είναι ν.
 
+<BR>
+<A NAME="vicidial_campaigns-list_order_mix">
+<BR>
+<B>Μίγμα διαταγής καταλόγων - αγνοεί τους τομείς θέσης διαταγήςκαι πινάκων μολύβδου. Θα χρησιμοποιήσει τις παραμέτρους καταλόγωνκαι θέσης για την επιλεγμένη είσοδο μιγμάτων καταλόγων στο υπο-τμήμα μιγμάτων καταλόγων αντ' αυτού. Η προεπιλογή είναι ΕΚΤΟΣΛΕΙΤΟΥΡΓΊΑΣ.
+
+<BR>
+<A NAME="vicidial_campaigns-vcl_id">
+<BR>
+<B>Ταυτότητα μιγμάτων καταλόγων - ταυτότητα του μίγματος καταλόγων.Πρέπει να είστε από 2-20 χαρακτήρες στο μήκος χωρίς ταδιαστήματα ή άλλη ειδική στίξη.
+
+<BR>
+<A NAME="vicidial_campaigns-vcl_name">
+<BR>
+<B>Όνομα μιγμάτων καταλόγων - περιγραφικό όνομα του μίγματοςκαταλόγων. Πρέπει να είστε από 2-50 χαρακτήρες στο μήκος.
+
+<BR>
+<A NAME="vicidial_campaigns-list_mix_container">
+<BR>
+<B>Λεπτομέρεια μιγμάτων καταλόγων - η σύνθεση της εισόδου μιγμάτωνκαταλόγων. Περιέχει τον κατάλογο ταυτότητα, τη διαταγή μιγμάτων,τα ποσοστά και τις θέσεις που αποτελούν αυτό το μίγμα καταλόγων.Τα ποσοστά πρέπει πάντα να προσθέσουν μέχρι 100, και οικατάλογοι όλοι πρέπει να είναι ενεργοί και καθορισμένοι τηνεκστρατεία για την είσοδο μιγμάτων διαταγής που ενεργοποιείται.
+
+<BR>
+<A NAME="vicidial_campaigns-mix_method">
+<BR>
+<B>Μέθοδος μιγμάτων καταλόγων - η μέθοδος όλα τα μέρη τηςλεπτομέρειας μιγμάτων καταλόγων από κοινού.  EVEN_MIX θααναμίξει τους μολύβδους από κάθε μέρος που παρεμβάλλεται λευκέςσελίδες με τα άλλα μέρη, όπως αυτό το 1,2,3,1,2,3,1,2,3.IN_ORDER θα βάλει τους μολύβδους στη διαταγή στην οποίαπαρατίθενται στην οθόνη λεπτομέρειας μιγμάτων καταλόγων1,1,1,2,2,2,3,3,3. ΤΥΧΑΊΑ θα τους βάλουν στην ΤΥΧΑΊΑ προεπιλογήδιαταγής 1,3,2,1,1,3,2,1,3. είναι IN_ORDER.
+
+<BR>
+<A NAME="vicidial_campaigns-manual_dial_list_id">
+<BR>
+<B>Χειρωνακτικός κατάλογος ταυτότητα πινάκων - η προεπιλογήlist_id για να χρησιμοποιηθεί όταν δημιουργείται έναςπράκτορας placces μια χειρωνακτική κλήση και ένα νέο αρχείομολύβδου στο vicidial_list. Η προεπιλογή είναι 999. Αυτός οτομέας μπορεί να περιέχει τα ψηφία μόνο.
+
+
 
 
 <BR><BR><BR><BR>
@@ -2046,7 +2487,10 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
  <BR> &nbsp; - oldest_call_start: ταξινομημένο με την τελευταία φορά που σε ένα χρήστη στάλθηκε  μία κλήση. Με αποτέλεσμα, ο χρήστης να λαμβάνει συνολικά το ίδιο αριθό κλήσεων.
  <BR> &nbsp; - oldest_call_finish: ταξινομημένο με την τελευταία φορά που ένας χρήστης τελείωσε μία κλήση. Ο χρήστης που περιμένει περισσότερο λαμβάνει την πρώτη κλήση.
  <BR> &nbsp; - overall_user_level: οι διαταγές από το user_level του χειριστή όπως καθορίζεται στα vicidial_users παρουσιάζουν ένα υψηλότερο user_level θα άβουν περισσότερες κλήσεις.
-
+ <BR> &nbsp; - inbound_group_rank: διαταγές από την τάξη που δίνεται στονπράκτορα για τη συγκεκριμένη εισερχόμενη ομάδα. Ο υψηλότερος σεχαμηλότερο.
+ <BR> &nbsp; - fewest_calls: διαταγές από τον αριθμό κλήσεων πουπαραλαμβάνονται από έναν πράκτορα για εκείνη την συγκεκριμένηεισερχόμενη ομάδα. Λιγότερες κλήσεις πρώτα.
+ <BR> &nbsp; - campaign_rank: διαταγές από την τάξη που δίνεται στον πράκτοραγια την εκστρατεία. Ο υψηλότερος σε χαμηλότερο.
+ <BR> &nbsp; - fewest_calls_campaign: orders by the number of calls received by an agent for the campaign. Least calls first.
 <BR>
 <A NAME="vicidial_inbound_groups-fronter_display">
 <BR>
@@ -2086,6 +2530,66 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_inbound_groups-drop_exten">
 <BR>
 <B>Εσωτ.Σύνδεση Εγκατάλειψης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Εγκατάλειψης στον διακομιστή.
+
+<BR>
+<A NAME="vicidial_inbound_groups-call_time_id">
+<BR>
+<B>Χρόνος κλήσης - αυτό είναι το χρονικό σχέδιο κλήσης ναχρησιμοποιήσει για αυτήν την εισερχόμενη ομάδα. Λάβετε υπόψηότι ο χρόνος είναι βασισμένος στο χρόνο κεντρικών υπολογιστών.Η προεπιλογή είναι 24hours.
+
+<BR>
+<A NAME="vicidial_inbound_groups-after_hours_action">
+<BR>
+<B>Μετά από τη δράση ωρών - η δράση για να εκτελέσει εάν είναιμετά από τις ώρες όπως καθορίζεται στο χρόνο πρόσκλησης γιααυτήν την εισερχόμενη ομάδα.  HANGUP hangup αμέσως η κλήση,MESSASGE θα παίξει το αρχείο στο μετέπειτα τομέα Filenamμηνυμάτων ωρών, η ΕΠΈΚΤΑΣΗ θα στείλει την κλήση στη μετέπειταπαράταση ωρών στον dialplan και το ΦΩΝΗΤΙΚΌ ΤΑΧΥΔΡΟΜΕΊΟ θαστείλει την κλήση στο παράθυρο φωνητικού ταχυδρομείου πουαπαριθμείται στο μετέπειτα τομέα φωνητικού ταχυδρομείου ωρών. Ηπροεπιλογή είναι ΜΗΝΥΜΑ.
+
+<BR>
+<A NAME="vicidial_inbound_groups-after_hours_message_filename">
+<BR>
+<B>Μετά από το όνομα αρχείου μηνυμάτων ωρών - το ακουστικό αρχείοπου βρίσκεται στον κεντρικό υπολογιστή που παίζεται εάν η δράσητίθεται το ΜΗΝΥΜΑ. Η προεπιλογή είναι VM-ANTJ'O
+
+<BR>
+<A NAME="vicidial_inbound_groups-after_hours_exten">
+<BR>
+<B>Μετά από την παράταση ωρών - η dialplan επέκταση για ναστείλει την πρόσκληση εάν η δράση τίθεται την ΕΠΕΚΤΑΣΗ. Ηπροεπιλογή είναι 8300.
+
+<BR>
+<A NAME="vicidial_inbound_groups-after_hours_voicemail">
+<BR>
+<B>Μετά από το φωνητικό ταχυδρομείο ωρών - το κιβώτιο φωνητικούταχυδρομείου για να στείλει την πρόσκληση εάν η δράση τίθεται τοΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΊΟ.
+
+<BR>
+<A NAME="vicidial_inbound_groups-welcome_message_filename">
+<BR>
+<B>Ευπρόσδεκτο όνομα αρχείου μηνυμάτων - το ακουστικό αρχείο πουβρίσκεται στον κεντρικό υπολογιστή που παίζεται όταν μπαίνει ηκλήση. Εάν θέστε ΚΑΝΕΝΑΣ --- έπειτα κανένα μήνυμα δεν θαπαιχτεί. Η προεπιλογή είναι ΚΑΜΙΑ ---
+
+<BR>
+<A NAME="vicidial_inbound_groups-moh_context">
+<BR>
+<B>Μουσική στο πλαίσιο λαβής - η μουσική στο πλαίσιο λαβής στηχρήση όταν τοποθετείται ο πελάτης στη λαβή. Η προεπιλογή είναιπροεπιλογή.
+
+<BR>
+<A NAME="vicidial_inbound_groups-onhold_prompt_filename">
+<BR>
+<B>Στο γρήγορο όνομα αρχείου λαβής - το ακουστικό αρχείο πουβρίσκεται στον κεντρικό υπολογιστή που παίζεται σε ένα τακτόχρονικό διάστημα όταν είναι ο πελάτης στη λαβή. Η προεπιλογήείναι generic_hold. Αυτό το ακουστικό αρχείο ΠΡΕΠΕΙ να είναι 9δευτερόλεπτα ή λιγότεροι στο μήκος.
+
+<BR>
+<A NAME="vicidial_inbound_groups-prompt_interval">
+<BR>
+<B>Στο γρήγορο διάστημα λαβής - το χρονικό διάστημα σταδευτερόλεπτα για να περιμένει πρίν παίζει επάνω κρατά γρήγορος.Η προεπιλογή είναι 60.
+
+<BR>
+<A NAME="vicidial_inbound_groups-agent_alert_exten">
+<BR>
+<B>Αγρυπνη επέκταση πρακτόρων - η επέκταση που στέλνει στη σύνοδοπρακτόρων για να αναγγείλει ότι μια κλήση έρχεται στον πράκτορα.Αυτή η επέκταση πρέπει να έχει μια αναπαραγωγή ήχου ενόςακουστικού αρχείου. Για να μην χρησιμοποιήσετε αυτήν τηνλειτουργία θέστε αυτό σε Χ. Default είναι Χ.
+
+<BR>
+<A NAME="vicidial_inbound_groups-agent_alert_delay">
+<BR>
+<B>Αγρυπνη καθυστέρηση πρακτόρων - το χρονικό διάστημα στα χιλιοστάτου δευτερολέπτου για να περιμένει πρίν στέλνει την κλήση στονπράκτορα μετά από να παίξει την επάνω άγρυπνη επέκτασηπρακτόρων. Η προεπιλογή είναι 1000.
+
+<BR>
+<A NAME="vicidial_inbound_groups-default_xfer_group">
+<BR>
+<B>Ομάδα μεταφοράς προεπιλογής - αυτός ο τομέας είναι η-ΟΜΑΔΑπροεπιλογής που θα επιλεχτεί αυτόματα όταν πηγαίνει ο πράκτοραςστο πλαίσιο μεταφορά-διασκέψεων στη διεπαφή πρακτόρων τους.
 
 
 
@@ -2140,7 +2644,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>VICIDIAL_CAMPAIGN_STATUSES ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
 <A NAME="vicidial_campaign_statuses">
 <BR>
-<B>Με την χρήση προσαρμοσμένων καταστάσεων εκστρατείας, μπορείτε να έχετε καταστάσεις μόνο για συγκεκριμένες εκστρατείες. Η κατάσταση πρέπει να είναι 1-8 χαρακτήρες, η περιγραφή 2-30 χαρακτήρες και Επιλέξιμα καθορίζεται αν εμφανίζεται στο VICIDIAL ως τερματισμός.</B>
+<B>Με την χρήση προσαρμοσμένων καταστάσεων εκστρατείας, μπορείτε να έχετε καταστάσεις μόνο για συγκεκριμένες εκστρατείες. Η κατάσταση πρέπει να είναι 1-8 χαρακτήρες, η περιγραφή 2-30 χαρακτήρες και Επιλέξιμα καθορίζεται αν εμφανίζεται στο VICIDIAL ως τερματισμός. Ο τομέας χρησιμοποιείται κατά τον υπολογισμό του ποσοστούπτώσης, ή εγκαταλείπει το ποσοστό. Η ρύθμιση την στο Υ θαχρησιμοποιήσει αυτήν την θέση κατά υπολογισμό τωνανθρώπινος-απαντημένων κλήσεων. Η επιλογή κατηγορίας επιτρέπει σε σας για να ομαδοποιήσειδιάφορες θέσεις σε ένα catogy που μπορεί να χρησιμοποιηθεί γιατη στατιστική ανάλυση.</B>
 
 
 
@@ -2229,7 +2733,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Κείμενο χειρόγραφου -</B> This is where you place the content of a Vicidial Script. Minimum of 2 characters. You can have customer information be auto-populated in this script using "--A--field--B--" where field is one of the following fieldnames: vendor_lead_code, source_id, list_id, gmt_offset_now, called_since_last_reset, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, lead_id, campaign, phone_login, group, channel_group, SQLdate, epoch, uniqueid, customer_zap_channel, server_ip, SIPexten, session_id. For example, this sentence would print the persons name in it----<BR><BR>  Hello, can I speak with --A--first_name--B-- --A--last_name--B-- please? Well hello --A--title--B-- --A--last_name--B-- how are you today?<BR><BR> This would read----<BR><BR>Hello, can I speak with John Doe please? Well hello Mr. Doe how are you today?<BR><BR> You can also use an iframe to load a separate window within the SCRIPT tab, here is an example with prepopulated variables:
 
 <DIV style="height:200px;width:400px;background:white;overflow:scroll;font-size:12px;font-family:sans-serif;" id=iframe_example>
-&#60;iframe src="http://astguiclient.sf.net/test_VICIDIAL_output.php?lead_id=--A--lead_id--B--&#38;vendor_id=--A--vendor_lead_code--B--&#38;list_id=--A--list_id--B--&#38;gmt_offset_now=--A--gmt_offset_now--B--&#38;phone_code=--A--phone_code--B--&#38;phone_number=--A--phone_number--B--&#38;title=--A--title--B--&#38;first_name=--A--first_name--B--&#38;middle_initial=--A--middle_initial--B--&#38;last_name=--A--last_name--B--&#38;address1=--A--address1--B--&#38;address2=--A--address2--B--&#38;address3=--A--address3--B--&#38;city=--A--city--B--&#38;state=--A--state--B--&#38;province=--A--province--B--&#38;postal_code=--A--postal_code--B--&#38;country_code=--A--country_code--B--&#38;gender=--A--gender--B--&#38;date_of_birth=--A--date_of_birth--B--&#38;alt_phone=--A--alt_phone--B--&#38;email=--A--email--B--&#38;security_phrase=--A--security_phrase--B--&#38;comments=--A--comments--B--&#38;user=--A--user--B--&#38;campaign=--A--campaign--B--&#38;phone_login=--A--phone_login--B--&#38;fronter=--A--fronter--B--&#38;closer=--A--user--B--&#38;group=--A--group--B--&#38;channel_group=--A--group--B--&#38;SQLdate=--A--SQLdate--B--&#38;epoch=--A--epoch--B--&#38;uniqueid=--A--uniqueid--B--&#38;customer_zap_channel=--A--customer_zap_channel--B--&#38;server_ip=--A--server_ip--B--&#38;SIPexten=--A--SIPexten--B--&#38;session_id=--A--session_id--B--&#38;phone=--A--phone--B--" style="width:580;height:290;background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame" width="460" height="290"&#62;
+&#60;iframe src="http://astguiclient.sf.net/test_VICIDIAL_output.php?lead_id=--A--lead_id--B--&#38;vendor_id=--A--vendor_lead_code--B--&#38;list_id=--A--list_id--B--&#38;gmt_offset_now=--A--gmt_offset_now--B--&#38;phone_code=--A--phone_code--B--&#38;phone_number=--A--phone_number--B--&#38;title=--A--title--B--&#38;first_name=--A--first_name--B--&#38;middle_initial=--A--middle_initial--B--&#38;last_name=--A--last_name--B--&#38;address1=--A--address1--B--&#38;address2=--A--address2--B--&#38;address3=--A--address3--B--&#38;city=--A--city--B--&#38;state=--A--state--B--&#38;province=--A--province--B--&#38;postal_code=--A--postal_code--B--&#38;country_code=--A--country_code--B--&#38;gender=--A--gender--B--&#38;date_of_birth=--A--date_of_birth--B--&#38;alt_phone=--A--alt_phone--B--&#38;email=--A--email--B--&#38;security_phrase=--A--security_phrase--B--&#38;comments=--A--comments--B--&#38;user=--A--user--B--&#38;campaign=--A--campaign--B--&#38;phone_login=--A--phone_login--B--&#38;fronter=--A--fronter--B--&#38;closer=--A--user--B--&#38;group=--A--group--B--&#38;channel_group=--A--group--B--&#38;SQLdate=--A--SQLdate--B--&#38;epoch=--A--epoch--B--&#38;uniqueid=--A--uniqueid--B--&#38;customer_zap_channel=--A--customer_zap_channel--B--&#38;server_ip=--A--server_ip--B--&#38;SIPexten=--A--SIPexten--B--&#38;session_id=--A--session_id--B--&#38;phone=--A--phone--B--" style="width:580;height:290;background-color:transparent;" scrolling="auto" frameborder="0" allowtransparency="true" id="popupFrame" name="popupFrame" width="460" height="290" STYLE="z-index:17"&#62;
 &#60;/iframe&#62;
 </DIV>
 
@@ -2305,7 +2809,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>ΛΕΙΤΟΥΡΓΙΑ ΕΙΣΑΓΩΓΗΣ ΛΙΣΤΑΣ</FONT></B><BR><BR>
 <A NAME="vicidial_list_loader">
 <BR>
-Ο VICIDIAL εισαγωγέας οδηγών είναι απλά σχεδιασμένος, ώστε να παίρνι ένα αρχείο - μέχρι 8ΜΒ - που είναι  διαχωρισμένο με tab ή pipe και να το φορτώνει στον πίνακα vicidial_list. Υπάρχει επίσης ένας νέος βήτα φορτωτής οδηγών έκδοσης έξοχος που επιτρέπει τον τομέα επιλέγοντας και TXT - σαφές κείμενο, CSV - κόμμα χώρισε τις τιμέ και XLS - σχήματα αρχείων Excel. Ο φορτωτής δεν κάνει εξακρίβωση δεδομένων ή έλεγχο σε διπλές καταχωρήσεις, το οποί είναι κάτι που πρέπει να κάνετε πριν την φόρτωση. Επίσης, διευκρινίστε ότι έχετε δημιουργήσει την λίστα όπου οι οδηγοί θα είναι από κάτω, ώστε να τους χρησιμοποιήστε.Υπάρχει επίσης το θέμα με τις ζώνες κωδικοποίησης χρόνου των οδηγών. Μπορεί να θέλετε να αυξήσετε την συχνότητα όπου το ADMIN_adjust_GMTnow_on_leads.pl τρέχει στον cron, ώστε οποιαδήποτε φόρτωση οδηγών να κωδικοποιείται πιο γρήγορα. Εδώ είναι μία λίστα από πεδία στην πρέπουσα ταξινόμηση για τα αρχεία καθοδήγησης.:
+Ο βασικός βασισμένος στο WEB φορτωτής μολύβδου VICIDIALσχεδιάζεται απλά για να πάρει ένα αρχείο μολύβδου - μέχρι8MB στο μέγεθος - που είναι είτε ετικέττα είτε σωλήνας πουοριοθετείται και τον φορτώνει στον πίνακα vicidial_list. Οφορτωτής μολύβδου επιτρέπει τον τομέα επιλέγοντας και TXT -σαφές κείμενο, CSV - κόμμα χώρισε τις τιμές και XLS -σχήματα αρχείων Excel. Ο φορτωτής μολύβδου δεν κάνει τηνεπικύρωση στοιχείων, αλλά επιτρέπει σε σας για να ελέγξει για τααντίγραφα σε το, μέσα στην εκστρατεία ή μέσα το σε ολόκληροσύστημα. Επίσης, σιγουρευτείτε ότι έχετε δημιουργήσει τονκατάλογο ότι αυτοί οι μόλυβδοι πρόκειται να κάτω έτσι ώστεμπορείτε να τους χρησιμοποιήσετε. Εδώ είναι ένας κατάλογος τωντομέων στην κατάλληλη διαταγή τους για τα αρχεία μολύβδου:
 	<OL>
 	<LI>Κωδικός Οδηγού Προμηθευτού
 	<LI>Πηγαίος Κώδικας - εσωτερική χρήση μόνο από διαχειριστές και DBAs
@@ -2332,7 +2836,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 	<LI>Σχόλια
 	</OL>
 
-<BR>NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /etc/astguiclient.conf file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file.
+<BR>ΣΗΜΕΙΩΣΕΙΣ: Η λειτουργία φορτωτών μολύβδου Excel επιτρέπεταιαπό μια σειρά χειρογράφων perl και πρέπει να έχει κατάλληλαδιαμορφωμένη/ένα αρχείο κ.λπ.../astguiclient.conf σε ισχύ στονκεντρικό υπολογιστή δικτύου. Επίσης, οι ενότητες ζευγών perlπρέπει να φορτωθούν για το για να εργαστούν επίσης - ολε-Storage_Lite και υπολογισμός με λογιστικό φύλλο(spreadsheet)- ParseExcel. Μπορείτε να ελέγξετε για τα λάθηχρόνου εκτέλεσης σε αυτοί με την εξέταση το αρχείο apache σαςerror_log. Επίσης, για τους ελέγχους διπλασιασμού ενάντια στουςκαταλόγους gampaign, ο κατάλογος που έχει τα νέα προβαδίσματαπου πηγαίνουν σε το πρέπει να δημιουργηθεί στο σύστημα προτού νααρχίσετε να φορτώνετε τους μολύβδους.
 
 
 
@@ -2886,6 +3390,30 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Σπίτι URL Admin -</B> αυτό είναι η διεύθυνση URL ήιστοχώρων ότι θα πάτε εάν χτυπήσετε στην ΕΓΧΏΡΙΑ σύνδεση στηνκορυφή της σελίδας admin.php.
 
+<BR>
+<A NAME="settings-enable_agc_xfer_log">
+<BR>
+<B>Επιτρέψτε το αρχείο ημερολογίου μεταφοράς πρακτόρων - αυτή ηεπιλογή θα καταγράψει σε ένα αρχείο ημερολογίου κειμένων στοwebserver κάθε φορά που μεταφέρεται μια κλήση σε ένανπράκτορα. Η προεπιλογή είναι 0, άτομα με ειδικές ανάγκες.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_STATUSES ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<A NAME="vicidial_statuses">
+<BR>
+<B>Μέσω της χρήσης των θέσεων συστημάτων, μπορείτε να έχετε τιςθέσεις που υπάρχουν για την εκστρατεία και την-ΟΜΑΔΑ. Η θέσηπρέπει να είναι 1-6 χαρακτήρες στο μήκος, η περιγραφή πρέπεινα είναι 2-30 χαρακτήρες στο μήκος και επιλέξιμος καθορίζειεάν παρουσιάζει σε VICIDIAL ως διάθεση πρακτόρων. Ο τομέαςχρησιμοποιείται κατά τον υπολογισμό του ποσοστού πτώσης, ήεγκαταλείπει το ποσοστό. Η ρύθμιση την στο Υ θα χρησιμοποιήσειαυτήν την θέση κατά υπολογισμό των ανθρώπινος-απαντημένωνκλήσεων. Η επιλογή κατηγορίας επιτρέπει σε σας για ναομαδοποιήσει διάφορες θέσεις σε ένα catogy που μπορεί ναχρησιμοποιηθεί για τη στατιστική ανάλυση.</B>
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_STATUS_CATEGORIES ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<A NAME="vicidial_status_categories">
+<BR>
+<B>Μέσω της χρήσης των κατηγοριών θέσης συστημάτων, μπορείτε νασυγκεντρώσετε τις θέσεις για να επιτρέψετε τη στατιστική ανάλυσησε μια ομάδα θέσεων. Η ταυτότητα κατηγορίας πρέπει να είναι2-20 χαρακτήρες στο μήκος χωρίς τα διαστήματα, το όνομαπρέπει να είναι 2-50 χαρακτήρες στο μήκος, η περιγραφή είναιπροαιρετική και η επίδειξη TimeonVDAD καθορίζει εάν εκείνη ηθέση θα είναι ενός θέσης από μέχρι 4 θέσεις που μπορούν ναυπολογιστούν και να επιδειχθούν στο χρόνο στη σε πραγματικό χρόνοέκθεση VDAD.</B>
+
 
 
 
@@ -2899,6 +3427,12 @@ exit;
 #### END HELP SCREENS
 }
 
+
+######################################################################################################
+######################################################################################################
+#######   7 series, filter count preview and script preview
+######################################################################################################
+######################################################################################################
 
 
 
@@ -3160,9 +3694,119 @@ if ($hh=='reports')
 	{$reports_hh="bgcolor=\"$reports_color\""; $reports_fc="$reports_font"; $reports_bold="$header_selected_bold";}
 	else {$reports_hh=''; $reports_fc='WHITE'; $reports_bold="$header_nonselected_bold";}
 
+echo "</title>\n";
+echo "<script language=\"Javascript\">\n";
+
+######################
+# ADD=31 or 34 and SUB=29 for list mixes
+######################
+if ( ( ($ADD==34) or ($ADD==31) or ($ADD==49) ) and ($SUB==29) and ($LOGmodify_campaigns==1) and ( (eregi("$campaign_id",$LOGallowed_campaigns)) or (eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+{
+
 ?>
-</title>
-<script language="Javascript">
+//Μίγμα καταλόγωνstatus add and remove
+function mod_mix_status(stage,vcl_id,entry) 
+	{
+	var mod_status = document.getElementById("dial_status_" + entry + "_" + vcl_id);
+	if (mod_status.value.length < 1)
+		{
+		alert("You must select a status first");
+		}
+	else
+		{
+		var old_statuses = document.getElementById("status_" + entry + "_" + vcl_id);
+		var ROold_statuses = document.getElementById("ROstatus_" + entry + "_" + vcl_id);
+		var MODstatus = new RegExp(" " + mod_status.value + " ","g");
+		if (stage=="ADD")
+			{
+			if (old_statuses.value.match(MODstatus))
+				{
+				alert("The status " + mod_status.value + " is already present");
+				}
+			else
+				{
+				var new_statuses = " " + mod_status.value + "" + old_statuses.value;
+				old_statuses.value = new_statuses;
+				ROold_statuses.value = new_statuses;
+				mod_status.value = "";
+				}
+			}
+		if (stage=="REMOVE")
+			{
+			var MODstatus = new RegExp(" " + mod_status.value + " ","g");
+			old_statuses.value = old_statuses.value.replace(MODstatus, " ");
+			ROold_statuses.value = ROold_statuses.value.replace(MODstatus, " ");
+			}
+		}
+	}
+
+//Μίγμα καταλόγωνpercent difference calculation and warning message
+function mod_mix_percent(vcl_id,entries) 
+	{
+	var i=0;
+	var total_percent=0;
+	var percent_diff='';
+	while(i < entries)
+		{
+		var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
+		temp_percent = mod_percent_field.value * 1;
+		total_percent = (total_percent + temp_percent);
+		i++;
+		}
+
+	var mod_diff_percent = document.getElementById("PCT_DIFF_" + vcl_id);
+	percent_diff = (total_percent - 100);
+	if (percent_diff > 0)
+		{
+		percent_diff = '+' + percent_diff;
+		}
+	var mix_list_submit = document.getElementById("submit_" + vcl_id);
+	if ( (percent_diff > 0) || (percent_diff < 0) )
+		{
+		mix_list_submit.disabled = true;
+		document.getElementById("ERROR_" + vcl_id).innerHTML = "<font color=red><B>The Difference % must be 0</B></font>";
+		}
+	else
+		{
+		mix_list_submit.disabled = false;
+		document.getElementById("ERROR_" + vcl_id).innerHTML = "";
+		}
+
+	mod_diff_percent.value = percent_diff;
+	}
+
+function submit_mix(vcl_id,entries) 
+	{
+	var h=1;
+	var j=1;
+	var list_mix_container='';
+	var mod_list_mix_container_field = document.getElementById("list_mix_container_" + vcl_id);
+	while(h < 11)
+		{
+		var i=0;
+		while(i < entries)
+			{
+			var mod_list_id_field = document.getElementById("list_id_" + i + "_" + vcl_id);
+			var mod_priority_field = document.getElementById("priority_" + i + "_" + vcl_id);
+			var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
+			var mod_statuses_field = document.getElementById("status_" + i + "_" + vcl_id);
+			if (mod_priority_field.value==h)
+				{
+				list_mix_container = list_mix_container + mod_list_id_field.value + "|" + j + "|" + mod_percent_field.value + "|" + mod_statuses_field.value + "|:";
+				j++
+				}
+			i++;
+			}
+		h++
+		}
+	mod_list_mix_container_field.value = list_mix_container;
+	var form_to_submit = document.getElementById("" + vcl_id);
+	form_to_submit.submit();
+	}
+<?
+}
+?>
+
 function openNewWindow(url) {
   window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
 }
@@ -3204,7 +3848,7 @@ $admin_home_url_LU =	$row[0];
 
 ?>
 <CENTER>
-<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>ΣΠΙΤΙ</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Αποσύνδεση</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>ΣΠΙΤΙ</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Αποσύνδεση</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
 
 <TR BGCOLOR=#015B91>
 <TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Χρήστες </a></TD>
@@ -3221,15 +3865,57 @@ $admin_home_url_LU =	$row[0];
 
 <? if (strlen($users_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χρήστες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο χρήστη </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός χρήστη </a></TD></TR>
+<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χρήστες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο χρήστη </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Χρήστης αντιγράφων </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός χρήστη </a></TD></TR>
 <? } 
-if (strlen($campaigns_hh) > 1) { 
+if (strlen($campaigns_hh) > 1) 
+	{ 
+
+#	if ($sh=='basic') {$basic_sh="bgcolor=\"$subcamp_color\""; $basic_fc="$subcamp_font";}
+#		else {$basic_sh=''; $basic_fc='BLACK';}
+#	if ($sh=='detail') {$detail_sh="bgcolor=\"$subcamp_color\""; $detail_fc="$subcamp_font";}
+#		else {$detail_sh=''; $detail_fc='BLACK';}
+#	if ($sh=='dialstat') {$dialstat_sh="bgcolor=\"$subcamp_color\""; $dialstat_fc="$subcamp_font";}
+#		else {$dialstat_sh=''; $dialstat_fc='BLACK';}
+
+	if ($sh=='basic') {$sh='list';}
+	if ($sh=='detail') {$sh='list';}
+	if ($sh=='dialstat') {$sh='list';}
+
+	if ($sh=='list') {$list_sh="bgcolor=\"$subcamp_color\""; $list_fc="$subcamp_font";}
+		else {$list_sh=''; $list_fc='BLACK';}
+	if ($sh=='status') {$status_sh="bgcolor=\"$subcamp_color\""; $status_fc="$subcamp_font";}
+		else {$status_sh=''; $status_fc='BLACK';}
+	if ($sh=='hotkey') {$hotkey_sh="bgcolor=\"$subcamp_color\""; $hotkey_fc="$subcamp_font";}
+		else {$hotkey_sh=''; $hotkey_fc='BLACK';}
+	if ($sh=='recycle') {$recycle_sh="bgcolor=\"$subcamp_color\""; $recycle_fc="$subcamp_font";}
+		else {$recycle_sh=''; $recycle_fc='BLACK';}
+	if ($sh=='autoalt') {$autoalt_sh="bgcolor=\"$subcamp_color\""; $autoalt_fc="$subcamp_font";}
+		else {$autoalt_sh=''; $autoalt_fc='BLACK';}
+	if ($sh=='pause') {$pause_sh="bgcolor=\"$subcamp_color\""; $pause_fc="$subcamp_font";}
+		else {$pause_sh=''; $pause_fc='BLACK';}
+	if ($sh=='listmix') {$listmix_sh="bgcolor=\"$subcamp_color\""; $listmix_fc="$subcamp_font";}
+		else {$listmix_sh=''; $listmix_fc='BLACK';}
+
 	?>
-<TR BGCOLOR=<?=$campaigns_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε εκστρατείες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα εκστρατεία </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Σε πραγματικό χρόνο περίληψη εκστρατειών </a></TD></TR>
-<? } 
+<TR BGCOLOR=<?=$campaigns_color ?>>
+<TD ALIGN=CENTER <?=$list_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$list_fc ?> SIZE=<?=$subcamp_font_size ?>>Κεντρικός αγωγός εκστρατειών</a></TD>
+<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=32"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$subcamp_font_size ?>> Statuses </a></TD>
+<TD ALIGN=LEFT <?=$hotkey_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=33"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$hotkey_fc ?> SIZE=<?=$subcamp_font_size ?>> HotKeys </a></TD>
+<TD ALIGN=LEFT <?=$recycle_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>>Μόλυβδος ανακύκλωσης</a></TD>
+<TD ALIGN=LEFT <?=$autoalt_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>>Αυτόματος-ALT πίνακας</a></TD>
+<TD ALIGN=LEFT <?=$pause_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=37"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$pause_fc ?> SIZE=<?=$subcamp_font_size ?>>Κώδικες μικρής διακοπής</a></TD>
+<TD ALIGN=LEFT <?=$listmix_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>>Μίγμα καταλόγων</a></TD>
+</TR>
+	<?
+	if (strlen($list_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Παρουσιάστε εκστρατείες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Προσθέστε μια νέα εκστρατεία </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Εκστρατεία αντιγράφων </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Σε πραγματικό χρόνο περίληψη εκστρατειών </a></TD></TR>
+		<? } 
+
+	} 
 if (strlen($lists_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε καταλόγους </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο κατάλογο </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός μολύβδου </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε τον αριθμό σε DNC </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./listloaderMAIN.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Νέοι μόλυβδοι φορτίων </a></TD></TR>
+<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε καταλόγους </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο κατάλογο </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός μολύβδου </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε τον αριθμό σε DNC </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./new_listloader_superL.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Νέοι μόλυβδοι φορτίων </a></TD></TR>
 <? } 
 if (strlen($scripts_hh) > 1) { 
 	?>
@@ -3241,7 +3927,7 @@ if (strlen($filters_hh) > 1) {
 <? } 
 if (strlen($ingroups_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε-ΟΜΑΔΕΣ </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα-ΟΜΑΔΑ </a></TD></TR>
+<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε-ΟΜΑΔΕΣ </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα-ΟΜΑΔΑ </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1211"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> $$$-ΟΜΑΔΑ αντιγράφων </a></TD></TR>
 <? } 
 if (strlen($usergroups_hh) > 1) { 
 	?>
@@ -3261,8 +3947,10 @@ if (strlen($admin_hh) > 1) {
 		else {$server_sh=''; $server_fc='BLACK';}
 	if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
 		else {$conference_sh=''; $conference_fc='BLACK';}
-	if ($sh=='settings') {$settings_sh="bgcolor=\"$server_color\""; $settings_fc="$server_font";} # pink
+	if ($sh=='settings') {$settings_sh="bgcolor=\"$settings_color\""; $settings_fc="$settings_font";} # pink
 		else {$settings_sh=''; $settings_fc='BLACK';}
+	if ($sh=='status') {$status_sh="bgcolor=\"$status_color\""; $status_fc="$status_font";} # pink
+		else {$status_sh=''; $status_fc='BLACK';}
 
 	?>
 <TR BGCOLOR=<?=$admin_color ?>>
@@ -3270,7 +3958,8 @@ if (strlen($admin_hh) > 1) {
 <TD ALIGN=LEFT <?=$phones_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Τηλέφωνα </a></TD>
 <TD ALIGN=LEFT <?=$conference_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Διασκέψεις </a></TD>
 <TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Κεντρικοί υπολογιστές </a></TD>
-<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=3><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> Τοποθετήσεις συστημάτων </a></TD>
+<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> Τοποθετήσεις συστημάτων </a></TD>
+<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$header_font_size ?>>Θέσεις συστημάτων</a></TD>
 </TR>
 	<?
 	if (strlen($times_sh) > 1) { 
@@ -3293,6 +3982,10 @@ if (strlen($admin_hh) > 1) {
 		?>
 	<TR BGCOLOR=<?=$settings_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Τοποθετήσεις συστημάτων </a></TD></TR>
 	<?}
+	if (strlen($status_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Θέσεις συστημάτων</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Κατηγορίες θέσης</a></TD></TR>
+	<?}
 
 ### Do nothing if admin has no permissions
 if($LOGast_admin_access < 1) 
@@ -3305,7 +3998,7 @@ if($LOGast_admin_access < 1)
 } 
 if (strlen($reports_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </TD></TR>
+<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </B></TD></TR>
 <? } ?>
 
 
@@ -3329,7 +4022,7 @@ if (strlen($reports_hh) > 1) {
 # ADD=1 display the ADD NEW USER FORM SCREEN
 ######################
 
-if ($ADD==1)
+if ($ADD=="1")
 {
 	if ($LOGmodify_users==1)
 	{
@@ -3380,6 +4073,53 @@ if ($ADD==1)
 
 
 ######################
+# ADD=1 display the COPY USER FORM SCREEN
+######################
+
+if ($ADD=="1A")
+{
+	if ($LOGmodify_users==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>ΧΡΗΣΤΗΣ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=2A>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Χρήστη: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+
+	if ($LOGuser_level==9) {$levelMAX=10;}
+	else {$levelMAX=$LOGuser_level;}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Source User: </td><td align=left><select size=1 name=source_user_id>\n";
+
+		$stmt="SELECT user,full_name from vicidial_users where user_level < $levelMAX order by full_name;";
+		$rslt=mysql_query($stmt, $link);
+		$Uusers_to_print = mysql_num_rows($rslt);
+		$Uusers_list='';
+
+		$o=0;
+		while ($Uusers_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$Uusers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$Uusers_list";
+	echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
 # ADD=11 display the ADD NEW CAMPAIGN FORM SCREEN
 ######################
 
@@ -3401,15 +4141,59 @@ if ($ADD==11)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Αρχείου Στάθμευσης: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Χρόνος Τοπικής Κλήσης: </td><td align=left><select size=1 name=local_call_time><option>24hours</option><option>9am-9pm</option><option>9am-5pm</option><option>12pm-5pm</option><option>12pm-9pm</option><option>5pm-9pm</option></select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
 	echo "$scripts_list";
 	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=12 display the COPY CAMPAIGN FORM SCREEN
+######################
+
+if ($ADD==12)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>ΑΝΤΙΓΡΑΨΤΕ μια ΕΚΣΤΡΑΤΕΙΑ<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=20>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία πηγής:</td><td align=left><select size=1 name=source_campaign_id>\n";
+
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+		$rslt=mysql_query($stmt, $link);
+		$campaigns_to_print = mysql_num_rows($rslt);
+		$campaigns_list='';
+
+		$o=0;
+		while ($campaigns_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$campaigns_list";
+	echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+	
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -3529,12 +4313,56 @@ if ($ADD==1111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Μπροστινή Οθόνη: </td><td align=left><select size=1 name=fronter_display><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
 	echo "$scripts_list";
 	echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=1211 display the COPY INBOUND GROUP SCREEN
+######################
+
+if ($ADD==1211)
+{
+	if ($LOGmodify_ingroups==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>ΕΙΣΕΡΧΟΜΕΝΗ ΟΜΑΔΑ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=2011>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Source ID Ομάδας: </td><td align=left><select size=1 name=source_group_id>\n";
+
+		$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+		$rslt=mysql_query($stmt, $link);
+		$groups_to_print = mysql_num_rows($rslt);
+		$groups_list='';
+
+		$o=0;
+		while ($groups_to_print > $o) {
+			$rowx=mysql_fetch_row($rslt);
+			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+		}
+	echo "$groups_list";
+	echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -3927,7 +4755,7 @@ if ($ADD==11111111111111)
 # ADD=2 adds the new user to the system
 ######################
 
-if ($ADD==2)
+if ($ADD=="2")
 {
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
@@ -3959,7 +4787,56 @@ if ($ADD==2)
 				}
 			}
 		}
+
 $ADD=3;
+}
+
+######################
+# ADD=2A adds the copied new user to the system
+######################
+
+if ($ADD=="2A")
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_users where user='$user';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - υπάρχει ήδη ένας χρήστης με αυτό τον αριθμό\n";}
+	else
+		{
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+			{
+			 echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
+			 echo "<br>το id χρήστη πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
+			 echo "<br>το πλήρες όνομα και κωδικός πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+			}
+		 else
+			{
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override from vicidial_users where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_agents (user,campaign_id,campaign_rank,campaign_weight,calls_today) SELECT \"$user\",campaign_id,campaign_rank,campaign_weight,\"0\" from vicidial_campaign_agents where user=\"$source_user_id\";";
+			$rslt=mysql_query($stmtA, $link);
+
+			echo "<br><B>USER COPIED: $user copied from $source_user_id</B>\n";
+			echo "<br><br>\n";
+			echo "<a href=\"$PHP_SELF?ADD=3&user=$user\">Click here to go to the user record</a>\n";
+			echo "<br><br>\n";
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A COPIED USER   |$PHP_AUTH_USER|$ip|$user|$source_user_id|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+exit;
 }
 
 ######################
@@ -3977,28 +4854,93 @@ if ($ADD==21)
 		{echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία εκστρατεία με αυτό το ID\n";}
 	else
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
+		$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>CAMPAIGN NOT ADDED - there is already an inbound group in the system with this ID\n";}
+		else
+			{
+			 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or (strlen($campaign_name) < 6)  or (strlen($campaign_name) > 40) )
+				{
+				 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
+				 echo "<br>το ID της εκστρατείας πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
+				 echo "<br>το όνομα της εκστρατείας πρέπει να είναι μεταξύ 6 και 40 χαρακτήρες\n";
+				}
+			 else
+				{
+				echo "<br><B>ΕΚΣΤΡΑΤΕΙΑ ΠΡΟΣΤΕΘΗΚΕ: $campaign_id</B>\n";
+
+				$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh,list_order_mix) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y','DISABLED');";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+				$rslt=mysql_query($stmt, $link);
+
+				echo "<!-- $stmt -->";
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ  |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				}
+			}
+		}
+$ADD=31;
+}
+
+######################
+# ADD=20 adds copied new campaign to the system
+######################
+
+if ($ADD==20)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία εκστρατεία με αυτό το ID\n";}
+	else
+		{
+		 if ( (strlen($campaign_id) < 2) or (strlen($campaign_id) > 8) or  (strlen($campaign_name) < 2) or (strlen($source_campaign_id) < 2) or (strlen($source_campaign_id) > 8) )
 			{
 			 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
 			 echo "<br>το ID της εκστρατείας πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
-			 echo "<br>το όνομα της εκστρατείας πρέπει να είναι μεταξύ 6 και 40 χαρακτήρες\n";
+			 echo "<br>source το ID της εκστρατείας πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
 			}
 		 else
 			{
-			echo "<br><B>ΕΚΣΤΡΑΤΕΙΑ ΠΡΟΣΤΕΘΗΚΕ: $campaign_id</B>\n";
+			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y');";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
-			$rslt=mysql_query($stmt, $link);
+			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_campaign_hotkeys (status,hotkey,status_name,selectable,campaign_id) SELECT status,hotkey,status_name,selectable,\"$campaign_id\" from vicidial_campaign_hotkeys where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_lead_recycle (status,attempt_delay,attempt_maximum,active,campaign_id) SELECT status,attempt_delay,attempt_maximum,active,\"$campaign_id\" from vicidial_lead_recycle where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
+
+			$stmtA="INSERT INTO vicidial_pause_codes (pause_code,pause_code_name,billable,campaign_id) SELECT pause_code,pause_code_name,billable,\"$campaign_id\" from vicidial_pause_codes where campaign_id='$source_campaign_id';";
+			$rslt=mysql_query($stmtA, $link);
 
 			echo "<!-- $stmt -->";
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|COPY TO NEW CAMPAIGN|$PHP_AUTH_USER|$ip|$campaign_id|$source_campaign_id|$stmt|$stmtA|\n");
 				fclose($fp);
 				}
 
@@ -4039,19 +4981,20 @@ if ($ADD==22)
 				{
 				echo "<br><B>ΚΑΤΑΣΤΑΣΗ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΕΘΗΚΕ: $campaign_id - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_campaign_statuses values('$status','$status_name','$selectable','$campaign_id');";
+				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) values('$status','$status_name','$selectable','$campaign_id','$human_answered','$category');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
 				if ($WeBRooTWritablE > 0)
 					{
 					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ STATUS |$PHP_AUTH_USER|$ip|'$status','$status_name','$selectable','$campaign_id'|\n");
+					fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ STATUS |$PHP_AUTH_USER|$ip|$stmt|\n");
 					fclose($fp);
 					}
 				}
 			}
 		}
+$SUB=22;
 $ADD=31;
 }
 
@@ -4096,6 +5039,7 @@ if ($ADD==23)
 				}
 			}
 		}
+$SUB=23;
 $ADD=31;
 }
 
@@ -4138,6 +5082,7 @@ if ($ADD==25)
 				}
 			}
 		}
+$SUB=25;
 $ADD=31;
 }
 
@@ -4184,6 +5129,7 @@ if ($ADD==26)
 				}
 			}
 		}
+$SUB=26;
 $ADD=31;
 }
 
@@ -4224,6 +5170,7 @@ if ($ADD==27)
 				}
 			}
 		}
+$SUB=27;
 $ADD=31;
 }
 
@@ -4270,6 +5217,7 @@ if ($ADD==28)
 				}
 			}
 		}
+#$SUB=28;
 $ADD=31;
 }
 
@@ -4330,7 +5278,55 @@ if ($ADD==2111)
 		{echo "<br>Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία ομάδα με αυτό το ID\n";}
 	else
 		{
-		 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2)  or (strlen($group_color) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
+		$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>GROUP NOT ADDED - there is already a campaign in the system with this ID\n";}
+		else
+			{
+			 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2)  or (strlen($group_color) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
+				{
+				 echo "<br>Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
+				 echo "<br>Το ID ομάδας πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες ' -+'.\n";
+				 echo "<br>Το όνομα και χρώμα ομάδας πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+				}
+			 else
+				{
+				$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
+				$rslt=mysql_query($stmt, $link);
+
+				echo "<br><B>ΟΜΑΔΑ ΠΡΟΣΤΕΘΗΚΕ: $group_id</B>\n";
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+				}
+			}
+		}
+$ADD=3111;
+}
+
+
+######################
+# ADD=2011 adds copied inbound group to the system
+######################
+
+if ($ADD==2011)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη μία ομάδα με αυτό το ID\n";}
+	else
+		{
+		 if ( (strlen($group_id) < 2) or (strlen($group_name) < 2) or (strlen($group_id) > 20) or (eregi(' ',$group_id)) or (eregi("\-",$group_id)) or (eregi("\+",$group_id)) )
 			{
 			 echo "<br>Η ΟΜΑΔΑ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
 			 echo "<br>Το ID ομάδας πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες ' -+'.\n";
@@ -4338,7 +5334,7 @@ if ($ADD==2111)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΟΜΑΔΑ ΠΡΟΣΤΕΘΗΚΕ: $group_id</B>\n";
@@ -4347,12 +5343,12 @@ if ($ADD==2111)
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|COPIED TO NEW GROUP |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
 			}
 		}
-$ADD=1000;
+$ADD=3111;
 }
 
 
@@ -4762,6 +5758,105 @@ $ADD=31111111111111;
 }
 
 
+######################
+# ADD=221111111111111 adds the new system status to the system
+######################
+
+if ($ADD==221111111111111)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_campaign_statuses where status='$status';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΡΟΣΤΙΘΕΜΕΝΗ - there is already a campaign-status in the system with this name: $row[0]\n";}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_statuses where status='$status';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΡΟΣΤΙΘΕΜΕΝΗ - there is already a global-status in the system with this name\n";}
+		else
+			{
+			 if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
+				{
+				 echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΡΟΣΤΙΘΕΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 8 χαρακτήρρες\n";
+				 echo "<br>το όνομα της κατάστασης πρέπει να είναι μεταξύ 2 και 30 χαρακτήρρες\n";
+				}
+			 else
+				{
+				echo "<br><B>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΡΟΣΤΙΘΕΜΕΝΗ: $status_name - $status</B>\n";
+
+				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered,category) values('$status','$status_name','$selectable','$human_answered','$category');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW SYSTEM STATUS   |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+				}
+			}
+		}
+$ADD=321111111111111;
+}
+
+
+######################
+# ADD=231111111111111 adds the new status category to the system
+######################
+
+if ($ADD==231111111111111)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_status_categories where vsc_id='$vsc_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΠΡΟΣΤΙΘΕΜΕΝΗ - υπάρχει ήδη μια κατηγορία θέσης στο σύστημα με αυτήν τηνταυτότητα: $row[0]\n";}
+	else
+		{
+		 if ( (strlen($vsc_id) < 2) or (strlen($vsc_id) > 20) or (strlen($vsc_name) < 2) )
+			{
+			 echo "<br>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΠΡΟΣΤΙΘΕΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>Η ταυτότητα πρέπει να είναι μεταξύ 2 και 20 χαρακτήρων στο μήκος\n";
+			 echo "<br>το όνομα ονόματος πρέπει να είναι μεταξύ 2 και 50 χαρακτήρων στομήκος\n";
+			}
+		 else
+			{
+			echo "<br><B>STATUS CATEGORY ADDED: $vsc_id - $vsc_name</B>\n";
+
+			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
+				{
+				$tovdad_display = 'N';
+				echo "<br><B>ΛΑΘΟΣ: Υπάρχουν ήδη 4 κατηγορίες θέσης καθορισμένες την επίδειξηTimeOnVDAD</B>\n";
+				}
+
+			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW STATUS CATEGORY |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=331111111111111;
+}
+
+
 
 ######################################################################################################
 ######################################################################################################
@@ -4880,7 +5975,7 @@ if ($ADD==4)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass' where user='$user'|\n");
+			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		}
@@ -4942,7 +6037,10 @@ if ($ADD==41)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins' where campaign_id='$campaign_id';";
+		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+			{$hopper_level='100';}
+
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -4979,7 +6077,7 @@ $ADD=31;	# go to campaign modification form below
 }
 
 ######################
-# ADD=42 delete campaign status in the system
+# ADD=42 modify/delete campaign status in the system
 ######################
 
 if ($ADD==42)
@@ -4996,17 +6094,39 @@ if ($ADD==42)
 		}
 	 else
 		{
-		echo "<br><B>ΔΙΑΓΡΑΦΗΚΕ Η ΠΡΟΣΑΡΜΟΣΜΕΝΗ ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ: $campaign_id - $status</B>\n";
-
-		$stmt="DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if (ereg('delete',$stage))
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status'|\n");
-			fclose($fp);
+			echo "<br><B>ΔΙΑΓΡΑΦΗΚΕ Η ΠΡΟΣΑΡΜΟΣΜΕΝΗ ΚΑΤΑΣΤΑΣΗ ΤΗΣ ΕΚΣΤΡΑΤΕΙΑΣ: $campaign_id - $status</B>\n";
+
+			$stmt="DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmtA, $link);
+
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
+				fclose($fp);
+				}
+			}
+		if (ereg('modify',$stage))
+			{
+			echo "<br><B>ΘΕΣΗ ΕΚΣΤΡΑΤΕΙΑΣ ΣΥΝΗΘΕΙΑΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $campaign_id - $status</B>\n";
+
+			$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -5015,6 +6135,7 @@ if ($ADD==42)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=22;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -5046,7 +6167,7 @@ if ($ADD==43)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey'|\n");
+			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey'|\n");
 			fclose($fp);
 			}
 		}
@@ -5056,6 +6177,7 @@ if ($ADD==43)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=23;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -5100,7 +6222,10 @@ if ($ADD==44)
 					}
 				}
 			}
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_description='$campaign_description',campaign_changedate='$SQLdate' where campaign_id='$campaign_id';";
+		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+			{$hopper_level='100';}
+
+		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmtA, $link);
 
 		if ($reset_hopper == 'Y')
@@ -5174,6 +6299,7 @@ if ($ADD==45)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=25;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -5214,8 +6340,274 @@ if ($ADD==47)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=27;
 $ADD=31;	# go to campaign modification form below
 }
+
+
+######################
+# ADD=49 modify campaign list mix in the system
+######################
+
+if ($ADD==49)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	##### MODIFY a list mix container entry #####
+		if ($stage=='MODIFY')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		$Flist_mix_container = "list_mix_container_$vcl_id";
+		$Fmix_method = "mix_method_$vcl_id";
+		$Fstatus = "status_$vcl_id";
+		$Fvcl_name = "vcl_name_$vcl_id";
+
+		if (isset($_GET[$Flist_mix_container]))				{$list_mix_container=$_GET[$Flist_mix_container];}
+			elseif (isset($_POST[$Flist_mix_container]))	{$list_mix_container=$_POST[$Flist_mix_container];}
+		if (isset($_GET[$Fmix_method]))						{$mix_method=$_GET[$Fmix_method];}
+			elseif (isset($_POST[$Fmix_method]))			{$mix_method=$_POST[$Fmix_method];}
+		if (isset($_GET[$Fstatus]))							{$status=$_GET[$Fstatus];}
+			elseif (isset($_POST[$Fstatus]))				{$status=$_POST[$Fstatus];}
+		if (isset($_GET[$Fvcl_name]))						{$vcl_name=$_GET[$Fvcl_name];}
+			elseif (isset($_POST[$Fvcl_name]))				{$vcl_name=$_POST[$Fvcl_name];}
+		$list_mix_container = preg_replace("/:$/","",$list_mix_container);
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_mix_container) < 6) or (strlen($vcl_name) < 2) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
+			}
+		 else
+			{
+			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $vcl_name</B>\n";
+			}
+		}
+
+	##### ADD a list mix container entry #####
+		if ($stage=='ADD')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_id) < 1) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>list_id must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$OLDlist_mix_container =	$row[0];
+			$NEWlist_mix_container = "$OLDlist_mix_container:$list_id|10|0| -|";
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $list_id</B>\n";
+			}
+		}
+
+	##### REMOVE a list mix container entry #####
+		if ($stage=='REMOVE')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_id) < 1) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>list_id must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			$stmt="SELECT list_mix_container from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$MIXentries = $MT;
+			$MIXentries = explode(":", $row[0]);
+			$Ms_to_print = (count($MIXentries) - 0);
+
+			if ($Ms_to_print < 2)
+				{
+				echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: Δεν μπορείτε να διαγράψετε το τελευταίο λήμμα list_id από έναμίγμα καταλόγων</B>\n";
+				}
+			else
+				{
+				$MIXdetailsPCT = explode('|', $MIXentries[$mix_container_item]);
+				$MIXpercentPCT = $MIXdetailsPCT[2];
+
+				$q=0;
+				while ($Ms_to_print > $q) 
+					{
+					if ( ($mix_container_item > $q) or ($mix_container_item < $q) )
+						{
+						if ( ($q==0) and ($mix_container_item > 0) )
+							{
+							$MIXdetailsONE = explode('|', $MIXentries[$q]);
+							$MIXpercentONE = ($MIXdetailsONE[2] + $MIXpercentPCT);
+							$NEWlist_mix_container .= "$MIXdetailsONE[0]|$MIXdetailsONE[1]|$MIXpercentONE|$MIXdetailsONE[3]|:";
+							}
+						else
+							{
+							if ( ($q==1) and ($mix_container_item < 1) )
+								{
+								$MIXdetailsONE = explode('|', $MIXentries[$q]);
+								$MIXpercentONE = ($MIXdetailsONE[2] + $MIXpercentPCT);
+								$NEWlist_mix_container .= "$MIXdetailsONE[0]|$MIXdetailsONE[1]|$MIXpercentONE|$MIXdetailsONE[3]|:";
+								}
+							else
+								{
+								$NEWlist_mix_container .= "$MIXentries[$q]:";
+								}
+							}
+						}
+					$q++;
+					}
+				$NEWlist_mix_container = preg_replace("/.$/",'',$NEWlist_mix_container);
+
+				$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
+				}
+			}
+		}
+
+	##### ADD a NEW list mix #####
+		if ($stage=='NEWMIX')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($vcl_name) < 2) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΡΟΣΤΙΘΕΜΕΝΟ- Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			 echo "<br>vcl_name must be at least 2 characters in length\n";
+			}
+		 else
+			{
+			$stmt="SELECT count(*) from vicidial_campaigns_list_mix where vcl_id='$vcl_id';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΡΟΣΤΙΘΕΜΕΝΟ- Υπάρχει ήδη ένα μίγμα καταλόγων με αυτήν την ταυτότητα στοσύστημα\n";
+				}
+			else
+				{
+				$stmt="INSERT INTO vicidial_campaigns_list_mix SET list_mix_container='$list_id|1|100| $status -|',campaign_id='$campaign_id',vcl_id='$vcl_id',vcl_name='$vcl_name',mix_method='$mix_method',status='INACTIVE';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
+
+				echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΡΟΣΤΙΘΕΜΕΝΟ:$campaign_id - $vcl_id - $vcl_name</B>\n";
+				}
+			}
+		}
+
+	##### DELETE an existing list mix #####
+		if ($stage=='DELMIX')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			}
+		 else
+			{
+			$stmt="DELETE from vicidial_campaigns_list_mix where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ:$campaign_id - $vcl_id - $vcl_name</B>\n";
+			}
+		}
+
+	##### Set list mix entry to active #####
+		if ($stage=='SETACTIVE')
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) )
+			{
+			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΔΕΝ ΕΝΕΡΓΟΠΟΙΕΙΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			}
+		 else
+			{
+			$stmt="UPDATE vicidial_campaigns_list_mix SET status='INACTIVE' where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmt="UPDATE vicidial_campaigns_list_mix SET status='ACTIVE' where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+
+			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΕΝΕΡΓΟΠΟΙΕΙΤΑΙ: $campaign_id - $vcl_id - $vcl_name</B>\n";
+			}
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$SUB=29;
+$ADD=31;	# go to campaign modification form below
+}
+
 
 ######################
 # ADD=411 submit list modifications to the system
@@ -5297,7 +6689,7 @@ if ($ADD==4111)
 		{
 		echo "<br><B>ΟΜΑΔΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_message='$drop_message',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_message='$drop_message',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -5821,7 +7213,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL ΤΟΠΟΘΕΤΗΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΕΣ\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -5839,6 +7231,146 @@ if ($ADD==411111111111111)
 	}
 $ADD=311111111111111;	# go to vicidial system settings form below
 }
+
+
+######################
+# ADD=421111111111111 modify/delete system status in the system
+######################
+
+if ($ADD==421111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if (ereg('delete',$stage))
+		{
+		if ( (strlen($status) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
+			{
+			 echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>η θέση συστημάτων δεν μπορεί να είναι μια διατηρημένη θέση:B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+			 echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
+			}
+		else
+			{
+			echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
+
+			$stmt="DELETE FROM vicidial_statuses where status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="DELETE FROM vicidial_campaign_hotkeys where status='$status';";
+			$rslt=mysql_query($stmtA, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
+				fclose($fp);
+				}
+			}
+		}
+	if (ereg('modify',$stage))
+		{
+		if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
+			{
+			 echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
+			 echo "<br>το όνομα θέσης συστημάτων πρέπει να είναι χαρακτήρεςτουλάχιστον 1 στο μήκος\n";
+			}
+		else
+			{
+			echo "<br><B>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $status</B>\n";
+
+			$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=321111111111111;	# go to system settings modification form below
+}
+
+
+######################
+# ADD=431111111111111 modify/delete status category in the system
+######################
+
+if ($ADD==431111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($vsc_id) < 2)  or (preg_match("/^UNDEFINED$/i",$vsc_id)) )
+		{
+		 echo "<br>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>η κατηγορία θέσης δεν μπορεί να είναι μια διατηρημένη κατηγορία:UNDEFINED\n";
+		 echo "<br>η κατηγορία θέσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες στομήκος\n";
+		}
+	 else
+		{
+		if (ereg('delete',$stage))
+			{
+			echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ: $vsc_id</B>\n";
+
+			$stmt="DELETE FROM vicidial_status_categories where vsc_id='$vsc_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		if (ereg('modify',$stage))
+			{
+			echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $vsc_id</B>\n";
+
+			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
+				{
+				$tovdad_display = 'N';
+				echo "<br><B>ΛΑΘΟΣ: Υπάρχουν ήδη 4 κατηγορίες θέσης καθορισμένες την επίδειξηTimeOnVDAD</B>\n";
+				}
+
+			$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display' where vsc_id='$vsc_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=331111111111111;	# go to system settings modification form below
+}
+
 
 
 
@@ -6235,14 +7767,20 @@ if ($ADD==6)
 		}
 	 else
 		{
-		$stmt="DELETE from vicidial_users where user='$user' limit 1;";
+		$stmtA="DELETE from vicidial_users where user='$user' limit 1;";
+		$rslt=mysql_query($stmtA, $link);
+
+		$stmt="DELETE from vicidial_campaign_agents where user='$user';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_inbound_group_agents where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING USER!!!!|$PHP_AUTH_USER|$ip|user='$user'|\n");
+			fwrite ($fp, "$date|!!!DELETING USER!!!!|$PHP_AUTH_USER|$ip|$user|$stmtA|$stmt|\n");
 			fclose($fp);
 			}
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΧΡΗΣΤΗ ΟΛΟΚΛΗΡΩΘΗΚΕ: $user</B>\n";
@@ -6268,6 +7806,39 @@ if ($ADD==61)
 	 else
 		{
 		$stmt="DELETE from vicidial_campaigns where campaign_id='$campaign_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_agents where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_live_agents where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_statuses where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_hotkeys where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_callbacks where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_stats where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_lead_recycle where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_server_stats where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_server_trunks where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_pause_codes where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaigns_list_mix where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br>ΑΠΟΜΑΚΡΥΝΣΗ ΚΑΘΟΔΗΓΗΤΩΝ ΛΙΣΤΑΣ HOPPER ΑΠΟ ΠΑΛΑΙΑ HOPPER ΕΚΣΤΡΑΤΕΙΑ ($campaign_id)\n";
@@ -6412,6 +7983,7 @@ if ($ADD==65)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=25;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6464,6 +8036,7 @@ if ($ADD==66)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=26;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6503,6 +8076,7 @@ if ($ADD==67)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+$SUB=27;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6555,6 +8129,7 @@ if ($ADD==68)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
+#$SUB=28;
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6614,6 +8189,12 @@ if ($ADD==6111)
 	 else
 		{
 		$stmt="DELETE from vicidial_inbound_groups where group_id='$group_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_inbound_group_agents where group_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_live_inbound_agents where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -7151,42 +8732,61 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>Η πιό στενή προεπιλογή συνδύασε: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL συμπληρωματική προμήθεια καταγραφής: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Ο πράκτορας αλλάζει τη συμπληρωματική προμήθεια στοιχείωνπελατών: </td><td align=left><select size=1 name=alter_custdata_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custdata_override</option></select>$NWB#vicidial_users-alter_custdata_override$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες Ομάδες: </td><td align=left>\n";
-			echo "$groups_list";
-			echo "$NWB#vicidial_users-closer_campaigns$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Τάξεις εκστρατείας:$NWB#vicidial_users-campaign_ranks$NWE<BR>\n";
+			echo "<table border=0>\n";
+			echo "$RANKcampaigns_list";
+			echo "</table>\n";
+			echo "</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Εισερχόμενες Ομάδες: $NWB#vicidial_users-closer_campaigns$NWE<BR>\n";
+			echo "<table border=0>\n";
+			echo "$RANKgroups_list";
+			echo "</table>\n";
+			echo "</td></tr>\n";
 			}
 		if ($LOGuser_level > 8)
 			{
 			echo "<tr bgcolor=#015B91><td colspan=2 align=center><font color=white><B>ΕΠΙΛΟΓΈΣ ΕΠΙΦΑΝΕΙΑΣ ΕΡΓΑΣΙΑΣ ΔΙΑΧ:</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Αλλάξτε τις επιλογές επιφάνειας εργασίας των χειριστών: </td><td align=left><select size=1 name=alter_agent_interface_options><option>0</option><option>1</option><option SELECTED>$alter_agent_interface_options</option></select>$NWB#vicidial_users-alter_agent_interface_options$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε  τους χρήστες: </td><td align=left><select size=1 name=delete_users><option>0</option><option>1</option><option SELECTED>$delete_users</option></select>$NWB#vicidial_users-delete_users$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τις ομάδες χρηστών: </td><td align=left><select size=1 name=delete_user_groups><option>0</option><option>1</option><option SELECTED>$delete_user_groups</option></select>$NWB#vicidial_users-delete_user_groups$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τις Λίστες: </td><td align=left><select size=1 name=delete_lists><option>0</option><option>1</option><option SELECTED>$delete_lists</option></select>$NWB#vicidial_users-delete_lists$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τις εκστρατείες: </td><td align=left><select size=1 name=delete_campaigns><option>0</option><option>1</option><option SELECTED>$delete_campaigns</option></select>$NWB#vicidial_users-delete_campaigns$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τις Εισ-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=delete_ingroups><option>0</option><option>1</option><option SELECTED>$delete_ingroups</option></select>$NWB#vicidial_users-delete_ingroups$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τους Απομακρυσμένους Χειριστές: </td><td align=left><select size=1 name=delete_remote_agents><option>0</option><option>1</option><option SELECTED>$delete_remote_agents</option></select>$NWB#vicidial_users-delete_remote_agents$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διάγραψε τον Βοηθόs: </td><td align=left><select size=1 name=delete_scripts><option>0</option><option>1</option><option SELECTED>$delete_scripts</option></select>$NWB#vicidial_users-delete_scripts$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Εισαγωγή Οδηγών: </td><td align=left><select size=1 name=load_leads><option>0</option><option>1</option><option SELECTED>$load_leads</option></select>$NWB#vicidial_users-load_leads$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Λεπτομέρειες εκστρατείας: </td><td align=left><select size=1 name=campaign_detail><option>0</option><option>1</option><option SELECTED>$campaign_detail</option></select>$NWB#vicidial_users-campaign_detail$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Πρόσβαση AGC Admin: </td><td align=left><select size=1 name=ast_admin_access><option>0</option><option>1</option><option SELECTED>$ast_admin_access</option></select>$NWB#vicidial_users-ast_admin_access$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Το AGC διαγράφει τα τηλέφωνα: </td><td align=left><select size=1 name=ast_delete_phones><option>0</option><option>1</option><option SELECTED>$ast_delete_phones</option></select>$NWB#vicidial_users-ast_delete_phones$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποίηση Οδηγών: </td><td align=left><select size=1 name=modify_leads><option>0</option><option>1</option><option SELECTED>$modify_leads</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Αλλαγή Εκστρατείας Χειριστή: </td><td align=left><select size=1 name=change_agent_campaign><option>0</option><option>1</option><option SELECTED>$change_agent_campaign</option></select>$NWB#vicidial_users-change_agent_campaign$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διαγραφή Φίλτρουs: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Διαγραφή Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=delete_call_times><option>0</option><option>1</option><option SELECTED>$delete_call_times</option></select>$NWB#vicidial_users-delete_call_times$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποίηση Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=modify_call_times><option>0</option><option>1</option><option SELECTED>$modify_call_times</option></select>$NWB#vicidial_users-modify_call_times$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τους χρήστες: </td><td align=left><select size=1 name=modify_users><option>0</option><option>1</option><option SELECTED>$modify_users</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τις εκστρατείες: </td><td align=left><select size=1 name=modify_campaigns><option>0</option><option>1</option><option SELECTED>$modify_campaigns</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τους καταλόγους: </td><td align=left><select size=1 name=modify_lists><option>0</option><option>1</option><option SELECTED>$modify_lists</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τα χειρόγραφα: </td><td align=left><select size=1 name=modify_scripts><option>0</option><option>1</option><option SELECTED>$modify_scripts</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τα φίλτρα: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τις-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=modify_ingroups><option>0</option><option>1</option><option SELECTED>$modify_ingroups</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τις ομάδες χρηστών: </td><td align=left><select size=1 name=modify_usergroups><option>0</option><option>1</option><option SELECTED>$modify_usergroups</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τους μακρινούς πράκτορες: </td><td align=left><select size=1 name=modify_remoteagents><option>0</option><option>1</option><option SELECTED>$modify_remoteagents</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Τροποποιήστε τους κεντρικούς υπολογιστές: </td><td align=left><select size=1 name=modify_servers><option>0</option><option>1</option><option SELECTED>$modify_servers</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Εκθέσεις άποψης: </td><td align=left><select size=1 name=view_reports><option>0</option><option>1</option><option SELECTED>$view_reports</option></select>$NWB#vicidial_users-view_reports$NWE</td></tr>\n";
+
+#9BB9FB
+#B9CBFD
+			echo "<tr bgcolor=#9BB9FB><td align=right>Εκθέσεις άποψης: </td><td align=left><select size=1 name=view_reports><option>0</option><option>1</option><option SELECTED>$view_reports</option></select>$NWB#vicidial_users-view_reports$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Αλλάξτε τις επιλογές επιφάνειας εργασίας των χειριστών: </td><td align=left><select size=1 name=alter_agent_interface_options><option>0</option><option>1</option><option SELECTED>$alter_agent_interface_options</option></select>$NWB#vicidial_users-alter_agent_interface_options$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τους χρήστες: </td><td align=left><select size=1 name=modify_users><option>0</option><option>1</option><option SELECTED>$modify_users</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Αλλαγή Εκστρατείας Χειριστή: </td><td align=left><select size=1 name=change_agent_campaign><option>0</option><option>1</option><option SELECTED>$change_agent_campaign</option></select>$NWB#vicidial_users-change_agent_campaign$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε  τους χρήστες: </td><td align=left><select size=1 name=delete_users><option>0</option><option>1</option><option SELECTED>$delete_users</option></select>$NWB#vicidial_users-delete_users$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τις ομάδες χρηστών: </td><td align=left><select size=1 name=modify_usergroups><option>0</option><option>1</option><option SELECTED>$modify_usergroups</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Διάγραψε τις ομάδες χρηστών: </td><td align=left><select size=1 name=delete_user_groups><option>0</option><option>1</option><option SELECTED>$delete_user_groups</option></select>$NWB#vicidial_users-delete_user_groups$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τους καταλόγους: </td><td align=left><select size=1 name=modify_lists><option>0</option><option>1</option><option SELECTED>$modify_lists</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τις Λίστες: </td><td align=left><select size=1 name=delete_lists><option>0</option><option>1</option><option SELECTED>$delete_lists</option></select>$NWB#vicidial_users-delete_lists$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Εισαγωγή Οδηγών: </td><td align=left><select size=1 name=load_leads><option>0</option><option>1</option><option SELECTED>$load_leads</option></select>$NWB#vicidial_users-load_leads$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποίηση Οδηγών: </td><td align=left><select size=1 name=modify_leads><option>0</option><option>1</option><option SELECTED>$modify_leads</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τις εκστρατείες: </td><td align=left><select size=1 name=modify_campaigns><option>0</option><option>1</option><option SELECTED>$modify_campaigns</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Λεπτομέρειες εκστρατείας: </td><td align=left><select size=1 name=campaign_detail><option>0</option><option>1</option><option SELECTED>$campaign_detail</option></select>$NWB#vicidial_users-campaign_detail$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Διάγραψε τις εκστρατείες: </td><td align=left><select size=1 name=delete_campaigns><option>0</option><option>1</option><option SELECTED>$delete_campaigns</option></select>$NWB#vicidial_users-delete_campaigns$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τις-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=modify_ingroups><option>0</option><option>1</option><option SELECTED>$modify_ingroups</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τις Εισ-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=delete_ingroups><option>0</option><option>1</option><option SELECTED>$delete_ingroups</option></select>$NWB#vicidial_users-delete_ingroups$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τους μακρινούς πράκτορες: </td><td align=left><select size=1 name=modify_remoteagents><option>0</option><option>1</option><option SELECTED>$modify_remoteagents</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Διάγραψε τους Απομακρυσμένους Χειριστές: </td><td align=left><select size=1 name=delete_remote_agents><option>0</option><option>1</option><option SELECTED>$delete_remote_agents</option></select>$NWB#vicidial_users-delete_remote_agents$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τα χειρόγραφα: </td><td align=left><select size=1 name=modify_scripts><option>0</option><option>1</option><option SELECTED>$modify_scripts</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τον Βοηθόs: </td><td align=left><select size=1 name=delete_scripts><option>0</option><option>1</option><option SELECTED>$delete_scripts</option></select>$NWB#vicidial_users-delete_scripts$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τα φίλτρα: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Διαγραφή Φίλτρουs: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Πρόσβαση AGC Admin: </td><td align=left><select size=1 name=ast_admin_access><option>0</option><option>1</option><option SELECTED>$ast_admin_access</option></select>$NWB#vicidial_users-ast_admin_access$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Το AGC διαγράφει τα τηλέφωνα: </td><td align=left><select size=1 name=ast_delete_phones><option>0</option><option>1</option><option SELECTED>$ast_delete_phones</option></select>$NWB#vicidial_users-ast_delete_phones$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποίηση Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=modify_call_times><option>0</option><option>1</option><option SELECTED>$modify_call_times</option></select>$NWB#vicidial_users-modify_call_times$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διαγραφή Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=delete_call_times><option>0</option><option>1</option><option SELECTED>$delete_call_times</option></select>$NWB#vicidial_users-delete_call_times$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τους κεντρικούς υπολογιστές: </td><td align=left><select size=1 name=modify_servers><option>0</option><option>1</option><option SELECTED>$modify_servers</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			}
-		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 		echo "</TABLE></center>\n";
 
 		if ($LOGdelete_users > 0)
@@ -7218,7 +8818,7 @@ if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi
 
 if ($ADD==31)
 {
-	if ($LOGmodify_users==1)
+	if ($LOGmodify_campaigns==1)
 	{
 		if ($stage=='show_dialable')
 		{
@@ -7230,8 +8830,6 @@ if ($ADD==31)
 			$stmt="UPDATE vicidial_campaigns set display_dialable_count='N' where campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 		}
-		echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 		$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
@@ -7243,6 +8841,7 @@ if ($ADD==31)
 		$dial_status_d = $row[6];
 		$dial_status_e = $row[7];
 		$lead_order = $row[8];
+		$allow_closers = $row[12];
 		$hopper_level = $row[13];
 		$auto_dial_level = $row[14];
 		$next_agent_call = $row[15];
@@ -7295,24 +8894,43 @@ if ($ADD==31)
 		$dial_statuses = $row[61];
 		$disable_alter_custdata = $row[62];
 		$no_hopper_leads_logins = $row[63];
+		$list_order_mix = $row[64];
+		$campaign_allow_inbound = $row[65];
+		$manual_dial_list_id = $row[66];
+		$default_xfer_group = $row[67];
 
-	echo "<br>ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΕΚΣΤΡΑΤΕΙΩΝ: $row[0] - <a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\">Βασική Επισκόπηση</a>";
-	echo " | Αναλυτική Επισκόπηση</a> | ";
-	echo "<a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\">Πραγματικού Χρόνου Οθόνη</a>\n";
-	echo "<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=41>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$campaign_name\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_description size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$row[12]</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+	if (ereg("DISABLED",$list_order_mix))
+		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
+	else
+		{$DEFlistDISABLE = 'disabled';	$DEFstatusDISABLED=1;}
 
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE'";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] < 1)
+		{
+		$mixes_list="<option SELECTED value=\"DISABLED\">DISABLED</option>\n";
+		$mixname_list["DISABLED"] = "DISABLED";
+		}
+	else
+		{
+		##### get list_mix listings for dynamic pulldown
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE' limit 1";
+		$rslt=mysql_query($stmt, $link);
+		$mixes_to_print = mysql_num_rows($rslt);
+		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
+
+		$o=0;
+		while ($mixes_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixes_list .= "<option value=\"ACTIVE\">ACTIVE ($rowx[0] - $rowx[1])</option>\n";
+			$mixname_list["ACTIVE"] = "$rowx[0] - $rowx[1]";
+			$o++;
+			}
+		}
+
+	##### get status listings for dynamic pulldown
 	$stmt="SELECT * from vicidial_statuses order by status";
 	$rslt=mysql_query($stmt, $link);
 	$statuses_to_print = mysql_num_rows($rslt);
@@ -7350,184 +8968,286 @@ if ($ADD==31)
 	$Dstatuses = explode(" ", $dial_statuses);
 	$Ds_to_print = (count($Dstatuses) -1);
 
+	##### get in-groups listings for dynamic pulldown list menu
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups $xfer_groupsSQL order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Xgroups_to_print = mysql_num_rows($rslt);
+	$Xgroups_menu='';
+	$Xgroups_selected=0;
 	$o=0;
-	while ($Ds_to_print > $o) 
+	while ($Xgroups_to_print > $o) 
 		{
+		$rowx=mysql_fetch_row($rslt);
+		$Xgroups_menu .= "<option ";
+		if ($default_xfer_group == "$rowx[0]") 
+			{
+			$Xgroups_menu .= "SELECTED ";
+			$Xgroups_selected++;
+			}
+		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$o++;
-		$Dstatus = $Dstatuses[$o];
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
-		echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-		echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
 		}
+	if ($Xgroups_selected < 1) 
+		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
 
-	echo "$statuses_list";
-	echo "</select> &nbsp; \n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+	if ($SUB<1)		{$camp_detail_color=$subcamp_color;}
+		else		{$camp_detail_color=$campaigns_color;}
+	if ($SUB==22)	{$camp_statuses_color=$subcamp_color;}
+		else		{$camp_statuses_color=$campaigns_color;}
+	if ($SUB==23)	{$camp_hotkeys_color=$subcamp_color;}
+		else		{$camp_hotkeys_color=$campaigns_color;}
+	if ($SUB==25)	{$camp_recycle_color=$subcamp_color;}
+		else		{$camp_recycle_color=$campaigns_color;}
+	if ($SUB==26)	{$camp_autoalt_color=$subcamp_color;}
+		else		{$camp_autoalt_color=$campaigns_color;}
+	if ($SUB==27)	{$camp_pause_color=$subcamp_color;}
+		else		{$camp_pause_color=$campaigns_color;}
+	if ($SUB==29)	{$camp_listmix_color=$subcamp_color;}
+		else		{$camp_listmix_color=$campaigns_color;}
+	echo "<TABLE WIDTH=$page_width CELLPADDING=2 CELLSPACING=0><TR BGCOLOR=\"$campaigns_color\">\n";
+	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Basic </font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_detail_color\"> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Detail </font></a> </TD>";
+	echo "<TD BGCOLOR=\"$camp_statuses_color\"><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Statuses</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_hotkeys_color\"><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">HotKeys</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Auto Alt Dial</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Pause Codes</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
+	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time</font></a></TD>\n";
+	echo "</TR></TABLE>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-	echo "$filters_list";
-	echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+	echo "<center>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>50</option><option>100</option><option>200</option><option>500</option><option>750</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+	if ($SUB < 1)
+		{
+		echo "<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=41>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "<TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$campaign_name\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_description size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$allow_closers</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
+		$o=0;
+		while ($Ds_to_print > $o) 
+			{
+			$o++;
+			$Dstatus = $Dstatuses[$o];
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
+			echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
+
+			if ($DEFstatusDISABLED > 0)
+				{
+				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+				echo "REMOVE</DEL></td></tr>\n";
+				}
+			else
+				{
+				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
+				}
+			}
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+		echo "<option value=\"\"> - NONE - </option>\n";
+
+		echo "$statuses_list";
+		echo "</select> &nbsp; \n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+		echo "$mixes_list";
+		if (ereg("DISABLED",$list_order_mix))
+			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
+		else
+			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+		echo "$filters_list";
+		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
 : </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ΠΡΟΣΑΡΜΟΣΤΕ ΤΗ ΣΥΜΠΛΗΡΩΜΑΤΙΚΗ ΠΡΟΜΉΘΕΙΑ</td></tr>\n";
+		echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ΠΡΟΣΑΡΜΟΣΤΕ ΤΗ ΣΥΜΠΛΗΡΩΜΑΤΙΚΗ ΠΡΟΜΉΘΕΙΑ</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Διαθέσιμα μόνο ετικέτες
+		echo "<tr bgcolor=#BDFFBD><td align=right>Διαθέσιμα μόνο ετικέτες
 : </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Ποσοστό Ορίου Εγκατ.Κλήσεων
+		echo "<tr bgcolor=#BDFFBD><td align=right>Ποσοστό Ορίου Εγκατ.Κλήσεων
 : </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
-	$n=100;
-	while ($n>=1)
-		{
-		echo "<option>$n</option>\n";
-		$n--;
-		}
-	echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+		$n=100;
+		while ($n>=1)
+			{
+			echo "<option>$n</option>\n";
+			$n--;
+			}
+		echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων
+		echo "<tr bgcolor=#BDFFBD><td align=right>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων
 : </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Τελευταίος Χρόνος Διακομιστή
+		echo "<tr bgcolor=#BDFFBD><td align=right>Τελευταίος Χρόνος Διακομιστή
 : </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 μόνο αριθμοί</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
+		echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
 : </td><td align=left><select size=1 name=adaptive_intensity>\n";
-	$n=40;
-	while ($n>=-40)
-		{
-		$dtl = 'Balanced';
-		if ($n<0) {$dtl = 'Less Intense';}
-		if ($n>0) {$dtl = 'More Intense';}
-		if ($n == $adaptive_intensity) 
-			{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-		else
-			{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-		$n--;
-		}
-	echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
+		$n=40;
+		while ($n>=-40)
+			{
+			$dtl = 'Balanced';
+			if ($n<0) {$dtl = 'Less Intense';}
+			if ($n>0) {$dtl = 'More Intense';}
+			if ($n == $adaptive_intensity) 
+				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+			else
+				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+			$n--;
+			}
+		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Επίπεδο Κλήσεων Μεταβολής Στόχου
+		echo "<tr bgcolor=#BDFFBD><td align=right>Επίπεδο Κλήσεων Μεταβολής Στόχου
 : </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
-	$n=40;
-	while ($n>=-40)
-		{
-		$nabs = abs($n);
-		$dtl = 'Balanced';
-		if ($n<0) {$dtl = 'Agents Waiting for Calls';}
-		if ($n>0) {$dtl = 'Calls Waiting for Agents';}
-		if ($n == $adaptive_dl_diff_target) 
-			{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
-		else
-			{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
-		$n--;
-		}
-	echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
+		$n=40;
+		while ($n>=-40)
+			{
+			$nabs = abs($n);
+			$dtl = 'Balanced';
+			if ($n<0) {$dtl = 'Agents Waiting for Calls';}
+			if ($n>0) {$dtl = 'Calls Waiting for Agents';}
+			if ($n == $adaptive_dl_diff_target) 
+				{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
+			else
+				{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
+			$n--;
+			}
+		echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#BDFFBD><td align=right>Ταυτόχρονες μεταφορές: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#BDFFBD><td align=right>Ταυτόχρονες μεταφορές: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
 
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αυτόματος σχηματισμός ALT-ARJCMOY: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3<option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αυτόματος σχηματισμός ALT-ARJCMOY: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3<option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$local_call_time\">Χρόνος Τοπικής Κλήσης: </a></td><td align=left><select size=1 name=local_call_time>\n";
-	echo "$call_times_list";
-	echo "<option selected value=\"$local_call_time\">$local_call_time - $call_timename_list[$local_call_time]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$local_call_time\">Χρόνος Τοπικής Κλήσης: </a></td><td align=left><select size=1 name=local_call_time>\n";
+		echo "$call_times_list";
+		echo "<option selected value=\"$local_call_time\">$local_call_time - $call_timename_list[$local_call_time]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση εκτός χρόνου: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση εκτός χρόνου: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Πρόθεμα Κλήσης: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Πρόθεμα Κλήσης: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Παράλειψη Κωδικού Τηλεφώνου
+		echo "<tr bgcolor=#B6D3FC><td align=right>Παράλειψη Κωδικού Τηλεφώνου
 : </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Εκστρατείας: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Εκστρατείας: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατείας VDAD εσωτ.σύνδεση: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατείας VDAD εσωτ.σύνδεση: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επέκταση εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επέκταση εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ηχογράφηση εκστρατείας: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ηχογράφηση εκστρατείας: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα αρχείου εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα αρχείου εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_filename size=50 maxlength=50 value=\"$campaign_rec_filename\">$NWB#vicidial_campaigns-campaign_rec_filename$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Καθυστέρηση Ηχογράφησης
+		echo "<tr bgcolor=#B6D3FC><td align=right>Καθυστέρηση Ηχογράφησης
 : </td><td align=left><input type=text name=allcalls_delay size=3 maxlength=3 value=\"$allcalls_delay\"> <i>in seconds</i>$NWB#vicidial_campaigns-allcalls_delay$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
-	echo "$scripts_list";
-	echo "<option selected value=\"$script_id\">$script_id - $scriptname_list[$script_id]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "<option selected value=\"$script_id\">$script_id - $scriptname_list[$script_id]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option selected>$get_call_launch</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option selected>$get_call_launch</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Αυτόματου Τηλεφωνητή: </td><td align=left><input type=text name=am_message_exten size=10 maxlength=20 value=\"$am_message_exten\">$NWB#vicidial_campaigns-am_message_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Αυτόματου Τηλεφωνητή: </td><td align=left><input type=text name=am_message_exten size=10 maxlength=20 value=\"$am_message_exten\">$NWB#vicidial_campaigns-am_message_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>AMD στέλνει στο VM: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>AMD στέλνει στο VM: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>DTMF Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_dtmf size=20 maxlength=50 value=\"$xferconf_a_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DTMF Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_dtmf size=20 maxlength=50 value=\"$xferconf_a_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_number size=20 maxlength=50 value=\"$xferconf_a_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_number size=20 maxlength=50 value=\"$xferconf_a_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>DTMF Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_dtmf size=20 maxlength=50 value=\"$xferconf_b_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DTMF Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_dtmf size=20 maxlength=50 value=\"$xferconf_b_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση Εναλ Αριθμού: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση Εναλ Αριθμού: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Προγραμματισμένες Επανακλήσεις: </td><td align=left><select size=1 name=scheduled_callbacks><option>Y</option><option>N</option><option SELECTED>$scheduled_callbacks</option></select>$NWB#vicidial_campaigns-scheduled_callbacks$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Προγραμματισμένες Επανακλήσεις: </td><td align=left><select size=1 name=scheduled_callbacks><option>Y</option><option>N</option><option SELECTED>$scheduled_callbacks</option></select>$NWB#vicidial_campaigns-scheduled_callbacks$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήση μηνύματος Ασφαλούς Φιλοξενίας: </td><td align=left><select size=1 name=safe_harbor_message><option>Y</option><option>N</option><option SELECTED>$safe_harbor_message</option></select>$NWB#vicidial_campaigns-safe_harbor_message$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Χρήση μηνύματος Ασφαλούς Φιλοξενίας: </td><td align=left><select size=1 name=safe_harbor_message><option>Y</option><option>N</option><option SELECTED>$safe_harbor_message</option></select>$NWB#vicidial_campaigns-safe_harbor_message$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ.Σύνδεση Ασφαλούς Φιλοξενίας: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ.Σύνδεση Ασφαλούς Φιλοξενίας: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ Τυλίγματος: </td><td align=left><input type=text name=wrapup_seconds size=5 maxlength=3 value=\"$wrapup_seconds\">$NWB#vicidial_campaigns-wrapup_seconds$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ Τυλίγματος: </td><td align=left><input type=text name=wrapup_seconds size=5 maxlength=3 value=\"$wrapup_seconds\">$NWB#vicidial_campaigns-wrapup_seconds$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Τυλίγματος: </td><td align=left><input type=text name=wrapup_message size=40 maxlength=255 value=\"$wrapup_message\">$NWB#vicidial_campaigns-wrapup_message$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Τυλίγματος: </td><td align=left><input type=text name=wrapup_message size=40 maxlength=255 value=\"$wrapup_message\">$NWB#vicidial_campaigns-wrapup_message$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτερικός κατάλογος DNC χρήσης: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτερικός κατάλογος DNC χρήσης: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Pause Codes Ενεργή:</td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>AgentΚώδικες μικρής διακοπήςΕνεργή:</td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Stats Refresh: </td><td align=left><select size=1 name=campaign_stats_refresh><option>Y</option><option>N</option><option SELECTED>$campaign_stats_refresh</option></select>$NWB#vicidial_campaigns-campaign_stats_refresh$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Stats Refresh: </td><td align=left><select size=1 name=campaign_stats_refresh><option>Y</option><option>N</option><option SELECTED>$campaign_stats_refresh</option></select>$NWB#vicidial_campaigns-campaign_stats_refresh$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Θέστε εκτός λειτουργίας αλλάζει τα στοιχεία πελατών: </td><td align=left><select size=1 name=disable_alter_custdata><option>Y</option><option>N</option><option SELECTED>$disable_alter_custdata</option></select>$NWB#vicidial_campaigns-disable_alter_custdata$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Θέστε εκτός λειτουργίας αλλάζει τα στοιχεία πελατών: </td><td align=left><select size=1 name=disable_alter_custdata><option>Y</option><option>N</option><option SELECTED>$disable_alter_custdata</option></select>$NWB#vicidial_campaigns-disable_alter_custdata$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
 
+		echo "<tr bgcolor=#B6D3FC><td align=right>Χειρωνακτικός κατάλογος ταυτότητα πινάκων:</td><td align=left><input type=text name=manual_dial_list_id size=15 maxlength=12 value=\"$manual_dial_list_id\">$NWB#vicidial_campaigns-manual_dial_list_id$NWE</td></tr>\n";
 
-	if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)", $campaign_id))
-		{
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες ομάδες: <BR>";
-		echo " $NWB#vicidial_campaigns-closer_campaigns$NWE</td><td align=left>\n";
-		echo "$groups_list";
-		echo "</td></tr>\n";
-		}
+		if ($campaign_allow_inbound == 'Y')
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες ομάδες: <BR>";
+			echo " $NWB#vicidial_campaigns-closer_campaigns$NWE</td><td align=left>\n";
+			echo "$groups_list";
+			echo "</td></tr>\n";
+			}
 
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα μεταφοράς προεπιλογής:</td><td align=left><select size=1 name=default_xfer_group>";
+		echo "$Xgroups_menu";
+		echo "</select>$NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
 
+		if ($allow_closers == 'Y')
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδες μεταφοράς:<BR>";
+			echo " $NWB#vicidial_campaigns-xfer_groups$NWE</td><td align=left>\n";
+			echo "$XFERgroups_list";
+			echo "</td></tr>\n";
+			}
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center></FORM>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center></FORM>\n";
 
 	echo "<center>\n";
 	echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
@@ -7542,280 +9262,331 @@ if ($ADD==31)
 		$camp_lists='';
 
 		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
-			$o++;
-		if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
-		if (ereg("N", $rowx[1])) {$inactive_lists++;}
+		while ($lists_to_print > $o) 
+			{
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+			if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
+			if (ereg("N", $rowx[1])) {$inactive_lists++;}
 
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
+			}
+		echo "</table></center><br>\n";
+		echo "<center><b>\n";
+
+		$filterSQL = $filtersql_list[$lead_filter_id];
+		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
+		if (strlen($filterSQL)>4)
+			{$fSQL = "and $filterSQL";}
 		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			{$fSQL = '';}
 
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
+			$camp_lists = eregi_replace(".$","",$camp_lists);
+		echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
 
+		if ($display_dialable_count == 'Y')
+			{
+			### call function to calculate and print dialable leads
+			dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
+			}
+		else
+			{
+			echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
+			}
+
+
+
+
+
+			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			$hopper_leads = "$rowx[0]";
+
+		echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
+		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
+		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
+		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
+		echo "</b></center>\n";
 		}
 
-	echo "</table></center><br>\n";
-	echo "<center><b>\n";
 
-	$filterSQL = $filtersql_list[$lead_filter_id];
-	$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
-	if (strlen($filterSQL)>4)
-		{$fSQL = "and $filterSQL";}
-	else
-		{$fSQL = '';}
 
-		$camp_lists = eregi_replace(".$","",$camp_lists);
-	echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
-
-	if ($display_dialable_count == 'Y')
+	if ($SUB==22)
 		{
-		### call function to calculate and print dialable leads
-		dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
-		}
-	else
+
+	##### get status category listings for dynamic pulldown
+	$stmt="SELECT vsc_id,vsc_name from vicidial_status_categories order by vsc_id desc";
+	$rslt=mysql_query($stmt, $link);
+	$cats_to_print = mysql_num_rows($rslt);
+	$cats_list="";
+
+	$o=0;
+	while ($cats_to_print > $o)
 		{
-		echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
-		}
-
-
-
-
-
-		$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_query($stmt, $link);
 		$rowx=mysql_fetch_row($rslt);
-		$hopper_leads = "$rowx[0]";
-
-	echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
-	echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
-	echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
-	echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
-	echo "</b></center>\n";
+		$cats_list .= "<option value=\"$rowx[0]\">$rowx[0] - " . substr($rowx[1],0,20) . "</option>\n";
+		$catsname_list["$rowx[0]"] = substr($rowx[1],0,20);
+		$o++;
+		}
 
 
-
-
-	echo "<center>\n";
-	echo "<br><b>ΠΡΟΣΑΡΜΟΣΜΕΝΕΣ ΚΑΤΑΣΤΑΣΕΙΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_statuses$NWE</b><br>\n";
-	echo "<TABLE width=400 cellspacing=3>\n";
-	echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>ΕΠΙΛΕΞΙΜΟ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
+		echo "<center>\n";
+		echo "<br><b>ΠΡΟΣΑΡΜΟΣΜΕΝΕΣ ΚΑΤΑΣΤΑΣΕΙΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_statuses$NWE</b><br>\n";
+		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>ΕΠΙΛΕΞΙΜΟ</td><td>ΑΝΘΡΩΠΙΝΗ ΑΠΑΝΤΗΣΗ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
 
 		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id'";
 		$rslt=mysql_query($stmt, $link);
 		$statuses_to_print = mysql_num_rows($rslt);
 		$o=0;
-		while ($statuses_to_print > $o) {
+		while ($statuses_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
+			$AScategory = $rowx[5];
 			$o++;
 
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
 
-		echo "<tr $bgcolor><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1><a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&action=DELETE\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=42>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=status value=\"$rowx[0]\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<font size=2><B>$rowx[0]</B></td>\n";
+			echo "<td><input type=text name=status_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+			echo "<td><select size=1 name=selectable><option>Y</option><option>N</option><option selected>$rowx[2]</option></select></td>\n";
+			echo "<td><select size=1 name=human_answered><option>Y</option><option>N</option><option selected>$rowx[4]</option></select></td>\n";
+			echo "<td>\n";
+			echo "<select size=1 name=category>\n";
+			echo "$cats_list";
+			echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+			echo "</select>\n";
+			echo "</td>\n";
+			echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; \n";
+			echo "<a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&stage=delete\">ΔΙΑΓΡΑΦΗ</a>\n";
+			echo "</form></td></tr>\n";
+			}
 
-		}
+		echo "</table>\n";
 
-	echo "</table>\n";
-
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΠΡΟΣΑΡΜΟΣΜΕΝΗΣ ΚΑΤΑΣΤΑΣΗΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ<BR><form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=22>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "Κατάσταση:<input type=text name=status size=10 maxlength=8> &nbsp; \n";
-	echo "Περιγραφή:<input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
-	echo "Επιλέξιμο:<select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
-
-	echo "</FORM><br>\n";
-
-
-
-	echo "<br><b>ΠΡΟΣΑΡΜΟΣΜΕΝΑ ΚΛΕΙΔΙΑ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_hotkeys$NWE</b><br>\n";
-	echo "<TABLE width=400 cellspacing=3>\n";
-	echo "<tr><td>ΚΛΕΙΔΙ</td><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
-
-		$stmt="SELECT * from vicidial_campaign_hotkeys where campaign_id='$campaign_id' order by hotkey";
-		$rslt=mysql_query($stmt, $link);
-		$statuses_to_print = mysql_num_rows($rslt);
-		$o=0;
-		while ($statuses_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
-			$o++;
-
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-
-		echo "<tr $bgcolor><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[2]</td><td><font size=1><a href=\"$PHP_SELF?ADD=43&campaign_id=$campaign_id&status=$rowx[0]&hotkey=$rowx[1]&action=DELETE\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
-
-		}
-
-	echo "</table>\n";
-
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΠΡΟΣΑΡΜΟΣΜΕΝΟΥ ΚΛΕΙΔΙΟΥ ΕΚΣΤΡΑΤΕΙΑΣ<BR><form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=23>\n";
-	echo "<input type=hidden name=selectable value=Y>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "Hotkey: <select size=1 name=hotkey>\n";
-	echo "<option>1</option>\n";
-	echo "<option>2</option>\n";
-	echo "<option>3</option>\n";
-	echo "<option>4</option>\n";
-	echo "<option>5</option>\n";
-	echo "<option>6</option>\n";
-	echo "<option>7</option>\n";
-	echo "<option>8</option>\n";
-	echo "<option>9</option>\n";
-	echo "</select> &nbsp; \n";
-	echo "Κατάσταση:<select size=1 name=HKstatus>\n";
-	echo "$HKstatuses_list\n";
-	echo "<option value=\"ALTPH2-----Alternate Phone Hot Dial\">ALTPH2 - Alternate Phone Hot Dial</option>\n";
-	echo "<option value=\"ADDR3-----Address3 Hot Dial\">ADDR3 - Address3 Hot Dial</option>\n";
-	echo "</select> &nbsp; \n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
-	echo "</form><BR>\n";
-
-
-
-	echo "<br><br><b>ΑΝΑΚΥΚΛΩΣΗ ΟΔΗΓΟΥ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
-	echo "<TABLE width=500 cellspacing=3>\n";
-	echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΚΑΘΥΣΤΕΡΗΣΗ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΜΕΓΙΣΤΟ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΕΝΕΡΓΟ</td><td> </td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
-
-		$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
-		$rslt=mysql_query($stmt, $link);
-		$recycle_to_print = mysql_num_rows($rslt);
-		$o=0;
-		while ($recycle_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
-			$o++;
-
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-
-		echo "<tr $bgcolor><td><font size=1>$rowx[2]<form action=$PHP_SELF method=POST>\n";
-		echo "<input type=hidden name=status value=\"$rowx[2]\">\n";
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΠΡΟΣΑΡΜΟΣΜΕΝΗΣ ΚΑΤΑΣΤΑΣΗΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=22>\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-		echo "<input type=hidden name=ADD value=45></td>\n";
-		echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
-		echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
-		echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$rowx[5]</option></select></td>\n";
-		echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$rowx[2]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+		echo "Κατάσταση:<input type=text name=status size=10 maxlength=8> &nbsp; \n";
+		echo "Περιγραφή:<input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
+		echo "Επιλέξιμο:<select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Κατηγορία:\n";
+		echo "<select size=1 name=category>\n";
+		echo "$cats_list";
+		echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+		echo "</select> &nbsp; <BR>\n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+		echo "</FORM><br>\n";
 		}
 
-	echo "</table>\n";
 
-	echo "<br>ΠΡΟΣΘΕΣΕ ΝΕΟ ΟΔΗΓΟ ΕΚΣΤΡΑΤΕΙΑΣ ΑΝΑΚΥΚΛΩΣΗΣ<BR><form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=25>\n";
-	echo "<input type=hidden name=active value=\"N\">\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "Κατάσταση:<select size=1 name=status>\n";
-	echo "$LRstatuses_list\n";
-	echo "</select> &nbsp; \n";
-	echo "Καθυστέρηση προσπάθειας: <input type=text size=7 maxlength=5 name=attempt_delay>\n";
-	echo "Μέγιστο προσπάθειας: <input type=text size=5 maxlength=3 name=attempt_maximum>\n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
-
-	echo "</FORM><br>\n";
-
-
-
-	echo "<br><br><b>ΑΥΤΟΜΑΤΟΣ ΣΧΗΜΑΤΙΣΜΌΣ ΑΡΙΘΜΟΎ ALT ΓΙΑ ΑΥΤΉΝ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ: &nbsp; $NWB#vicidial_auto_alt_dial_statuses$NWE</b><br>\n";
-	echo "<TABLE width=500 cellspacing=3>\n";
-	echo "<tr><td>STATUSES</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
-
-	$auto_alt_dial_statuses = preg_replace("/ -$/","",$auto_alt_dial_statuses);
-	$AADstatuses = explode(" ", $auto_alt_dial_statuses);
-	$AADs_to_print = (count($AADstatuses) -1);
-
-	$o=0;
-	while ($AADs_to_print > $o) 
+	if ($SUB==23)
 		{
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-		$o++;
+		echo "<br><b>ΠΡΟΣΑΡΜΟΣΜΕΝΑ ΚΛΕΙΔΙΑ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_hotkeys$NWE</b><br>\n";
+		echo "<TABLE width=400 cellspacing=3>\n";
+		echo "<tr><td>ΚΛΕΙΔΙ</td><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
 
-		echo "<tr $bgcolor><td><font size=1>$AADstatuses[$o]</td>\n";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=66&campaign_id=$campaign_id&status=$AADstatuses[$o]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			$stmt="SELECT * from vicidial_campaign_hotkeys where campaign_id='$campaign_id' order by hotkey";
+			$rslt=mysql_query($stmt, $link);
+			$statuses_to_print = mysql_num_rows($rslt);
+			$o=0;
+			while ($statuses_to_print > $o) {
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[0]</td><td><font size=1>$rowx[2]</td><td><font size=1><a href=\"$PHP_SELF?ADD=43&campaign_id=$campaign_id&status=$rowx[0]&hotkey=$rowx[1]&action=DELETE\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+
+			}
+
+		echo "</table>\n";
+
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΠΡΟΣΑΡΜΟΣΜΕΝΟΥ ΚΛΕΙΔΙΟΥ ΕΚΣΤΡΑΤΕΙΑΣ<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=23>\n";
+		echo "<input type=hidden name=selectable value=Y>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "Hotkey: <select size=1 name=hotkey>\n";
+		echo "<option>1</option>\n";
+		echo "<option>2</option>\n";
+		echo "<option>3</option>\n";
+		echo "<option>4</option>\n";
+		echo "<option>5</option>\n";
+		echo "<option>6</option>\n";
+		echo "<option>7</option>\n";
+		echo "<option>8</option>\n";
+		echo "<option>9</option>\n";
+		echo "</select> &nbsp; \n";
+		echo "Κατάσταση:<select size=1 name=HKstatus>\n";
+		echo "$HKstatuses_list\n";
+		echo "<option value=\"ALTPH2-----Alternate Phone Hot Dial\">ALTPH2 - Alternate Phone Hot Dial</option>\n";
+		echo "<option value=\"ADDR3-----Address3 Hot Dial\">ADDR3 - Address3 Hot Dial</option>\n";
+		echo "</select> &nbsp; \n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+		echo "</form><BR>\n";
 		}
 
-	echo "</table>\n";
 
-	echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΗ ΝΕΑ ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΣΧΗΜΑΤΙΣΜΟΎ ΑΡΙΘΜΟΎ ALT<BR><form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=26>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "Κατάσταση:<select size=1 name=status>\n";
-	echo "$LRstatuses_list\n";
-	echo "</select> &nbsp; \n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+	if ($SUB==25)
+		{
+		echo "<br><br><b>ΑΝΑΚΥΚΛΩΣΗ ΟΔΗΓΟΥ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
+		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΚΑΘΥΣΤΕΡΗΣΗ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΜΕΓΙΣΤΟ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΕΝΕΡΓΟ</td><td> </td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
 
-	echo "</FORM><br>\n";
+			$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
+			$rslt=mysql_query($stmt, $link);
+			$recycle_to_print = mysql_num_rows($rslt);
+			$o=0;
+			while ($recycle_to_print > $o) {
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1>$rowx[2]<form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=status value=\"$rowx[2]\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<input type=hidden name=ADD value=45></td>\n";
+			echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
+			echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
+			echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$rowx[5]</option></select></td>\n";
+			echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$rowx[2]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			}
+
+		echo "</table>\n";
+
+		echo "<br>ΠΡΟΣΘΕΣΕ ΝΕΟ ΟΔΗΓΟ ΕΚΣΤΡΑΤΕΙΑΣ ΑΝΑΚΥΚΛΩΣΗΣ<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=25>\n";
+		echo "<input type=hidden name=active value=\"N\">\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "Κατάσταση:<select size=1 name=status>\n";
+		echo "$LRstatuses_list\n";
+		echo "</select> &nbsp; \n";
+		echo "Καθυστέρηση προσπάθειας: <input type=text size=7 maxlength=5 name=attempt_delay>\n";
+		echo "Μέγιστο προσπάθειας: <input type=text size=5 maxlength=3 name=attempt_maximum>\n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+		echo "</FORM><br>\n";
+		}
 
 
+	if ($SUB==26)
+		{
+		echo "<br><br><b>ΑΥΤΟΜΑΤΟΣ ΣΧΗΜΑΤΙΣΜΌΣ ΑΡΙΘΜΟΎ ALT ΓΙΑ ΑΥΤΉΝ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ: &nbsp; $NWB#vicidial_auto_alt_dial_statuses$NWE</b><br>\n";
+		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>STATUSES</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
 
-	echo "<br><br><b>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΓΙΑ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_pause_codes$NWE</b><br>\n";
-	echo "<TABLE width=500 cellspacing=3>\n";
-	echo "<tr><td>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ</td><td>ΧΡΕΩΤΕΟΣ</td><td>ΤΡΟΠΟΠΟΙΗΣΗ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
+		$auto_alt_dial_statuses = preg_replace("/ -$/","",$auto_alt_dial_statuses);
+		$AADstatuses = explode(" ", $auto_alt_dial_statuses);
+		$AADs_to_print = (count($AADstatuses) -1);
 
-		$stmt="SELECT * from vicidial_pause_codes where campaign_id='$campaign_id' order by pause_code";
-		$rslt=mysql_query($stmt, $link);
-		$pause_codes_to_print = mysql_num_rows($rslt);
 		$o=0;
-		while ($pause_codes_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
+		while ($AADs_to_print > $o) 
+			{
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
 			$o++;
 
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
+			echo "<tr $bgcolor><td><font size=1>$AADstatuses[$o]</td>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=66&campaign_id=$campaign_id&status=$AADstatuses[$o]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			}
 
-		echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>$rowx[0]\n";
-		echo "<input type=hidden name=ADD value=47>\n";
+		echo "</table>\n";
+
+		echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΗ ΝΕΑ ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΣΧΗΜΑΤΙΣΜΟΎ ΑΡΙΘΜΟΎ ALT<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=26>\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-		echo "<input type=hidden name=pause_code value=\"$rowx[0]\"> &nbsp;\n";
-		echo "<input type=text size=20 maxlength=30 name=pause_code_name value=\"$rowx[1]\"></td>\n";
-		echo "<td><select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option><option SELECTED>$rowx[2]</option></select></td>\n";
-		echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=67&campaign_id=$campaign_id&pause_code=$rowx[0]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+		echo "Κατάσταση:<select size=1 name=status>\n";
+		echo "$LRstatuses_list\n";
+		echo "</select> &nbsp; \n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+		echo "</FORM><br>\n";
 		}
 
-	echo "</table>\n";
 
-	echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΟ ΝΕΟ ΚΩΔΙΚΑ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ<BR><form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=27>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "Κώδικας μικρής διακοπής: <input type=text size=8 maxlength=6 name=pause_code>\n";
-	echo "Όνομα κώδικα μικρής διακοπής: <input type=text size=20 maxlength=30 name=pause_code_name>\n";
-	echo " &nbsp; Χρεωτέος: <select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option></select>\n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
-
-	echo "</center></FORM><br>\n";
-
-
-
-
-
-
-	echo "<BR><BR>\n";
-	echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">ΑΠΟΣΥΝΔΕΣΗ ΟΛΩΝ ΤΩΝ ΧΕΙΡΙΣΤΩΝ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a><BR><BR>\n";
-	echo "<a href=\"$PHP_SELF?ADD=53&campaign_id=$campaign_id\">EMERGENCY VDAC CLEAR FOR THIS CAMPAIGN</a><BR><BR>\n";
-
-	if ($LOGdelete_campaigns > 0)
+	if ($SUB==27)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=51&campaign_id=$campaign_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a>\n";
+		echo "<br><br><b>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΓΙΑ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_pause_codes$NWE</b><br>\n";
+		echo "<TABLE width=500 cellspacing=3>\n";
+		echo "<tr><td>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ</td><td>ΧΡΕΩΤΕΟΣ</td><td>ΤΡΟΠΟΠΟΙΗΣΗ</td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
+
+			$stmt="SELECT * from vicidial_pause_codes where campaign_id='$campaign_id' order by pause_code";
+			$rslt=mysql_query($stmt, $link);
+			$pause_codes_to_print = mysql_num_rows($rslt);
+			$o=0;
+			while ($pause_codes_to_print > $o) {
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST><font size=1>$rowx[0]\n";
+			echo "<input type=hidden name=ADD value=47>\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<input type=hidden name=pause_code value=\"$rowx[0]\"> &nbsp;\n";
+			echo "<input type=text size=20 maxlength=30 name=pause_code_name value=\"$rowx[1]\"></td>\n";
+			echo "<td><select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option><option SELECTED>$rowx[2]</option></select></td>\n";
+			echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=67&campaign_id=$campaign_id&pause_code=$rowx[0]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			}
+
+		echo "</table>\n";
+
+		echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΟ ΝΕΟ ΚΩΔΙΚΑ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ<BR><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=27>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "Κώδικας μικρής διακοπής: <input type=text size=8 maxlength=6 name=pause_code>\n";
+		echo "Όνομα κώδικα μικρής διακοπής: <input type=text size=20 maxlength=30 name=pause_code_name>\n";
+		echo " &nbsp; Χρεωτέος: <select size=1 name=billable><option>YES</option><option>NO</option><option>HALF</option></select>\n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+		echo "</center></FORM><br>\n";
+		}
+
+
+	if ($SUB < 1)
+		{
+		echo "<BR><BR>\n";
+		echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">ΑΠΟΣΥΝΔΕΣΗ ΟΛΩΝ ΤΩΝ ΧΕΙΡΙΣΤΩΝ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a><BR><BR>\n";
+		echo "<a href=\"$PHP_SELF?ADD=53&campaign_id=$campaign_id\">EMERGENCY VDAC CLEAR FOR THIS CAMPAIGN</a><BR><BR>\n";
+
+		if ($LOGdelete_campaigns > 0)
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=51&campaign_id=$campaign_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a>\n";
+			}
 		}
 	}
 	else
@@ -7847,8 +9618,6 @@ if ($ADD==34)
 			$stmt="UPDATE vicidial_campaigns set display_dialable_count='N' where campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 		}
-		echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 		$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
@@ -7880,195 +9649,299 @@ if ($ADD==34)
 		$campaign_stats_refresh = $row[59];
 		$campaign_logindate = $row[60];
 		$dial_statuses = $row[61];
+		$list_order_mix = $row[64];
+		$default_xfer_group = $row[67];
+		$campaign_allow_inbound = $row[65];
+		$default_xfer_group = $row[67];
 
-	echo "<br>MODIFY A CAMPAIGN'S RECORD: $row[0] - Βασική Επισκόπηση | ";
-	echo "<a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\">Αναλυτική Επισκόπηση</a> | ";
-	echo "<a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\">Πραγματικού Χρόνου Οθόνη</a>\n";
-	echo "<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=44>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_changedate size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+	if (ereg("DISABLED",$list_order_mix))
+		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
+	else
+		{$DEFlistDISABLE = 'disabled';	$DEFstatusDISABLED=1;}
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-
-	$stmt="SELECT * from vicidial_statuses order by status";
-	$rslt=mysql_query($stmt, $link);
-	$statuses_to_print = mysql_num_rows($rslt);
-	$statuses_list='';
-
-	$o=0;
-	while ($statuses_to_print > $o) 
-		{
-		$rowx=mysql_fetch_row($rslt);
-		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$statname_list["$rowx[0]"] = "$rowx[1]";
-		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-		if (eregi("Y",$rowx[2]))
-			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-		$o++;
-		}
-
-	$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
-	$rslt=mysql_query($stmt, $link);
-	$Cstatuses_to_print = mysql_num_rows($rslt);
-
-	$o=0;
-	while ($Cstatuses_to_print > $o) 
-		{
-		$rowx=mysql_fetch_row($rslt);
-		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$statname_list["$rowx[0]"] = "$rowx[1]";
-		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
-		if (eregi("Y",$rowx[2]))
-			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
-		$o++;
-		}
-
-	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-	$Dstatuses = explode(" ", $dial_statuses);
-	$Ds_to_print = (count($Dstatuses) -1);
-
-	$o=0;
-	while ($Ds_to_print > $o) 
-		{
-		$o++;
-		$Dstatus = $Dstatuses[$o];
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
-		echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-		echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
-		}
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status>\n";
-	echo "<option value=\"\"> - NONE - </option>\n";
-
-	echo "$statuses_list";
-	echo "</select> &nbsp; \n";
-	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-	echo "$filters_list";
-	echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-	echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>50</option><option>100</option><option>200</option><option>500</option><option>750</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
-: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
-: </td><td align=left><select size=1 name=adaptive_intensity>\n";
-	$n=40;
-	while ($n>=-40)
-		{
-		$dtl = 'Balanced';
-		if ($n<0) {$dtl = 'Less Intense';}
-		if ($n>0) {$dtl = 'More Intense';}
-		if ($n == $adaptive_intensity) 
-			{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-		else
-			{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-		$n--;
-		}
-	echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left>$script_id</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left>$get_call_launch</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center></FORM>\n";
-
-	echo "<center>\n";
-	echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
-	echo "<TABLE width=400 cellspacing=3>\n";
-	echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>ΟΝΟΜΑ ΛΙΣΤΑΣ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
-
-		$active_lists = 0;
-		$inactive_lists = 0;
-		$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
+		$stmt="SELECT * from vicidial_statuses order by status";
 		$rslt=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rslt);
-		$camp_lists='';
+		$statuses_to_print = mysql_num_rows($rslt);
+		$statuses_list='';
 
 		$o=0;
-		while ($lists_to_print > $o) {
+		while ($statuses_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
+			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$statname_list["$rowx[0]"] = "$rowx[1]";
+			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+			if (eregi("Y",$rowx[2]))
+				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
 			$o++;
-		if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
-		if (ereg("N", $rowx[1])) {$inactive_lists++;}
+			}
 
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
-
-		}
-
-	echo "</table></center><br>\n";
-	echo "<center><b>\n";
-
-	$filterSQL = $filtersql_list[$lead_filter_id];
-	$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
-	if (strlen($filterSQL)>4)
-		{$fSQL = "and $filterSQL";}
-	else
-		{$fSQL = '';}
-
-		$camp_lists = eregi_replace(".$","",$camp_lists);
-	echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
-
-
-	if ($display_dialable_count == 'Y')
-		{
-		### call function to calculate and print dialable leads
-		dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
-		}
-	else
-		{
-		echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
-		}
-
-
-
-		$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
-		if ($DB) {echo "$stmt\n";}
+		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id' order by status";
 		$rslt=mysql_query($stmt, $link);
-		$rowx=mysql_fetch_row($rslt);
-		$hopper_leads = "$rowx[0]";
+		$Cstatuses_to_print = mysql_num_rows($rslt);
 
-	echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
-	echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
-	echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
-	echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
-	echo "</b></center>\n";
+		$o=0;
+		while ($Cstatuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$statname_list["$rowx[0]"] = "$rowx[1]";
+			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
+			if (eregi("Y",$rowx[2]))
+				{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+			$o++;
+			}
 
-	echo "<br>\n";
+		$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+		$Dstatuses = explode(" ", $dial_statuses);
+		$Ds_to_print = (count($Dstatuses) -1);
 
-	echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">ΑΠΟΣΥΝΔΕΣΗ ΟΛΩΝ ΤΩΝ ΧΕΙΡΙΣΤΩΝ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a><BR><BR>\n";
-
-
-	if ($LOGdelete_campaigns > 0)
+	$stmt="SELECT count(*) from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE'";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] < 1)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=51&campaign_id=$campaign_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a>\n";
+		$mixes_list="<option SELECTED value=\"DISABLED\">DISABLED</option>\n";
+		$mixname_list["DISABLED"] = "DISABLED";
+		}
+	else
+		{
+		##### get list_mix listings for dynamic pulldown
+		$stmt="SELECT vcl_id,vcl_name from vicidial_campaigns_list_mix where campaign_id='$campaign_id' and status='ACTIVE' limit 1";
+		$rslt=mysql_query($stmt, $link);
+		$mixes_to_print = mysql_num_rows($rslt);
+		$mixes_list="<option value=\"DISABLED\">DISABLED</option>\n";
+
+		$o=0;
+		while ($mixes_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixes_list .= "<option value=\"ACTIVE\">ACTIVE ($rowx[0] - $rowx[1])</option>\n";
+			$mixname_list["ACTIVE"] = "$rowx[0] - $rowx[1]";
+			$o++;
+			}
+		}
+
+	if ($SUB<1)		{$camp_detail_color=$subcamp_color;}
+		else		{$camp_detail_color=$campaigns_color;}
+	if ($SUB==22)	{$camp_statuses_color=$subcamp_color;}
+		else		{$camp_statuses_color=$campaigns_color;}
+	if ($SUB==23)	{$camp_hotkeys_color=$subcamp_color;}
+		else		{$camp_hotkeys_color=$campaigns_color;}
+	if ($SUB==25)	{$camp_recycle_color=$subcamp_color;}
+		else		{$camp_recycle_color=$campaigns_color;}
+	if ($SUB==26)	{$camp_autoalt_color=$subcamp_color;}
+		else		{$camp_autoalt_color=$campaigns_color;}
+	if ($SUB==27)	{$camp_pause_color=$subcamp_color;}
+		else		{$camp_pause_color=$campaigns_color;}
+	if ($SUB==29)	{$camp_listmix_color=$subcamp_color;}
+		else		{$camp_listmix_color=$campaigns_color;}
+	echo "<TABLE WIDTH=$page_width CELLPADDING=2 CELLSPACING=0><TR BGCOLOR=\"$campaigns_color\">\n";
+	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
+	echo "<TD BGCOLOR=\"$camp_detail_color\"><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Βασική Επισκόπηση </font></a></TD>";
+	echo "<TD> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Αναλυτική Επισκόπηση</font></a> </TD>";
+	echo "<TD BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a> </TD>";
+	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Πραγματικού Χρόνου Οθόνη</font></a></TD>\n";
+	echo "<TD WIDTH=300><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> &nbsp; </font></TD>\n";
+	echo "</TR></TABLE>\n";
+
+	if ($SUB < 1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		echo "<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=44>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left>$row[57]$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα μεταφοράς προεπιλογής:</td><td align=left>$default_xfer_group $NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
+
+		$o=0;
+		while ($Ds_to_print > $o) 
+			{
+			$o++;
+			$Dstatus = $Dstatuses[$o];
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
+			if ($DEFstatusDISABLED > 0)
+				{
+				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+				echo "REMOVE</DEL></td></tr>\n";
+				}
+			else
+				{
+				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
+				}
+			}
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+		echo "<option value=\"\"> - NONE - </option>\n";
+
+		echo "$statuses_list";
+		echo "</select> &nbsp; \n";
+		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+		echo "$mixes_list";
+		if (ereg("DISABLED",$list_order_mix))
+			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
+		else
+			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+		echo "$filters_list";
+		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
+: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
+: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+		$n=40;
+		while ($n>=-40)
+			{
+			$dtl = 'Balanced';
+			if ($n<0) {$dtl = 'Less Intense';}
+			if ($n>0) {$dtl = 'More Intense';}
+			if ($n == $adaptive_intensity) 
+				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+			else
+				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+			$n--;
+			}
+		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left>$script_id</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left>$get_call_launch</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center></FORM>\n";
+
+		echo "<center>\n";
+		echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
+		echo "<TABLE width=400 cellspacing=3>\n";
+		echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>ΟΝΟΜΑ ΛΙΣΤΑΣ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
+
+			$active_lists = 0;
+			$inactive_lists = 0;
+			$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
+			$rslt=mysql_query($stmt, $link);
+			$lists_to_print = mysql_num_rows($rslt);
+			$camp_lists='';
+
+			$o=0;
+			while ($lists_to_print > $o) {
+				$rowx=mysql_fetch_row($rslt);
+				$o++;
+			if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
+			if (ereg("N", $rowx[1])) {$inactive_lists++;}
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
+
+			}
+
+		echo "</table></center><br>\n";
+		echo "<center><b>\n";
+
+		$filterSQL = $filtersql_list[$lead_filter_id];
+		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
+		if (strlen($filterSQL)>4)
+			{$fSQL = "and $filterSQL";}
+		else
+			{$fSQL = '';}
+
+			$camp_lists = eregi_replace(".$","",$camp_lists);
+		echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
+
+
+		if ($display_dialable_count == 'Y')
+			{
+			### call function to calculate and print dialable leads
+			dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
+			}
+		else
+			{
+			echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
+			}
+
+
+
+			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			$hopper_leads = "$rowx[0]";
+
+		echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
+		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
+		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
+		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
+		echo "</b></center>\n";
+
+		echo "<br>\n";
+
+		### list of agent rank or skill-level for this campaign
+		echo "<center>\n";
+		echo "<br><b>ΤΑΞΕΙΣ ΠΡΑΚΤΟΡΩΝ ΓΙΑ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ:</b><br>\n";
+		echo "<TABLE width=400 cellspacing=3>\n";
+		echo "<tr><td>USER</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS TODAY</td></tr>\n";
+
+			$stmt="SELECT user,campaign_rank,calls_today from vicidial_campaign_agents where campaign_id='$campaign_id'";
+			$rsltx=mysql_query($stmt, $link);
+			$users_to_print = mysql_num_rows($rsltx);
+
+			$o=0;
+			while ($users_to_print > $o) {
+				$rowx=mysql_fetch_row($rsltx);
+				$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td></tr>\n";
+			}
+
+		echo "</table></center><br>\n";
+
+
+		echo "<a href=\"$PHP_SELF?ADD=52&campaign_id=$campaign_id\">ΑΠΟΣΥΝΔΕΣΗ ΟΛΩΝ ΤΩΝ ΧΕΙΡΙΣΤΩΝ ΑΠΟ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a><BR><BR>\n";
+
+
+		if ($LOGdelete_campaigns > 0)
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=51&campaign_id=$campaign_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ</a>\n";
+			}
 		}
 	}
 	else
@@ -8080,7 +9953,217 @@ if ($ADD==34)
 
 
 ######################
-# ADD=31 campaign not allowed
+# ADD=31 or 34 and SUB=29 for list mixes
+######################
+if ( ( ($ADD==34) or ($ADD==31) ) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
+	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
+
+if ( ($ADD==34) or ($ADD==31) )
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	if ($SUB==29)
+		{
+		##### get list_id listings for dynamic pulldown
+		$stmt="SELECT list_id,list_name from vicidial_lists where campaign_id='$campaign_id' order by list_id";
+		$rslt=mysql_query($stmt, $link);
+		$mixlists_to_print = mysql_num_rows($rslt);
+		$mixlists_list="";
+
+		$o=0;
+		while ($mixlists_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$mixlists_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$mixlistsname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
+
+		echo "<br><br><b>ΜΙΓΜΑΤΑ ΚΑΤΑΛΟΓΩΝ ΓΙΑ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ:&nbsp; $NWB#vicidial_campaigns-list_order_mix$NWE</b><br>\n";
+
+		echo "<br><br><b>Experimental Feature in development!!! NON-FUNCTIONAL</b><br>\n";
+
+
+		$stmt="SELECT * from vicidial_campaigns_list_mix where campaign_id='$campaign_id' order by status, vcl_id";
+		$rslt=mysql_query($stmt, $link);
+		$listmixes = mysql_num_rows($rslt);
+		$o=0;
+		while ($listmixes > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$vcl_id=$rowx[0];
+			$o++;
+
+			if ($o < 2)
+				{$tablecolor='bgcolor="#99FF99"';   $bgcolor='bgcolor="#CCFFCC"';}
+			else
+				{
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$tablecolor='bgcolor="#B9CBFD"';   $bgcolor='bgcolor="#9BB9FB"';} 
+				else
+					{$tablecolor='bgcolor="#9BB9FB"';   $bgcolor='bgcolor="#B9CBFD"';}
+				}
+			echo "<a name=\"$vcl_id\"><BR>\n";
+			echo "<span id=\"LISTMIX$US$vcl_id$US$o\">";
+			echo "<TABLE width=740 cellspacing=3 $tablecolor>\n";
+			echo "<tr><td colspan=6>\n";
+			echo "<form action=\"$PHP_SELF#$vcl_id\" method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<input type=hidden name=ADD value=49>\n";
+			echo "<input type=hidden name=SUB value=29>\n";
+			echo "<input type=hidden name=stage value=\"MODIFY\">\n";
+			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "<input type=hidden name=list_mix_container$US$vcl_id id=list_mix_container$US$vcl_id value=\"\">\n";
+			echo "<B>$vcl_id:</B>\n";
+			echo "<input type=text size=40 maxlength=50 name=vcl_name$US$vcl_id id=vcl_name$US$vcl_id value=\"$rowx[1]\">\n";
+			echo " &nbsp; &nbsp; <a href=\"$PHP_SELF?ADD=49&SUB=29&stage=DELMIX&campaign_id=$campaign_id&vcl_id=$vcl_id\">DELETE LIST MIX</a></td></tr>\n";
+			echo "<tr><td colspan=3>Κατάσταση:\n";
+			if ($rowx[5]=='INACTIVE')
+				{
+				echo "<B>$rowx[5]</B>\n";
+				echo "<a href=\"$PHP_SELF?ADD=49&SUB=29&stage=SETACTIVE&campaign_id=$campaign_id&vcl_id=$vcl_id\"><font size=1>ΘΕΣΤΕ ΕΝΕΡΓΟΣ</font></a></td>\n";
+				}
+			else
+				{echo "<B>$rowx[5]</B></td>\n";}
+			echo "<td colspan=3>Method:\n";
+			echo "<select size=1 name=mix_method$US$vcl_id id=method$US$vcl_id><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option><option SELECTED value=\"$rowx[4]\">$rowx[4]</option></select></td></tr>\n";
+			echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>PRIORITY</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
+
+# list_id|order|percent|statuses|:list_id|order|percent|statuses|:...
+# 101|1|40| A B NA -|:102|2|25| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|
+# INSERT INTO vicidial_campaigns_list_mix values('TESTMIX','TESTCAMP List Mix','TESTCAMP','101|1|40| A B NA -|:102|2|25| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|','IN_ORDER','ACTIVE');
+# INSERT INTO vicidial_campaigns_list_mix values('TESTMIX2','TESTCAMP List Mix2','TESTCAMP','101|1|20| A B -|:102|2|45| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|','IN_ORDER','ACTIVE');
+# INSERT INTO vicidial_campaigns_list_mix values('TESTMIX3','TESTCAMP List Mix3','TESTCAMP','101|1|30| A NA -|:102|2|35| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|','IN_ORDER','ACTIVE');
+
+			$MIXentries = $MT;
+			$MIXentries = explode(":", $rowx[3]);
+			$Ms_to_print = (count($MIXentries) - 0);
+			$q=0;
+			while ($Ms_to_print > $q) 
+				{
+				$MIXdetails = explode('|', $MIXentries[$q]);
+				$MIXdetailsLIST = $MIXdetails[0];
+
+				$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+				$Dstatuses = explode(" ", $dial_statuses);
+				$Ds_to_print = (count($Dstatuses) - 0);
+				$Dsql = '';
+				$r=0;
+				while ($Ds_to_print > $r) 
+					{
+					$r++;
+					$Dsql .= "'$Dstatuses[$r]',";
+					}
+				$Dsql = preg_replace("/,$/","",$Dsql);
+
+				echo "<tr $bgcolor><td NOWRAP><font size=3>\n";
+				echo "<input type=hidden name=list_id$US$q$US$vcl_id id=list_id$US$q$US$vcl_id value=$MIXdetailsLIST>\n";
+				echo "<a href=\"$PHP_SELF?ADD=311&list_id=$MIXdetailsLIST\">List</a>: $MIXdetailsLIST &nbsp; <font size=1><a href=\"$PHP_SELF?ADD=49&SUB=29&stage=REMOVE&campaign_id=$campaign_id&vcl_id=$vcl_id&mix_container_item=$q&list_id=$MIXdetailsLIST#$vcl_id\">ΑΦΑΙΡΕΣΤΕ</a></font></td>\n";
+
+				echo "<td><select size=1 name=priority$US$q$US$vcl_id id=priority$US$q$US$vcl_id>\n";
+				$n=10;
+				while ($n>=1)
+					{
+					echo "<option value=\"$n\">$n</option>\n";
+					$n = ($n-1);
+					}
+				echo "<option SELECTED value=\"$MIXdetails[1]\">$MIXdetails[1]</option></select></td>\n";
+
+				echo "<td><select size=1 name=\"percentage$US$q$US$vcl_id\" id=\"percentage$US$q$US$vcl_id\" onChange=\"mod_mix_percent('$vcl_id','$Ms_to_print')\">\n";
+				$n=100;
+				while ($n>=0)
+					{
+					echo "<option value=\"$n\">$n</option>\n";
+					$n = ($n-5);
+					}
+				echo "<option SELECTED value=\"$MIXdetails[2]\">$MIXdetails[2]</option></select></td>\n";
+
+				
+				echo "<td><input type=hidden name=status$US$q$US$vcl_id id=status$US$q$US$vcl_id value=\"$MIXdetails[3]\"><input type=text size=20 maxlength=255 name=ROstatus$US$q$US$vcl_id id=ROstatus$US$q$US$vcl_id value=\"$MIXdetails[3]\" READONLY></td>\n";
+				echo "<td NOWRAP>\n";
+
+
+
+				echo "<select size=1 name=dial_status$US$q$US$vcl_id id=dial_status$US$q$US$vcl_id>\n";
+				echo "<option value=\"\"> - Select A Status - </option>\n";
+
+				echo "$statuses_list";
+				echo "</select> <font size=2><B>\n";
+				echo "<a href=\"#\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> &nbsp; \n";
+				echo "<a href=\"#\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">ΑΦΑΙΡΕΣΤΕ</a>\n";
+				echo "</font></B></td></tr>\n";
+
+
+				echo "</td></tr>\n";
+
+
+				$q++;
+
+				}
+
+
+
+			
+			echo "<tr $bgcolor><td colspan=3 align=right><font size=2>\n";
+			echo "Difference %: <input type=text size=4 name=PCT_DIFF_$vcl_id id=PCT_DIFF_$vcl_id value=0 readonly>\n";
+			echo "</td>\n";
+
+			echo "<td colspan=2><input type=button name=submit_$vcl_id id=submit_$vcl_id value=\"ΕΠΙΒΕΒΑΙΩΣΗ\" onClick=\"submit_mix('$vcl_id','$Ms_to_print')\"> &nbsp; \n";
+			echo "<span id=ERROR_$vcl_id></span>\n";
+			echo "</form></td></tr>\n";
+
+
+			echo "<tr $bgcolor><td colspan=4 align=right><font size=2>\n";
+			echo "<form action=\"$PHP_SELF#$vcl_id\" method=POST name=$vcl_id id=$vcl_id>\n";
+			echo "<input type=hidden name=ADD value=49>\n";
+			echo "<input type=hidden name=SUB value=29>\n";
+			echo "<input type=hidden name=stage value=\"ADD\">\n";
+			echo "<input type=hidden name=vcl_id value=\"$vcl_id\">\n";
+			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+			echo "List: <select size=1 name=list_id>\n";
+			echo "$mixlists_list";
+			echo "<option selected value=\"\">ADD ANOTHER ENTRY</option>\n";
+			echo "</select></td>\n";
+			
+			if ($q > 9) {$AE_disabled = 'DISABLED';}
+			else {$AE_disabled = '';}
+			echo "<td><input type=submit name=submit value=\"ADD ENTRY\" $AE_disabled>\n";
+			echo "</form></td></tr>\n";
+			echo "</table></span>\n";
+			}
+
+
+		echo "<br><br><B>ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΛΙΣΤΑΣ MIX</B><BR><form action=$PHP_SELF method=POST>\n";
+		echo "<table border=0>\n";
+		echo "<tr $bgcolor><td><form action=\"$PHP_SELF#$vcl_id\" method=POST>\n";
+		echo "<input type=hidden name=ADD value=49>\n";
+		echo "<input type=hidden name=SUB value=29>\n";
+		echo "<input type=hidden name=stage value=\"NEWMIX\">\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "Mix ID: <input type=text size=20 maxlength=20 name=vcl_id value=\"\"></td>\n";
+		echo "<td>Mix Name: <input type=text size=30 maxlength=50 name=vcl_name value=\"\"></td>\n";
+		echo "<td>Mix Method: ";
+		echo "<select size=1 name=mix_method><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option></select></td></tr>\n";
+		echo "<tr $bgcolor><td>List: <select size=1 name=list_id>\n";
+		echo "$mixlists_list";
+		echo "</select></td>\n";
+		echo "<td>Dial Κατάσταση:<select size=1 name=status>\n";
+		echo "$statuses_list";
+		echo "</select></td>\n";
+		echo "<td> &nbsp; <input type=submit name=submit value=ΕΠΙΒΕΒΑΙΩΣΗ></form></td>\n";
+		echo "</tr>\n";
+		echo "</table>\n";
+
+		echo "<br>\n";
+
+		}
+	}
+}
+
+
+######################
+# ADD=30 campaign not allowed
 ######################
 
 if ($ADD==30)
@@ -8089,6 +10172,380 @@ echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 echo "You do not have permission to view campaign $campaign_id\n";
 }
+
+
+######################
+# ADD=32 display all campaign statuses
+######################
+if ($ADD==32)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΛΙΣΤΕΣ ΘΕΣΕΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΣΥΝΗΘΕΙΑΣ:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>STATUSES</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_campaign_statuses where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaigns_id_list[$o]\">MODIFY STATUSES</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=33 display all campaign hotkeys
+######################
+if ($ADD==33)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΛΊΣΤΕΣ ΕΚΣΤΡΑΤΕΙΑΣ HOTKEYS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>HOTKEYS</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_campaign_hotkeys where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaigns_id_list[$o]\">MODIFY HOTKEYS</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=35 display all campaign lead recycle entries
+######################
+if ($ADD==35)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΑΝΑΚΥΚΛΩΣΗΣ ΛΙΣΤΕΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>Ο ΜΟΛΥΒΔΟΣ ΑΝΑΚΥΚΛΩΝΕΙ</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT status from vicidial_lead_recycle where campaign_id='$campaigns_id_list[$o]' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaigns_id_list[$o]\">MODIFY Ο ΜΟΛΥΒΔΟΣ ΑΝΑΚΥΚΛΩΝΕΙ</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=36 display all campaign auto-alt dial entries
+######################
+if ($ADD==36)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΛΊΣΤΕΣ ΠΙΝΑΚΩΝ ΜΟΛΥΒΔΟΥ ΑΥΤΌΜΑΤΟΣ-ALT ΕΚΣΤΡΑΤΕΙΑΣ:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>AUTO-ALT DIAL</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaigns_id_list[$o]';";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if (strlen($row[0])<3) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaigns_id_list[$o]\">MODIFY AUTO-ALT DIAL</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=37 display all campaign agent pause codes
+######################
+if ($ADD==37)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΛΙΣΤΕΣ ΚΩΔΙΚΑ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΕΚΣΤΡΑΤΕΙΑΣ:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT pause_code from vicidial_pause_codes where campaign_id='$campaigns_id_list[$o]' order by pause_code;";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaigns_id_list[$o]\">MODIFY ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
+######################
+# ADD=39 display all campaign list mixes
+######################
+if ($ADD==39)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>ΛΙΣΤΕΣ ΜΙΓΜΑΤΩΝ ΚΑΤΑΛΟΓΩΝ ΕΚΣΤΡΑΤΕΙΑΣ:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr>\n";
+echo "<td><B>CAMPAIGN</B></td>\n";
+echo "<td><B>ΟΝΟΜΑ</B></td>\n";
+echo "<td><B>LIST MIX</B></td>\n";
+echo "<td><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td>\n";
+echo "</tr>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$campaigns_id_list[$o] = $row[0];
+		$campaigns_name_list[$o] = $row[1];
+		$o++;
+		}
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
+		{
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\">$campaigns_id_list[$o]</a></td>";
+		echo "<td><font size=1> $campaigns_name_list[$o] </td>";
+		echo "<td><font size=1> ";
+
+		$stmt="SELECT vcl_id from vicidial_campaigns_list_mix where campaign_id='$campaigns_id_list[$o]' order by status,vcl_id;";
+		$rslt=mysql_query($stmt, $link);
+		$campstatus_to_print = mysql_num_rows($rslt);
+		$p=0;
+		while ( ($campstatus_to_print > $p) and ($p < 10) )
+			{
+			$row=mysql_fetch_row($rslt);
+			echo "$row[0] ";
+			$p++;
+			}
+		if ($p<1) 
+			{echo "<font color=grey><DEL>NONE</DEL></font>";}
+		echo "</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaigns_id_list[$o]\">MODIFY LIST MIX</a></td></tr>\n";
+		$o++;
+		}
+
+echo "</TABLE></center>\n";
+}
+
+
 
 
 
@@ -8460,22 +10917,59 @@ if ($ADD==3111)
 	$stmt="SELECT * from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$group_name = $row[1];
-	$group_color = $row[2];
-	$active = $row[3];
-	$web_form_address = $row[4];
-	$voicemail_ext = $row[5];
-	$next_agent_call = $row[6];
-	$fronter_display = $row[7];
-	$script_id = $row[8];
-	$get_call_launch = $row[9];
-	$xferconf_a_dtmf = $row[10];
-	$xferconf_a_number = $row[11];
-	$xferconf_b_dtmf = $row[12];
-	$xferconf_b_number = $row[13];
-	$drop_call_seconds = $row[14];
-	$drop_message = $row[15];
-	$drop_exten = $row[16];
+	$group_name =				$row[1];
+	$group_color =				$row[2];
+	$active =					$row[3];
+	$web_form_address =			$row[4];
+	$voicemail_ext =			$row[5];
+	$next_agent_call =			$row[6];
+	$fronter_display =			$row[7];
+	$script_id =				$row[8];
+	$get_call_launch =			$row[9];
+	$xferconf_a_dtmf =			$row[10];
+	$xferconf_a_number =		$row[11];
+	$xferconf_b_dtmf =			$row[12];
+	$xferconf_b_number =		$row[13];
+	$drop_call_seconds =		$row[14];
+	$drop_message =				$row[15];
+	$drop_exten =				$row[16];
+	$call_time_id =				$row[17];
+	$after_hours_action =		$row[18];
+	$after_hours_message_filename =	$row[19];
+	$after_hours_exten =		$row[20];
+	$after_hours_voicemail =	$row[21];
+	$welcome_message_filename =	$row[22];
+	$moh_context =				$row[23];
+	$onhold_prompt_filename =	$row[24];
+	$prompt_interval =			$row[25];
+	$agent_alert_exten =		$row[26];
+	$agent_alert_delay =		$row[27];
+	$default_xfer_group =		$row[28];
+
+	##### get in-groups listings for dynamic pulldown
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Xgroups_to_print = mysql_num_rows($rslt);
+	$Xgroups_menu='';
+	$Xgroups_selected=0;
+	$o=0;
+	while ($Xgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Xgroups_menu .= "<option ";
+		if ($default_xfer_group == "$rowx[0]") 
+			{
+			$Xgroups_menu .= "SELECTED ";
+			$Xgroups_selected++;
+			}
+		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Xgroups_selected < 1) 
+		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΟΜΑΔΩΝ: $row[0]<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=4111>\n";
@@ -8486,7 +10980,7 @@ if ($ADD==3111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Χρώμα Ομάδας: </td><td align=left bgcolor=\"$row[2]\"><input type=text name=group_color size=7 maxlength=7 value=\"$row[2]\">$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Μπροστινή Οθόνη: </td><td align=left><select size=1 name=fronter_display><option>Y</option><option>N</option><option SELECTED>$fronter_display</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
@@ -8511,13 +11005,66 @@ if ($ADD==3111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ. Σύνδεση Εγκατάλειψης: </td><td align=left><input type=text name=drop_exten size=10 maxlength=20 value=\"$drop_exten\">$NWB#vicidial_inbound_groups-drop_exten$NWE</td></tr>\n";
 
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$call_time_id\">Χρόνος κλήσης:</a></td><td align=left><select size=1 name=call_time_id>\n";
+	echo "$call_times_list";
+	echo "<option selected value=\"$call_time_id\">$call_time_id - $call_timename_list[$call_time_id]</option>\n";
+	echo "</select>$NWB#vicidial_inbound_groups-call_time_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από τη δράση ωρών:</td><td align=left><select size=1 name=after_hours_action><option>HANGUP</option><option>MESSAGE</option><option>ΤΗΛ.ΣΥΝΔΕΣΗ</option><option>VOICEMAIL</option><option SELECTED>$after_hours_action</option></select>$NWB#vicidial_inbound_groups-after_hours_action$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από το όνομα αρχείου μηνυμάτων ωρών:</td><td align=left><input type=text name=after_hours_message_filename size=20 maxlength=50 value=\"$after_hours_message_filename\">$NWB#vicidial_inbound_groups-after_hours_message_filename$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από την παράταση ωρών:</td><td align=left><input type=text name=after_hours_exten size=10 maxlength=20 value=\"$after_hours_exten\">$NWB#vicidial_inbound_groups-after_hours_exten$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από το φωνητικό ταχυδρομείο ωρών:</td><td align=left><input type=text name=after_hours_voicemail size=10 maxlength=20 value=\"$after_hours_voicemail\">$NWB#vicidial_inbound_groups-after_hours_voicemail$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ευπρόσδεκτο όνομα αρχείου μηνυμάτων:</td><td align=left><input type=text name=welcome_message_filename size=20 maxlength=50 value=\"$welcome_message_filename\">$NWB#vicidial_inbound_groups-welcome_message_filename$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μουσική στο πλαίσιο λαβής:</td><td align=left><input type=text name=moh_context size=10 maxlength=20 value=\"$moh_context\">$NWB#vicidial_inbound_groups-moh_context$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στο γρήγορο όνομα αρχείου λαβής:</td><td align=left><input type=text name=onhold_prompt_filename size=20 maxlength=50 value=\"$onhold_prompt_filename\">$NWB#vicidial_inbound_groups-onhold_prompt_filename$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στο γρήγορο διάστημα λαβής:</td><td align=left><input type=text name=prompt_interval size=5 maxlength=5 value=\"$prompt_interval\">$NWB#vicidial_inbound_groups-prompt_interval$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αγρυπνη επέκταση πρακτόρων:</td><td align=left><input type=text name=agent_alert_exten size=10 maxlength=20 value=\"$agent_alert_exten\">$NWB#vicidial_inbound_groups-agent_alert_exten$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αγρυπνη καθυστέρηση πρακτόρων:</td><td align=left><input type=text name=agent_alert_delay size=6 maxlength=6 value=\"$agent_alert_delay\">$NWB#vicidial_inbound_groups-agent_alert_delay$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα μεταφοράς προεπιλογής:</td><td align=left><select size=1 name=default_xfer_group>";
+	echo "$Xgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-default_xfer_group$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 	echo "</TABLE></center>\n";
 
+	### list of agent rank or skill-level for this inbound group
+	echo "<center>\n";
+	echo "<br><b>ΧΕΙΡΙΣΤΗΣRANKS FOR THIS INBOUND GROUP:</b><br>\n";
+	echo "<TABLE width=400 cellspacing=3>\n";
+	echo "<tr><td>USER</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS TODAY</td></tr>\n";
+
+		$stmt="SELECT user,group_rank,calls_today from vicidial_inbound_group_agents where group_id='$group_id'";
+		$rsltx=mysql_query($stmt, $link);
+		$users_to_print = mysql_num_rows($rsltx);
+
+		$o=0;
+		while ($users_to_print > $o) {
+			$rowx=mysql_fetch_row($rsltx);
+			$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td></tr>\n";
+		}
+
 	echo "</table></center><br>\n";
 
-	echo "<a href=\"./AST_CLOSERstats.php?group=$group_id\">Click here to see a report for this campaign</a><BR><BR>\n";
+	echo "</table></center><br>\n";
+
+	echo "<a href=\"./AST_CLOSERstats.php?group=$group_id\">Click here to see a report for this inbound group</a><BR><BR>\n";
 
 	echo "<center><b>\n";
 
@@ -8989,9 +11536,21 @@ echo "<TABLE>\n";
 	$o=0;
 	while ($camps_to_print > $o) {
 		$row=mysql_fetch_row($rslt);
-		$CT_camp_id =		$row[1];
-		$CT_camp_name =		$row[2];
 		echo "<TR><TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+		$o++;
+	}
+
+echo "</TABLE>\n";
+echo "<B>INBOUND GROUPS USING THIS CALL TIME:</B><BR>\n";
+echo "<TABLE>\n";
+
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where call_time_id='$call_time_id';";
+	$rslt=mysql_query($stmt, $link);
+	$camps_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($camps_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		echo "<TR><TD><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
 		$o++;
 	}
 
@@ -9512,7 +12071,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -9530,6 +12089,7 @@ if ($ADD==311111111111111)
 	$vicidial_agent_disable =		$row[12];
 	$allow_sipsak_messages =		$row[13];
 	$admin_home_url =				$row[14];
+	$enable_agc_xfer_log =			$row[15];
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -9565,11 +12125,12 @@ if ($ADD==311111111111111)
 	echo "</select>$NWB#settings-vicidial_agent_disable$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τα μηνύματα SIPSAK: </td><td align=left><select size=1 name=allow_sipsak_messages><option>1</option><option>0</option><option selected>$allow_sipsak_messages</option></select>$NWB#settings-allow_sipsak_messages$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Σπίτι URL Admin:</td><td align=left><input type=text name=admin_home_url size=50 maxlength=255 value=\"$admin_home_url\">$NWB#settings-admin_home_url$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε το αρχείο ημερολογίου μεταφοράς πρακτόρων: </td><td align=left><select size=1 name=enable_agc_xfer_log><option>1</option><option>0</option><option selected>$enable_agc_xfer_log</option></select>$NWB#settings-enable_agc_xfer_log$NWE</td></tr>\n";
+
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
 	echo "</TABLE></center>\n";
-
-	echo "<center><b>\n";
+	echo "</form>\n";
 	}
 	else
 	{
@@ -9578,6 +12139,213 @@ if ($ADD==311111111111111)
 	}
 }
 
+
+
+
+
+
+######################
+# ADD=321111111111111 modify vicidial system statuses
+######################
+
+if ($ADD==321111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>VICIDIAL ΘΕΣΕΙΣ ΜΕΣΑ ΣΕ ΑΥΤΟ ΤΟ ΣΥΣΤΗΜΑ:&nbsp; $NWB#vicidial_statuses$NWE</b><br>\n";
+	echo "<TABLE width=700 cellspacing=3>\n";
+	echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>SELECT-<BR>ABLE</td><td>HUMAN<BR>ANSWER</td><td>CATEGORY</td><td>MODIFY/DELETE</td></tr>\n";
+
+	##### get status category listings for dynamic pulldown
+	$stmt="SELECT vsc_id,vsc_name from vicidial_status_categories order by vsc_id desc";
+	$rslt=mysql_query($stmt, $link);
+	$cats_to_print = mysql_num_rows($rslt);
+	$cats_list="";
+
+	$o=0;
+	while ($cats_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$cats_list .= "<option value=\"$rowx[0]\">$rowx[0] - " . substr($rowx[1],0,20) . "</option>\n";
+		$catsname_list["$rowx[0]"] = substr($rowx[1],0,20);
+		$o++;
+		}
+
+
+	$stmt="SELECT * from vicidial_statuses order by status;";
+	$rslt=mysql_query($stmt, $link);
+	$statuses_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$AScategory = $rowx[4];
+		$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=421111111111111>\n";
+		echo "<input type=hidden name=stage value=modify>\n";
+		echo "<input type=hidden name=status value=\"$rowx[0]\">\n";
+		echo "<font size=2><B>$rowx[0]</B></td>\n";
+		echo "<td><input type=text name=status_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+		echo "<td><select size=1 name=selectable><option>Y</option><option>N</option><option selected>$rowx[2]</option></select></td>\n";
+		echo "<td><select size=1 name=human_answered><option>Y</option><option>N</option><option selected>$rowx[3]</option></select></td>\n";
+		echo "<td>\n";
+		echo "<select size=1 name=category>\n";
+		echo "$cats_list";
+		echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+		echo "</select>\n";
+		echo "</td>\n";
+		echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+		echo " &nbsp; \n";
+		
+		if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
+			{
+			echo "<DEL>ΔΙΑΓΡΑΦΗ</DEL>\n";
+			}
+		else
+			{
+			echo "<a href=\"$PHP_SELF?ADD=421111111111111&status=$rowx[0]&stage=delete\">ΔΙΑΓΡΑΦΗ</a>\n";
+			}
+		echo "</form></td></tr>\n";
+		}
+
+	echo "</table>\n";
+
+	echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΗ ΝΕΑ ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=221111111111111>\n";
+	echo "Κατάσταση:<input type=text name=status size=7 maxlength=6> &nbsp; \n";
+	echo "Περιγραφή:<input type=text name=status_name size=30 maxlength=30><BR>\n";
+	echo "Επιλέξιμο:<select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Κατηγορία:\n";
+	echo "<select size=1 name=category>\n";
+	echo "$cats_list";
+	echo "<option selected value=\"$AScategory\">$AScategory - $catsname_list[$AScategory]</option>\n";
+	echo "</select> &nbsp; <BR>\n";
+	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+	echo "</FORM><br>\n";
+
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+
+
+
+######################
+# ADD=331111111111111 modify vicidial status categories
+######################
+
+if ($ADD==331111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>VICIDIAL STATUS CATEGORIES: &nbsp; $NWB#vicidial_status_categories$NWE</b><br>\n";
+	echo "<TABLE width=700 cellspacing=3>\n";
+	echo "<tr><td>CATEGORY</td><td>ΟΝΟΜΑ</td><td>TOVDAD</td><td>STATUSES IN THIS CATEGORY</td></tr>\n";
+
+		$stmt="SELECT * from vicidial_status_categories order by vsc_id;";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+
+			$Avsc_id[$o] = $rowx[0];
+			$Avsc_name[$o] = $rowx[1];
+			$Avsc_description[$o] = $rowx[2];
+			$Atovdad_display[$o] = $rowx[3];
+
+			$o++;
+			}
+		$p=0;
+		while ($o > $p)
+			{
+			if (eregi("1$|3$|5$|7$|9$", $p))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$CATstatuses='';
+			$stmt="SELECT status from vicidial_statuses where category='$Avsc_id[$p]' order by status;";
+			$rslt=mysql_query($stmt, $link);
+			$statuses_to_print = mysql_num_rows($rslt);
+			$q=0;
+			while ($statuses_to_print > $q) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$CATstatuses.=" $rowx[0]";
+				$q++;
+				}
+			$stmt="SELECT status from vicidial_campaign_statuses where category='$Avsc_id[$p]' order by status;";
+			$rslt=mysql_query($stmt, $link);
+			$statuses_to_print = mysql_num_rows($rslt);
+			$q=0;
+			while ($statuses_to_print > $q) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$CATstatuses.=" $rowx[0]";
+				$q++;
+				}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=431111111111111>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=vsc_id value=\"$Avsc_id[$p]\">\n";
+			echo "<font size=2><B>$Avsc_id[$p]</B></td>\n";
+			echo "<td><input type=text name=vsc_name size=30 maxlength=50 value=\"$Avsc_name[$p]\"></td>\n";
+			echo "<td><select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select></td>\n";
+			echo "<td><font size=1>\n";
+			echo "$CATstatuses";
+			echo "</td></tr>\n";
+			echo "<tr $bgcolor><td colspan=4><font size=1>Περιγραφή:<input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
+			echo "<tr $bgcolor><td colspan=4 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; <a href=\"$PHP_SELF?ADD=431111111111111&vsc_id=$Avsc_id[$p]&stage=delete\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			echo "<tr><td colspan=4><font size=1> &nbsp; </form></td></tr>\n";
+
+			$p++;
+			}
+
+	echo "</table>\n";
+
+	echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΗ ΝΕΑ ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=231111111111111>\n";
+	echo "Category ID: <input type=text name=vsc_id size=20 maxlength=20> &nbsp; \n";
+	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; \n";
+	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
+	echo "Περιγραφή:<input type=text name=vsc_description size=80 maxlength=255> &nbsp; \n";
+	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+	echo "</FORM><br>\n";
+
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
 
 
 
@@ -9671,13 +12439,29 @@ echo "</TABLE></center>\n";
 ######################
 if ($ADD==8)
 {
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_users==1)
+	{
+		if ($SUB==89)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_month_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>User($user) callback listings LIVE for more than one month have been made INACTIVE\n";
+		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>User($user) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
+	}
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8&SUB=89&user=$user\">Remove LIVE Callbacks older than one month for this user</a><BR><a href=\"$PHP_SELF?ADD=8&SUB=899&user=$user\">Remove LIVE Callbacks older than one week for this user</a><BR>";
 
-	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and user='$user' order by recipient,status desc,callback_time";
-	$rslt=mysql_query($stmt, $link);
-	$cb_to_print = mysql_num_rows($rslt);
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$CBquerySQLwhere = "and user='$user'";
 
 echo "<br>USER CALLBACK HOLD LISTINGS: $user\n";
+$oldADD = "ADD=8&user=$user";
 $ADD='82';
 }
 
@@ -9686,13 +12470,29 @@ $ADD='82';
 ######################
 if ($ADD==81)
 {
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_campaigns==1)
+	{
+		if ($SUB==89)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where campaign_id='$campaign_id' and status='LIVE' and callback_time < '$past_month_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>campaign($campaign_id) callback listings LIVE for more than one month have been made INACTIVE\n";
+		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where campaign_id='$campaign_id' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>campaign($campaign_id) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
+	}
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=81&SUB=89&campaign_id=$campaign_id\">Remove LIVE Callbacks older than one month for this campaign</a><BR><a href=\"$PHP_SELF?ADD=81&SUB=899&campaign_id=$campaign_id\">Remove LIVE Callbacks older than one week for this campaign</a><BR>";
 
-	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and campaign_id='$campaign_id' order by recipient,status desc,callback_time";
-	$rslt=mysql_query($stmt, $link);
-	$cb_to_print = mysql_num_rows($rslt);
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$CBquerySQLwhere = "and campaign_id='$campaign_id'";
 
 echo "<br>CAMPAIGN CALLBACK HOLD LISTINGS: $campaign_id\n";
+$oldADD = "ADD=81&campaign_id=$campaign_id";
 $ADD='82';
 }
 
@@ -9701,13 +12501,29 @@ $ADD='82';
 ######################
 if ($ADD==811)
 {
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_lists==1)
+	{
+		if ($SUB==89)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where list_id='$list_id' and status='LIVE' and callback_time < '$past_month_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>list($list_id) callback listings LIVE for more than one month have been made INACTIVE\n";
+		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where list_id='$list_id' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>list($list_id) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
+	}
+$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=811&SUB=89&list_id=$list_id\">Remove LIVE Callbacks older than one month for this list</a><BR><a href=\"$PHP_SELF?ADD=811&SUB=899&list_id=$list_id\">Remove LIVE Callbacks older than one week for this list</a><BR>";
 
-	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and list_id='$list_id' order by recipient,status desc,callback_time";
-	$rslt=mysql_query($stmt, $link);
-	$cb_to_print = mysql_num_rows($rslt);
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$CBquerySQLwhere = "and list_id='$list_id'";
 
 echo "<br>LIST CALLBACK HOLD LISTINGS: $list_id\n";
+$oldADD = "ADD=811&list_id=$list_id";
 $ADD='82';
 }
 
@@ -9716,13 +12532,29 @@ $ADD='82';
 ######################
 if ($ADD==8111)
 {
+	if ($LOGmodify_usergroups==1)
+	{
+		if ($SUB==89)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user_group='$user_group' and status='LIVE' and callback_time < '$past_month_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>user group($user_group) callback listings LIVE for more than one month have been made INACTIVE\n";
+		}
+		if ($SUB==899)
+		{
+		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user_group='$user_group' and status='LIVE' and callback_time < '$past_week_date';";
+		$rslt=mysql_query($stmt, $link);
+		echo "<br>user group($user_group) callback listings LIVE for more than one week have been made INACTIVE\n";
+		}
+	}
+	$CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8111&SUB=89&user_group=$user_group\">Remove LIVE Callbacks older than one month for this user group</a><BR><a href=\"$PHP_SELF?ADD=8111&SUB=899&user_group=$user_group\">Remove LIVE Callbacks older than one week for this user group</a><BR>";
+
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') and user_group='$user_group' order by recipient,status desc,callback_time";
-	$rslt=mysql_query($stmt, $link);
-	$cb_to_print = mysql_num_rows($rslt);
+	$CBquerySQLwhere = "and user_group='$user_group'";
 
 echo "<br>USER GROUP CALLBACK HOLD LISTINGS: $list_id\n";
+$oldADD = "ADD=8111&user_group=$user_group";
 $ADD='82';
 }
 
@@ -9731,9 +12563,30 @@ $ADD='82';
 ######################
 if ($ADD==82)
 {
+
+$USERlink='stage=USERIDDOWN';
+$GROUPlink='stage=GROUPDOWN';
+$ENDATElink='stage=ENDATEDOWN';
+$SQLorder='order by ';
+if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc,';   $USERlink='stage=USERIDUP';}
+if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc,';   $NAMElink='stage=NAMEUP';}
+if (eregi("ENDATEDOWN",$stage)) {$SQLorder='order by entry_time desc,';   $LEVELlink='stage=LEVELUP';}
+
+	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') $CBquerySQLwhere $SQLorder recipient,status desc,callback_time";
+	$rslt=mysql_query($stmt, $link);
+	$cb_to_print = mysql_num_rows($rslt);
+
 echo "<TABLE><TR><TD>\n";
 echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td><td><font size=1 color=white>ΕΚΣΤΡΑΤΕΙΑ</td><td><font size=1 color=white>ENTRY ΗΜΕΡΑ</td><td><font size=1 color=white>CALLBACK ΗΜΕΡΑ</td><td><font size=1 color=white>USER</td><td><font size=1 color=white>RECIPIENT</td><td><font size=1 color=white>ΚΑΤΑΣΤΑΣΗ</td><td><font size=1 color=white>GROUP</td></tr>\n";
+echo "<tr bgcolor=black>\n";
+echo "<td><font size=1 color=white>LEAD</td><td><font size=1 color=white>LIST</td>\n";
+echo "<td><font size=1 color=white>ΕΚΣΤΡΑΤΕΙΑ</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$ENDATElink\"><font size=1 color=white><B>ENTRY ΗΜΕΡΑ</B></a></td>\n";
+echo "<td><font size=1 color=white>CALLBACK ΗΜΕΡΑ</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$USERlink\"><font size=1 color=white><B>USER</B></a></td>\n";
+echo "<td><font size=1 color=white>RECIPIENT</td>\n";
+echo "<td><font size=1 color=white>ΚΑΤΑΣΤΑΣΗ</td>\n";
+echo "<td><a href=\"$PHP_SELF?$oldADD&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td></tr>\n";
 
 	$o=0;
 	while ($cb_to_print > $o) {
@@ -9757,6 +12610,8 @@ echo "<tr bgcolor=black><td><font size=1 color=white>LEAD</td><td><font size=1 c
 	}
 
 echo "</TABLE></center>\n";
+
+echo "$CBinactiveLINK";
 }
 
 
@@ -9873,7 +12728,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
 		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
@@ -9908,7 +12763,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[3]</td>";
 		echo "<td><font size=1> $row[5]</td>";
@@ -9943,7 +12798,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[1]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\">$row[1]</a></td>";
 		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3]</td>";
 		echo "<td><font size=1> $row[4]</td>";
@@ -9979,7 +12834,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
@@ -10011,7 +12866,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
@@ -10044,7 +12899,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
@@ -10077,7 +12932,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[3] </td>";
 		echo "<td><font size=1> $row[4] </td>";
@@ -10111,7 +12966,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3] </td>";
@@ -10197,7 +13052,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td><td><font size=1>$row[1]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">$row[0]</a></td><td><font size=1>$row[1]</td>";
 		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[4]</td>";
 		echo "<td><font size=1> $row[3]</td><td><font size=1> &nbsp;</td>";
@@ -10230,7 +13085,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
@@ -10262,7 +13117,7 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1>$row[0]</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
 		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
@@ -10317,11 +13172,10 @@ if ($ADD==999999)
 	<FONT SIZE=4><B>VICIDIAL: Στατιστικά Διακομιστή and Reports</B></font><BR><BR>
 	<UL>
 	<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
-	<LI><a href="AST_parkstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΑΝΑΦΟΡΑ ΣΤΑΘΜΕΥΣΗΣ</a></FONT>
 	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΑΝΑΦΟΡΑ VDAD</a></FONT>
 	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΑΝΑΦΟΡΑ CLOSER</a></FONT>
-	<LI><a href="AST_agent_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣΑΠΟΔΟΣΗ</a></FONT>
 	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣΑΠΟΔΟΣΗ DETAIL</a></FONT>
+	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣSPREADSHEET ΑΠΟΔΟΣΗ</a></FONT>
 	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΔΙΑΚΟΜΙΣΤΗΣ ΑΠΟΔΟΣΗ</a></FONT>
 <?
 	if ($enable_queuemetrics_logging_LU > 0)
@@ -10368,12 +13222,12 @@ $ENDtime = date("U");
 
 $RUNtime = ($ENDtime - $STARTtime);
 
-echo "\n\n\n<br><br><br>\n\n";
+echo "\n\n\n<br><br><br>\n<center>\n";
 
 
 echo "<font size=0>\n\n\n<br><br><br>\nχρόνος εκτέλεσης διαδικασίας: $RUNtime seconds";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΕΚΔΟΣΗ: $admin_version";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔΗΜΙΟΥΡΓΙΑ: $build</font>\n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΕΚΔΟΣΗ: $admin_version";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔΗΜΙΟΥΡΓΙΑ: $build</font>\n";
 
 
 ?>

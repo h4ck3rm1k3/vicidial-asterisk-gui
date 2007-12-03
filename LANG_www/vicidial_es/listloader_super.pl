@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-### listloader_super.pl   version 0.3   *DBI-version*
+### listloader_super.pl   version 0.4   *DBI-version*
 ### 
-### Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+### Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 #
 #
@@ -16,6 +16,7 @@
 # 61128-1207 - added postal code GMT lookup and duplicate check options
 # 70205-1703 - Defaulted phone_code to 1 if not populated
 # 70417-1059 - Fixed default phone_code bug
+# 70510-1518 - Added campaign and system duplicate check and phonecode override
 #
 
 ### begin parsing run-time options ###
@@ -38,6 +39,10 @@ if (length($ARGV[0])>1)
 	{
 		if ($args =~ /-duplicate-check/i)
 			{$dupcheck=1;}
+		if ($args =~ /-duplicate-campaign-check/i)
+			{$dupcheckcamp=1;}
+		if ($args =~ /-duplicate-system-check/i)
+			{$dupchecksys=1;}
 		if ($args =~ /-postal-code-gmt/i)
 			{$postalgmt=1;}
 		if ($args =~ /--forcelistid=/i)
@@ -49,6 +54,17 @@ if (length($ARGV[0])>1)
 		}
 		else
 			{$forcelistid = '';}
+
+		if ($args =~ /--forcephonecode=/i)
+		{
+		@data_in = split(/--forcephonecode=/,$args);
+			$forcephonecode = $data_in[1];
+			$forcephonecode =~ s/ .*//gi;
+		print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";
+		}
+		else
+			{$forcephonecode = '';}
+
 		if ($args =~ /--lead-file=/i)
 		{
 		@data_in = split(/--lead-file=/,$args);
@@ -231,15 +247,26 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 			{
 			$list_id =	$forcelistid;		# set list_id to override value
 			}
-		if ($dupcheck > 0)
+		if (length($forcephonecode) > 0)
+			{
+			$phone_code =	$forcephonecode;	# set phone_code to override value
+			}
+
+		##### Check for duplicate phone numbers in vicidial_list table entire database #####
+		if ($dupchecksys > 0)
 			{
 			$dup_lead=0;
-			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
+			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number';";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
 				@aryA = $sthA->fetchrow_array;
 				$dup_lead = $aryA[0];
+				$dup_lead_list=$list_id;
+				}
 			$sthA->finish();
 			if ($dup_lead < 1)
 				{
@@ -247,12 +274,92 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 					{$dup_lead++;}
 				}
 			}
+		##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+		if ($dupcheck > 0)
+			{
+			$dup_lead=0;
+			$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$dup_lead_list = $aryA[0];
+				$dup_lead++;
+				}
+			$sthA->finish();
+			if ($dup_lead < 1)
+				{
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
+				}
+			}
+		##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+		if ($dupcheckcamp > 0)
+			{
+			$dup_lead=0;
+			$dup_lists='';
+
+			$stmtA = "select count(*) from vicidial_lists where list_id='$list_id';";
+				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				@aryA = $sthA->fetchrow_array;
+				$ci_recs = $aryA[0];
+			$sthA->finish();
+			if ($ci_recs > 0)
+				{
+				$stmtA = "select campaign_id from vicidial_lists where list_id='$list_id';";
+					if($DBX){print STDERR "\n|$stmtA|\n";}
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					@aryA = $sthA->fetchrow_array;
+					$dup_camp = $aryA[0];
+				$sthA->finish();
+
+				$stmtA = "select list_id from vicidial_lists where campaign_id='$dup_camp';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$dup_lists .=	"'$aryA[0]',";
+					$rec_count++;
+					}
+				$sthA->finish();
+
+				chop($dup_lists);
+				$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$rec_count=0;
+				while ($sthArows > $rec_count)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$dup_lead_list =	"'$aryA[0]',";
+					$rec_count++;
+					$dup_lead=1;
+					}
+				$sthA->finish();
+				}
+			if ($dup_lead < 1)
+				{
+				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+					{$dup_lead++;}
+				}
+			}
+
 		if ( (length($phone_number)>6) && ($dup_lead < 1) )
 			{
 			$phone_list .= "$phone_number$US$list_id|";
 			$postalgmt_found=0;
 			if (length($phone_code)<1) {$phone_code = '1';}
-			else {print "PHONE_CODE|$phone_code|\n";}
+
 			if ( ($postalgmt > 0) && (length($postal_code)>4) )
 				{
 				if ($phone_code =~ /^1$/)
@@ -455,7 +562,7 @@ foreach $oWkS (@{$oBook->{Worksheet}}) {
 
 			$good++;
 		} else {
-			if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]|</font><b>\n";}
+			if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| $dup_lead_list</font><b>\n";}
 			$bad++;
 		}
 		$total++;

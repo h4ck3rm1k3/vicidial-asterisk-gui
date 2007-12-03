@@ -1,7 +1,13 @@
 <?
 # admin_modify_lead.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+
+# CHANGES
+#
+# 70702-1259 - Added recording location link and truncation
+# 70906-2132 - Added closer_log records display
 #
 
 require("dbconnect.php");
@@ -304,6 +310,35 @@ else
 
 		}
 
+	$stmt="select * from vicidial_closer_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by closecallid desc limit 500;";
+	$rslt=mysql_query($stmt, $link);
+	$Clogs_to_print = mysql_num_rows($rslt);
+
+	$y=0;
+	$closer_log = '';
+	$Clog_campaign = '';
+	while ($Clogs_to_print > $y) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (strlen($Clog_campaign)<1) {$Clog_campaign = $row[3];}
+		if (eregi("1$|3$|5$|7$|9$", $y))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$y++;
+			$closer_log .= "<tr $bgcolor>";
+			$closer_log .= "<td><font size=1>$y</td>";
+			$closer_log .= "<td><font size=2>$row[4]</td>";
+			$closer_log .= "<td align=left><font size=2> $row[7]</td>\n";
+			$closer_log .= "<td align=left><font size=2> $row[8]</td>\n";
+			$closer_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[11]</A> </td>\n";
+			$closer_log .= "<td align=right><font size=2> $row[3] </td>\n";
+			$closer_log .= "<td align=right><font size=2> $row[2] </td>\n";
+			$closer_log .= "<td align=right><font size=2> $row[1] </td>\n";
+			$closer_log .= "<td align=right><font size=2> &nbsp; $row[14] </td></tr>\n";
+
+		}
 
 		$stmt="SELECT * from vicidial_list where lead_id='" . mysql_real_escape_string($lead_id) . "'";
 		$rslt=mysql_query($stmt, $link);
@@ -481,16 +516,20 @@ echo "<B>ANRUFE ZU DIESEM LEITUNG:</B>\n";
 echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> KAMPAGNE</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
 
+	echo "$call_log\n";
 
-echo "$call_log\n";
+echo "</TABLE>\n";
+echo "<BR><BR>\n";
 
+echo "<B>CLOSER RECORDS FOR THIS LEAD:</B>\n";
+echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> KAMPAGNE</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> WAIT</td></tr>\n";
 
-
-
-
+	echo "$closer_log\n";
 
 echo "</TABLE></center>\n";
 echo "<BR><BR>\n";
+
 
 echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
 echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
@@ -509,17 +548,26 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
-			$u++;
-			echo "<tr $bgcolor>";
-			echo "<td><font size=1>$u</td>";
-			echo "<td align=left><font size=2> $row[12] </td>";
-			echo "<td align=left><font size=1> $row[4] </td>\n";
-			echo "<td align=left><font size=2> $row[8] </td>\n";
-			echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
-			echo "<td align=center><font size=1> $row[10] </td>\n";
-			echo "<td align=left><font size=2> $row[11] </td>\n";
-			echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
-			echo "</tr>\n";
+		$location = $row[11];
+		if (strlen($location)>30)
+			{$locat = substr($location,0,27);  $locat = "$locat...";}
+		else
+			{$locat = $location;}
+		if (eregi("http",$location))
+			{$location = "<a href=\"$location\">$locat</a>";}
+		else
+			{$location = $locat;}
+		$u++;
+		echo "<tr $bgcolor>";
+		echo "<td><font size=1>$u</td>";
+		echo "<td align=left><font size=2> $row[12] </td>";
+		echo "<td align=left><font size=1> $row[4] </td>\n";
+		echo "<td align=left><font size=2> $row[8] </td>\n";
+		echo "<td align=left><font size=2> $row[0] &nbsp;</td>\n";
+		echo "<td align=center><font size=1> $row[10] </td>\n";
+		echo "<td align=left><font size=2> $location </td>\n";
+		echo "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[13]\" target=\"_blank\">$row[13]</A> </td>";
+		echo "</tr>\n";
 
 		}
 

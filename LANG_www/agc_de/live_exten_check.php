@@ -108,7 +108,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
 echo "<title>LIVE Erweiterung überprüfen";
 echo "</title>\n";
 echo "</head>\n";

@@ -459,7 +459,11 @@ if ($ACTION=="RedirectVD")
 	else
 	{
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
-			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
 				{
 				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}

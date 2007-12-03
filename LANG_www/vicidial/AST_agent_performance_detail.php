@@ -1,14 +1,13 @@
 <? 
 ### AST_agent_performance_detail.php
 ### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # CHANGES
 #
-# 60619-1712 - Added variable filtering to eliminate SQL injection attack threat
-#            - Added required user/pass to gain access to this page
-# 70118-1705 - Added user_group filtering option
-# 70201-1207 - Added non_latin UTF8 output code, widened USER ID to 8 chars
+# 71119-2359 - First build
+# 71121-0144 - Replace existing AST_agent_performance_detail.php script with this one
+#            - Fixed zero division bug
 #
 
 require("dbconnect.php");
@@ -141,25 +140,25 @@ else
 {
 if ($shift == 'AM') 
 	{
-	$query_date_BEGIN = "$query_date 03:45:00";   
-	$query_date_END = "$query_date 15:15:00";
-	$time_BEGIN = "03:45:00";   
-	$time_END = "15:15:00";
+	$time_BEGIN=$AM_shift_BEGIN;
+	$time_END=$AM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
 	}
 if ($shift == 'PM') 
 	{
-	$query_date_BEGIN = "$query_date 15:15:00";   
-	$query_date_END = "$query_date 23:15:00";
-	$time_BEGIN = "15:15:00";   
-	$time_END = "23:15:00";
+	$time_BEGIN=$PM_shift_BEGIN;
+	$time_END=$PM_shift_END;
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	}
 if ($shift == 'ALL') 
 	{
-	$query_date_BEGIN = "$query_date 00:00:00";   
-	$query_date_END = "$query_date 23:59:59";
-	$time_BEGIN = "00:00:00";   
-	$time_END = "23:59:59";
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
+$query_date_BEGIN = "$query_date $time_BEGIN";   
+$query_date_END = "$query_date $time_END";
 
 if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
 else {$ugSQL='';}
@@ -169,11 +168,22 @@ echo "VICIDIAL: Agent Performance Detail                        $NOW_TIME\n";
 echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- AGENTS Details -------------\n\n";
 
-echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
-echo "| USER NAME       | ID       | CALLS  | TIME   | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG| A    | B    | DC   | DNC  | N    | NI   | CB   | SALE |\n";
-echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
 
-$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,avg(talk_sec),sum(pause_sec),avg(pause_sec),sum(wait_sec),avg(wait_sec),sum(dispo_sec),avg(dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 $ugSQL group by full_name order by calls desc limit 1000;";
+
+
+
+$statuses='-';
+$statusesTXT='';
+$statusesHEAD='';
+$statusesHTML='';
+$statusesARY[0]='';
+$j=0;
+$users='-';
+$usersARY[0]='';
+$user_namesARY[0]='';
+$k=0;
+
+$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 and wait_sec<36000 and talk_sec<36000 and dispo_sec<36000 $ugSQL group by full_name,status order by status desc,full_name limit 100000;";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
@@ -182,43 +192,123 @@ $i=0;
 while ($i < $rows_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
-	$TOTcalls=($TOTcalls + $row[0]);
-	$TOTtime=($TOTtime + $row[1] + $row[5] + $row[7] + $row[9]);
-	$TOTtotTALK=($TOTtotTALK + $row[1]);
-	$TOTtotWAIT=($TOTtotWAIT + $row[7]);
-	$TOTtotPAUSE=($TOTtotPAUSE + $row[5]);
-	$TOTtotDISPO=($TOTtotDISPO + $row[9]);
-	$calls[$i] =	sprintf("%-6s", $row[0]);
+	$row[0] = ($row[0] - 1);	# subtract 1 for login/logout event compensation
+	
+	$calls[$i] =		$row[0];
+	$talk_sec[$i] =		$row[1];
+	$full_name[$i] =	$row[2];
+	$user[$i] =			$row[3];
+	$pause_sec[$i] =	$row[4];
+	$wait_sec[$i] =		$row[5];
+	$dispo_sec[$i] =	$row[6];
+	$status[$i] =		$row[7];
+	if ( (!eregi("-$status[$i]-", $statuses)) and (strlen($status[$i])>0) )
+		{
+		$statusesTXT = sprintf("%8s", $status[$i]);
+		$statusesHEAD .= "----------+";
+		$statusesHTML .= " $statusesTXT |";
+		$statuses .= "$status[$i]-";
+		$statusesARY[$j] = $status[$i];
+		$j++;
+		}
+	if (!eregi("-$user[$i]-", $users))
+		{
+		$users .= "$user[$i]-";
+		$usersARY[$k] = $user[$i];
+		$user_namesARY[$k] = $full_name[$i];
+		$k++;
+		}
+
+	$i++;
+	}
+
+
+echo "+-----------------+----------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
+echo "| USER NAME       | ID       | CALLS  | TIME    | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG|$statusesHTML\n";
+echo "+-----------------+----------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
+
+
+### BEGIN loop through each user ###
+$m=0;
+while ($m < $k)
+	{
+	$Suser=$usersARY[$m];
+	$Sfull_name=$user_namesARY[$m];
+	$Stime=0;
+	$Scalls=0;
+	$Stalk_sec=0;
+	$Spause_sec=0;
+	$Swait_sec=0;
+	$Sdispo_sec=0;
+	$SstatusesHTML='';
+
+	### BEGIN loop through each status ###
+	$n=0;
+	while ($n < $j)
+		{
+		$Sstatus=$statusesARY[$n];
+		$SstatusTXT='';
+		### BEGIN loop through each stat line ###
+		$i=0; $status_found=0;
+		while ($i < $rows_to_print)
+			{
+			if ( ($Suser=="$user[$i]") and ($Sstatus=="$status[$i]") )
+				{
+				$Scalls =		($Scalls + $calls[$i]);
+				$Stalk_sec =	($Stalk_sec + $talk_sec[$i]);
+				$Spause_sec =	($Spause_sec + $pause_sec[$i]);
+				$Swait_sec =	($Swait_sec + $wait_sec[$i]);
+				$Sdispo_sec =	($Sdispo_sec + $dispo_sec[$i]);
+				$SstatusTXT = sprintf("%8s", $calls[$i]);
+				$SstatusesHTML .= " $SstatusTXT |";
+				$status_found++;
+				}
+			$i++;
+			}
+		if ($status_found < 1)
+			{
+			$SstatusesHTML .= "        0 |";
+			}
+		### END loop through each stat line ###
+		$n++;
+		}
+	### END loop through each status ###
+	$Stime = ($Stalk_sec + $Spause_sec + $Swait_sec + $Sdispo_sec);
+	$TOTcalls=($TOTcalls + $Scalls);
+	$TOTtime=($TOTtime + $Stime);
+	$TOTtotTALK=($TOTtotTALK + $Stalk_sec);
+	$TOTtotWAIT=($TOTtotWAIT + $Swait_sec);
+	$TOTtotPAUSE=($TOTtotPAUSE + $Spause_sec);
+	$TOTtotDISPO=($TOTtotDISPO + $Sdispo_sec);
+	$Stime = ($Stalk_sec + $Spause_sec + $Swait_sec + $Sdispo_sec);
+	if ( ($Scalls > 0) and ($Stalk_sec > 0) ) {$Stalk_avg = ($Stalk_sec/$Scalls);}
+		else {$Stalk_avg=0;}
+	if ( ($Scalls > 0) and ($Spause_sec > 0) ) {$Spause_avg = ($Spause_sec/$Scalls);}
+		else {$Spause_avg=0;}
+	if ( ($Scalls > 0) and ($Swait_sec > 0) ) {$Swait_avg = ($Swait_sec/$Scalls);}
+		else {$Swait_avg=0;}
+	if ( ($Scalls > 0) and ($Sdispo_sec > 0) ) {$Sdispo_avg = ($Sdispo_sec/$Scalls);}
+		else {$Sdispo_avg=0;}
+
+	$Scalls =	sprintf("%6s", $Scalls);
 
 	if ($non_latin < 1)
 	{
-   	 $full_name[$i]=	sprintf("%-15s", $row[2]); 
-	 while(strlen($full_name[$i])>15) {$full_name[$i] = substr("$full_name[$i]", 0, -1);}
-
-	 $user[$i] =		sprintf("%-6s", $row[3]);
-        while(strlen($user[$i])>6) {$user[$i] = substr("$user[$i]", 0, -1);}
+   	 $Sfull_name=	sprintf("%-15s", $Sfull_name); 
+		while(strlen($Sfull_name)>15) {$Sfull_name = substr("$Sfull_name", 0, -1);}
+	 $Suser =		sprintf("%-8s", $Suser);
+        while(strlen($Suser)>8) {$Suser = substr("$Suser", 0, -1);}
        }
 	else
 	{	
-        $full_name[$i]=	sprintf("%-45s", $row[2]); 
-	 while(mb_strlen($full_name[$i],'utf-8')>15) {$full_name[$i] = mb_substr("$full_name[$i]", 0, -1,'utf-8');}
+        $Sfull_name=	sprintf("%-45s", $Sfull_name); 
+	 while(mb_strlen($Sfull_name,'utf-8')>15) {$Sfull_name = mb_substr("$Sfull_name", 0, -1,'utf-8');}
 
- 	 $user[$i] =		sprintf("%-18s", $row[3]);
-	 while(mb_strlen($user[$i],'utf-8')>6) {$user[$i] = mb_substr("$user[$i]", 0, -1,'utf-8');}
+ 		$Suser =	sprintf("%-24s", $Suser);
+	 while(mb_strlen($Suser,'utf-8')>8) {$Suser = mb_substr("$Suser", 0, -1,'utf-8');}
 	}
 
-	$user[$i] =		sprintf("%-8s", $row[3]);
-	$USERtime =	($row[1] + $row[5] + $row[7] + $row[9]);
-	$USERtotTALK =	$row[1];
-	$USERavgTALK =	$row[4];
-	$USERtotPAUSE =	$row[5];
-	$USERavgPAUSE =	$row[6];
-	$USERtotWAIT =	$row[7];
-	$USERavgWAIT =	$row[8];
-	$USERtotDISPO =	$row[9];
-	$USERavgDISPO =	$row[10];
-
-	$USERtime_M = ($USERtime / 60);
+	$USERtime_M = ($Stime / 60);
 	$USERtime_M = round($USERtime_M, 2);
 	$USERtime_M_int = intval("$USERtime_M");
 	$USERtime_S = ($USERtime_M - $USERtime_M_int);
@@ -226,9 +316,9 @@ while ($i < $rows_to_print)
 	$USERtime_S = round($USERtime_S, 0);
 	if ($USERtime_S < 10) {$USERtime_S = "0$USERtime_S";}
 	$USERtime_MS = "$USERtime_M_int:$USERtime_S";
-	$pfUSERtime_MS[$i] =		sprintf("%7s", $USERtime_MS);
+	$pfUSERtime_MS =		sprintf("%7s", $USERtime_MS);
 
-	$USERtotTALK_M = ($USERtotTALK / 60);
+	$USERtotTALK_M = ($Stalk_sec / 60);
 	$USERtotTALK_M = round($USERtotTALK_M, 2);
 	$USERtotTALK_M_int = intval("$USERtotTALK_M");
 	$USERtotTALK_S = ($USERtotTALK_M - $USERtotTALK_M_int);
@@ -236,9 +326,9 @@ while ($i < $rows_to_print)
 	$USERtotTALK_S = round($USERtotTALK_S, 0);
 	if ($USERtotTALK_S < 10) {$USERtotTALK_S = "0$USERtotTALK_S";}
 	$USERtotTALK_MS = "$USERtotTALK_M_int:$USERtotTALK_S";
-	$pfUSERtotTALK_MS[$i] =		sprintf("%6s", $USERtotTALK_MS);
+	$pfUSERtotTALK_MS =		sprintf("%6s", $USERtotTALK_MS);
 
-	$USERavgTALK_M = ($USERavgTALK / 60);
+	$USERavgTALK_M = ($Stalk_avg / 60);
 	$USERavgTALK_M = round($USERavgTALK_M, 2);
 	$USERavgTALK_M_int = intval("$USERavgTALK_M");
 	$USERavgTALK_S = ($USERavgTALK_M - $USERavgTALK_M_int);
@@ -246,9 +336,9 @@ while ($i < $rows_to_print)
 	$USERavgTALK_S = round($USERavgTALK_S, 0);
 	if ($USERavgTALK_S < 10) {$USERavgTALK_S = "0$USERavgTALK_S";}
 	$USERavgTALK_MS = "$USERavgTALK_M_int:$USERavgTALK_S";
-	$pfUSERavgTALK_MS[$i] =		sprintf("%6s", $USERavgTALK_MS);
+	$pfUSERavgTALK_MS =		sprintf("%6s", $USERavgTALK_MS);
 
-	$USERtotPAUSE_M = ($USERtotPAUSE / 60);
+	$USERtotPAUSE_M = ($Spause_sec / 60);
 	$USERtotPAUSE_M = round($USERtotPAUSE_M, 2);
 	$USERtotPAUSE_M_int = intval("$USERtotPAUSE_M");
 	$USERtotPAUSE_S = ($USERtotPAUSE_M - $USERtotPAUSE_M_int);
@@ -256,9 +346,9 @@ while ($i < $rows_to_print)
 	$USERtotPAUSE_S = round($USERtotPAUSE_S, 0);
 	if ($USERtotPAUSE_S < 10) {$USERtotPAUSE_S = "0$USERtotPAUSE_S";}
 	$USERtotPAUSE_MS = "$USERtotPAUSE_M_int:$USERtotPAUSE_S";
-	$pfUSERtotPAUSE_MS[$i] =		sprintf("%6s", $USERtotPAUSE_MS);
+	$pfUSERtotPAUSE_MS =		sprintf("%6s", $USERtotPAUSE_MS);
 
-	$USERavgPAUSE_M = ($USERavgPAUSE / 60);
+	$USERavgPAUSE_M = ($Spause_avg / 60);
 	$USERavgPAUSE_M = round($USERavgPAUSE_M, 2);
 	$USERavgPAUSE_M_int = intval("$USERavgPAUSE_M");
 	$USERavgPAUSE_S = ($USERavgPAUSE_M - $USERavgPAUSE_M_int);
@@ -266,9 +356,9 @@ while ($i < $rows_to_print)
 	$USERavgPAUSE_S = round($USERavgPAUSE_S, 0);
 	if ($USERavgPAUSE_S < 10) {$USERavgPAUSE_S = "0$USERavgPAUSE_S";}
 	$USERavgPAUSE_MS = "$USERavgPAUSE_M_int:$USERavgPAUSE_S";
-	$pfUSERavgPAUSE_MS[$i] =		sprintf("%6s", $USERavgPAUSE_MS);
+	$pfUSERavgPAUSE_MS =		sprintf("%6s", $USERavgPAUSE_MS);
 
-	$USERtotWAIT_M = ($USERtotWAIT / 60);
+	$USERtotWAIT_M = ($Swait_sec / 60);
 	$USERtotWAIT_M = round($USERtotWAIT_M, 2);
 	$USERtotWAIT_M_int = intval("$USERtotWAIT_M");
 	$USERtotWAIT_S = ($USERtotWAIT_M - $USERtotWAIT_M_int);
@@ -276,9 +366,9 @@ while ($i < $rows_to_print)
 	$USERtotWAIT_S = round($USERtotWAIT_S, 0);
 	if ($USERtotWAIT_S < 10) {$USERtotWAIT_S = "0$USERtotWAIT_S";}
 	$USERtotWAIT_MS = "$USERtotWAIT_M_int:$USERtotWAIT_S";
-	$pfUSERtotWAIT_MS[$i] =		sprintf("%6s", $USERtotWAIT_MS);
+	$pfUSERtotWAIT_MS =		sprintf("%6s", $USERtotWAIT_MS);
 
-	$USERavgWAIT_M = ($USERavgWAIT / 60);
+	$USERavgWAIT_M = ($Swait_avg / 60);
 	$USERavgWAIT_M = round($USERavgWAIT_M, 2);
 	$USERavgWAIT_M_int = intval("$USERavgWAIT_M");
 	$USERavgWAIT_S = ($USERavgWAIT_M - $USERavgWAIT_M_int);
@@ -286,9 +376,9 @@ while ($i < $rows_to_print)
 	$USERavgWAIT_S = round($USERavgWAIT_S, 0);
 	if ($USERavgWAIT_S < 10) {$USERavgWAIT_S = "0$USERavgWAIT_S";}
 	$USERavgWAIT_MS = "$USERavgWAIT_M_int:$USERavgWAIT_S";
-	$pfUSERavgWAIT_MS[$i] =		sprintf("%6s", $USERavgWAIT_MS);
+	$pfUSERavgWAIT_MS =		sprintf("%6s", $USERavgWAIT_MS);
 	
-	$USERtotDISPO_M = ($USERtotDISPO / 60);
+	$USERtotDISPO_M = ($Sdispo_sec / 60);
 	$USERtotDISPO_M = round($USERtotDISPO_M, 2);
 	$USERtotDISPO_M_int = intval("$USERtotDISPO_M");
 	$USERtotDISPO_S = ($USERtotDISPO_M - $USERtotDISPO_M_int);
@@ -296,9 +386,9 @@ while ($i < $rows_to_print)
 	$USERtotDISPO_S = round($USERtotDISPO_S, 0);
 	if ($USERtotDISPO_S < 10) {$USERtotDISPO_S = "0$USERtotDISPO_S";}
 	$USERtotDISPO_MS = "$USERtotDISPO_M_int:$USERtotDISPO_S";
-	$pfUSERtotDISPO_MS[$i] =		sprintf("%6s", $USERtotDISPO_MS);
+	$pfUSERtotDISPO_MS =		sprintf("%6s", $USERtotDISPO_MS);
 
-	$USERavgDISPO_M = ($USERavgDISPO / 60);
+	$USERavgDISPO_M = ($Sdispo_avg / 60);
 	$USERavgDISPO_M = round($USERavgDISPO_M, 2);
 	$USERavgDISPO_M_int = intval("$USERavgDISPO_M");
 	$USERavgDISPO_S = ($USERavgDISPO_M - $USERavgDISPO_M_int);
@@ -306,42 +396,51 @@ while ($i < $rows_to_print)
 	$USERavgDISPO_S = round($USERavgDISPO_S, 0);
 	if ($USERavgDISPO_S < 10) {$USERavgDISPO_S = "0$USERavgDISPO_S";}
 	$USERavgDISPO_MS = "$USERavgDISPO_M_int:$USERavgDISPO_S";
-	$pfUSERavgDISPO_MS[$i] =		sprintf("%6s", $USERavgDISPO_MS);
+	$pfUSERavgDISPO_MS =		sprintf("%6s", $USERavgDISPO_MS);
 
-	$i++;
+	echo "| $Sfull_name | $Suser | $Scalls | $pfUSERtime_MS | $pfUSERtotPAUSE_MS | $pfUSERavgPAUSE_MS | $pfUSERtotWAIT_MS | $pfUSERavgWAIT_MS | $pfUSERtotTALK_MS | $pfUSERavgTALK_MS | $pfUSERtotDISPO_MS | $pfUSERavgDISPO_MS |$SstatusesHTML\n";
+	$m++;
 	}
+### END loop through each user ###
 
-$k=0;
-while($k < $i)
+
+###### LAST LINE FORMATTING ##########
+### BEGIN loop through each status ###
+$SUMstatusesHTML='';
+$n=0;
+while ($n < $j)
 	{
-	$ctA[$k]="0   "; $ctB[$k]="0   "; $ctDC[$k]="0   "; $ctDNC[$k]="0   "; $ctN[$k]="0   "; $ctNI[$k]="0   "; $ctSALE[$k]="0   "; $ctCB[$k]="0   "; 
-	$stmt="select count(*),status from vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and user='$user[$k]' and campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
-	$rslt=mysql_query($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$rows_to_print = mysql_num_rows($rslt);
-	$m=0;
-	while ($m < $rows_to_print)
+	$Scalls=0;
+	$Sstatus=$statusesARY[$n];
+	$SUMstatusTXT='';
+	### BEGIN loop through each stat line ###
+	$i=0; $status_found=0;
+	while ($i < $rows_to_print)
 		{
-		$row=mysql_fetch_row($rslt);
-		if ($row[1] == 'A') {$ctA[$k]=sprintf("%-4s", $row[0]);		$TOT_A = ($TOT_A + $row[0]);}
-		if ($row[1] == 'B') {$ctB[$k]=sprintf("%-4s", $row[0]);		$TOT_B = ($TOT_B + $row[0]);}
-		if ($row[1] == 'DC') {$ctDC[$k]=sprintf("%-4s", $row[0]);	$TOT_DC = ($TOT_DC + $row[0]);}
-		if ($row[1] == 'DNC') {$ctDNC[$k]=sprintf("%-4s", $row[0]);	$TOT_DNC = ($TOT_DNC + $row[0]);}
-		if ($row[1] == 'N') {$ctN[$k]=sprintf("%-4s", $row[0]);		$TOT_N = ($TOT_N + $row[0]);}
-		if ($row[1] == 'NI') {$ctNI[$k]=sprintf("%-4s", $row[0]);	$TOT_NI = ($TOT_NI + $row[0]);}
-		if (($row[1] == 'SALE') || ($row[1] == 'XFER') ) {$ctSALE[$k]=sprintf("%-4s", $row[0]);	$TOT_SALE = ($TOT_SALE + $row[0]);}
-		if (($row[1] == 'CALLBK') || ($row[1] == 'CBHOLD') ) {$ctCB[$k]=sprintf("%-4s", $row[0]);	$TOT_CB = ($TOT_CB + $row[0]);}
-		$m++;
+		if ($Sstatus=="$status[$i]")
+			{
+			$Scalls =		($Scalls + $calls[$i]);
+			$status_found++;
+			}
+		$i++;
 		}
-	echo "| $full_name[$k] | $user[$k] | $calls[$k] | $pfUSERtime_MS[$k]| $pfUSERtotPAUSE_MS[$k] | $pfUSERavgPAUSE_MS[$k] | $pfUSERtotWAIT_MS[$k] | $pfUSERavgWAIT_MS[$k] | $pfUSERtotTALK_MS[$k] | $pfUSERavgTALK_MS[$k] | $pfUSERtotDISPO_MS[$k] | $pfUSERavgDISPO_MS[$k] | $ctA[$k] | $ctB[$k] | $ctDC[$k] | $ctDNC[$k] | $ctN[$k] | $ctNI[$k] | $ctCB[$k] | $ctSALE[$k] |\n";
-
-
-
-	$k++;
+	### END loop through each stat line ###
+	if ($status_found < 1)
+		{
+		$SUMstatusesHTML .= "        0 |";
+		}
+	else
+		{
+		$SUMstatusTXT = sprintf("%8s", $Scalls);
+		$SUMstatusesHTML .= " $SUMstatusTXT |";
+		}
+	$n++;
 	}
+### END loop through each status ###
 
-	$TOTcalls =	sprintf("%-7s", $TOTcalls);
+
+	$TOTcalls =	sprintf("%7s", $TOTcalls);
+	$TOT_AGENTS = sprintf("%-4s", $m);
 
 	$TOTtime_M = ($TOTtime / 60);
 	$TOTtime_M = round($TOTtime_M, 2);
@@ -351,8 +450,8 @@ while($k < $i)
 	$TOTtime_S = round($TOTtime_S, 0);
 	if ($TOTtime_S < 10) {$TOTtime_S = "0$TOTtime_S";}
 	$TOTtime_MS = "$TOTtime_M_int:$TOTtime_S";
-	$TOTtime_MS =		sprintf("%7s", $TOTtime_MS);
-		while(strlen($TOTtime_MS)>7) {$TOTtime_MS = substr("$TOTtime_MS", 0, -1);}
+	$TOTtime_MS =		sprintf("%8s", $TOTtime_MS);
+		while(strlen($TOTtime_MS)>8) {$TOTtime_MS = substr("$TOTtime_MS", 0, -1);}
 
 	$TOTtotTALK_M = ($TOTtotTALK / 60);
 	$TOTtotTALK_M = round($TOTtotTALK_M, 2);
@@ -362,8 +461,8 @@ while($k < $i)
 	$TOTtotTALK_S = round($TOTtotTALK_S, 0);
 	if ($TOTtotTALK_S < 10) {$TOTtotTALK_S = "0$TOTtotTALK_S";}
 	$TOTtotTALK_MS = "$TOTtotTALK_M_int:$TOTtotTALK_S";
-	$TOTtotTALK_MS =		sprintf("%7s", $TOTtotTALK_MS);
-		while(strlen($TOTtotTALK_MS)>7) {$TOTtotTALK_MS = substr("$TOTtotTALK_MS", 0, -1);}
+	$TOTtotTALK_MS =		sprintf("%8s", $TOTtotTALK_MS);
+		while(strlen($TOTtotTALK_MS)>8) {$TOTtotTALK_MS = substr("$TOTtotTALK_MS", 0, -1);}
 
 	$TOTtotDISPO_M = ($TOTtotDISPO / 60);
 	$TOTtotDISPO_M = round($TOTtotDISPO_M, 2);
@@ -373,8 +472,8 @@ while($k < $i)
 	$TOTtotDISPO_S = round($TOTtotDISPO_S, 0);
 	if ($TOTtotDISPO_S < 10) {$TOTtotDISPO_S = "0$TOTtotDISPO_S";}
 	$TOTtotDISPO_MS = "$TOTtotDISPO_M_int:$TOTtotDISPO_S";
-	$TOTtotDISPO_MS =		sprintf("%7s", $TOTtotDISPO_MS);
-		while(strlen($TOTtotDISPO_MS)>7) {$TOTtotDISPO_MS = substr("$TOTtotDISPO_MS", 0, -1);}
+	$TOTtotDISPO_MS =		sprintf("%8s", $TOTtotDISPO_MS);
+		while(strlen($TOTtotDISPO_MS)>8) {$TOTtotDISPO_MS = substr("$TOTtotDISPO_MS", 0, -1);}
 
 	$TOTtotPAUSE_M = ($TOTtotPAUSE / 60);
 	$TOTtotPAUSE_M = round($TOTtotPAUSE_M, 2);
@@ -384,8 +483,8 @@ while($k < $i)
 	$TOTtotPAUSE_S = round($TOTtotPAUSE_S, 0);
 	if ($TOTtotPAUSE_S < 10) {$TOTtotPAUSE_S = "0$TOTtotPAUSE_S";}
 	$TOTtotPAUSE_MS = "$TOTtotPAUSE_M_int:$TOTtotPAUSE_S";
-	$TOTtotPAUSE_MS =		sprintf("%7s", $TOTtotPAUSE_MS);
-		while(strlen($TOTtotPAUSE_MS)>7) {$TOTtotPAUSE_MS = substr("$TOTtotPAUSE_MS", 0, -1);}
+	$TOTtotPAUSE_MS =		sprintf("%8s", $TOTtotPAUSE_MS);
+		while(strlen($TOTtotPAUSE_MS)>8) {$TOTtotPAUSE_MS = substr("$TOTtotPAUSE_MS", 0, -1);}
 
 	$TOTtotWAIT_M = ($TOTtotWAIT / 60);
 	$TOTtotWAIT_M = round($TOTtotWAIT_M, 2);
@@ -395,8 +494,8 @@ while($k < $i)
 	$TOTtotWAIT_S = round($TOTtotWAIT_S, 0);
 	if ($TOTtotWAIT_S < 10) {$TOTtotWAIT_S = "0$TOTtotWAIT_S";}
 	$TOTtotWAIT_MS = "$TOTtotWAIT_M_int:$TOTtotWAIT_S";
-	$TOTtotWAIT_MS =		sprintf("%7s", $TOTtotWAIT_MS);
-		while(strlen($TOTtotWAIT_MS)>7) {$TOTtotWAIT_MS = substr("$TOTtotWAIT_MS", 0, -1);}
+	$TOTtotWAIT_MS =		sprintf("%8s", $TOTtotWAIT_MS);
+		while(strlen($TOTtotWAIT_MS)>8) {$TOTtotWAIT_MS = substr("$TOTtotWAIT_MS", 0, -1);}
 
 
 	$TOTavgTALK_M = ( ($TOTtotTALK / $TOTcalls) / 60);
@@ -443,25 +542,14 @@ while($k < $i)
 	$TOTavgWAIT_MS =		sprintf("%6s", $TOTavgWAIT_MS);
 		while(strlen($TOTavgWAIT_MS)>6) {$TOTavgWAIT_MS = substr("$TOTavgWAIT_MS", 0, -1);}
 
-	
-	$TOT_A = sprintf("%-5s", $TOT_A);
-	$TOT_B = sprintf("%-5s", $TOT_B);
-	$TOT_DC = sprintf("%-5s", $TOT_DC);
-	$TOT_DNC = sprintf("%-5s", $TOT_DNC);
-	$TOT_N = sprintf("%-5s", $TOT_N);
-	$TOT_NI = sprintf("%-5s", $TOT_NI);
-	$TOT_CB = sprintf("%-5s", $TOT_CB);
-	$TOT_SALE = sprintf("%-5s", $TOT_SALE);
-	$TOT_AGENTS = sprintf("%-4s", $k);
 
-echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
-echo "|  TOTALS        AGENTS:$TOT_AGENTS | $TOTcalls| $TOTtime_MS| $TOTtotPAUSE_MS| $TOTavgPAUSE_MS | $TOTtotWAIT_MS| $TOTavgWAIT_MS | $TOTtotTALK_MS| $TOTavgTALK_MS | $TOTtotDISPO_MS| $TOTavgDISPO_MS | $TOT_A| $TOT_B| $TOT_DC| $TOT_DNC| $TOT_N| $TOT_NI| $TOT_CB| $TOT_SALE|\n";
-echo "+-----------------+----------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+\n";
+echo "+-----------------+----------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
+echo "|  TOTALS        AGENTS:$TOT_AGENTS | $TOTcalls| $TOTtime_MS|$TOTtotPAUSE_MS| $TOTavgPAUSE_MS |$TOTtotWAIT_MS| $TOTavgWAIT_MS |$TOTtotTALK_MS| $TOTavgTALK_MS |$TOTtotDISPO_MS| $TOTavgDISPO_MS |$SUMstatusesHTML\n";
+echo "+----------------------------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
 
 echo "\n";
 
 }
-
 
 
 ?>

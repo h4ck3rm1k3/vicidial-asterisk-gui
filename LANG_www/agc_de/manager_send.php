@@ -196,7 +196,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
 echo "<title>Manager Senden: ";
 if ($ACTION=="Originate")		{echo "Originate";}
 if ($ACTION=="Redirect")		{echo "Redirect";}
@@ -227,7 +227,7 @@ if ($ACTION=="SysCIDOriginate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $queryCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate Befehl gesendet an Exten $exten Kanal $channel an $server_ip\n";
+	echo "Originate Befehl gesendet um Exten $exten Kanal $channel an $server_ip\n";
 	}
 }
 
@@ -323,7 +323,7 @@ if ($ACTION=="Originate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate Befehl gesendet an Exten $exten Kanal $channel an $server_ip\n";
+	echo "Originate Befehl gesendet um Exten $exten Kanal $channel an $server_ip\n";
 	}
 }
 
@@ -428,7 +428,7 @@ if ($ACTION=="Hangup")
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
-		echo "Hangup Befehl gesendet an Kanal $channel an $call_server_ip\n";
+		echo "Hangup Befehl gesendet um Kanal $channel an $call_server_ip\n";
 		}
 	}
 }
@@ -459,7 +459,11 @@ if ($ACTION=="RedirectVD")
 	else
 	{
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
-			if (eregi("(CLOSER|BLEND|INBND|_C$|_B$|_I$)",$campaign))
+			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
 				{
 				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -695,7 +699,7 @@ if ($ACTION=="RedirectXtraCX")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "RedirectXtraCX Befehl gesendet an Kanal $channel an $call_server_ip and \nHungup $extrachannel an $server_ip\n";
+				echo "RedirectXtraCX Befehl gesendet um Kanal $channel an $call_server_ip and \nHungup $extrachannel an $server_ip\n";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel an $call_server_ip, Hungup $extrachannel an $server_ip";}
 			}
 		}
@@ -819,7 +823,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra Befehl gesendet an Kanal $channel and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
+					echo "RedirectXtra Befehl gesendet um Kanal $channel and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten an $server_ip";}
 				}
 				else
@@ -844,7 +848,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra Befehl gesendet an Kanal $channel an $call_server_ip and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
+					echo "RedirectXtra Befehl gesendet um Kanal $channel an $call_server_ip and \nExtraKanal $extrachannel\n to $exten an $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
@@ -912,7 +916,7 @@ if ($ACTION=="Redirect")
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		echo "Redirect Befehl gesendet an Kanal $channel an $server_ip\n";
+		echo "Redirect Befehl gesendet um Kanal $channel an $server_ip\n";
 		}
 	}
 }
@@ -993,7 +997,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				}
 
 			}
-		echo "$ACTION Befehl gesendet an Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
+		echo "$ACTION Befehl gesendet um Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
 		}
 	}
 }
@@ -1077,7 +1081,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION Befehl gesendet an Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n AUFNAHME DAUERT BIS ZU 60 MINUTEN\n";
+		echo "$ACTION Befehl gesendet um Kanal $channel an $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n AUFNAHME DAUERT BIS ZU 60 MINUTEN\n";
 	}
 }
 
@@ -1108,7 +1112,7 @@ if ($ACTION=="VolumeControl")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $volume_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Volume Befehl gesendet an Konferenz $exten, Stage $stage Kanal $channel an $server_ip\n";
+	echo "Volume Befehl gesendet um Konferenz $exten, Stage $stage Kanal $channel an $server_ip\n";
 	}
 }
 

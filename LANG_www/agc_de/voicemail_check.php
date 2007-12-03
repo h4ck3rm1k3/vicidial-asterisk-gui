@@ -95,7 +95,7 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
 echo "<title>Voicemail Check";
 echo "</title>\n";
 echo "</head>\n";

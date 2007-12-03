@@ -124,7 +124,7 @@ while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
 	<script language="Javascript">	
 		var server_ip = '<? echo $server_ip ?>';

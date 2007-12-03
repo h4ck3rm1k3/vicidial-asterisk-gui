@@ -107,8 +107,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Anruf Log";
+echo "<!-- VERSION: $version     BUILD: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
+echo "<title>Anruf Log Anzeige";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";

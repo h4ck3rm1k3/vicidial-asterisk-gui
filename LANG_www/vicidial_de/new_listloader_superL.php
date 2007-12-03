@@ -18,11 +18,12 @@
 # 61110-1222 - added new USA-Canada DST scheme and Brazil DST scheme
 # 61128-1149 - added postal code GMT lookup and duplicate check options
 # 70417-1059 - Fixed default phone_code bug
+# 70510-1518 - Added campaign and system duplicate check and phonecode override
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.3';
-$build = '70417-1059';
+$version = '2.0.4';
+$build = '70510-1518';
 
 
 require("dbconnect.php");
@@ -105,6 +106,9 @@ if (isset($_GET["dupcheck"]))				{$dupcheck=$_GET["dupcheck"];}
 	elseif (isset($_POST["dupcheck"]))		{$dupcheck=$_POST["dupcheck"];}
 if (isset($_GET["postalgmt"]))				{$postalgmt=$_GET["postalgmt"];}
 	elseif (isset($_POST["postalgmt"]))		{$postalgmt=$_POST["postalgmt"];}
+if (isset($_GET["phone_code_override"]))			{$phone_code_override=$_GET["phone_code_override"];}
+	elseif (isset($_POST["phone_code_override"]))	{$phone_code_override=$_POST["phone_code_override"];}
+	$phone_code_override = (preg_replace("/\D/","",$phone_code_override));
 
 # $country_field=$_GET["country_field"];					if (!$country_field) {$country_field=$_POST["country_field"];}
 
@@ -266,7 +270,7 @@ A.employee_standard {  font-family: garamond, sans-serif; font-size: ".macfontfi
 
 <script language="JavaScript1.2">
 function openNewWindow(url) {
-  window.open (url,"",'width=500,height=300,scrollbars=yes,menubar=yes,address=yes');
+  window.open (url,"",'width=700,height=300,scrollbars=yes,menubar=yes,address=yes');
 }
 function ShowProgress(good, bad, total, dup, post) {
 	parent.lead_count.document.open();
@@ -284,13 +288,13 @@ function ParseFileName() {
 	}
 }
 </script>
-<title>VICIDIAL ADMIN: Super Lead Loader</title>
+<title>VICIDIAL ADMIN: Lead Loader</title>
 </head>
 <body>
 <form action=<?=$PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
 <input type=hidden name='leadfile_name' value="<?=$leadfile_name ?>">
 <? if ($file_layout!="custom") { ?>
-<table align=center width="500" border=0 cellpadding=5 cellspacing=0 bgcolor=#D9E6FE>
+<table align=center width="700" border=0 cellpadding=5 cellspacing=0 bgcolor=#D9E6FE>
   <tr>
 	<td align=right width="35%"><B><font face="arial, helvetica" size=2>Last Leitungen von dieser Akte:</font></B></td>
 	<td align=left width="65%"><input type=file name="leadfile" value="<?=$leadfile ?>"> <? echo "$NWB#vicidial_list_loader$NWE"; ?></td>
@@ -300,12 +304,21 @@ function ParseFileName() {
 	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$list_id_override ?>" name='list_id_override' size=10 maxlength=8> (nur Zahlen or leave blank for values in the file)</td>
   </tr>
   <tr>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Phone Code Override: </font></td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$phone_code_override ?>" name='phone_code_override' size=8 maxlength=6> (nur Zahlen or leave blank for values in the file)</td>
+  </tr>
+  <tr>
 	<td align=right><B><font face="arial, helvetica" size=2>Zu verwenden Dateiaufbau:</font></B></td>
 	<td align=left><font face="arial, helvetica" size=2><input type=radio name="file_layout" value="standard" checked>Standard-VICIDIAL&nbsp;&nbsp;&nbsp;&nbsp;<input type=radio name="file_layout" value="custom">Kundenspezifischer Plan</td>
   </tr>
     <tr>
 	<td align=right width="25%"><font face="arial, helvetica" size=2>Leitung Duplikat-Überprüfung: </font></td>
-	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck><option selected value="NONE">NO DUPLICATE CHECK</option><option value="DUP">CHECK FOR DUPLICATES BY PHONE IN LISTE IDENTIFIKATION</option></select></td>
+	<td align=left width="75%"><font face="arial, helvetica" size=1><select size=1 name=dupcheck>
+	<option selected value="NONE">NO DUPLICATE CHECK</option>
+	<option value="DUPLIST">CHECK FOR DUPLICATES BY PHONE IN LISTE IDENTIFIKATION</option>
+	<option value="DUPCAMP">ÜBERPRÜFEN SIE AUF DUPLIKATE DURCH PHONE IN ALLE KAMPAGNE LISTEN</option>
+	<option value="DUPSYS">ÜBERPRÜFEN SIE AUF DUPLIKATE DURCH PHONE IN GESAMTES SYSTEM</option>
+	</select></td>
   </tr>
   <tr>
 	<td align=right width="25%"><font face="arial, helvetica" size=2>Vorbereitungs- und Anlaufzeit Zone Nachschlagen: </font></td>
@@ -314,15 +327,14 @@ function ParseFileName() {
 <tr>
 	<td align=center colspan=2><input type=submit value="SUBMIT" name='submit_file'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick="javascript:document.location='new_listloader_superL.php'" value="BEGINNEN SIE RÜBER" name='reload_page'></td>
   </tr>
-  <tr><td colspan=2><font size=1><a href="listloaderMAIN.php" target="_parent">KLICKEN SIE HIER, UM ZUR BASIC LEITUNG LADEVORRICHTUNG ZU GEHEN </a> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php" target="_parent">ZURÜCK ZU ADMIN</a></font></td></tr>
-  <tr><td colspan=2><font size=1>SUPERLISTE LADEVORRICHTUNG- &nbsp; &nbsp; VERSION: <?=$version ?> &nbsp; &nbsp; BAU: <?=$build ?></td></tr>
+  <tr><td align=left><font size=1> &nbsp; &nbsp; &nbsp; &nbsp; <a href="admin.php?ADD=100" target="_parent">ZURÜCK ZU ADMIN</a></font></td><td align=right><font size=1>LIST LOADER- &nbsp; &nbsp; VERSION: <?=$version ?> &nbsp; &nbsp; BAU: <?=$build ?> &nbsp; &nbsp; </td></tr>
 </table>
 <? } ?>
 
 <?
 
 	if ($OK_to_process) {
-		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true;document.forms[0].list_id_override.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
+		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true;document.forms[0].list_id_override.disabled=true;document.forms[0].phone_code_override.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
 		flush();
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 
@@ -348,6 +360,11 @@ function ParseFileName() {
 			if (strlen($list_id_override)>0) 
 				{
 				print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+				}
+
+			if (strlen($phone_code_override)>0) 
+				{
+				print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>";
 				}
 
 				while (!feof($file)) {
@@ -396,9 +413,78 @@ function ParseFileName() {
 						#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 							$list_id = $list_id_override;
 							}
+						if (strlen($phone_code_override)>0) 
+							{
+							$phone_code = $phone_code_override;
+							}
 
-						##### Check for duplicate phone numbers in vicidial_list table #####
-						if (eregi("DUP",$dupcheck))
+						##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+						if (eregi("DUPCAMP",$dupcheck))
+							{
+								$dup_lead=0;
+								$dup_lists='';
+							$stmt="select campaign_id from vicidial_lists where list_id='$list_id';";
+							$rslt=mysql_query($stmt, $link);
+							$ci_recs = mysql_num_rows($rslt);
+							if ($ci_recs > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$dup_camp =			$row[0];
+
+								$stmt="select list_id from vicidial_lists where campaign_id='$dup_camp';";
+								$rslt=mysql_query($stmt, $link);
+								$li_recs = mysql_num_rows($rslt);
+								if ($li_recs > 0)
+									{
+									$L=0;
+									while ($li_recs > $L)
+										{
+										$row=mysql_fetch_row($rslt);
+										$dup_lists .=	"'$row[0]',";
+										$L++;
+										}
+									$dup_lists = eregi_replace(",$",'',$dup_lists);
+
+									$stmt="select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+									$rslt=mysql_query($stmt, $link);
+									$pc_recs = mysql_num_rows($rslt);
+									if ($pc_recs > 0)
+										{
+										$dup_lead=1;
+										$row=mysql_fetch_row($rslt);
+										$dup_lead_list =	$row[0];
+										}
+									if ($dup_lead < 1)
+										{
+										if (eregi("$phone_number$US$list_id",$phone_list))
+											{$dup_lead++; $dup++;}
+										}
+									}
+								}
+							}
+
+						##### Check for duplicate phone numbers in vicidial_list table entire database #####
+						if (eregi("DUPSYS",$dupcheck))
+							{
+							$dup_lead=0;
+							$stmt="select list_id from vicidial_list where phone_number='$phone_number';";
+							$rslt=mysql_query($stmt, $link);
+							$pc_recs = mysql_num_rows($rslt);
+							if ($pc_recs > 0)
+								{
+								$dup_lead=1;
+								$row=mysql_fetch_row($rslt);
+								$dup_lead_list =	$row[0];
+								}
+							if ($dup_lead < 1)
+								{
+								if (eregi("$phone_number$US$list_id",$phone_list))
+									{$dup_lead++; $dup++;}
+								}
+							}
+
+						##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+						if (eregi("DUPLIST",$dupcheck))
 							{
 							$dup_lead=0;
 							$stmt="select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
@@ -408,6 +494,7 @@ function ParseFileName() {
 								{
 								$row=mysql_fetch_row($rslt);
 								$dup_lead =			$row[0];
+								$dup_lead_list =	$list_id;
 								}
 							if ($dup_lead < 1)
 								{
@@ -441,7 +528,7 @@ function ParseFileName() {
 
 							$good++;
 						} else {
-							if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+							if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead  $dup_lead_list</font><b>\n";}
 							$bad++;
 						}
 						$total++;
@@ -473,11 +560,17 @@ function ParseFileName() {
 			{
 			print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>\n";
 			}
+			if (strlen($phone_code_override)>0) 
+			{
+			print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>\n";
+			}
 		# print "|$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override --lead_file=$lead_file|";
 			$dupcheckCLI=''; $postalgmtCLI='';
-			if (eregi("DUP",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+			if (eregi("DUPLIST",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+			if (eregi("DUPCAMP",$dupcheck)) {$dupcheckCLI='--duplicate-campaign-check';}
+			if (eregi("DUPSYS",$dupcheck)) {$dupcheckCLI='--duplicate-system-check';}
 			if (eregi("POSTAL",$postalgmt)) {$postalgmtCLI='--postal-code-gmt';}
-			passthru("$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override --lead-file=$lead_file $postalgmtCLI $dupcheckCLI");
+			passthru("$WeBServeRRooT/vicidial/listloader_super.pl $vendor_lead_code_field,$source_id_field,$list_id_field,$phone_code_field,$phone_number_field,$title_field,$first_name_field,$middle_initial_field,$last_name_field,$address1_field,$address2_field,$address3_field,$city_field,$state_field,$province_field,$postal_code_field,$country_code_field,$gender_field,$date_of_birth_field,$alt_phone_field,$email_field,$security_phrase_field,$comments_field, --forcelistid=$list_id_override --forcephonecode=$phone_code_override --lead-file=$lead_file $postalgmtCLI $dupcheckCLI");
 		} else {
 			# copy($leadfile, "./vicidial_temp_file.csv");
 			$file=fopen("$lead_file", "r");
@@ -489,6 +582,11 @@ function ParseFileName() {
 			if (strlen($list_id_override)>0) 
 				{
 				print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+				}
+
+			if (strlen($phone_code_override)>0) 
+				{
+				print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>";
 				}
 
 			while($row=fgetcsv($file, 1000, ",")) {
@@ -528,12 +626,80 @@ function ParseFileName() {
 
 					if (strlen($list_id_override)>0) 
 						{
-					#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 						$list_id = $list_id_override;
 						}
+					if (strlen($phone_code_override)>0) 
+						{
+						$phone_code = $phone_code_override;
+						}
 
-					##### Check for duplicate phone numbers in vicidial_list table #####
-					if (eregi("DUP",$dupcheck))
+					##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+					if (eregi("DUPCAMP",$dupcheck))
+						{
+							$dup_lead=0;
+							$dup_lists='';
+						$stmt="select campaign_id from vicidial_lists where list_id='$list_id';";
+						$rslt=mysql_query($stmt, $link);
+						$ci_recs = mysql_num_rows($rslt);
+						if ($ci_recs > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$dup_camp =			$row[0];
+
+							$stmt="select list_id from vicidial_lists where campaign_id='$dup_camp';";
+							$rslt=mysql_query($stmt, $link);
+							$li_recs = mysql_num_rows($rslt);
+							if ($li_recs > 0)
+								{
+								$L=0;
+								while ($li_recs > $L)
+									{
+									$row=mysql_fetch_row($rslt);
+									$dup_lists .=	"'$row[0]',";
+									$L++;
+									}
+								$dup_lists = eregi_replace(",$",'',$dup_lists);
+
+								$stmt="select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+								$rslt=mysql_query($stmt, $link);
+								$pc_recs = mysql_num_rows($rslt);
+								if ($pc_recs > 0)
+									{
+									$dup_lead=1;
+									$row=mysql_fetch_row($rslt);
+									$dup_lead_list =	$row[0];
+									}
+								if ($dup_lead < 1)
+									{
+									if (eregi("$phone_number$US$list_id",$phone_list))
+										{$dup_lead++; $dup++;}
+									}
+								}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table entire database #####
+					if (eregi("DUPSYS",$dupcheck))
+						{
+						$dup_lead=0;
+						$stmt="select list_id from vicidial_list where phone_number='$phone_number';";
+						$rslt=mysql_query($stmt, $link);
+						$pc_recs = mysql_num_rows($rslt);
+						if ($pc_recs > 0)
+							{
+							$dup_lead=1;
+							$row=mysql_fetch_row($rslt);
+							$dup_lead_list =	$row[0];
+							}
+						if ($dup_lead < 1)
+							{
+							if (eregi("$phone_number$US$list_id",$phone_list))
+								{$dup_lead++; $dup++;}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+					if (eregi("DUPLIST",$dupcheck))
 						{
 						$dup_lead=0;
 						$stmt="select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
@@ -577,7 +743,7 @@ function ParseFileName() {
 
 					$good++;
 				} else {
-					if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -637,6 +803,10 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 			{
 			print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 			}
+			if (strlen($phone_code_override)>0) 
+			{
+			print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>\n";
+			}
 		while (!feof($file)) {
 				$record++;
 				$buffer=rtrim(fgets($file, 4096));
@@ -680,12 +850,80 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if (strlen($list_id_override)>0) 
 						{
-					#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 						$list_id = $list_id_override;
 						}
+					if (strlen($phone_code_override)>0) 
+						{
+						$phone_code = $phone_code_override;
+						}
 
-					##### Check for duplicate phone numbers in vicidial_list table #####
-					if (eregi("DUP",$dupcheck))
+					##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+					if (eregi("DUPCAMP",$dupcheck))
+						{
+							$dup_lead=0;
+							$dup_lists='';
+						$stmt="select campaign_id from vicidial_lists where list_id='$list_id';";
+						$rslt=mysql_query($stmt, $link);
+						$ci_recs = mysql_num_rows($rslt);
+						if ($ci_recs > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$dup_camp =			$row[0];
+
+							$stmt="select list_id from vicidial_lists where campaign_id='$dup_camp';";
+							$rslt=mysql_query($stmt, $link);
+							$li_recs = mysql_num_rows($rslt);
+							if ($li_recs > 0)
+								{
+								$L=0;
+								while ($li_recs > $L)
+									{
+									$row=mysql_fetch_row($rslt);
+									$dup_lists .=	"'$row[0]',";
+									$L++;
+									}
+								$dup_lists = eregi_replace(",$",'',$dup_lists);
+
+								$stmt="select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+								$rslt=mysql_query($stmt, $link);
+								$pc_recs = mysql_num_rows($rslt);
+								if ($pc_recs > 0)
+									{
+									$dup_lead=1;
+									$row=mysql_fetch_row($rslt);
+									$dup_lead_list =	$row[0];
+									}
+								if ($dup_lead < 1)
+									{
+									if (eregi("$phone_number$US$list_id",$phone_list))
+										{$dup_lead++; $dup++;}
+									}
+								}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table entire database #####
+					if (eregi("DUPSYS",$dupcheck))
+						{
+						$dup_lead=0;
+						$stmt="select list_id from vicidial_list where phone_number='$phone_number';";
+						$rslt=mysql_query($stmt, $link);
+						$pc_recs = mysql_num_rows($rslt);
+						if ($pc_recs > 0)
+							{
+							$dup_lead=1;
+							$row=mysql_fetch_row($rslt);
+							$dup_lead_list =	$row[0];
+							}
+						if ($dup_lead < 1)
+							{
+							if (eregi("$phone_number$US$list_id",$phone_list))
+								{$dup_lead++; $dup++;}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+					if (eregi("DUPLIST",$dupcheck))
 						{
 						$dup_lead=0;
 						$stmt="select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
@@ -729,7 +967,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 						$good++;
 					} else {
-						if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+						if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 						$bad++;
 					}
 					$total++;
@@ -768,9 +1006,11 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 	#	echo "|$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override --lead-file=$lead_file|";
 		$dupcheckCLI=''; $postalgmtCLI='';
-		if (eregi("DUP",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+		if (eregi("DUPLIST",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+		if (eregi("DUPCAMP",$dupcheck)) {$dupcheckCLI='--duplicate-campaign-check';}
+		if (eregi("DUPSYS",$dupcheck)) {$dupcheckCLI='--duplicate-system-check';}
 		if (eregi("POSTAL",$postalgmt)) {$postalgmtCLI='--postal-code-gmt';}
-		passthru("$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override --lead-file=$lead_file  $postalgmtCLI $dupcheckCLI");
+		passthru("$WeBServeRRooT/vicidial/listloader.pl --forcelistid=$list_id_override --forcephonecode=$phone_code_override --lead-file=$lead_file  $postalgmtCLI $dupcheckCLI");
 	
 		}
 		else 
@@ -794,6 +1034,10 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 		if (strlen($list_id_override)>0) 
 			{
 			print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+			}
+		if (strlen($phone_code_override)>0) 
+			{
+			print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>";
 			}
 
 		while($row=fgetcsv($file, 1000, ",")) {
@@ -832,12 +1076,80 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if (strlen($list_id_override)>0) 
 						{
-					#	print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
 						$list_id = $list_id_override;
 						}
+					if (strlen($phone_code_override)>0) 
+						{
+						$phone_code = $phone_code_override;
+						}
 
-					##### Check for duplicate phone numbers in vicidial_list table #####
-					if (eregi("DUP",$dupcheck))
+					##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+					if (eregi("DUPCAMP",$dupcheck))
+						{
+							$dup_lead=0;
+							$dup_lists='';
+						$stmt="select campaign_id from vicidial_lists where list_id='$list_id';";
+						$rslt=mysql_query($stmt, $link);
+						$ci_recs = mysql_num_rows($rslt);
+						if ($ci_recs > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$dup_camp =			$row[0];
+
+							$stmt="select list_id from vicidial_lists where campaign_id='$dup_camp';";
+							$rslt=mysql_query($stmt, $link);
+							$li_recs = mysql_num_rows($rslt);
+							if ($li_recs > 0)
+								{
+								$L=0;
+								while ($li_recs > $L)
+									{
+									$row=mysql_fetch_row($rslt);
+									$dup_lists .=	"'$row[0]',";
+									$L++;
+									}
+								$dup_lists = eregi_replace(",$",'',$dup_lists);
+
+								$stmt="select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
+								$rslt=mysql_query($stmt, $link);
+								$pc_recs = mysql_num_rows($rslt);
+								if ($pc_recs > 0)
+									{
+									$dup_lead=1;
+									$row=mysql_fetch_row($rslt);
+									$dup_lead_list =	$row[0];
+									}
+								if ($dup_lead < 1)
+									{
+									if (eregi("$phone_number$US$list_id",$phone_list))
+										{$dup_lead++; $dup++;}
+									}
+								}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table entire database #####
+					if (eregi("DUPSYS",$dupcheck))
+						{
+						$dup_lead=0;
+						$stmt="select list_id from vicidial_list where phone_number='$phone_number';";
+						$rslt=mysql_query($stmt, $link);
+						$pc_recs = mysql_num_rows($rslt);
+						if ($pc_recs > 0)
+							{
+							$dup_lead=1;
+							$row=mysql_fetch_row($rslt);
+							$dup_lead_list =	$row[0];
+							}
+						if ($dup_lead < 1)
+							{
+							if (eregi("$phone_number$US$list_id",$phone_list))
+								{$dup_lead++; $dup++;}
+							}
+						}
+
+					##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+					if (eregi("DUPLIST",$dupcheck))
 						{
 						$dup_lead=0;
 						$stmt="select count(*) from vicidial_list where phone_number='$phone_number' and list_id='$list_id';";
@@ -881,7 +1193,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					$good++;
 				} else {
-					if ($bad < 10) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -906,7 +1218,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 		} else {
 			print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script><HR>";
 			flush();
-			print "<table border=0 cellpadding=3 cellspacing=0 width=500 align=center>\r\n";
+			print "<table border=0 cellpadding=3 cellspacing=0 width=700 align=center>\r\n";
 			print "  <tr bgcolor='#330099'>\r\n";
 			print "    <th align=right><font class='standard' color='white'>VICIDIAL Spalte</font></th>\r\n";
 			print "    <th><font class='standard' color='white'>Akte Daten</font></th>\r\n";
@@ -944,6 +1256,10 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				if (strlen($list_id_override)>0) 
 					{
 					print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+					}
+				if (strlen($phone_code_override)>0) 
+					{
+					print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>";
 					}
 				$buffer=rtrim(fgets($file, 4096));
 				$buffer=stripslashes($buffer);
@@ -1016,7 +1332,9 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 			#	echo "|$WeBServeRRooT/vicidial/listloader_rowdisplay.pl --lead-file=$lead_file|";
 				$dupcheckCLI=''; $postalgmtCLI='';
-				if (eregi("DUP",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+				if (eregi("DUPLIST",$dupcheck)) {$dupcheckCLI='--duplicate-check';}
+				if (eregi("DUPCAMP",$dupcheck)) {$dupcheckCLI='--duplicate-campaign-check';}
+				if (eregi("DUPSYS",$dupcheck)) {$dupcheckCLI='--duplicate-system-check';}
 				if (eregi("POSTAL",$postalgmt)) {$postalgmtCLI='--postal-code-gmt';}
 				passthru("$WeBServeRRooT/vicidial/listloader_rowdisplay.pl --lead-file=$lead_file $postalgmtCLI $dupcheckCLI");
 			} 
@@ -1042,6 +1360,10 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				if (strlen($list_id_override)>0) 
 					{
 					print "<BR><BR>LISTE IDENTIFIKATION OVERRIDE FOR THIS FILE: $list_id_override<BR><BR>";
+					}
+				if (strlen($phone_code_override)>0) 
+					{
+					print "<BR><BR>TELEFON-CODE-ÜBERSTEUERUNG FÜR DIESE AKTE: $phone_code_override<BR><BR>";
 					}
 
 				$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
@@ -1102,6 +1424,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 			print "  <input type=hidden name=postalgmt value=\"$postalgmt\">\r\n";
 			print "  <input type=hidden name=lead_file value=\"$lead_file\">\r\n";
 			print "  <input type=hidden name=list_id_override value=\"$list_id_override\">\r\n";
+			print "  <input type=hidden name=phone_code_override value=\"$phone_code_override\">\r\n";
 			print "    <th colspan=2><input type=submit name='OK_to_process' value='OKAY ZU VERARBEITEN'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type=button onClick=\"javascript:document.location='new_listloader_superL.php'\" value=\"BEGINNEN SIE RÜBER\" name='reload_page'></th>\r\n";
 			print "  </tr>\r\n";
 			print "</table>\r\n";

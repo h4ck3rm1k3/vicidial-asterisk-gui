@@ -1,7 +1,7 @@
 <?
 # conf_exten_check.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -34,6 +34,7 @@
 # 60619-1201 - Added variable filters to close security holes for login form
 # 61128-2255 - Added update for manual dial vicidial_live_agents
 # 70319-1542 - Added agent disabled display function
+# 71122-0205 - Added vicidial_live_agent status output
 #
 
 require("dbconnect.php");
@@ -70,8 +71,8 @@ if (!isset($format))   {$format="text";}
 if (!isset($ACTION))   {$ACTION="refresh";}
 if (!isset($client))   {$client="agc";}
 
-$version = '0.0.11';
-$build = '70319-1542';
+$version = '2.0.4-12';
+$build = '71122-0205';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -155,6 +156,14 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			$row=mysql_fetch_row($rslt);
 			$Acount=$row[0];
 
+			if ($Acount > 0)
+				{
+				$stmt="SELECT status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$Astatus=$row[0];
+				}
 		#	### find out if external table shows agent should be disabled
 		#	$stmt="SELECT count(*) from another_table where user='$user' and status='DEAD';";
 		#	if ($DB) {echo "|$stmt|\n";}
@@ -176,7 +185,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
 					$row=mysql_fetch_row($rslt);
-					$Astatus=$row[0];
+					$Alogin=$row[0];
 					$Acampaign=$row[1];
 
 					### grab the number of calls being placed from this server and campaign
@@ -188,13 +197,13 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					}
 				else
 					{
-					$Astatus='N';
+					$Alogin='N';
 					$RingCalls='N';
 					}
 				}
 			else
 				{
-				$Astatus='N';
+				$Alogin='N';
 				$RingCalls='N';
 
 				### update the vicidial_live_agents every second with a new random number so it is shown to be alive
@@ -204,10 +213,10 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 
 				}
 
-			if ($Acount < 1) {$Astatus='DEAD_VLA';}
-			if ($AexternalDEAD > 0) {$Astatus='DEAD_EXTERNAL';}
+			if ($Acount < 1) {$Alogin='DEAD_VLA';}
+			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Statut: ' . $Astatus . '|CampCalls: ' . $RingCalls . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Statut: ' . $Astatus . "|\n";
 
 			}
 		$total_conf=0;

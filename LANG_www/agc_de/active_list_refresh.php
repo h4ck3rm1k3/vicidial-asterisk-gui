@@ -159,7 +159,7 @@ if ($format=='table')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BAU: $build    ADD: $ADD   server_ip: $server_ip-->\n";
+echo "<!-- VERSION: $version     BUILD: $build    ADD: $ADD   server_ip: $server_ip-->\n";
 echo "<title>Liste Display: ";
 if ($ADD==1)		{echo "Live Erweiterungen";}
 if ($ADD==2)		{echo "Besetzte Erweiterungen";}
