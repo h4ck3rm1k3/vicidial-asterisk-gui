@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.4               2007-11-XX
+Asterisk/astguiclient install from scratch.    v.2.0.4               2007-12-03
    By the astGUIclient group                              astguiclient@eflo.net
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -1626,12 +1626,12 @@ SUBPHASE 6.0: putting the files in place
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.3)
+package(as of this writing it is 2.0.4)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.3.zip
-	- unzip astguiclient_2.0.3.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.zip
+	- unzip astguiclient_2.0.4.zip
 	- perl install.pl (make sure you are in the directory with the install.pl file)
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
@@ -1728,6 +1728,12 @@ quit
 	- /usr/share/astguiclient/ADMIN_area_code_populate.pl
 
 ######------ END Mysql data entry ------######
+
+NOTE: If you will be using channelbanks for agent phones you can use the 
+/extras/single_channelbank_phones.sql file to help enter the phones table entries.
+
+NOTE: If you will be using IAX or SIP phones for agent phones you can use the 
+/extras/sip-iax_phones.sql file to help enter the phones table entries.
 
 NOTE: if you are not installing using default user/pass or have MySQL on another 
 server, you will need to edit either the /etc/astguiclient.conf file or the 
@@ -1904,6 +1910,7 @@ exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 ; 	- CID - 	CID received, add record with phone number
 ; 	- CIDLOOKUP - 	Lookup CID to find record in whole system
 ; 	- CIDLOOKUPRL -	Restrict lookup to one list
+; 	- CIDLOOKUPRC -	Restrict lookup to one campaign's lists
 ;	- CLOSER -      Closer calls from VICIDIAL fronters
 ; 	- ANI - 	ANI received, add record with phone number
 ; 	- ANILOOKUP - 	Lookup ANI to find record in whole system
@@ -1923,6 +1930,7 @@ exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 ; 7. the status of the call initially(usually not used)
 ; 8. the list_id to insert the new lead under if it is new (and CID/ANI available)
 ; 9. the phone dialing code to insert with the new lead if new (and CID/ANI available)
+; 10. the campaign_id to search within lists if CIDLOOKUPRC
 ; inbound VICIDIAL call with CID delivery through T1 PRI
 exten => 1234,1,Answer                  ; Answer the line
 exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----CL_GALLERIA-----7274515134-----Closer-----park----------999-----1)
@@ -1938,15 +1946,16 @@ exten => _990009.,3,Hangup
 
 
 ### follow these instructions if you plan to have VICIDIAL agents take inbound or closer calls:
-	1. create a new campaign in VICIDIAL  called "CLOSER"
-	2. in VICIDIAL web admin "add a new in-group" (the above examples would be "CL_GALLERIA")
+	1. in VICIDIAL web admin "add a new in-group" (the above examples would be "CL_GALLERIA")
 		- group IDs cannot contain spaces ' ' or dashes '-' or plusses '+'
 		- if you are using a HEX color value make sure to include the hash '#' at the beginning
-	3. have agents log in to the CLOSER campaign and select the CL_GALLERIA button
-	4. they will now start receiving inbound calls
-	5. as calls come in, each call is inserted into the vicidial_list table under the 
+	2. create a new campaign in VICIDIAL  called "CLOSER" and set "allow inbound blended" to Y
+	3. check the CL_GALLERIA checknox in the "Allowed In-Groups" section
+	4. have agents log in to the CLOSER campaign and select the CL_GALLERIA in-group
+	5. they will now start receiving inbound calls
+	6. as calls come in, each call is inserted into the vicidial_list table under the 
 	   list specified int the AGI string, In the above example that would be list 999
-	6. if you want to take closer calls from the campaign "TEST" you will need to create
+	7. if you want to take closer calls from the campaign "TEST" you will need to create
 	   an in-group called "CL_TEST_" for internal closing(on the same system) or "CL_TEST_L"
 	   for local closing(closer on different system from fronter) and then the fronter will
 	   click on the "internal closer" button to send the call to a closer
@@ -3020,9 +3029,7 @@ GUI interface using only a web browser. The browser requirements for this are:
 - Mozilla 1.7 or greater
 - Netscape 8 or greater
 - Opera 8.5 or greater
-- Microsoft Internet Explorer 5.0 or greater (we have noticed some serious
-  memory leaks in IE5 and IE6 when using this program, they do not occur in
-  Firefox which is why we recommend it overall.)
+- Microsoft Internet Explorer 6.0
 
 This new version also has more flexibility and functionality than the perl/Tk
 version as well as being prettier. We have successfully tested this on many 
@@ -3070,9 +3077,7 @@ The browser requirements for this are:
 - Mozilla 1.7 or greater
 - Netscape 8 or greater
 - Opera 8.5 or greater
-- Microsoft Internet Explorer 5.0 or greater (we have noticed some serious
-  memory leaks in IE5 and IE6 when using this program, they do not occur in
-  Firefox which is why we recommend it overall.)
+- Microsoft Internet Explorer 6.0
 
 This version is fully functional and has been tested in our production 
 call center with no problems. On RedHat 9.0 Linux workstations we have noticed 

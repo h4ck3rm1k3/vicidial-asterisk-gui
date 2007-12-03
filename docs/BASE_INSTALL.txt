@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from existing server.    v.2.0.3        2007-04-27
+Asterisk/astguiclient install from existing server.    v.2.0.4        2007-12-03
    By the astGUIclient group                              astguiclient@eflo.net
 
 
@@ -187,12 +187,12 @@ VICIDIAL components to the system.
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.3)
+package(as of this writing it is 2.0.4)
    - for 2.0.X release:
 	mkdir /usr/src/astguiclient
 	cd /usr/src/astguiclient
-	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.3.zip
-	unzip astguiclient_2.0.3.zip
+	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.zip
+	unzip astguiclient_2.0.4.zip
 	perl install.pl
    - for SVN 2.0 trunk:
 	mkdir /usr/src/astguiclient

@@ -1,4 +1,4 @@
-# Quick install of required apps    v.2.0.4               2007-05-21
+# Quick install of required apps    v.2.0.4               2007-12-03
 # This file is a supplement to the BASE_INSTALL document giving you simple copy/
 # paste installation shell commands for required and helper apps for VICIDIAL
 # might need:   echo '/* Linuxthreads */' >> /usr/include/pthread.h

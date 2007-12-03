@@ -153,25 +153,3 @@ ALTER TABLE vicidial_inbound_groups ADD default_xfer_group VARCHAR(20) default '
 
 ALTER TABLE vicidial_campaigns ADD xfer_groups  TEXT default '';
 
-
-
-
-
-#!!!!!!! CHANGES BELOW THIS LINE ARE NOT FOR PRODUCTION USE YET, DO NOT APPLY THEM!!!!!!!!!!!!!!!!!!!!!
-#
-#ALTER TABLE vicidial_inbound_groups ADD announce_place_in_line ENUM('Y','N') default 'N';
-#ALTER TABLE vicidial_inbound_groups ADD announce_estimate_hold_time ENUM('Y','N') default 'N';
-#ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_place ENUM('Y','N') default 'N';
-#ALTER TABLE vicidial_inbound_groups ADD allow_leave_queue_message ENUM('Y','N') default 'N';
-#ALTER TABLE vicidial_inbound_groups ADD callback_number_validation ENUM('6','7','8','9','10','11','12','13','14','NORTH_AMERICA','UK','NONE');
-#
-#ALTER TABLE vicidial_user_groups ADD allowable_xfer_inbound_groups TEXT
-#ALTER TABLE vicidial_user_groups ADD default_xfer_inbound_group VARCHAR(20)
-#
-# 
-
-
-
-
-
-

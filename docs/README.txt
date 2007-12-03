@@ -1,5 +1,5 @@
 +------------------------------------------------------------------------------+
-|   Asterisk GUI client - astguiclient - twenty-seventh public release 2.0.3   |
+|   Asterisk GUI client - astguiclient - twenty-ninth public release 2.0.4     |
 |           created by astGUIclient group <astguiclient@eflo.net>              |
 |  project started 2003-10-06   http://sourceforge.net/projects/astguiclient/  |
 +------------------------------------------------------------------------------+
@@ -568,3 +568,16 @@ UPGRADE NOTES:
      http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.3
 UPGRADE NOTES:
  * if upgrading from 2.0.2 you need to follow instructions in the UPGRADE doc
+
+2.0.4 - Twenty-Ninth public release - 2007-12-03
+- Easy control over System Statuses, including the addition of Status Categories
+- Several new additional In-Group features including music-on-hold, alert messages and call times
+- Skills based ranking and call routing for inbound and outbound
+- Agent call routing based on the number of calls taken today per in-group or campaign
+- Added the ability to copy the settings of an existing User/Campaign/In-Group into a new one
+- Changing the Transfer feature in the agent screen to allow for more transfer In-Group choices
+- Dynamic display of available campaigns for an agent in the agent login screen
+- Many other changes and bug fixes listed in the TODO Wiki webpage:
+     http://www.eflo.net/VICIDIALwiki/index.php/TODO:2.0.4
+UPGRADE NOTES:
+ * if upgrading from 2.0.3 you need to follow instructions in the UPGRADE doc
