@@ -156,7 +156,7 @@ $KEEP=0;
 $DELETE=0;
 foreach(@lead_ids)
 	{
-	if ($save_statuses !~ /\|$statuses[$i]\|/)
+	if ( ($save_statuses !~ /\|$statuses[$i]\|/) && (length($statuses[$i])>0) )
 		{
 		if ($use_date_DIRs) 
 			{

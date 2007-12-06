@@ -474,10 +474,10 @@ echo "</FORM>\n\n";
 if ($campaign_allow_inbound > 0)
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
+		if ($non_latin > 0)
+		{
+		$rslt=mysql_query("SET NAMES 'UTF8'");
+		}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);

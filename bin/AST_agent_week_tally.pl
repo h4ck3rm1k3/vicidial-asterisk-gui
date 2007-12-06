@@ -1,18 +1,19 @@
 #!/usr/bin/perl
 
-# AST_agent_day.pl
+# AST_agent_week_tally.pl
 #
 # This script is designed to gather stats for all agent activity over the course
-# of a day and print it in an ASCI text file to be placed 
+# of a week and print it in an ASCI text file to be placed 
 # on a web server for viewing.
 #
-# Place in the crontab and run every night at 23:59
-# 59 23 * * * /home/cron/AST_agent_day.pl
+# Place in the crontab and run every Saturday night at 23:59
+# 59 23 6 * * /home/cron/AST_agent_day.pl
 # 
 # CHANGES
 # 60517-1100 - First version
 # 60715-2325 - changed to use /etc/astguiclient.conf for configs
 # 71115-0231 - added Pipe-delimited file output
+# 71205-1232 - Changed to week total version
 #
 
 $txt = '.txt';
@@ -81,10 +82,20 @@ $secX = time();
 	if ($wday==5) {$day='Friday   ';}
 	if ($wday==6) {$day='Saturday ';}
 
+$TDtarget = ($secX - 600000); # 6 days 10 hours 30 minutes in the past
+($Tsec,$Tmin,$Thour,$Tmday,$Tmon,$Tyear,$Twday,$Tyday,$Tisdst) = localtime($TDtarget);
+$Tyear = ($Tyear + 1900);
+$Tmon++;
+if ($Tmon < 10) {$Tmon = "0$Tmon";}
+if ($Tmday < 10) {$Tmday = "0$Tmday";}
+if ($Thour < 10) {$Thour = "0$Thour";}
+if ($Tmin < 10) {$Tmin = "0$Tmin";}
+if ($Tsec < 10) {$Tsec = "0$Tsec";}
+	$begindate = "$Tyear-$Tmon-$Tmday";
 
 
-print "\n\n\n\n\n\n\n\n\n\n\n\n-- AST_agent_day.pl --\n\n";
-print "This program is designed to print stats to a file for agents' activity for the previous day. \n\n";
+print "\n\n\n\n\n\n\n\n\n\n\n\n-- AST_agent_week_tally.pl --\n\n";
+print "This program is designed to print stats to a file for agents' activity for the previous week. \n\n";
 
 
 # default path to astguiclient configuration file:
@@ -128,8 +139,8 @@ foreach(@conf)
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
 
-$outfile = "AGENT_DAY_$shipdate$txt";
-$Doutfile = "AGENT_DAY_PIPE_$shipdate$txt";
+$outfile = "AGENT_TALLY_$shipdate$txt";
+$Doutfile = "AGENT_TALLY_PIPE_$shipdate$txt";
 
 ### open the X out file for writing ###
 open(out, ">$PATHweb/vicidial/agent_reports/$outfile")
@@ -154,14 +165,13 @@ $vicidial_agent_log = 'vicidial_agent_log';
 ###########################################################################
 ########### PAST WEEK STAT GATHERING LOOP #################################
 ###########################################################################
-print Dout "TODAY:     $day     $shipdate\n\n";
 print Dout "DATE|AGENT|USER|CALLS|TALK|PAUSE|WAIT|DISPO|ACTIVE|LOGTIME|FIRST|LAST\n";
-print out "TODAY:     $day     $shipdate\n\n";
+print out "WEEK: $begindate through $shipdate\n\n";
 print out "AGENT                USER     CALLS  TALK     PAUSE    WAIT     DISPO    ACTIVE   LOGTIME  FIRST                LAST                    \n";
-print "TODAY:     $day     $shipdate\n\n";
+print "WEEK: $begindate through $shipdate\n\n";
 print "AGENT                USER     CALLS  TALK     PAUSE    WAIT     DISPO    ACTIVE   LOGTIME  FIRST                LAST                    \n";
 
-$stmtA = "select count(*) as calls, full_name,vicidial_users.user,sum(talk_sec),sum(pause_sec),sum(wait_sec),sum(dispo_sec) from vicidial_users,$vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$shipdate 00:00:00' and vicidial_users.user=$vicidial_agent_log.user and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 group by vicidial_users.user order by full_name limit 10000;";
+$stmtA = "select count(*) as calls, full_name,vicidial_users.user,sum(talk_sec),sum(pause_sec),sum(wait_sec),sum(dispo_sec) from vicidial_users,$vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$begindate 00:00:00' and vicidial_users.user=$vicidial_agent_log.user and pause_sec<48800 and wait_sec<48800 and talk_sec<48800 and dispo_sec<48800 group by vicidial_users.user order by full_name limit 10000;";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -238,7 +248,7 @@ while ($sthArows > $rec_count)
 	$Ddispo = $TIME_HMS;
 	$dispo =	sprintf("%9s", $TIME_HMS);
 
-	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$shipdate 00:00:00' and user='$aryA[2]' order by event_time limit 1;";
+	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$begindate 00:00:00' and user='$aryA[2]' order by event_time limit 1;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtA ", $dbhB->errstr;
 	@aryB = $sthB->fetchrow_array;
@@ -247,7 +257,7 @@ while ($sthArows > $rec_count)
 	$Dfirst_log = $aryB[1];
 	$first_log = $aryB[1];
 
-	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$shipdate 00:00:00' and user='$aryA[2]' order by event_time desc limit 1;";
+	$stmtB = "select event_time,UNIX_TIMESTAMP(event_time) from $vicidial_agent_log where event_time <= '$shipdate 23:59:59' and event_time >= '$begindate 00:00:00' and user='$aryA[2]' order by event_time desc limit 1;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtA ", $dbhB->errstr;
 	@aryB = $sthB->fetchrow_array;
@@ -264,6 +274,7 @@ while ($sthArows > $rec_count)
 	if ($TIME_S < 10) {$TIME_S = "0$TIME_S";}
 	if ($TIME_M < 10) {$TIME_M = "0$TIME_M";}
 	$TIME_HMS = "$TIME_H:$TIME_M:$TIME_S";
+	$TIME_HMS = "N/A";
 	$Dlogin_time = $TIME_HMS;
 	$login_time =	sprintf("%9s", $TIME_HMS);
 

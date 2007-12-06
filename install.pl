@@ -1878,6 +1878,27 @@ if ($PROMPTcopy_conf_files =~ /y/i)
 	`cp -f ./docs/conf_examples/dnsmgr.conf.sample /etc/asterisk/dnsmgr.conf`;
 	}
 
+
+### format the new server_ip dialstring for example to use with extensions.conf
+$S='*';
+if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+	{
+	$a = leading_zero($1); 
+	$b = leading_zero($2); 
+	$c = leading_zero($3); 
+	$d = leading_zero($4);
+	$VARremDIALstr = "$a$S$b$S$c$S$d";
+	}
+
+print "\nIMPORTANT NOTE!\n";
+print "\nPlease remember to put these lines in your extensions.conf file:\n";
+print "exten => _$VARremDIALstr*8600XXX,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*78600XXX,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+
 print "\nASTGUICLIENT INSTALLATION FINISHED!     ENJOY!\n";
 
 $secy = time();		$secz = ($secy - $secX);		$minz = ($secz/60);		# calculate script runtime so far
@@ -1885,3 +1906,13 @@ print "\n     - process runtime      ($secz sec) ($minz minutes)\n";
 
 
 exit;
+
+
+
+sub leading_zero($) 
+{
+    $_ = $_[0];
+    s/^(\d)$/0$1/;
+    s/^(\d\d)$/0$1/;
+    return $_;
+} # End of the leading_zero() routine.

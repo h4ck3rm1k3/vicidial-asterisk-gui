@@ -112,8 +112,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 
 	if ($DB) {print " - cleaning up pause time\n";}
-	### Grab any pause time record greater than 50000
-	$stmtA = "SELECT agent_log_id,pause_epoch,wait_epoch from vicidial_agent_log where pause_sec>50000;";
+	### Grab any pause time record greater than 43999
+	$stmtA = "SELECT agent_log_id,pause_epoch,wait_epoch from vicidial_agent_log where pause_sec>43999;";
 		if ($DBX) {print "$stmtA\n";}
 	#$dbhA->query("$stmtA");
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -129,7 +129,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 			$pause_epoch[$i]	=		"$aryA[1]";
 			$wait_epoch[$i]	=			"$aryA[2]";
 			$pause_sec[$i] = int($wait_epoch[$i] - $pause_epoch[$i]);
-			if ( ($pause_sec[$i] < 0) || ($pause_sec[$i] > 50000) ) 
+			if ( ($pause_sec[$i] < 0) || ($pause_sec[$i] > 43999) ) 
 				{
 				$DBout = "Override output: $pause_sec[$i]"; 
 				$pause_sec[$i] = 0;
@@ -156,8 +156,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	if ($DBX) {print "\n\n";}
 	if ($DB) {print " - cleaning up wait time\n";}
-	### Grab any pause time record greater than 50000
-	$stmtA = "SELECT agent_log_id,wait_epoch,talk_epoch from vicidial_agent_log where wait_sec>50000;";
+	### Grab any pause time record greater than 43999
+	$stmtA = "SELECT agent_log_id,wait_epoch,talk_epoch from vicidial_agent_log where wait_sec>43999;";
 		if ($DBX) {print "$stmtA\n";}
 	
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -173,7 +173,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 			$wait_epoch[$i]	=		    "$aryA[1]";
 			$talk_epoch[$i]	=			"$aryA[2]";
 			$wait_sec[$i] = int($talk_epoch[$i] - $wait_epoch[$i]);
-			if ( ($wait_sec[$i] < 0) || ($wait_sec[$i] > 50000) ) 
+			if ( ($wait_sec[$i] < 0) || ($wait_sec[$i] > 43999) ) 
 				{
 				$DBout = "Override output: $wait_sec[$i]"; 
 				$wait_sec[$i] = 0;
@@ -199,8 +199,8 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	if ($DBX) {print "\n\n";}
 	if ($DB) {print " - cleaning up talk time\n";}
-	### Grab any pause time record greater than 50000
-	$stmtA = "SELECT agent_log_id,talk_epoch,dispo_epoch from vicidial_agent_log where talk_sec>50000;";
+	### Grab any pause time record greater than 43999
+	$stmtA = "SELECT agent_log_id,talk_epoch,dispo_epoch from vicidial_agent_log where talk_sec>43999;";
 		if ($DBX) {print "$stmtA\n";}
 
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -216,7 +216,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 			$talk_epoch[$i]	=		"$aryA[1]";
 			$dispo_epoch[$i]	=	"$aryA[2]";
 			$talk_sec[$i] = int($dispo_epoch[$i] - $talk_epoch[$i]);
-			if ( ($talk_sec[$i] < 0) || ($talk_sec[$i] > 50000) ) 
+			if ( ($talk_sec[$i] < 0) || ($talk_sec[$i] > 43999) ) 
 				{
 				$DBout = "Override output: $talk_sec[$i]"; 
 				$talk_sec[$i] = 0;
@@ -243,7 +243,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 
 	if ($DBX) {print "\n\n";}
 	if ($DB) {print " - cleaning up dispo time\n";}
-		$stmtA = "UPDATE vicidial_agent_log set dispo_sec='0' where dispo_sec>50000;";
+		$stmtA = "UPDATE vicidial_agent_log set dispo_sec='0' where dispo_sec>43999;";
 			if($DBX){print STDERR "|$stmtA|\n";}
 	if (!$TEST)
 		{

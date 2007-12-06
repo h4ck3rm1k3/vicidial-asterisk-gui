@@ -4,7 +4,9 @@
 #
 # DESCRIPTION:
 # OPTIONAL!!! CUSTOMIZE THIS SCRIPT FIRST!!!
-# separates leads into two different lists
+# - separates leads into two different lists
+# - moves leads older than 30 days into 999999 list_id
+# - deletes non-sale leads older than 45 days
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
@@ -102,8 +104,18 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 
 
-if ($isdst) {$TZmove = "'-6.00','-7.00','-8.00','-9.00','-10.00'";}
-else {$TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";}
+if ($isdst)
+ {
+ $TZmove = "'-6.00','-7.00','-8.00','-9.00','-10.00'";
+ $TZback = "'-4.00','-5.00'";
+ }
+else 
+ {
+ $TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";
+ $TZback = "'-5.00','-6.00'";
+ }
+
+	##### change Pacific Mountain	
 
 	$stmtA = "UPDATE vicidial_list set list_id='222' where list_id='111' and gmt_offset_now IN($TZmove);";
 		if($DB){print STDERR "\n|$stmtA|\n";}
@@ -118,6 +130,39 @@ else {$TZmove = "'-7.00','-8.00','-9.00','-10.00','-11.00'";}
 				$affected_rows = $dbhA->do($stmtA);
 				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
+
+        $stmtA = "UPDATE vicidial_list set list_id='4444' where list_id='3333' and gmt_offset_now IN($TZmove);";
+                if($DB){print STDERR "\n|$stmtA|\n";}
+                if (!$T) {
+                                $affected_rows = $dbhA->do($stmtA);
+                                if($DB){print STDERR "\n|$affected_rows records changed|\n";}
+                                 }
+
+	##### change back Eastern Central
+
+        $stmtA = "UPDATE vicidial_list set list_id='111' where list_id='222' and gmt_offset_now IN($TZback);";
+                if($DB){print STDERR "\n|$stmtA|\n";}
+                if (!$T) {
+                                $affected_rows = $dbhA->do($stmtA);
+                                if($DB){print STDERR "\n|$affected_rows records changed|\n";}
+                                 }
+
+        $stmtA = "UPDATE vicidial_list set list_id='11315' where list_id='12021' and gmt_offset_now IN($TZback);";
+                if($DB){print STDERR "\n|$stmtA|\n";}
+                if (!$T) {
+                                $affected_rows = $dbhA->do($stmtA);
+                                if($DB){print STDERR "\n|$affected_rows records changed|\n";}
+                                 }
+
+        $stmtA = "UPDATE vicidial_list set list_id='3333' where list_id='4444' and gmt_offset_now IN($TZback);";
+                if($DB){print STDERR "\n|$stmtA|\n";}
+                if (!$T) {
+                                $affected_rows = $dbhA->do($stmtA);
+                                if($DB){print STDERR "\n|$affected_rows records changed|\n";}
+                                 }
+
+
+
 
 $secX = time();
 
@@ -143,14 +188,14 @@ if ($Tmin < 10) {$Tmin = "0$Tmin";}
 if ($Tsec < 10) {$Tsec = "0$Tsec";}
 	$TDSQLdate = "$Tyear-$Tmon-$Tmday $Thour:$Tmin:$Tsec";
 
-	$stmtA = "UPDATE vicidial_list set list_id='999999' where list_id IN('11315','12021','111','222') and entry_date < \"$XDSQLdate\";";
+	$stmtA = "UPDATE vicidial_list set list_id='999999' where list_id IN('11315','12021','111','222','3333','4444') and entry_date < \"$XDSQLdate\";";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 				$affected_rows = $dbhA->do($stmtA);
 				if($DB){print STDERR "\n|$affected_rows records changed|\n";}
 				 }
 
-	$stmtA = "DELETE from vicidial_list WHERE list_id='999999' and entry_date < \"$TDSQLdate\";";
+	$stmtA = "DELETE from vicidial_list WHERE list_id='999999' and entry_date < \"$TDSQLdate\" and status NOT IN('SALE','UPSELL','UPSALE','A1','A2','A3','A4');";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 				$affected_rows = $dbhA->do($stmtA);
@@ -161,3 +206,4 @@ if ($Tsec < 10) {$Tsec = "0$Tsec";}
 		$dbhA->disconnect();
 
 exit;
+
