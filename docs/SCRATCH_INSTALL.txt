@@ -576,6 +576,7 @@ the time is the same on our client computers and our servers.
 iftop is a good console bandwidth visualization tool that shows you active 
 connections, where they are going to/from and how much of your precious bandwidth 
 they are using. *OPTIONAL*
+NOTE: another good network analysis utility is "iptraf" and is on most system
 
 6. Go to http://www.ex-parrot.com/~pdw/iftop/ and download the package
    - to install this directly on the command line type:
@@ -617,6 +618,10 @@ that can be displayed real-time on a web page.
 	- make
 	- make install
    - you are done
+   NOTE: uncomment these lines to compile on systems without X11:
+	NOXFLAG = -DNOX11
+	XLIBS =
+	XOBJ =
    NOTE: for the graphics to work on the AST_server_performance page you will 
    need the 'pl' script to be linked or copied into your htdocs/vicidial/ploticus directory
    NOTE: you may need to edit the Makefile for ploticus if you do not have X11
@@ -1803,7 +1808,7 @@ effected extension groups are show):
 
 ##### This 'h' exten is VERY important for VICIDIAL usage, 
 ##### you will have problems if it is not in your dialplan!
-exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME}))
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
 ; Extension 3429 - Inbound 800 number (1-800-555-3429)
 exten => _**3429,1,Ringing

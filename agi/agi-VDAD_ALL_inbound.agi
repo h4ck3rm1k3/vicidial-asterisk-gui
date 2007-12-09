@@ -4,7 +4,7 @@
 # 
 # runs when a call comes in from an inbound call. This script will 
 # send the calls out to the closers that are logged in.
-# ## THIS SCRIPT CONSOLIDATES NINE SEPARATE VDAD closer inbound SCRIPTS ##
+# ## THIS SCRIPT CONSOLIDATES THIRTEEN SEPARATE VDAD closer inbound SCRIPTS ##
 # 
 #
 # You need to put lines similar to those below in your extensions.conf file:

@@ -70,7 +70,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 14. Added ability to copy the settings campaigns, users and in-groups to new records
 
 15. REQUIRED CHANGE! Old inbound and Closer AGI scripts have all been consolidated
-	into a single script: agi-VDAD_inbound.agi
+	into a single script: agi-VDAD_ALL_inbound.agi
 	Please look at the script header or the SCRATCH_INSTALL doc for more
 	info on how to alter your extenions.conf to use the new script.
 	The old agi-VDAD_closer... scripts have all been depricated and moved
