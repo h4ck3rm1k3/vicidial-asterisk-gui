@@ -207,6 +207,11 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 		$VD_campaign = strtoupper($VD_campaign);
 		$VD_campaign = eregi_replace(" ",'',$VD_campaign);
 		}
+	if (!isset($flag_channels))
+		{
+		$flag_channels=0;
+		$flag_string='';
+		}
 
 ### security strip all non-alphanumeric characters out of the variables ###
 	$DB=ereg_replace("[^0-9a-z]","",$DB);
@@ -1823,6 +1828,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var enable_sipsak_messages = '<? echo $enable_sipsak_messages ?>';
 	var allow_sipsak_messages = '<? echo $allow_sipsak_messages ?>';
 	var HidEMonitoRSessionS = '<? echo $HidEMonitoRSessionS ?>';
+	var flag_channels = '<? echo $flag_channels ?>';
+	var flag_string = '<? echo $flag_string ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2342,6 +2349,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{var row_color = '#CCCCFF';}
 									var conv_ct = (loop_ct + conv_start);
 									var channelfieldA = conf_chan_array[conv_ct];
+									var regXFcred = new RegExp(flag_string,"g");
+									if ( (channelfieldA.match(regXFcred)) && (flag_channels>0) )
+										{
+										var chan_name_color = 'log_text_red';
+										}
+									else
+										{
+										var chan_name_color = 'log_text';
+										}
 									if ( (HidEMonitoRSessionS==1) && (channelfieldA.match(/68600/)) )
 										{
 										var hide_channel=1;
@@ -2350,11 +2366,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{
 										if (volumecontrol_active!=1)
 											{
-											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td></td></tr>";
 											}
 										else
 											{
-											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">HANGUP</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_up.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"./images/vdc_volume_UNMUTE.gif\" BORDER=0></a></td></tr>";
 											}
 										}
 				//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
@@ -6304,14 +6320,15 @@ else
    .body_small {font-size: 11px;  font-family: sans-serif;}
    .body_tiny {font-size: 10px;  font-family: sans-serif;}
    .log_text {font-size: 11px;  font-family: monospace;}
+   .log_text_red {font-size: 11px;  font-family: monospace; font-weight: bold; background: #FF3333}
    .log_title {font-size: 12px;  font-family: monospace; font-weight: bold;}
    .sd_text {font-size: 16px;  font-family: sans-serif; font-weight: bold;}
    .sh_text {font-size: 14px;  font-family: sans-serif; font-weight: bold;}
    .sb_text {font-size: 12px;  font-family: sans-serif;}
    .sk_text {font-size: 11px;  font-family: sans-serif;}
    .skb_text {font-size: 13px;  font-family: sans-serif; font-weight: bold;}
-   .ON_conf {font-size: 11px;  font-family: monospace; color: black ; background: #FFFF99}
-   .OFF_conf {font-size: 11px;  font-family: monospace; color: black ; background: #FFCC77}
+   .ON_conf {font-size: 11px;  font-family: monospace; color: black; background: #FFFF99}
+   .OFF_conf {font-size: 11px;  font-family: monospace; color: black; background: #FFCC77}
    .cust_form {font-family: sans-serif; font-size: 10px; overflow: auto}
 
 -->

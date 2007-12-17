@@ -45,5 +45,7 @@ $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
 $non_latin = '0';	# set to 1 for UTF rules
+$flag_channels=0;
+$flag_string = 'VICIast20';
 
 ?>
