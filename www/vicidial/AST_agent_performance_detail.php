@@ -8,6 +8,7 @@
 # 71119-2359 - First build
 # 71121-0144 - Replace existing AST_agent_performance_detail.php script with this one
 #            - Fixed zero division bug
+# 71218-1155 - added end_date for multi-day reports
 #
 
 require("dbconnect.php");
@@ -17,6 +18,8 @@ $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
+if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
+	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
@@ -53,6 +56,7 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
+if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
 $stmt="select campaign_id from vicidial_campaigns;";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
@@ -95,7 +99,8 @@ while ($i < $user_groups_to_print)
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "<INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
+echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
+echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($campaigns_to_print > $o)
@@ -158,7 +163,7 @@ if ($shift == 'ALL')
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
 $query_date_BEGIN = "$query_date $time_BEGIN";   
-$query_date_END = "$query_date $time_END";
+$query_date_END = "$end_date $time_END";
 
 if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
 else {$ugSQL='';}

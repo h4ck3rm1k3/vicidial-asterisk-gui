@@ -10,6 +10,7 @@
 # 60905-1326 - Added queue time stats
 # 71008-1436 - Added shift to be defined in dbconnect.php
 # 71025-0021 - Added status breakdown
+# 71218-1155 - added end_date for multi-day reports
 #
 
 require("dbconnect.php");
@@ -20,7 +21,9 @@ $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
-	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
+	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
+if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
+	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
 if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
@@ -52,6 +55,7 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
+if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
 $stmt="select group_id from vicidial_inbound_groups;";
 $rslt=mysql_query($stmt, $link);
@@ -82,6 +86,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 echo "<TITLE>VICIDIAL: VDAD Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
+echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -108,7 +113,7 @@ echo "<PRE><FONT SIZE=2>\n\n";
 if (!$group)
 {
 echo "\n\n";
-echo "PLEASE SELECT A CAMPAIGN AND DATE ABOVE AND CLICK SUBMIT\n";
+echo "PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT\n";
 }
 
 else
@@ -133,7 +138,7 @@ if ($shift == 'ALL')
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
 $query_date_BEGIN = "$query_date $time_BEGIN";   
-$query_date_END = "$query_date $time_END";
+$query_date_END = "$end_date $time_END";
 
 
 

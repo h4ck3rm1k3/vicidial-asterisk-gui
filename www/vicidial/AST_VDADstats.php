@@ -9,6 +9,7 @@
 #            - Added required user/pass to gain access to this page
 # 61215-1139 - Added drop percentage of answered and round-2 decimal
 # 71008-1436 - Added shift to be defined in dbconnect.php
+# 71218-1155 - added end_date for multi-day reports
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -22,6 +23,8 @@ if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
+if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
+	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
 if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
@@ -53,6 +56,7 @@ $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
+if (!isset($end_date)) {$end_date = $NOW_DATE;}
 
 $stmt="select campaign_id from vicidial_campaigns;";
 $rslt=mysql_query($stmt, $link);
@@ -83,6 +87,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 echo "<TITLE>VICIDIAL: VDAD Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
+echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -134,7 +139,7 @@ if ($shift == 'ALL')
 	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
 	}
 $query_date_BEGIN = "$query_date $time_BEGIN";   
-$query_date_END = "$query_date $time_END";
+$query_date_END = "$end_date $time_END";
 
 
 
