@@ -242,7 +242,7 @@ while($one_day_interval > 0)
 		##### grab number of calls today in this campaign and increment
 		$stmt="SELECT calls_today FROM vicidial_live_agents WHERE extension LIKE \"R/%\";";
 		$rslt=mysql_query($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
+		if ($DB) {print "$stmt\n";}
 		$vla_cc_ct = mysql_num_rows($rslt);
 		if ($vla_cc_ct > 0)
 			{
