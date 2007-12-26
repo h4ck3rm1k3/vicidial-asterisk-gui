@@ -323,6 +323,7 @@ exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 ; 	- CID - 	CID received, add record with phone number
 ; 	- CIDLOOKUP - 	Lookup CID to find record in whole system
 ; 	- CIDLOOKUPRL -	Restrict lookup to one list
+; 	- CIDLOOKUPRC -	Restrict lookup to one campaign's lists
 ;	- CLOSER -      Closer calls from VICIDIAL fronters
 ; 	- ANI - 	ANI received, add record with phone number
 ; 	- ANILOOKUP - 	Lookup ANI to find record in whole system
@@ -342,6 +343,7 @@ exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 ; 7. the status of the call initially(usually not used)
 ; 8. the list_id to insert the new lead under if it is new (and CID/ANI available)
 ; 9. the phone dialing code to insert with the new lead if new (and CID/ANI available)
+; 10. the campaign_id to search within lists if CIDLOOKUPRC
 ; inbound VICIDIAL call with CID delivery through T1 PRI
 exten => 1234,1,Answer                  ; Answer the line
 exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----CL_GALLERIA-----7274515134-----Closer-----park----------999-----1)

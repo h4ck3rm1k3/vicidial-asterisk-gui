@@ -627,13 +627,25 @@ if ($call_handle_method =~ /DIGITID$/)
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD : |$insert_lead_id|$fronter|insert to vicidial_log: $uniqueid";   &agi_output;}
-	}		
+	}
 if ($call_handle_method =~ /CLOSER|DIGITID$/)
 	{
 		$stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer) values('$insert_lead_id','$channel_group','$SQLdate','$phone_code','$phone_number','$fronter','VDXL')";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDXL : |$insert_lead_id|insert to vicidial_xfer_log";   &agi_output;}
+		$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
+		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		while ($sthArows > $cbc)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$insert_xfer_id = "$aryA[0]";
+			$cbc++; 
+			}
+		$sthA->finish();
+
+		if ($AGILOG) {$agi_string = "--    VDXL : |$insert_lead_id|$insert_xfer_id|insert to vicidial_xfer_log";   &agi_output;}
 	}
 
 ### insert a LIVE record to the vicidial_auto_calls table 

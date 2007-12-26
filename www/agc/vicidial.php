@@ -171,10 +171,12 @@
 # 71125-1751 - Changed Transfer section to allow for selection of in-groups to send calls to
 # 71127-0408 - Added height and width settings for easier modification of screen size
 # 71129-2025 - restricted callbacks count and list to campaign only
+# 71223-0318 - changed logging of closer calls
+# 71226-1117 - added option to kick all calls from conference upon logout
 #
 
-$version = '2.0.4-142';
-$build = '71129-2025';
+$version = '2.0.5-144';
+$build = '71226-1117';
 
 require("dbconnect.php");
 
@@ -261,6 +263,7 @@ $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of chann
 $PreseT_DiaL_LinKs		= '1';	# set to 1 to show a DIAL link for Dial Presets
 $LogiNAJAX				= '1';	# set to 1 to do lookups
 $HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "session calls"
+$LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent logout
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1828,6 +1831,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var enable_sipsak_messages = '<? echo $enable_sipsak_messages ?>';
 	var allow_sipsak_messages = '<? echo $allow_sipsak_messages ?>';
 	var HidEMonitoRSessionS = '<? echo $HidEMonitoRSessionS ?>';
+	var LogouTKicKAlL = '<? echo $LogouTKicKAlL ?>';
 	var flag_channels = '<? echo $flag_channels ?>';
 	var flag_string = '<? echo $flag_string ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
@@ -5254,7 +5258,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					}
 				if (xmlhttp) 
 					{ 
-					VDlogout_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=userLOGout&format=text&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&agent_log_id=" + agent_log_id + "&no_delete_sessions=" + no_delete_sessions + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages;
+					VDlogout_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=userLOGout&format=text&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&conf_exten=" + session_id + "&extension=" + extension + "&protocol=" + protocol + "&agent_log_id=" + agent_log_id + "&no_delete_sessions=" + no_delete_sessions + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages + "&LogouTKicKAlL=" + LogouTKicKAlL + "&ext_context=" + ext_context;
 					xmlhttp.open('POST', 'vdc_db_query.php'); 
 					xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 					xmlhttp.send(VDlogout_query); 

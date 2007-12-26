@@ -69,6 +69,7 @@
 #  - $use_internal_dnc - ('Y','N')
 #  - $omit_phone_code - ('Y','N')
 #  - $no_delete_sessions - ('0','1')
+#  - $LogouTKicKAlL - ('0','1');
 
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -138,10 +139,12 @@
 # 71120-1520 - added LogiNCamPaigns to show only allowed campaigns for agents upon login
 # 71125-1751 - Added inbound-group default inbound group sending to vicidial.php
 # 71129-2025 - restricted callbacks count and list to campaign only
+# 71223-0318 - changed logging of closer calls
+# 71226-1117 - added option to kick all calls from conference upon logout
 #
 
-$version = '2.0.4-65';
-$build = '71129-2025';
+$version = '2.0.5-67';
+$build = '71226-1117';
 
 require("dbconnect.php");
 
@@ -274,6 +277,8 @@ if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["e
 	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
 if (isset($_GET["status"]))						{$status=$_GET["status"];}
 	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
+if (isset($_GET["LogouTKicKAlL"]))				{$LogouTKicKAlL=$_GET["LogouTKicKAlL"];}
+	elseif (isset($_POST["LogouTKicKAlL"]))		{$LogouTKicKAlL=$_POST["LogouTKicKAlL"];}
 
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
@@ -1049,7 +1054,8 @@ if ($stage == "end")
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 				$row=mysql_fetch_row($rslt);
-			if ($row[0] > 0)
+				$check_inbound = $row[0];
+			if ($check_inbound > 0)
 				{
 				##### look for the start epoch in the vicidial_closer_log table
 				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
@@ -1072,11 +1078,8 @@ if ($stage == "end")
 				{
 				$length_in_sec = 0;
 				}
-			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
-			$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-			if ( ($length_in_sec < 1) and ($row[0] > 0) )
+
+			if ( ($length_in_sec < 1) and ($check_inbound > 0) )
 				{
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
 				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
@@ -1097,11 +1100,7 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
-		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-		if ($row[0] > 0)
+		if ($check_inbound > 0)
 			{
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
@@ -1642,41 +1641,69 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$row=mysql_fetch_row($rslt);
 				$user_group =		trim("$row[0]");
 				}
-		$stmt = "UPDATE vicidial_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' and uniqueid='$uniqueid';";
+
+
+		$stmt = "select campaign_id,phone_number,alt_dial,call_type from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
-
-		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-		if ($row[0] > 0)
+		$VDAC_cid_ct = mysql_num_rows($rslt);
+		if ($VDAC_cid_ct > 0)
 			{
-			### update the vicidial_closer_log user to INCALL
-			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' order by closecallid desc limit 1;";
+			$row=mysql_fetch_row($rslt);
+			$VDADchannel_group	=$row[0];
+			$dialed_number		=$row[1];
+			$dialed_label		=$row[2];
+			$call_type			=$row[3];
+			}
+		else
+			{
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|INBND|$callerid|$user|$user_group|$list_id|$lead_id|$phone_number|$uniqueid|\n");
+				fclose($fp);
+				}
+			}
+
+		if ( ($call_type=='OUT') or ($call_type=='OUTBALANCE') )
+			{
+			$stmt = "UPDATE vicidial_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
-			$stmt = "select campaign_id,phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
+			$stmt = "select campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number from vicidial_campaigns where campaign_id='$campaign';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$VDIG_cid_ct = mysql_num_rows($rslt);
+			if ($VDIG_cid_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$VDCL_campaign_script	= $row[0];
+				$VDCL_get_call_launch	= $row[1];
+				$VDCL_xferconf_a_dtmf	= $row[2];
+				$VDCL_xferconf_a_number	= $row[3];
+				$VDCL_xferconf_b_dtmf	= $row[4];
+				$VDCL_xferconf_b_number	= $row[5];
+				}
+			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n|\n";
+			
+			$stmt = "select phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$VDAC_cid_ct = mysql_num_rows($rslt);
 			if ($VDAC_cid_ct > 0)
 				{
 				$row=mysql_fetch_row($rslt);
-				$VDADchannel_group	=$row[0];
-				$dialed_number		=$row[1];
-				$dialed_label		=$row[2];
+				$dialed_number		=$row[0];
+				$dialed_label		=$row[1];
 				}
-			else
-				{
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./vicidial_debug.txt", "a");
-					fwrite ($fp, "$NOW_TIME|INBND|$callerid|$user|$user_group|$list_id|$lead_id|$phone_number|$uniqueid|\n");
-					fclose($fp);
-					}
-				}
+			}
+		else
+			{
+			### update the vicidial_closer_log user to INCALL
+			$stmt = "UPDATE vicidial_closer_log set user='$user', comments='AUTO', list_id='$list_id', status='INCALL', user_group='$user_group' where lead_id='$lead_id' order by closecallid desc limit 1;";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
 
 			$stmt = "select count(*) from vicidial_log where lead_id='$lead_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
@@ -1747,35 +1774,6 @@ if ($ACTION == 'VDADcheckINCOMING')
 				echo $fronter_full_name . '|' . $tsr . "\n";
 				}
 			else {echo '|' . $tsr . "\n";}
-			}
-		else 
-			{
-			$stmt = "select campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number from vicidial_campaigns where campaign_id='$campaign';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $link);
-			$VDIG_cid_ct = mysql_num_rows($rslt);
-			if ($VDIG_cid_ct > 0)
-				{
-				$row=mysql_fetch_row($rslt);
-				$VDCL_campaign_script	= $row[0];
-				$VDCL_get_call_launch	= $row[1];
-				$VDCL_xferconf_a_dtmf	= $row[2];
-				$VDCL_xferconf_a_number	= $row[3];
-				$VDCL_xferconf_b_dtmf	= $row[4];
-				$VDCL_xferconf_b_number	= $row[5];
-				}
-			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n|\n";
-			
-			$stmt = "select phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $link);
-			$VDAC_cid_ct = mysql_num_rows($rslt);
-			if ($VDAC_cid_ct > 0)
-				{
-				$row=mysql_fetch_row($rslt);
-				$dialed_number		=$row[0];
-				$dialed_label		=$row[1];
-				}
 			}
 
 		$comments = eregi_replace("\r",'',$comments);
@@ -1934,18 +1932,32 @@ else
 	$rslt=mysql_query($stmt, $link);
 	$wcs_delete = mysql_affected_rows($link);
 
-	##### Hangup the client phone
-	$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$protocol/$extension%\" order by channel desc;";
-		if ($format=='debug') {echo "\n<!-- $stmt -->";}
-	$rslt=mysql_query($stmt, $link);
-	if ($rslt) 
+	if ($LogouTKicKAlL > 0)
 		{
-		$row=mysql_fetch_row($rslt);
-		$agent_channel = "$row[0]";
-		if ($format=='debug') {echo "\n<!-- $row[0] -->";}
-		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','ULGH3459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
+		$local_DEF = 'Local/5555';
+		$local_AMP = '@';
+		$kick_local_channel = "$local_DEF$conf_exten$local_AMP$ext_context";
+		$queryCID = "ULGH3458$StarTtime";
+
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+		}
+	else
+		{
+		##### Hangup the client phone
+		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$protocol/$extension%\" order by channel desc;";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		if ($rslt) 
+			{
+			$row=mysql_fetch_row($rslt);
+			$agent_channel = "$row[0]";
+			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
+			$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','ULGH3459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			}
 		}
 
 	$pause_sec=0;
