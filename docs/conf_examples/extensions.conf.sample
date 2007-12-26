@@ -656,9 +656,14 @@ exten => 8352,1,AGI(agi-VDADselective_CID_hangup.agi,${EXTEN})
 exten => 8352,2,Playback(safe_harbor)
 exten => 8352,3,Hangup
 
-; prompt recording AGI script, ID is 4321
+; prompts for recording AGI script, ID is 4321
+; first variable is format (gsm/wav)
+; second variable is timeout in milliseconds (default is 360000 [6 minutes])
+exten => 8167,1,Answer
+exten => 8167,2,AGI(agi-record_prompts.agi,wav-----360000)
+exten => 8167,3,Hangup
 exten => 8168,1,Answer
-exten => 8168,2,AGI(agi-record_prompts.agi)
+exten => 8168,2,AGI(agi-record_prompts.agi,gsm-----360000)
 exten => 8168,3,Hangup
 
 ; playback of recorded prompts

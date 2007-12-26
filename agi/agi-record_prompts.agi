@@ -1,13 +1,18 @@
 #!/usr/bin/perl
 #
-# agi-record_prompts.agi version 0.2
+# agi-record_prompts.agi version 2.0.5-3
 #
 # for recording prompts to GSM file over the phone
 # Saves recordings with 8-digit filenames to be played when exten is dialed
 #
-#	; prompt recording AGI script, ID is 4321
+#	; prompts for recording AGI script, ID is 4321
+#   ; first variable is format (gsm/wav)
+#	; second variable is timeout in milliseconds (default is 360000 [6 minutes])
+#	exten => 8167,1,Answer
+#	exten => 8167,2,AGI(agi-record_prompts.agi,wav-----360000)
+#	exten => 8167,3,Hangup
 #	exten => 8168,1,Answer
-#	exten => 8168,2,AGI(agi-record_prompts.agi)
+#	exten => 8168,2,AGI(agi-record_prompts.agi,gsm-----360000)
 #	exten => 8168,3,Hangup
 #
 #	; playback of recorded prompts
@@ -24,11 +29,31 @@
 #	- vm-msgsaved
 #	- vm-goodbye
 #
+# CHANGELOG
+# 71226-1303 - Added option to change format GSM/WAV and timeout through flags
+#
 
 $US='_';
 
 use Asterisk::AGI;
 $AGI = new Asterisk::AGI;
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	$i++;
+	}
+	
+	### list of command-line array arguments:
+	@ARGV_vars = split(/-----/, $ARGV[0]);
+
+	$format = 	$ARGV_vars[0];
+	$timeout = 	$ARGV_vars[1];
+}
 
 $|=1;
 while(<STDIN>) {
@@ -46,6 +71,10 @@ while(<STDIN>) {
 
 }
 
+if ($format =~ /WAV/i) {$format = 'wav';}
+else {$format = 'gsm';}
+
+if ($timeout < 1) {$timeout = 360000;} # default is 6 minutes
 
 $unique_id_out = $unique_id;
 @NEW_ID = split(/\./, $unique_id_out);
@@ -162,7 +191,7 @@ $AGI->stream_file('beep');
 $digit='';
 $interrupt_digit='';
 
-$interrupt_digit = $AGI->record_file("$session_recording", 'gsm', '123456789*#', 360000, 1);
+$interrupt_digit = $AGI->record_file("$session_recording", "$format", '123456789*#', "$timeout", 1);
 
 	print STDERR "interrupt_digit |$interrupt_digit|\n";
 
