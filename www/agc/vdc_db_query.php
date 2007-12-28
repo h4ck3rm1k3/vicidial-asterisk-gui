@@ -1932,6 +1932,20 @@ else
 	$rslt=mysql_query($stmt, $link);
 	$wcs_delete = mysql_affected_rows($link);
 
+	##### Hangup the client phone
+	$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$protocol/$extension%\" order by channel desc;";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+	if ($rslt) 
+		{
+		$row=mysql_fetch_row($rslt);
+		$agent_channel = "$row[0]";
+		if ($format=='debug') {echo "\n<!-- $row[0] -->";}
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','ULGH3459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		}
+
 	if ($LogouTKicKAlL > 0)
 		{
 		$local_DEF = 'Local/5555';
@@ -1942,22 +1956,6 @@ else
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
-		}
-	else
-		{
-		##### Hangup the client phone
-		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$protocol/$extension%\" order by channel desc;";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-		if ($rslt) 
-			{
-			$row=mysql_fetch_row($rslt);
-			$agent_channel = "$row[0]";
-			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
-			$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','ULGH3459$StarTtime','Channel: $agent_channel','','','','','','','','','');";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
-			$rslt=mysql_query($stmt, $link);
-			}
 		}
 
 	$pause_sec=0;
