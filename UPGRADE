@@ -1,8 +1,28 @@
 ################ UPGRADE
 
-NOTE: Upgrading from 2.0.2 to 2.0.3 is below the first section
-NOTE: Upgrading from 2.0.1 to 2.0.2 is in the middle section
+NOTE: Upgrading from 2.0.3 to 2.0.4 is below the first section
+NOTE: Upgrading from 2.0.2 to 2.0.3 is below the second section
+NOTE: Upgrading from 2.0.1 to 2.0.2 is in the next section
 NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
+
+########## UPGRADING FROM 2.0.4 TO 2.0.5 ##########
+
+1. install new files:
+	perl ./install.pl
+	NOTES: If you have customized any scripts in the bin or agi folders, 
+	then make sure you back them up before running the install.pl script. 
+	This script will replace existing files in the astguiclient installation.
+
+2. upgrade the MySQL asterisk database:
+	mysql
+	use asterisk
+	\. /path/from/root/extras/upgrade_2.0.5.sql
+	quit
+
+
+
+
+
 
 ########## UPGRADING FROM 2.0.3 TO 2.0.4 ##########
 

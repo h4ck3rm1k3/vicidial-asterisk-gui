@@ -363,7 +363,7 @@ NOTE: a minimum of MySQL server 4.0.X is required
    - to install this directly on the command line type:
 	- cd /usr/local
 	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
-		# http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.41.tar.gz
+		# http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.45.tar.gz
 	- gunzip mysql-4.0.27.tar.gz
 	- tar xvf mysql-4.0.27.tar
 	- cd mysql-4.0.27
@@ -388,8 +388,8 @@ NOTE: a minimum of MySQL server 4.0.X is required
 		- export PATH
 	   **** you may also want to add those two lines to your /root/.bash_profile file
 	   **** For Mysql 5 tree only, you also may need to copy the libmysqlclient.so file to libs
-		- cp /usr/local/mysql-5.0.27/libmysql/.libs/libmysqlclient.so /usr/lib/
-		- cp /usr/local/mysql-5.0.27/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
+		- cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so /usr/lib/
+		- cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
    - you are done
 
    ** INSTALLATION NOTE **

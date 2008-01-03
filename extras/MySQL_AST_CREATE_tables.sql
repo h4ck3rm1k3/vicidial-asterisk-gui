@@ -378,6 +378,7 @@ comments VARCHAR(255),
 processed ENUM('Y','N'),
 queue_seconds DECIMAL(7,2) default '0',
 user_group VARCHAR(20),
+xfercallid INT(9) UNSIGNED,
 index (lead_id),
 index (call_date)
 );

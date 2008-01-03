@@ -628,6 +628,7 @@ if ($call_handle_method =~ /DIGITID$/)
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD : |$insert_lead_id|$fronter|insert to vicidial_log: $uniqueid";   &agi_output;}
 	}
+$insert_xfer_id=0;
 if ($call_handle_method =~ /CLOSER|DIGITID$/)
 	{
 		$stmtA = "INSERT INTO vicidial_xfer_log (lead_id,campaign_id,call_date,phone_code,phone_number,user,closer) values('$insert_lead_id','$channel_group','$SQLdate','$phone_code','$phone_number','$fronter','VDXL')";
@@ -635,9 +636,9 @@ if ($call_handle_method =~ /CLOSER|DIGITID$/)
 		$affected_rows = $dbhA->do($stmtA);
 		$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
 		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthA->execute or die "executing: $stmtB ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
-		while ($sthArows > $cbc)
+		if ($sthArows > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
 			$insert_xfer_id = "$aryA[0]";
@@ -653,10 +654,10 @@ $stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 
-$stmtA = "INSERT INTO vicidial_closer_log (lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$insert_lead_id','$channel_group','$SQLdate','$now_date_epoch','QUEUE','$phone_code','$phone_number','VDCL','N')";
+$stmtA = "INSERT INTO vicidial_closer_log (lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,xfercallid) values('$insert_lead_id','$channel_group','$SQLdate','$now_date_epoch','QUEUE','$phone_code','$phone_number','VDCL','N','$insert_xfer_id')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
-if ($AGILOG) {$agi_string = "--    VDCL : |$insert_lead_id|insert to vicidial_closer_log";   &agi_output;}
+if ($AGILOG) {$agi_string = "--    VDCL : |$insert_lead_id|$insert_xfer_id|insert to vicidial_closer_log";   &agi_output;}
 
 $drop_timer=0;
 $drop_seconds=0;
