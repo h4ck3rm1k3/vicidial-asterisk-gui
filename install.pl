@@ -9,6 +9,7 @@
 # 71004-1155 - Added FTP and REPORT connection variables
 # 71012-1251 - Added PATHDONEmonitor setting
 # 71121-1048 - Added -p flag to mkdir to not show errors
+# 80107-2341 - Added --build_multiserver_conf flag to generate dynamic multi-server conf sections
 #
 
 ############################################
@@ -176,6 +177,7 @@ if (length($ARGV[0])>1)
 	print "  [--fastagi_log_max_requests=1000] = define FastAGI log max requests\n";
 	print "  [--fastagi_log_checkfordead=30] = define FastAGI log check-for-dead seconds\n";
 	print "  [--fastagi_log_checkforwait=60] = define FastAGI log check-for-wait seconds\n";
+	print "  [--build_multiserver_conf] = generates conf file examples for extensions.conf and iax.conf\n";
 	print "\n";
 
 	exit;
@@ -512,6 +514,7 @@ if (length($ARGV[0])>1)
 		{
 		$CLIcopy_conf_files='n';
 		}
+
 		if ($args =~ /--fastagi_log_min_servers=/i) # CLI defined fastagi min servers
 		{
 		@CLIDB_minserARY = split(/--fastagi_log_min_servers=/,$args);
@@ -595,6 +598,153 @@ if (length($ARGV[0])>1)
 			$CLIfastagi_log_checkforwait=1;
 			print "  CLI defined log ckwait sec: $VARfastagi_log_checkforwait\n";
 			}
+		}
+
+		if ($args =~ /--build_multiserver_conf/i) # CLI defined conf files
+		{
+		$build_multiserver_conf='y';
+		print "  CLI multiserver conf gen:   YES\n";
+
+		# default path to astguiclient configuration file:
+		$PATHconf =		'/etc/astguiclient.conf';
+
+		open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+		@conf = <conf>;
+		close(conf);
+		$i=0;
+		foreach(@conf)
+			{
+			$line = $conf[$i];
+			$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+			if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+				{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+			if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+				{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+				{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+				{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+				{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+				{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+				{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+			$i++;
+			}
+
+		# Customized Variables
+		$server_ip = $VARserver_ip;		# Asterisk server IP
+		if (!$VARDB_port) {$VARDB_port='3306';}
+
+		use DBI;	  
+
+		$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+		### format the new server_ip dialstring for example to use with extensions.conf
+		$S='*';
+		if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+			{
+			$a = leading_zero($1); 
+			$b = leading_zero($2); 
+			$c = leading_zero($3); 
+			$d = leading_zero($4);
+			$VARremDIALstr = "$a$S$b$S$c$S$d";
+			}
+
+		$ext  = "\nAdd the following lines to your extensions.conf file:\n";
+
+		$iax  = "\nAdd the following lines to your iax.conf file:\n";
+		$iax  .= "#register => ASTloop:test\@$server_ip:40569\n";
+
+		$Lext  = "\n";
+		$Lext .= "# Local Server: $server_ip\n";
+		$Lext .= "exten => _$VARremDIALstr*8600XXX,1,Goto(default,\${EXTEN:16},1)\n";
+		$Lext .= "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
+		$Lext .= "exten => _$VARremDIALstr*78600XXX,1,Goto(default,\${EXTEN:16},1)\n";
+		$Lext .= "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
+		$Lext .= "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+		$Lext .= "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+
+		$Liax .= "\n";
+		$Liax .= "[ASTloop]\n";
+		$Liax .= "type=friend\n";
+		$Liax .= "accountcode=IAXASTloop\n";
+		$Liax .= "context=default\n";
+		$Liax .= "auth=plaintext\n";
+		$Liax .= "host=dynamic\n";
+		$Liax .= "permit=0.0.0.0/0.0.0.0\n";
+		$Liax .= "secret=test\n";
+		$Liax .= "disallow=all\n";
+		$Liax .= "allow=ulaw\n";
+		$Liax .= "qualify=yes\n";
+
+		##### Get the server_id for this server's server_ip #####
+		$stmtA = "SELECT server_id FROM servers where server_ip='$server_ip';";
+			print "$stmtA\n";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			 @aryA = $sthA->fetchrow_array;
+				$server_id	=	"$aryA[0]";
+			 $i++;
+			}
+		$sthA->finish();
+
+		##### Get the server_ips and server_ids of all VICIDIAL servers on the network #####
+		$stmtA = "SELECT server_ip,server_id FROM servers where server_ip!='$server_ip';";
+			print "$stmtA\n";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$i=0;
+		while ($sthArows > $i)
+			{
+			 @aryA = $sthA->fetchrow_array;
+				$server_ip[$i]	=	"$aryA[0]";
+				$server_id[$i]	=	"$aryA[1]";
+
+			if( $server_ip[$i] =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+				{
+				$a = leading_zero($1); 
+				$b = leading_zero($2); 
+				$c = leading_zero($3); 
+				$d = leading_zero($4);
+				$VARremDIALstr = "$a$S$b$S$c$S$d";
+				}
+			$ext  .= "TRUNK$server_id[$i] = IAX2/$server_id:test\@$server_ip[$i]:4569\n";
+
+			$iax  .= "register => $server_id:test\@$server_ip[$i]:4569\n";
+
+			$Lext .= "# Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
+			$Lext .= "exten => _$VARremDIALstr*8600XXX,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+			$Lext .= "exten => _$VARremDIALstr*8600XXX*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+			$Lext .= "exten => _$VARremDIALstr*78600XXX,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+			$Lext .= "exten => _$VARremDIALstr*78600XXX*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+
+			$Liax .= "\n";
+			$Liax .= "[$server_id[$i]]\n";
+			$Liax .= "type=friend\n";
+			$Liax .= "accountcode=IAX$server_id[$i]\n";
+			$Liax .= "context=default\n";
+			$Liax .= "auth=plaintext\n";
+			$Liax .= "host=dynamic\n";
+			$Liax .= "permit=0.0.0.0/0.0.0.0\n";
+			$Liax .= "secret=test\n";
+			$Liax .= "disallow=all\n";
+			$Liax .= "allow=ulaw\n";
+			$Liax .= "qualify=yes\n";
+
+			$i++;
+			}
+		$sthA->finish();
+
+
+		print "$ext$Lext\n$iax$Liax\n";
+		exit;
 		}
 	}
 }
