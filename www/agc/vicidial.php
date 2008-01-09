@@ -173,10 +173,11 @@
 # 71129-2025 - restricted callbacks count and list to campaign only
 # 71223-0318 - changed logging of closer calls
 # 71226-1117 - added option to kick all calls from conference upon logout
+# 80109-1510 - added gender select list
 #
 
-$version = '2.0.5-144';
-$build = '71226-1117';
+$version = '2.0.5-145';
+$build = '80109-1510';
 
 require("dbconnect.php");
 
@@ -3391,6 +3392,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; " + man_status;
 						if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
+						var gIndex = 1;
+						if (document.vicidial_form.gender.value == 'M') {var gIndex = 0;}
+						document.getElementById("gender_list").selectedIndex = gIndex;
+
+						var genderIndex = document.getElementById("gender_list").selectedIndex;
+						var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+						document.vicidial_form.gender.value = genderValue;
+
 						web_form_vars = 
 						"lead_id=" + document.vicidial_form.lead_id.value + 
 						"&vendor_id=" + document.vicidial_form.vendor_lead_code.value + 
@@ -3984,6 +3993,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							dialed_number									= check_VDIC_array[36];
 							dialed_label									= check_VDIC_array[37];
 							source_id										= check_VDIC_array[38];
+							
+							var gIndex = 1;
+							if (document.vicidial_form.gender.value == 'M') {var gIndex = 0;}
+							document.getElementById("gender_list").selectedIndex = gIndex;
 
 							lead_dial_number = document.vicidial_form.phone_number.value;
 							var dispnum = document.vicidial_form.phone_number.value;
@@ -4039,6 +4052,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							else
 								{var group = campaign;}
 							if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
+
+							var genderIndex = document.getElementById("gender_list").selectedIndex;
+							var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+							document.vicidial_form.gender.value = genderValue;
+
 
 							web_form_vars = 
 							"lead_id=" + document.vicidial_form.lead_id.value + 
@@ -4150,6 +4168,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		else
 			{var group = campaign;}
 		if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
+
+		var genderIndex = document.getElementById("gender_list").selectedIndex;
+		var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+		document.vicidial_form.gender.value = genderValue;
 
 		web_form_vars = 
 		"lead_id=" + document.vicidial_form.lead_id.value + 
@@ -4646,6 +4668,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
+
+			var genderIndex = document.getElementById("gender_list").selectedIndex;
+			var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+			document.vicidial_form.gender.value = genderValue;
+
 			VLupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&campaign=" + campaign +  "&ACTION=updateLEAD&format=text&user=" + user + "&pass=" + pass + 
 			"&lead_id=" + document.vicidial_form.lead_id.value + 
 			"&vendor_lead_code=" + document.vicidial_form.vendor_lead_code.value + 
@@ -6748,7 +6775,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td colspan=2 align=center> Customer Information: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
 <td align=right><font class="body_text"> Title: </td>
-<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=12 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=15 name=last_name maxlength=30 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=20 name=last_name maxlength=30 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Address1: </td>
 <td align=left><font class="body_text"><input type=text size=50 name=address1 maxlength=100 class="cust_form" value=""></td>
@@ -6760,7 +6787,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; State: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PostCode: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Province: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <select size=1 name=gender_list class="cust_form" id=gender_list><option value="M">M - Male</option><option value="F">F - Female</option></select></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
 <td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=12 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
