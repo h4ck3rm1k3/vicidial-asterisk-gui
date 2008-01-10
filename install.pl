@@ -2042,10 +2042,10 @@ if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 
 print "\nIMPORTANT NOTE!\n";
 print "\nPlease remember to put these lines in your extensions.conf file:\n";
-print "exten => _$VARremDIALstr*8600XXX,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*78600XXX,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*8600XXX,1,Goto(default,\${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*78600XXX,1,Goto(default,\${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
 print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 
