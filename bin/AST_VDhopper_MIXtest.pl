@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDhopper.pl version 2.0.4   *TEST List Mix version*
+# AST_VDhopper.pl version 2.0.5   *TEST List Mix version*
 #
 # DESCRIPTION:
 # uses DBD::MySQL to update the VICIDIAL leads hopper for the streamlined 
@@ -23,7 +23,7 @@
 # a minute, you may want to play with the variables below to streamline for 
 # your usage
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup
@@ -48,6 +48,7 @@
 # 70709-2033 - Functional Beta of List-Mix-aware version of the hopper script
 # 71029-1929 - Added 5th and 6th NEW to list order
 # 71030-2043 - Added hopper priority for callbacks
+# 80112-0221 - Added 2nd, 3rd,... NEW for LAST NAME/PHONE Sort
 #
 
 # constants
@@ -888,7 +889,7 @@ foreach(@campaign_id)
 		}
 	##### END lead recycling parsing and prep ###
 
-	if ($DB) {print "Starting hopper run for $campaign_id[$i] campaign- GMT: $local_call_time[$i]   HOPPER: $hopper_level[$i] \n";}
+	if ($DB) {print "Starting hopper run for $campaign_id[$i] campaign- GMT: $local_call_time[$i]   HOPPER: $hopper_level[$i]   ORDER: $lead_order[$i]\n";}
 
 	### Delete the DONE leads if there are any
 	$stmtA = "DELETE from $vicidial_hopper where campaign_id='$campaign_id[$i]' and status IN('DONE');";
@@ -1034,7 +1035,7 @@ foreach(@campaign_id)
 			}
 		$sthA->finish();
 
-		if ( ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/) && ($list_order_mix[$i] =~ /DISABLED/) )
+		if ( ($lead_order[$i] =~ / 2nd NEW$| 3rd NEW$| 4th NEW$| 5th NEW$| 6th NEW$/) && ($list_order_mix[$i] =~ /DISABLED/) )
 			{
 			$stmtA = "SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN('NEW') and list_id IN($camp_lists[$i]) and ($all_gmtSQL[$i]) $lead_filter_sql[$i];";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -1053,10 +1054,10 @@ foreach(@campaign_id)
 			}
 
 		##### IF no NEW leads to be called, error out of this campaign #####
-		if ( ($lead_order[$i] =~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/) && ($NEW_campaign_leads_to_call[$i] > 0) && ($list_order_mix[$i] =~ /DISABLED/) ) {$GOOD=1;}
+		if ( ($lead_order[$i] =~ / 2nd NEW$| 3rd NEW$| 4th NEW$| 5th NEW$| 6th NEW$/) && ($NEW_campaign_leads_to_call[$i] > 0) && ($list_order_mix[$i] =~ /DISABLED/) ) {$GOOD=1;}
 		else
 			{
-			if ($lead_order[$i] !~ /DOWN COUNT 2nd NEW|DOWN COUNT 3rd NEW|DOWN COUNT 4th NEW|DOWN COUNT 5th NEW|DOWN COUNT 6th NEW/)
+			if ($lead_order[$i] !~ / 2nd NEW$| 3rd NEW$| 4th NEW$| 5th NEW$| 6th NEW$/)
 				{
 				if ($DB) {print "     NO SHUFFLE-NEW-LEADS INTO HOPPER DEFINED FOR LEAD ORDER\n";}
 				}
@@ -1106,19 +1107,19 @@ foreach(@campaign_id)
 			$NEW_count = 0;
 			$NEW_level = 0;
 			$OTHER_level = $hopper_level[$i];   
-			if ($lead_order[$i] eq "DOWN") {$order_stmt = 'order by lead_id asc';}
-			if ($lead_order[$i] eq "UP") {$order_stmt = 'order by lead_id desc';}
-			if ($lead_order[$i] eq "UP LAST NAME") {$order_stmt = 'order by last_name desc, lead_id asc';}
-			if ($lead_order[$i] eq "DOWN LAST NAME") {$order_stmt = 'order by last_name, lead_id asc';}
-			if ($lead_order[$i] eq "UP PHONE") {$order_stmt = 'order by phone_number desc, lead_id asc';}
-			if ($lead_order[$i] eq "DOWN PHONE") {$order_stmt = 'order by phone_number, lead_id asc';}
-			if ($lead_order[$i] eq "UP COUNT") {$order_stmt = 'order by called_count desc, lead_id asc';}
-			if ($lead_order[$i] eq "DOWN COUNT") {$order_stmt = 'order by called_count, lead_id asc';}
-			if ($lead_order[$i] eq "DOWN COUNT 2nd NEW") {$NEW_count = 2;}
-			if ($lead_order[$i] eq "DOWN COUNT 3rd NEW") {$NEW_count = 3;}
-			if ($lead_order[$i] eq "DOWN COUNT 4th NEW") {$NEW_count = 4;}
-			if ($lead_order[$i] eq "DOWN COUNT 5th NEW") {$NEW_count = 5;}
-			if ($lead_order[$i] eq "DOWN COUNT 6th NEW") {$NEW_count = 6;}
+			if ($lead_order[$i] =~ /^DOWN/) {$order_stmt = 'order by lead_id asc';}
+			if ($lead_order[$i] =~ /^UP/) {$order_stmt = 'order by lead_id desc';}
+			if ($lead_order[$i] =~ /^UP LAST NAME/) {$order_stmt = 'order by last_name desc, lead_id asc';}
+			if ($lead_order[$i] =~ /^DOWN LAST NAME/) {$order_stmt = 'order by last_name, lead_id asc';}
+			if ($lead_order[$i] =~ /^UP PHONE/) {$order_stmt = 'order by phone_number desc, lead_id asc';}
+			if ($lead_order[$i] =~ /^DOWN PHONE/) {$order_stmt = 'order by phone_number, lead_id asc';}
+			if ($lead_order[$i] =~ /^UP COUNT/) {$order_stmt = 'order by called_count desc, lead_id asc';}
+			if ($lead_order[$i] =~ /^DOWN COUNT/) {$order_stmt = 'order by called_count, lead_id asc';}
+			if ($lead_order[$i] =~ / 2nd NEW$/) {$NEW_count = 2;}
+			if ($lead_order[$i] =~ / 3rd NEW$/) {$NEW_count = 3;}
+			if ($lead_order[$i] =~ / 4th NEW$/) {$NEW_count = 4;}
+			if ($lead_order[$i] =~ / 5th NEW$/) {$NEW_count = 5;}
+			if ($lead_order[$i] =~ / 6th NEW$/) {$NEW_count = 6;}
 
 		### BEGIN recycle grab leads ###
 			$REC_rec_countLEADS=0;
@@ -1165,7 +1166,7 @@ foreach(@campaign_id)
 				{
 				$NEW_level = int($hopper_level[$i] / $NEW_count);   
 				$OTHER_level = ($hopper_level[$i] - $NEW_level);   
-				$order_stmt = 'order by called_count, lead_id asc';
+			#	$order_stmt = 'order by called_count, lead_id asc';
 				if ($DB) {print "     looking for $NEW_level NEW leads mixed in with $OTHER_level other leads\n";}
 
 				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state FROM vicidial_list where called_since_last_reset='N' and status IN('NEW') and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $NEW_level;";
