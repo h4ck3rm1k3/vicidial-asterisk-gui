@@ -2,7 +2,7 @@
 #
 # relay_control      ip_relay startup/shutdown script
 #
-# Version: 1.0     /usr/local/ip_relay/relay_control     7-Feb-2003
+# Version: 1.0     ip_relay/relay_control     7-Feb-2003
 #
 # info@eflo.net
 #
@@ -19,8 +19,8 @@ case "$1" in
 
         echo "starting up ip_relay services "
 
-        /usr/local/ip_relay/ip_relay 40569 127.0.0.1    4569 9999999 &
-        /usr/local/ip_relay/ip_relay 41569 127.0.0.1    4569 9999999 &
+        ip_relay 40569 127.0.0.1    4569 9999999 &
+        ip_relay 41569 127.0.0.1    4569 9999999 &
 
         echo "done "
         echo
@@ -52,7 +52,7 @@ case "$1" in
         echo
         ;;
   *)
-        echo "Usage: /usr/local/ip_relay/relay_control {start|stop|status|restart|reload}"
+        echo "Usage: relay_control {start|stop|status|restart|reload}"
         exit 1
 esac
 
