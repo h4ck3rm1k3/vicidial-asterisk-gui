@@ -10,6 +10,7 @@
 # 71012-1251 - Added PATHDONEmonitor setting
 # 71121-1048 - Added -p flag to mkdir to not show errors
 # 80107-2341 - Added --build_multiserver_conf flag to generate dynamic multi-server conf sections
+# 80115-1426 - Added ip_relay scripts for port forwarding
 #
 
 ############################################
@@ -1988,6 +1989,19 @@ if ($WEBONLY < 1)
 
 	print "Copying sounds to $PATHsounds...\n";
 	`cp -f ./sounds/* $PATHsounds/`;
+
+	print "Copying ip_relay scripts to $PATHhome...\n";
+	`cp -fR ./extras/ip_relay $PATHhome/`;
+
+	print "Setting ip_relay scripts to executable...\n";
+	`chmod 0755 $PATHhome/ip_relay/relay_control`;
+	`chmod 0755 $PATHhome/ip_relay/ip_relay_linux_i386`;
+	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 $PATHhome/ip_relay/ip_relay`;
+	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/bin/ip_relay`;
+	`ln -s $PATHhome/ip_relay/ip_relay_linux_i386 /usr/local/bin/ip_relay`;
+
+	print "Starting ip_relay port forwarding for IAX on 40569 and 41569\n";
+	`$PATHhome/ip_relay/relay_control start  2>/dev/null 1>&2`;
 	}
 if ($NOWEB < 1)
 	{
