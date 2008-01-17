@@ -1,7 +1,7 @@
 <?
 ### user_stats.php
 ### 
-### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+### Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 ###
 # CHANGES
 #
@@ -9,6 +9,7 @@
 # 61201-1136 - Added recordings display and changed calls to time range with 10000 limit
 # 70118-1605 - Added user group column to login/out and calls lists
 # 70702-1231 - Added recording location link and truncation
+# 80117-0316 - Added vicidial_user_closer_log entries to display
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -263,6 +264,39 @@ echo "</TABLE></center>\n";
 echo "<br><br>\n";
 
 echo "<center>\n";
+
+echo "<B>CLOSER IN-GROUP SELECTION LOGS:</B>\n";
+echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2> CAMPAIGN</td><td align=left><font size=2>BLEND</td><td align=left><font size=2> GROUPS</td></tr>\n";
+
+	$stmt="select * from vicidial_user_closer_log where user='" . mysql_real_escape_string($user) . "' and event_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and event_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by event_date desc limit 1000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	while ($logs_to_print > $u) {
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td><font size=2>$row[2]</td>";
+			echo "<td align=left><font size=2> $row[1]</td>\n";
+			echo "<td align=left><font size=2> $row[3]</td>\n";
+			echo "<td align=left><font size=2> $row[4] </td>\n";
+			echo "</tr>\n";
+
+	}
+
+
+echo "</TABLE></center><BR><BR>\n";
+
+
+
 
 echo "<B>OUTBOUND CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";

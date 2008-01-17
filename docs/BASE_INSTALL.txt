@@ -91,7 +91,7 @@ cd ../asterisk-1.2.24
 
 	*OPTIONAL*(1.2.14 thru 1.2.24) rewrite of waitforsilence
 	wget http://www.eflo.net/files/app_waitforsilence.c
-	mv app_waitforsilence.c apps/app_waitforsilence.c
+	mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
 	*OPTIONAL* shorter enter and leave sounds for meetme
 	wget http://www.eflo.net/files/enter.h
@@ -550,8 +550,13 @@ PHASE 5: ADDING STARTUP ENTRIES FOR ASTGUICLIENT/VICIDIAL SCRIPTS
 	- vi /etc/rc.d/rc.local
 	   - add the following entries(here's what we used):
 
-### Path to local asterisk-perl_0.08 module if needed
-PERL5LIB="/usr/share/astguiclient/libs"; export PERL5LIB
+# OPTIONAL enable ip_relay(for same-machine trunking and blind monitoring)
+# /usr/share/astguiclient/ip_relay/relay_control start  2>/dev/null 1>&2
+
+# Disable console blanking and powersaving
+/usr/bin/setterm -blank
+/usr/bin/setterm -powersave off
+/usr/bin/setterm -powerdown
 
 ### start time server
 /usr/local/bin/ntpdate -u 18.145.0.30

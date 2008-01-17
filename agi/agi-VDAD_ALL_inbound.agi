@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_ALL_inbound.agi version 2.0.4   *DBI-version*
+# agi-VDAD_ALL_inbound.agi version 2.0.5   *DBI-version*
 # 
 # runs when a call comes in from an inbound call. This script will 
 # send the calls out to the closers that are logged in.
@@ -40,7 +40,7 @@
 #exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----INB-----7274515134-----Closer-----park----------999-----1-----OUTB)
 #exten => 1234,3,Hangup
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # changes:
 # 70828-0924 - First Build
@@ -1408,7 +1408,7 @@ sub trigger_transfer_process
 #	$BEGIN='BEGIN';
 #
 #	$CLI = "/usr/bin/date >> $PRSTESTfile &";
-#	$CLI = "/root/phone.pl $insert_lead_id$DS$insert_close_id$DS$CLInow_date$DS$VDADextension$DS$phone_number$DS$DS$BEGIN$DS >> $PRSTESTfile &";
+#	$CLI = "/root/phone.pl $insert_lead_id$DS$insert_close_id$DS$CLInow_date$DS$VDADuser$DS$phone_number$DS$DS$BEGIN$DS >> $PRSTESTfile &";
 #
 #	`$CLI`;
 #
@@ -1420,5 +1420,4 @@ sub trigger_transfer_process
 #		print Pout "$now_date|$VDADconf_exten|$VDADuser|$VDADextension|$insert_lead_id|$phone_number|$insert_close_id|$channel_group|$drop_timer|$CLI|\n";
 #		close(Pout);
 #		}
-#
 }

@@ -1,0 +1,40 @@
+############################################################  ADMIN
+
+QC Enabled -<\/B> This option allows the user to log in to the Quality Control agent screen||
+QC User Level -<\/B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section||
+QC Record Pass -<\/B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record||
+QC Record Finish -<\/B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record||
+QC Record Commit -<\/B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone||
+QC Allowed Campaigns -<\/B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system||
+QC Allowed Inbound Groups -<\/B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system||
+QC Enabled: ||
+QC User Level: ||
+QC Pass: ||
+QC Finish: ||
+QC Commit: ||
+Modify Nothing||
+Modify Nothing Except Status||
+Modify All Fields||
+Verify First Round of QC||
+View QC Statistics||
+Ability to Modify FINISHed records||
+Manager Level||
+USERS CAN VIEW ANY CAMPAIGN||
+USERS CAN QC ANY CAMPAIGN||
+USERS CAN QC ANY INBOUND GROUP||
+QC Allowed Campaigns: ||
+QC Allowed Inbound Groups: ||
+
+
+############################################################ CLIENT
+
+Gender: ||
+Date of Birth: ||
+YOU MUST BE PAUSED TO CHANGE GROUPS||
+
+
+############################################################  MANAGER Manual
+
+
+############################################################  AGENT Manual
+

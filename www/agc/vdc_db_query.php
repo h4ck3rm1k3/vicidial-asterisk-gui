@@ -1,7 +1,7 @@
 <?
 # vdc_db_query.php
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -70,6 +70,7 @@
 #  - $omit_phone_code - ('Y','N')
 #  - $no_delete_sessions - ('0','1')
 #  - $LogouTKicKAlL - ('0','1');
+#  - $closer_blended = ('0','1');
 
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -141,10 +142,11 @@
 # 71129-2025 - restricted callbacks count and list to campaign only
 # 71223-0318 - changed logging of closer calls
 # 71226-1117 - added option to kick all calls from conference upon logout
+# 80116-1032 - added user_closer_log logging in regCLOSER
 #
 
-$version = '2.0.5-67';
-$build = '71226-1117';
+$version = '2.0.5-68';
+$build = '80116-1032';
 
 require("dbconnect.php");
 
@@ -279,7 +281,8 @@ if (isset($_GET["status"]))						{$status=$_GET["status"];}
 	elseif (isset($_POST["status"]))			{$status=$_POST["status"];}
 if (isset($_GET["LogouTKicKAlL"]))				{$LogouTKicKAlL=$_GET["LogouTKicKAlL"];}
 	elseif (isset($_POST["LogouTKicKAlL"]))		{$LogouTKicKAlL=$_POST["LogouTKicKAlL"];}
-
+if (isset($_GET["closer_blended"]))				{$closer_blended=$_GET["closer_blended"];}
+	elseif (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -453,6 +456,14 @@ if ($ACTION == 'regCLOSER')
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
+
+	$stmt="INSERT INTO vicidial_user_closer_log set user='$user',campaign_id='$campaign',event_date='$NOW_TIME',blended='$closer_blended',closer_campaigns='$closer_choice';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
+
+	$stmt="DELETE FROM vicidial_live_inbound_agents where user='$user';";
+		if ($format=='debug') {echo "\n<!-- $stmt -->";}
+	$rslt=mysql_query($stmt, $link);
 
 	$in_groups_pre = preg_replace('/-$/','',$closer_choice);
 	$in_groups = explode(" ",$in_groups_pre);

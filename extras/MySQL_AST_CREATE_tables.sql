@@ -399,10 +399,10 @@ index (call_date)
 
  CREATE TABLE vicidial_users (
 user_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-user VARCHAR(20),
-pass VARCHAR(20),
+user VARCHAR(20) NOT NULL,
+pass VARCHAR(20) NOT NULL,
 full_name VARCHAR(50),
-user_level INT(2),
+user_level TINYINT(2) default '1',
 user_group VARCHAR(20),
 phone_login VARCHAR(20),
 phone_pass VARCHAR(20),
@@ -444,8 +444,14 @@ modify_servers ENUM('0','1') default '0',
 view_reports ENUM('0','1') default '0',
 vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
 alter_custdata_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
-index (user)
+qc_enabled ENUM('1','0') default '0',
+qc_user_level INT(2) default '1',
+qc_pass ENUM('1','0') default '0',
+qc_finish ENUM('1','0') default '0',
+qc_commit ENUM('1','0') default '0'
 );
+
+CREATE UNIQUE INDEX user ON vicidial_users (user);
 
  CREATE TABLE vicidial_user_log (
 user_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
@@ -461,7 +467,9 @@ index (user)
  CREATE TABLE vicidial_user_groups (
 user_group VARCHAR(20) NOT NULL,
 group_name VARCHAR(40) NOT NULL,
-allowed_campaigns TEXT
+allowed_campaigns TEXT,
+qc_allowed_campaigns TEXT,
+qc_allowed_inbound_groups TEXT
 );
 
  CREATE TABLE vicidial_campaigns (
@@ -473,7 +481,7 @@ dial_status_b VARCHAR(6),
 dial_status_c VARCHAR(6),
 dial_status_d VARCHAR(6),
 dial_status_e VARCHAR(6),
-lead_order VARCHAR(20),
+lead_order VARCHAR(30),
 park_ext VARCHAR(10),
 park_file_name VARCHAR(10),
 web_form_address VARCHAR(255),
@@ -1005,6 +1013,29 @@ calls_today SMALLINT(5) UNSIGNED default '0',
 index (campaign_id),
 index (user)
 );
+
+ CREATE TABLE vicidial_user_closer_log (
+user VARCHAR(20),
+campaign_id VARCHAR(20),
+event_date DATETIME,
+blended ENUM('1','0') default '0',
+closer_campaigns TEXT,
+index (user),
+index (event_date)
+);
+
+
+ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
+
+ALTER TABLE live_channels ENGINE=HEAP;
+
+ALTER TABLE live_sip_channels ENGINE=HEAP;
+
+ALTER TABLE parked_channels ENGINE=HEAP;
+
+ALTER TABLE server_updater ENGINE=HEAP;
+
+ALTER TABLE web_client_sessions ENGINE=HEAP;
 
 
 INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';

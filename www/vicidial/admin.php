@@ -2,7 +2,7 @@
 # admin.php - VICIDIAL administration page
 # 
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 
 
@@ -669,6 +669,20 @@ if (isset($_GET["source_group_id"]))			{$source_group_id=$_GET["source_group_id"
 	elseif (isset($_POST["source_group_id"]))	{$source_group_id=$_POST["source_group_id"];}
 if (isset($_GET["default_xfer_group"]))				{$default_xfer_group=$_GET["default_xfer_group"];}
 	elseif (isset($_POST["default_xfer_group"]))	{$default_xfer_group=$_POST["default_xfer_group"];}
+if (isset($_GET["qc_enabled"]))					{$qc_enabled=$_GET["qc_enabled"];}
+	elseif (isset($_POST["qc_enabled"]))		{$qc_enabled=$_POST["qc_enabled"];}
+if (isset($_GET["qc_user_level"]))				{$qc_user_level=$_GET["qc_user_level"];}
+	elseif (isset($_POST["qc_user_level"]))		{$qc_user_level=$_POST["qc_user_level"];}
+if (isset($_GET["qc_pass"]))					{$qc_pass=$_GET["qc_pass"];}
+	elseif (isset($_POST["qc_pass"]))			{$qc_pass=$_POST["qc_pass"];}
+if (isset($_GET["qc_finish"]))					{$qc_finish=$_GET["qc_finish"];}
+	elseif (isset($_POST["qc_finish"]))			{$qc_finish=$_POST["qc_finish"];}
+if (isset($_GET["qc_commit"]))					{$qc_commit=$_GET["qc_commit"];}
+	elseif (isset($_POST["qc_commit"]))			{$qc_commit=$_POST["qc_commit"];}
+if (isset($_GET["qc_campaigns"]))				{$qc_campaigns=$_GET["qc_campaigns"];}
+	elseif (isset($_POST["qc_campaigns"]))		{$qc_campaigns=$_POST["qc_campaigns"];}
+if (isset($_GET["qc_groups"]))					{$qc_groups=$_GET["qc_groups"];}
+	elseif (isset($_POST["qc_groups"]))			{$qc_groups=$_POST["qc_groups"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -807,6 +821,11 @@ $mix_container_item = ereg_replace("[^0-9]","",$mix_container_item);
 $prompt_interval = ereg_replace("[^0-9]","",$prompt_interval);
 $agent_alert_delay = ereg_replace("[^0-9]","",$agent_alert_delay);
 $manual_dial_list_id = ereg_replace("[^0-9]","",$manual_dial_list_id);
+$qc_enabled = ereg_replace("[^0-9]","",$qc_enabled);
+$qc_user_level = ereg_replace("[^0-9]","",$qc_user_level);
+$qc_pass = ereg_replace("[^0-9]","",$qc_pass);
+$qc_finish = ereg_replace("[^0-9]","",$qc_finish);
+$qc_commit = ereg_replace("[^0-9]","",$qc_commit);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
@@ -1141,12 +1160,14 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 71116-0942 - Added campaign_rank and fewest_calls as methods for agent call routing
 # 71122-1135 - Added default transfer group for campaigns and inbound groups
 # 71125-1751 - Added allowable transfer groups to campaign detail screen
+# 80107-1204 - Started framework for new QC section
+# 80112-0242 - Added more options for lead order
 #
 # 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-119';
-$build = '71125-1751';
+$admin_version = '2.0.5-121';
+$build = '80112-0242';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1769,16 +1790,26 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	{
 		if ( ($ADD==211111) or ($ADD==311111) or ($ADD==511111) or ($ADD==611111) )
 		{
-		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
+		$stmt="SELECT allowed_campaigns,qc_allowed_campaigns,qc_allowed_inbound_groups from vicidial_user_groups where user_group='$user_group';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
-		$allowed_campaigns =	$row[0];
+		$allowed_campaigns =			$row[0];
+		$qc_allowed_campaigns =			$row[1];
+		$qc_allowed_inbound_groups =	$row[2];
 		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
 		$campaigns = explode(" ", $allowed_campaigns);
+		$qc_allowed_campaigns = preg_replace("/ -$/","",$qc_allowed_campaigns);
+		$qc_campaigns = explode(" ", $qc_allowed_campaigns);
+		$qc_allowed_inbound_groups = preg_replace("/ -$/","",$qc_allowed_inbound_groups);
+		$qc_groups = explode(" ", $qc_allowed_inbound_groups);
 		}
 
 	$campaigns_value='';
 	$campaigns_list='<B><input type="checkbox" name="campaigns[]" value="-ALL-CAMPAIGNS-"';
+	$qc_campaigns_value='';
+	$qc_campaigns_list='<B><input type="checkbox" name="qc_campaigns[]" value="-ALL-CAMPAIGNS-"';
+	$qc_groups_value='';
+	$qc_groups_list='<B><input type="checkbox" name="qc_groups[]" value="-ALL-GROUPS-"';
 		$p=0;
 		while ($p<100)
 			{
@@ -1787,9 +1818,21 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				$campaigns_list.=" CHECKED";
 				$campaigns_value .= " -ALL-CAMPAIGNS- -";
 				}
+			if (eregi('ALL-CAMPAIGNS',$qc_campaigns[$p])) 
+				{
+				$qc_campaigns_list.=" CHECKED";
+				$qc_campaigns_value .= " -ALL-CAMPAIGNS- -";
+				}
+			if (eregi('ALL-GROUPS',$qc_groups[$p])) 
+				{
+				$qc_groups_list.=" CHECKED";
+				$qc_groups_value .= " -ALL-GROUPS- -";
+				}
 			$p++;
 			}
 	$campaigns_list.="> ALL-CAMPAIGNS - USERS CAN VIEW ANY CAMPAIGN</B><BR>\n";
+	$qc_campaigns_list.="> ALL-CAMPAIGNS - USERS CAN QC ANY CAMPAIGN</B><BR>\n";
+	$qc_groups_list.="> ALL-GROUPS - USERS CAN QC ANY INBOUND GROUP</B><BR>\n";
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
@@ -1802,6 +1845,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$campaign_id_value = $rowx[0];
 		$campaign_name_value = $rowx[1];
 		$campaigns_list .= "<input type=\"checkbox\" name=\"campaigns[]\" value=\"$campaign_id_value\"";
+		$qc_campaigns_list .= "<input type=\"checkbox\" name=\"qc_campaigns[]\" value=\"$campaign_id_value\"";
 		$p=0;
 		while ($p<100)
 			{
@@ -1811,13 +1855,47 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				$campaigns_list .= " CHECKED";
 				$campaigns_value .= " $campaign_id_value";
 				}
+			if ($campaign_id_value == $qc_campaigns[$p]) 
+				{
+				$qc_campaigns_list .= " CHECKED";
+				$qc_campaigns_value .= " $campaign_id_value";
+				}
 		#	echo "<!--  O $p|$campaign_id_value|$campaigns[$p]| -->";
 			$p++;
 			}
 		$campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
+		$qc_campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
 		$o++;
 		}
+
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$groups_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($groups_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$group_id_value = $rowx[0];
+		$group_name_value = $rowx[1];
+		$qc_groups_list .= "<input type=\"checkbox\" name=\"qc_groups[]\" value=\"$group_id_value\"";
+		$p=0;
+		while ($p<100)
+			{
+			if ($group_id_value == $qc_groups[$p]) 
+				{
+				$qc_groups_list .= " CHECKED";
+				$qc_groups_value .= " $group_id_value";
+				}
+			$p++;
+			}
+		$qc_groups_list .= "> $group_id_value - $group_name_value<BR>\n";
+		$o++;
+		}
+
 	if (strlen($campaigns_value)>2) {$campaigns_value .= " -";}
+	if (strlen($qc_campaigns_value)>2) {$qc_campaigns_value .= " -";}
+	if (strlen($qc_groups_value)>2) {$qc_groups_value .= " -";}
 	}
 	##### END get campaigns listing for checkboxes #####
 
@@ -2054,6 +2132,39 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_users-view_reports">
 <BR>
 <B>View Reports -</B> This option allows the user to view the VICIDIAL reports.
+
+<BR>
+<A NAME="vicidial_users-qc_enabled">
+<BR>
+<B>QC Enabled -</B> This option allows the user to log in to the Quality Control agent screen.
+
+<BR>
+<A NAME="vicidial_users-qc_user_level">
+<BR>
+<B>QC User Level -</B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section:<BR>
+1 - Modify Nothing<BR>
+2 - Modify Nothing Except Status<BR>
+3 - Modify All Fields<BR>
+4 - Verify First Round of QC<BR>
+5 - View QC Statistics<BR>
+6 - Ability to Modify FINISHed records<BR>
+7 - Manager Level<BR>
+
+<BR>
+<A NAME="vicidial_users-qc_pass">
+<BR>
+<B>QC Record Pass -</B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record.
+
+<BR>
+<A NAME="vicidial_users-qc_finish">
+<BR>
+<B>QC Record Finish -</B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record.
+
+<BR>
+<A NAME="vicidial_users-qc_commit">
+<BR>
+<B>QC Record Commit -</B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone.
+
 
 
 
@@ -2705,6 +2816,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_user_groups-allowed_campaigns">
 <BR>
 <B>Allowed Campaigns -</B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system.
+
+<BR>
+<A NAME="vicidial_user_groups-qc_allowed_campaigns">
+<BR>
+<B>QC Allowed Campaigns -</B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system.
+
+<BR>
+<A NAME="vicidial_user_groups-qc_allowed_inbound_groups">
+<BR>
+<B>QC Allowed Inbound Groups -</B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system.
 
 
 
@@ -4809,7 +4930,7 @@ if ($ADD=="2A")
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -5881,9 +6002,8 @@ if ($ADD=="4A")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
-
 
 
 		### LOG CHANGES TO LOG FILE ###
@@ -5923,7 +6043,7 @@ if ($ADD=="4B")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -6765,7 +6885,7 @@ if ($ADD==411111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value' where user_group='$OLDuser_group';";
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
@@ -8666,6 +8786,12 @@ if ($ADD==3)
 	$view_reports =			$row[43];
 	$vicidial_recording_override =	$row[44];
 	$alter_custdata_override = $row[45];
+	$qc_enabled =			$row[46];
+	$qc_user_level =		$row[47];
+	$qc_pass =				$row[48];
+	$qc_finish =			$row[49];
+	$qc_commit =			$row[50];
+
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -8738,6 +8864,11 @@ if ($ADD==3)
 			echo "$RANKgroups_list";
 			echo "</table>\n";
 			echo "</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td align=left><select size=1 name=qc_enabled><option>0</option><option>1</option><option SELECTED>$qc_enabled</option></select>$NWB#vicidial_users-qc_enabled$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>QC User Level: </td><td align=left><select size=1 name=qc_user_level><option value=1>1 - Modify Nothing</option><option value=2>2 - Modify Nothing Except Status</option><option value=3>3 - Modify All Fields</option><option value=4>4 - Verify First Round of QC</option><option value=5>5 - View QC Statistics</option><option value=6>6 - Ability to Modify FINISHed records</option><option value=7>7 - Manager Level</option><option SELECTED>$qc_user_level</option></select>$NWB#vicidial_users-qc_user_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>QC Pass: </td><td align=left><select size=1 name=qc_pass><option>0</option><option>1</option><option SELECTED>$qc_pass</option></select>$NWB#vicidial_users-qc_pass$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>QC Finish: </td><td align=left><select size=1 name=qc_finish><option>0</option><option>1</option><option SELECTED>$qc_finish</option></select>$NWB#vicidial_users-qc_finish$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>QC Commit: </td><td align=left><select size=1 name=qc_commit><option>0</option><option>1</option><option SELECTED>$qc_commit</option></select>$NWB#vicidial_users-qc_commit$NWE</td></tr>\n";
 			}
 		if ($LOGuser_level > 8)
 			{
@@ -9065,7 +9196,7 @@ if ($ADD==31)
 		echo "</select> &nbsp; \n";
 		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 		echo "$mixes_list";
@@ -9779,7 +9910,7 @@ if ($ADD==34)
 		echo "</select> &nbsp; \n";
 		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
 		echo "$mixes_list";
@@ -11154,6 +11285,14 @@ if ($ADD==311111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: </td><td align=left>\n";
 	echo "$campaigns_list";
 	echo "$NWB#vicidial_user_groups-allowed_campaigns$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Campaigns: </td><td align=left>\n";
+	echo "$qc_campaigns_list";
+	echo "$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Inbound Groups: </td><td align=left>\n";
+	echo "$qc_groups_list";
+	echo "$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 

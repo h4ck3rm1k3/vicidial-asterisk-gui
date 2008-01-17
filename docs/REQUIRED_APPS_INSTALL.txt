@@ -27,7 +27,7 @@ chown -R root  /usr/local/mysql
 chown -R mysql /usr/local/mysql/var
 chgrp -R mysql /usr/local/mysql
 cp support-files/my-medium.cnf /etc/my.cnf
-/usr/local/mysql/bin/mysqld_safe --user=mysql &
+/usr/local/mysql/bin/mysqld_safe --user=mysql --skip-name-resolve --skip-host-cache &
 ln -s /tmp/mysql.sock /var/run/mysql/mysql.sock
 
 
@@ -354,7 +354,7 @@ patch -p1 < ./cli_chan_concise_delimiter.patch
 
 
 wget http://www.eflo.net/files/app_waitforsilence.c
-mv app_waitforsilence.c apps/app_waitforsilence.c
+mv -f app_waitforsilence.c apps/app_waitforsilence.c
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h

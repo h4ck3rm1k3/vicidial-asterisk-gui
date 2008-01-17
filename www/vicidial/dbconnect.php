@@ -49,4 +49,5 @@ $AM_shift_BEGIN = '03:45:00';
 $AM_shift_END = '17:45:00';
 $PM_shift_BEGIN = '17:45:01';
 $PM_shift_END = '23:59:59';
+$admin_qc_enabled = '0';
 ?>

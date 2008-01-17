@@ -8,6 +8,32 @@ jitterbuffer=no
 tos=lowdelay
 
 ;register => 1112223333:PASSWORD@iax.binfone.com
+register => ASTloop:test@1270.0.1:40569
+register => ASTblind:test@1270.0.1:41569
+
+[ASTloop]
+type=friend
+accountcode=ASTloop
+context=default
+auth=plaintext
+host=dynamic
+permit=0.0.0.0/0.0.0.0
+secret=test
+disallow=all
+allow=ulaw
+qualify=yes
+
+[ASTblind]
+type=friend
+accountcode=ASTblind
+context=default
+auth=plaintext
+host=dynamic
+permit=0.0.0.0/0.0.0.0
+secret=test
+disallow=all
+allow=ulaw
+qualify=yes
 
 [1112223333]
 auth=md5

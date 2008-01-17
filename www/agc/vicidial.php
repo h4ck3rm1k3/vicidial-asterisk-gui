@@ -1,7 +1,7 @@
 <?
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also, you need to have the login
@@ -174,10 +174,11 @@
 # 71223-0318 - changed logging of closer calls
 # 71226-1117 - added option to kick all calls from conference upon logout
 # 80109-1510 - added gender select list
+# 80116-1032 - added option on CLOSER-type campaigns to change in-groups when paused
 #
 
-$version = '2.0.5-145';
-$build = '80109-1510';
+$version = '2.0.5-146';
+$build = '80116-1032';
 
 require("dbconnect.php");
 
@@ -5191,6 +5192,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (document.vicidial_form.CloserSelectBlended.checked==true)
 			{VICIDiaL_closer_blended = 1;}
+		else
+			{VICIDiaL_closer_blended = 0;}
 
 		var CloserSelectChoices = document.vicidial_form.CloserSelectList.value;
 
@@ -5218,7 +5221,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			CSCupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=regCLOSER&format=text&user=" + user + "&pass=" + pass + "&comments=" + VU_agent_choose_ingroups_DV + "&closer_choice=" + CloserSelectChoices + "-";
+			CSCupdate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=regCLOSER&format=text&user=" + user + "&pass=" + pass + "&comments=" + VU_agent_choose_ingroups_DV + "&closer_blended=" + VICIDiaL_closer_blended + "&campaign=" + campaign + "&closer_choice=" + CloserSelectChoices + "-";
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(CSCupdate_query); 
@@ -5656,6 +5659,21 @@ else
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
+		}
+
+
+// ################################################################################
+// Show the groups selection span
+	function OpeNGrouPSelectioN()
+		{
+		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
+			{
+			alert("YOU MUST BE PAUSED TO CHANGE GROUPS");
+			}
+		else
+			{
+			showDiv('CloserSelectBox')
+			}
 		}
 
 
@@ -6377,7 +6395,9 @@ echo "</head>\n";
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
 <?	echo "Logged in as User: $VD_login on Phone: $SIP_user to campaign: $VD_campaign&nbsp; \n"; ?>
-</TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text"><?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
+</TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text">
+<? if ($INgrpCT > 0) {echo "<a href=\"#\" onclick=\"OpeNGrouPSelectioN();return false;\">GROUPS</a> &nbsp; &nbsp; \n";} ?>
+<?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
 </TD></TR></TABLE>
 </SPAN>
 
