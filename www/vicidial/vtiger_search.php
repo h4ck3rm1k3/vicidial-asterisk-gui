@@ -6,12 +6,13 @@
 # This page does a search against a standard vtiger CRM system. If the record 
 # is not present, it will create a new one and send the agent's screen to that new page.
 #
-# This code is tested against vtiger 4.2
+# This code is tested against vtiger 5.0.3
 #
 # CHANGES
 # 60719-1615 - First version
 # 60801-2304 - added mysql debug and auto-forward
 # 60802-1111 - added insertion of not-found record into vtiger system
+# 80120-1934 - added changes for compatibility with vtiger 5.0.3
 #
 
 #Asterisk/VICIDIAL Server (ASTERISK)
@@ -22,12 +23,14 @@
 #Internal : 10.10.10.16
 #External : 55.55.55.56
 
+### Modified 20.Dec.2007 by I. Taushanov for VTiger 5.03- search/create lead
 
-### alter to connect to your vtiger database
-$link=mysql_connect("10.10.10.16", "cron",'1234');
+
+### alter to connect to your vtiger database, "IP", "username for DB", 'password for DB')
+$link=mysql_connect("xxx.xxx.xxx.xxx", "dbuser",'dbpassword');
 if (!$link) {die('Could not connect: ' . mysql_error());}
 echo 'Connected successfully';
-mysql_select_db("vtigercrm4_2");
+mysql_select_db("vtigercrm503");
 
 
 $PHP_SELF=$_SERVER['PHP_SELF'];
@@ -124,70 +127,13 @@ $REC_TIME = date("Ymd-His");
 $FILE_datetime = $STARTtime;
 $parked_time = $STARTtime;
 
-# $ext_context = 'default'; defined in dbconnect file
-
-#	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
-#		if ($DB) {echo "$stmt\n";}
-#	$rslt=mysql_query($stmt, $link);
-#	$row=mysql_fetch_row($rslt);
-#	$auth=$row[0];
-
-#$fp = fopen ("./project_auth_entries.txt", "a");
-#$date = date("r");
-#$ip = getenv("REMOTE_ADDR");
-#$browser = getenv("HTTP_USER_AGENT");
-
-#  if( (strlen($user)<2) or (strlen($pass)<2) or (!$auth))
-#	{
-#    Header("WWW-Authenticate: Basic realm=\"VICIDIAL-CLOSER\"");
-#    Header("HTTP/1.0 401 Unauthorized");
-#    echo "Invalid Username/Password: |$user|$pass|\n";
-#    exit;
-#	}
-#  else
-#	{
-#
-#	if($auth>0)
-#		{
-#		$office_no=strtoupper($user);
-#		$password=strtoupper($pass);
-#			$stmt="SELECT full_name from vicidial_users where user='$user' and pass='$pass'";
-#			if ($DB) {echo "$stmt\n";}
-#			$rslt=mysql_query($stmt, $link);
-#			$row=mysql_fetch_row($rslt);
-#			$LOGfullname=$row[0];
-#			$fullname = $row[0];
-#		fwrite ($fp, "VD_CLOSER|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
-#		fclose($fp);
-#		
-#		if ( (strlen($customer_zap_channel)>2) and (eregi('zap',$customer_zap_channel)) )
-#			{
-#			echo "\n<!-- zap channel: $customer_zap_channel -->\n";
-#			echo "\n<!-- session_id: $session_id -->\n";
-#
-#			}
-#		else
-#			{
-#			echo "Bad channel: $customer_zap_channel\n";
-#			echo "Make sure the Zap channel is live and try again\n";
-#			exit;
-#			}
-#
-#		}
-#	else
-#		{
-#		fwrite ($fp, "VD_CLOSER|FAIL|$date|$user|$pass|$ip|$browser|\n");
-#		fclose($fp);
-#		}
-#	}
-
 echo "<html>\n";
 echo "<head>\n";
 echo "<title>VICIDIAL Vtiger Lookup</title>\n";
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 
 
-$stmt="SELECT count(*) from account where phone='$phone' or otherphone='$phone' or fax='$phone';";
+$stmt="SELECT count(*) from vtiger_leadaddress where phone='$phone' or mobile='$phone' or fax='$phone';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 if (!$rslt) {
@@ -204,45 +150,66 @@ if ($found_count < 1)
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
 	echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 	echo "$phone not found, creating account...\n";
-
+#Get logged in user ID
 	if ($DB) {echo "<PRE>";}
-	$stmt="SELECT id from users where user_name='$user';";
+	$stmt="SELECT id from vtiger_users where user_name='$user';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$user_id = $row[0];
 	if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-	$stmt = "INSERT INTO crmentity (smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$user_id', '$user_id', 0, 'Accounts', NULL, '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, 0, 1, 1);";
-	if ($DB) {echo "|$stmt|\n";}
+	
+#Vtiger no longer use auto increment for vtiger_crmentity crmid, vtiger_crmentity_seq is used instead to list next aviable entity ID
+# Get next aviable id to use as  crmid in vtiger_crmentity	
+	$stmt="SELECT id from vtiger_crmentity_seq ;";
+	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
-	$recordID = mysql_insert_id($link);
-	if ($DB) {echo "|$recordID|\n";}
+	$row=mysql_fetch_row($rslt);
+	$leadid = $row[0];
 	if (!$rslt) {die('Could not execute: ' . mysql_error());}
 
-#	$stmt = "INSERT INTO accountscf (accountid, cf_393, cf_397, cf_403, cf_405, cf_407, cf_409, cf_411) VALUES ('$recordID', NULL, NULL, NULL, NULL, NULL, NULL, NULL);";
+# Increase 	next aviable crmid with 1 so next record gets proper id
+	$stmt="UPDATE vtiger_crmentity_seq SET `id` = `id` + 1;";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+	
+	
+#Insert values into tiger_crmentity
+	$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$leadid', '$user_id', '$user_id','$user_id', 'Leads', '(Memo)', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "|$leadid|\n";}
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+#Insert values into vtiger_leaddetails	
+	$stmt = "INSERT INTO vtiger_leaddetails (leadid,firstname,lastname,company) values('$leadid','$first_name','$last_name','$first_name $last_name');";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+#Insert values into vtiger_leaddetails
+	$stmt = "INSERT INTO vtiger_leadaddress (leadaddressid,city,code,state,country,phone,mobile,lane) values('$leadid','$city','$postal_code','$province','$country','$phone','$alt_phone','$address1 $address2');";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+#Insert values into vtiger_leadsubdetails	
+	$stmt = "INSERT INTO vtiger_leadsubdetails (leadsubscriptionid) VALUES ('$leadid');";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+	
+#Insert values into vtiger_leadscf, these are custom created fields example	
+#	$stmt = "INSERT INTO vtiger_leadscf (leadid,cf_452,cf_454,cf_456) VALUES ('$leadid','$email','$address3','$security');";
 #	if ($DB) {echo "|$stmt|\n";}
 #	$rslt=mysql_query($stmt, $link);
 #	if (!$rslt) {die('Could not execute: ' . mysql_error());}
 
-	$stmt = "INSERT INTO account (accountid,accountname,contactname,phone,otherphone,email1) values('$recordID','$last_name, $first_name','$first_name $last_name','$phone','$alt_phone','$email');";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-	$stmt = "INSERT INTO accountbillads (accountaddressid,city,code,country,state,street) values('$recordID','$city','$postal_code','US','$state','$address1');";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-	$stmt = "INSERT INTO accountshipads (accountaddressid,city,code,country,state,street) values('$recordID','$city','$postal_code','US','$state','$address1');";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
 	if ($DB) {echo "DONE\n";}
 
-	$account_URL = "http://55.55.55.56/index.php?module=Accounts&action=DetailView&record=$recordID";
+#ammend with your Vtiger Address	
+	$account_URL = "http://mysite.com/vtigercrm/index.php?module=Leads&action=DetailView&record=$leadid";
 	echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
@@ -250,22 +217,22 @@ if ($found_count < 1)
 
 	echo "<PRE>";
 	echo "account created!\n";
-	echo "accountid:   <a href=\"$account_URL\">$recordID</a>\n";
+	echo "accountid:   <a href=\"$account_URL\">$leadid</a>\n";
 	echo "phone:       $phone\n";
 	echo "</PRE><BR>";
 
 }
 else
 {
-	$stmt="SELECT accountid,accountname,contactname from account where phone='$phone' or otherphone='$phone' or fax='$phone';";
+	$stmt="SELECT leadaddressid from vtiger_leadaddress where phone='$phone' or mobile='$phone' or fax='$phone';";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
-	$accountid = $row[0];
-	$accountname = $row[1];
-	$contactname = $row[2];
+	$leadid = $row[0];
 
-	$account_URL = "http://55.55.55.56/index.php?module=Accounts&action=DetailView&record=$accountid";
+	
+#ammend with your Vtiger Address
+	$account_URL = "http://mysite.com/vtigercrm/index.php?module=Leads&action=DetailView&record=$leadid";
 	echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
@@ -273,10 +240,8 @@ else
 
 	echo "<PRE>";
 	echo "account found!\n";
-	echo "accountid:   <a href=\"$account_URL\">$accountid</a>\n";
+	echo "accountid:   <a href=\"$account_URL\">$leadid</a>\n";
 	echo "phone:       $phone\n";
-	echo "accountname: $accountname\n";
-	echo "contactname: $contactname\n";
 	echo "</PRE><BR>";
 
 }
