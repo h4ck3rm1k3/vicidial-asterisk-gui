@@ -156,7 +156,7 @@ ALTER TABLE vicidial_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINI
 # For the closer log table, some fields will need to be added to the vicidial_closer_log table:
 ALTER TABLE vicidial_closer_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
 
-# For the campaigns log table, some fields will need to be added to the vicidial_campaigns table:
+# For the campaigns table, some fields will need to be added to the vicidial_campaigns table:
 ALTER TABLE vicidial_campaigns ADD qc_statuses TEXT;
 ALTER TABLE vicidial_campaigns ADD qc_lists TEXT;
 ALTER TABLE vicidial_campaigns ADD campaign_shift_start_time VARCHAR(4) default '0900';

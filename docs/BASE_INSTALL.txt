@@ -819,3 +819,24 @@ Also, check out our weblog: http://astguiclient.blogspot.com/
 read the REQUIREMENTS.txt for a minimum requirements list. ***
 
 End-user Manuals for Agents and Managers are available from http://www.eflo.net
+
+
+
+
+
+PHASE 11: Security Hardening:
+
+You may want to reduce the exposure of some of the elements of VICIDIAL. Here are some examples:
+
+ ln -s /dev/null /usr/local/apache2/htdocs/vicidial/project_auth_entries.txt
+ ln -s /dev/null /usr/local/apache2/htdocs/agc/project_auth_entries.txt
+ ln -s /dev/null /usr/local/apache2/htdocs/vicidial/admin_changes_log.txt
+
+- Change the WWW writable in the admin.php server settings to "0"
+- Change the default admin user "6666" or it's password from the default
+- Change the Default secret(password) for the default SIP and IAX accounts that are set up with astGUIclient
+- Possibly use static IP addresses for the IAX/SIP conf account entries
+- Change the default port for Apache in httpd.conf from 80 to something else
+- Change the default port for IAX in iax.conf from 4569 to something else
+- Change the default control port for SIP in sip.conf from 5060 to something else
+- Use a firewall to route access using different port numbers or restricting connection by VPN or set IP addresses

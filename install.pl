@@ -179,6 +179,7 @@ if (length($ARGV[0])>1)
 	print "  [--fastagi_log_checkfordead=30] = define FastAGI log check-for-dead seconds\n";
 	print "  [--fastagi_log_checkforwait=60] = define FastAGI log check-for-wait seconds\n";
 	print "  [--build_multiserver_conf] = generates conf file examples for extensions.conf and iax.conf\n";
+	print "  [--build_phones_conf] = generates conf file examples for extensions.conf, sip.conf and iax.conf\n";
 	print "\n";
 
 	exit;
@@ -745,6 +746,134 @@ if (length($ARGV[0])>1)
 
 
 		print "$ext$Lext\n$iax$Liax\n";
+		exit;
+		}
+
+
+		if ($args =~ /--build_phones_conf/i) # CLI defined conf files
+		{
+		$build_phones_conf='y';
+		print "  CLI phones conf gen:        YES\n";
+
+		# default path to astguiclient configuration file:
+		$PATHconf =		'/etc/astguiclient.conf';
+
+		open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+		@conf = <conf>;
+		close(conf);
+		$i=0;
+		foreach(@conf)
+			{
+			$line = $conf[$i];
+			$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+			if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+				{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+			if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+				{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+				{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+				{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+				{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+				{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+			if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+				{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+			$i++;
+			}
+
+		# Customized Variables
+		$server_ip = $VARserver_ip;		# Asterisk server IP
+		if (!$VARDB_port) {$VARDB_port='3306';}
+
+		use DBI;	  
+
+		$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		 or die "Couldn't connect to database: " . DBI->errstr;
+
+		$ext  = "\nAdd the following lines to your extensions.conf file:\n";
+
+		$sip  = "\nAdd the following lines to your sip.conf file:\n";
+
+		$iax  = "\nAdd the following lines to your iax.conf file:\n";
+
+		$vm  = "\nAdd the following lines to your voicemail.conf file:\n";
+
+		##### Get the SIP phone entries #####
+		$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass FROM phones where server_ip='$server_ip' and protocol='SIP';";
+			print "$stmtA\n";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$i=0;
+		while ($sthArows > $i)
+			{
+			 @aryA = $sthA->fetchrow_array;
+				$extension[$i] =	"$aryA[0]";
+				$dialplan[$i] =		"$aryA[1]";
+				$voicemail[$i] =	"$aryA[2]";
+				$pass[$i] =			"$aryA[3]";
+
+			$ext .= "exten => $dialplan[$i],1,Dial(SIP/$extension[$i])\n";
+			$ext .= "exten => $dialplan[$i],2,Voicemail,u$voicemail[$i]\n";
+
+			$sip .= "\[$extension[$i]\]\n";
+			$sip .= "disallow=all\n";
+			$sip .= "allow=ulaw\n";
+			$sip .= "type=friend\n";
+			$sip .= "username=$extension[$i]\n";
+			$sip .= "secret=$pass[$i]\n";
+			$sip .= "host=dynamic\n";
+			$sip .= "dtmfmode=rfc2833\n";
+			$sip .= "qualify=1000\n";
+			$sip .= "mailbox=$voicemail[$i]\n\n";
+
+			$vm  .= "$voicemail[$i] => $voicemail[$i],$extension[$i] Mailbox\n";
+
+			$i++;
+			}
+		$sthA->finish();
+
+		##### Get the IAX phone entries #####
+		$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass FROM phones where server_ip='$server_ip' and protocol='IAX2';";
+			print "$stmtA\n";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$i=0;
+		while ($sthArows > $i)
+			{
+			 @aryA = $sthA->fetchrow_array;
+				$extension[$i] =	"$aryA[0]";
+				$dialplan[$i] =		"$aryA[1]";
+				$voicemail[$i] =	"$aryA[2]";
+				$pass[$i] =			"$aryA[3]";
+
+			$ext .= "exten => $dialplan[$i],1,Dial(IAX2/$extension[$i])\n";
+			$ext .= "exten => $dialplan[$i],2,Voicemail,u$voicemail[$i]\n";
+
+			$iax .= "\[$extension[$i]\]\n";
+			$iax .= "disallow=all\n";
+			$iax .= "allow=ulaw\n";
+			$iax .= "context=default\n";
+			$iax .= "type=friend\n";
+			$iax .= "accountcode=$extension[$i]\n";
+			$iax .= "secret=$pass[$i]\n";
+			$iax .= "auth=md5\n";
+			$iax .= "host=dynamic\n";
+			$iax .= "permit=0.0.0.0/0.0.0.0\n";
+			$iax .= "qualify=1000\n";
+			$iax .= "mailbox=$voicemail[$i]\n\n";
+
+			$vm  .= "$voicemail[$i] => $voicemail[$i],$extension[$i] Mailbox\n";
+
+			$i++;
+			}
+		$sthA->finish();
+
+
+		print "$ext\n$sip\n$iax\n$vm\n";
 		exit;
 		}
 	}

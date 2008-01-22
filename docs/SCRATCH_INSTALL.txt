@@ -610,15 +610,15 @@ that can be displayed real-time on a web page.
    - to install this directly on the command line type:
 	NOTE: you may have to edit the Makefile to remove X11 if you don't have it
 	- cd /usr/local	
-	- wget http://ploticus.sourceforge.net/download/pl232src.tar.gz
-	- gunzip pl232src.tar.gz
-	- tar xvf pl232src.tar
-	- cd pl232src/src/
+	- wget http://superb-west.dl.sourceforge.net/sourceforge/ploticus/pl240src.tar.gz
+	- gunzip pl240src.tar.gz
+	- tar xvf pl240src.tar
+	- cd pl240src/src/
 	- make clean
 	- make
 	- make install
    - you are done
-   NOTE: uncomment these lines to compile on systems without X11:
+   NOTE: uncomment these lines to compile on systems without X11(v232):
 	NOXFLAG = -DNOX11
 	XLIBS =
 	XOBJ =
@@ -966,7 +966,7 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.1.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.2.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 

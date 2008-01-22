@@ -159,10 +159,10 @@ make install
 
 
 cd /usr/local	
-wget http://ploticus.sourceforge.net/download/pl232src.tar.gz
-gunzip pl232src.tar.gz
-tar xvf pl232src.tar
-cd pl232src/src/
+wget http://superb-west.dl.sourceforge.net/sourceforge/ploticus/pl240src.tar.gz
+gunzip pl240src.tar.gz
+tar xvf pl240src.tar
+cd pl240src/src/
 make clean
 make
 make install
