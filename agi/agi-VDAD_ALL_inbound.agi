@@ -1155,9 +1155,10 @@ if ($agent_search_method =~ /^LO|^LB/)
 if ($hold_message_counter > $prompt_interval)
 	{
 	$AGI->stream_file('sip-silence'); # stop music-on-hold process
-	$AGI->stream_file("$onhold_prompt_filename");
+	$AGI->stream_file("$onhold_prompt_filename"); # this prompt must be less than 10 seconds long
 	$hold_message_counter = 0;
 	$start_moh=1;
+	if ($drop_timer > 3) {$drop_timer = ($drop_timer + 5);} # add propmt play time to total queue time
 	}
   else {$hold_message_counter++;}
 if ($hold_tone_counter > 3)

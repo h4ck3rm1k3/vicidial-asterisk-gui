@@ -11,6 +11,7 @@
 # 71121-1048 - Added -p flag to mkdir to not show errors
 # 80107-2341 - Added --build_multiserver_conf flag to generate dynamic multi-server conf sections
 # 80115-1426 - Added ip_relay scripts for port forwarding
+# 80122-0320 - Added build_phones_conf flag to generate phones conf entries from phones table records
 #
 
 ############################################

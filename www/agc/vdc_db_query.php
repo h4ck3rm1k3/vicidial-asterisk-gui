@@ -143,10 +143,11 @@
 # 71223-0318 - changed logging of closer calls
 # 71226-1117 - added option to kick all calls from conference upon logout
 # 80116-1032 - added user_closer_log logging in regCLOSER
+# 80125-1213 - fixed vicidial_log bug when call is from closer
 #
 
-$version = '2.0.5-68';
-$build = '80116-1032';
+$version = '2.0.5-69';
+$build = '80125-1213';
 
 require("dbconnect.php");
 
@@ -1111,11 +1112,20 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
+		$closer_logged=0;
 		if ($check_inbound > 0)
 			{
-			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' order by start_epoch desc limit 1;";
+			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d")-1,date("Y")));
+
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by start_epoch desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
+			$affected_rows = mysql_affected_rows($link);
+			if ($affected_rows > 0)
+				{
+				$closer_logged=1;
+				echo "$uniqueid\n$channel\n";
+				}
 			}
 
 		#############################################
@@ -1357,19 +1367,22 @@ if ($stage == "end")
 				}
 			}
 
-		##### look for the channel in the UPDATED vicidial_manager record of the call initiation
-		$stmt="UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id';";
-		if ($DB) {echo "$stmt\n";}
-		$rslt=mysql_query($stmt, $link);
-		$affected_rows = mysql_affected_rows($link);
+		if ($closer_logged < 1)
+			{
+			##### update the duration and end time in the vicidial_log table
+			$stmt="UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$affected_rows = mysql_affected_rows($link);
 
-		if ($affected_rows > 0)
-			{
-			echo "$uniqueid\n$channel\n";
-			}
-		else
-			{
-			echo "LOG NOT ENTERED\n\n";
+			if ($affected_rows > 0)
+				{
+				echo "$uniqueid\n$channel\n";
+				}
+			else
+				{
+				echo "LOG NOT ENTERED\n\n";
+				}
 			}
 		}
 
