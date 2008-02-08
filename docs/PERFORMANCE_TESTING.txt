@@ -97,7 +97,6 @@ TESTTRUNK = Zap/g2
 TESTSIPTRUNK = SIP/VICItest:test@10.10.10.16:5060
 
 [default]
-;exten => _91999NXXXXXX,1,AGI(call_log.agi)
 exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91999NXXXXXX,2,Dial(${TESTTRUNK}/${EXTEN:2},,tTo)
 exten => _91999NXXXXXX,3,Hangup
@@ -105,3 +104,32 @@ exten => _91999NXXXXXX,3,Hangup
 exten => 999999999999,1,Answer
 exten => 999999999999,2,Dial(${TESTSIPTRUNK}/${EXTEN},,tTo)
 exten => 999999999999,2,Hangup
+
+
+In the sip.conf file of the test server:
+register => ASTtest2:test@10.10.10.16:5060
+
+[VICItest]
+disallow=all
+allow=ulaw
+type=friend
+username=VICItest
+secret=test
+host=dynamic
+dtmfmode=inband
+defaultip=10.10.10.16
+qualify=1000
+
+
+In the sip.conf file of the control server:
+
+[VICItest]
+disallow=all
+allow=ulaw
+type=friend
+username=VICItest
+secret=test
+host=dynamic
+dtmfmode=inband
+defaultip=10.10.10.16
+qualify=1000

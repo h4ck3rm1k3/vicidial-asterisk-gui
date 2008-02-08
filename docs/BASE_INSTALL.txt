@@ -31,16 +31,16 @@ PHASE 1: INSTALLING ASTERISK
 1. follow these command line steps:
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.24.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.21.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
-gunzip asterisk-1.2.24.tar.gz
-tar xvf asterisk-1.2.24.tar
-gunzip zaptel-1.2.21.tar.gz
-tar xvf zaptel-1.2.21.tar
-gunzip libpri-1.2.5.tar.gz
-tar xvf libpri-1.2.5.tar
-cd ./zaptel-1.2.21
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.26.2.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.23.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.7.tar.gz
+gunzip asterisk-1.2.26.2.tar.gz
+tar xvf asterisk-1.2.26.2.tar
+gunzip zaptel-1.2.23.tar.gz
+tar xvf zaptel-1.2.23.tar
+gunzip libpri-1.2.7.tar.gz
+tar xvf libpri-1.2.7.tar
+cd ./zaptel-1.2.23
 wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
@@ -54,11 +54,11 @@ make clean
 make zttool
 make
 make install
-cd ../libpri-1.2.5
+cd ../libpri-1.2.7
 make clean
 make
 make install
-cd ../asterisk-1.2.24
+cd ../asterisk-1.2.26.2
 	(1.2 tree) If you want to include Answering Machine Detection ability
 	  you will need to download app_amd.c and amd.conf and alter the 
 	  apps/Makefile to compile it properly
@@ -73,11 +73,11 @@ cd ../asterisk-1.2.24
 	wget http://www.eflo.net/files/amd2.conf
 	mkdir /etc/asterisk
 	mv amd2.conf /etc/asterisk/amd.conf
-	*OPTIONAL*(1.2.23 thru 1.2.24) apply the meetme DTMF passthru patch
+	*OPTIONAL*(1.2.23 thru 1.2.26.2) apply the meetme DTMF passthru patch
 	wget http://www.eflo.net/files/meetme_DTMF_passthru-1.2.23.patch
 	patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
 		- File to patch: app_meetme.c
-	*OPTIONAL*(1.2.12.1 thru 1.2.24) apply the meetme volume control patch
+	*OPTIONAL*(1.2.12.1 thru 1.2.26.2) apply the meetme volume control patch
 		*Different patches available for 1.2.7.1 through 1.2.14
 	wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 	patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -89,7 +89,7 @@ cd ../asterisk-1.2.24
 	patch -p1 < ./cli_chan_concise_delimiter.patch
 		- File to patch: cli.c
 
-	*OPTIONAL*(1.2.14 thru 1.2.24) rewrite of waitforsilence
+	*OPTIONAL*(1.2.14 thru 1.2.26.2) rewrite of waitforsilence
 	wget http://www.eflo.net/files/app_waitforsilence.c
 	mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
@@ -267,7 +267,7 @@ use asterisk;
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.24');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTast','Test install of Asterisk server', '10.10.10.15','Y','1.2.26.2');
 
 insert into server_updater values('10.10.10.15','');
 
@@ -554,9 +554,9 @@ PHASE 5: ADDING STARTUP ENTRIES FOR ASTGUICLIENT/VICIDIAL SCRIPTS
 # /usr/share/astguiclient/ip_relay/relay_control start  2>/dev/null 1>&2
 
 # Disable console blanking and powersaving
-/usr/bin/setterm -blank
-/usr/bin/setterm -powersave off
-/usr/bin/setterm -powerdown
+setterm -blank
+setterm -powersave off
+setterm -powerdown
 
 ### start time server
 /usr/local/bin/ntpdate -u 18.145.0.30

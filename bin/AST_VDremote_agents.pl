@@ -19,7 +19,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG:
 # 50215-0954 - First version of script
@@ -34,6 +34,7 @@
 # 70214-1243 - Added queuemetrics_log_id field to queue_log logging
 # 70222-1606 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70417-1346 - Fixed bug that would add unneeded simulated agent lines
+# 80128-0105 - Fixed calls_today bug
 #
 
 ### begin parsing run-time options ###
@@ -240,18 +241,20 @@ while($one_day_interval > 0)
 		 &event_logger;
 
 		##### grab number of calls today in this campaign and increment
-		$stmt="SELECT calls_today FROM vicidial_live_agents WHERE extension LIKE \"R/%\";";
-		$rslt=mysql_query($stmt, $link);
-		if ($DB) {print "$stmt\n";}
-		$vla_cc_ct = mysql_num_rows($rslt);
+		$stmtA="SELECT calls_today FROM vicidial_live_agents WHERE extension LIKE \"R/%\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$vla_cc_ct=$sthA->rows;
 		if ($vla_cc_ct > 0)
 			{
-			$row=mysql_fetch_row($rslt);
-			$calls_today =$row[0];
+			 @aryA = $sthA->fetchrow_array;
+				$calls_today =	"$aryA[0]";
+			 $rec_count++;
 			}
 		else
 			{$calls_today ='0';}
 		$calls_today++;
+		$sthA->finish();
 
 		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE',calls_today='$calls_today' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
 		$affected_rows = $dbhA->do($stmtA);

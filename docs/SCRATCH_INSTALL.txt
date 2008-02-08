@@ -681,7 +681,7 @@ installation on another machine)
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://apache.secsup.org/dist/httpd/httpd-2.0.61.tar.gz
+	- wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.0.61.tar.gz
 	- gunzip httpd-2.0.61.tar.gz
 	- tar xvf httpd-2.0.61.tar
 	- wget http://us2.php.net/distributions/php-4.4.7.tar.gz

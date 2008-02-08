@@ -8,8 +8,8 @@ jitterbuffer=no
 tos=lowdelay
 
 ;register => 1112223333:PASSWORD@iax.binfone.com
-register => ASTloop:test@1270.0.1:40569
-register => ASTblind:test@1270.0.1:41569
+register => ASTloop:test@127.0.0.1:40569
+register => ASTblind:test@127.0.0.1:41569
 
 [ASTloop]
 type=friend

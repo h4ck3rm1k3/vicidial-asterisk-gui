@@ -8,7 +8,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 #
 # CHANGES
@@ -25,6 +25,7 @@
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
 # 70801-0912 - Added called count and status to import leads format (fields 24 and 25)
 # 70815-2128 - Added entry_date to import leads format (field 26)
+# 80128-0105 - Fixed bugs in file loading
 #
 
 $secX = time();
@@ -194,11 +195,11 @@ else
 {
 print "no command line options set\n";
 $args = "";
-$i=0;
 $forcelistid = '';
 }
 ### end parsing run-time options ###
 
+$i=0;
 $US = '_';
 $phone_list = '|';
 
@@ -277,8 +278,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	$multi_insert_counter=0;
 	$multistmt='';
 
-if ($DB)
-#	while (<infile>)
+#if ($DB)
+	while (<infile>)
 	{
 
 #		print "$a| $number\n";

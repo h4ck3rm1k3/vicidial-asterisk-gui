@@ -1115,7 +1115,7 @@ if ($stage == "end")
 		$closer_logged=0;
 		if ($check_inbound > 0)
 			{
-			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d")-1,date("Y")));
+			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by start_epoch desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
