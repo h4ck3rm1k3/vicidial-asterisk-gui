@@ -31,9 +31,6 @@ index (user),
 index (event_date)
 );
 
-
-
-
 ALTER TABLE vicidial_users ADD qc_enabled ENUM('1','0') default '0';
 ALTER TABLE vicidial_users ADD qc_user_level INT(2) default '1';
 ALTER TABLE vicidial_users ADD qc_pass ENUM('1','0') default '0';
@@ -42,3 +39,12 @@ ALTER TABLE vicidial_users ADD qc_commit ENUM('1','0') default '0';
 
 ALTER TABLE vicidial_user_groups ADD qc_allowed_campaigns TEXT;
 ALTER TABLE vicidial_user_groups ADD qc_allowed_inbound_groups TEXT;
+
+
+
+
+
+ALTER TABLE system_settings ADD db_schema_version INT(8) UNSIGNED default '0';
+
+UPDATE system_settings SET db_schema_version='1074', version='2.0.5b0.5';
+

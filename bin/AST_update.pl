@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_update.pl version 14   *DBI-version*
+# AST_update.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface and Net::MySQL to update the live_channels
@@ -30,7 +30,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # version changes:
 # 41228-1659 - modified to compensate for manager output response hiccups
@@ -55,9 +55,10 @@
 # 60926-1601 - validate proper binutil locations for performance gathering
 # 61130-1008 - defaults show_channels_format to 1 for non 1.0 version Asterisk
 # 61227-1659 - added "core show channels concise" for Asterisk 1.4 compatibility
+# 80111-1850 - fixed server_updater record missing bug
 #
 
-$build = '61227-1659';
+$build = '80111-1850';
 
 # constants
 $SYSPERF=0;	# system performance logging to MySQL server_performance table every 5 seconds
@@ -146,6 +147,7 @@ if (length($ARGV[0])>1)
 		}
 		if ($args =~ /--debugX/i)
 		{
+		$DB=1;
 		$DBX=1;
 		print "\n----- SUPER-DUPER DEBUGGING -----\nBUILD: $build\n";
 		}
@@ -268,6 +270,27 @@ $sthA->finish();
 	if ($AST_ver =~ /^1\.0/i) {$show_channels_format = 0;}
 	if ($AST_ver =~ /^1\.4/i) {$show_channels_format = 2;}
 	print STDERR "SHOW CHANNELS format: $show_channels_format\n";
+
+
+##### Check for a server_updater record, and if not present, insert one
+$SUrec=0;
+$stmtA = "SELECT count(*) FROM $server_updater where server_ip = '$server_ip';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+@aryA = $sthA->fetchrow_array;
+$SUrec = $aryA[0];
+$sthA->finish();
+	if($DB){print STDERR "\n|$SUrec|$stmtA|\n";}
+
+if ($SUrec < 1)
+	{
+	&get_time_now;
+
+	$stmtU = "INSERT INTO $server_updater set  server_ip='$server_ip', last_update='$now_date';";
+		if($DB){print STDERR "\n|$stmtU|\n";}
+	$affected_rows = $dbhA->do($stmtU);
+	}
+
 
 ##### LOOK FOR ZAP CLIENTS AS DEFINED IN THE phones TABLE SO THEY ARE NOT MISLABELED AS TRUNKS
 	print STDERR "LOOKING FOR Zap clients assigned to this server:\n";
