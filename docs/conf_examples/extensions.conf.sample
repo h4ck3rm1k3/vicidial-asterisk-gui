@@ -300,9 +300,9 @@ exten => _**3429,6,Voicemail,u2000
 exten => _*NXXNXXXXXX*3429,1,Ringing
 exten => _*NXXNXXXXXX*3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inbound 800-----x-----y-----z-----w)
-exten => _*NXXNXXXXXX*3429,3,Answer
-exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
-exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
+exten => _*NXXNXXXXXX*3429,4,Answer
+exten => _*NXXNXXXXXX*3429,5,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _*NXXNXXXXXX*3429,6,Voicemail,u2000
 
 ; BE SURE TO CHANGE THESE FOR YOUR IP ADDRESS!
 exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
