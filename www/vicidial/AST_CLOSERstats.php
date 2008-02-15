@@ -329,7 +329,7 @@ echo "+--------------------------+------------+----------+--------+\n";
 echo "| AGENT                    | CALLS      | TIME M   | AVRG M |\n";
 echo "+--------------------------+------------+----------+--------+\n";
 
-$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 4 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
+$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 0 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);

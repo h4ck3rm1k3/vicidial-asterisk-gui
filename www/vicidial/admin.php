@@ -9065,12 +9065,14 @@ if ($ADD==31)
 	$rslt=mysql_query($stmt, $link);
 	$statuses_to_print = mysql_num_rows($rslt);
 	$statuses_list='';
+	$dial_statuses_list='';
 
 	$o=0;
 	while ($statuses_to_print > $o) 
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
@@ -9087,6 +9089,7 @@ if ($ADD==31)
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
@@ -9195,7 +9198,7 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
 		echo "<option value=\"\"> - NONE - </option>\n";
 
-		echo "$statuses_list";
+		echo "$dial_statuses_list";
 		echo "</select> &nbsp; \n";
 		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
@@ -9784,12 +9787,13 @@ if ($ADD==34)
 		$rslt=mysql_query($stmt, $link);
 		$statuses_to_print = mysql_num_rows($rslt);
 		$statuses_list='';
-
+		$dial_statuses_list='';
 		$o=0;
 		while ($statuses_to_print > $o) 
 			{
 			$rowx=mysql_fetch_row($rslt);
 			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 			$statname_list["$rowx[0]"] = "$rowx[1]";
 			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 			if (eregi("Y",$rowx[2]))
@@ -9806,6 +9810,7 @@ if ($ADD==34)
 			{
 			$rowx=mysql_fetch_row($rslt);
 			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 			$statname_list["$rowx[0]"] = "$rowx[1]";
 			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 			if (eregi("Y",$rowx[2]))
@@ -9909,7 +9914,7 @@ if ($ADD==34)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
 		echo "<option value=\"\"> - NONE - </option>\n";
 
-		echo "$statuses_list";
+		echo "$dial_statuses_list";
 		echo "</select> &nbsp; \n";
 		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
 
@@ -10207,7 +10212,7 @@ if ( ($ADD==34) or ($ADD==31) )
 				echo "<select size=1 name=dial_status$US$q$US$vcl_id id=dial_status$US$q$US$vcl_id>\n";
 				echo "<option value=\"\"> - Select A Status - </option>\n";
 
-				echo "$statuses_list";
+				echo "$dial_statuses_list";
 				echo "</select> <font size=2><B>\n";
 				echo "<a href=\"#\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> &nbsp; \n";
 				echo "<a href=\"#\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">REMOVE</a>\n";
@@ -10268,7 +10273,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		echo "$mixlists_list";
 		echo "</select></td>\n";
 		echo "<td>Dial Status: <select size=1 name=status>\n";
-		echo "$statuses_list";
+		echo "$dial_statuses_list";
 		echo "</select></td>\n";
 		echo "<td> &nbsp; <input type=submit name=submit value=SUBMIT></form></td>\n";
 		echo "</tr>\n";
