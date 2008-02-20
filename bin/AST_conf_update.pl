@@ -186,7 +186,7 @@ $t = new Net::Telnet (Port => $telnet_port,
 	else {$telnet_login = $ASTmgrUSERNAME;}
 
 $t->open("$telnet_host"); 
-$t->waitfor('/0\n$/');			# print login
+$t->waitfor('/[01]\n$/');			# print login
 $t->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 $t->waitfor('/Authentication accepted/');		# waitfor auth accepted
 

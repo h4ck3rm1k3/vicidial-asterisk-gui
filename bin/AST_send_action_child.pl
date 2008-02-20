@@ -159,7 +159,7 @@ if ($action) {
 		$telnet_login = $ASTmgrUSERNAME;
 	}
 	$tn->open($telnet_host); 
-	$tn->waitfor('/0\n$/'); # print login
+	$tn->waitfor('/[01]\n$/'); # print login
 	$tn->print("Action: Login\nUsername: $telnet_login\nSecret: $ASTmgrSECRET\n\n");
 	$tn->waitfor('/Authentication accepted/'); # waitfor auth accepted
 
