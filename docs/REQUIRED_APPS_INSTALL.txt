@@ -181,9 +181,9 @@ cd /usr/local
 wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.0.61.tar.gz
 gunzip httpd-2.0.61.tar.gz
 tar xvf httpd-2.0.61.tar
-wget http://us2.php.net/distributions/php-4.4.7.tar.gz
-gunzip php-4.4.7.tar.gz
-tar xvf php-4.4.7.tar
+wget http://us2.php.net/distributions/php-4.4.8.tar.gz
+gunzip php-4.4.8.tar.gz
+tar xvf php-4.4.8.tar
 cd httpd-2.0.61
 ./configure --prefix=/usr/local/apache2 --enable-ssl --enable-setenvif --enable-so --with-apxs2 --enable-dav --enable-maintainer-mode
 make
@@ -197,7 +197,7 @@ openssl req -new -x509 -days 1200 -keyout /usr/local/apache2/conf/ssl.key/server
 openssl rsa -in /usr/local/apache2/conf/ssl.key/server.key.cpy -out /usr/local/apache2/conf/ssl.key/server.key
 
 
-cd ../php-4.4.7
+cd ../php-4.4.8
 ./configure --with-mysql=/usr/local/mysql --enable-inline-optimization --enable-memory-limit --enable-track-vars --enable-libgcc --with-xml --enable-versioning --enable-sysvsem --with-openssl --disable-debug --with-apxs2=/usr/local/apache2/bin/apxs --with-zlib
 make
 make install
@@ -425,11 +425,11 @@ rm -f /usr/lib/asterisk/modules/pbx_functions.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.17.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.18.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.8.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.3.tar.gz
-gunzip asterisk-1.4.17.tar.gz
-tar xvf asterisk-1.4.17.tar
+gunzip asterisk-1.4.18.tar.gz
+tar xvf asterisk-1.4.18.tar
 gunzip zaptel-1.4.8.tar.gz
 tar xvf zaptel-1.4.8.tar
 gunzip libpri-1.4.3.tar.gz
@@ -442,7 +442,7 @@ cd ../libpri-1.4.3
 make clean
 make
 make install
-cd ../asterisk-1.4.17
+cd ../asterisk-1.4.18
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h

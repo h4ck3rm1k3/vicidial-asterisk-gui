@@ -474,6 +474,7 @@ insert into vicidial_statuses values('DROP','Agent Not Available','N','Y','UNDEF
 insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINED');
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('CBHOLD','Call Back Hold','N','Y','UNDEFINED');
 insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
 insert into vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
 insert into vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');

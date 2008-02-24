@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# FastAGI_log.pl version 2.0.3   *DBI-version*
+# FastAGI_log.pl version 2.0.5   *DBI-version*
 # 
 # Experimental Deamon using perl Net::Server that runs as FastAGI to reduce load
 # replaces the following AGI scripts:
@@ -25,7 +25,7 @@
 # exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 # 
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG:
 # 61010-1007 - First test build
@@ -33,6 +33,7 @@
 # 70215-1258 - Added queue_log entry when deleting vac record
 # 70808-1425 - Moved VD_hangup section to the call_log end stage to improve efficiency
 # 71030-2039 - Added priority to hopper insertions
+# 80224-0040 - Fixed bugs in vicidial_log updates
 #
 
 
@@ -127,7 +128,7 @@ if ($SERVERLOG =~ /Y/)
 	print "SERVER LOGGING ON: LEVEL-$log_level FILE-$childLOGfile\n";
 	}
 
-package TEST_VDfastAGI;
+package VDfastAGI;
 
 use Net::Server;
 use Asterisk::AGI;
@@ -140,7 +141,7 @@ use Net::Server::PreFork; # any personality will do
 
 sub process_request {
 	$process = 'begin';
-	$script = 'TEST_VDfastAGI';
+	$script = 'VDfastAGI';
 	########## Get current time, parse configs, get logging preferences ##########
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 	$year = ($year + 1900);
@@ -441,6 +442,20 @@ sub process_request {
 		else		 
 			{
 			if ($AGILOG) {$agi_string = "|CALL HUNG UP|";   &agi_output;}
+			if ($request =~ /--HVcauses--/i)
+				{
+				$HVcauses=1;
+				@ARGV_vars = split(/-----/, $request);
+				$PRI = $ARGV_vars[0];
+				$PRI =~ s/.*--HVcauses--//gi;
+				$DEBUG = $ARGV_vars[1];
+				$hangup_cause = $ARGV_vars[2];
+				$dialstatus = $ARGV_vars[3];
+				$dial_time = $ARGV_vars[4];
+				$ring_time = $ARGV_vars[5];
+				$agi_string = "URL HVcauses: |$PRI|$DEBUG|$hangup_cause|$dialstatus|$dial_time|$ring_time|";   
+				&agi_output;
+				}
 
 			### get uniqueid and start_epoch from the call_log table
 			$stmtA = "SELECT uniqueid,start_epoch FROM call_log where uniqueid='$unique_id';";
@@ -551,20 +566,24 @@ sub process_request {
 					if ($dialstatus =~ /BUSY/) {$VDL_status = 'B'; $VDAC_status = 'BUSY';}
 					if ($dialstatus =~ /CHANUNAVAIL/) {$VDL_status = 'DC'; $VDAC_status = 'DISCONNECT';}
 
-					$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
-						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAC update: |$affected_rows|$CIDlead_id";   &agi_output;}
-
 					$stmtA = "UPDATE vicidial_list set status='$VDL_status' where lead_id = '$CIDlead_id';";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id";   &agi_output;}
+					$VDADaffected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$VDADaffected_rows|$CIDlead_id";   &agi_output;}
 
-					$stmtA = "UPDATE vicidial_log set status='$VDL_status' where uniqueid = '$uniqueid';";
+					$stmtA = "UPDATE vicidial_auto_calls set status='$VDAC_status' where callerid = '$callerid';";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|";   &agi_output;}
+					$VDACaffected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDAC update: |$VDACaffected_rows|$CIDlead_id";   &agi_output;}
+
+						$Euniqueid=$uniqueid;
+						$Euniqueid =~ s/\.\d+$//gi;
+					$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$VDL_status' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+					$VDLaffected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VDLaffected_rows|$uniqueid|$VDACuniqueid|";   &agi_output;}
+
+					sleep(1);
 
 					$dbhA->disconnect();
 				}
@@ -581,7 +600,7 @@ sub process_request {
 
 				########## FIND AND DELETE vicidial_auto_calls ##########
 				$VD_alt_dial = 'NONE';
-				$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time) FROM vicidial_auto_calls where uniqueid = '$uniqueid' limit 1;";
+				$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
 					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -596,6 +615,7 @@ sub process_request {
 					$VD_alt_dial	=	"$aryA[3]";
 					$VD_stage =			"$aryA[4]";
 					$VD_start_epoch =	"$aryA[5]";
+					$VD_uniqueid =		"$aryA[6]";
 					 $rec_countCUSTDATA++;
 					}
 				$sthA->finish();
@@ -606,9 +626,9 @@ sub process_request {
 					}
 				else
 					{
-					$stmtA = "DELETE FROM vicidial_auto_calls where uniqueid='$uniqueid' order by call_time desc limit 1;";
+					$stmtA = "DELETE FROM vicidial_auto_calls where uniqueid='$uniqueid' or callerid = '$callerid' order by call_time desc limit 1;";
 					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_callerid|$VARserver_ip";   &agi_output;}
+					if ($AGILOG) {$agi_string = "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_uniqueid|$VD_callerid|$VARserver_ip";   &agi_output;}
 
 					#############################################
 					##### START QUEUEMETRICS LOGGING LOOKUP #####
@@ -673,14 +693,16 @@ sub process_request {
 
 
 					########## FIND AND UPDATE vicidial_log ##########
-					$stmtA = "SELECT start_epoch,status FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$VD_lead_id' limit 1;";
+						$Euniqueid=$uniqueid;
+						$Euniqueid =~ s/\.\d+$//gi;
+					$stmtA = "SELECT start_epoch,status FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
 					 $epc_countCUSTDATA=0;
 					 $VD_closecallid='';
-					while ($sthArows > $rec_countCUSTDATA)
+					while ($sthArows > $epc_countCUSTDATA)
 						{
 						@aryA = $sthA->fetchrow_array;
 						$VD_start_epoch	= "$aryA[0]";
@@ -691,7 +713,7 @@ sub process_request {
 
 					if (!$epc_countCUSTDATA)
 						{
-						if ($AGILOG) {$agi_string = "no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
+						if ($AGILOG) {$agi_string = "no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid $VD_uniqueid";   &agi_output;}
 
 						$secX = time();
 						$Rtarget = ($secX - 21600);	# look for VDCL entry within last 6 hours
@@ -724,7 +746,7 @@ sub process_request {
 						}
 					if (!$epc_countCUSTDATA)
 						{
-						if ($AGILOG) {$agi_string = "no VDL or VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
+						if ($AGILOG) {$agi_string = "no VDL or VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid $VD_uniqueid";   &agi_output;}
 						}
 					else
 						{
@@ -742,7 +764,7 @@ sub process_request {
 							if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id";   &agi_output;}
 							}
 
-						$stmtA = "UPDATE vicidial_log set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where uniqueid = '$uniqueid';";
+						$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\";";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$affected_rows = $dbhA->do($stmtA);
 						if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|$VD_status|";   &agi_output;}
@@ -753,7 +775,7 @@ sub process_request {
 						########## UPDATE vicidial_closer_log ##########
 						if (length($VD_closecallid) < 1)
 							{
-							if ($AGILOG) {$agi_string = "no VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid";   &agi_output;}
+							if ($AGILOG) {$agi_string = "no VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid $VD_uniqueid";   &agi_output;}
 							}
 						else
 							{
@@ -878,7 +900,7 @@ sub process_request {
 }
 
 
-TEST_VDfastAGI->run(
+VDfastAGI->run(
 					port=>4577,
 					user=>'root',
 					group=>'root',

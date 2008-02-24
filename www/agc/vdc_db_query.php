@@ -676,10 +676,16 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 			if ( ($WeBRooTWritablE > 0) and ($enable_agc_xfer_log > 0) )
 				{
+				# generate callerID for unique identifier in xfer_log file
+				$PADlead_id = sprintf("%09s", $lead_id);
+					while (strlen($PADlead_id) > 9) {$PADlead_id = substr("$PADlead_id", 0, -1);}
+				# Create unique calleridname to track the call: MmmddhhmmssLLLLLLLLL
+					$MqueryCID = "M$CIDdate$PADlead_id";
+
 				#	DATETIME|campaign|lead_id|phone_number|user|type
 				#	2007-08-22 11:11:11|TESTCAMP|65432|3125551212|1234|M
 				$fp = fopen ("./xfer_log.txt", "a");
-				fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|M\n");
+				fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|M|$MqueryCID|\n");
 				fclose($fp);
 				}
 
@@ -1882,7 +1888,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			#	DATETIME|campaign|lead_id|phone_number|user|type
 			#	2007-08-22 11:11:11|TESTCAMP|65432|3125551212|1234|A
 			$fp = fopen ("./xfer_log.txt", "a");
-			fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|$Ctype\n");
+			fwrite ($fp, "$NOW_TIME|$campaign|$lead_id|$phone_number|$user|$Ctype|$callerid|$uniqueid\n");
 			fclose($fp);
 			}
 

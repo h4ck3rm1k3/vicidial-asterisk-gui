@@ -842,7 +842,7 @@ $talking_to_print = mysql_num_rows($rslt);
 			}
 		if (eregi("PAUSED",$row[3])) 
 			{
-			if ($call_time_M_int >= 30) 
+			if ($call_time_M_int >= 360) 
 				{$i++; continue;} 
 			else
 				{

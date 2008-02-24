@@ -66,7 +66,7 @@ PHASE 1: INSTALLING AN OPERATING SYSTEM
 
 
 This installation will be using Slackware 11 for the linux distribution, 
-Slackware 10.X will also work with these instructions. There are several easier 
+Slackware 12.X will also work with these instructions. There are several easier 
 linux distributions and there are others that are more popular, but Slackware is 
 a nice non-commercial distro that has been around for a long time and proven 
 itself to be a very uncluttered and stable platform for development.
@@ -684,15 +684,15 @@ installation on another machine)
 	- wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.0.61.tar.gz
 	- gunzip httpd-2.0.61.tar.gz
 	- tar xvf httpd-2.0.61.tar
-	- wget http://us2.php.net/distributions/php-4.4.7.tar.gz
+	- wget http://us2.php.net/distributions/php-4.4.8.tar.gz
 		NOTE: PHP 5.1.1 has also been tested with this release
-	- gunzip php-4.4.7.tar.gz
-	- tar xvf php-4.4.7.tar
+	- gunzip php-4.4.8.tar.gz
+	- tar xvf php-4.4.8.tar
 	- cd httpd-2.0.61
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install
-	- cd ../php-4.4.7
+	- cd ../php-4.4.8
 	- ./configure --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql
 	- make
 	- make install
@@ -2972,6 +2972,7 @@ insert into vicidial_statuses values('DROP','Agent Not Available','N','Y','UNDEF
 insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINED');
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
+insert into vicidial_statuses values('CBHOLD','Call Back Hold','N','Y','UNDEFINED');
 insert into vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
 insert into vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
 insert into vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');
@@ -3100,10 +3101,7 @@ The browser requirements for this are:
 - Microsoft Internet Explorer 6.0
 
 This version is fully functional and has been tested in our production 
-call center with no problems. On RedHat 9.0 Linux workstations we have noticed 
-a decrease in system load running the web-client as compared to the Perl/Tk 
-client. Also, the memory usage stayed at about 22MB for a full shift of 
-activity, so no memory leaks with Firefox. 
+call center with no problems.
 
 To log into this app you will need a login setup in the vicidial_users table 
 with a user_level of 1 or greater as well as an entry for the phone you are 

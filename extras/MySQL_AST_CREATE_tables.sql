@@ -147,7 +147,7 @@ index(user)
 );
 
  CREATE TABLE live_inbound (
-uniqueid DOUBLE(18,7) NOT NULL,
+uniqueid VARCHAR(20) NOT NULL,
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 caller_id VARCHAR(30),
@@ -177,7 +177,7 @@ last_update DATETIME
 );
 
  CREATE TABLE call_log (
-uniqueid DOUBLE(18,7) PRIMARY KEY NOT NULL,
+uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 channel VARCHAR(100),
 channel_group VARCHAR(30),
 type VARCHAR(10),
@@ -197,7 +197,7 @@ index (channel)
 );
 
  CREATE TABLE park_log (
-uniqueid DOUBLE(18,7) PRIMARY KEY NOT NULL,
+uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 status VARCHAR(10),
 channel VARCHAR(100),
 channel_group VARCHAR(30),
@@ -214,7 +214,7 @@ index (parked_time)
 
  CREATE TABLE vicidial_manager (
 man_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-uniqueid DOUBLE(18,7),
+uniqueid VARCHAR(20),
 entry_date DATETIME,
 status  ENUM('NEW','QUEUE','SENT','UPDATED','DEAD'),
 response  ENUM('Y','N'),
@@ -300,7 +300,7 @@ extension VARCHAR(100),
 status ENUM('READY','QUEUE','INCALL','PAUSED','CLOSER') default 'PAUSED',
 lead_id INT(9) UNSIGNED NOT NULL,
 campaign_id VARCHAR(8),			
-uniqueid DOUBLE(18,7),
+uniqueid VARCHAR(20),
 callerid VARCHAR(20),
 channel VARCHAR(100),
 random_id INT(8) UNSIGNED,
@@ -325,7 +325,7 @@ server_ip VARCHAR(15) NOT NULL,
 campaign_id VARCHAR(20),			
 status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT') default 'PAUSED',
 lead_id INT(9) UNSIGNED NOT NULL,
-uniqueid DOUBLE(18,7),
+uniqueid VARCHAR(20),
 callerid VARCHAR(20),
 channel VARCHAR(100),
 phone_code VARCHAR(10),
@@ -342,7 +342,7 @@ index (last_update_time)
 );
 
  CREATE TABLE vicidial_log (
-uniqueid DOUBLE(18,7) PRIMARY KEY NOT NULL,
+uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 list_id BIGINT(14) UNSIGNED,
 campaign_id VARCHAR(8),
@@ -653,7 +653,7 @@ closer_campaigns TEXT
 );
 
  CREATE TABLE live_inbound_log (
-uniqueid DOUBLE(18,7) NOT NULL,
+uniqueid VARCHAR(20) NOT NULL,
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 caller_id VARCHAR(30),
@@ -924,7 +924,8 @@ queuemetrics_eq_prepend VARCHAR(255) default 'NONE',
 vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'NOT_ACTIVE',
 allow_sipsak_messages ENUM('0','1') default '0',
 admin_home_url VARCHAR(255) default '../vicidial/welcome.php',
-enable_agc_xfer_log ENUM('0','1') default '0'
+enable_agc_xfer_log ENUM('0','1') default '0',
+db_schema_version INT(8) UNSIGNED default '0'
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1071,3 +1072,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
+UPDATE system_settings SET db_schema_version='1075';
