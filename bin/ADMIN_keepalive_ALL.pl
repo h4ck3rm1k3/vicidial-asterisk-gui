@@ -1,16 +1,17 @@
 #!/usr/bin/perl
 #
-# ADMIN_keepalive_ALL.pl   version  0.2
+# ADMIN_keepalive_ALL.pl   version  2.0.5
 #
 # Designed to keep the astGUIclient processes alive and check every minute
 # Replaces all other ADMIN_keepalive scripts
 # Uses /etc/astguiclient.conf file to know which processes to keepalive
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 #
 # 61011-1348 - first build
 # 61120-2011 - added option 7 for AST_VDauto_dial_FILL.pl
+# 80227-1526 - added option 8 for ip_relay
 #
 
 $DB=0; # Debug flag
@@ -83,6 +84,7 @@ foreach(@conf)
 #	5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 #	6 - FastAGI_log\n";
 #	7 - AST_VDauto_dial_FILL\n";
+#	8 - ip_relay for blind monitoring\n";
 
 if ($VARactive_keepalives =~ /X/)
 	{
@@ -97,6 +99,7 @@ $AST_VDremote_agents=0;
 $AST_VDadapt=0;
 $FastAGI_log=0;
 $AST_VDauto_dial_FILL=0;
+$ip_relay=0;
 $runningAST_update=0;
 $runningAST_send=0;
 $runningAST_listen=0;
@@ -105,6 +108,7 @@ $runningAST_VDremote_agents=0;
 $runningAST_VDadapt=0;
 $runningFastAGI_log=0;
 $runningAST_VDauto_dial_FILL=0;
+$runningip_relay=0;
 
 if ($VARactive_keepalives =~ /1/) 
 	{
@@ -140,6 +144,11 @@ if ($VARactive_keepalives =~ /7/)
 	{
 	$AST_VDauto_dial_FILL=1;
 	if ($DB) {print "AST_VDauto_dial_FILL set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /8/) 
+	{
+	$ip_relay=1;
+	if ($DB) {print "ip_relay set to keepalive\n";}
 	}
 
 $REGhome = $PATHhome;
@@ -207,6 +216,11 @@ if ($DBX) {print "$i|$psoutput[$i]|     \n";}
 		{
 		$runningAST_VDauto_dial_FILL++;
 		if ($DB) {print "AST_VDauto_dial_FILL RUNNING:    |$psline[1]|\n";}
+		}
+	if ($psoutput[$i] =~ / ip_relay /) 
+		{
+		$runningip_relay++;
+		if ($DB) {print "ip_relay RUNNING:                |$psoutput[$i]|\n";}
 		}
 $i++;
 }
@@ -276,7 +290,8 @@ if (
 	( ($AST_VDremote_agents > 0) && ($runningAST_VDremote_agents < 1) ) ||
 	( ($AST_VDadapt > 0) && ($runningAST_VDadapt < 1) ) ||
 	( ($FastAGI_log > 0) && ($runningFastAGI_log < 1) ) ||
-	( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) )
+	( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) ) ||
+	( ($ip_relay > 0) && ($runningip_relay < 1) )
    )
 {
 
@@ -338,6 +353,11 @@ foreach (@psoutput2)
 		$runningAST_VDauto_dial_FILL++;
 		if ($DB) {print "AST_VDauto_dial_FILL RUNNING:    |$psline[1]|\n";}
 		}
+	if ($psoutput2[$i] =~ / ip_relay /) 
+		{
+		$runningip_relay++;
+		if ($DB) {print "ip_relay RUNNING:                |$psoutput2[$i]|\n";}
+		}
 	$i++;
 	}
 
@@ -389,6 +409,11 @@ if ( ($AST_VDauto_dial_FILL > 0) && ($runningAST_VDauto_dial_FILL < 1) )
 	if ($DB) {print "starting AST_VDauto_dial_FILL...\n";}
 	# add a '-L' to the command below to activate logging
 	`/usr/bin/screen -d -m -S ASTVDautoFILL $PATHhome/AST_VDauto_dial_FILL.pl`;
+	}
+if ( ($ip_relay > 0) && ($runningip_relay < 1) )
+	{ 
+	if ($DB) {print "starting ip_relay through relay_control...\n";}
+	`$PATHhome/ip_relay/relay_control start  2>/dev/null 1>&2`;
 	}
 }
 

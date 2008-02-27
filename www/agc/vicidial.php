@@ -2364,7 +2364,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{
 										var chan_name_color = 'log_text';
 										}
-									if ( (HidEMonitoRSessionS==1) && (channelfieldA.match(/68600/)) )
+									if ( (HidEMonitoRSessionS==1) && (channelfieldA.match(/ASTblind/)) )
 										{
 										var hide_channel=1;
 										}

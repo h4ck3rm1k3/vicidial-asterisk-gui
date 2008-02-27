@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-# install.pl
+# install.pl version 2.0.5
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 
 # CHANGES
@@ -12,6 +12,7 @@
 # 80107-2341 - Added --build_multiserver_conf flag to generate dynamic multi-server conf sections
 # 80115-1426 - Added ip_relay scripts for port forwarding
 # 80122-0320 - Added build_phones_conf flag to generate phones conf entries from phones table records
+# 80227-1536 - Added ip_relay to keepalive list
 #
 
 ############################################
@@ -44,7 +45,7 @@ $VARDB_user =	'cron';
 $VARDB_pass =	'1234';
 $VARDB_port =	'3306';
 # default keepalive processes: 
-$VARactive_keepalives =		'123456';
+$VARactive_keepalives =		'1234568';
 # default recording FTP archive variables:
 $VARFTP_host = '10.0.0.4';
 $VARFTP_user = 'cron';
@@ -160,6 +161,7 @@ if (length($ARGV[0])>1)
 	print "     5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 	print "     6 - FastAGI_log\n";
 	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
+	print "     8 - ip_relay (used for blind agent monitoring)\n";
 	print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
 	print "  [--FTP_host=192.168.0.2] = define recording archive server IP address at runtime\n";
 	print "  [--FTP_user=cron] = define archive server name at runtime\n";
@@ -657,23 +659,38 @@ if (length($ARGV[0])>1)
 			}
 
 		$ext  = "\nAdd the following lines to your extensions.conf file:\n";
+		$ext  .= "TRUNKloop = IAX2/ASTloop:test\@127.0.0.1:40569\n";
+		$ext  .= "TRUNKblind = IAX2/ASTblind:test\@127.0.0.1:41569\n";
 
 		$iax  = "\nAdd the following lines to your iax.conf file:\n";
-		$iax  .= "#register => ASTloop:test\@$server_ip:40569\n";
+		$iax  .= "register => ASTloop:test\@127.0.0.1:40569\n";
+		$iax  .= "register => ASTblind:test\@127.0.0.1:41569\n";
 
 		$Lext  = "\n";
 		$Lext .= "# Local Server: $server_ip\n";
-		$Lext .= "exten => _$VARremDIALstr*8600XXX,1,Goto(default,\${EXTEN:16},1)\n";
-		$Lext .= "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
-		$Lext .= "exten => _$VARremDIALstr*78600XXX,1,Goto(default,\${EXTEN:16},1)\n";
-		$Lext .= "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,\${EXTEN:16},1)\n";
+		$Lext .= "exten => _$VARremDIALstr*.,1,Goto(default,\${EXTEN:16},1)\n";
 		$Lext .= "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 		$Lext .= "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+		$Lext .= "# Local blind monitoring\n";
+		$Lext .= "exten => _08600XXX,1,Dial(\${TRUNKblind}/6\${EXTEN:1},55,o)\n";
 
 		$Liax .= "\n";
 		$Liax .= "[ASTloop]\n";
 		$Liax .= "type=friend\n";
 		$Liax .= "accountcode=IAXASTloop\n";
+		$Liax .= "context=default\n";
+		$Liax .= "auth=plaintext\n";
+		$Liax .= "host=dynamic\n";
+		$Liax .= "permit=0.0.0.0/0.0.0.0\n";
+		$Liax .= "secret=test\n";
+		$Liax .= "disallow=all\n";
+		$Liax .= "allow=ulaw\n";
+		$Liax .= "qualify=yes\n";
+
+		$Liax .= "\n";
+		$Liax .= "[ASTblind]\n";
+		$Liax .= "type=friend\n";
+		$Liax .= "accountcode=IAXASTblind\n";
 		$Liax .= "context=default\n";
 		$Liax .= "auth=plaintext\n";
 		$Liax .= "host=dynamic\n";
@@ -723,10 +740,7 @@ if (length($ARGV[0])>1)
 			$iax  .= "register => $server_id:test\@$server_ip[$i]:4569\n";
 
 			$Lext .= "# Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
-			$Lext .= "exten => _$VARremDIALstr*8600XXX,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
-			$Lext .= "exten => _$VARremDIALstr*8600XXX*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
-			$Lext .= "exten => _$VARremDIALstr*78600XXX,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
-			$Lext .= "exten => _$VARremDIALstr*78600XXX*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+			$Lext .= "exten => _$VARremDIALstr*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
 
 			$Liax .= "\n";
 			$Liax .= "[$server_id[$i]]\n";
@@ -1544,6 +1558,7 @@ else
 			print " 5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 			print " 6 - FastAGI_log\n";
 			print " 7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
+			print " 8 - ip_relay (used for blind agent monitoring)\n";
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
@@ -2041,7 +2056,7 @@ print conf "VARDB_pass => $VARDB_pass\n";
 print conf "VARDB_port => $VARDB_port\n";
 print conf "\n";
 print conf "# Alpha-Numeric list of the astGUIclient processes to be kept running\n";
-print conf "# (value should be listing of characters with no spaces: 123456)\n";
+print conf "# (value should be listing of characters with no spaces: 1234568)\n";
 print conf "#  X - NO KEEPALIVE PROCESSES (use only if you want none to be keepalive)\n";
 print conf "#  1 - AST_update\n";
 print conf "#  2 - AST_send_listen\n";
@@ -2050,6 +2065,7 @@ print conf "#  4 - AST_VDremote_agents\n";
 print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 print conf "#  6 - FastAGI_log\n";
 print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
+print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# FTP recording archive connection information\n";

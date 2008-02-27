@@ -10,6 +10,9 @@ TRUNKIAX=IAX2/ASTtest1:test@10.10.10.16:4569	; IAX trunk interface
 TRUNKIAX1=IAX2/ASTtest1:test@10.10.10.16:4569	; IAX trunk interface
 TRUNKBINFONE=IAX2/1112223333:PASSWORD@iax.binfone.com	; IAX trunk interface
 SIPtrunk=SIP/1234:PASSWORD@sip.provider.net	; SIP trunk
+TRUNKloop = IAX2/ASTloop:test@127.0.0.1:40569
+TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569
+
 
 [default]
 ; Example phone extensions
@@ -304,18 +307,15 @@ exten => _*NXXNXXXXXX*3429,4,Answer
 exten => _*NXXNXXXXXX*3429,5,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _*NXXNXXXXXX*3429,6,Voicemail,u2000
 
-; BE SURE TO CHANGE THESE FOR YOUR IP ADDRESS!
-exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
+; BE SURE TO CHANGE THIS LINE FOR YOUR IP ADDRESS!
 exten => _010*010*010*015*.,1,Goto(default,${EXTEN:16},1)
 exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+; Local blind monitoring
+exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,o)
 
-; ### server 2 extens:
-; exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-; exten => _010*010*010*016*8600XXX,2,Hangup
-; exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-; exten => _010*010*010*016*8600XXX*.,2,Hangup
+; ### server 2 exten:
+; exten => _010*010*010*016*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 
 
 ; parameters for agi-VDAD_ALL_inbound.agi (9 fields separated by five dashes "-----"):
