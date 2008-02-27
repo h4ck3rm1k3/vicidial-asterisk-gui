@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDauto_dial.pl version 2.0.3   *DBI-version*
+# AST_VDauto_dial.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # Places auto_dial calls on the VICIDIAL dialer system 
@@ -25,7 +25,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
@@ -65,6 +65,7 @@
 # 70320-1458 - Fixed several errors in calculating trunk shortage for campaigns
 # 71029-1909 - Changed CLOSER-type campaign_id restriction
 # 71030-2054 - Added hopper priority sorting
+# 80227-0406 - added queue_priority
 #
 
 
@@ -287,6 +288,7 @@ while($one_day_interval > 0)
 		@DBIPserver_trunks_limit=@MT;
 		@DBIPserver_trunks_other=@MT;
 		@DBIPserver_trunks_allowed=@MT;
+		@DBIPqueue_priority=@MT;
 
 		$active_line_counter=0;
 		$user_counter=0;
@@ -439,7 +441,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -467,6 +469,7 @@ while($one_day_interval > 0)
 							}
 					$DBIPautoaltdial[$user_CIPct] =	"$aryA[10]";
 					$DBIPcampaign_allow_inbound[$user_CIPct] =	"$aryA[11]";
+					$DBIPqueue_priority[$user_CIPct] =	"$aryA[12]";
 				$rec_count++;
 				}
 			$sthA->finish();
@@ -844,7 +847,7 @@ while($one_day_interval > 0)
 									 &event_logger;
 
 								### insert a SENT record to the vicidial_auto_calls table 
-									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial')";
+									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial','$DBIPqueue_priority[$user_CIPct]')";
 									$affected_rows = $dbhA->do($stmtA);
 
 								### sleep for a tenth of a second to not flood the server with new calls

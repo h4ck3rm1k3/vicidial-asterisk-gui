@@ -1,7 +1,7 @@
 <? 
 # AST_timeonVDADall.php
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -28,7 +28,8 @@
 # 70206-1140 - Added call-type statuses to display(A-Auto, M-Manual, I-Inbound/Closer)
 # 70619-1339 - Added Status Category tally display
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
-# 
+# 80227-0418 - Added priority to waiting calls display
+#
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -515,18 +516,18 @@ if ($campaign_allow_inbound > 0)
 	$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
 	$closer_campaigns = "'$closer_campaigns'";
 
-	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (campaign_id='" . mysql_real_escape_string($group) . "' and call_type IN('OUT','OUTBALANCE')) ) order by campaign_id,call_time;";
+	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaigns)) or (campaign_id='" . mysql_real_escape_string($group) . "' and call_type IN('OUT','OUTBALANCE')) ) order by queue_priority desc,campaign_id,call_time;";
 	}
 else
 	{
 	if ($group=='XXXX-ALL-ACTIVE-XXXX') {$groupSQL = '';}
 	else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";}
 
-	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') $groupSQL order by campaign_id,call_time;";
+	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') $groupSQL order by queue_priority desc,campaign_id,call_time;";
 	}
 if ($CALLSdisplay > 0)
 	{
-	$stmtA = "SELECT status,campaign_id,phone_number,server_ip,UNIX_TIMESTAMP(call_time),call_type";
+	$stmtA = "SELECT status,campaign_id,phone_number,server_ip,UNIX_TIMESTAMP(call_time),call_type,queue_priority";
 	}
 else
 	{
@@ -565,6 +566,7 @@ $parked_to_print = mysql_num_rows($rslt);
 				$CDserver_ip[$k] =		$row[3];
 				$CDcall_time[$k] =		$row[4];
 				$CDcall_type[$k] =		$row[5];
+				$CDqueue_priority[$k] =	$row[6];
 				$k++;
 				}
 			}
@@ -606,9 +608,9 @@ $parked_to_print = mysql_num_rows($rslt);
 
 $Cecho = '';
 $Cecho .= "VICIDIAL: Calls Waiting                      $NOW_TIME\n";
-$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+\n";
-$Cecho .= "| STATUS | CAMPAIGN     | PHONE NUMBER | SERVER_IP       | DIALTIME| CALL TYPE  |\n";
-$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+\n";
+$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+----------+\n";
+$Cecho .= "| STATUS | CAMPAIGN     | PHONE NUMBER | SERVER_IP       | DIALTIME| CALL TYPE  | PRIORITY |\n";
+$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+----------+\n";
 
 $p=0;
 while($p<$k)
@@ -618,6 +620,7 @@ while($p<$k)
 	$Cphone_number =	sprintf("%-12s", $CDphone_number[$p]);
 	$Cserver_ip =		sprintf("%-15s", $CDserver_ip[$p]);
 	$Ccall_type =		sprintf("%-10s", $CDcall_type[$p]);
+	$Cqueue_priority =	sprintf("%8s", $CDqueue_priority[$p]);
 
 	$Ccall_time_S = ($STARTtime - $CDcall_time[$p]);
 	$Ccall_time_M = ($Ccall_time_S / 60);
@@ -635,11 +638,11 @@ while($p<$k)
 		{
 		$G="<SPAN class=\"$CDcampaign_id[$p]\"><B>"; $EG='</B></SPAN>';
 		}
-	$Cecho .= "| $G$Cstatus$EG | $G$Ccampaign_id$EG | $G$Cphone_number$EG | $G$Cserver_ip$EG | $G$Ccall_time_MS$EG | $G$Ccall_type$EG |\n";
+	$Cecho .= "| $G$Cstatus$EG | $G$Ccampaign_id$EG | $G$Cphone_number$EG | $G$Cserver_ip$EG | $G$Ccall_time_MS$EG | $G$Ccall_type$EG | $G$Cqueue_priority$EG |\n";
 
 	$p++;
 	}
-$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+\n\n";
+$Cecho .= "+--------+--------------+--------------+-----------------+---------+------------+----------+\n";
 
 if ($p<1)
 	{$Cecho='';}
@@ -921,6 +924,7 @@ $talking_to_print = mysql_num_rows($rslt);
 	else
 	{
 	echo " NO AGENTS ON CALLS \n";
+	echo "<PRE>$Cecho";
 	}
 
 ?>

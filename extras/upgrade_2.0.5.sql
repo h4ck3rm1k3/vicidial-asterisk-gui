@@ -61,3 +61,10 @@ ALTER TABLE vicidial_log DROP INDEX uniqueid;
 ALTER TABLE vicidial_log MODIFY uniqueid VARCHAR(20) PRIMARY KEY UNIQUE NOT NULL;
 
 UPDATE system_settings SET db_schema_version='1075';
+
+ALTER TABLE vicidial_auto_calls ADD queue_priority TINYINT(2) default '0';
+ALTER TABLE vicidial_campaigns ADD queue_priority TINYINT(2) default '50';
+ALTER TABLE vicidial_inbound_groups ADD queue_priority TINYINT(2) default '0';
+
+UPDATE system_settings SET db_schema_version='1076';
+

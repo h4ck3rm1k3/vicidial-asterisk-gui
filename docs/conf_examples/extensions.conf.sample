@@ -306,9 +306,8 @@ exten => _*NXXNXXXXXX*3429,6,Voicemail,u2000
 
 ; BE SURE TO CHANGE THESE FOR YOUR IP ADDRESS!
 exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
 exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*78600XXX*.,1,Goto(default,${EXTEN:16},1)
+exten => _010*010*010*015*.,1,Goto(default,${EXTEN:16},1)
 exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 

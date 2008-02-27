@@ -55,6 +55,7 @@
 # 71116-1045 - added fewest_calls_campaign agent call routing option
 # 71128-1758 - added CIDLOOKUPRC method to search all lists within a campaign
 # 80109-2348 - added option to trigger a system process when the call is sent to an agent
+# 80227-0335 - added queue priority functionality
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -341,7 +342,7 @@ $sthA->finish();
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_message,drop_exten,next_agent_call,voicemail_ext FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_message,drop_exten,next_agent_call,voicemail_ext,queue_priority FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -367,6 +368,7 @@ while ($sthArows > $cbc)
 	$CAMP_callorder	=				"$aryA[14]";
 	$VDADvoicemail_ext =			"$aryA[15]";
 		$VDADvoicemail_ext =~ s/\D//gi;
+	$queue_priority =				"$aryA[16]";
 	$cbc++;
 	}
 $sthA->finish();
@@ -665,7 +667,7 @@ if ($call_handle_method =~ /CLOSER|DIGITID$/)
 	}
 
 ### insert a LIVE record to the vicidial_auto_calls table 
-$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage) values('$VARserver_ip','$channel_group','LIVE','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','LIVE-0')";
+$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority) values('$VARserver_ip','$channel_group','LIVE','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','LIVE-0','$queue_priority')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 
@@ -690,6 +692,9 @@ $drop_seconds=0;
 $hold_message_counter=($prompt_interval - 10);
 $hold_tone_counter=0;
 
+
+############################################
+### Loop to try to send call to an agent ###
 while ($drop_timer <= $DROP_TIME)
 {
 $channel_status = $AGI->channel_status("$channel");
@@ -711,6 +716,8 @@ if ($channel_status < 1)
 
 	$rec_countCUSTDATA=0;
 	$rec_countWAIT=0;
+	$gsp_countWAIT=0;
+	$qp_countWAIT=0;
 	$cbc=0;
 	$aco_sub=0;
 	$agent_call_order='order by last_call_finish';
@@ -724,16 +731,32 @@ if ($channel_status < 1)
 	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today';}
 
 
+$vci=0;
+$INBOUNDcampsSQL='';
+$stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+	while ($sthArows > $vci)
+	{
+	@aryA = $sthA->fetchrow_array;
+	if ($vci==0) {$INBOUNDcampsSQL	.= "'$aryA[0]'";}
+	else {$INBOUNDcampsSQL	.= ",'$aryA[0]'";}
+	$vci++;
+	}
+$sthA->finish();
+
+################################################################
 ##### Attempt to send call to an agent on this server only #####
 if ($agent_search_method =~ /^SO|^LO/)
 {
+	### Get count of number of calls in this group that are ahead of this call
 	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$insert_lead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
- 
-	while ($sthArows > $cbc)
+	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$rec_countWAIT = "$aryA[0]";
@@ -743,12 +766,61 @@ if ($agent_search_method =~ /^SO|^LO/)
 
 	if ($rec_countWAIT < 1)
 		{
+		$qp_countWAIT=0;
+		### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and lead_id != '$insert_lead_id' and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_time < \"$SQLdateBEGIN\"));";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$qp_countWAIT = "$aryA[0]";
+			}
+		$sthA->finish();
+
+		$qp_groupWAIT='';
+		$qp_groupWAIT_SQL='';
+		$qp_groupWAIT_aco='';
+		$qp_groupWAIT_aco_SQL='';
+		$qp_groupWAIT_camp_SQL='';
+		if ($qp_countWAIT > 0)
+			{
+			### Get group/campaign ids of calls in higher priority groups than this call or the same priority with longer wait time
+			$stmtA = "SELECT distinct campaign_id FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and lead_id != '$insert_lead_id' and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_time < \"$SQLdateBEGIN\") );";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$dbc=0;
+			$qp_groupWAIT='';
+			while ($sthArows > $dbc)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$qp_groupWAIT_aco .= "'$aryA[0]',";
+				if ($dbc > 0) 
+					{
+					$qp_groupWAIT .= "and ";
+					}
+				$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
+				$dbc++;
+				}
+			chop($qp_groupWAIT_aco);
+
+			$qp_groupWAIT_SQL = "and ($qp_groupWAIT)";
+			$qp_groupWAIT_aco_SQL = "and vicidial_live_inbound_agents.group_id NOT IN($qp_groupWAIT_aco)";
+			$qp_groupWAIT_camp_SQL = "and campaign_id NOT IN($qp_groupWAIT_aco)";
+
+			$sthA->finish();
+			}
+
 		if ($aco_sub>0)
 			{
 			$stmtA = "LOCK TABLES vicidial_live_agents WRITE, vicidial_live_inbound_agents WRITE;";
 			my $LOCKaffected_rows = $dbhA->do($stmtA);
 
-			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and server_ip='$VARserver_ip' and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and server_ip='$VARserver_ip' and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -779,7 +851,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 			}
 		else
 			{
-			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
 			$found_agents=$affected_rows;
 			}
@@ -813,7 +885,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 			if ($AGILOG) {$agi_string = "--    VDCL XFER : |$affected_rows|$callerid\n|$stmtA|";   &agi_output;}
 			if ($affected_rows < 1)
 				{
-				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer')";
+				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer','$queue_priority')";
 				$affected_rows = $dbhA->do($stmtA);
 					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 				}
@@ -938,12 +1010,13 @@ if ($agent_search_method =~ /^LO|^LB/)
 ##### Attempt to send call to an agent on any server #####
 	$cbc=0;
 	$rec_countWAITrem=0;
+	### Get count of number of calls in this group that are ahead of this call
 	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and campaign_id = '$channel_group' and call_time < \"$SQLdateBEGIN\" and lead_id != '$insert_lead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
-	while ($sthArows > $cbc)
+	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$rec_countWAITrem = "$aryA[0]";
@@ -953,12 +1026,63 @@ if ($agent_search_method =~ /^LO|^LB/)
 	
 	if ($rec_countWAITrem < 1)
 		{
+		$qp_countWAIT=0;
+		### Get count of number of waiting calls in higher priority groups than this call or the same priority with longer wait time
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and lead_id != '$insert_lead_id' and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_time < \"$SQLdateBEGIN\") );";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$qp_countWAIT = "$aryA[0]";
+			}
+		$sthA->finish();
+
+		$qp_groupWAIT='';
+		$qp_groupWAIT_SQL='';
+		$qp_groupWAIT_aco='';
+		$qp_groupWAIT_aco_SQL='';
+		$qp_groupWAIT_camp_SQL='';
+		if ($qp_countWAIT > 0)
+			{
+			### Get group/campaign ids of calls in higher priority groups than this call or the same priority with longer wait time
+			$stmtA = "SELECT distinct campaign_id FROM vicidial_auto_calls where status = 'LIVE' and lead_id != '$insert_lead_id' and ( (queue_priority > '$queue_priority') or (queue_priority = '$queue_priority' and call_time < \"$SQLdateBEGIN\") );";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			$dbc=0;
+			$qp_groupWAIT='';
+			while ($sthArows > $dbc)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$qp_groupWAIT_aco .= "'$aryA[0]',";
+				if ($dbc > 0) 
+					{
+					$qp_groupWAIT .= "and ";
+					}
+				$qp_groupWAIT .= "closer_campaigns NOT LIKE \"% $aryA[0] %\" ";
+				$dbc++;
+				}
+			chop($qp_groupWAIT_aco);
+
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+
+			$qp_groupWAIT_SQL = "and ($qp_groupWAIT)";
+			$qp_groupWAIT_aco_SQL = "and vicidial_live_inbound_agents.group_id NOT IN($qp_groupWAIT_aco)";
+			$qp_groupWAIT_camp_SQL = "and campaign_id NOT IN($qp_groupWAIT_aco)";
+
+			$sthA->finish();
+			}
+
 		if ($aco_sub>0)
 			{
 			$stmtA = "LOCK TABLES vicidial_live_agents WRITE, vicidial_live_inbound_agents WRITE;";
 			my $LOCKaffected_rows = $dbhA->do($stmtA);
 
-			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -991,7 +1115,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 			}
 		else
 			{
-			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
 			$found_agents=$affected_rows;
 			}
@@ -1023,7 +1147,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 			if ($AGILOG) {$agi_string = "--    VDCL XFER REMOTE: |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
 			if ($affected_rows < 1)
 				{
-				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer')";
+				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer','$queue_priority')";
 				$affected_rows = $dbhA->do($stmtA);
 					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 				}
@@ -1191,7 +1315,7 @@ $stmtA = "UPDATE vicidial_auto_calls set stage='LIVE-$drop_timer' where callerid
 $affected_rows = $dbhA->do($stmtA);
 if ($affected_rows < 1)
 	{
-	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer')";
+	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer','$queue_priority')";
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 	}

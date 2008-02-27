@@ -24,6 +24,8 @@ USERS CAN QC ANY CAMPAIGN||
 USERS CAN QC ANY INBOUND GROUP||
 QC Allowed Campaigns: ||
 QC Allowed Inbound Groups: ||
+Queue Priority -<\/B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode||
+Queue Priority: ||
 
 
 ############################################################ CLIENT
