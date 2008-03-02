@@ -26,6 +26,12 @@ QC Allowed Campaigns: ||
 QC Allowed Inbound Groups: ||
 Queue Priority -<\/B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode||
 Queue Priority: ||
+Drop Action: ||
+Drop Transfer Group: ||
+Drop Action -<\/B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below||
+Drop Exten -<\/B> If Drop Action is set to MESSAGE, this is the dial plan extension that the call will be sent to if it reaches Drop Call Seconds||
+Drop Call Seconds -<\/B> The number of seconds a call will stay in queue before being considered a DROP||
+Drop Transfer Group -<\/B> If Drop Action is set to IN_GROUP, the call will be sent to this inbound group if it reaches Drop Call Seconds||
 
 
 ############################################################ CLIENT

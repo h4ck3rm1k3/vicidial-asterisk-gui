@@ -56,6 +56,7 @@
 # 71128-1758 - added CIDLOOKUPRC method to search all lists within a campaign
 # 80109-2348 - added option to trigger a system process when the call is sent to an agent
 # 80227-0335 - added queue priority functionality
+# 80302-0232 - added drop_action and transfer to in-group
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -232,7 +233,7 @@ if ( (!$callerid) or ($callerid =~ /unknown/) )
 
 if ($call_handle_method =~ /^CLOSER/)
 {
-	### allow for internal PRI/IAX/SIP transfer data string "90009*CL_uk3survy_*8301*10000123*universal***"
+	### allow for internal PRI/IAX/SIP transfer data string "90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
 	if ($extension =~ /^900\d\d\*|^9900\d\d\*/)
 		{
 		@EXT_vars = split(/\*/, $extension);
@@ -242,8 +243,8 @@ if ($call_handle_method =~ /^CLOSER/)
 		$inbound_number =	$EXT_vars[2];	# extension to send call to after parsing
 		$parked_by =		$EXT_vars[3];	# leadID
 		$park_extension =	$EXT_vars[4];	# filename of the on-hold music file
-		$comment_d =		$EXT_vars[5];	# N/A
-		$comment_e =		$EXT_vars[6];	# N/A
+		$phone_number =		$EXT_vars[5];	# phone number of customer
+		$fronter =			$EXT_vars[6];	# user of the fronter that transferred the call
 
 		$CIDlead_id = $parked_by;
 
@@ -251,7 +252,7 @@ if ($call_handle_method =~ /^CLOSER/)
 		# JmmddhhmmssLLLLLLLLL
 			$JqueryCID = "J$CIDdate$PADlead_id";
 			$callerid = $JqueryCID;
-		### set the callerid to the filename of the audio for on-hold
+		### set the new call callerid to track the call
 		print "SET CALLERID $JqueryCID\n";
 		checkresult($result);
 		if ($AGILOG) {$agi_string = "callerID changed: $JqueryCID";   &agi_output;}
@@ -342,7 +343,7 @@ $sthA->finish();
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_message,drop_exten,next_agent_call,voicemail_ext,queue_priority FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -363,12 +364,13 @@ while ($sthArows > $cbc)
 	$agent_alert_delay	=			"$aryA[10]";
 	$drop_call_seconds	=			"$aryA[11]";
 		$DROP_TIME = $drop_call_seconds;
-	$drop_message =					"$aryA[12]";
+	$drop_action =					"$aryA[12]";
 	$drop_exten	=					"$aryA[13]";
 	$CAMP_callorder	=				"$aryA[14]";
 	$VDADvoicemail_ext =			"$aryA[15]";
 		$VDADvoicemail_ext =~ s/\D//gi;
 	$queue_priority =				"$aryA[16]";
+	$drop_inbound_group =			"$aryA[17]";
 	$cbc++;
 	}
 $sthA->finish();
@@ -1357,18 +1359,25 @@ $DROPexten = '';
 if ($drop_seconds < 1) 
 	{
 	$drop_seconds = $DROP_TIME;
-
-	if ($drop_message =~ /Y/)
-		{
-		$DROPexten = "$drop_exten";
-		}
-	else
-		{
-		if (length($VDADvoicemail_ext)>0)
-			{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
-		}
 	}
 
+if ($drop_action =~ /MESSAGE/)
+	{
+	if (length($drop_exten)>0)
+		{$DROPexten = "$drop_exten";}
+	}
+if ($drop_action =~ /VOICEMAIL/)
+	{
+	if (length($VDADvoicemail_ext)>0)
+		{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
+	}
+if ($drop_action =~ /IN_GROUP/)
+	{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
+	$S='*';
+	$DROPexten = "90009*$drop_inbound_group$S$S$insert_lead_id$S$S$phone_number$S$fronter$S";
+	}
+
+if ($AGILOG) {$agi_string = "--    VDCL DROP: |$drop_action|$DROPexten|";   &agi_output;}
 
 	### use STDOUT to send call to proper DROP location
 	$VHqueryCID = "VH$CIDdate$VDADconf_exten";
@@ -1393,7 +1402,7 @@ if ($drop_seconds < 1)
 		### insert a NEW record to the vicidial_manager table to be processed
 		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
 		$affected_rows = $dbhA->do($stmtA);  
-		if ($AGILOG) {$agi_string = "--    VDCL call_hungup timout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup timeout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
 		}
 
 	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";

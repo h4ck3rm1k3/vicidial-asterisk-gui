@@ -29,10 +29,18 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	calling or not. There is also a new log with the details of what
 	groups an agent has selected each time in the user stats page.
 
-5. The start of a new QC (Quality Control) feature [non functional right now]
-
-6. Queue Priority has been added allowing for the prioritization of one in-group
+5. Queue Priority has been added allowing for the prioritization of one in-group
 	over another in-group or outbound campaign(when in blended mode)
+
+6. Drop call action has been added to both inbound and outbound calling. You
+	can now send a call that would drop into an inbound group. The call will
+	still be recorded as a DROP in it's original in-group or campaign, but 
+	the lead information will move on to the drop in-group.
+
+7. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated
+	into a single AGI script: agi-VDAD_ALL_outbound.agi
+
+8. The start of a new QC (Quality Control) feature [non functional right now]
 
 
 

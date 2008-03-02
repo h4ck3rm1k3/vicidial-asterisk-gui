@@ -335,6 +335,7 @@ call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT',
 stage VARCHAR(20) default 'START',
 last_update_time TIMESTAMP,
 alt_dial ENUM('NONE','MAIN','ALT','ADDR3') default 'NONE',
+queue_priority TINYINT(2) default '0',
 index (uniqueid),
 index (callerid),
 index (call_time),
@@ -510,7 +511,7 @@ alt_number_dialing ENUM('Y','N') default 'N',
 scheduled_callbacks ENUM('Y','N') default 'N',
 lead_filter_id VARCHAR(10) default 'NONE',
 drop_call_seconds TINYINT(3) unsigned default '5',
-safe_harbor_message ENUM('Y','N') default 'N',
+drop_action ENUM('HANGUP','MESSAGE','VOICEMAIL','IN_GROUP') default 'MESSAGE',
 safe_harbor_exten VARCHAR(20)  default '8307',
 display_dialable_count ENUM('Y','N') default 'Y',
 wrapup_seconds SMALLINT(3) UNSIGNED default '0',
@@ -541,7 +542,9 @@ list_order_mix VARCHAR(20) default 'DISABLED',
 campaign_allow_inbound ENUM('Y','N') default 'N',
 manual_dial_list_id BIGINT(14) UNSIGNED,
 default_xfer_group VARCHAR(20) default '---NONE---',
-xfer_groups  TEXT default ''
+xfer_groups  TEXT default '',
+queue_priority TINYINT(2) default '50',
+drop_inbound_group VARCHAR(20) default '---NONE---'
 );
 
  CREATE TABLE vicidial_lists (
@@ -614,7 +617,7 @@ xferconf_a_number VARCHAR(50),
 xferconf_b_dtmf VARCHAR(50),
 xferconf_b_number VARCHAR(50),
 drop_call_seconds SMALLINT(4) unsigned default '360',
-drop_message ENUM('Y','N') default 'N',
+drop_action ENUM('HANGUP','MESSAGE','VOICEMAIL','IN_GROUP') default 'MESSAGE',
 drop_exten VARCHAR(20)  default '8307',
 call_time_id VARCHAR(20) default '24hours',
 after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL') default 'MESSAGE',
@@ -627,7 +630,9 @@ onhold_prompt_filename VARCHAR(50) default 'generic_hold',
 prompt_interval SMALLINT(5) UNSIGNED default '60',
 agent_alert_exten VARCHAR(20) default '8304',
 agent_alert_delay INT(6) default '1000',
-default_xfer_group VARCHAR(20) default '---NONE---'
+default_xfer_group VARCHAR(20) default '---NONE---',
+queue_priority TINYINT(2) default '0',
+drop_inbound_group VARCHAR(20) default '---NONE---'
 );
 
 CREATE TABLE vicidial_stations (
@@ -1072,4 +1077,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1075';
+UPDATE system_settings SET db_schema_version='1077';

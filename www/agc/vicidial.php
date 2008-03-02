@@ -6672,7 +6672,17 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	Minutes: 
 	<SELECT SIZE=1 NAME="CBT_minute" ID="CBT_minute">
 	<option>00</option>
+	<option>05</option>
+	<option>10</option>
+	<option>15</option>
+	<option>20</option>
+	<option>25</option>
 	<option>30</option>
+	<option>35</option>
+	<option>40</option>
+	<option>45</option>
+	<option>50</option>
+	<option>55</option>
 	</select> &nbsp;
 
 	<SELECT SIZE=1 NAME="CBT_ampm" ID="CBT_ampm">

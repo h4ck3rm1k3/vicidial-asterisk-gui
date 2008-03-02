@@ -32,6 +32,7 @@
 #
 # changes:
 # 80218-2027 - First Build
+# 80302-0232 - added drop_action and transfer to in-group
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -319,7 +320,7 @@ if ($affected_rows > 0)
 	$sthA->finish();
 
 	### Grab campaign values from the database
-	$stmtA = "SELECT drop_call_seconds,safe_harbor_message,safe_harbor_exten,concurrent_transfers,next_agent_call FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
+	$stmtA = "SELECT drop_call_seconds,drop_action,safe_harbor_exten,concurrent_transfers,next_agent_call,voicemail_ext,drop_inbound_group FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -328,13 +329,15 @@ if ($affected_rows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$DBdrop_call_seconds	= "$aryA[0]";
-		$DBsafe_harbor_message	= "$aryA[1]";
+		$DBdrop_action	= "$aryA[1]";
 		$DBsafe_harbor_exten	= "$aryA[2]";
 		$DBconcurrent_transfers	= "$aryA[3]";
 		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
-		if ($DBsafe_harbor_message)	{$safe_harbor_message = $DBsafe_harbor_message;}
+		if ($DBdrop_action)	{$drop_action = $DBdrop_action;}
 		if ($DBsafe_harbor_exten)	{$safe_harbor_exten = $DBsafe_harbor_exten;}
 		$CAMP_callorder	=		"$aryA[4]";
+		$VDADvoicemail_ext =	"$aryA[5]";
+		$drop_inbound_group =	"$aryA[6]";
 		 $rec_count++;
 		}
 	$sthA->finish();
@@ -462,7 +465,7 @@ if ($channel_status < 1)
 if ($agent_search_method =~ /^SO|^LO/)
 {
 	$rec_countWAIT=0;
-	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$VDADlead_id';";
+	$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and server_ip='$VARserver_ip' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$CIDlead_id';";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -614,7 +617,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 ##### Attempt to send call to an agent on any server #####
 	$cbc=0;
 	 $rec_countWAITrem=0;
-$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$VDADlead_id';";
+$stmtA = "SELECT count(*) FROM vicidial_auto_calls where status = 'LIVE' and campaign_id = '$VDADcampaign' and call_time < \"$VDADcall_time\" and lead_id != '$CIDlead_id';";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -793,7 +796,7 @@ $stmtA = "UPDATE vicidial_auto_calls set stage='LIVE-$drop_timer' where callerid
 $affected_rows = $dbhA->do($stmtA);
 if ($affected_rows < 1)
 	{
-	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer')";
+	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage)  values('$VARserver_ip','$channel_group','CLOSER','$CIDlead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer')";
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 	}
@@ -829,7 +832,6 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 	$CIDdate = "$mon$mday$hour$min$sec";
 	$tsSQLdate = "$year$mon$mday$hour$min$sec";
 	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
-	$VDADvoicemail_ext = '';
 
 if ($enable_queuemetrics_logging > 0)
 	{
@@ -847,30 +849,22 @@ if ($enable_queuemetrics_logging > 0)
 if ($drop_seconds < 1) 
 	{
 	$drop_seconds = $DROP_TIME;
+	}
 
-	if ($safe_harbor_message =~ /Y/)
-		{
-		$DROPexten = "$safe_harbor_exten";
-		}
-	else
-		{
-		$stmtA = "SELECT voicemail_ext FROM vicidial_campaigns where campaign_id = '$VDADcampaign' limit 1;";
-			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		 $rec_count=0;
-		while ($sthArows > $rec_count)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VDADvoicemail_ext	= "$aryA[0]";
-			$VDADvoicemail_ext =~ s/\D//gi;
-			if (length($VDADvoicemail_ext)>0)
-				{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
-			 $rec_count++;
-			}
-		$sthA->finish();
-		}
+if ($drop_action =~ /MESSAGE/)
+	{
+	if (length($safe_harbor_exten)>0)
+		{$DROPexten = "$safe_harbor_exten";}
+	}
+if ($drop_action =~ /VOICEMAIL/)
+	{
+	if (length($VDADvoicemail_ext)>0)
+		{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
+	}
+if ($drop_action =~ /IN_GROUP/)
+	{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
+	$S='*';
+	$DROPexten = "90009*$drop_inbound_group$S$S$CIDlead_id$S$S$VDADphone$S$fronter$S";
 	}
 
 

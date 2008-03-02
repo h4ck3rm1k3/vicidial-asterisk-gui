@@ -68,3 +68,12 @@ ALTER TABLE vicidial_inbound_groups ADD queue_priority TINYINT(2) default '0';
 
 UPDATE system_settings SET db_schema_version='1076';
 
+ALTER TABLE vicidial_inbound_groups CHANGE drop_message drop_action ENUM('HANGUP','MESSAGE','VOICEMAIL','IN_GROUP') default 'MESSAGE';
+ALTER TABLE vicidial_inbound_groups ADD drop_inbound_group VARCHAR(20) default '---NONE---';
+UPDATE vicidial_inbound_groups SET drop_action='MESSAGE';
+
+ALTER TABLE vicidial_campaigns CHANGE safe_harbor_message drop_action ENUM('HANGUP','MESSAGE','VOICEMAIL','IN_GROUP') default 'MESSAGE';
+ALTER TABLE vicidial_campaigns ADD drop_inbound_group VARCHAR(20) default '---NONE---';
+UPDATE vicidial_campaigns SET drop_action='MESSAGE';
+
+UPDATE system_settings SET db_schema_version='1077';
