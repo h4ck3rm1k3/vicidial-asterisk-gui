@@ -72,11 +72,21 @@ make install
 
 
 cd /usr/local
-wget http://easynews.dl.sourceforge.net/sourceforge/sox/sox-12.17.9.tar.gz
-gunzip sox-12.17.9.tar.gz
-tar xvf sox-12.17.9.tar
-cd sox-12.17.9
+wget http://easynews.dl.sourceforge.net/sourceforge/lame/lame-3.96.1.tar.gz
+gunzip lame-3.96.1.tar.gz
+tar xvf lame-3.96.1.tar
+cd lame-3.96.1
 ./configure
+make
+make install
+
+
+cd /usr/local
+wget http://easynews.dl.sourceforge.net/sourceforge/sox/sox-14.0.1.tar.gz
+gunzip sox-14.0.1.tar.gz
+tar xvf sox-14.0.1.tar
+cd sox-14.0.1
+./configure --disable-shared
 make
 make install
 

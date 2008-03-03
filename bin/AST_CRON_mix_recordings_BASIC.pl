@@ -85,8 +85,17 @@ else
 	if ( -e ('/usr/local/bin/soxmix')) {$soxmixbin = '/usr/local/bin/soxmix';}
 	else
 		{
-		print "Can't find soxmix binary! Exiting...\n";
-		exit;
+		print "Can't find soxmix binary! Trying sox...\n";
+		if ( -e ('/usr/bin/sox')) {$soxmixbin = '/usr/bin/sox -m';}
+		else 
+			{
+			if ( -e ('/usr/local/bin/sox')) {$soxmixbin = '/usr/local/bin/sox -m';}
+			else
+				{
+				print "Can't find sox binary! Exiting...\n";
+				exit;
+				}
+			}
 		}
 	}
 

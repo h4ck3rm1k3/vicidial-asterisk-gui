@@ -479,11 +479,12 @@ in and out as separate files
 1. Go to http://sourceforge.net/projects/sox/ and download the sox package
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://easynews.dl.sourceforge.net/sourceforge/sox/sox-12.17.9.tar.gz
-	- gunzip sox-12.17.9.tar.gz
-	- tar xvf sox-12.17.9.tar
-	- cd sox-12.17.9
-	- ./configure
+	- cd /usr/local
+	- wget http://easynews.dl.sourceforge.net/sourceforge/sox/sox-14.0.1.tar.gz
+	- gunzip sox-14.0.1.tar.gz
+	- tar xvf sox-14.0.1.tar
+	- cd sox-14.0.1
+	- ./configure --disable-shared
 	- make			(if alsa.o errors add --disable-alsa-dsp to configure and redo)
 	- make install
    - you are done
@@ -2849,12 +2850,12 @@ SUBPHASE 6.5: setting up astguiclient scripts for continuous running
 	- cd /usr/share/astguiclient
 	- crontab -e
 	   - add the following entries(here's what we used):
-	      (Note if you have not edited the AST_CRON_mix_recordings.pl script 
-to FTP to a different server, then you should use the 
-AST_CRON_mix_recordings_BASIC.pl file in it's place)
 
-### recording mixing for Asterisk run every 5 minutes
-1,6,11,16,21,26,31,36,41,46,51,56 * * * 1,2,3,4,5,6 /usr/share/astguiclient/AST_CRON_mix_recordings_BASIC.pl
+### recording mixing/compressing/ftping scripts
+0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57 * * * * /usr/share/astguiclient/AST_CRON_audio_1_move_mix.pl
+#0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57 * * * * /usr/share/astguiclient/AST_CRON_audio_1_move_VDonly.pl
+1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49,52,55,58 * * * * /usr/share/astguiclient/AST_CRON_audio_2_compress.pl --GSM
+#2,5,8,11,14,17,20,23,26,29,32,35,38,41,44,47,50,53,56,59 * * * * /usr/share/astguiclient/AST_CRON_audio_3_ftp.pl --GSM
 
 ### keepalive script for astguiclient processes
 * * * * * /usr/share/astguiclient/ADMIN_keepalive_ALL.pl

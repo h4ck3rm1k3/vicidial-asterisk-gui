@@ -2109,6 +2109,10 @@ if ($WEBONLY < 1)
 	`mkdir -p $PATHmonitor`;
 	`mkdir -p $PATHDONEmonitor`;
 	`mkdir -p $PATHDONEmonitor/ORIG`;
+	`mkdir -p $PATHDONEmonitor/GSM`;
+	`mkdir -p $PATHDONEmonitor/MP3`;
+	`mkdir -p $PATHDONEmonitor/OGG`;
+	`mkdir -p $PATHDONEmonitor/FTP`;
 	`chmod -R 0766 $PATHmonitor`;
 	`chmod -R 0766 $PATHDONEmonitor`;
 
