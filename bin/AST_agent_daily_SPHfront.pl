@@ -11,6 +11,8 @@
 # Place in the crontab and run every night at 02:00AM for the previous day's stats
 # 0 2 * * * /home/cron/AST_agent_daily_SPH.pl
 # 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 # 80114-1221 - First version
 # 80116-0941 - only print agents with week and month hours of 0 to PIPE file

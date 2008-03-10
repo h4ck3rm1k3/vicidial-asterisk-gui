@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADfixCXFER.agi version 0.4   *DBI-version*
+# agi-VDADfixCXFER.agi version 2.0.5   *DBI-version*
 # 
 # runs when a Consultative transfer is released by the vicidial fronter as the
 # call arrives on another channel so that the vicidial_live_agents record is
@@ -12,7 +12,7 @@
 # exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 # exten => _010*010*010*015*8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 60809-1749 - First build

@@ -1,8 +1,7 @@
 <?
 # admin.php - VICIDIAL administration page
-# 
-# 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 

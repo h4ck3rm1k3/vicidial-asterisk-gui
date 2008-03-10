@@ -1,7 +1,7 @@
 <?
 # phone_stats.php.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 
 # changes:

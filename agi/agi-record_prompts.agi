@@ -29,6 +29,8 @@
 #	- vm-msgsaved
 #	- vm-goodbye
 #
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGELOG
 # 71226-1303 - Added option to change format GSM/WAV and timeout through flags
 #

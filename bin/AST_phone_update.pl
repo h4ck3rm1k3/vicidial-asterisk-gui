@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
-# AST_phone_update.pl version 2.0.4   *DBI-version*
+# AST_phone_update.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # checks the registered IP address of the phone and updates the phones table
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 70521-1529 - first build
 #

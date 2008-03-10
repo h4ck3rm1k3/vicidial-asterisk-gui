@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADlisten_DTMF.agi version 0.3   *DBI-version*
+# agi-VDADlisten_DTMF.agi version 2.0.5   *DBI-version*
 # 
 # To be initiated by an agent so during a call. Agent will click a PIN NUMBER
 # link on a web form webpage that will Originate a new call to this script
@@ -24,7 +24,7 @@
 #exten => _83009.,1,AGI(agi-VDADlisten_DTMF.agi,${EXTEN})
 #exten => _83009.,2,Hangup
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60206-1434 first build

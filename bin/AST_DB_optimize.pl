@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 #
-# AST_DB_optimize.pl version 0.2   *DBI-version*
+# AST_DB_optimize.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # optimizes the tables used in the asterisk MySQL database
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60717-1242 - changed to DBI by Marin Blu

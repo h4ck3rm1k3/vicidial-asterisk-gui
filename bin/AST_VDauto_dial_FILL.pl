@@ -12,7 +12,7 @@
 #
 # Should only be run on one server in a multi-server Asterisk/VICIDIAL cluster
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 61115-1246 - First build, framework setup, non-functional

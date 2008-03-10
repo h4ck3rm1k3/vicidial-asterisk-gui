@@ -1,7 +1,7 @@
 <?
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also, you need to have the login

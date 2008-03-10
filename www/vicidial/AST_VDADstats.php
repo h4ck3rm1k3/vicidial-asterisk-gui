@@ -1,8 +1,8 @@
 <? 
-### AST_VDADstats.php
-### 
-### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_VDADstats.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60619-1718 - Added variable filtering to eliminate SQL injection attack threat

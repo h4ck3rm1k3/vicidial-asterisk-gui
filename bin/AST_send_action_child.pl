@@ -14,7 +14,7 @@
 # to be executed. connect to the manager interface, send the action and logoff
 # then exit.
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50810-1547 - Added database server variable definitions lookup

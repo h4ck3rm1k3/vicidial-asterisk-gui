@@ -1,8 +1,10 @@
 #!/usr/bin/perl
-
-# build_translation_www_files.pl - converts web pages to other language
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# build_translation_www_files.pl    version 2.0.5
+#
+# converts web pages to other language
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60808-1029 - Changed to use /etc/astguiclient.conf for configs

@@ -1,7 +1,7 @@
 <?
 # new_listloader_superL.php
 # 
-# Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI lead loader from formatted file
 # 

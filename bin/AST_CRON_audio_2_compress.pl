@@ -25,7 +25,7 @@
 # 
 # This program assumes that recordings are saved by Asterisk as .wav
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 
 # 80302-1958 - First Build
@@ -212,7 +212,7 @@ foreach(@FILES)
 		$size2 = (-s "$dir2/$FILES[$i]");
 		if ($DBX) {print "$FILES[$i] $size2\n\n";}
 
-		if ( ($FILES[$i] !~ /out\.|in\./i) && ($size1 eq $size2) && (length($FILES[$i]) > 4))
+		if ( ($FILES[$i] !~ /out\.|in\.|lost\+found/i) && ($size1 eq $size2) && (length($FILES[$i]) > 4))
 			{
 			$recording_id='';
 			$ALLfile = $FILES[$i];

@@ -1,7 +1,7 @@
 <? 
 # AST_inboundEXTstats.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60421-1450 - check GET/POST vars lines with isset to not trigger PHP NOTICES

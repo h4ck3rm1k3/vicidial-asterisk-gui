@@ -1,8 +1,8 @@
 <?
-### closer-fronter_popup2.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# closer-fronter_popup2.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # this is the closer popup of a specific call that starts recording the call and allows you to go and fetch info on that caller in the local CRM system.
 # CHANGES
 #

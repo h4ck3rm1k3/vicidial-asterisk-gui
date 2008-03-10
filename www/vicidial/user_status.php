@@ -1,8 +1,8 @@
 <?
-### user_status.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# user_status.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60619-1738 - Added variable filtering to eliminate SQL injection attack threat

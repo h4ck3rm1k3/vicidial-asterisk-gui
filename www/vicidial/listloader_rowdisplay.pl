@@ -1,9 +1,9 @@
 #!/usr/bin/perl
-
-### listloader_rowdisplay.pl   version 0.2   *DBI-version*
-### 
-### Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
-###
+#
+# listloader_rowdisplay.pl    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 #
 # CHANGES
 # 

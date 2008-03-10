@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-
-# AST_agent_day.pl
+#
+# AST_agent_day.pl    version 2.0.5
 #
 # This script is designed to gather stats for all agent activity over the course
 # of a day and print it in an ASCI text file to be placed 
@@ -9,6 +9,8 @@
 # Place in the crontab and run every night at 23:59
 # 59 23 * * * /home/cron/AST_agent_day.pl
 # 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 # 60517-1100 - First version
 # 60715-2325 - changed to use /etc/astguiclient.conf for configs

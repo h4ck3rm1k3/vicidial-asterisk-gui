@@ -6,7 +6,7 @@
 # OPTIONAL!!! CUSTOMIZE THIS SCRIPT FIRST!!!
 # - changes status of leads as crontab script
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 80114-1150 - first build

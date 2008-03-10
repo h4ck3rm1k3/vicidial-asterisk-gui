@@ -1,8 +1,7 @@
 <?
 # welcome.php - VICIDIAL welcome page
 # 
-# 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 echo "<title>VICIDIAL Welcome</title>\n";

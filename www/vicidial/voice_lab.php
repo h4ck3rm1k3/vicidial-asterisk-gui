@@ -1,11 +1,11 @@
 <?
-### voice_lab.php
-### 
-### This script is designed to broadcast a recorded message or allow a person to
-### speak to all agents logged into a VICIDIAL campaign.
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# voice_lab.php
+# 
+# This script is designed to broadcast a recorded message or allow a person to
+# speak to all agents logged into a VICIDIAL campaign.
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 #
 # CHANGES
 #

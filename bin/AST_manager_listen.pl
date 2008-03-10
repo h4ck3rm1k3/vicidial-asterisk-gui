@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_listen.pl version 2.0.4   *DBI-version*
+# AST_manager_listen.pl version 2.0.5   *DBI-version*
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -14,16 +14,8 @@
 # look for certain events and based upon either the uniqueid or the callerid of 
 # the call update the status and information of an action record in the 
 # vicidial_manager table of the asterisk MySQL database.
-# 
-# For this program to work you need to have the "asterisk" MySQL database 
-# created and create the tables listed in the CONF_MySQL.txt file, also make sure
-# that the machine running this program has read/write/update/delete access 
-# to that database
-# 
-# In your Asterisk server setup you also need to have several things activated
-# and defined. See the CONF_Asterisk.txt file for details
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50322-1300 - changed callerid parsing to remove quotes and number

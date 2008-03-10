@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# call_inbound.agi version 0.3   *DBI-version*
+# call_inbound.agi version 2.0.5   *DBI-version*
 # 
 # runs at the beginning and ending of every inbound call received
 # 
@@ -17,7 +17,7 @@
 # 
 # 
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60731-1435 - changed to use DBI-DBD::mysql

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_vm_update.pl version 0.4   *DBI-version*
+# AST_vm_update.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # uses the Asterisk Manager interface and Net::MySQL to update the count of 
@@ -25,7 +25,7 @@
 # more than this either change the cron when this script is run or change the 
 # wait interval below
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 50823-1422 - Added database server variable definitions lookup
 # 50823-1452 - Added commandline arguments for debug at runtime

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADselective_CID_hangup.agi version 0.1   *NO DB Connection*
+# agi-VDADselective_CID_hangup.agi version 2.0.5   *NO DB Connection*
 # 
 # Will hangup a call if it is not within the specified area codes
 #
@@ -11,7 +11,7 @@
 #exten => 8352,2,Playback(85100001)
 #exten => 8352,3,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60918-1151 - First build

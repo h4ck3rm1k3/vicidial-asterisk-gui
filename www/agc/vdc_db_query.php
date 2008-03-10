@@ -1,7 +1,7 @@
 <?
 # vdc_db_query.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table

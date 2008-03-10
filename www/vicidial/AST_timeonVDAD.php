@@ -1,8 +1,8 @@
 <? 
-### AST_timeonVDAD.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_timeonVDAD.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # live real-time stats for the VICIDIAL Auto-Dialer
 #
 # CHANGES

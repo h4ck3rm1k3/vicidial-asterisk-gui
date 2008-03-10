@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# invalid_speak.agi version 0.1
+# invalid_speak.agi version 2.0.5
 # 
 # runs during an invalid extension and speaks the extension sent to it while printing to STDERR
 # 
@@ -28,7 +28,7 @@
 #exten => _**XXXX*,3,Hangup
 #
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 $V = 0;		# set to 1 for verbose mode

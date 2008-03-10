@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VD_auto_post_VERIFY.agi version 0.1   *DBI-version*
+# VD_auto_post_VERIFY.agi version 2.0.5   *DBI-version*
 #
 # NOTE: This script is only used with auto-message campaigns with dynamic data
 # 
@@ -14,7 +14,7 @@
 #exten => 8320,3,Hangup
 # 
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60915-1616 - first build

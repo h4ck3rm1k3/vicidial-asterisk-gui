@@ -40,7 +40,7 @@
 #exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----INB-----7274515134-----Closer-----park----------999-----1-----OUTB)
 #exten => 1234,3,Hangup
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 70828-0924 - First Build

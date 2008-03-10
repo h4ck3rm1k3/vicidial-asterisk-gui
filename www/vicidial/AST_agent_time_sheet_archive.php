@@ -1,8 +1,8 @@
 <? 
-### AST_agent_time_sheet_archive.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_agent_time_sheet_archive.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60619-1721 - Added variable filtering to eliminate SQL injection attack threat

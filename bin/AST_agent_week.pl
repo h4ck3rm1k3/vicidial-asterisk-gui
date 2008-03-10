@@ -1,10 +1,12 @@
 #!/usr/bin/perl
-
-# AST_agent_week.pl
+#
+# AST_agent_week.pl    version 2.0.5
 #
 # This script is designed to gather stats for all agent activity over the course
 # of a week(Sunday to Saturday) and print it in an ASCI text file to be placed 
 # on a web server for viewing.
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60517-1100 - First version

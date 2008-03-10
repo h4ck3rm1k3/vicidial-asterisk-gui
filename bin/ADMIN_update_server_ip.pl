@@ -1,12 +1,12 @@
 #!/usr/bin/perl
-
+#
 # ADMIN_update_server_ip.pl - updates IP address in DB and conf file
 #
 # This script is designed to update all database tables and the local 
 # astguiclient.conf file to reflect a change in IP address. The script will 
 # automatically default to the first eth address in the ifconfig output.
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 71205-2144 - added display of extensions.conf example for call routing

@@ -1,11 +1,11 @@
 #!/usr/bin/perl
-
-# AST_VDsales_export.pl                version: 2.0.4
+#
+# AST_VDsales_export.pl                version: 2.0.5
 #
 # This script is designed to gather sales for a VICIDIAL Outbound-only campaign and
 # post them to a directory
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 61219-1118 - First version

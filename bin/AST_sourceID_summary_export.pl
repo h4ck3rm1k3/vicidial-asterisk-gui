@@ -1,11 +1,11 @@
 #!/usr/bin/perl
-
-# AST_sourceID_summary_export.pl               version: 2.0.4
+#
+# AST_sourceID_summary_export.pl               version: 2.0.5
 #
 # This script is designed to gather stats for all leads by source_id and
 # post them to a directory
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 70905-1409 - First version

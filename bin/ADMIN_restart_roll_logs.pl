@@ -1,8 +1,12 @@
 #!/usr/bin/perl
-# ADMIN_restart_roll_logs.pl - script to roll the Asterisk logs on machine restart
+#
+# ADMIN_restart_roll_logs.pl    version 2.0.5
+#
+# script to roll the Asterisk logs on machine restart
+#
 # have this run on the astersik server 
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);

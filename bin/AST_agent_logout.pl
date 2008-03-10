@@ -21,7 +21,7 @@
 #	15 16 * * 6 /usr/share/astguiclient/AST_agent_logout.pl --debugX
 #
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 80112-0330 - First Build

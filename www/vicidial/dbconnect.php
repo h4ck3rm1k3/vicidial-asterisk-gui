@@ -1,6 +1,10 @@
 <?
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# dbconnect.php    version 2.0.5
+#
+# database connection settings and some global web settings
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 if ( file_exists("/etc/astguiclient.conf") )
 {

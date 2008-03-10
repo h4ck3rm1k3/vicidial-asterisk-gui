@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# park_CID.agi version 0.3   *DBI-version*
+# park_CID.agi version 2.0.5   *DBI-version*
 # 
 # runs before the park extension to populate the parked_channels entry with the channel's callerid
 # 
@@ -12,7 +12,7 @@
 # exten => 8301,3,Playback(park)
 # exten => 8301,4,Hangup 
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60731-1423 - changed to use DBI-DBD::mysql

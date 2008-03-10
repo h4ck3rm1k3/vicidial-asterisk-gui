@@ -1,9 +1,8 @@
 #!/usr/bin/perl
-
-### listloader_super.pl   version 0.4   *DBI-version*
-### 
-### Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
-###
+#
+# listloader_super.pl   version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES

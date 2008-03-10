@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_DB_tz_divide.pl version 2.0.4   *DBI-version*
+# AST_DB_tz_divide.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # OPTIONAL!!! CUSTOMIZE THIS SCRIPT FIRST!!!
@@ -10,7 +10,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 71106-0250 - first build

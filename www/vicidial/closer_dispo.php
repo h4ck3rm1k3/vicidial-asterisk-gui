@@ -1,9 +1,11 @@
 <?
-### closer_dispo.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-# this is the closer disposition screen of a call that has been grabbed. This allows the closer to modify customer information and disposition the call
+# closer_dispo.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# this is the closer disposition screen of a call that has been grabbed. This 
+# allows the closer to modify customer information and disposition the call
+#
 # CHANGES
 #
 # 60619-1641 - Added variable filtering to eliminate SQL injection attack threat

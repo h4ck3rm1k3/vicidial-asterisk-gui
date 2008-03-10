@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_manager_send.pl version 0.3   *DBI-version*
+# AST_manager_send.pl version 2.0.5
 #
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -16,7 +16,7 @@
 # scalability over just using a single process. Also, this means that a single
 # action execution lock cannot bring the entire system down.
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 50823-1514 - Added commandline debug options with debug printouts

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_cleanup_agent_log.pl version 0.3   *** DBI version ***
+# AST_cleanup_agent_log.pl version 2.0.5
 #
 # DESCRIPTION:
 # to be run frequently to clean up the vicidial_agent_log to fix erroneous time 
@@ -10,11 +10,12 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60711-0945 - changed to DBI by Marin Blu
 # 60715-2301 - changed to use /etc/astguiclient.conf for configs
+#
 
 # constants
 $COUNTER_OUTPUT=1;	# set to 1 to display the counter as the script runs

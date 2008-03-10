@@ -1,8 +1,8 @@
 <? 
-### AST_timeonpark.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_timeonpark.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60620-1042 - Added variable filtering to eliminate SQL injection attack threat

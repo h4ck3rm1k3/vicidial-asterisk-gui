@@ -1,13 +1,13 @@
 #!/usr/bin/perl
 
-# ADMIN_adjust_GMTnow_on_leads.pl   *DBI-version*
+# ADMIN_adjust_GMTnow_on_leads.pl    verison 2.0.5
 #
 # program goes throught the vicidial_list table and adjusts the gmt_offset_now
 # field to change it to today's offset if needed because of Daylight Saving Time
 #
 # run every time you load leads into the vicidial_list table
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES

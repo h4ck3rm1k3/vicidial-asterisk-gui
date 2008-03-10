@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_VDremote_agents.pl version 2.0.3   *DBI-version*
+# AST_VDremote_agents.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # uses Net::MySQL to keep remote agents logged in to the VICIDIAL system 
@@ -19,7 +19,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50215-0954 - First version of script

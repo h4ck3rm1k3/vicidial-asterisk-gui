@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
-# AST_VDadapt.pl version 2.0.4   *DBI-version*
+# AST_VDadapt.pl version 2.0.5
 #
 # DESCRIPTION:
 # adjusts the auto_dial_level for vicidial adaptive-predictive campaigns. 
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 60823-1302 - First build from AST_VDhopper.pl

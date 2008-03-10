@@ -1,8 +1,8 @@
 <? 
-### AST_agent_performance_detail.php
-### 
-### Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_agent_performance_detail.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 71119-2359 - First build

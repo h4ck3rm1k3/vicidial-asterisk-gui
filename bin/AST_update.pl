@@ -30,7 +30,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # version changes:
 # 41228-1659 - modified to compensate for manager output response hiccups

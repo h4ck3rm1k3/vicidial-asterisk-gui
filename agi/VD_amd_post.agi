@@ -25,7 +25,7 @@
 # exten => 8320,3,AGI(VD_amd_post.agi,${EXTEN})
 # exten => 8320,4,Hangup
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60217-1119 first build

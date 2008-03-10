@@ -6,7 +6,7 @@
 # Replaces all other ADMIN_keepalive scripts
 # Uses /etc/astguiclient.conf file to know which processes to keepalive
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # 61011-1348 - first build

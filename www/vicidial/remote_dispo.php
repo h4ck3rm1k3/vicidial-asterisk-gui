@@ -1,10 +1,12 @@
 <?
-### remote_dispo.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-# this is the remote agent disposition screen for calls sent to remote agents. This allows the remote agent to modify customer information and disposition the call
-
+# remote_dispo.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# this is the remote agent disposition screen for calls sent to remote agents. 
+# This allows the remote agent to modify customer information and disposition 
+# the call
+#
 # CHANGES
 #
 # 60619-1626 - Added variable filtering to eliminate SQL injection attack threat

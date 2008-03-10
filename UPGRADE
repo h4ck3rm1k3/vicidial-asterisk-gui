@@ -7,37 +7,41 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 ########## UPGRADING FROM 2.0.4 TO 2.0.5 ##########
 
-1. install new files:
+1. Note the license change from GPLv2 to AGPLv2. This change was made to close
+	the ASP loophole for code distribution that was present in the GPLv2 
+	license. Please read the docs/LICENSE.txt file for more information
+
+2. install new files:
 	perl ./install.pl
 	NOTES: If you have customized any scripts in the bin or agi folders, 
 	then make sure you back them up before running the install.pl script. 
 	This script will replace existing files in the astguiclient installation.
 
-2. upgrade the MySQL asterisk database:
+3. upgrade the MySQL asterisk database:
 	mysql
 	use asterisk
 	\. /path/from/root/extras/upgrade_2.0.5.sql
 	quit
 
-3. Several of the MySQL tables have been changed to a HEAP type to reside in
+4. Several of the MySQL tables have been changed to a HEAP type to reside in
 	memory to improve performance.
 
-4. Added the ability for inbound and blended agents to choose their selected
+5. Added the ability for inbound and blended agents to choose their selected
 	in-groups without logging out. The new GROUPS link at the top of the 
 	agent screen(vicidial.php) can be used when an agent is Paused to
 	change their selected groups and whether they are set to do Blended
 	calling or not. There is also a new log with the details of what
 	groups an agent has selected each time in the user stats page.
 
-5. Queue Priority has been added allowing for the prioritization of one in-group
+6. Queue Priority has been added allowing for the prioritization of one in-group
 	over another in-group or outbound campaign(when in blended mode)
 
-6. Drop call action has been added to both inbound and outbound calling. You
+7. Drop call action has been added to both inbound and outbound calling. You
 	can now send a call that would drop into an inbound group. The call will
 	still be recorded as a DROP in it's original in-group or campaign, but 
 	the lead information will move on to the drop in-group.
 
-7. Audio recording mixing/compression/ftping scripts have been completely
+8. Audio recording mixing/compression/ftping scripts have been completely
 	rewritten and separated into different scripts for better fault
 	tolerance. Also, you have the option of compression in to the following
 	formats: WAV, GSM, MP3 and OGG
@@ -46,10 +50,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	- AST_CRON_audio_2_compress.pl
 	- AST_CRON_audio_3_ftp.pl
 
-8. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated
+9. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated
 	into a single AGI script: agi-VDAD_ALL_outbound.agi
 
-9. The start of a new QC (Quality Control) feature [non functional right now]
+10. The start of a new QC (Quality Control) feature [non functional right now]
 
 
 

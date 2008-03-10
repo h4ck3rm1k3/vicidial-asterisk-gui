@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_CRON_GSM_SALE_recordings.pl
+# AST_CRON_GSM_SALE_recordings.pl    version 2.0.5
 #
 # IMPORTANT!!! used to delete recordings!!!
 #
@@ -13,7 +13,7 @@
 # This program assumes that recordings are saved as .wav
 # should be easy to change this code if you use .gsm instead
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # 
 # 1112-1245 - first build 

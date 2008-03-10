@@ -12,7 +12,7 @@
 #exten => _91NXXNXXXXXX,3,Dial(${TRUNKX}/${EXTEN:1},55,tTo)
 #exten => _91NXXNXXXXXX,4,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60918-1042 - First build

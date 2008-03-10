@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_reset_mysql_vars.pl version 0.3   *DBI-version*
+# AST_reset_mysql_vars.pl    version 2.0.5
 #
 #  !!! DO NOT RUN THIS WHILE THERE ARE ACTIVE CALLS ON THE ASTERISK SERVER !!!
 #
@@ -8,8 +8,9 @@
 # clears out mysql records for this server
 #
 # It is recommended that you run this program on the local Asterisk machine
+# You should place a command to run this in the /etc/rc.d/rc.local file
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60717-1237 - changed to DBI by Marin Blu

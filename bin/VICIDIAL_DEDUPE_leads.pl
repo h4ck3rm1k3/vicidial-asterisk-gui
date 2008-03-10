@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 #
-# VICIDIAL_DEDUPE_leads.pl version 2.0.4   *DBI-version*
+# VICIDIAL_DEDUPE_leads.pl version 2.0.5
 #
 # DESCRIPTION:
 # moves duplicate leads to another list_id
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # /usr/share/astguiclient/VICIDIAL_DEDUPE_leads.pl --debugX --campaign-duplicate=CTF --ignore-list=999
 #

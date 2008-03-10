@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_flush_DBqueue.pl version 0.3   *DBI-version*
+# AST_flush_DBqueue.pl    version 2.0.5
 #
 # DESCRIPTION:
 # - clears out mysql records for this server for the ACQS vicidial_manager table
@@ -8,7 +8,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60717-1214 - changed to DBI by Marin Blu

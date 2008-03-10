@@ -1,9 +1,11 @@
 <?
-### closer_popup.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-# this is the closer popup of a specific call that grabs the call and allows you to go and fetch info on that caller in the local CRM system.
+# closer_popup.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# this is the closer popup of a specific call that grabs the call and allows you
+# to go and fetch info on that caller in the local CRM system.
+#
 # CHANGES
 #
 # 60620-1029 - Added variable filtering to eliminate SQL injection attack threat

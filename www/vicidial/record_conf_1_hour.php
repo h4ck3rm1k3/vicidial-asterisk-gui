@@ -1,8 +1,8 @@
 <?
-### record_conf_1_hour.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# record_conf_1_hour.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # grab: $server_ip $station $session_id
 #
 # CHANGES

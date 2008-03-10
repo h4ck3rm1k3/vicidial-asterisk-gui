@@ -1,9 +1,8 @@
 #!/usr/bin/perl
-
-### spreadsheet_sales_viewer.pl   version 2.0.4   *DBI-version*
-### 
-### Copyright (C) 2007  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+#
+# spreadsheet_sales_viewer.pl    version 2.0.5
+# 
+# Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES

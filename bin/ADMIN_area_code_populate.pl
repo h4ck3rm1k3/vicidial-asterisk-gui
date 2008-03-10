@@ -1,7 +1,8 @@
 #!/usr/bin/perl
-# ADMIN_area_code_populate.pl version 0.3   *DBI-version*
 #
-# Copyright (C) 2006  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# ADMIN_area_code_populate.pl    version 2.0.5
+#
+# Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Description:
 # server application that allows load areacodes into to asterisk list database

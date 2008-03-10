@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VICIDIAL_IN_new_leads_file.pl version 0.6   *DBI-version*
+# VICIDIAL_IN_new_leads_file.pl version 2.0.5   *DBI-version*
 #
 # DESCRIPTION:
 # script lets you insert leads into the vicidial_list table from a TAB-delimited
@@ -8,7 +8,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES

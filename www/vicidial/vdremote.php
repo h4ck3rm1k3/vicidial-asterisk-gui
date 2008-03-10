@@ -1,7 +1,10 @@
 <?
 # vdremote.php
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# make sure you have added a user to the vicidial_users MySQL table with at 
+# least user_level 4 to access this page the first time
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Changes
 # 50307-1721 - First version
@@ -9,7 +12,6 @@
 # 60421-1229 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60619-1603 - Added variable filtering to eliminate SQL injection attack threat
 #
-# make sure you have added a user to the vicidial_users MySQL table with at least user_level 4 to access this page the first time
 
 $version = '1.1.12';
 $build = '60619-1603';

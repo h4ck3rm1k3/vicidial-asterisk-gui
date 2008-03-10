@@ -18,7 +18,7 @@
 # exten => 834562311,2,Playback(gettysburgaddress)
 # exten => 834562311,3,Hangup
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 50708-1533 - First version

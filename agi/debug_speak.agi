@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# debug_speak.agi version 0.1
+# debug_speak.agi version 2.0.5
 # 
 # runs during any extension and speaks the extension sent to it while 
 # printing the extension as well as lots of info about the call to STDERR
@@ -11,7 +11,7 @@
 #exten => _XXXX,1,AGI(debug_speak.agi,${EXTEN})
 #exten => _XXXX,3,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 $V = 1;		# set to 1 for verbose mode

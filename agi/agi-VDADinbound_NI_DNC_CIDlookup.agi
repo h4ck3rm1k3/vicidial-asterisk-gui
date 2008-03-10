@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDADinbound_NI_DNC_CIDlookup.agi version 0.1   *DBI-version*
+# agi-VDADinbound_NI_DNC_CIDlookup.agi version 2.0.5   *DBI-version*
 # 
 # runs when a call comes in from an inbound call. This script will 
 # play a message and take input to automatically change customer lead to NI or DNC.
@@ -13,7 +13,7 @@
 #exten => 1234,4,AGI(agi-VDADinbound_NI_DNC_CIDlookup.agi)
 #exten => 1234,5,Hangup
 #
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60914-1051 - First draft

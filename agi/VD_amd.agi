@@ -18,7 +18,7 @@
 # exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
 # exten => 8369,7,Hangup
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60206-1434 first build

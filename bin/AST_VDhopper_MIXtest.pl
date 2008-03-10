@@ -23,7 +23,7 @@
 # a minute, you may want to play with the variables below to streamline for 
 # your usage
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 50810-1613 - Added database server variable definitions lookup

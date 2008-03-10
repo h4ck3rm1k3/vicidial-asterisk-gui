@@ -1,8 +1,8 @@
 <?
-### vtiger_search.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# vtiger_search.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # This page does a search against a standard vtiger CRM system. If the record 
 # is not present, it will create a new one and send the agent's screen to that new page.
 #

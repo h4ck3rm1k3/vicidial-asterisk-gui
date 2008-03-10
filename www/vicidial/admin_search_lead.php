@@ -1,10 +1,10 @@
 <?
-### admin_search_lead.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### AST GUI database administration search for lead info
-### admin_modify_lead.php
+# admin_search_lead.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# AST GUI database administration search for lead info
+# admin_modify_lead.php
 #
 # this is the administration lead information modifier screen, the administrator just needs to enter the leadID and then they can view and modify the information in the record for that lead
 #

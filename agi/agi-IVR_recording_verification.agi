@@ -42,7 +42,7 @@
 #exten => _83002*,5,Hangup
 #
 #
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
 # 70912-1105 - First build, non-functional

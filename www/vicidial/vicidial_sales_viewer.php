@@ -1,9 +1,9 @@
 <? header("Pragma: no-cache"); 
-
+#
 # vicidial_sales_viewer.php - VICIDIAL administration page
 # 
 # 
-# Copyright (C) 2007  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
 

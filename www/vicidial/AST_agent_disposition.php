@@ -1,14 +1,14 @@
 <? 
-### AST_agent_disposition.php
-### Date Range - Agent/Campaign Disposition (Perfect Network Corporation)
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_agent_disposition.php
+#
+# Date Range - Agent/Campaign Disposition (Perfect Network Corporation)
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 70201-1213 - First build - from Marin Blu
-#            
-# 
+#
 
 require("dbconnect.php");
 
