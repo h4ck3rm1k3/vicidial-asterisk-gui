@@ -445,6 +445,7 @@ following modules first:   (say YES if asked to install prerequisites)
    - install Net::Telnet
    - install Time::HiRes
    - install Net::Server
+   - install Switch
    - install Unicode::Map		(needed for super list loader Excel)
    - install Jcode			(needed for super list loader Excel)
    - install Spreadsheet::WriteExcel	(needed for super list loader Excel)

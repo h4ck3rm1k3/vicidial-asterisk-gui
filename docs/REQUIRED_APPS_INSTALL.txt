@@ -51,6 +51,7 @@ force install DBD::mysql
 install Net::Telnet
 install Time::HiRes
 install Net::Server
+install Switch
 install Unicode::Map
 install Jcode
 install Spreadsheet::WriteExcel
