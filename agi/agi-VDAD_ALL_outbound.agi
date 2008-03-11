@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# agi-VDAD_ALL_outbound.agi version 2.0.5   *DBI-version*
+# agi-VDAD_ALL_outbound.agi version 2.0.5
 # 
 # runs when an outbound call is answered. This script will 
 # send the calls out to the agents that are logged in.

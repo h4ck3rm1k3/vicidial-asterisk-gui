@@ -544,7 +544,13 @@ manual_dial_list_id BIGINT(14) UNSIGNED,
 default_xfer_group VARCHAR(20) default '---NONE---',
 xfer_groups  TEXT default '',
 queue_priority TINYINT(2) default '50',
-drop_inbound_group VARCHAR(20) default '---NONE---'
+drop_inbound_group VARCHAR(20) default '---NONE---',
+qc_enabled ENUM('Y','N') default 'N',
+qc_statuses TEXT,
+qc_lists TEXT,
+campaign_shift_start_time VARCHAR(4) default '0900',
+campaign_shift_length VARCHAR(5) default '16:00',
+campaign_day_start_time VARCHAR(4) default '0100'
 );
 
  CREATE TABLE vicidial_lists (
@@ -1077,4 +1083,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1077';
+UPDATE system_settings SET db_schema_version='1078';

@@ -4,9 +4,7 @@
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 
-
 require("dbconnect.php");
-
 
 ######################################################################################################
 ######################################################################################################
@@ -569,7 +567,8 @@ if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["ca
 	elseif (isset($_POST["campaign_stats_refresh"])){$campaign_stats_refresh=$_POST["campaign_stats_refresh"];}
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
-if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}		elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
+if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}	
+	elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
 if (isset($_GET["use_non_latin"]))				{$use_non_latin=$_GET["use_non_latin"];}
 	elseif (isset($_POST["use_non_latin"]))		{$use_non_latin=$_POST["use_non_latin"];}
 if (isset($_GET["webroot_writable"]))			{$webroot_writable=$_GET["webroot_writable"];}
@@ -686,7 +685,16 @@ if (isset($_GET["queue_priority"]))				{$queue_priority=$_GET["queue_priority"];
 	elseif (isset($_POST["queue_priority"]))	{$queue_priority=$_POST["queue_priority"];}
 if (isset($_GET["drop_inbound_group"]))				{$drop_inbound_group=$_GET["drop_inbound_group"];}
 	elseif (isset($_POST["drop_inbound_group"]))	{$drop_inbound_group=$_POST["drop_inbound_group"];}
-
+if (isset($_GET["qc_statuses"]))			{$qc_statuses=$_GET["qc_statuses"];}
+	elseif (isset($_POST["qc_statuses"]))	{$qc_statuses=$_POST["qc_statuses"];}
+if (isset($_GET["qc_lists"]))				{$qc_lists=$_GET["qc_lists"];}
+	elseif (isset($_POST["qc_lists"]))		{$qc_lists=$_POST["qc_lists"];}
+if (isset($_GET["campaign_shift_start_time"]))			{$campaign_shift_start_time=$_GET["campaign_shift_start_time"];}
+	elseif (isset($_POST["campaign_shift_start_time"]))	{$campaign_shift_start_time=$_POST["campaign_shift_start_time"];}
+if (isset($_GET["campaign_shift_length"]))				{$campaign_shift_length=$_GET["campaign_shift_length"];}
+	elseif (isset($_POST["campaign_shift_length"]))		{$campaign_shift_length=$_POST["campaign_shift_length"];}
+if (isset($_GET["campaign_day_start_time"]))			{$campaign_day_start_time=$_GET["campaign_day_start_time"];}
+	elseif (isset($_POST["campaign_day_start_time"]))	{$campaign_day_start_time=$_POST["campaign_day_start_time"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -823,11 +831,12 @@ $mix_container_item = ereg_replace("[^0-9]","",$mix_container_item);
 $prompt_interval = ereg_replace("[^0-9]","",$prompt_interval);
 $agent_alert_delay = ereg_replace("[^0-9]","",$agent_alert_delay);
 $manual_dial_list_id = ereg_replace("[^0-9]","",$manual_dial_list_id);
-$qc_enabled = ereg_replace("[^0-9]","",$qc_enabled);
 $qc_user_level = ereg_replace("[^0-9]","",$qc_user_level);
 $qc_pass = ereg_replace("[^0-9]","",$qc_pass);
 $qc_finish = ereg_replace("[^0-9]","",$qc_finish);
 $qc_commit = ereg_replace("[^0-9]","",$qc_commit);
+$campaign_shift_start_time = ereg_replace("[^0-9]","",$campaign_shift_start_time);
+$campaign_day_start_time = ereg_replace("[^0-9]","",$campaign_day_start_time);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
@@ -856,6 +865,9 @@ $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
 $human_answered = ereg_replace("[^NY]","",$human_answered);
 $tovdad_display = ereg_replace("[^NY]","",$tovdad_display);
 $campaign_allow_inbound = ereg_replace("[^NY]","",$campaign_allow_inbound);
+
+$qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
+
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -1018,6 +1030,7 @@ $queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pas
 $after_hours_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$after_hours_message_filename);
 $welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_message_filename);
 $onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
+$campaign_shift_length = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$campaign_shift_length);
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
@@ -1170,11 +1183,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80211-1901 - Added DB Schema Version to system settings display
 # 80224-1334 - Added Queue Priority to in-groups and campaigns
 # 80302-0232 - added drop_action and transfer to in-group for both in-groups and outbound
+# 80310-1504 - added QC settings section to campaign screen
 # 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-123';
-$build = '80302-0232';
+$admin_version = '2.0.5-124';
+$build = '80310-1504';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1340,18 +1354,29 @@ if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL STA
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			
-				{
-				$hh='campaigns';	$sh='detail';	echo "Modify Campaign - Detail - $campaign_id";
-				if ($SUB==22)	{echo " - Statuses";}
-				if ($SUB==23)	{echo " - HotKeys";}
-				if ($SUB==25)	{echo " - Lead Recycle Entries";}
-				if ($SUB==26)	{echo " - Auto Alt Dial Statuses";}
-				if ($SUB==27)	{echo " - Agent Pause Codes";}
-				if ($SUB==29)	{echo " - List Mixes";}
-				}
+		{
+		$hh='campaigns';	$sh='detail';	echo "Modify Campaign - Detail - $campaign_id";
+		if ($SUB==22)	{echo " - Statuses";}
+		if ($SUB==23)	{echo " - HotKeys";}
+		if ($SUB==25)	{echo " - Lead Recycle Entries";}
+		if ($SUB==26)	{echo " - Auto Alt Dial Statuses";}
+		if ($SUB==27)	{echo " - Agent Pause Codes";}
+		if ($SUB==28)	{echo " - QC";}
+		if ($SUB==29)	{echo " - List Mixes";}
+		}
+if ($ADD==34)
+		{
+		$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View - $campaign_id";
+		if ($SUB==22)	{echo " - Statuses";}
+		if ($SUB==23)	{echo " - HotKeys";}
+		if ($SUB==25)	{echo " - Lead Recycle Entries";}
+		if ($SUB==26)	{echo " - Auto Alt Dial Statuses";}
+		if ($SUB==27)	{echo " - Agent Pause Codes";}
+		if ($SUB==28)	{echo " - QC";}
+		if ($SUB==29)	{echo " - List Mixes";}
+		}
 if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Campaign Statuses";}
 if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Campaign HotKeys";}
-if ($ADD==34)			{$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View";}
 if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Campaign Lead Recycle Entries";}
 if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Campaign Auto Alt Dial Statuses";}
 if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Campaign Agent Pause Codes";}
@@ -1382,6 +1407,7 @@ if ($ADD==43)			{$hh='campaigns';	$sh='hotkey';	echo "Modify Campaign HotKey";}
 if ($ADD==44)			{$hh='campaigns';	$sh='basic';	echo "Modify Campaign - Basic View";}
 if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Modify Campaign Lead Recycle";}
 if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Modify Agent Pause Code";}
+if ($ADD==48)			{$hh='campaigns';	$sh='qc';	echo "Modify Campaign QC Settings";}
 if ($ADD==49)			{$hh='campaigns';	$sh='listmix';	echo "Modify Campaign List Mix";}
 if ($ADD==411)			{$hh='lists';		echo "Modify List";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Modify In-Group";}
@@ -2529,6 +2555,37 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-manual_dial_list_id">
 <BR>
 <B>Manual Dial List ID -</B> The default list_id to be used when an agent placces a manual call and a new lead record is created in vicidial_list. Default is 999. This field can contain digits only.
+
+<BR>
+<A NAME="vicidial_campaigns-qc_enabled">
+<BR>
+<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
+
+<BR>
+<A NAME="vicidial_campaigns-qc_statuses">
+<BR>
+<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
+
+<BR>
+<A NAME="vicidial_campaigns-qc_lists">
+<BR>
+<B>QC Lists -</B> This area is where you select which lists of leads should be gone over by the QC system. Place a check next to the list that you want QC to review. 
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_shift_start_time">
+<BR>
+<B>Campaign Shift Start Time -</B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_shift_length">
+<BR>
+<B>Campaign Shift Length -</B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00.
+
+<BR>
+<A NAME="vicidial_campaigns-campaign_day_start_time">
+<BR>
+<B>Campaign Day Start Time -</B> This is the time that the a new campaign day begins. Must only be numbers, 1:00 AM would be 0100.
+
 
 
 
@@ -6497,6 +6554,64 @@ $ADD=31;	# go to campaign modification form below
 
 
 ######################
+# ADD=48 modify campaign QC settings in the system
+######################
+
+if ($ADD==48)
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>QC SETTINGS NOT MODIFIED - Please go back and look at the data you entered\n";
+		}
+	 else
+		{
+		$p=0;
+		$qc_statuses_ct = count($qc_statuses);
+		while ($p < $qc_statuses_ct)
+			{
+			$QC_statuses .= " $qc_statuses[$p]";
+			$p++;
+			}
+		$p=0;
+		$qc_lists_ct = count($qc_lists);
+		while ($p < $qc_lists_ct)
+			{
+			$QC_lists .= " $qc_lists[$p]";
+			$p++;
+			}
+		
+		if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
+		if (strlen($QC_lists)>0) {$QC_lists .= " -";}
+
+		echo "<br><B>QC SETTINGS MODIFIED: $campaign_id</B>\n";
+
+		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',campaign_shift_start_time='$campaign_shift_start_time',campaign_shift_length='$campaign_shift_length',campaign_day_start_time='$campaign_day_start_time' where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY CAMP QC SETTING|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$SUB=28;
+$ADD=31;	# go to campaign modification form below
+}
+
+
+######################
 # ADD=49 modify campaign list mix in the system
 ######################
 
@@ -9062,6 +9177,12 @@ if ($ADD==31)
 		$default_xfer_group = $row[67];
 		$queue_priority = $row[69];
 		$drop_inbound_group = $row[70];
+		$qc_enabled = $row[71];
+		$qc_statuses = $row[72];
+		$qc_lists = $row[73];
+		$campaign_shift_start_time = $row[74];
+		$campaign_shift_length = $row[75];
+		$campaign_day_start_time = $row[76];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -9094,12 +9215,25 @@ if ($ADD==31)
 			}
 		}
 
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
+
+	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+	$QCstatuses = explode(" ", $qc_statuses);
+	$QCs_to_print = (count($QCstatuses) -0);
+
+	$qc_lists = preg_replace("/^ | -$/","",$qc_lists);
+	$QClists = explode(" ", $qc_lists);
+	$QCL_to_print = (count($QClists) -0);
+
 	##### get status listings for dynamic pulldown
 	$stmt="SELECT * from vicidial_statuses order by status";
 	$rslt=mysql_query($stmt, $link);
 	$statuses_to_print = mysql_num_rows($rslt);
 	$statuses_list='';
 	$dial_statuses_list='';
+	$qc_statuses_list='';
 
 	$o=0;
 	while ($statuses_to_print > $o) 
@@ -9111,6 +9245,19 @@ if ($ADD==31)
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
 		$o++;
 		}
 
@@ -9128,12 +9275,21 @@ if ($ADD==31)
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
 		$o++;
 		}
-
-	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-	$Dstatuses = explode(" ", $dial_statuses);
-	$Ds_to_print = (count($Dstatuses) -1);
 
 	##### get in-groups listings for dynamic drop in-group pulldown
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
@@ -9197,6 +9353,8 @@ if ($ADD==31)
 		else		{$camp_autoalt_color=$campaigns_color;}
 	if ($SUB==27)	{$camp_pause_color=$subcamp_color;}
 		else		{$camp_pause_color=$campaigns_color;}
+	if ($SUB==28)	{$camp_qc_color=$subcamp_color;}
+		else		{$camp_qc_color=$campaigns_color;}
 	if ($SUB==29)	{$camp_listmix_color=$subcamp_color;}
 		else		{$camp_listmix_color=$campaigns_color;}
 	echo "<TABLE WIDTH=$page_width CELLPADDING=2 CELLSPACING=0><TR BGCOLOR=\"$campaigns_color\">\n";
@@ -9208,6 +9366,7 @@ if ($ADD==31)
 	echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Auto Alt Dial</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Pause Codes</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_qc_color\"><a href=\"$PHP_SELF?ADD=31&SUB=28&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">QC</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
@@ -9520,7 +9679,7 @@ if ($ADD==31)
 		}
 
 
-
+	##### CAMPAIGN CUSTOM STATUSES #####
 	if ($SUB==22)
 		{
 
@@ -9600,7 +9759,7 @@ if ($ADD==31)
 		echo "</FORM><br>\n";
 		}
 
-
+	##### CAMPAIGN HOTKEYS #####
 	if ($SUB==23)
 		{
 		echo "<br><b>CUSTOM HOT KEYS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_hotkeys$NWE</b><br>\n";
@@ -9650,7 +9809,7 @@ if ($ADD==31)
 		echo "</form><BR>\n";
 		}
 
-
+	##### CAMPAIGN LEAD RECYCLING #####
 	if ($SUB==25)
 		{
 		echo "<br><br><b>LEAD RECYCLING WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
@@ -9697,7 +9856,7 @@ if ($ADD==31)
 		echo "</FORM><br>\n";
 		}
 
-
+	##### CAMPAIGN AUTO-ALT-NUMBER DIALING #####
 	if ($SUB==26)
 		{
 		echo "<br><br><b>AUTO ALT NUMBER DIALING FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_auto_alt_dial_statuses$NWE</b><br>\n";
@@ -9734,7 +9893,7 @@ if ($ADD==31)
 		echo "</FORM><br>\n";
 		}
 
-
+	##### CAMPAIGN PAUSE CODES #####
 	if ($SUB==27)
 		{
 		echo "<br><br><b>AGENT PAUSE CODES FOR THIS CAMPAIGN: &nbsp; $NWB#vicidial_pause_codes$NWE</b><br>\n";
@@ -9775,6 +9934,49 @@ if ($ADD==31)
 		echo "<input type=submit name=submit value=ADD><BR>\n";
 
 		echo "</center></FORM><br>\n";
+		}
+
+	##### CAMPAIGN QC SETTINGS #####
+	if ($SUB==28)
+		{
+		$stmt="SELECT list_id,list_name,active from vicidial_lists where campaign_id='$campaign_id'";
+		$rslt=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rslt);
+		$qc_lists_list='';
+
+		$p=0;
+		while ($lists_to_print > $p) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$qc_lists_list .= "<input type=\"checkbox\" name=\"qc_lists[]\" value=\"$rowx[0]\"";
+			$r=0;
+			while ($r < $QCL_to_print)
+				{
+				if ($rowx[0] == $QClists[$r]) 
+					{
+					$qc_lists_list .= " CHECKED";
+					}
+				$r++;
+				}
+			$qc_lists_list .= "> $rowx[0] - $rowx[1] - $rowx[2]<BR>\n";
+
+			$p++;
+			}
+
+		echo "<br><br><b>QC SETTINGS FOR THIS CAMPAIGN:</b><br>\n";
+		echo "<form action=$PHP_SELF method=POST><center><TABLE width=500 cellspacing=3>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right><input type=hidden name=ADD value=48>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "QC Enabled: </td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_campaigns-qc_enabled$NWE</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC Statuses: <BR> $NWB#vicidial_campaigns-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Lists: <BR> $NWB#vicidial_campaigns-qc_lists$NWE</td><td>$qc_lists_list</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Shift Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_shift_start_time value=\"$campaign_shift_start_time\"> $NWB#vicidial_campaigns-campaign_shift_start_time$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Campaign Shift Length: </td><td><input type=text size=6 maxlength=5 name=campaign_shift_length value=\"$campaign_shift_length\"> $NWB#vicidial_campaigns-campaign_shift_length$NWE</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Day Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_day_start_time value=\"$campaign_day_start_time\"> $NWB#vicidial_campaigns-campaign_day_start_time$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
+
+		echo "</table>\n";
+		echo "<BR></center></FORM><br>\n";
 		}
 
 
@@ -10163,6 +10365,7 @@ if ( ($ADD==34) or ($ADD==31) )
 {
 	if ($LOGmodify_campaigns==1)
 	{
+	##### CAMPAIGN LIST MIX SETTINGS #####
 	if ($SUB==29)
 		{
 		##### get list_id listings for dynamic pulldown

@@ -77,3 +77,12 @@ ALTER TABLE vicidial_campaigns ADD drop_inbound_group VARCHAR(20) default '---NO
 UPDATE vicidial_campaigns SET drop_action='MESSAGE';
 
 UPDATE system_settings SET db_schema_version='1077';
+
+ALTER TABLE vicidial_campaigns ADD qc_enabled ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_campaigns ADD qc_statuses TEXT;
+ALTER TABLE vicidial_campaigns ADD qc_lists TEXT;
+ALTER TABLE vicidial_campaigns ADD campaign_shift_start_time VARCHAR(4) default '0900';
+ALTER TABLE vicidial_campaigns ADD campaign_shift_length VARCHAR(5) default '16:00';
+ALTER TABLE vicidial_campaigns ADD campaign_day_start_time VARCHAR(4) default '0100';
+
+UPDATE system_settings SET db_schema_version='1078';
