@@ -21,7 +21,7 @@ use Switch;
 #    ARG1 is the time stamp to go along with this log
 #    ARG2 is the name of the script that is currently logging
 #    ARG3 is the stage that script is currently in
-#    ARG4 is the log files name
+#    ARG4 is the log file's name
 #    ARG5 is the string that is going into the log
 #    this function does not return a value
 sub agi_output {
