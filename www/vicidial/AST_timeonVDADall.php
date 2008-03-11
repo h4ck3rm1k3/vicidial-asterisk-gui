@@ -29,6 +29,7 @@
 # 70619-1339 - Added Status Category tally display
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
 # 80227-0418 - Added priority to waiting calls display
+# 80311-1550 - Added calls_today on all agents and wait time/in-group for inbound calls
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -682,6 +683,8 @@ $HDtime =			"---------+";
 $HTtime =			" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">MM:SS</a>   |";
 $HDcampaign =		"------------+";
 $HTcampaign =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">CAMPAIGN</a>   |";
+$HDcalls =			"-------+";
+$HTcalls =			" CALLS |";
 
 if ($UGdisplay < 1)
 	{
@@ -708,18 +711,18 @@ if ($SERVdisplay < 1)
 
 
 
-$Aline  = "$HDbegin$HDstation$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign\n";
-$Bline  = "$HTbegin$HTstation$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign\n";
+$Aline  = "$HDbegin$HDstation$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
+$Bline  = "$HTbegin$HTstation$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
 $Aecho .= "$Aline";
 $Aecho .= "$Bline";
 $Aecho .= "$Aline";
 
-if ($orderby=='timeup') {$orderSQL='status,last_call_time';}
-if ($orderby=='timedown') {$orderSQL='status desc,last_call_time desc';}
-if ($orderby=='campaignup') {$orderSQL='campaign_id,status,last_call_time';}
-if ($orderby=='campaigndown') {$orderSQL='campaign_id desc,status desc,last_call_time desc';}
-if ($orderby=='groupup') {$orderSQL='user_group,status,last_call_time';}
-if ($orderby=='groupdown') {$orderSQL='user_group desc,status desc,last_call_time desc';}
+if ($orderby=='timeup') {$orderSQL='vicidial_live_agents.status,last_call_time';}
+if ($orderby=='timedown') {$orderSQL='vicidial_live_agents.status desc,last_call_time desc';}
+if ($orderby=='campaignup') {$orderSQL='vicidial_live_agents.campaign_id,vicidial_live_agents.status,last_call_time';}
+if ($orderby=='campaigndown') {$orderSQL='vicidial_live_agents.campaign_id desc,vicidial_live_agents.status desc,last_call_time desc';}
+if ($orderby=='groupup') {$orderSQL='user_group,vicidial_live_agents.status,last_call_time';}
+if ($orderby=='groupdown') {$orderSQL='user_group desc,vicidial_live_agents.status desc,last_call_time desc';}
 if ($UidORname > 0)
 	{
 	if ($orderby=='userup') {$orderSQL='full_name,status,last_call_time';}
@@ -732,13 +735,11 @@ else
 	}
 
 if ($group=='XXXX-ALL-ACTIVE-XXXX') {$groupSQL = '';}
-else {$groupSQL = " and campaign_id='" . mysql_real_escape_string($group) . "'";}
+else {$groupSQL = " and vicidial_live_agents.campaign_id='" . mysql_real_escape_string($group) . "'";}
 if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
-$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
-
-#$stmt="select extension,vicidial_live_agents.user,conf_exten,status,server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,campaign_id,vicidial_users.user_group,vicidial_users.full_name from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user and campaign_id='" . mysql_real_escape_string($group) . "' order by $orderSQL;";
+$stmt="select extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
 
 if ($non_latin > 0)
 {
@@ -754,32 +755,55 @@ $talking_to_print = mysql_num_rows($rslt);
 	while ($i < $talking_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
-			if (eregi("READY|PAUSED",$row[3]))
+
+		$Aextension[$i] =		$row[0];
+		$Auser[$i] =			$row[1];
+		$Asessionid[$i] =		$row[2];
+		$Astatus[$i] =			$row[3];
+		$Aserver_ip[$i] =		$row[4];
+		$Acall_time[$i] =		$row[5];
+		$Acall_finish[$i] =		$row[6];
+		$Acall_server_ip[$i] =	$row[7];
+		$Acampaign_id[$i] =		$row[8];
+		$Auser_group[$i] =		$row[9];
+		$Afull_name[$i] =		$row[10];
+		$Acomments[$i] = 		$row[11];
+		$Acalls_today[$i] =		$row[12];
+		$Acallerid[$i] =		$row[13];
+
+		$i++;
+		}
+	$i=0;
+	$agentcount=0;
+	while ($i < $talking_to_print)
+		{
+			if (eregi("READY|PAUSED",$Astatus[$i]))
 			{
-			$row[5]=$row[6];
+			$Acall_time[$i]=$Acall_finish[$i];
 			}
 			if ($non_latin < 1)
 			{
-			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension = eregi_replace('Local/',"",$Aextension[$i]);
 			$extension =		sprintf("%-10s", $extension);
 			while(strlen($extension)>10) {$extension = substr("$extension", 0, -1);}
 			}
 			else
 			{
-			$extension = eregi_replace('Local/',"",$row[0]);
+			$extension = eregi_replace('Local/',"",$Aextension[$i]);
 			$extension =		sprintf("%-40s", $extension);
 			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
 			}
-		$Luser =			$row[1];
-		$user =				sprintf("%-18s", $row[1]);
-		$Lsessionid =		$row[2];
-		$sessionid =		sprintf("%-9s", $row[2]);
-		$Lstatus =			$row[3];
-		$status =			sprintf("%-6s", $row[3]);
-		$server_ip =		sprintf("%-15s", $row[4]);
-		$call_server_ip =	sprintf("%-15s", $row[7]);
-		$campaign_id =	sprintf("%-10s", $row[8]);
-		$comments=		$row[11];
+		$Luser =			$Auser[$i];
+		$user =				sprintf("%-18s", $Auser[$i]);
+		$Lsessionid =		$Asessionid[$i];
+		$sessionid =		sprintf("%-9s", $Asessionid[$i]);
+		$Lstatus =			$Astatus[$i];
+		$status =			sprintf("%-6s", $Astatus[$i]);
+		$server_ip =		sprintf("%-15s", $Aserver_ip[$i]);
+		$call_server_ip =	sprintf("%-15s", $Acall_server_ip[$i]);
+		$campaign_id =	sprintf("%-10s", $Acampaign_id[$i]);
+		$comments=		$Acomments[$i];
+		$calls_today =	sprintf("%-5s", $Acalls_today[$i]);
 
 		if (eregi("INCALL",$Lstatus)) 
 			{
@@ -799,12 +823,12 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 				if ($non_latin < 1)
 				{
-				$user_group =		sprintf("%-12s", $row[9]);
+				$user_group =		sprintf("%-12s", $Auser_group[$i]);
 				while(strlen($user_group)>12) {$user_group = substr("$user_group", 0, -1);}
 				}
 				else
 				{
-				$user_group =		sprintf("%-40s", $row[9]);
+				$user_group =		sprintf("%-40s", $Auser_group[$i]);
 				while(mb_strlen($user_group, 'utf-8')>12) {$user_group = mb_substr("$user_group", 0, -1,'utf8');}
 				}
 			}
@@ -812,19 +836,19 @@ $talking_to_print = mysql_num_rows($rslt);
 			{
 				if ($non_latin < 1)
 				{
-				$user =		sprintf("%-18s", $row[10]);
+				$user =		sprintf("%-18s", $Afull_name[$i]);
 				while(strlen($user)>18) {$user = substr("$user", 0, -1);}
 				}
 				else
 				{
-				$user =		sprintf("%-40s", $row[10]);
+				$user =		sprintf("%-40s", $Afull_name[$i]);
 				while(mb_strlen($user, 'utf-8')>18) {$user = mb_substr("$user", 0, -1,'utf8');}
 				}
 			}
-		if (!eregi("INCALL|QUEUE",$row[3]))
-			{$call_time_S = ($STARTtime - $row[6]);}
+		if (!eregi("INCALL|QUEUE",$Astatus[$i]))
+			{$call_time_S = ($STARTtime - $Acall_finish[$i]);}
 		else
-			{$call_time_S = ($STARTtime - $row[5]);}
+			{$call_time_S = ($STARTtime - $Acall_time[$i]);}
 
 		$call_time_M = ($call_time_S / 60);
 		$call_time_M = round($call_time_M, 2);
@@ -843,7 +867,7 @@ $talking_to_print = mysql_num_rows($rslt);
 			if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 	#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 			}
-		if (eregi("PAUSED",$row[3])) 
+		if (eregi("PAUSED",$Astatus[$i])) 
 			{
 			if ($call_time_M_int >= 360) 
 				{$i++; continue;} 
@@ -856,7 +880,7 @@ $talking_to_print = mysql_num_rows($rslt);
 				if ($call_time_M_int >= 5) {$G='<SPAN class="olive"><B>'; $EG='</B></SPAN>';}
 				}
 			}
-#		if ( (strlen($row[7])> 4) and ($row[7] != "$row[4]") )
+#		if ( (strlen($Acall_server_ip[$i])> 4) and ($Acall_server_ip[$i] != "$Aserver_ip[$i]") )
 #				{$G='<SPAN class="orange"><B>'; $EG='</B></SPAN>';}
 
 		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) ) {$agent_incall++;  $agent_total++;}
@@ -881,9 +905,30 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($SERVdisplay > 0)	{$SVD = "$G$server_ip$EG | $G$call_server_ip$EG | ";}
 		else	{$SVD = "";}
 
+		if ($CM == 'I') 
+			{
+			$stmt="select campaign_id,stage from vicidial_auto_calls where callerid='$Acallerid[$i]' LIMIT 1;";
+			if ($non_latin > 0)
+			{
+			$rslt=mysql_query("SET NAMES 'UTF8'");
+			}
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ingrp_to_print = mysql_num_rows($rslt);
+				if ($ingrp_to_print > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$vac_campaign =	sprintf("%-20s", $row[0]);
+				$row[1] = eregi_replace(".*-",'',$row[1]);
+				$vac_stage =	sprintf("%-4s", $row[1]);
+				}
+
+			$INGRP = " $G$vac_stage$EG  $G$vac_campaign$EG ";
+			}
+
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG |\n";
+		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 
 		$i++;
 		}
