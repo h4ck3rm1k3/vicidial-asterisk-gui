@@ -11,6 +11,16 @@ tos=lowdelay
 register => ASTloop:test@127.0.0.1:40569
 register => ASTblind:test@127.0.0.1:41569
 
+[vicihelp]
+host=67.134.219.20 			;voip.vicidial-group.com
+type=friend
+context=opengateway
+disallow=all
+allow=gsm
+allow=ulaw
+permit=67.134.219.20/255.255.255.255
+insecure=very
+
 [ASTloop]
 type=friend
 accountcode=ASTloop

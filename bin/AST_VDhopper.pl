@@ -436,7 +436,8 @@ foreach(@campaign_id)
 		$o++;
 		$STATUSsql[$i] .= "'$Dstatuses[$o]',";
 		}
-	chop($STATUSsql[$i]);
+	if (length($STATUSsql[$i])<3) {$STATUSsql[$i]="''";}
+	else {chop($STATUSsql[$i]);}
 
 	$stmtA = "SELECT dialable_leads from vicidial_campaign_stats where campaign_id='$campaign_id[$i]';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

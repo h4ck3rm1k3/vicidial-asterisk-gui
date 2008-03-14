@@ -667,11 +667,11 @@ if (length($ARGV[0])>1)
 		$iax  .= "register => ASTblind:test\@127.0.0.1:41569\n";
 
 		$Lext  = "\n";
-		$Lext .= "# Local Server: $server_ip\n";
+		$Lext .= "; Local Server: $server_ip\n";
 		$Lext .= "exten => _$VARremDIALstr*.,1,Goto(default,\${EXTEN:16},1)\n";
 		$Lext .= "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 		$Lext .= "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
-		$Lext .= "# Local blind monitoring\n";
+		$Lext .= "; Local blind monitoring\n";
 		$Lext .= "exten => _08600XXX,1,Dial(\${TRUNKblind}/6\${EXTEN:1},55,o)\n";
 
 		$Liax .= "\n";
@@ -739,7 +739,7 @@ if (length($ARGV[0])>1)
 
 			$iax  .= "register => $server_id:test\@$server_ip[$i]:4569\n";
 
-			$Lext .= "# Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
+			$Lext .= "; Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
 			$Lext .= "exten => _$VARremDIALstr*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
 
 			$Liax .= "\n";

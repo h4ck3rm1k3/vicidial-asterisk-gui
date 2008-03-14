@@ -157,6 +157,8 @@ ALTER TABLE vicidial_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINI
 ALTER TABLE vicidial_closer_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
 
 
+ALTER TABLE vicidial_campaigns ADD qc_webform_address VARCHAR(255);
+ALTER TABLE vicidial_campaigns ADD qc_script VARCHAR(10);
 
 
 

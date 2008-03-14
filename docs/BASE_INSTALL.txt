@@ -471,6 +471,7 @@ insert into vicidial_statuses values('NEW','New Lead','N','N','UNDEFINED');
 insert into vicidial_statuses values('QUEUE','Lead To Be Called','N','N','UNDEFINED');
 insert into vicidial_statuses values('INCALL','Lead Being Called','N','N','UNDEFINED');
 insert into vicidial_statuses values('DROP','Agent Not Available','N','Y','UNDEFINED');
+insert into vicidial_statuses values('XDROP','Agent Not Available IN','N','Y','UNDEFINED');
 insert into vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINED');
 
 insert into vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
