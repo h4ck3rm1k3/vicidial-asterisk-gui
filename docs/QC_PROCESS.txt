@@ -157,13 +157,13 @@ ALTER TABLE vicidial_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINI
 ALTER TABLE vicidial_closer_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
 
 
+
+
+
+
+
 ALTER TABLE vicidial_campaigns ADD qc_web_form_address VARCHAR(255);
 ALTER TABLE vicidial_campaigns ADD qc_script VARCHAR(10);
-
-
-
-
-
 
 # For the campaigns table, some fields will need to be added to the vicidial_campaigns table:
 ALTER TABLE vicidial_campaigns ADD qc_enabled ENUM('Y','N') default 'N';

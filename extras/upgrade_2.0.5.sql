@@ -86,3 +86,8 @@ ALTER TABLE vicidial_campaigns ADD campaign_shift_length VARCHAR(5) default '16:
 ALTER TABLE vicidial_campaigns ADD campaign_day_start_time VARCHAR(4) default '0100';
 
 UPDATE system_settings SET db_schema_version='1078';
+
+ALTER TABLE vicidial_campaigns ADD qc_web_form_address VARCHAR(255);
+ALTER TABLE vicidial_campaigns ADD qc_script VARCHAR(10);
+
+UPDATE system_settings SET db_schema_version='1079';
