@@ -695,7 +695,10 @@ if (isset($_GET["campaign_shift_length"]))				{$campaign_shift_length=$_GET["cam
 	elseif (isset($_POST["campaign_shift_length"]))		{$campaign_shift_length=$_POST["campaign_shift_length"];}
 if (isset($_GET["campaign_day_start_time"]))			{$campaign_day_start_time=$_GET["campaign_day_start_time"];}
 	elseif (isset($_POST["campaign_day_start_time"]))	{$campaign_day_start_time=$_POST["campaign_day_start_time"];}
-
+if (isset($_GET["qc_web_form_address"]))				{$qc_web_form_address=$_GET["qc_web_form_address"];}
+	elseif (isset($_POST["qc_web_form_address"]))	{$qc_web_form_address=$_POST["qc_web_form_address"];}
+if (isset($_GET["qc_script"]))						{$qc_script=$_GET["qc_script"];}
+	elseif (isset($_POST["qc_script"]))				{$qc_script=$_POST["qc_script"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -889,6 +892,7 @@ $queuemetrics_log_id = ereg_replace("[^0-9a-zA-Z]","",$queuemetrics_log_id);
 $after_hours_action = ereg_replace("[^0-9a-zA-Z]","",$after_hours_action);
 $after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
 $after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
+$qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1040,6 +1044,7 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # $web_form_address
 # $queuemetrics_url
 # $admin_home_url
+# $qc_web_form_address
 
 ### VARIABLES not filtered at all ###
 # $script_text
@@ -2585,6 +2590,16 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-campaign_day_start_time">
 <BR>
 <B>Campaign Day Start Time -</B> This is the time that the a new campaign day begins. Must only be numbers, 1:00 AM would be 0100.
+
+<BR>
+<A NAME="vicidial_campaigns-qc_web_form_address">
+<BR>
+<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
+
+<BR>
+<A NAME="vicidial_campaigns-qc_script">
+<BR>
+<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
 
 
 
@@ -6589,7 +6604,7 @@ if ($ADD==48)
 
 		echo "<br><B>QC SETTINGS MODIFIED: $campaign_id</B>\n";
 
-		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',campaign_shift_start_time='$campaign_shift_start_time',campaign_shift_length='$campaign_shift_length',campaign_day_start_time='$campaign_day_start_time' where campaign_id='$campaign_id';";
+		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',campaign_shift_start_time='$campaign_shift_start_time',campaign_shift_length='$campaign_shift_length',campaign_day_start_time='$campaign_day_start_time',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -9118,6 +9133,7 @@ if ($ADD==31)
 		$dial_status_d = $row[6];
 		$dial_status_e = $row[7];
 		$lead_order = $row[8];
+		$web_form_address = $row[11];
 		$allow_closers = $row[12];
 		$hopper_level = $row[13];
 		$auto_dial_level = $row[14];
@@ -9183,6 +9199,8 @@ if ($ADD==31)
 		$campaign_shift_start_time = $row[74];
 		$campaign_shift_length = $row[75];
 		$campaign_day_start_time = $row[76];
+		$qc_web_form_address = $row[77];
+		$qc_script = $row[78];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -9389,7 +9407,7 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$allow_closers</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
@@ -9974,7 +9992,11 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B9CBFD><td align=right>Campaign Shift Length: </td><td><input type=text size=6 maxlength=5 name=campaign_shift_length value=\"$campaign_shift_length\"> $NWB#vicidial_campaigns-campaign_shift_length$NWE</td></tr>\n";
 		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Day Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_day_start_time value=\"$campaign_day_start_time\"> $NWB#vicidial_campaigns-campaign_day_start_time$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
-
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=50 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_campaigns-qc_web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
+		echo "$QCscripts_list";
+		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-qc_script$NWE</td></tr>\n";
 		echo "</table>\n";
 		echo "<BR></center></FORM><br>\n";
 		}

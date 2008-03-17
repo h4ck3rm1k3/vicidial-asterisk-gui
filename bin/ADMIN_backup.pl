@@ -10,6 +10,7 @@
 # CHANGELOG
 #
 # 80316-2211 - First Build
+# 80317-1609 - Added Sangoma conf file backup and changed FTP settings
 #
 
 
@@ -145,16 +146,16 @@ foreach(@conf)
 		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
-	if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
-		{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
-	if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
-		{$VARFTP_user = $line;   $VARFTP_user =~ s/.*=//gi;}
-	if ( ($line =~ /^VARFTP_pass/) && ($CLIFTP_pass < 1) )
-		{$VARFTP_pass = $line;   $VARFTP_pass =~ s/.*=//gi;}
-	if ( ($line =~ /^VARFTP_port/) && ($CLIFTP_port < 1) )
-		{$VARFTP_port = $line;   $VARFTP_port =~ s/.*=//gi;}
-	if ( ($line =~ /^VARFTP_dir/) && ($CLIFTP_dir < 1) )
-		{$VARFTP_dir = $line;   $VARFTP_dir =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
+		{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
+		{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
+		{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
+		{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_dir/) && ($CLIREPORT_dir < 1) )
+		{$VARREPORT_dir = $line;   $VARREPORT_dir =~ s/.*=//gi;}
 
 	$i++;
 	}
@@ -214,12 +215,15 @@ else
 	}
 
 $conf='_CONF_';
+$sangoma='_SANGOMA_';
+$linux='_LINUX_';
 $bin='_BIN_';
 $web='_WEB_';
 $sounds='_SOUNDS_';
 $all='_ALL_';
 $tar='.tar';
 $gz='.gz';
+$sgSTRING='';
 
 `cd $ARCHIVEpath`;
 `mkdir $ARCHIVEpath/temp`;
@@ -234,6 +238,25 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	{
 	### BACKUP THE ASTERISK CONF FILES ON THE SERVER ###
 	`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$conf$wday$tar /etc/astguiclient.conf /etc/zaptel.conf /etc/asterisk`;
+
+	### BACKUP THE WANPIPE CONF FILES(if there are any) ###
+	if ( -e ('/etc/wanpipe/wanpipe1.conf')) 
+		{
+		$sgSTRING = '/etc/wanpipe/wanpipe1.conf ';
+		if ( -e ('/etc/wanpipe/wanpipe2.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe2.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe3.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe3.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe4.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe4.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe5.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe5.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe6.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe6.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe7.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe7.conf ';}
+		if ( -e ('/etc/wanpipe/wanpipe8.conf')) {$sgSTRING .= '/etc/wanpipe/wanpipe8.conf ';}
+		if ( -e ('/etc/wanpipe/wanrouter.rc')) {$sgSTRING .= '/etc/wanpipe/wanrouter.rc ';}
+
+		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$sangoma$wday$tar $sgSTRING`;
+		}
+
+	### BACKUP OTHER CONF FILES ON THE SERVER ###
+	`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/my.cnf /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
@@ -257,6 +280,9 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_sounds < 1) )
 ### PUT EVERYTHING TOGETHER TO BE COMPRESSED ###
 `$tarbin cf $ARCHIVEpath/$VARserver_ip$all$wday$tar $ARCHIVEpath/temp`;
 
+### REMOVE OLD GZ FILE
+`rm -f $ARCHIVEpath/$VARserver_ip$all$wday$tar$gz`;
+
 ### COMPRESS THE ALL FILE ###
 `$gzipbin -9 $ARCHIVEpath/$VARserver_ip$all$wday$tar`;
 
@@ -268,9 +294,9 @@ if ( ($conf_only < 1) && ($db_only < 1) && ($without_sounds < 1) )
 if ($ftp_transfer > 0)
 	{
 	use Net::FTP;
-	$ftp = Net::FTP->new("$VARFTP_host", Port => "$VARFTP_port", Debug => "$FTPdebug");
-	$ftp->login("$VARFTP_user","$VARFTP_pass");
-	$ftp->cwd("$VARFTP_dir");
+	$ftp = Net::FTP->new("$VARREPORT_host", Port => "$VARREPORT_port", Debug => "$FTPdebug");
+	$ftp->login("$VARREPORT_user","$VARREPORT_pass");
+	$ftp->cwd("$VARREPORT_dir");
 	$ftp->binary();
 	$ftp->put("$ARCHIVEpath/$VARserver_ip$all$wday$tar$gz", "$VARserver_ip$all$wday$tar$gz");
 	$ftp->quit;

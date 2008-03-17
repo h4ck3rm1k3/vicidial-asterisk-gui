@@ -1687,6 +1687,9 @@ GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost ID
 # NOTE: if using MySQL 4.1.12 or higher you may need to run this query too:
 UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
 
+# NOTE: make sure you do NOT put any spaces or other punctuation in the
+# server_id, phone, extension, or user fields in the queries below if you edit them.
+
 use asterisk;
 
 \. /usr/share/astguiclient/MySQL_AST_CREATE_tables.sql

@@ -48,6 +48,10 @@ Campaign Shift Length -<\/B> This is the time in Hours and Minutes that the camp
 Campaign Day Start Time -<\/B> This is the time that the a new campaign day begins. Must only be numbers, 1:00 AM would be 0100||
 QC SETTINGS NOT MODIFIED||
 QC SETTINGS MODIFIED||
+QC WebForm Address -<\/B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen||
+QC Script -<\/B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen||
+QC WebForm: ||
+QC Script||
 
 
 ############################################################ CLIENT
