@@ -69,19 +69,6 @@ exten => i,1,Playback(invalid)          ; "That's not valid, try again"
 exten => 8500,1,VoicemailMain
 exten => 8500,2,Goto(s,6)
 
-; ASTERISK AGENTS LOGINS FOR QUEUES (NOT part of VICIDIAL)
-; the following assumes phone agent login and exten are 3 digits and the same
-; also assumes that 3-digit login is present in agents.conf and queueus.conf
-;Agent Logout then stay onhook, DIAL 54 + 3-digit ID
-exten => _54XXX,1,AgentCallbackLogin(||)
-; the following are used to login and logout of Asterisk Queues from phone
-;Agent Login then stay offhook on the phone, DIAL 55 + 3-digit ID
-exten => _55XXX,1,AgentLogin(${EXTEN:1})
-;Agent Login then stay onhook, phones will ring, DIAL 56 + 3-digit ID
-exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
-
-
-
 ; FastAGI for VICIDIAL/astGUIclient call logging
 exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
@@ -124,15 +111,15 @@ exten => _91866NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91866NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,To)
 exten => _91866NXXXXXX,3,Hangup
 
+; dial a local outbound number (modified because of only LD T1)
+exten => _9NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,To)
+exten => _9NXXXXXX,3,Hangup
+
 ; dial a local 727 outbound number with area code
 exten => _9727NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,To)
 exten => _9727NXXXXXX,3,Hangup
-
-; dial a local 813 outbound number with area code
-exten => _9813NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,To)
-exten => _9813NXXXXXX,3,Hangup
 
 ; dial a long distance outbound number
 ; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls
@@ -147,11 +134,6 @@ exten => _91NXXNXXXXXX,3,Hangup
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
 ; exten => _91NXXNXXXXXX,3,Hangup
-
-; dial a local outbound number (modified because of only LD T1)
-exten => _9NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,To)
-exten => _9NXXXXXX,3,Hangup
 
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
 ; 1. the extension of the phone to ring as defined in the asterisk.phones table

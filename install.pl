@@ -13,6 +13,7 @@
 # 80115-1426 - Added ip_relay scripts for port forwarding
 # 80122-0320 - Added build_phones_conf flag to generate phones conf entries from phones table records
 # 80227-1536 - Added ip_relay to keepalive list
+# 80316-2208 - Added $PATHlogs/archive for backups
 #
 
 ############################################
@@ -2115,6 +2116,9 @@ if ($WEBONLY < 1)
 	`mkdir -p $PATHDONEmonitor/FTP`;
 	`chmod -R 0766 $PATHmonitor`;
 	`chmod -R 0766 $PATHDONEmonitor`;
+
+	print "Creating $PATHlogs/archive directory for backups...\n";
+	`mkdir -p $PATHlogs/archive`;
 
 	print "Copying bin scripts to $PATHhome ...\n";
 	`cp -f ./bin/* $PATHhome/`;

@@ -50,13 +50,16 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	- AST_CRON_audio_2_compress.pl
 	- AST_CRON_audio_3_ftp.pl
 
-9. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated
+9. Created a new script to backup a VICIDIAL setup, including the Asterisk conf
+	files, prompt recordings, bin, agi and web files:
+	ADMIN_backup.pl
+
+10. The 8 outbound agi-VDADtransfer scripts are in process of being consolidated
 	into a single AGI script: agi-VDAD_ALL_outbound.agi
 
-10. The start of a new QC (Quality Control) feature [non functional right now]
+11. The start of a new QC (Quality Control) feature [non functional right now]
 
-
-11. Install the Switch perl module from CPAN
+12. Install the Switch perl module from CPAN
 	perl -MCPAN -e shell
 	- install Switch
 
