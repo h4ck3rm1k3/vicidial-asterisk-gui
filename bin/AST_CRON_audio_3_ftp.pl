@@ -21,6 +21,9 @@
 # --OGG = OGG Vorbis files
 # --WAV = WAV files
 #
+# FLAG FOR NO DATE DIRECTORY ON FTP
+# --NODATEDIR
+#
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
 # 
@@ -30,9 +33,10 @@
 #
 # 
 # 80302-1958 - First Build
+# 80317-2349 - Added FTP debug if debugX
 #
 
-$GSM=0;   $MP3=0;   $OGG=0;   $WAV=0;
+$GSM=0;   $MP3=0;   $OGG=0;   $WAV=0;   $NODATEDIR=0;
 
 # Default variables for FTP
 $VARFTP_host = '10.0.0.4';
@@ -55,7 +59,7 @@ if (length($ARGV[0])>1)
 
 	if ($args =~ /--help/i)
 	{
-	print "allowed run time options:\n  [--debug] = debug\n  [--debugX] = super debug\n  [-t] = test\n  [--GSM] = copy GSM files\n  [--MP3] = copy MPEG-Layer-3 files\n  [--OGG] = copy OGG Vorbis files\n  [--WAV] = copy WAV files\n\n";
+	print "allowed run time options:\n  [--debug] = debug\n  [--debugX] = super debug\n  [-t] = test\n  [--GSM] = copy GSM files\n  [--MP3] = copy MPEG-Layer-3 files\n  [--OGG] = copy OGG Vorbis files\n  [--WAV] = copy WAV files\n  [--NODATEDIR] = do not put into dated directories\n\n";
 	exit;
 	}
 	else
@@ -73,7 +77,12 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-t/i)
 		{
 		$T=1;   $TEST=1;
-		print "\n-----TESTING -----\n\n";
+		print "\n----- TESTING -----\n\n";
+		}
+		if ($args =~ /-nodatedir/i)
+		{
+		$NODATEDIR=1;
+		print "\n----- NO DATE DIRECTORIES -----\n\n";
 		}
 		if ($args =~ /--GSM/i)
 		{
@@ -231,16 +240,23 @@ foreach(@FILES)
 
 			if ($ping_good)
 				{
-				$ftp = Net::FTP->new("$VARFTP_host", Port => $VARFTP_port);
+				$start_date_PATH='';
+				$FTPdb=0;
+				if ($DBX>0) {$FTPdb=1;}
+				$ftp = Net::FTP->new("$VARFTP_host", Port => $VARFTP_port, Debug => $FTPdb);
 				$ftp->login("$VARFTP_user","$VARFTP_pass");
 				$ftp->cwd("$VARFTP_dir");
-				$ftp->mkdir("$start_date");
-				$ftp->cwd("$start_date");
+				if ($NODATEDIR < 1)
+					{
+					$ftp->mkdir("$start_date");
+					$ftp->cwd("$start_date");
+					$start_date_PATH = "$start_date/";
+					}
 				$ftp->binary();
 				$ftp->put("$dir2/$ALLfile", "$ALLfile");
 				$ftp->quit;
 
-				$stmtA = "UPDATE recording_log set location='$VARHTTP_path/$start_date/$ALLfile' where recording_id='$recording_id';";
+				$stmtA = "UPDATE recording_log set location='$VARHTTP_path/$start_date_PATH$ALLfile' where recording_id='$recording_id';";
 					if($DB){print STDERR "\n|$stmtA|\n";}
 				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
 
