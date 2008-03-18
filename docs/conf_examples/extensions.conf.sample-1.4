@@ -15,6 +15,8 @@ TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569	; used for testing
 
 
 [default]
+; VICI-GROUP DIRECT SUPPORT LINE (VICIHELP[84244357])
+exten => _84244XXX,1,Dial(IAX2/vicihelp/${EXTEN:5})
 
 ; BE SURE TO CHANGE THIS LINE FOR YOUR IP ADDRESS!
 exten => _010*010*010*015*.,1,Goto(default,${EXTEN:16},1)
@@ -67,19 +69,6 @@ exten => i,1,Playback(invalid)          ; "That's not valid, try again"
 exten => 8500,1,VoicemailMain
 exten => 8500,2,Goto(s,6)
 
-; ASTERISK AGENTS LOGINS FOR QUEUES (NOT part of VICIDIAL)
-; the following assumes phone agent login and exten are 3 digits and the same
-; also assumes that 3-digit login is present in agents.conf and queueus.conf
-;Agent Logout then stay onhook, DIAL 54 + 3-digit ID
-exten => _54XXX,1,AgentCallbackLogin(||)
-; the following are used to login and logout of Asterisk Queues from phone
-;Agent Login then stay offhook on the phone, DIAL 55 + 3-digit ID
-exten => _55XXX,1,AgentLogin(${EXTEN:1})
-;Agent Login then stay onhook, phones will ring, DIAL 56 + 3-digit ID
-exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
-
-
-
 ; FastAGI for VICIDIAL/astGUIclient call logging
 exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
@@ -122,15 +111,15 @@ exten => _91866NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91866NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,To)
 exten => _91866NXXXXXX,3,Hangup
 
+; dial a local outbound number (modified because of only LD T1)
+exten => _9NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,To)
+exten => _9NXXXXXX,3,Hangup
+
 ; dial a local 727 outbound number with area code
 exten => _9727NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,To)
 exten => _9727NXXXXXX,3,Hangup
-
-; dial a local 813 outbound number with area code
-exten => _9813NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,To)
-exten => _9813NXXXXXX,3,Hangup
 
 ; dial a long distance outbound number
 ; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls
@@ -145,11 +134,6 @@ exten => _91NXXNXXXXXX,3,Hangup
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
 ; exten => _91NXXNXXXXXX,3,Hangup
-
-; dial a local outbound number (modified because of only LD T1)
-exten => _9NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => _9NXXXXXX,2,Dial(${TRUNK}/1727${EXTEN:1},,To)
-exten => _9NXXXXXX,3,Hangup
 
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
 ; 1. the extension of the phone to ring as defined in the asterisk.phones table
@@ -215,7 +199,6 @@ exten => _990009.,2,AGI(agi-VDAD_ALL_inbound.agi,CLOSER-----LB-----CL_TESTCAMP--
 exten => _990009.,3,Hangup
 
 
-
 ; barge monitoring extension
 exten => 8159,1,ZapBarge
 exten => 8159,2,Hangup
@@ -245,6 +228,7 @@ exten => _86000[0-4]X,1,Meetme,${EXTEN}|q
 ; VICIDIAL conferences
 exten => _86000[5-9]X,1,Meetme,${EXTEN}|F
 exten => _86001XX,1,Meetme,${EXTEN}|F
+exten => _8600200,1,Meetme,${EXTEN}|F
 ; quiet entry and leaving conferences for VICIDIAL
 exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
 ; quiet monitor extensions for meetme rooms (for room managers)
@@ -359,9 +343,9 @@ exten => 8364,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
+exten => 8365,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+exten => 8365,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+exten => 8365,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
 exten => 8365,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
@@ -373,25 +357,25 @@ exten => 8366,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
 exten => 8367,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8367,2,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+exten => 8367,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+exten => 8367,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+exten => 8367,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
 exten => 8367,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balanced:
 exten => 8368,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8368,2,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8368,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8368,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8368,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 exten => 8369,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => 8369,2,AMD(2000|2000|1000|5000|120|50|4|256)
 exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
-exten => 8369,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8369,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8369,6,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8369,7,Hangup
 
 ; VICIDIAL auto-dial reminder script
@@ -414,8 +398,8 @@ exten => 8372,5,Hangup
 ;; VICIDIAL_auto_dialer transfer script:
 ;exten => 8365,1,Playback(sip-silence)
 ;exten => 8365,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
-;exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
+;exten => 8365,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+;exten => 8365,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
 ;exten => 8365,5,Hangup
 ;
 ;; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
@@ -428,15 +412,15 @@ exten => 8372,5,Hangup
 ;; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
 ;exten => 8367,1,Playback(sip-silence)
 ;exten => 8367,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-;exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+;exten => 8367,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+;exten => 8367,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
 ;exten => 8367,5,Hangup
 ;
 ;; VICIDIAL_auto_dialer transfer script Load Balanced:
 ;exten => 8368,1,Playback(sip-silence)
 ;exten => 8368,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-;exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+;exten => 8368,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 ;exten => 8368,5,Hangup
 ;
 ;; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
@@ -444,8 +428,8 @@ exten => 8372,5,Hangup
 ;exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
 ;exten => 8369,3,AMD(2000|2000|1000|5000|120|50|4|256)
 ;exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
-;exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-;exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+;exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8369,6,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 ;exten => 8369,7,Hangup
 ;
 ;; VICIDIAL auto-dial reminder script
@@ -454,4 +438,3 @@ exten => 8372,5,Hangup
 ;exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,5,Hangup
-

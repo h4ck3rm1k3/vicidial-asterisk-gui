@@ -144,10 +144,11 @@
 # 71226-1117 - added option to kick all calls from conference upon logout
 # 80116-1032 - added user_closer_log logging in regCLOSER
 # 80125-1213 - fixed vicidial_log bug when call is from closer
+# 80317-2051 - Added in-group recording settings
 #
 
-$version = '2.0.5-69';
-$build = '80125-1213';
+$version = '2.0.5-70';
+$build = '80317-2051';
 
 require("dbconnect.php");
 
@@ -1745,24 +1746,26 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_front_VDlog	=$row[0];
 				}
 
-			$stmt = "select * from vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$stmt = "select group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename from vicidial_inbound_groups where group_id='$VDADchannel_group';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$VDIG_cid_ct = mysql_num_rows($rslt);
 			if ($VDIG_cid_ct > 0)
 				{
 				$row=mysql_fetch_row($rslt);
-				$VDCL_group_name		= $row[1];
-				$VDCL_group_color		= $row[2];
-				$VDCL_group_web			= $row[4];
-				$VDCL_fronter_display	= $row[7];
-				$VDCL_ingroup_script	= $row[8];
-				$VDCL_get_call_launch	= $row[9];
-				$VDCL_xferconf_a_dtmf	= $row[10];
-				$VDCL_xferconf_a_number	= $row[11];
-				$VDCL_xferconf_b_dtmf	= $row[12];
-				$VDCL_xferconf_b_number	= $row[13];
-				$VDCL_default_xfer_group= $row[28];
+				$VDCL_group_name =					$row[0];
+				$VDCL_group_color =					$row[1];
+				$VDCL_group_web	=					$row[2];
+				$VDCL_fronter_display =				$row[3];
+				$VDCL_ingroup_script =				$row[4];
+				$VDCL_get_call_launch =				$row[5];
+				$VDCL_xferconf_a_dtmf =				$row[6];
+				$VDCL_xferconf_a_number =			$row[7];
+				$VDCL_xferconf_b_dtmf =				$row[8];
+				$VDCL_xferconf_b_number =			$row[9];
+				$VDCL_default_xfer_group =			$row[10];
+				$VDCL_ingroup_recording_override =	$row[11];
+				$VDCL_ingroup_rec_filename =		$row[12];
 
 				### update the comments in vicidial_live_agents record
 				$stmt = "UPDATE vicidial_live_agents set comments='INBOUND' where user='$user' and server_ip='$server_ip';";
@@ -1790,8 +1793,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 				}
 
 			### if web form is set then send on to vicidial.php for override of WEB_FORM address
-			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|\n";}
-			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|\n";}
+			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
+			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
 
 			$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 			if ($DB) {echo "$stmt\n";}

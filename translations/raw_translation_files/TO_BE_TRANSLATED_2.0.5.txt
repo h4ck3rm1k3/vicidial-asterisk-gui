@@ -52,6 +52,10 @@ QC WebForm Address -<\/B> This is the website address that a QC agent can go to 
 QC Script -<\/B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen||
 QC WebForm: ||
 QC Script||
+In-Group Recording Override -<\/B> This field allows for the overriding of the campaign call recording setting. This setting can be overridden by the vicidial_user recording override setting. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording||
+In-Group Recording Filename -<\/B> This field will override the Campaign Recording Filenaming Scheme unless it is set to NONE. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max. Default is NONE||
+In-Group Recording Override: ||
+In-Group Recording Filename: ||
 
 
 ############################################################ CLIENT

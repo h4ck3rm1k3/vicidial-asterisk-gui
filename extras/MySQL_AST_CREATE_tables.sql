@@ -640,7 +640,9 @@ agent_alert_exten VARCHAR(20) default '8304',
 agent_alert_delay INT(6) default '1000',
 default_xfer_group VARCHAR(20) default '---NONE---',
 queue_priority TINYINT(2) default '0',
-drop_inbound_group VARCHAR(20) default '---NONE---'
+drop_inbound_group VARCHAR(20) default '---NONE---',
+ingroup_recording_override  ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
+ingroup_rec_filename VARCHAR(50) default 'NONE'
 );
 
 CREATE TABLE vicidial_stations (
@@ -1085,4 +1087,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1079';
+UPDATE system_settings SET db_schema_version='1080';

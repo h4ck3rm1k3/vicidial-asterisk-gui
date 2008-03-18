@@ -91,3 +91,8 @@ ALTER TABLE vicidial_campaigns ADD qc_web_form_address VARCHAR(255);
 ALTER TABLE vicidial_campaigns ADD qc_script VARCHAR(10);
 
 UPDATE system_settings SET db_schema_version='1079';
+
+ALTER TABLE vicidial_inbound_groups ADD ingroup_recording_override  ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED';
+ALTER TABLE vicidial_inbound_groups ADD ingroup_rec_filename VARCHAR(50) default 'NONE';
+
+UPDATE system_settings SET db_schema_version='1080';

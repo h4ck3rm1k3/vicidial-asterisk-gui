@@ -899,7 +899,7 @@ if ($drop_action =~ /IN_GROUP/)
 	if ($AGILOG) {$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
 
 		$Euniqueid=$uniqueid;
-		$Euniqueid =~ s/\.*//gi;
+		$Euniqueid =~ s/\.\d+//gi;
 	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);

@@ -175,10 +175,11 @@
 # 71226-1117 - added option to kick all calls from conference upon logout
 # 80109-1510 - added gender select list
 # 80116-1032 - added option on CLOSER-type campaigns to change in-groups when paused
+# 80317-2106 - added recording override options for inbound group calls
 #
 
-$version = '2.0.5-146';
-$build = '80116-1032';
+$version = '2.0.5-147';
+$build = '80317-2106';
 
 require("dbconnect.php");
 
@@ -1725,6 +1726,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var recording_exten = '<? echo $campaign_rec_exten ?>';
 	var campaign_recording = '<? echo $campaign_recording ?>';
 	var campaign_rec_filename = '<? echo $campaign_rec_filename ?>';
+	var LIVE_campaign_recording = '<? echo $campaign_recording ?>';
+	var LIVE_campaign_rec_filename = '<? echo $campaign_rec_filename ?>';
 	var campaign_script = '<? echo $campaign_script ?>';
 	var get_call_launch = '<? echo $get_call_launch ?>';
 	var campaign_am_message_exten = '<? echo $campaign_am_message_exten ?>';
@@ -2505,7 +2508,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var REGrecTINYDATE = new RegExp("TINYDATE","g");
 				var REGrecEPOCH = new RegExp("EPOCH","g");
 				var REGrecAGENT = new RegExp("AGENT","g");
-				filename = campaign_rec_filename;
+				filename = LIVE_campaign_rec_filename;
 				filename = filename.replace(REGrecCAMPAIGN, campaign);
 				filename = filename.replace(REGrecCUSTPHONE, lead_dial_number);
 				filename = filename.replace(REGrecFULLDATE, filedate);
@@ -2517,7 +2520,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
 				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"./images/vdc_LB_stoprecording.gif\" border=0 alt=\"Stop Recording\"></a>";
 
-				if (campaign_recording == 'ALLFORCE')
+				if (LIVE_campaign_recording == 'ALLFORCE')
 					{
 					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 					}
@@ -2532,7 +2535,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var query_recording_exten = session_id;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
 				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"./images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Recording\"></a>";
-				if (campaign_recording == 'ALLFORCE')
+				if (LIVE_campaign_recording == 'ALLFORCE')
 					{
 					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 					}
@@ -2855,7 +2858,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if ( (taskMDstage != "start") && (VDstop_rec_after_each_call == 1) )
 							{
 							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"./images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Recording\"></a>";
-							if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
+							if ( (LIVE_campaign_recording == 'NEVER') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{
 								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 								}
@@ -3488,7 +3491,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
 
-							if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
+							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
 
 							if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -3706,7 +3709,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
 
-						if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
+						if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
 
 						if ( (view_scripts == 1) && (campaign_script.length > 0) )
@@ -3935,6 +3938,16 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							else
 								{LIVE_default_xfer_group = default_xfer_group;}
 
+							if ( (VDIC_data_VDIG[12].length > 0) && (VDIC_data_VDIG[12]!='DISABLED') )
+								{LIVE_campaign_recording = VDIC_data_VDIG[12];}
+							else
+								{LIVE_campaign_recording = campaign_recording;}
+
+							if ( (VDIC_data_VDIG[13].length > 0) && (VDIC_data_VDIG[13]!='NONE') )
+								{LIVE_campaign_rec_filename = VDIC_data_VDIG[13];}
+							else
+								{LIVE_campaign_rec_filename = campaign_rec_filename;}
+
 							var VDIC_data_VDFR=check_VDIC_array[3].split("|");
 							if ( (VDIC_data_VDFR[1].length > 1) && (VDCL_fronter_display == 'Y') )
 								{VDIC_fronter = "  Fronter: " + VDIC_data_VDFR[0] + " - " + VDIC_data_VDFR[1];}
@@ -4123,7 +4136,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"./images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
 
-							if ( (campaign_recording == 'ALLCALLS') || (campaign_recording == 'ALLFORCE') )
+							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
 
 							if ( (view_scripts == 1) && (CalL_ScripT_id.length > 0) )
@@ -5856,7 +5869,7 @@ else
 				document.getElementById("LocalCloser").style.visibility = 'hidden';
 				}
 			document.getElementById("sessionIDspan").innerHTML = session_id;
-			if ( (campaign_recording == 'NEVER') || (campaign_recording == 'ALLFORCE') )
+			if ( (LIVE_campaign_recording == 'NEVER') || (LIVE_campaign_recording == 'ALLFORCE') )
 				{
 				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Recording\">";
 				}
@@ -5896,6 +5909,8 @@ else
 				WaitingForNextStep=1;
 				open_dispo_screen=0;
 				LIVE_default_xfer_group = default_xfer_group;
+				LIVE_campaign_recording = campaign_recording;
+				LIVE_campaign_rec_filename = campaign_rec_filename;
 				document.getElementById("DispoSelectPhonE").innerHTML = document.vicidial_form.phone_number.value;
 				if (auto_dial_level == 0)
 					{
