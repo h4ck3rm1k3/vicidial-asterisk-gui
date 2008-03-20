@@ -67,7 +67,19 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	perl -MCPAN -e shell
 	- install Switch
 
-
+14. Recording to RAM now uses tmpfs it is usually included in all kernels if you want 
+	to check in in menuconfig you will find it under
+	File Systems --> Pseudo filesystems --> [*] Virtual memory file system support.
+	It does not hurt to enable 
+	[*] Tmpfs POSIX Access Control Lists  
+	as well.
+	The following line should be added to /etc/fstab:
+	tmpfs                /var/spool/asterisk/monitor  tmpfs  rw                    0 0
+	Mounting the ramdisk in rc.local should be remove:
+	# mke2fs -m 0 /dev/ram0
+	# mount /dev/ram0 /var/spool/asterisk/monitor
+	This allows for a more efficient use of memory and recording to RAM with less RAM 
+	available.
 
 ########## UPGRADING FROM 2.0.3 TO 2.0.4 ##########
 

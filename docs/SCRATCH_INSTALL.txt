@@ -215,13 +215,6 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	ATA/ATAPI/MFM/RLL support  --->
 	  <*> SCSI emulation support
 	    (needed for SATA drives, also further down check chipset drivers)
-	Block devices  --->
-	  <*> Loopback device support
-	  <*> RAM disk support
-	  (1)   Default number of RAM disks
-	  (128000) Default RAM disk size (kbytes)
-	  [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
-	     (ONLY USE THE ABOVE 4 SETTINGS IF YOU WILL BE SETTING UP A RAM DRIVE FOR RECORDING)
 	SCSI device support  --->
 	  <*> RAID Transport Class
 	    (needed if you are using a RAID)
@@ -244,6 +237,9 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
      File systems  --->
 	<*> Ext3 journalling file system support
 	  (important if using ext3 filesystem)
+	  pseudo filesystems --->
+	    <*> Virtual memory file system support
+		(this is usually checked anyway but mandatory for recording to RAM)
      Library routines  --->
 	<*> CRC-CCITT functions
 	<*> CRC16 functions
@@ -266,9 +262,9 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	root=/dev/hda1			# device of root partition
 	read-only
 19. /sbin/lilo				# run the lilo reload script
-20. shutdown -r 0			# reboot machine and hope it worked
-
-
+20. vi /etc/fstab           # to include the following line for recording to RAM
+	tmpfs                /var/spool/asterisk/monitor  tmpfs  rw                    0 0
+21. shutdown -r 0			# reboot machine and hope it worked
 
 OPTION 2: compile Linux kernel 2.4.33.3
 
@@ -2796,10 +2792,6 @@ SUBPHASE 6.4: setting up asterisk and helper applications for startup
    - on the command line type:
 	- vi /etc/rc.d/rc.local
 	   - add the following entries(here's what we used):
-
-### uncomment If kernel RAM drive is enabled
-# mke2fs -m 0 /dev/ram0
-# mount /dev/ram0 /var/spool/asterisk/monitor
 
 # OPTIONAL enable ip_relay(for same-machine trunking and blind monitoring)
 # /usr/share/astguiclient/ip_relay/relay_control start  2>/dev/null 1>&2
