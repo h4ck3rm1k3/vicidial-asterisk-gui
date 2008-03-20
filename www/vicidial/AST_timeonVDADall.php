@@ -905,6 +905,9 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($SERVdisplay > 0)	{$SVD = "$G$server_ip$EG | $G$call_server_ip$EG | ";}
 		else	{$SVD = "";}
 
+		$vac_stage='';
+		$vac_campaign='';
+		$INGRP='';
 		if ($CM == 'I') 
 			{
 			$stmt="select campaign_id,stage from vicidial_auto_calls where callerid='$Acallerid[$i]' LIMIT 1;";
