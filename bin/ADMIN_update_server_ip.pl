@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#
+
 # ADMIN_update_server_ip.pl - updates IP address in DB and conf file
 #
 # This script is designed to update all database tables and the local 
@@ -10,6 +10,7 @@
 #
 # CHANGELOG
 # 71205-2144 - added display of extensions.conf example for call routing
+# 80321-0220 - updated for new settings
 #
 #
 # default path to astguiclient configuration file:
@@ -141,6 +142,8 @@ if (-e "$PATHconf")
 			{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 		if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 			{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+		if ( ($line =~ /^PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+			{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 #		if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 #			{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
 		if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
@@ -155,6 +158,28 @@ if (-e "$PATHconf")
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
 			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
+			{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
+			{$VARFTP_user = $line;   $VARFTP_user =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_pass/) && ($CLIFTP_pass < 1) )
+			{$VARFTP_pass = $line;   $VARFTP_pass =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_port/) && ($CLIFTP_port < 1) )
+			{$VARFTP_port = $line;   $VARFTP_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARFTP_dir/) && ($CLIFTP_dir < 1) )
+			{$VARFTP_dir = $line;   $VARFTP_dir =~ s/.*=//gi;}
+		if ( ($line =~ /^VARHTTP_path/) && ($CLIHTTP_path < 1) )
+			{$VARHTTP_path = $line;   $VARHTTP_path =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
+			{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
+			{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
+			{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
+			{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
+		if ( ($line =~ /^VARREPORT_dir/) && ($CLIREPORT_dir < 1) )
+			{$VARREPORT_dir = $line;   $VARREPORT_dir =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_min_servers/) && ($CLIVARfastagi_log_min_servers < 1) )
 			{$VARfastagi_log_min_servers = $line;   $VARfastagi_log_min_servers =~ s/.*=//gi;}
 		if ( ($line =~ /^VARfastagi_log_max_servers/) && ($CLIVARfastagi_log_max_servers < 1) )
@@ -287,7 +312,8 @@ print conf "PATHlogs => $PATHlogs\n";
 print conf "PATHagi => $PATHagi\n";
 print conf "PATHweb => $PATHweb\n";
 print conf "PATHsounds => $PATHsounds\n";
-print conf "PATHmonitor => $PATHmonitor\n\n";
+print conf "PATHmonitor => $PATHmonitor\n";
+print conf "PATHDONEmonitor => $PATHDONEmonitor\n";
 print conf "\n";
 print conf "# The IP address of this machine\n";
 print conf "VARserver_ip => $VARserver_ip\n";
@@ -309,7 +335,23 @@ print conf "#  4 - AST_VDremote_agents\n";
 print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one server)\n";
 print conf "#  6 - FastAGI_log\n";
 print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
+print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
+print conf "\n";
+print conf "# FTP recording archive connection information\n";
+print conf "VARFTP_host => $VARFTP_host\n";
+print conf "VARFTP_user => $VARFTP_user\n";
+print conf "VARFTP_pass => $VARFTP_pass\n";
+print conf "VARFTP_port => $VARFTP_port\n";
+print conf "VARFTP_dir => $VARFTP_dir\n";
+print conf "VARHTTP_path => $VARHTTP_path\n";
+print conf "\n";
+print conf "# REPORT server connection information\n";
+print conf "VARREPORT_host => $VARREPORT_host\n";
+print conf "VARREPORT_user => $VARREPORT_user\n";
+print conf "VARREPORT_pass => $VARREPORT_pass\n";
+print conf "VARREPORT_port => $VARREPORT_port\n";
+print conf "VARREPORT_dir => $VARREPORT_dir\n";
 print conf "\n";
 print conf "# Settings for FastAGI logging server\n";
 print conf "VARfastagi_log_min_servers => $VARfastagi_log_min_servers\n";

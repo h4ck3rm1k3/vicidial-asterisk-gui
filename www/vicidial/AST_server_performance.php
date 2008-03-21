@@ -178,7 +178,7 @@ $PNGfile = "$group$query_date$shift$filedate$PNG";
 $HTMfp = fopen ("$DOCroot/$HTMfile", "a");
 $DATfp = fopen ("$DOCroot/$DATfile", "a");
 
-$stmt="select DATE_FORMAT(start_time,'%Y-%m-%d.%H:%i:%s') as timex,sysload,processes,channels_total,live_recordings,cpu_user_percent,cpu_system_percent from server_performance where server_ip='" . mysql_real_escape_string($group) . "' and start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' order by timex;";
+$stmt="select DATE_FORMAT(start_time,'%Y-%m-%d.%H:%i:%s') as timex,sysload,processes,channels_total,live_recordings,cpu_user_percent,cpu_system_percent from server_performance where server_ip='" . mysql_real_escape_string($group) . "' and start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' order by timex limit 99999;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -190,7 +190,34 @@ while ($i < $rows_to_print)
 	$time_END = $row[0];
 	$row[5] = intval(($row[5] + $row[6]) * $HIGHmulti);
 	$row[6] = intval($row[6] * $HIGHmulti);
-	fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+	if ($rows_to_print > 9999)
+		{
+		if ($rows_to_print <= 19999)
+			{
+			if (preg_match("/0$|2$|4$|6$|8$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		if ( ($rows_to_print > 19999) and ($rows_to_print <= 49999) )
+			{
+			if (preg_match("/0$|5$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		if ( ($rows_to_print > 49999) and ($rows_to_print <= 99999) )
+			{
+			if (preg_match("/0$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		}
+	else
+		{
+		fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+		}
 	$i++;
 	}
 fclose($DATfp);
