@@ -94,7 +94,7 @@ foreach(@conf)
 		{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
 	if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
 		{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
-	if ( ($line =~ /PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
+	if ( ($line =~ /^PATHDONEmonitor/) && ($CLIDONEmonitor < 1) )
 		{$PATHDONEmonitor = $line;   $PATHDONEmonitor =~ s/.*=//gi;}
 	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
 		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
