@@ -6,6 +6,10 @@
 mode=files
 directory=/var/lib/asterisk/mohmp3
 
+[quiet]
+mode=files
+directory=/var/lib/asterisk/quiet-mp3
+
 ; valid mode options:
 ; quietmp3      -- default
 ; mp3           -- loud
