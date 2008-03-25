@@ -2124,6 +2124,7 @@ if ($WEBONLY < 1)
 	`cp -f ./bin/* $PATHhome/`;
 
 	print "Copying libs to $PATHhome ...\n";
+	`cp -f ./libs/* $PATHhome/libs`;
 	`cp -f ./extras/Asterisk.pm $PATHhome/libs/`;
 	`cp -f ./extras/Asterisk/* $PATHhome/libs/Asterisk/`;
 
