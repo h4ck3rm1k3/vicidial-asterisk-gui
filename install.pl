@@ -2195,6 +2195,7 @@ if ($PROMPTcopy_conf_files =~ /y/i)
 	`cp -f ./docs/conf_examples/logger.conf.sample /etc/asterisk/logger.conf`;
 	`cp -f ./docs/conf_examples/iax.conf.sample /etc/asterisk/iax.conf`;
 	`cp -f ./docs/conf_examples/dnsmgr.conf.sample /etc/asterisk/dnsmgr.conf`;
+	`cp -f ./docs/conf_examples/features.conf.sample /etc/asterisk/features.conf`;
 	}
 
 
