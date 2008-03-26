@@ -81,6 +81,13 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	This allows for a more efficient use of memory and recording to RAM with less RAM 
 	available.
 
+15. The following should be added to the [featuremap] section of /etc/asterisk/features.conf
+	to prevent agents and called parties from being able to "transfer" a call to any 
+	number possible in your Asterisk dialplan.
+	[featuremap]
+	blindxfer => D
+
+
 ########## UPGRADING FROM 2.0.3 TO 2.0.4 ##########
 
 1. install new files:
