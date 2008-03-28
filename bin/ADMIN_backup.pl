@@ -11,6 +11,7 @@
 #
 # 80316-2211 - First Build
 # 80317-1609 - Added Sangoma conf file backup and changed FTP settings
+# 80328-0135 - Do not attempt to archive /etc/my.cnf is --without-db flag is set
 #
 
 
@@ -255,8 +256,16 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$sangoma$wday$tar $sgSTRING`;
 		}
 
-	### BACKUP OTHER CONF FILES ON THE SERVER ###
-	`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/my.cnf /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
+	if ($without_db < 1)
+		{
+		### BACKUP OTHER CONF FILES ON THE SERVER ###
+		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/my.cnf /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
+		}
+	else
+		{
+		### BACKUP OTHER CONF FILES ON THE SERVER ###
+		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
+		}
 	}
 
 if ( ($conf_only < 1) && ($db_only < 1) && ($without_web < 1) )
