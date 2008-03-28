@@ -308,16 +308,16 @@ make install
 
 mkdir /usr/src/asterisk
 cd /usr/src/asterisk
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.26.2.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.23.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.27.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.24.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.7.tar.gz
-gunzip asterisk-1.2.26.2.tar.gz
-tar xvf asterisk-1.2.26.2.tar
-gunzip zaptel-1.2.23.tar.gz
-tar xvf zaptel-1.2.23.tar
+gunzip asterisk-1.2.27.tar.gz
+tar xvf asterisk-1.2.27.tar
+gunzip zaptel-1.2.24.tar.gz
+tar xvf zaptel-1.2.24.tar
 gunzip libpri-1.2.7.tar.gz
 tar xvf libpri-1.2.7.tar
-cd ./zaptel-1.2.23
+cd ./zaptel-1.2.24
 wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
@@ -335,7 +335,7 @@ cd ../libpri-1.2.7
 make clean
 make
 make install
-cd ../asterisk-1.2.26.2
+cd ../asterisk-1.2.27
 cd apps
 wget http://www.eflo.net/files/app_amd2.c
 mv app_amd2.c app_amd.c
@@ -403,13 +403,13 @@ mkdir ../orig-mp3
 mv -f *.mp3 ../orig-mp3/
 mkdir ../quiet-mp3
 cd ../quiet-mp3
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.5 fpm-sunshine.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.25 fpm-sunshine.wav
 sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
 sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.5 fpm-calm-river.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.25 fpm-calm-river.wav
 sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
 sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.5 fpm-world-mix.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.25 fpm-world-mix.wav
 sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
 sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
 rm -f ../mohmp3/*.raw
@@ -444,6 +444,36 @@ rm -f /usr/lib/asterisk/modules/format_au.so
 rm -f /usr/lib/asterisk/modules/format_pcm_alaw.so
 rm -f /usr/lib/asterisk/modules/pbx_functions.so
 
+### If downgrading from 1.4.X Asterisk to 1.2.X asterisk:
+rm -f /usr/lib/asterisk/modules/app_channelredirect.so
+rm -f /usr/lib/asterisk/modules/app_followme.so
+rm -f /usr/lib/asterisk/modules/app_morsecode.so
+rm -f /usr/lib/asterisk/modules/app_speech_utils.so
+rm -f /usr/lib/asterisk/modules/format_h264.so
+rm -f /usr/lib/asterisk/modules/func_base64.so
+rm -f /usr/lib/asterisk/modules/func_cdr.so
+rm -f /usr/lib/asterisk/modules/func_channel.so
+rm -f /usr/lib/asterisk/modules/func_curl.so
+rm -f /usr/lib/asterisk/modules/func_cut.so
+rm -f /usr/lib/asterisk/modules/func_db.so
+rm -f /usr/lib/asterisk/modules/func_env.so
+rm -f /usr/lib/asterisk/modules/func_global.so
+rm -f /usr/lib/asterisk/modules/func_groupcount.so
+rm -f /usr/lib/asterisk/modules/func_language.so
+rm -f /usr/lib/asterisk/modules/func_logic.so
+rm -f /usr/lib/asterisk/modules/func_math.so
+rm -f /usr/lib/asterisk/modules/func_md5.so
+rm -f /usr/lib/asterisk/modules/func_moh.so
+rm -f /usr/lib/asterisk/modules/func_rand.so
+rm -f /usr/lib/asterisk/modules/func_realtime.so
+rm -f /usr/lib/asterisk/modules/func_sha1.so
+rm -f /usr/lib/asterisk/modules/func_strings.so
+rm -f /usr/lib/asterisk/modules/func_timeout.so
+rm -f /usr/lib/asterisk/modules/res_clioriginate.so
+rm -f /usr/lib/asterisk/modules/res_convert.so
+rm -f /usr/lib/asterisk/modules/res_smdi.so
+rm -f /usr/lib/asterisk/modules/res_snmp.so
+rm -f /usr/lib/asterisk/modules/res_speech.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4

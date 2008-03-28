@@ -851,13 +851,13 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.24.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.21.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.27.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.24.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
-	- gunzip asterisk-1.2.24.tar.gz
-	- tar xvf asterisk-1.2.24.tar
-	- gunzip zaptel-1.2.21.tar.gz
-	- tar xvf zaptel-1.2.21.tar
+	- gunzip asterisk-1.2.27.tar.gz
+	- tar xvf asterisk-1.2.27.tar
+	- gunzip zaptel-1.2.24.tar.gz
+	- tar xvf zaptel-1.2.24.tar
 	- gunzip libpri-1.2.5.tar.gz
 	- tar xvf libpri-1.2.5.tar
    B. if you want latest SVN_1.2 version (release tree with new patches)
@@ -882,7 +882,7 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.21
+	- cd ./zaptel-1.2.24
 	- make clean
 	- make
 	- make install
@@ -890,7 +890,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.24
+	- cd ../asterisk-1.2.27
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -905,11 +905,11 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
-		*OPTIONAL*(1.2.23 thru 1.2.24) apply the meetme DTMF passthru patch
+		*OPTIONAL*(1.2.23 thru 1.2.27) apply the meetme DTMF passthru patch
 		- wget http://www.eflo.net/files/meetme_DTMF_passthru-1.2.23.patch
 		- patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
 		- File to patch: app_meetme.c
-		*OPTIONAL*(1.2.12.1 thru 1.2.24) apply the meetme volume control patch
+		*OPTIONAL*(1.2.12.1 thru 1.2.27) apply the meetme volume control patch
 			*Different patches available for 1.2.7.1 through 1.2.14
 		- wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 		- patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -921,7 +921,7 @@ with the following patch:
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
 
-		*OPTIONAL*(1.2.14 thru 1.2.24) rewrite of waitforsilence
+		*OPTIONAL*(1.2.14 thru 1.2.27) rewrite of waitforsilence
 		- wget http://www.eflo.net/files/app_waitforsilence.c
 		- mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
@@ -1023,13 +1023,13 @@ musiconhold audio files to be converted to native formats like GSM, ULAW and ALA
 	mv -f *.mp3 ../orig-mp3/
 	mkdir ../quiet-mp3
 	cd ../quiet-mp3
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.5 fpm-sunshine.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.25 fpm-sunshine.wav
 	sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
 	sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.5 fpm-calm-river.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.25 fpm-calm-river.wav
 	sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
 	sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.5 fpm-world-mix.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.25 fpm-world-mix.wav
 	sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
 	sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
 	rm -f ../mohmp3/*.raw

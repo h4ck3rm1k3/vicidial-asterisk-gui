@@ -3938,12 +3938,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							else
 								{LIVE_default_xfer_group = default_xfer_group;}
 
-							if ( (VDIC_data_VDIG[12].length > 0) && (VDIC_data_VDIG[12]!='DISABLED') )
+							if ( (VDIC_data_VDIG[12].length > 1) && (VDIC_data_VDIG[12]!='DISABLED') )
 								{LIVE_campaign_recording = VDIC_data_VDIG[12];}
 							else
 								{LIVE_campaign_recording = campaign_recording;}
 
-							if ( (VDIC_data_VDIG[13].length > 0) && (VDIC_data_VDIG[13]!='NONE') )
+							if ( (VDIC_data_VDIG[13].length > 1) && (VDIC_data_VDIG[13]!='NONE') )
 								{LIVE_campaign_rec_filename = VDIC_data_VDIG[13];}
 							else
 								{LIVE_campaign_rec_filename = campaign_rec_filename;}

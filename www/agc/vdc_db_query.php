@@ -1544,6 +1544,8 @@ if ($ACTION == 'VDADREcheckINCOMING')
 ################################################################################
 if ($ACTION == 'VDADcheckINCOMING')
 {
+	$VDCL_ingroup_recording_override = '';
+	$VDCL_ingroup_rec_filename = '';
 	$Ctype = 'A';
 	$MT[0]='';
 	$row='';   $rowx='';
@@ -1716,7 +1718,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_xferconf_b_dtmf	= $row[4];
 				$VDCL_xferconf_b_number	= $row[5];
 				}
-			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|\n|\n";
+			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number||||\n|\n";
 			
 			$stmt = "select phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
