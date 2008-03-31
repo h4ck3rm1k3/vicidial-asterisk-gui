@@ -699,6 +699,13 @@ installation on another machine)
 	   error_reporting  =  E_ALL & ~E_NOTICE         ; (this is default)
 !!! REQUIRED !!! raise the memory limit for scripts in php.ini:
 	   memory_limit = 48M
+	some other fields to change if using web-based lead loader:
+	   max_execution_time = 330
+	   max_input_time = 360
+	   post_max_size = 48M
+	   upload_max_filesize = 42M
+	   default_socket_timeout = 360
+
 	- vi /usr/local/apache2/conf/httpd.conf
 		add the following lines:
 			"AddType application/x-httpd-php .php .phtml"
@@ -706,9 +713,27 @@ installation on another machine)
 			   or
 			"LoadModule php4_module modules/libphp4.so"
 		modify the index.html line and add index.php to the list
+
+		to disable logging, change:
+			"CustomLog logs/access_log common"
+		to this:
+			"CustomLog /dev/null common"
+
+		to enable web browsing of Recordings on Asterisk server, add this:
+			Alias /RECORDINGS/ "/var/spool/asterisk/monitorDONE/"
+
+			<Directory "/var/spool/asterisk/monitorDONE">
+			    Options Indexes MultiViews
+			    AllowOverride None
+			    Order allow,deny
+			    Allow from all
+			</Directory>
+
 	- /usr/local/apache2/bin/apachectl start
    - go to http://your-new-asterisk-server-ipaddress/ to see if it worked
    - you are done
+    NOTE: If using PHP5 you may need to add the following line to php.ini:
+      short_open_tag = On
 
    OPTIONAL- Load eaccelerator PHP-caching application:
    - Go to http://eaccelerator.net and download the most recent package
@@ -830,8 +855,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.24) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.24. These instructions are how we get 
+this writing the official release is 1.2.27) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.27. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -964,7 +989,7 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.2.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.4.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 
@@ -1196,7 +1221,7 @@ with a pin number required for entry):
 	[rooms]
 	conf => 8600
 	conf => 8601,1234
-5.  edit iax.conf (only to do IAX trunks, not required)
+5.  edit iax.conf
 	- vi /etc/asterisk/iax.conf
 	   This is the IAX configuration file, below is a very simple config for
 	   having two Asterisk servers connect natively to each other, if you 
@@ -1508,7 +1533,7 @@ install with astguiclient to start Asterisk.
 SUBPHASE 5.1: setting up your SIP phones
 
 You will need to follow the instructions for the phones that you are using with 
-your system, but here's the way to set up a Grandstream 102 and a Sipura 
+your system, but here's the way to set up a Grandstream 102 and a Linksys/Sipura 
 SPA-2000
 
 1.  Here are basic instructions for setting up a Grandstream BT 102:
@@ -1642,12 +1667,12 @@ SUBPHASE 6.0: putting the files in place
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.4)
+package(as of this writing it is 2.0.4.1)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.zip
-	- unzip astguiclient_2.0.4.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.1.zip
+	- unzip astguiclient_2.0.4.1.zip
 	- perl install.pl (make sure you are in the directory with the install.pl file)
    - for SVN 2.0 trunk:
 	- mkdir /usr/src/astguiclient
@@ -1667,9 +1692,9 @@ free for download at the following two sites:
    Then you will need to execute this command to copy it as the park file
    'cp /var/lib/asterisk/sounds/conf.gsm /var/lib/asterisk/sounds/park.gsm'
   Here are the steps spelled out:
-	- cd /var/lib/asterisk/sounds
-	- wget http://www.freedomphones.net/conf.gsm 
-	- cp conf.gsm park.gsm
+	cd /var/lib/asterisk/sounds
+	wget http://www.freedomphones.net/conf.gsm 
+	cp conf.gsm park.gsm
 
    - you are done
 
@@ -1703,7 +1728,7 @@ use asterisk;
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.17');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.27');
 
 insert into server_updater values('10.10.10.15','');
 
@@ -1743,8 +1768,17 @@ insert into conferences values('8600029','10.10.10.15','');
 
 quit
 
-   run this command from command line:
-	- /usr/share/astguiclient/ADMIN_area_code_populate.pl
+  to populate the timezone/country table run this command from command line:
+   - /usr/share/astguiclient/ADMIN_area_code_populate.pl
+
+  to load the performance testing leads run these commands:
+   - cp /usr/src/astguiclient/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+       or
+	   - cp /usr/src/astguiclient/agc_2.0.4/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+	   - cp /usr/src/astguiclient_2.0.4.1/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+
+   - /usr/share/astguiclient/VICIDIAL_IN_new_leads_file.pl --forcelistid=107 --forcephonecode=1
+
 
 ######------ END Mysql data entry ------######
 
@@ -1822,25 +1856,39 @@ effected extension groups are show):
 ##### you will have problems if it is not in your dialplan!
 exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
+; MANDITORY VDAD extens:
+; In this setup, the serverIP is the prefix followed by agent conf_exten
+; These lines are REQUIRED for VICIDIAL to work properly
+; local server extens:
+; BE SURE TO CHANGE THIS LINE FOR YOUR IP ADDRESS!
+	exten => _010*010*010*015*.,1,Goto(default,${EXTEN:16},1)
+	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
+; Local blind monitoring
+	exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,To)
+; OPTIONAL server 2 extens, needed for load balancing:
+	exten => _010*010*010*016*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+
 ; Extension 3429 - Inbound 800 number (1-800-555-3429)
 exten => _**3429,1,Ringing
 exten => _**3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _**3429,3,Answer
-exten => _**3429,4,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _**3429,4,Dial,sip/spa2000&sip/spa2001,30,to
 exten => _**3429,5,Voicemail,u2000           
 ; Extension 3429 - with ANI [callerID]
 exten => _*NXXNXXXXXX*3429,1,Ringing
 exten => _*NXXNXXXXXX*3429,2,AGI(agi://127.0.0.1:4577/call_log)
 exten => _*NXXNXXXXXX*3429,3,Answer
-exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
+exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001,30,to
 exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000           
 
 ; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
+;    SEE extensions.conf.sample-1.4 for changes needed for use with Asterisk 1.4
 exten => 7275551212,1,Ringing
 exten => 7275551212,2,Wait(1)
 exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID}-----${CALLERIDNUM}-----${CALLERIDNAME})
 exten => 7275551212,4,Answer
-exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001|30|to
+exten => 7275551212,5,Dial,sip/spa2000&sip/spa2001,30,to
 exten => 7275551212,6,Voicemail,u2000
 
 ; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
@@ -1854,6 +1902,14 @@ exten => _901144XXXXXXXXXX,3,Hangup
 exten => _901161XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,tTo)
 exten => _901161XXXXXXXXX,3,Hangup
+
+; Extensions for performance testing 
+exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => _91999NXXXXXX,2,Dial(${TRUNKloop}/${EXTEN:2},,tTo)
+exten => _91999NXXXXXX,3,Hangup
+exten => 999999999999,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => 999999999999,2,Dial(${TRUNKloop}/${EXTEN:1},,tTo)
+exten => 999999999999,3,Hangup
 
 ; dial an 800 outbound number
 exten => _91800NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
@@ -1873,11 +1929,6 @@ exten => _91866NXXXXXX,3,Hangup
 exten => _9727NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _9727NXXXXXX,2,Dial(${TRUNK}/1${EXTEN:1},,tTo)
 exten => _9727NXXXXXX,3,Hangup
-
-; dial a local 813 outbound number with area code
-exten => _9813NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => _9813NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,tTo)
-exten => _9813NXXXXXX,3,Hangup
 
 ; This 'o' Dial flag is VERY important for VICIDIAL on outbound calls, 
 ; dial a long distance outbound number
@@ -1918,14 +1969,6 @@ exten => _*NXXNXXXXXX*3429,3,AGI(call_inbound.agi,spa2000-----8005553429-----Inb
 exten => _*NXXNXXXXXX*3429,3,Answer
 exten => _*NXXNXXXXXX*3429,4,Dial,sip/spa2000&sip/spa2001|30|to
 exten => _*NXXNXXXXXX*3429,5,Voicemail,u2000
-
-exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
-exten => _010*010*010*015*78600XXX*.,1,Goto(default,${EXTEN:16},1)
-exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
-exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
-
 
 ; parameters for agi-VDAD_ALL_inbound.agi (9 fields separated by five dashes "-----"):
 ;  1. the method of call handling for the script:
@@ -1990,33 +2033,9 @@ exten => _990009.,3,Hangup
 3. Add the ZapBarge entries for all zap lines:
    - here is how our sample dialplan changes for adding zapbarge line-specific 
 entries(this is a pure addition, nothing is being modified):
-######------ START extensions.conf additions for direct zapbarges ------######
+
 ; ZapBarge direct channel extensions
-exten => 8612001,1,ZapBarge(1)
-exten => 8612002,1,ZapBarge(2)
-exten => 8612003,1,ZapBarge(3)
-exten => 8612004,1,ZapBarge(4)
-exten => 8612005,1,ZapBarge(5)
-exten => 8612006,1,ZapBarge(6)
-exten => 8612007,1,ZapBarge(7)
-exten => 8612008,1,ZapBarge(8)
-exten => 8612009,1,ZapBarge(9)
-exten => 8612010,1,ZapBarge(10)
-exten => 8612011,1,ZapBarge(11)
-exten => 8612012,1,ZapBarge(12)
-exten => 8612013,1,ZapBarge(13)
-exten => 8612014,1,ZapBarge(14)
-exten => 8612015,1,ZapBarge(15)
-exten => 8612016,1,ZapBarge(16)
-exten => 8612017,1,ZapBarge(17)
-exten => 8612018,1,ZapBarge(18)
-exten => 8612019,1,ZapBarge(19)
-exten => 8612020,1,ZapBarge(20)
-exten => 8612021,1,ZapBarge(21)
-exten => 8612022,1,ZapBarge(22)
-exten => 8612023,1,ZapBarge(23)
-exten => 8612024,1,ZapBarge(24)
-######------ END extensions.conf additions for direct zapbarges ------######
+exten => _86120XX,1,ZapBarge(${EXTEN:5})
 
 
 4. Add the meetme entries for astguiclient and VICIDIAL conferences to 
@@ -2209,37 +2228,9 @@ conf => 8600200
 5. Add the conference entries for astguiclient conferences:
    - here is how our sample dialplan changes for adding conference entries (this 
 is a pure addition, nothing is being modified):
-######------ START extensions.conf additions for agc conferences ------######
-exten => 8600001,1,Meetme,8600001|q
-exten => 8600002,1,Meetme,8600002|q
-exten => 8600003,1,Meetme,8600003|q
-exten => 8600004,1,Meetme,8600004|q
-exten => 8600005,1,Meetme,8600005|q
-exten => 8600006,1,Meetme,8600006|q
-exten => 8600007,1,Meetme,8600007|q
-exten => 8600008,1,Meetme,8600008|q
-exten => 8600009,1,Meetme,8600009|q
-exten => 8600010,1,Meetme,8600010|q
-exten => 8600011,1,Meetme,8600011|q
-exten => 8600012,1,Meetme,8600012|q
-exten => 8600013,1,Meetme,8600013|q
-exten => 8600014,1,Meetme,8600014|q
-exten => 8600015,1,Meetme,8600015|q
-exten => 8600016,1,Meetme,8600016|q
-exten => 8600017,1,Meetme,8600017|q
-exten => 8600018,1,Meetme,8600018|q
-exten => 8600019,1,Meetme,8600019|q
-exten => 8600020,1,Meetme,8600020|q
-exten => 8600021,1,Meetme,8600021|q
-exten => 8600022,1,Meetme,8600022|q
-exten => 8600023,1,Meetme,8600023|q
-exten => 8600024,1,Meetme,8600024|q
-exten => 8600025,1,Meetme,8600025|q
-exten => 8600026,1,Meetme,8600026|q
-exten => 8600027,1,Meetme,8600027|q
-exten => 8600028,1,Meetme,8600028|q
-exten => 8600029,1,Meetme,8600029|q
-######------ END extensions.conf additions for agc conferences ------######
+
+; astGUIclient conferences
+exten => _86000[0-4]X,1,Meetme,${EXTEN}|q
 
 
 6. Add the conference entries for VICIDIAL conferences:
@@ -2263,160 +2254,19 @@ exten => _55558600XXX,1,MeetMeAdmin(${EXTEN:4},K)
 exten => _55558600XXX,2,Hangup
 exten => 8300,1,Hangup
 
-exten => 8600051,1,Meetme,8600051
-exten => 8600052,1,Meetme,8600052
-exten => 8600053,1,Meetme,8600053
-exten => 8600054,1,Meetme,8600054
-exten => 8600055,1,Meetme,8600055
-exten => 8600056,1,Meetme,8600056
-exten => 8600057,1,Meetme,8600057
-exten => 8600058,1,Meetme,8600058
-exten => 8600059,1,Meetme,8600059
-exten => 8600060,1,Meetme,8600060
-exten => 8600061,1,Meetme,8600061
-exten => 8600062,1,Meetme,8600062
-exten => 8600063,1,Meetme,8600063
-exten => 8600064,1,Meetme,8600064
-exten => 8600065,1,Meetme,8600065
-exten => 8600066,1,Meetme,8600066
-exten => 8600067,1,Meetme,8600067
-exten => 8600068,1,Meetme,8600068
-exten => 8600069,1,Meetme,8600069
-exten => 8600070,1,Meetme,8600070
-exten => 8600071,1,Meetme,8600071
-exten => 8600072,1,Meetme,8600072
-exten => 8600073,1,Meetme,8600073
-exten => 8600074,1,Meetme,8600074
-exten => 8600075,1,Meetme,8600075
-exten => 8600076,1,Meetme,8600076
-exten => 8600077,1,Meetme,8600077
-exten => 8600078,1,Meetme,8600078
-exten => 8600079,1,Meetme,8600079
-exten => 8600080,1,Meetme,8600080
-exten => 8600081,1,Meetme,8600081
-exten => 8600082,1,Meetme,8600082
-exten => 8600083,1,Meetme,8600083
-exten => 8600084,1,Meetme,8600084
-exten => 8600085,1,Meetme,8600085
-exten => 8600086,1,Meetme,8600086
-exten => 8600087,1,Meetme,8600087
-exten => 8600088,1,Meetme,8600088
-exten => 8600089,1,Meetme,8600089
-exten => 8600090,1,Meetme,8600090
-exten => 8600091,1,Meetme,8600091
-exten => 8600092,1,Meetme,8600092
-exten => 8600093,1,Meetme,8600093
-exten => 8600094,1,Meetme,8600094
-exten => 8600095,1,Meetme,8600095
-exten => 8600096,1,Meetme,8600096
-exten => 8600097,1,Meetme,8600097
-exten => 8600098,1,Meetme,8600098
-exten => 8600099,1,Meetme,8600099
-exten => 8600100,1,Meetme,8600100
-exten => 8600101,1,Meetme,8600101
-exten => 8600102,1,Meetme,8600102
-exten => 8600103,1,Meetme,8600103
-exten => 8600104,1,Meetme,8600104
-exten => 8600105,1,Meetme,8600105
-exten => 8600106,1,Meetme,8600106
-exten => 8600107,1,Meetme,8600107
-exten => 8600108,1,Meetme,8600108
-exten => 8600109,1,Meetme,8600109
-exten => 8600110,1,Meetme,8600110
-exten => 8600111,1,Meetme,8600111
-exten => 8600112,1,Meetme,8600112
-exten => 8600113,1,Meetme,8600113
-exten => 8600114,1,Meetme,8600114
-exten => 8600115,1,Meetme,8600115
-exten => 8600116,1,Meetme,8600116
-exten => 8600117,1,Meetme,8600117
-exten => 8600118,1,Meetme,8600118
-exten => 8600119,1,Meetme,8600119
-exten => 8600120,1,Meetme,8600120
-exten => 8600121,1,Meetme,8600121
-exten => 8600122,1,Meetme,8600122
-exten => 8600123,1,Meetme,8600123
-exten => 8600124,1,Meetme,8600124
-exten => 8600125,1,Meetme,8600125
-exten => 8600126,1,Meetme,8600126
-exten => 8600127,1,Meetme,8600127
-exten => 8600128,1,Meetme,8600128
-exten => 8600129,1,Meetme,8600129
-exten => 8600130,1,Meetme,8600130
-exten => 8600131,1,Meetme,8600131
-exten => 8600132,1,Meetme,8600132
-exten => 8600133,1,Meetme,8600133
-exten => 8600134,1,Meetme,8600134
-exten => 8600135,1,Meetme,8600135
-exten => 8600136,1,Meetme,8600136
-exten => 8600137,1,Meetme,8600137
-exten => 8600138,1,Meetme,8600138
-exten => 8600139,1,Meetme,8600139
-exten => 8600140,1,Meetme,8600140
-exten => 8600141,1,Meetme,8600141
-exten => 8600142,1,Meetme,8600142
-exten => 8600143,1,Meetme,8600143
-exten => 8600144,1,Meetme,8600144
-exten => 8600145,1,Meetme,8600145
-exten => 8600146,1,Meetme,8600146
-exten => 8600147,1,Meetme,8600147
-exten => 8600148,1,Meetme,8600148
-exten => 8600149,1,Meetme,8600149
-exten => 8600150,1,Meetme,8600150
-exten => 8600151,1,Meetme,8600151
-exten => 8600152,1,Meetme,8600152
-exten => 8600153,1,Meetme,8600153
-exten => 8600154,1,Meetme,8600154
-exten => 8600155,1,Meetme,8600155
-exten => 8600156,1,Meetme,8600156
-exten => 8600157,1,Meetme,8600157
-exten => 8600158,1,Meetme,8600158
-exten => 8600159,1,Meetme,8600159
-exten => 8600160,1,Meetme,8600160
-exten => 8600161,1,Meetme,8600161
-exten => 8600162,1,Meetme,8600162
-exten => 8600163,1,Meetme,8600163
-exten => 8600164,1,Meetme,8600164
-exten => 8600165,1,Meetme,8600165
-exten => 8600166,1,Meetme,8600166
-exten => 8600167,1,Meetme,8600167
-exten => 8600168,1,Meetme,8600168
-exten => 8600169,1,Meetme,8600169
-exten => 8600170,1,Meetme,8600170
-exten => 8600171,1,Meetme,8600171
-exten => 8600172,1,Meetme,8600172
-exten => 8600173,1,Meetme,8600173
-exten => 8600174,1,Meetme,8600174
-exten => 8600175,1,Meetme,8600175
-exten => 8600176,1,Meetme,8600176
-exten => 8600177,1,Meetme,8600177
-exten => 8600178,1,Meetme,8600178
-exten => 8600179,1,Meetme,8600179
-exten => 8600180,1,Meetme,8600180
-exten => 8600181,1,Meetme,8600181
-exten => 8600182,1,Meetme,8600182
-exten => 8600183,1,Meetme,8600183
-exten => 8600184,1,Meetme,8600184
-exten => 8600185,1,Meetme,8600185
-exten => 8600186,1,Meetme,8600186
-exten => 8600187,1,Meetme,8600187
-exten => 8600188,1,Meetme,8600188
-exten => 8600189,1,Meetme,8600189
-exten => 8600190,1,Meetme,8600190
-exten => 8600191,1,Meetme,8600191
-exten => 8600192,1,Meetme,8600192
-exten => 8600193,1,Meetme,8600193
-exten => 8600194,1,Meetme,8600194
-exten => 8600195,1,Meetme,8600195
-exten => 8600196,1,Meetme,8600196
-exten => 8600197,1,Meetme,8600197
-exten => 8600198,1,Meetme,8600198
-exten => 8600199,1,Meetme,8600199
-exten => 8600200,1,Meetme,8600200
+; VICIDIAL conferences
+exten => _86000[5-9]X,1,Meetme,${EXTEN}|F
+exten => _86001XX,1,Meetme,${EXTEN}|F
+exten => _8600200,1,Meetme,${EXTEN}|F
 ; quiet entry and leaving conferences for VICIDIAL
-exten => _78600XXX,1,Meetme,${EXTEN:1}|q
+exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
 ; quiet monitor extensions for meetme rooms (for room managers)
-exten => _68600XXX,1,Meetme,${EXTEN:1}|mq
+exten => _68600XXX,1,Meetme,${EXTEN:1}|Fmq
+
+; voicelab exten
+exten => _86009XX,1,Meetme,${EXTEN}|Fmq
+; voicelab exten moderator
+exten => _986009XX,1,Meetme,${EXTEN:1}
 
 ######------ END extensions.conf changes for VD conf ------######
 
@@ -2460,6 +2310,7 @@ exten => 8307,3,Hangup
 
 ; this is used for recording conference calls, the client app sends the filename
 ;    value as a callerID recordings go to /var/spool/asterisk/monitor (WAV)
+;    SEE extensions.conf.sample-1.4 for changes needed for use with Asterisk 1.4
 exten => 8309,1,Answer
 exten => 8309,2,Monitor(wav,${CALLERIDNAME})
 exten => 8309,3,Wait,3600
@@ -2467,6 +2318,7 @@ exten => 8309,4,Hangup
 
 ; this is used for recording conference calls, the client app sends the filename
 ;    value as a callerID recordings go to /var/spool/asterisk/monitor (GSM)
+;    SEE extensions.conf.sample-1.4 for changes needed for use with Asterisk 1.4
 exten => 8310,1,Answer
 exten => 8310,2,Monitor(gsm,${CALLERIDNAME})
 exten => 8310,3,Wait,3600
@@ -2481,6 +2333,7 @@ exten => 8320,4,Hangup
 
 ; this is used to allow the GUI to send you directly into voicemail
 ;     don't forget to set GUI variable $voicemail_exten to this extension
+;    SEE extensions.conf.sample-1.4 for changes needed for use with Asterisk 1.4
 exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
 exten => 8501,2,Hangup
 
@@ -2612,22 +2465,6 @@ exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,5,Hangup
 
-; MANDITORY VDAD extens:
-; In this setup, the serverIP is the prefix followed by agent conf_exten
-; These lines are REQUIRED for VICIDIAL to work properly
-; local server extens:
-	exten => _010*010*010*015*8600XXX,1,Goto(default,${EXTEN:16},1)
-	exten => _010*010*010*015*8600XXX*.,1,Goto(default,${EXTEN:16},1)
-	exten => _010*010*010*015*78600XXX,1,Goto(default,${EXTEN:16},1)
-	exten => _010*010*010*015*78600XXX*.,1,Goto(default,${EXTEN:16},1)
-	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
-	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
-
-; OPTIONAL server 2 extens, needed for load balancing:
-	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*8600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*78600XXX*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 
 
 SUBPHASE 6.3: adding entries to your MySQL "asterisk" database for vicidial 

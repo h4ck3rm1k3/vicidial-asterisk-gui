@@ -97,6 +97,14 @@ exten => _901161XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _901161XXXXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,To)
 exten => _901161XXXXXXXXX,3,Hangup
 
+; Extensions for performance testing 
+exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => _91999NXXXXXX,2,Dial(${TRUNKloop}/${EXTEN:2},,tTo)
+exten => _91999NXXXXXX,3,Hangup
+exten => 999999999999,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => 999999999999,2,Dial(${TRUNKloop}/${EXTEN:1},,tTo)
+exten => 999999999999,3,Hangup
+
 ; dial an 800 outbound number
 exten => _91800NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91800NXXXXXX,2,Dial(${TRUNK}/${EXTEN:1},,To)
@@ -438,3 +446,69 @@ exten => 8372,5,Hangup
 ;exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,5,Hangup
+
+
+
+; PERFORMANCE TESTING
+exten => _999XXXXXX1,1,Answer
+exten => _999XXXXXX1,2,Wait(2)
+exten => _999XXXXXX1,3,Playback(beep)
+exten => _999XXXXXX1,4,Hangup
+
+exten => _999XXXX112,1,Wait(8)
+exten => _999XXXX112,2,Answer
+exten => _999XXXX112,3,Playback(demo-instruct)
+exten => _999XXXX112,4,Playback(demo-instruct)
+exten => _999XXXX112,5,Hangup
+
+exten => _999XXXXXX2,1,Wait(8)
+exten => _999XXXXXX2,2,Answer
+exten => _999XXXXXX2,3,Playback(demo-instruct)
+exten => _999XXXXXX2,4,Hangup
+
+exten => _999XXXXXX3,1,SetVar(PRI_CAUSE=1)
+exten => _999XXXXXX3,2,Hangup
+
+exten => _999XXXXXX4,1,SetVar(PRI_CAUSE=27)
+exten => _999XXXXXX4,2,Hangup
+
+exten => _999XXXXXX5,1,Wait(60)
+exten => _999XXXXXX5,2,Hangup
+
+exten => _999XXXXXX6,1,Wait(10)
+exten => _999XXXXXX6,2,Answer
+exten => _999XXXXXX6,3,Playback(demo-instruct)
+exten => _999XXXXXX6,4,Hangup
+
+exten => _999XXXXXX7,1,Wait(12)
+exten => _999XXXXXX7,2,Answer
+exten => _999XXXXXX7,3,Playback(demo-enterkeywords)
+exten => _999XXXXXX7,4,Hangup
+
+exten => _999XXXXXX8,1,SetVar(PRI_CAUSE=17)
+exten => _999XXXXXX8,2,Hangup
+
+exten => _999XXXXXX9,1,Wait(6)
+exten => _999XXXXXX9,2,Answer
+exten => _999XXXXXX9,3,Playback(demo-abouttotry)
+exten => _999XXXXXX9,4,Hangup
+
+exten => _999XXXXXX0,1,Wait(5)
+exten => _999XXXXXX0,2,Answer
+exten => _999XXXXXX0,3,Playback(vm-goodbye)
+exten => _999XXXXXX0,4,Hangup
+
+exten => 99999999999,1,Answer
+exten => 99999999999,2,Playback(conf)
+exten => 99999999999,3,Playback(conf)
+exten => 99999999999,4,Playback(conf)
+exten => 99999999999,5,Playback(conf)
+exten => 99999999999,6,Playback(conf)
+exten => 99999999999,7,Playback(conf)
+exten => 99999999999,8,Playback(conf)
+exten => 99999999999,9,Playback(conf)
+exten => 99999999999,10,Playback(conf)
+exten => 99999999999,11,Playback(conf)
+exten => 99999999999,12,Playback(conf)
+exten => 99999999999,13,Playback(conf)
+exten => 99999999999,14,Hangup

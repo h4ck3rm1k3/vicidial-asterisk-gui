@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from existing server.    v.2.0.4        2007-12-03
+Asterisk/astguiclient install from existing server.    v.2.0.5        2008-XX-XX
    By the astGUIclient group                              astguiclient@eflo.net
 
 
@@ -187,12 +187,12 @@ VICIDIAL components to the system.
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.4)
+package(as of this writing it is 2.0.4.1)
    - for 2.0.X release:
 	mkdir /usr/src/astguiclient
 	cd /usr/src/astguiclient
-	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.zip
-	unzip astguiclient_2.0.4.zip
+	wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.1.zip
+	unzip astguiclient_2.0.4.1.zip
 	perl install.pl
    - for SVN 2.0 trunk:
 	mkdir /usr/src/astguiclient
@@ -507,8 +507,17 @@ insert into vicidial_statuses values('XFER','Call Transferred','Y','Y','UNDEFINE
 
 quit
 
-   run this command from command line:
-	- /usr/share/astguiclient/ADMIN_area_code_populate.pl
+  to populate the timezone/country table run this command from command line:
+   - /usr/share/astguiclient/ADMIN_area_code_populate.pl
+
+  to load the performance testing leads run these commands:
+   - cp /usr/src/astguiclient/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+       or
+	   - cp /usr/src/astguiclient/agc_2.0.4/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+	   - cp /usr/src/astguiclient_2.0.4.1/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+
+   - /usr/share/astguiclient/VICIDIAL_IN_new_leads_file.pl --forcelistid=107 --forcephonecode=1
+
 
 ######------ END Mysql data entry ------######
 

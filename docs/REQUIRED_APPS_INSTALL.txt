@@ -1,4 +1,4 @@
-# Quick install of required apps    v.2.0.5               2008-03-10
+# Quick install of required apps    v.2.0.5               2008-XX-XX
 # This file is a supplement to the BASE_INSTALL document giving you simple copy/
 # paste installation shell commands for required and helper apps for VICIDIAL
 # might need:   echo '/* Linuxthreads */' >> /usr/include/pthread.h
@@ -223,6 +223,30 @@ vi /usr/local/apache2/conf/httpd.conf
 		"LoadModule php4_module module/libphp4.so"
 	modify the index.html line and add index.php to the list
 
+	to disable logging, change:
+		"CustomLog logs/access_log common"
+	to this:
+		"CustomLog /dev/null common"
+
+	to enable web browsing of Recordings on Asterisk server, add this:
+		Alias /RECORDINGS/ "/var/spool/asterisk/monitorDONE/"
+
+		<Directory "/var/spool/asterisk/monitorDONE">
+		    Options Indexes MultiViews
+		    AllowOverride None
+		    Order allow,deny
+		    Allow from all
+		</Directory>
+
+	OPTIONAL: USE ONLY FOR STANDALONE apache/php SERVER ONLY:
+		<IfModule prefork.c>
+		ServerLimit        768
+		StartServers        450
+		MinSpareServers     250
+		MaxSpareServers     500
+		MaxClients         768
+		MaxRequestsPerChild  1000
+		</IfModule>
 
 vi /usr/local/lib/php.ini
 
@@ -232,8 +256,12 @@ vi /usr/local/lib/php.ini
         and change it to:
             "memory_limit = 48M"
 
-
-/usr/local/apache2/bin/apachectl startssl
+      some other fields to change if using web-based lead loader:
+	max_execution_time = 330
+	max_input_time = 360
+	post_max_size = 48M
+	upload_max_filesize = 42M
+	default_socket_timeout = 360
 
 
 cd /usr/local
@@ -270,21 +298,21 @@ mkdir /tmp/eaccelerator
 chmod 0777 /tmp/eaccelerator
 php -v
 
+/usr/local/apache2/bin/apachectl startssl
 
-cd /usr/local
-wget http://superb-east.dl.sourceforge.net/sourceforge/mtop/mtop-0.6.6.tar.gz
-gunzip mtop-0.6.6.tar.gz
-tar xvf mtop-0.6.6.tar
-cd mtop-0.6.6
+
 cpan 
-
 
 install Curses
 install Getopt::Long
 install Net::Domain
 quit
 
-
+cd /usr/local
+wget http://superb-east.dl.sourceforge.net/sourceforge/mtop/mtop-0.6.6.tar.gz
+gunzip mtop-0.6.6.tar.gz
+tar xvf mtop-0.6.6.tar
+cd mtop-0.6.6
 perl Makefile.PL
 make
 make install
