@@ -32,8 +32,8 @@
 #  - $agent_log_id - ('123456',...)
 #  - $call_server_ip - ('10.10.10.15',...)
 #  - $CalLCID - ('VD01234567890123456',...)
-#  - $stage - ('UP','DOWN')
-# 
+#  - $stage - ('UP','DOWN','2NDXfeR')
+#  - $session_id - ('8600051')
 
 # CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
@@ -68,6 +68,8 @@
 # 70226-1251 - Added Mute/UnMute to conference volume control
 # 70320-1502 - Added option to allow retry of leave-3way-call and debug logging
 # 70322-1636 - Added sipsak display ability
+# 80331-1433 - Added second transfer try for VICIDIAL transfers on manual dial calls
+# 80402-0121 - Fixes for manual dial transfers on some systems
 #
 
 require("dbconnect.php");
@@ -137,6 +139,8 @@ if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["e
 	elseif (isset($_POST["enable_sipsak_messages"]))	{$enable_sipsak_messages=$_POST["enable_sipsak_messages"];}
 if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["allow_sipsak_messages"];}
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
+if (isset($_GET["session_id"]))				{$session_id=$_GET["session_id"];}
+	elseif (isset($_POST["session_id"]))		{$session_id=$_POST["session_id"];}
 
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
@@ -147,8 +151,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.29';
-$build = '70320-1502';
+$version = '2.0.5-30';
+$build = '80402-0121';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -459,29 +463,28 @@ if ($ACTION=="RedirectVD")
 	else
 	{
 		if (strlen($call_server_ip)>6) {$server_ip = $call_server_ip;}
-			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+		$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-			if ($row[0] > 0)
-				{
-				$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where lead_id='$lead_id' order by start_epoch desc limit 1;";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
-				}
-			if ($auto_dial_level < 1)
-				{
-				$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
-				}
-			else
-				{
-				$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
-				}
-
+			}
+		if ($auto_dial_level < 1)
+			{
+			$stmt = "UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$secondS',status='XFER' where uniqueid='$uniqueid';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		else
+			{
+			$stmt = "DELETE from vicidial_auto_calls where uniqueid='$uniqueid';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			}
 		$ACTION="Redirect";
 	}
 }
@@ -878,6 +881,29 @@ if ($ACTION=="RedirectXtra")
 
 if ($ACTION=="Redirect")
 {
+	### for manual dial VICIDIAL calls send the second attempt to transfer the call
+	if ($stage=="2NDXfeR")
+	{
+		$local_DEF = 'Local/';
+		$local_AMP = '@';
+		$hangup_channel_prefix = "$local_DEF$session_id$local_AMP$ext_context";
+
+		$stmt="SELECT count(*) FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$hangup_channel_prefix%\";";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row > 0)
+		{
+			$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$hangup_channel_prefix%\";";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rslt);
+			$channel=$rowx[0];
+			$channel = eregi_replace("1$","2",$channel);
+			$queryCID = eregi_replace("^.","Q",$queryCID);
+		}
+	}
+
 	$row='';   $rowx='';
 	$channel_live=1;
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )

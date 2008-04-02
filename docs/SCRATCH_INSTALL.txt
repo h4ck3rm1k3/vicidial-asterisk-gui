@@ -1048,13 +1048,13 @@ musiconhold audio files to be converted to native formats like GSM, ULAW and ALA
 	mv -f *.mp3 ../orig-mp3/
 	mkdir ../quiet-mp3
 	cd ../quiet-mp3
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.25 fpm-sunshine.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 fpm-sunshine.wav vol 0.25
 	sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
 	sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.25 fpm-calm-river.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 fpm-calm-river.wav vol 0.25
 	sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
 	sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
-	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.25 fpm-world-mix.wav
+	sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 fpm-world-mix.wav vol 0.25
 	sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
 	sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
 	rm -f ../mohmp3/*.raw

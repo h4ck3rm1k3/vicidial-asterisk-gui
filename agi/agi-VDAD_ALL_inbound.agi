@@ -57,6 +57,7 @@
 # 80109-2348 - added option to trigger a system process when the call is sent to an agent
 # 80227-0335 - added queue priority functionality
 # 80302-0232 - added drop_action and transfer to in-group
+# 80402-0142 - added code for manual dial transfer duplicate check
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -304,9 +305,32 @@ $VDADphone_code='';
 
 if ($channel =~ /Local/i)
 {
-	if ($inbound_number =~ /CXFER/)
+	if ( ($inbound_number =~ /CXFER/) || ($call_handle_method =~ /^CLOSER/) )
 	{
 	if ($AGILOG) {$agi_string = "+++++ VDAD START LOCAL CHANNEL: CXFER OVERRIDE- $priority";   &agi_output;}
+		if ($call_handle_method =~ /^CLOSER/) 
+		{
+		sleep(1);
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where lead_id='$CIDlead_id' and call_type='IN' and campaign_id='$channel_group' and channel NOT LIKE \"Local%\";";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		 $rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$Pseudo_duplicate_count	= "$aryA[0]";
+			$rec_count++;
+			}
+		$sthA->finish();
+
+			if ($Pseudo_duplicate_count > 0)
+			{
+			if ($AGILOG) {$agi_string = "+++++ INBOUND LOCAL DUPLICATE: EXITING- $priority";   &agi_output;}
+			exit;
+			}
+		}
 	}
 	else
 	{
@@ -728,9 +752,9 @@ if ($channel_status < 1)
 	if ($CAMP_callorder =~ /oldest_call_finish/i)	{$agent_call_order = 'order by last_call_finish';}
 	if ($CAMP_callorder =~ /random/i)				{$agent_call_order = 'order by random_id';}
 	if ($CAMP_callorder =~ /campaign_rank/i)		{$agent_call_order = 'order by campaign_weight desc,last_call_finish';}
-	if ($CAMP_callorder =~ /fewest_calls_campaign/i) {$agent_call_order = 'order by calls_today,last_call_finish';}
+	if ($CAMP_callorder =~ /fewest_calls_campaign/i) {$agent_call_order = 'order by vicidial_live_agents.calls_today,vicidial_live_agents.last_call_finish';}
 	if ($CAMP_callorder =~ /inbound_group_rank/i)	{$aco_sub=1;	$agent_call_order = 'order by group_weight desc';}
-	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by calls_today';}
+	if ($CAMP_callorder =~ /fewest_calls/i)			{$aco_sub=1;	$agent_call_order = 'order by vicidial_live_inbound_agents.calls_today,vicidial_live_inbound_agents.last_call_finish';}
 
 
 $vci=0;

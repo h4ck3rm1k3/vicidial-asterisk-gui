@@ -145,10 +145,11 @@
 # 80116-1032 - added user_closer_log logging in regCLOSER
 # 80125-1213 - fixed vicidial_log bug when call is from closer
 # 80317-2051 - Added in-group recording settings
+# 80402-0121 - Fixes for manual dial transfers on some systems, removed /n persist flag
 #
 
-$version = '2.0.5-70';
-$build = '80317-2051';
+$version = '2.0.5-71';
+$build = '80402-0121';
 
 require("dbconnect.php");
 
@@ -737,7 +738,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$local_AMP = '@';
 				$Local_out_prefix = '9';
 				$Local_dial_timeout = '60';
-				$Local_persist = '/n';
+			#	$Local_persist = '/n';
+                                $Local_persist = '';
 				if ($dial_timeout > 4) {$Local_dial_timeout = $dial_timeout;}
 				$Local_dial_timeout = ($Local_dial_timeout * 1000);
 				if (strlen($dial_prefix) > 0) {$Local_out_prefix = "$dial_prefix";}
