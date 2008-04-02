@@ -63,10 +63,10 @@ quit
 
 
 cd /usr/local
-wget http://asterisk.gnuinter.net/files/asterisk-perl-0.10.tar.gz
-gunzip asterisk-perl-0.10.tar.gz
-tar xvf asterisk-perl-0.10.tar
-cd asterisk-perl-0.10
+wget http://asterisk.gnuinter.net/files/asterisk-perl-0.08.tar.gz
+gunzip asterisk-perl-0.08.tar.gz
+tar xvf asterisk-perl-0.08.tar
+cd asterisk-perl-0.08
 perl Makefile.PL
 make all
 make install

@@ -281,6 +281,14 @@ use asterisk;
 	or you may need to run this if you get an error:
 	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
 
+### to load in default IAX and SIP phone accounts run the following query
+
+\. /usr/src/astguiclient/trunk/extras/sip-iax_phones.sql
+	or you may need to run this if you get an error:
+	\. /usr/src/astguiclient/agc_2.0.4/extras/sip-iax_phones.sql
+	\. /usr/src/astguiclient/astguiclient/sip-iax_phones.sql
+
+
 ##### make sure on these queries that you change the server_ip "10.10.10.15" 
 ##### to the server IP that you are using
 

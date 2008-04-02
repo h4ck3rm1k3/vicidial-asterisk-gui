@@ -792,3 +792,17 @@ allow=alaw
 allow=gsm
 qualify=yes
 
+[cc351]
+type=friend
+accountcode=cc351
+context=default
+auth=md5
+host=dynamic
+permit=0.0.0.0/0.0.0.0
+secret=test
+disallow=all
+allow=ulaw
+allow=alaw
+allow=gsm
+qualify=yes
+

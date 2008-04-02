@@ -1724,9 +1724,18 @@ UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
 
 use asterisk;
 
-\. /usr/share/astguiclient/MySQL_AST_CREATE_tables.sql
+\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
-	\. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
+	\. /usr/src/astguiclient/agc_2.0.4/extras/MySQL_AST_CREATE_tables.sql
+	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
+
+### to load in default IAX and SIP phone accounts run the following query
+
+\. /usr/src/astguiclient/trunk/extras/sip-iax_phones.sql
+	or you may need to run this if you get an error:
+	\. /usr/src/astguiclient/agc_2.0.4/extras/sip-iax_phones.sql
+	\. /usr/src/astguiclient/astguiclient/sip-iax_phones.sql
+
 
 insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.27');
 
