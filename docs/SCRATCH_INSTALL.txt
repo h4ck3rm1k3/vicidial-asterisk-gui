@@ -189,13 +189,20 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
     (this part is very dependant upon your own hardware)
     (what is mentioned below are only changes beyond what is selected by default)
 
+	 Block Layer --->
+	-> IO Scheduler
+	 this should be set to CFQ if you do not have a hardware caching controller
+	 if you have a hardware caching controller DEADLINE or NO-OP are the best
+	 choices, if you have a battery backuped caching controller that is set to write-back you should use NO-OP.
      Processor Type and Features  --->
 	->Symmetric multi-processing support
 	  (if you have multiple processors or a Dual-core or HT enabled)
 	->High Memory Support
 	  (if you have more than 900MB of System RAM move upto 4GB)
 	->Timer frequency (1000 HZ)
-	  (change to 1000Hz if using ztdummy for timer)
+	  (change to 1000Hz if using ztdummy for timer on pre 2.6.17 kernel)
+	->[*]Tickless System (enable UNLESS using ztdummy on pre 2.6.17 kernel)
+	->[*]Enable Kernel irq balancing  
 	->Preemption Model (No Forced Preemption (Server))
 	  (This one is very important!!!)
      Power management options (ACPI, APM)  --->
