@@ -1,5 +1,5 @@
 Asterisk/astguiclient install from scratch.    v.2.0.4               2007-12-03
-   By the astGUIclient group                              astguiclient@eflo.net
+   By the VICIDIAL group                                      info@vicidial.com
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
 read the REQUIREMENTS.txt for a minimum requirements list. ***
@@ -204,7 +204,7 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	->[*]Tickless System (enable UNLESS using ztdummy on pre 2.6.17 kernel)
 	->[*]Enable Kernel irq balancing  
 	->Preemption Model (No Forced Preemption (Server))
-	  (This one is very important!!!)
+	  (^This one is very important!!!)
      Power management options (ACPI, APM)  --->
 	->ACPI (Advanced Configuration and Power Interface) Support
 	  (enable all down to Processor and thermal zone)
@@ -246,7 +246,7 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	  (important if using ext3 filesystem)
 	  pseudo filesystems --->
 	    <*> Virtual memory file system support
-		(this is usually checked anyway but mandatory for recording to RAM)
+		(this is usually checked anyway but mandatory for recording to RAM[tmpfs])
      Library routines  --->
 	<*> CRC-CCITT functions
 	<*> CRC16 functions
@@ -273,7 +273,7 @@ OPTION 1: compile Linux kernel 2.6.17 *RECOMMENDED*
 	tmpfs                /var/spool/asterisk/monitor  tmpfs  rw                    0 0
 21. shutdown -r 0			# reboot machine and hope it worked
 
-OPTION 2: compile Linux kernel 2.4.33.3
+OPTION 2: compile Linux kernel 2.4.33.3 (not recommended, very old)
 
 1.  cd /usr/src/linux			# move to your linux source directory
 2.  cp .config config.save		# copy old config to a save file
@@ -702,7 +702,7 @@ installation on another machine)
 	- make
 	- make install
 	- cp php.ini-dist /usr/local/lib/php.ini
-	   NOTE: you will want to make sure notice logging is turned off:
+	   NOTE: you will want to make sure NOTICE logging is turned off:
 	   error_reporting  =  E_ALL & ~E_NOTICE         ; (this is default)
 !!! REQUIRED !!! raise the memory limit for scripts in php.ini:
 	   memory_limit = 48M
@@ -1085,13 +1085,13 @@ The Wiki:  http://www.voip-info.org/tiki-index.php
 The Lists: http://www.asterisk.org/index.php?menu=support
 
 I need to note that it is possible to install Asterisk and use astGUIclient 
-applications with no Zaptel(Digium) cards installed, but it is not recommended 
-even if you are not going to use Zap trunks for your inbound-outbound calls
-with no real Zap devices, you would need to use a dummy timer(zt_dummy) based
-on you USB ports to get meetme conference rooms working properly and you may 
-have other issues along the way. We would at least recommend getting a X100 or 
-X101 board from Digium or a clone manufacturer so there is a dedicated hardware
-timer in place on your system.
+applications with no Zaptel(Digium/Sangoma/Rhino/etc...) cards installed, but it
+is not recommended even if you are not going to use Zap trunks for your inbound-
+outbound calls with no real Zap devices, you would need to use a dummy timer
+(zt_dummy) based on you USB ports to get meetme conference rooms working 
+properly and you may have other issues along the way. We would at least 
+recommend getting a X100 or X101 board from Digium or a clone manufacturer so 
+there is a dedicated hardware timer in place on your system.
 
 
 
@@ -1162,7 +1162,7 @@ Here's what we used(you can set echocancel=no if you are using PRIs):
 	- vi /etc/asterisk/sip.conf
 	   here is where we will edit the configuration of our SIP compatible 
 phone devices. As stated at the beginning, we will be setting up a 
-Grandstream Budgetone 102 phone and a Sipura SPA-2000 adapter with 
+Grandstream Budgetone 102 phone and a Sipura/Linksys SPA-2000 adapter with 
 two analog phones connected(each with it's own extension). Here are 
 the settings we used to set each of them up:
 	[general]
@@ -1399,6 +1399,8 @@ CONSOLE=Console/dsp                             ; Console interface for demo
 TRUNK=Zap/g1                                    ; Trunk interface
 TRUNKX=Zap/g2					; 2nd trunk interface
 TRUNKIAX=IAX2/ASTtest1:test@10.10.10.16:4569	; IAX trunk interface
+TRUNKloop = IAX2/ASTloop:test@127.0.0.1:40569	; used for blind monitoring
+TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569	; used for testing
 
 [default]
 ; Extension 8600 + 8601 conference rooms
@@ -1509,11 +1511,9 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 ### In this setup, the serverIP is the prefix followed by agent conf_exten
 ### FOR MORE INFORMATION, READ THE LOAD_BALANCING.txt DOCUMENT
 ### server 1 extens:
-	exten => _010*010*010*016*8600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
-	exten => _010*010*010*016*78600XXX,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
+	exten => _010*010*010*016*.,1,Dial(${TRUNKIAX2}/${EXTEN:16},55,o)
 ### server 2 extens:
-	exten => _010*010*010*015*8600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
-	exten => _010*010*010*015*78600XXX,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
+	exten => _010*010*010*015*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 
 10. edit dnsmgr.conf:   # It is very helpful to enable dnsmgr
 	[general]
@@ -1527,13 +1527,14 @@ first time.
 digium card. 
    - next type the following at the command prompt: "ztcfg -vvvvvv"
 	- you should see a confirmation that the Zaptel device has loaded
-   - now you can launch asteris with the following command:
+   - now you can launch asterisk with the following command:
 	"asterisk -vvvvvvvvvvvvgc"
 	- you should see a lot of messages scroll by and at the end you should 
 be given a CLI> prompt if everything loaded OK. To get out of Asterisk you can
 type "stop now". Now that you are sure it is running you can either run it in a 
 separate terminal window or use the start_asterisk_boot.pl that you will 
-install with astguiclient to start Asterisk.
+install with astguiclient to start Asterisk:
+	/usr/share/astguiclient/start_asterisk_boot.pl
 
 
 
@@ -1781,6 +1782,26 @@ insert into conferences values('8600026','10.10.10.15','');
 insert into conferences values('8600027','10.10.10.15','');
 insert into conferences values('8600028','10.10.10.15','');
 insert into conferences values('8600029','10.10.10.15','');
+insert into conferences values('8600030','10.10.10.15','');
+insert into conferences values('8600031','10.10.10.15','');
+insert into conferences values('8600032','10.10.10.15','');
+insert into conferences values('8600033','10.10.10.15','');
+insert into conferences values('8600034','10.10.10.15','');
+insert into conferences values('8600035','10.10.10.15','');
+insert into conferences values('8600036','10.10.10.15','');
+insert into conferences values('8600037','10.10.10.15','');
+insert into conferences values('8600038','10.10.10.15','');
+insert into conferences values('8600039','10.10.10.15','');
+insert into conferences values('8600040','10.10.10.15','');
+insert into conferences values('8600041','10.10.10.15','');
+insert into conferences values('8600042','10.10.10.15','');
+insert into conferences values('8600043','10.10.10.15','');
+insert into conferences values('8600044','10.10.10.15','');
+insert into conferences values('8600045','10.10.10.15','');
+insert into conferences values('8600046','10.10.10.15','');
+insert into conferences values('8600047','10.10.10.15','');
+insert into conferences values('8600048','10.10.10.15','');
+insert into conferences values('8600049','10.10.10.15','');
 
 quit
 
@@ -2088,6 +2109,27 @@ conf => 8600026
 conf => 8600027
 conf => 8600028
 conf => 8600029
+conf => 8600030
+conf => 8600031
+conf => 8600032
+conf => 8600033
+conf => 8600034
+conf => 8600035
+conf => 8600036
+conf => 8600037
+conf => 8600038
+conf => 8600039
+conf => 8600040
+conf => 8600041
+conf => 8600042
+conf => 8600043
+conf => 8600044
+conf => 8600045
+conf => 8600046
+conf => 8600047
+conf => 8600048
+conf => 8600049
+conf => 8600050
 conf => 8600051
 conf => 8600052
 conf => 8600053
@@ -2278,6 +2320,8 @@ exten => _8600200,1,Meetme,${EXTEN}|F
 exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
 ; quiet monitor extensions for meetme rooms (for room managers)
 exten => _68600XXX,1,Meetme,${EXTEN:1}|Fmq
+; Local blind monitoring
+exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,To)
 
 ; voicelab exten
 exten => _86009XX,1,Meetme,${EXTEN}|Fmq
