@@ -267,8 +267,8 @@ rc_reset
 # considered a success.
 
 case "$1" in
-    start)
-	echo -n "Starting Vicidial "
+start)
+	echo "Starting Vicidial "
 	## Start daemon with startproc(8). If this fails
 	## the return value is set appropriately by startproc.
 	
@@ -303,29 +303,29 @@ case "$1" in
 
 	sleep 2
 
-        $VICI_DIR/ADMIN_keepalive_ALL.pl
+    $VICI_DIR/ADMIN_keepalive_ALL.pl
 
 	echo ""
 
-	echo -n "Starting Vicidial "
+	echo "Starting Vicidial "
 
 	# Remember status and be verbose
 	rc_status -v
 	;;
-    stop)
+stop)
 	## Stop daemon with killproc(8) and if this fails
 	## killproc sets the return value according to LSB.
 
-        if /bin/ps | /usr/bin/grep asterisk
-        then
+    if /bin/ps -A | /usr/bin/grep asterisk
+    then
 		echo "Stopping asterisk gracefully (wait 60sec)"
 		$AST_BIN -rx "stop gracefully" 1> /dev/null 2> /dev/null # stop asterisk gracefully
 		sleep 60
 
-		if /bin/ps | /usr/bin/grep asterisk
+		if /bin/ps -A| /usr/bin/grep asterisk
 		then 
-                        echo "Okay it has had long enough ... stopping Asterisk now"
-	        	$AST_BIN -rx "stop now" 1> /dev/null 2> /dev/null  # stop asterisk now
+            echo "Okay it has had long enough ... stopping Asterisk now"
+	        $AST_BIN -rx "stop now" 1> /dev/null 2> /dev/null  # stop asterisk now
 		fi
 		echo "Asterisk stopped"
 	else
@@ -379,7 +379,7 @@ case "$1" in
 	# Remember status and be quiet
 	rc_status
 	;;
-    restart)
+restart)
 	## Stop the service and regardless of whether it was
 	## running or not, start it again.
 	$0 stop
@@ -388,8 +388,8 @@ case "$1" in
 	# Remember status and be quiet
 	rc_status
 	;;
-    status)
-	echo -n "Checking for service Vicidial "
+status)
+    echo -n "Checking for service Vicidial "
 	## Check status with checkproc(8), if process is running
 	## checkproc will return with exit status 0.
 
@@ -401,13 +401,15 @@ case "$1" in
 	# 4 - service status unknown :-(
 	# 5--199 reserved (5--99 LSB, 100--149 distro, 150--199 appl.)
 	
+	/usr/bin/screen -ls
+	
 	# NOTE: checkproc returns LSB compliant status values.
 	checkproc $AST_BIN
 	# NOTE: rc_status knows that we called this init script with
 	# "status" option and adapts its messages accordingly.
 	rc_status -v
 	;;
-    probe)
+probe)
 	## Optional: Probe for the necessity of a reload, print out the
 	## argument to this init script which is required for a reload.
 	## Note: probe is not (yet) part of LSB (as of 1.9)
