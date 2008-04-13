@@ -1303,12 +1303,12 @@ register to if you plan on using G729 as your codec: iax-g729.binfone.com
 	TRUNKBINFONE=IAX2/1112223333:PASSWORD@iax.binfone.com	; IAX trunk interface
 
 	[default]
-	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
+	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 	[incoming]
-	exten => 1112223333,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
+	exten => 1112223333,1,AGI(agi://127.0.0.1:4577/call_log)
 	exten => 1112223333,2,Dial(sip/gs102,55,o)
 	exten => 1112223333,3,Hangup
 
@@ -1498,12 +1498,12 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 ######------ END extensions.conf example ------######
 
 ### OPTIONAL IAX trunk extensions entries for long distance dialing over IAX
-	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
+	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 ### OPTIONAL SIP trunk extensions entries for long distance dialing over SIP
-	exten => _91NXXNXXXXXX,1,AGI(AGI(agi://127.0.0.1:4577/call_log)
+	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 	exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
