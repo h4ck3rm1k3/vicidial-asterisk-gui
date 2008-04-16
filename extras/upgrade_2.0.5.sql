@@ -96,3 +96,10 @@ ALTER TABLE vicidial_inbound_groups ADD ingroup_recording_override  ENUM('DISABL
 ALTER TABLE vicidial_inbound_groups ADD ingroup_rec_filename VARCHAR(50) default 'NONE';
 
 UPDATE system_settings SET db_schema_version='1080';
+
+ CREATE TABLE vicidial_qc_codes (
+code VARCHAR(8) PRIMARY KEY NOT NULL,
+code_name VARCHAR(30)
+);
+
+UPDATE system_settings SET db_schema_version='1081';

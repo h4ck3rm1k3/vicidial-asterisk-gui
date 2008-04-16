@@ -1040,6 +1040,11 @@ index (user),
 index (event_date)
 );
 
+ CREATE TABLE vicidial_qc_codes (
+code VARCHAR(8) PRIMARY KEY NOT NULL,
+code_name VARCHAR(30)
+);
+
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1087,4 +1092,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1080';
+UPDATE system_settings SET db_schema_version='1081';
