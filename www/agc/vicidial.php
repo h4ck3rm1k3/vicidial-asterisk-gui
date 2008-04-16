@@ -178,10 +178,12 @@
 # 80317-2106 - added recording override options for inbound group calls
 # 80331-1433 - Added second transfer try for VICIDIAL transfers/hangups on manual dial calls
 # 80402-0121 - Fixes for manual dial transfers on some systems
+# 80407-2112 - Work on adding phone login load balancing across servers
+# 80416-0559 - Added ability to log computer_ip at login, set the $PhoneSComPIP variable
 #
 
-$version = '2.0.5-149';
-$build = '80402-0121';
+$version = '2.0.5-151';
+$build = '80416-0559';
 
 require("dbconnect.php");
 
@@ -222,7 +224,7 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 
 ### security strip all non-alphanumeric characters out of the variables ###
 	$DB=ereg_replace("[^0-9a-z]","",$DB);
-	$phone_login=ereg_replace("[^0-9a-zA-Z]","",$phone_login);
+	$phone_login=ereg_replace("[^\,0-9a-zA-Z]","",$phone_login);
 	$phone_pass=ereg_replace("[^0-9a-zA-Z]","",$phone_pass);
 	$VD_login=ereg_replace("[^0-9a-zA-Z]","",$VD_login);
 	$VD_pass=ereg_replace("[^0-9a-zA-Z]","",$VD_pass);
@@ -269,6 +271,7 @@ $PreseT_DiaL_LinKs		= '1';	# set to 1 to show a DIAL link for Dial Presets
 $LogiNAJAX				= '1';	# set to 1 to do lookups
 $HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "session calls"
 $LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent logout
+$PhoneSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -943,8 +946,29 @@ $VDloginDISPLAY=0;
 	exit;
 	}
 
+# code for parsing load-balanced agent phone allocation where agent interface
+# will send multiple phones-table logins so that the script can determine the
+# server that has the fewest agents logged into it.
+#   login: ca101,cb101,cc101
+$pa=0;
+if ( (eregi(',',$phone_login)) and (strlen($phone_login) > 2) )
+	{
+	$phoneSQL = "(";
+	$phones_auto = explode(',',$phone_login);
+	$phones_auto_ct = count($phones_auto);
+	while($pa < $phones_auto_ct)
+		{
+		if ($pa > 0)
+			{$phoneSQL .= " or ";}
+		$phoneSQL .= "(login='$phones_auto[$pa]' and pass='$phone_pass')";
+		$pa++;
+		}
+	$phoneSQL .= ")";
+	}
+else {$phoneSQL = "login='$phone_login' and pass='$phone_pass'";}
+
 $authphone=0;
-$stmt="SELECT count(*) from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
+$stmt="SELECT count(*) from phones where $phoneSQL and active = 'Y';";
 if ($DB) {echo "|$stmt|\n";}
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
@@ -982,6 +1006,42 @@ if (!$authphone)
 	}
 else
 	{
+### go through the entered phones to figure out which server has fewest agents
+### logged in and use that phone login account
+	if ($pa > 0)
+		{
+		$pb=0;
+		while($pb < $phones_auto_ct)
+			{
+			$pb_login='';
+			$pb_server_ip='';
+			$pb_count=0;
+			$pb_log='';
+
+			$stmtx="SELECT server_ip from phones where login = '$phones_auto[$pb]';";
+			if ($DB) {echo "|$stmtx|\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmtx, $link);
+			$rowx=mysql_fetch_row($rslt);
+
+			$stmt="SELECT count(*) from vicidial_live_agents where server_ip = '$rowx[0]';";
+			if ($DB) {echo "|$stmt|\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			
+			$pb_log .= "$phones_auto[$pb]|$rowx[0]|$row[0]|";
+
+			if ($pb_count >= $row[0])
+				{
+				$pb_count=$row[0];
+				$pb_server_ip=$rowx[0];
+				$phone_login=$phones_auto[$pb];
+				}
+			$pb++;
+			}
+		echo "<!-- Phones balance selection: $phone_login|$pb_server_ip|   |$pb_log -->\n";
+		}
 	echo "<title>VICIDIAL web client</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
@@ -1050,6 +1110,23 @@ else
 	$DBX_port=$row[59];
 	$enable_sipsak_messages=$row[66];
 
+	if ($PhoneSComPIP == '1')
+		{
+		if (strlen($computer_ip) < 4)
+			{
+			$stmt="UPDATE phones SET computer_ip='$ip' where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
+			if ($DB) {echo "|$stmt|\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	if ($PhoneSComPIP == '2')
+		{
+		$stmt="UPDATE phones SET computer_ip='$ip' where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
+		if ($DB) {echo "|$stmt|\n";}
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+		}
 	if ($clientDST)
 		{
 		$local_gmt = ($local_gmt + $isdst);

@@ -144,12 +144,6 @@ qc_user_level INT(2) default '0',
 campaign_group_id VARCHAR(20)
 );
 
-# qc codes to be used for statistics
- CREATE TABLE qc_codes (
-code VARCHAR(8) PRIMARY KEY NOT NULL,
-code_name VARCHAR(30)
-);
-
 # For the log table, some fields will need to be added to the vicidial_log table:
 ALTER TABLE vicidial_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
 
@@ -161,6 +155,12 @@ ALTER TABLE vicidial_closer_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2
 
 
 
+
+# qc codes to be used for statistics
+ CREATE TABLE vicidial_qc_codes (
+code VARCHAR(8) PRIMARY KEY NOT NULL,
+code_name VARCHAR(30)
+);
 
 ALTER TABLE vicidial_campaigns ADD qc_web_form_address VARCHAR(255);
 ALTER TABLE vicidial_campaigns ADD qc_script VARCHAR(10);

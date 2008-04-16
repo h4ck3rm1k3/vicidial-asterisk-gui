@@ -87,7 +87,20 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	[featuremap]
 	blindxfer => D
 
-16. Added ip_relay to allow for loopback IAX trunks that make true blind monitoring possible for all agents no matter their phone type 0860XXXX.
+16. Added ip_relay to allow for loopback IAX trunks that make true blind 
+	monitoring possible for all agents no matter their phone type 0860XXXX.
+
+17. Added the ability to load balance the logins to vicidial.php for phones 
+	that are registered to multiple servers on a multi-server system. 
+	Simply put multiple phone_login values in the phone login field at 
+	login separated by a comma and the vicidial.php script will pick the 
+	server that has the fewest agents logged into it at the moment of login.
+
+18. Added ability for vicidial.php to populate the phones.computer_ip field upon
+	agent login. Options set in the vicidial.php file to allow for overwrite
+	every login or only if field is empty.
+
+
 
 
 

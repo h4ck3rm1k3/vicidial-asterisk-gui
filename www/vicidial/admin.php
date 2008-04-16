@@ -703,6 +703,10 @@ if (isset($_GET["qc_script"]))						{$qc_script=$_GET["qc_script"];}
 	elseif (isset($_POST["qc_script"]))				{$qc_script=$_POST["qc_script"];}
 if (isset($_GET["ingroup_recording_override"]))		{$ingroup_recording_override=$_GET["ingroup_recording_override"];}	
 	elseif (isset($_POST["ingroup_recording_override"]))	{$ingroup_recording_override=$_POST["ingroup_recording_override"];}
+if (isset($_GET["code"]))				{$code=$_GET["code"];}	
+	elseif (isset($_POST["code"]))		{$code=$_POST["code"];}
+if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}	
+	elseif (isset($_POST["code_name"]))	{$code_name=$_POST["code_name"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -898,6 +902,7 @@ $after_hours_action = ereg_replace("[^0-9a-zA-Z]","",$after_hours_action);
 $after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
 $after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
 $qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
+$code = ereg_replace("[^0-9a-zA-Z]","",$code);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1023,6 +1028,7 @@ $list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
 $vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
 $vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
 $vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
+$code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$code_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1196,11 +1202,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80302-0232 - added drop_action and transfer to in-group for both in-groups and outbound
 # 80310-1504 - added QC settings section to campaign screen
 # 80317-2037 - Added Recording override settings to in-groups
+# 80414-1505 - More work on QC, added vicidial_qc_codes
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-125';
-$build = '80317-2037';
+$admin_version = '2.0.5-126';
+$build = '80414-1505';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1363,6 +1370,7 @@ if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFER
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
 if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL STATUS CATEGORY";}
+if ($ADD==241111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL QC STATUS CODE";}
 if ($ADD==3)			{$hh='users';		echo "Modify User";}
 if ($ADD==30)			{$hh='campaigns';	echo "Campaign Not Allowed";}
 if ($ADD==31)			
@@ -1410,6 +1418,7 @@ if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL 
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
 if ($ADD==321111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
 if ($ADD==331111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL STATUS CATEGORY";}
+if ($ADD==341111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL QC STATUS CODE";}
 if ($ADD=="4A")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Modify User - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Modify User";}
@@ -1437,6 +1446,7 @@ if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL 
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
 if ($ADD==421111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL SYSTEM STATUSES";}
 if ($ADD==431111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL STATUS CATEGORIES";}
+if ($ADD==441111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL QC STATUS CODE";}
 if ($ADD==5)			{$hh='users';		echo "Delete User";}
 if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Campaign";}
 if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Logout Agents";}
@@ -3654,6 +3664,14 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <B>Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report.</B>
 
 
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL QC STATUS CODES</FONT></B><BR><BR>
+<A NAME="vicidial_qc_status_codes">
+<BR>
+<B>The Quality Control-QC system within VICIDIAL has its own set of status codes separate from those within the call handling functions of VICIDIAL. QC statuse codes must be between 2 and 8 characters in length and contain no special characters like a space or colon. The QC status code description must be between 2 and 30 characters in length.</B>
+
+
 
 
 <BR><BR><BR><BR><BR><BR><BR><BR>
@@ -4223,7 +4241,7 @@ if (strlen($admin_hh) > 1) {
 	<?}
 	if (strlen($status_sh) > 1) { 
 		?>
-	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Statuses </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Status Categories </a></TD></TR>
+	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Statuses </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Status Categories </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=341111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> QC Status Codes </a></TD></TR>
 	<?}
 
 ### Do nothing if admin has no permissions
@@ -6099,6 +6117,48 @@ $ADD=331111111111111;
 
 
 
+######################
+# ADD=241111111111111 adds the new qc status code to the system
+######################
+
+if ($ADD==241111111111111)
+{
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_qc_codes where code='$code';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>QC STATUS CODE NOT ADDED - there is already a qc status code in the system with this name: $row[0]\n";}
+	else
+		{
+		 if ( (strlen($code) < 1) or (strlen($code_name) < 2) )
+			{
+			 echo "<br>QC STATUS CODE NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>code must be between 1 and 8 characters in length\n";
+			 echo "<br>code name must be between 2 and 30 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>QC STATUS CODE ADDED: $code_name - $code</B>\n";
+
+			$stmt="INSERT INTO vicidial_qc_codes (code,code_name) values('$code','$code_name');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW QC STATUS CODE  |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=341111111111111;
+}
+
+
+
 ######################################################################################################
 ######################################################################################################
 #######   4 series, record modifications submitted and DB is modified, then on to 3 series forms below
@@ -7667,6 +7727,74 @@ if ($ADD==431111111111111)
 	exit;
 	}
 $ADD=331111111111111;	# go to system settings modification form below
+}
+
+
+######################
+# ADD=441111111111111 modify/delete qc status code in the system
+######################
+
+if ($ADD==441111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if (ereg('delete',$stage))
+		{
+		if ( (strlen($code) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$code)) )
+			{
+			 echo "<br>QC STATUS CODE NOT DELETED - Please go back and look at the data you entered\n";
+			 echo "<br>the qc status code cannot be a reserved status: B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+			 echo "<br>the qc status code needs to be at least 1 characters in length\n";
+			}
+		else
+			{
+			echo "<br><B>QC STATUS CODE DELETED: $code</B>\n";
+
+			$stmt="DELETE FROM vicidial_qc_codes where code='$code';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|DELETE QC STATUS CODE |$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
+				fclose($fp);
+				}
+			}
+		}
+	if (ereg('modify',$stage))
+		{
+		if ( (strlen($code) < 1) or (strlen($code_name) < 2) )
+			{
+			 echo "<br>QC STATUS CODE NOT MODIFIED - Please go back and look at the data you entered\n";
+			 echo "<br>the qc status code needs to be at least 1 characters in length\n";
+			 echo "<br>the qc status code name needs to be at least 1 characters in length\n";
+			}
+		else
+			{
+			echo "<br><B>QC STATUS CODE MODIFIED: $code</B>\n";
+
+			$stmt="UPDATE vicidial_qc_codes SET code_name='$code_name' where code='$code';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY QC STATUS CODE |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=341111111111111;	# go to qc status code modification form below
 }
 
 
@@ -12826,6 +12954,84 @@ if ($ADD==331111111111111)
 	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; \n";
 	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
 	echo "Description: <input type=text name=vsc_description size=80 maxlength=255> &nbsp; \n";
+	echo "<input type=submit name=submit value=ADD><BR>\n";
+
+	echo "</FORM><br>\n";
+
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+
+
+
+######################
+# ADD=341111111111111 modify vicidial QC status code
+######################
+
+if ($ADD==341111111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>VICIDIAL QC STATUS CODES WITHIN THIS SYSTEM: &nbsp; $NWB#vicidial_qc_status_codes$NWE</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>STATUS CODE</td><td>DESCRIPTION</td><td>MODIFY/DELETE</td></tr>\n";
+
+	##### go through each QC status code
+	$stmt="SELECT count(*) from vicidial_qc_codes;";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] > 0)
+		{
+		$stmt="SELECT code,code_name from vicidial_qc_codes order by code;";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=441111111111111>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=code value=\"$rowx[0]\">\n";
+			echo "<font size=2><B>$rowx[0]</B></td>\n";
+			echo "<td><input type=text name=code_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+			echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; \n";
+			
+			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
+				{
+				echo "<DEL>DELETE</DEL>\n";
+				}
+			else
+				{
+				echo "<a href=\"$PHP_SELF?ADD=441111111111111&status=$rowx[0]&stage=delete\">DELETE</a>\n";
+				}
+			echo "</form></td></tr>\n";
+			}
+		}
+	echo "</table>\n";
+
+	echo "<br>ADD NEW QC STATUS CODE<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=241111111111111>\n";
+	echo "Status: <input type=text name=code size=9 maxlength=8> &nbsp; \n";
+	echo "Description: <input type=text name=code_name size=30 maxlength=30><BR>\n";
 	echo "<input type=submit name=submit value=ADD><BR>\n";
 
 	echo "</FORM><br>\n";
