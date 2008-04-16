@@ -73,6 +73,13 @@ $slash_star = '\*';
 #### download the latest phone code table ####
 chdir("$PATHhome");
 
+$wget = `which wget`;
+print "$wget\n";
+if ( $wget eq "" ) {
+	print STDERR "Please install the wget command\n";
+	exit();
+}
+
 print STDERR "Downloading latest phone codes tables\n";
 
 `wget $URL1`;
