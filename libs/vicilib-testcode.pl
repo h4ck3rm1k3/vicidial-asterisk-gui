@@ -20,6 +20,7 @@ use strict;
 use warnings;
 
 use vicidial;
+use viciagi;
 use DBI;
 
 # Test if get_date_hash_current is working

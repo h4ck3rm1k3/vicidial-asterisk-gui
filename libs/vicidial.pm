@@ -11,11 +11,12 @@ package vicidial;
 # CHANGELOG:
 # 80311-1611 - First test build
 # 80324-1435 - Fixed minor issues and tested all functions.
+# 80326-1113 - Moved agi_log to the new viciagi.pm library
 
 # Export our symbols
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(agi_output get_date_hash_current get_date_hash_value get_now_date load_config_file load_sys_config_db load_server_config_db load_all_servers_config_db);
+@EXPORT = qw(get_date_hash_current get_date_hash_value get_now_date load_config_file load_sys_config_db load_server_config_db load_all_servers_config_db);
 
 # USE FLAGS
 use 5.008;
@@ -23,44 +24,6 @@ use strict;
 use warnings;
 use Switch;
 use DBI;
-
-# function to perform logging for agi scripts
-#    ARG0 is the logging level of the script (0-3)
-#    ARG1 is the time stamp to go along with this log
-#    ARG2 is the name of the script that is currently logging
-#    ARG3 is the stage that script is currently in
-#    ARG4 is the log file's name
-#    ARG5 is the string that is going into the log
-#    this function does not return a value
-sub agi_output {
-	my $agi_log_level 	= $_[0];
-	my $now_date		= $_[1];
-	my $script_name		= $_[2];
-	my $process_stage	= $_[3];
-	my $log_file_name	= $_[4];
-	my $log_string		= $_[5];
-
-	my $write_string = "$now_date|$script_name|$process_stage|$log_string";
-
-	# loggin to STDERR
-	if ( ( $agi_log_level == '1' ) || ( $agi_log_level == '3' ) ) {
-		print STDERR "$write_string\n";
-	}
-
-	# logging to file
-	if ( $agi_log_level >= 2 ) {
-		# open the log file for writing
-		my $file_opened = 1;
-		(open( Lout, ">>$log_file_name" )) || ($file_opened = 0);
-		if ( $file_opened ) {	# if the file was opened print to it and then close
-			print Lout "$write_string\n";
-			close(Lout);
-		} else {	# else print a message to STDERR
-			print STDERR "Can't open $log_file_name to write $write_string: $!\n";
-		}
-	}	
-}
-
 
 # function to get a date hash that represents the current time
 #    this function does not take any arguments
@@ -204,13 +167,30 @@ sub load_config_file {
 	$config_hash{ 'sounds_path' } = "";
 	$config_hash{ 'monitor_path' } = "";
 	$config_hash{ 'done_monitor_path' } = "";
+	$config_hash{ 'fagi_log_server-port' } = "4577";
 	$config_hash{ 'fagi_log_min_servers' } = "";
 	$config_hash{ 'fagi_log_max_servers' } = "";
 	$config_hash{ 'fagi_log_min_spare_servers' } = "";
 	$config_hash{ 'fagi_log_max_spare_servers' } = "";
 	$config_hash{ 'fagi_log_max_requests' } = "";
 	$config_hash{ 'fagi_log_checkfordead' } = "";
-	$config_hash{ 'fastagi_log_checkforwait' } = "";
+	$config_hash{ 'fagi_log_checkforwait' } = "";
+	$config_hash{ 'fagi_in_server_port' } = "4578";
+	$config_hash{ 'fagi_in_min_servers' } = "";
+	$config_hash{ 'fagi_in_max_servers' } = "";
+	$config_hash{ 'fagi_in_min_spare_servers' } = "";
+	$config_hash{ 'fagi_in_max_spare_servers' } = "";
+	$config_hash{ 'fagi_in_max_requests' } = "";
+	$config_hash{ 'fagi_in_checkfordead' } = "";
+	$config_hash{ 'fagi_in_checkforwait' } = "";
+	$config_hash{ 'fagi_out_server-port' } = "4579";
+	$config_hash{ 'fagi_out_min_servers' } = "";
+	$config_hash{ 'fagi_out_max_servers' } = "";
+	$config_hash{ 'fagi_out_min_spare_servers' } = "";
+	$config_hash{ 'fagi_out_max_spare_servers' } = "";
+	$config_hash{ 'fagi_out_max_requests' } = "";
+	$config_hash{ 'fagi_out_checkfordead' } = "";
+	$config_hash{ 'fagi_out_checkforwait' } = "";
 	$config_hash{ 'server_ip' } = "";
 	$config_hash{ 'active_keepalives' } = "";
 	$config_hash{ 'db_server' } = "";
@@ -274,6 +254,10 @@ sub load_config_file {
 			}
 
 			# FAGI log server settings
+			case qr/^VARfastagi_log_server_port/ {
+				$config_hash{ 'fagi_log_server_port' } = $line;
+				$config_hash{ 'fagi_log_server_port' } =~ s/.*=//gi;
+			}
 			case qr/^VARfastagi_log_min_servers/ {
 				$config_hash{ 'fagi_log_min_servers' } = $line;
 				$config_hash{ 'fagi_log_min_servers' } =~ s/.*=//gi;
@@ -299,8 +283,76 @@ sub load_config_file {
 				$config_hash{ 'fagi_log_checkfordead' } =~ s/.*=//gi;
 			}
 			case qr/^VARfastagi_log_checkforwait/ {
-				$config_hash{ 'fastagi_log_checkforwait' } = $line;
-				$config_hash{ 'fastagi_log_checkforwait' } =~ s/.*=//gi;
+				$config_hash{ 'fagi_log_checkforwait' } = $line;
+				$config_hash{ 'fagi_log_checkforwait' } =~ s/.*=//gi;
+			}
+
+			# FAGI inbound server settings
+			case qr/^VARfastagi_in_server_port/ {
+				$config_hash{ 'fagi_in_server_port' } = $line;
+				$config_hash{ 'fagi_in_server_port' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_min_servers/ {
+				$config_hash{ 'fagi_in_min_servers' } = $line;
+				$config_hash{ 'fagi_in_min_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_max_servers/ {
+				$config_hash{ 'fagi_in_max_servers' } = $line;
+				$config_hash{ 'fagi_in_max_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_min_spare_servers/ {
+				$config_hash{ 'fagi_in_min_spare_servers' } = $line;
+				$config_hash{ 'fagi_in_min_spare_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_max_spare_servers/ {
+				$config_hash{ 'fagi_in_max_spare_servers' } = $line;
+				$config_hash{ 'fagi_in_max_spare_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_max_requests/ {
+				$config_hash{ 'fagi_in_max_requests' } = $line;
+				$config_hash{ 'fagi_in_max_requests' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_checkfordead/ {
+				$config_hash{ 'fagi_in_checkfordead' } = $line;
+				$config_hash{ 'fagi_in_checkfordead' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_in_checkforwait/ {
+				$config_hash{ 'fagi_in_checkforwait' } = $line;
+				$config_hash{ 'fagi_in_checkforwait' } =~ s/.*=//gi;
+			}
+
+			# FAGI outbound server settings
+			case qr/^VARfastagi_out_server_port/ {
+				$config_hash{ 'fagi_out_server_port' } = $line;
+				$config_hash{ 'fagi_out_server_port' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_min_servers/ {
+				$config_hash{ 'fagi_out_min_servers' } = $line;
+				$config_hash{ 'fagi_out_min_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_max_servers/ {
+				$config_hash{ 'fagi_out_max_servers' } = $line;
+				$config_hash{ 'fagi_out_max_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_min_spare_servers/ {
+				$config_hash{ 'fagi_out_min_spare_servers' } = $line;
+				$config_hash{ 'fagi_out_min_spare_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_max_spare_servers/ {
+				$config_hash{ 'fagi_out_max_spare_servers' } = $line;
+				$config_hash{ 'fagi_out_max_spare_servers' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_max_requests/ {
+				$config_hash{ 'fagi_out_max_requests' } = $line;
+				$config_hash{ 'fagi_out_max_requests' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_checkfordead/ {
+				$config_hash{ 'fagi_out_checkfordead' } = $line;
+				$config_hash{ 'fagi_out_checkfordead' } =~ s/.*=//gi;
+			}
+			case qr/^VARfastagi_out_checkforwait/ {
+				$config_hash{ 'fagi_out_checkforwait' } = $line;
+				$config_hash{ 'fagi_out_checkforwait' } =~ s/.*=//gi;
 			}
 
 			# general server settings

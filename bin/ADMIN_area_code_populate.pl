@@ -12,11 +12,14 @@
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
 # 61122-1902 - Added GMT_USA_zip.txt data import for USA postal GMT data
-#
+# 80416-1017 - 
 
 
 # default path to astguiclient configuration file:
-$PATHconf =		'/etc/astguiclient.conf';
+$PATHconf =		"/etc/astguiclient.conf";
+$domain   =		"http://phonecodes.vicidial.com";
+$URL1     =		"$domain/phone_codes_GMT-latest.txt";
+$URL2     =		"$domain/GMT_USA_zip-latest.txt";
 
 open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
 @conf = <conf>;
@@ -67,9 +70,16 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 $slash_star = '\*';
 
+#### download the latest phone code table ####
+chdir("$PATHhome");
+
+print STDERR "Downloading latest phone codes tables\n";
+
+`wget $URL1`;
+`wget $URL2`;
 
 #### BEGIN vicidial_phone_codes population from phone_codes_GMT.txt file ####
-open(codefile, "$PATHhome/phone_codes_GMT.txt") || die "can't open $PATHhome/phone_codes_GMT.txt: $!\n";
+open(codefile, "$PATHhome/phone_codes_GMT-latest.txt") || die "can't open $PATHhome/phone_codes_GMT-latest.txt: $!\n";
 @codefile = <codefile>;
 close(codefile);
 $pc=0;
@@ -110,7 +120,7 @@ print STDERR "$pc\n";
 
 
 #### BEGIN vicidial_postal_codes population from GMT_USA_zip.txt file ####
-open(zipfile, "$PATHhome/GMT_USA_zip.txt") || die "can't open $PATHhome/GMT_USA_zip.txt: $!\n";
+open(zipfile, "$PATHhome/GMT_USA_zip-latest.txt") || die "can't open $PATHhome/GMT_USA_zip-latest.txt: $!\n";
 @zipfile = <zipfile>;
 close(zipfile);
 $pc=0;
