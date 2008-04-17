@@ -247,6 +247,8 @@ $FILE_TIME = date("Ymd-His");
 $CIDdate = date("ymdHis");
 	$month_old = mktime(11, 0, 0, date("m"), date("d")-2,  date("Y"));
 	$past_month_date = date("Y-m-d H:i:s",$month_old);
+	$minutes_old = mktime(date("H"), date("i")-2, date("s"), date("m"), date("d"),  date("Y"));
+	$past_minutes_date = date("Y-m-d H:i:s",$minutes_old);
 
 
 $random = (rand(1000000, 9999999) + 10000000);
@@ -1011,36 +1013,54 @@ else
 	if ($pa > 0)
 		{
 		$pb=0;
+		$pb_login='';
+		$pb_server_ip='';
+		$pb_count=0;
+		$pb_log='';
 		while($pb < $phones_auto_ct)
 			{
-			$pb_login='';
-			$pb_server_ip='';
-			$pb_count=0;
-			$pb_log='';
-
+			### find the server_ip of each phone_login
 			$stmtx="SELECT server_ip from phones where login = '$phones_auto[$pb]';";
 			if ($DB) {echo "|$stmtx|\n";}
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmtx, $link);
 			$rowx=mysql_fetch_row($rslt);
 
+			### get number of agents logged in to each server
 			$stmt="SELECT count(*) from vicidial_live_agents where server_ip = '$rowx[0]';";
 			if ($DB) {echo "|$stmt|\n";}
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			
-			$pb_log .= "$phones_auto[$pb]|$rowx[0]|$row[0]|";
+			### find out whether the server is set to active
+			$stmt="SELECT count(*) from servers where server_ip = '$rowx[0]' and active='Y';";
+			if ($DB) {echo "|$stmt|\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $link);
+			$rowy=mysql_fetch_row($rslt);
 
-			if ($pb_count >= $row[0])
+			### find out whether the server_updater is running
+			$stmt="SELECT count(*) from server_updater where server_ip = '$rowx[0]' and last_update > '$past_minutes_date';";
+			if ($DB) {echo "|$stmt|\n";}
+			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			$rslt=mysql_query($stmt, $link);
+			$rowz=mysql_fetch_row($rslt);
+
+			$pb_log .= "$phones_auto[$pb]|$rowx[0]|$row[0]|$rowy[0]|$rowz[0]|  ";
+
+			if ( ($rowy[0] > 0) && ($rowz[0] > 0) )
 				{
-				$pb_count=$row[0];
-				$pb_server_ip=$rowx[0];
-				$phone_login=$phones_auto[$pb];
+				if ( ($pb_count >= $row[0]) || (strlen($pb_server_ip) < 4) )
+					{
+					$pb_count=$row[0];
+					$pb_server_ip=$rowx[0];
+					$phone_login=$phones_auto[$pb];
+					}
 				}
 			$pb++;
 			}
-		echo "<!-- Phones balance selection: $phone_login|$pb_server_ip|   |$pb_log -->\n";
+		echo "<!-- Phones balance selection: $phone_login|$pb_server_ip|$past_minutes_date|     |$pb_log -->\n";
 		}
 	echo "<title>VICIDIAL web client</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
