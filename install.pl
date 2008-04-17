@@ -2132,8 +2132,8 @@ if ($WEBONLY < 1)
 	`chmod 0755 $PATHhome/*`;
 
 	print "Copying extras files to $PATHhome ...\n";
-	`cp -f ./extras/GMT_USA_zip.txt $PATHhome/`;
-	`cp -f ./extras/phone_codes_GMT.txt $PATHhome/`;
+#	`cp -f ./extras/GMT_USA_zip.txt $PATHhome/`;
+#	`cp -f ./extras/phone_codes_GMT.txt $PATHhome/`;
 	`cp -f ./extras/MySQL_AST_CREATE_tables.sql $PATHhome/`;
 
 	print "Copying agi-bin scripts to $PATHagi ...\n";
