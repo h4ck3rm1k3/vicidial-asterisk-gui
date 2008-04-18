@@ -27,6 +27,7 @@
 # 60814-1712 - added option for no logging to file
 # 60817-1211 - added more ARGS to go to child process to remove DBI from child
 # 61221-1926 - optimize and clean code, lc
+# 80418-0901 - reduced time between Actions being sent, raised endless loop timer
 #
 
 $|++;
@@ -97,9 +98,9 @@ my $event_string='LOGGED INTO MYSQL SERVER ON 1 CONNECTION|';
 eventLogger($conf{PATHlogs}, 'process', $event_string);
 
 
-my $one_day_interval = 90;		# 1 day loops for 3 months
+my $one_day_interval = 182;		# 2 day loops for 12 months
 while ($one_day_interval > 0) {
-	my $endless_loop = 864000;		# 10 days at .20 seconds per loop
+	my $endless_loop = 864000;		# 2 days at .20 seconds per loop
 	my $affected_rows;
 	my $NEW_actions;
 	while ($endless_loop > 0) {
@@ -185,6 +186,7 @@ while ($one_day_interval > 0) {
 					$launch .= " --ASTmgrUSERNAME=" . $servConf->{ASTmgrUSERNAME};
 					$launch .= " --ASTmgrSECRET=" . $servConf->{ASTmgrSECRET};
 					$launch .= " --ASTmgrUSERNAMEsend=" . $servConf->{ASTmgrUSERNAMEsend};
+					$launch .= " --man_id=" . $vdm->{man_id};
 					$launch .= " --action=" . $vdm->{action};
 					$launch .= " --cmd_line_b=" . $vdm->{cmd_line_b} if ($vdm->{cmd_line_b});
 					$launch .= " --cmd_line_c=" . $vdm->{cmd_line_c} if ($vdm->{cmd_line_c});
@@ -224,10 +226,10 @@ while ($one_day_interval > 0) {
 		}
 
 		if ($affected_rows) {
-			### sleep for 10 hundredths of a second
-			usleep(1*100*1000);
+			### sleep for 5 hundredths of a second if just send an ACTION
+			usleep(1*50*1000);
 		} else {
-			### sleep for 20 hundredths of a second
+			### sleep for 20 hundredths of a second if no actions sent
 			usleep(1*200*1000);
 		}
 

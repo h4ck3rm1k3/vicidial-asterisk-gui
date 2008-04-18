@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_send_action_child.pl version 0.5   *DBI-version
+# AST_send_action_child.pl version 2.0.5   *DBI-version
 # 
 # Part of the Asterisk Central Queue System (ACQS)
 #
@@ -27,6 +27,7 @@
 # 61004-1728 - added ability to parse volume control and lookup meetme IDs
 # 61220-1720 - optimize and clean code, lc.
 # 61221-1942 - additional modification to structure, lc.
+# 80418-0927 - added man_id to logging output for better tracking, raised sleep times
 #
 
 $|++;
@@ -39,7 +40,7 @@ my $secX = time(); #Start time
 
 ### Initialize run-time variables ###
 my ($CLOhelp, $SYSLOG, $PATHlogs, $telnet_host, $telnet_port, $ASTmgrUSERNAME);
-my ($ASTmgrSECRET, $ASTmgrUSERNAMEsend, $action, $cmd_line_b, $cmd_line_c);
+my ($ASTmgrSECRET, $ASTmgrUSERNAMEsend, $man_id, $action, $cmd_line_b, $cmd_line_c);
 my ($cmd_line_d, $cmd_line_e, $cmd_line_f, $cmd_line_g, $cmd_line_h);
 my ($cmd_line_i, $cmd_line_j, $cmd_line_k, $DB, $DBX);
 my $FULL_LOG = 1;
@@ -54,6 +55,7 @@ if (scalar @ARGV) {
 		'ASTmgrUSERNAME=s' => \$ASTmgrUSERNAME,
 		'ASTmgrSECRET=s' => \$ASTmgrSECRET,
 		'ASTmgrUSERNAMEsend=s' => \$ASTmgrUSERNAMEsend,
+		'man_id=s' => \$man_id,
 		'action=s' => \$action,
 		'cmd_line_b=s' => \$cmd_line_b,
 		'cmd_line_c=s' => \$cmd_line_c,
@@ -79,6 +81,7 @@ if (scalar @ARGV) {
 		print "  ASTmgrUSERNAME:        $ASTmgrUSERNAME\n" if ($ASTmgrUSERNAME);
 		print "  ASTmgrSECRET:          $ASTmgrSECRET\n" if ($ASTmgrSECRET);
 		print "  ASTmgrUSERNAMEsend:    $ASTmgrUSERNAMEsend\n" if ($ASTmgrUSERNAMEsend);
+		print "  man_id:                $man_id\n" if ($man_id);
 		print "  cmd_line_b:            $cmd_line_b\n" if ($cmd_line_b);
 		print "  cmd_line_c:            $cmd_line_c\n" if ($cmd_line_c);
 		print "  cmd_line_d:            $cmd_line_d\n" if ($cmd_line_d);
@@ -102,6 +105,7 @@ if (scalar @ARGV) {
 		print "  [--ASTmgrUSERNAME] = username for Asterisk Manager login\n";
 		print "  [--ASTmgrSECRET] = secret or password for Asterisk Manager login\n";
 		print "  [--ASTmgrUSERNAMEsend] = username specific for sending actions for Asterisk Manager login\n";
+		print "  [--man_id] = ID of the action in the vicidial_manager table\n";
 		print "  [--action] = type of manager action to send\n";
 		print "  [--cmd_line_X] = lines to send to Manager after action\n";
 		print "                   X replaced with b-k (10 lines)\n";
@@ -132,6 +136,7 @@ if ($action) {
 		print "  ASTmgrUSERNAME:        $ASTmgrUSERNAME\n" if ($ASTmgrUSERNAME);
 		print "  ASTmgrSECRET:          $ASTmgrSECRET\n" if ($ASTmgrSECRET);
 		print "  ASTmgrUSERNAMEsend:    $ASTmgrUSERNAMEsend\n" if ($ASTmgrUSERNAMEsend);
+		print "  man_id:                $man_id\n" if ($man_id);
 		print "  cmd_line_b:            $cmd_line_b\n" if ($cmd_line_b);
 		print "  cmd_line_c:            $cmd_line_c\n" if ($cmd_line_c);
 		print "  cmd_line_d:            $cmd_line_d\n" if ($cmd_line_d);
@@ -209,8 +214,8 @@ if ($action) {
 	$originate_command .= "\n";
 
 
-	print nowDate() . "|$SYSLOG|\n$originate_command";
-	my $event_string = "0|" . $SYSLOG . "|";
+	print nowDate() . "|$SYSLOG|$man_id|\n$originate_command";
+	my $event_string = $man_id . "|0|" . $SYSLOG . "|";
 	$event_string .= "\n" . $originate_command;
 
 	eventLogger($PATHlogs,'full',$event_string) if ($FULL_LOG and $SYSLOG);
@@ -218,11 +223,11 @@ if ($action) {
 	my @list_channels = $tn->cmd(String => $originate_command,
 		Prompt => '/.*/'); 
 
-	sleep(3);
+	sleep(4);
 	
 	my $data1;  # ? Useless ?
 	if ($FULL_LOG and $SYSLOG) {
-		my $event_string = "1|" . $data1 . "|";
+		my $event_string = $man_id . "|1|" . $data1 . "|";
 		foreach my $channel (@list_channels) {
 			$event_string .= $channel;
 		}
@@ -235,10 +240,10 @@ if ($action) {
 	$tn->buffer_empty;
 	#@hangup = $tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
 	$tn->cmd(String => "Action: Logoff\n\n", Prompt => "/.*/"); 
-	sleep(2);
+	sleep(3);
 
 	if ($FULL_LOG and $SYSLOG) {
-		my $event_string = "2|" . $data1 . "|";
+		my $event_string = $man_id . "|2|" . $data1 . "|";
 		foreach my $channel (@list_channels) {
 			$event_string .= $channel;
 		}

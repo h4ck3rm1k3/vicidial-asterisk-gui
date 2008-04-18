@@ -655,6 +655,8 @@ You may want to reduce the exposure of some of the elements of VICIDIAL. Here ar
 - Change the WWW writable in the admin.php server settings to "0"
 - Change the default admin user "6666" or it's password from the default
 - Change the Default secret(password) for the default SIP and IAX accounts that are set up with astGUIclient
+- Change the default password for the Asterisk manager connection in manager.conf then change it in the server modification screen
+- Change the default password for the mysql cron user in mysql and change it to match in /etc/astguiclient.conf on each server
 - Possibly use static IP addresses for the IAX/SIP conf account entries
 - Change the default port for Apache in httpd.conf from 80 to something else
 - Change the default port for IAX in iax.conf from 4569 to something else
