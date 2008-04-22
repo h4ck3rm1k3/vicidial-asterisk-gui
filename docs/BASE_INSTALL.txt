@@ -648,9 +648,10 @@ PHASE 11: Security Hardening:
 
 You may want to reduce the exposure of some of the elements of VICIDIAL. Here are some examples:
 
- ln -s /dev/null /usr/local/apache2/htdocs/vicidial/project_auth_entries.txt
- ln -s /dev/null /usr/local/apache2/htdocs/agc/project_auth_entries.txt
- ln -s /dev/null /usr/local/apache2/htdocs/vicidial/admin_changes_log.txt
+ln -s /dev/null /usr/local/apache2/htdocs/vicidial/project_auth_entries.txt
+ln -s /dev/null /usr/local/apache2/htdocs/agc/vicidial_auth_entries.txt
+ln -s /dev/null /usr/local/apache2/htdocs/agc/astguiclient_auth_entries.txt
+ln -s /dev/null /usr/local/apache2/htdocs/vicidial/admin_changes_log.txt
 
 - Change the WWW writable in the admin.php server settings to "0"
 - Change the default admin user "6666" or it's password from the default

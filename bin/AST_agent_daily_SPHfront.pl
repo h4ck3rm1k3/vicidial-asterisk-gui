@@ -379,7 +379,7 @@ foreach (@Duser)
 	$GMONTHhours = ($GMONTHhours + $MONTHhours);
 	$TOTMONTHhours = ($TOTMONTHhours + $MONTHhours);
 
-	print Dout "$shipdate|$Dname[$i]|$Duser[$i]||$Dhours[0]|$Dsph[0]|$Dhours[1]|$Dsph[1]|$Dhours[2]|$Dsph[2]|$Dhours[3]|$Dsph[3]|$Dhours[4]|$Dsph[4]|$Dhours[5]|$Dsph[5]|$Dhours[6]|$Dsph[6]|$WEEKhours|$WEEKsph|$MONTHhours|$MONTHsph|$Dgroup[$i]\n"; 
+	print Dout "$shipdate|$Dname[$i]|$Duser[$i]|$Dhours[0]|$Dsph[0]|$Dhours[1]|$Dsph[1]|$Dhours[2]|$Dsph[2]|$Dhours[3]|$Dsph[3]|$Dhours[4]|$Dsph[4]|$Dhours[5]|$Dsph[5]|$Dhours[6]|$Dsph[6]|$WEEKhours|$WEEKsph|$MONTHhours|$MONTHsph|$Dgroup[$i]\n"; 
 
 	### only print to ASCII fixed-length file if week-to-date and month-to-date hours > 0
 	if ( ($WEEKhours > 0) || ($MONTHhours > 0) )
@@ -441,7 +441,7 @@ foreach (@Duser)
 		else
 			{$GMONTHsph = 0;}
 
-		print Dout "$shipdate|TOTAL $Dprevgroup|||$GDhours[0]|$GDsph[0]|$GDhours[1]|$GDsph[1]|$GDhours[2]|$GDsph[2]|$GDhours[3]|$GDsph[3]|$GDhours[4]|$GDsph[4]|$GDhours[5]|$GDsph[5]|$GDhours[6]|$GDsph[6]|$GWEEKhours|$GWEEKsph|$GMONTHhours|$GMONTHsph|\n"; 
+		print Dout "$shipdate|TOTAL $Dprevgroup||$GDhours[0]|$GDsph[0]|$GDhours[1]|$GDsph[1]|$GDhours[2]|$GDsph[2]|$GDhours[3]|$GDsph[3]|$GDhours[4]|$GDsph[4]|$GDhours[5]|$GDsph[5]|$GDhours[6]|$GDsph[6]|$GWEEKhours|$GWEEKsph|$GMONTHhours|$GMONTHsph|\n"; 
 
 			$GWEEKhours =	sprintf("%.0f", $GWEEKhours);
 			$GWEEKhours =	sprintf("%5s", $GWEEKhours); while(length($GWEEKhours)>5) {chop($GWEEKhours);}
@@ -505,7 +505,7 @@ else
 	{$TOTMONTHsph = 0;}
 
 
-print Dout "$shipdate|TOTAL|||$TOTDhours[0]|$TOTDsph[0]|$TOTDhours[1]|$TOTDsph[1]|$TOTDhours[2]|$TOTDsph[2]|$TOTDhours[3]|$TOTDsph[3]|$TOTDhours[4]|$TOTDsph[4]|$TOTDhours[5]|$TOTDsph[5]|$TOTDhours[6]|$TOTDsph[6]|$TOTWEEKhours|$TOTWEEKsph|$TOTMONTHhours|$TOTMONTHsph|\n"; 
+print Dout "$shipdate|TOTAL||$TOTDhours[0]|$TOTDsph[0]|$TOTDhours[1]|$TOTDsph[1]|$TOTDhours[2]|$TOTDsph[2]|$TOTDhours[3]|$TOTDsph[3]|$TOTDhours[4]|$TOTDsph[4]|$TOTDhours[5]|$TOTDsph[5]|$TOTDhours[6]|$TOTDsph[6]|$TOTWEEKhours|$TOTWEEKsph|$TOTMONTHhours|$TOTMONTHsph|\n"; 
 
 	$TOTWEEKhours =	sprintf("%.0f", $TOTWEEKhours);
 	$TOTWEEKhours =	sprintf("%5s", $TOTWEEKhours); while(length($TOTWEEKhours)>5) {chop($TOTWEEKhours);}

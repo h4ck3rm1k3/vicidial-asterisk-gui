@@ -30,6 +30,7 @@
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
 # 80227-0418 - Added priority to waiting calls display
 # 80311-1550 - Added calls_today on all agents and wait time/in-group for inbound calls
+# 80422-0033 - Added phonediaplay option, allow for toggle-sorting on sortable fields
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -71,7 +72,8 @@ if (isset($_GET["SERVdisplay"]))			{$SERVdisplay=$_GET["SERVdisplay"];}
 	elseif (isset($_POST["SERVdisplay"]))	{$SERVdisplay=$_POST["SERVdisplay"];}
 if (isset($_GET["CALLSdisplay"]))			{$CALLSdisplay=$_GET["CALLSdisplay"];}
 	elseif (isset($_POST["CALLSdisplay"]))	{$CALLSdisplay=$_POST["CALLSdisplay"];}
-
+if (isset($_GET["PHONEdisplay"]))			{$PHONEdisplay=$_GET["PHONEdisplay"];}
+	elseif (isset($_POST["PHONEdisplay"]))	{$PHONEdisplay=$_POST["PHONEdisplay"];}
 
 if (!isset($RR))			{$gRRroup=4;}
 if (!isset($group))			{$group='';}
@@ -81,7 +83,7 @@ if (!isset($UidORname))		{$UidORname=0;}	# 0=id, 1=name
 if (!isset($orderby))		{$orderby='timeup';}
 if (!isset($SERVdisplay))	{$SERVdisplay=1;}	# 0=no, 1=yes
 if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
-
+if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 
 function get_server_load($windows = false) {
 $os = strtolower(PHP_OS);
@@ -245,7 +247,7 @@ $rslt=mysql_query($stmt, $link);
 	$campaign_allow_inbound = $row[0];
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">\n";
+echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&group=$group&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">\n";
 echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "VICIDIAL Campaign: \n";
@@ -260,6 +262,7 @@ echo "<INPUT TYPE=HIDDEN NAME=UidORname VALUE=\"$UidORname\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=orderby VALUE=\"$orderby\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=SERVdisplay VALUE=\"$SERVdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=CALLSdisplay VALUE=\"$CALLSdisplay\">\n";
+echo "<INPUT TYPE=HIDDEN NAME=PHONEdisplay VALUE=\"$PHONEdisplay\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
 echo "<option value=\"XXXX-ALL-ACTIVE-XXXX\">ALL ACTIVE</option>\n";
 	$o=0;
@@ -284,10 +287,17 @@ if ($UGdisplay > 0)
 	echo "</SELECT>\n";
 	}
 echo "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">STOP</a> | ";
-echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">SLOW</a> | ";
-echo "<a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">GO</a>";
-echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | \n";
+echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">STOP</a> | ";
+echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">SLOW</a> | ";
+echo "<a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">GO</a>";
+if ($group == 'XXXX-ALL-ACTIVE-XXXX')
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=10\">MODIFY</a> | \n";
+	}
+else
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | \n";
+	}
 echo "<a href=\"./AST_timeonVDADallSUMMARY.php?group=$group&RR=$RR&DB=$DB&adastats=$adastats\">SUMMARY</a> | \n";
 echo "<a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
 echo "\n\n";
@@ -461,39 +471,47 @@ echo "<TD ALIGN=LEFT COLSPAN=8>";
 
 if ($adastats<2)
 	{
-	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\"><font size=1>+ VIEW MORE SETTINGS</font></a>";
+	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>+ VIEW MORE SETTINGS</font></a>";
 	}
 if ($UGdisplay>0)
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=0&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\"><font size=1>HIDE USER GROUP</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=0&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>HIDE USER GROUP</font></a>";
 	}
 else
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=1&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\"><font size=1>VIEW USER GROUP</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=1&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>VIEW USER GROUP</font></a>";
 	}
 if ($UidORname>0)
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=0&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\"><font size=1>SHOW AGENT ID</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=0&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>SHOW AGENT ID</font></a>";
 	}
 else
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=1&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\"><font size=1>SHOW AGENT NAME</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=1&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>SHOW AGENT NAME</font></a>";
 	}
 if ($SERVdisplay>0)
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=0&CALLSdisplay=$CALLSdisplay\"><font size=1>HIDE SERVER INFO</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=0&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>HIDE SERVER INFO</font></a>";
 	}
 else
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=1&CALLSdisplay=$CALLSdisplay\"><font size=1>SHOW SERVER INFO</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=1&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\"><font size=1>SHOW SERVER INFO</font></a>";
 	}
 if ($CALLSdisplay>0)
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=0\"><font size=1>HIDE WAITING CALLS DETAIL</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=0&PHONEdisplay=$PHONEdisplay\"><font size=1>HIDE WAITING CALLS</font></a>";
 	}
 else
 	{
-	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=1\"><font size=1>SHOW WAITING CALLS DETAIL</font></a>";
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=1&PHONEdisplay=$PHONEdisplay\"><font size=1>SHOW WAITING CALLS</font></a>";
+	}
+if ($PHONEdisplay>0)
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=0&PHONEdisplay=0\"><font size=1>HIDE PHONES</font></a>";
+	}
+else
+	{
+	echo " &nbsp; &nbsp; &nbsp; <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=1&PHONEdisplay=1\"><font size=1>SHOW PHONES</font></a>";
 	}
 echo "</TD>";
 echo "</TR>";
@@ -649,13 +667,30 @@ if ($p<1)
 	{$Cecho='';}
 
 ###################################################################################
-###### TIME ON SYSTEM
+###### AGENT TIME ON SYSTEM
 ###################################################################################
 
 $agent_incall=0;
 $agent_ready=0;
 $agent_paused=0;
 $agent_total=0;
+
+$phoneord=$orderby;
+$userord=$orderby;
+$groupord=$orderby;
+$timeord=$orderby;
+$campaignord=$orderby;
+
+if ($phoneord=='phoneup') {$phoneord='phonedown';}
+  else {$phoneord='phoneup';}
+if ($userord=='userup') {$userord='userdown';}
+  else {$userord='userup';}
+if ($groupord=='groupup') {$groupord='groupdown';}
+  else {$groupord='groupup';}
+if ($timeord=='timeup') {$timeord='timedown';}
+  else {$timeord='timeup';}
+if ($campaignord=='campaignup') {$campaignord='campaigndown';}
+  else {$campaignord='campaignup';}
 
 $Aecho = '';
 $Aecho .= "VICIDIAL: Agents Time On Calls Campaign: $group                      $NOW_TIME\n";
@@ -665,10 +700,12 @@ $HDbegin =			"+";
 $HTbegin =			"|";
 $HDstation =		"------------+";
 $HTstation =		" STATION    |";
+$HDphone =		"------------+";
+$HTphone =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$phoneord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">PHONE</a>      |";
 $HDuser =			"--------------------+";
-$HTuser =			" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=userup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">USER</a>               |";
+$HTuser =			" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$userord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">USER</a>               |";
 $HDusergroup =		"--------------+";
-$HTusergroup =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=groupup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">USER GROUP</a>   |";
+$HTusergroup =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$groupord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">USER GROUP</a>   |";
 $HDsessionid =		"------------------+";
 $HTsessionid =		" SESSIONID        |";
 $HDbarge =			"-------+";
@@ -680,12 +717,17 @@ $HTserver_ip =		" SERVER IP       |";
 $HDcall_server_ip =	"-----------------+";
 $HTcall_server_ip =	" CALL SERVER IP  |";
 $HDtime =			"---------+";
-$HTtime =			" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=timeup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">MM:SS</a>   |";
+$HTtime =			" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$timeord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">MM:SS</a>   |";
 $HDcampaign =		"------------+";
-$HTcampaign =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=campaignup&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay\">CAMPAIGN</a>   |";
+$HTcampaign =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$campaignord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay\">CAMPAIGN</a>   |";
 $HDcalls =			"-------+";
 $HTcalls =			" CALLS |";
 
+if ($PHONEdisplay < 1)
+	{
+	$HDphone =	'';
+	$HTphone =	'';
+	}
 if ($UGdisplay < 1)
 	{
 	$HDusergroup =	'';
@@ -711,8 +753,8 @@ if ($SERVdisplay < 1)
 
 
 
-$Aline  = "$HDbegin$HDstation$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
-$Bline  = "$HTbegin$HTstation$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
+$Aline  = "$HDbegin$HDstation$HDphone$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
+$Bline  = "$HTbegin$HTstation$HTphone$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
 $Aecho .= "$Aline";
 $Aecho .= "$Bline";
 $Aecho .= "$Aline";
@@ -723,6 +765,8 @@ if ($orderby=='campaignup') {$orderSQL='vicidial_live_agents.campaign_id,vicidia
 if ($orderby=='campaigndown') {$orderSQL='vicidial_live_agents.campaign_id desc,vicidial_live_agents.status desc,last_call_time desc';}
 if ($orderby=='groupup') {$orderSQL='user_group,vicidial_live_agents.status,last_call_time';}
 if ($orderby=='groupdown') {$orderSQL='user_group desc,vicidial_live_agents.status desc,last_call_time desc';}
+if ($orderby=='phoneup') {$orderSQL='extension,server_ip';}
+if ($orderby=='phonedown') {$orderSQL='extension desc,server_ip desc';}
 if ($UidORname > 0)
 	{
 	if ($orderby=='userup') {$orderSQL='full_name,status,last_call_time';}
@@ -740,7 +784,6 @@ if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
 $stmt="select extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
-
 if ($non_latin > 0)
 {
 $rslt=mysql_query("SET NAMES 'UTF8'");
@@ -793,6 +836,45 @@ $talking_to_print = mysql_num_rows($rslt);
 			$extension =		sprintf("%-40s", $extension);
 			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
 			}
+
+			if (eregi("Local/",$Aextension[$i])) 
+				{
+				$protocol = 'EXTERNAL';
+				$dialplan = eregi_replace('Local/',"",$Aextension[$i]);
+				$dialplan = eregi_replace("\@.*",'',$dialplan);
+				$exten = "dialplan_number='$dialplan'";
+				}
+			if (eregi('SIP/',$Aextension[$i])) 
+				{
+				$protocol = 'SIP';
+				$dialplan = eregi_replace('SIP/',"",$Aextension[$i]);
+				$dialplan = eregi_replace("-.*",'',$dialplan);
+				$exten = "extension='$dialplan'";
+				}
+			if (eregi('IAX2/',$Aextension[$i])) 
+				{
+				$protocol = 'IAX2';
+				$dialplan = eregi_replace('IAX2/',"",$Aextension[$i]);
+				$dialplan = eregi_replace("-.*",'',$dialplan);
+				$exten = "extension='$dialplan'";
+				}
+			if (eregi('Zap/',$Aextension[$i])) 
+				{
+				$protocol = 'Zap';
+				$dialplan = eregi_replace('Zap/',"",$Aextension[$i]);
+				$exten = "extension='$dialplan'";
+				}
+
+		$stmt="select login from phones where server_ip='$Aserver_ip[$i]' and $exten and protocol='$protocol';";
+		if ($non_latin > 0)
+		{
+		$rslt=mysql_query("SET NAMES 'UTF8'");
+		}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$login = $row[0];
+
+		$phone =			sprintf("%-10s", $login);
 		$Luser =			$Auser[$i];
 		$user =				sprintf("%-18s", $Auser[$i]);
 		$Lsessionid =		$Asessionid[$i];
@@ -905,6 +987,9 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($SERVdisplay > 0)	{$SVD = "$G$server_ip$EG | $G$call_server_ip$EG | ";}
 		else	{$SVD = "";}
 
+		if ($PHONEdisplay > 0)	{$phoneD = "$G$phone$EG | ";}
+		else	{$phoneD = "";}
+
 		$vac_stage='';
 		$vac_campaign='';
 		$INGRP='';
@@ -931,7 +1016,7 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG | <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
+		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 
 		$i++;
 		}

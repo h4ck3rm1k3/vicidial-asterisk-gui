@@ -3,14 +3,6 @@
 # 
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# make sure you have added a user to the vicidial_users MySQL table with at least
-# user_level 1 or greater to access this page. Also, you need to have the login
-# and pass of a phone listed in the asterisk.phones table. The page grabs the 
-# server info and other details from this login and pass.
-#
-# This script works best with Firefox or Mozilla, but will run for a couple
-# hours on Internet Explorer before the memory leaks cause a crash.
-#
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
 # - manager_send.php: Sends manager actions to the DB for execution
@@ -759,7 +751,7 @@ $VDloginDISPLAY=0;
 			$HKstatuses = substr("$HKstatuses", 0, -1); 
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
-			##### grab the statuses to be dialed for your campaign as well as other campaign settings
+			##### grab the campaign settings
 			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
