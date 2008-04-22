@@ -31,6 +31,7 @@
 # 80227-0418 - Added priority to waiting calls display
 # 80311-1550 - Added calls_today on all agents and wait time/in-group for inbound calls
 # 80422-0033 - Added phonediaplay option, allow for toggle-sorting on sortable fields
+# 80422-1001 - Fixed sort by phone login
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -794,7 +795,6 @@ $talking_to_print = mysql_num_rows($rslt);
 	if ($talking_to_print > 0)
 	{
 	$i=0;
-	$agentcount=0;
 	while ($i < $talking_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
@@ -816,10 +816,69 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		$i++;
 		}
+
+### Lookup phone logins
 	$i=0;
-	$agentcount=0;
 	while ($i < $talking_to_print)
 		{
+		if (eregi("Local/",$Aextension[$i])) 
+			{
+			$protocol = 'EXTERNAL';
+			$dialplan = eregi_replace('Local/',"",$Aextension[$i]);
+			$dialplan = eregi_replace("\@.*",'',$dialplan);
+			$exten = "dialplan_number='$dialplan'";
+			}
+		if (eregi('SIP/',$Aextension[$i])) 
+			{
+			$protocol = 'SIP';
+			$dialplan = eregi_replace('SIP/',"",$Aextension[$i]);
+			$dialplan = eregi_replace("-.*",'',$dialplan);
+			$exten = "extension='$dialplan'";
+			}
+		if (eregi('IAX2/',$Aextension[$i])) 
+			{
+			$protocol = 'IAX2';
+			$dialplan = eregi_replace('IAX2/',"",$Aextension[$i]);
+			$dialplan = eregi_replace("-.*",'',$dialplan);
+			$exten = "extension='$dialplan'";
+			}
+		if (eregi('Zap/',$Aextension[$i])) 
+			{
+			$protocol = 'Zap';
+			$dialplan = eregi_replace('Zap/',"",$Aextension[$i]);
+			$exten = "extension='$dialplan'";
+			}
+
+		$stmt="select login from phones where server_ip='$Aserver_ip[$i]' and $exten and protocol='$protocol';";
+		if ($non_latin > 0)
+		{
+		$rslt=mysql_query("SET NAMES 'UTF8'");
+		}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$Alogin[$i] = "$row[0]-----$i";
+		$i++;
+		}
+
+### Sort by phone if selected
+	if ($orderby=='phoneup')
+		{
+		sort($Alogin);
+		}
+	if ($orderby=='phonedown')
+		{
+		rsort($Alogin);
+		}
+
+### Run through the loop to display agents
+	$j=0;
+	$agentcount=0;
+	while ($j < $talking_to_print)
+		{
+
+		$phone_split = explode("-----",$Alogin[$j]);
+		$i = $phone_split[1];
+
 			if (eregi("READY|PAUSED",$Astatus[$i]))
 			{
 			$Acall_time[$i]=$Acall_finish[$i];
@@ -837,44 +896,7 @@ $talking_to_print = mysql_num_rows($rslt);
 			while(mb_strlen($extension, 'utf-8')>10) {$extension = mb_substr("$extension", 0, -1,'utf8');}
 			}
 
-			if (eregi("Local/",$Aextension[$i])) 
-				{
-				$protocol = 'EXTERNAL';
-				$dialplan = eregi_replace('Local/',"",$Aextension[$i]);
-				$dialplan = eregi_replace("\@.*",'',$dialplan);
-				$exten = "dialplan_number='$dialplan'";
-				}
-			if (eregi('SIP/',$Aextension[$i])) 
-				{
-				$protocol = 'SIP';
-				$dialplan = eregi_replace('SIP/',"",$Aextension[$i]);
-				$dialplan = eregi_replace("-.*",'',$dialplan);
-				$exten = "extension='$dialplan'";
-				}
-			if (eregi('IAX2/',$Aextension[$i])) 
-				{
-				$protocol = 'IAX2';
-				$dialplan = eregi_replace('IAX2/',"",$Aextension[$i]);
-				$dialplan = eregi_replace("-.*",'',$dialplan);
-				$exten = "extension='$dialplan'";
-				}
-			if (eregi('Zap/',$Aextension[$i])) 
-				{
-				$protocol = 'Zap';
-				$dialplan = eregi_replace('Zap/',"",$Aextension[$i]);
-				$exten = "extension='$dialplan'";
-				}
-
-		$stmt="select login from phones where server_ip='$Aserver_ip[$i]' and $exten and protocol='$protocol';";
-		if ($non_latin > 0)
-		{
-		$rslt=mysql_query("SET NAMES 'UTF8'");
-		}
-		$rslt=mysql_query($stmt, $link);
-		$row=mysql_fetch_row($rslt);
-		$login = $row[0];
-
-		$phone =			sprintf("%-10s", $login);
+		$phone =			sprintf("%-10s", $phone_split[0]);
 		$Luser =			$Auser[$i];
 		$user =				sprintf("%-18s", $Auser[$i]);
 		$Lsessionid =		$Asessionid[$i];
@@ -952,7 +974,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		if (eregi("PAUSED",$Astatus[$i])) 
 			{
 			if ($call_time_M_int >= 360) 
-				{$i++; continue;} 
+				{$j++; continue;} 
 			else
 				{
 				$agent_paused++;  $agent_total++;
@@ -1018,7 +1040,7 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 
-		$i++;
+		$j++;
 		}
 
 		$Aecho .= "$Aline";
