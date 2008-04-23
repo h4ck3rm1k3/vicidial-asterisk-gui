@@ -734,6 +734,9 @@ installation on another machine)
 			    AllowOverride None
 			    Order allow,deny
 			    Allow from all
+				<files *.mp3>
+					Forcetype application/forcedownload
+				</files>
 			</Directory>
 
 	- /usr/local/apache2/bin/apachectl start
