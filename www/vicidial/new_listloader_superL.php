@@ -19,6 +19,7 @@
 # 61128-1149 - added postal code GMT lookup and duplicate check options
 # 70417-1059 - Fixed default phone_code bug
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
+# 80428-0417 - UTF8 changes
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
@@ -113,10 +114,28 @@ if (isset($_GET["phone_code_override"]))			{$phone_code_override=$_GET["phone_co
 # $country_field=$_GET["country_field"];					if (!$country_field) {$country_field=$_POST["country_field"];}
 
 
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin < 1)
+{
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 $list_id_override = ereg_replace("[^0-9]","",$list_id_override);
-
+}
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -125,6 +144,7 @@ $FILE_datetime = $STARTtime;
 
 $stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
 if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $auth=$row[0];
@@ -144,6 +164,9 @@ $browser = getenv("HTTP_USER_AGENT");
   else
 	{
 	header ("Content-type: text/html; charset=utf-8");
+	header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+	header ("Pragma: no-cache");                          // HTTP/1.0
+
 	if($auth>0)
 		{
 		$office_no=strtoupper($PHP_AUTH_USER);

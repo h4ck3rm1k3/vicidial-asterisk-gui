@@ -717,6 +717,22 @@ if (strlen($dial_status) > 0)
 	$status = $dial_status;
 	}
 
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
 ######################################################################################################
 ######################################################################################################
 #######   Form variable filtering for security and data integrity
@@ -1203,11 +1219,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80310-1504 - added QC settings section to campaign screen
 # 80317-2037 - Added Recording override settings to in-groups
 # 80414-1505 - More work on QC, added vicidial_qc_codes
+# 80424-0442 - Added non_latin system_settings lookup at top to override dbconnect setting
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-126';
-$build = '80414-1505';
+$admin_version = '2.0.5-127';
+$build = '80424-0442';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1230,11 +1247,28 @@ if ($force_logout)
     exit;
 }
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
 	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
 if ($WeBRooTWritablE > 0)
 	{$fp = fopen ("./project_auth_entries.txt", "a");}

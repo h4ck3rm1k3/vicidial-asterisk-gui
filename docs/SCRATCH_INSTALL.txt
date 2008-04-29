@@ -1724,6 +1724,13 @@ to use our new mysql script file to add the tables to the database:
 ######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
 create database asterisk;
 
+NOTE: if you will be using lead files with a language that does not use the 
+standard latin character set then you will want to use UTF8 for your default 
+characterset in the MySQL database. This requires at least MySQL 4.1.11 and you 
+can use the following query to create the database:
+	CREATE DATABASE `asterisk` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
 

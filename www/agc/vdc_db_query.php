@@ -146,10 +146,11 @@
 # 80125-1213 - fixed vicidial_log bug when call is from closer
 # 80317-2051 - Added in-group recording settings
 # 80402-0121 - Fixes for manual dial transfers on some systems, removed /n persist flag
+# 80424-0442 - Added non_latin lookup from system_settings
 #
 
 $version = '2.0.5-71';
-$build = '80402-0121';
+$build = '80424-0442';
 
 require("dbconnect.php");
 
@@ -287,12 +288,35 @@ if (isset($_GET["LogouTKicKAlL"]))				{$LogouTKicKAlL=$_GET["LogouTKicKAlL"];}
 if (isset($_GET["closer_blended"]))				{$closer_blended=$_GET["closer_blended"];}
 	elseif (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
 
+
+header ("Content-type: text/html; charset=utf-8");
+header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+header ("Pragma: no-cache");                          // HTTP/1.0
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin < 1)
+{
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 $length_in_sec = ereg_replace("[^0-9]","",$length_in_sec);
 $phone_code = ereg_replace("[^0-9]","",$phone_code);
 $phone_number = ereg_replace("[^0-9]","",$phone_number);
-
+}
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
@@ -316,6 +340,7 @@ else
 	{
 	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
 	if ($DB) {echo "|$stmt|\n";}
+	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -392,7 +417,6 @@ if ($ACTION == 'LogiNCamPaigns')
 	$LOGallowed_campaignsSQL='';
 
 	$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
@@ -403,7 +427,6 @@ if ($ACTION == 'LogiNCamPaigns')
 		}
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$camps_to_print = mysql_num_rows($rslt);
 
@@ -1140,7 +1163,6 @@ if ($stage == "end")
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$qm_conf_ct = mysql_num_rows($rslt);
@@ -1276,7 +1298,6 @@ if ($stage == "end")
 					{
 					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
-					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
 					}
@@ -1303,7 +1324,6 @@ if ($stage == "end")
 
 					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
-					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
 
@@ -1343,7 +1363,6 @@ if ($stage == "end")
 
 				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
 
@@ -1367,7 +1386,6 @@ if ($stage == "end")
 
 					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
-					if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
 
@@ -2015,7 +2033,6 @@ else
 			#############################################
 			##### START QUEUEMETRICS LOGGING LOOKUP #####
 			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
-			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$qm_conf_ct = mysql_num_rows($rslt);
@@ -2047,12 +2064,11 @@ else
 
 			#	$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='1';";
 			#	if ($DB) {echo "$stmt\n";}
-			#	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+			#	
 			#	$rslt=mysql_query($stmt, $linkB);
 			#	$affected_rows = mysql_affected_rows($linkB);
 
 				$stmt = "SELECT time_id FROM queue_log where agent='Agent/$user' and verb='AGENTLOGIN' order by time_id desc limit 1;";
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
 				if ($DB) {echo "$stmt\n";}
 				echo "$stmt\n";
@@ -2070,7 +2086,6 @@ else
 
 				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='AGENTLOGOFF',data1='$user$agents',data2='$time_logged_in',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
-				if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
 
@@ -2197,7 +2212,6 @@ if ($ACTION == 'updateDISPO')
 	#############################################
 	##### START QUEUEMETRICS LOGGING LOOKUP #####
 	$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$qm_conf_ct = mysql_num_rows($rslt);
@@ -2222,7 +2236,6 @@ if ($ACTION == 'updateDISPO')
 
 		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='CALLSTATUS',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
 		if ($DB) {echo "$stmt\n";}
-		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $linkB);
 		$affected_rows = mysql_affected_rows($linkB);
 
@@ -2251,7 +2264,6 @@ if ($ACTION == 'updateLEAD')
 	{
 
 	$stmt = "SELECT disable_alter_custdata FROM vicidial_campaigns where campaign_id='$campaign'";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$dac_conf_ct = mysql_num_rows($rslt);
@@ -2267,7 +2279,6 @@ if ($ACTION == 'updateLEAD')
 		$DO_NOT_UPDATE=1;
 		$DO_NOT_UPDATE_text=' NOT';
 		$stmt = "SELECT alter_custdata_override FROM vicidial_users where user='$user'";
-		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$aco_conf_ct = mysql_num_rows($rslt);
@@ -2337,7 +2348,6 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$qm_conf_ct = mysql_num_rows($rslt);
@@ -2364,7 +2374,6 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 
 			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='$QMstatus',serverid='$queuemetrics_log_id';";
 			if ($DB) {echo "$stmt\n";}
-			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $linkB);
 			$affected_rows = mysql_affected_rows($linkB);
 
@@ -2471,7 +2480,6 @@ if ($ACTION == 'PauseCodeSubmit')
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
-		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$qm_conf_ct = mysql_num_rows($rslt);
@@ -2502,7 +2510,6 @@ if ($ACTION == 'PauseCodeSubmit')
 
 			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSEREASON',serverid='$queuemetrics_log_id',data1='$status';";
 			if ($DB) {echo "$stmt\n";}
-			if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 			$rslt=mysql_query($stmt, $linkB);
 			$affected_rows = mysql_affected_rows($linkB);
 

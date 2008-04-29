@@ -48,7 +48,7 @@ $local_AMP = '@';
 $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
-$non_latin = '0';	# set to 1 for UTF rules
+$non_latin = '0';	# set to 1 for UTF rules, overridden by system_settings
 $flag_channels=0;
 $flag_string = 'VICIast20';
 

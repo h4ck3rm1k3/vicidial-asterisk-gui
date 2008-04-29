@@ -26,6 +26,7 @@
 # 70801-0912 - Added called count and status to import leads format (fields 24 and 25)
 # 70815-2128 - Added entry_date to import leads format (field 26)
 # 80128-0105 - Fixed bugs in file loading
+# 80428-0320 - UTF8 update
 #
 
 $secX = time();
@@ -195,6 +196,7 @@ else
 {
 print "no command line options set\n";
 $args = "";
+$i=0;
 $forcelistid = '';
 }
 ### end parsing run-time options ###
@@ -209,6 +211,23 @@ use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmtA = "SELECT use_non_latin FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$non_latin		=		"$aryA[0]";
+	}
+$sthA->finish();
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin > 0) {$affected_rows = $dbhA->do("SET NAMES 'UTF8'");}
 
 $suf = '.txt';
 $people_packages_id_update='';

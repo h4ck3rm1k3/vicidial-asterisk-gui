@@ -1,13 +1,28 @@
 <?
 # admin_modify_lead.php
 # 
+# AST GUI database administration modify lead in vicidial_list
+# admin_modify_lead.php
+#
+# this is the administration lead information modifier screen, the administrator 
+# just needs to enter the leadID and then they can view and modify the 
+# information in the record for that lead
+#
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-
 # CHANGES
 #
+# 60419-1705 - Added ability to change lead callback record from USERONLY to ANYONE or USERONLY-user
+# 60421-1459 - check GET/POST vars lines with isset to not trigger PHP NOTICES
+# 60609-1112 - Added DNC list addition if status changed to DNC
+# 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
+# 61130-1639 - Added recording_log lookup and list for this lead_id
+# 61201-1136 - Added recording_log user(TSR) display and link
+# 70305-1133 - Changed to default CHECKED modify logs upon status change
+# 70424-1128 - Added campaign-specific statuses, reformatted recordings list
 # 70702-1259 - Added recording location link and truncation
 # 70906-2132 - Added closer_log records display
+# 80428-0144 - UTF8 cleanup
 #
 
 require("dbconnect.php");
@@ -98,35 +113,32 @@ if (isset($_GET["modify_logs"]))			{$modify_logs=$_GET["modify_logs"];}
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-
-
-### AST GUI database administration modify lead in vicidial_list
-### admin_modify_lead.php
-
-# this is the administration lead information modifier screen, the administrator just needs to enter the leadID and then they can view and modify the information in the record for that lead
-
-# CHANGES
-#
-# 60419-1705 - Added ability to change lead callback record from USERONLY to ANYONE or USERONLY-user
-# 60421-1459 - check GET/POST vars lines with isset to not trigger PHP NOTICES
-# 60609-1112 - Added DNC list addition if status changed to DNC
-# 60619-1539 - Added variable filtering to eliminate SQL injection attack threat
-# 61130-1639 - Added recording_log lookup and list for this lead_id
-# 61201-1136 - Added recording_log user(TSR) display and link
-# 70305-1133 - Changed to default CHECKED modify logs upon status change
-# 70424-1128 - Added campaign-specific statuses, reformatted recordings list
-#
-
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 
-
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and modify_leads='1';";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
 	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and modify_leads='1';";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
 if ($WeBRooTWritablE > 0)
 	{$fp = fopen ("./project_auth_entries.txt", "a");}

@@ -70,6 +70,7 @@
 # 70322-1636 - Added sipsak display ability
 # 80331-1433 - Added second transfer try for VICIDIAL transfers on manual dial calls
 # 80402-0121 - Fixes for manual dial transfers on some systems
+# 80424-0442 - Added non_latin lookup from system_settings
 #
 
 require("dbconnect.php");
@@ -142,9 +143,32 @@ if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["all
 if (isset($_GET["session_id"]))				{$session_id=$_GET["session_id"];}
 	elseif (isset($_POST["session_id"]))		{$session_id=$_POST["session_id"];}
 
+header ("Content-type: text/html; charset=utf-8");
+header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+header ("Pragma: no-cache");                          // HTTP/1.0
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin < 1)
+{
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 $secondS = ereg_replace("[^0-9]","",$secondS);
+}
 
 # default optional vars if not set
 if (!isset($ACTION))   {$ACTION="Originate";}
@@ -158,11 +182,12 @@ $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
-	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{

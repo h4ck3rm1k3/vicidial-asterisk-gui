@@ -35,6 +35,7 @@
 # 61128-2255 - Added update for manual dial vicidial_live_agents
 # 70319-1542 - Added agent disabled display function
 # 71122-0205 - Added vicidial_live_agent status output
+# 80424-0442 - Added non_latin lookup from system_settings
 #
 
 require("dbconnect.php");
@@ -63,8 +64,32 @@ if (isset($_GET["auto_dial_level"]))			{$auto_dial_level=$_GET["auto_dial_level"
 if (isset($_GET["campagentstdisp"]))			{$campagentstdisp=$_GET["campagentstdisp"];}
 	elseif (isset($_POST["campagentstdisp"]))	{$campagentstdisp=$_POST["campagentstdisp"];}
 
+header ("Content-type: text/html; charset=utf-8");
+header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+header ("Pragma: no-cache");                          // HTTP/1.0
+
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin < 1)
+{
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
+}
 
 # default optional vars if not set
 if (!isset($format))   {$format="text";}
@@ -81,11 +106,12 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 $random = (rand(1000000, 9999999) + 10000000);
 
 
-	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{

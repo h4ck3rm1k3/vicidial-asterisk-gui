@@ -100,6 +100,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	agent login. Options set in the vicidial.php file to allow for overwrite
 	every login or only if field is empty.
 
+19. Several code changes for better UTF8 compatibility with the database as well
+	as special character leads in the agent screen, lead loading
 
 
 

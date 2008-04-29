@@ -17,6 +17,7 @@
 # 70205-1703 - Defaulted phone_code to 1 if not populated
 # 70417-1059 - Fixed default phone_code bug
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
+# 80428-0144 - UTF8 cleanup
 #
 
 ### begin parsing run-time options ###
@@ -147,6 +148,23 @@ $pulldate="$year-$mon-$mday $hour:$min:$sec";
 $inSD = $pulldate0;
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmtA = "SELECT use_non_latin FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$non_latin		=		"$aryA[0]";
+	}
+$sthA->finish();
+##### END SETTINGS LOOKUP #####
+###########################################
+
+
+if ($non_latin > 0) {$affected_rows = $dbhA->do("SET NAMES 'UTF8'");}
 
 	### Grab Server values from the database
 	$stmtA = "SELECT local_gmt FROM servers where server_ip = '$server_ip';";

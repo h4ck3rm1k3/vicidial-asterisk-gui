@@ -32,6 +32,7 @@
 # 80311-1550 - Added calls_today on all agents and wait time/in-group for inbound calls
 # 80422-0033 - Added phonediaplay option, allow for toggle-sorting on sortable fields
 # 80422-1001 - Fixed sort by phone login
+# 80424-0515 - Added non_latin lookup from system_settings
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -75,6 +76,22 @@ if (isset($_GET["CALLSdisplay"]))			{$CALLSdisplay=$_GET["CALLSdisplay"];}
 	elseif (isset($_POST["CALLSdisplay"]))	{$CALLSdisplay=$_POST["CALLSdisplay"];}
 if (isset($_GET["PHONEdisplay"]))			{$PHONEdisplay=$_GET["PHONEdisplay"];}
 	elseif (isset($_POST["PHONEdisplay"]))	{$PHONEdisplay=$_POST["PHONEdisplay"];}
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
 
 if (!isset($RR))			{$gRRroup=4;}
 if (!isset($group))			{$group='';}
@@ -129,15 +146,12 @@ $load_ave = get_server_load(true);
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
-	if ($DB) {echo "|$stmt|\n";}
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
   if( (strlen($PHP_AUTH_USER)<2) or (strlen($PHP_AUTH_PW)<2) or (!$auth))
 	{
@@ -155,10 +169,6 @@ $epochSIXhoursAGO = ($STARTtime - 21600);
 $timeSIXhoursAGO = date("Y-m-d H:i:s",$epochSIXhoursAGO);
 
 $stmt="select campaign_id from vicidial_campaigns where active='Y';";
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -172,10 +182,6 @@ while ($i < $groups_to_print)
 	}
 
 $stmt="select * from vicidial_user_groups;";
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 if (!isset($DB))   {$DB=0;}
 if ($DB) {echo "$stmt\n";}
@@ -312,10 +318,6 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses) from vicidial_campaigns;";
 	}
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DIALlev =		$row[0];
@@ -345,10 +347,6 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select count(*) from vicidial_hopper;";
 	}
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $VDhop = $row[0];
@@ -358,10 +356,6 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats;";
 	}
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $DAleads =		$row[0];
@@ -393,10 +387,6 @@ if ($group=='XXXX-ALL-ACTIVE-XXXX')
 	{
 	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
 	}
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $balanceSHORT = $row[0];
@@ -526,10 +516,6 @@ echo "</FORM>\n\n";
 if ($campaign_allow_inbound > 0)
 	{
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
-		if ($non_latin > 0)
-		{
-		$rslt=mysql_query("SET NAMES 'UTF8'");
-		}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$closer_campaigns = preg_replace("/^ | -$/","",$row[0]);
@@ -554,10 +540,6 @@ else
 	$stmtA = "SELECT status";
 	}
 
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 
 $k=0;
 $stmt = "$stmtA $stmtB";
