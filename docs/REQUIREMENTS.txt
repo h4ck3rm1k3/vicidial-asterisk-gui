@@ -14,6 +14,7 @@ Requirements for installing astGUIclient/VICIDIAL on an Asterisk server:
 - No modification of outgoing callerID (you can set callerID through admin)
 - Access to Apache/PHP webserver, php.ini memory_limit set to 48M
 - In php.ini you must have uploads turned on to use the web lead loader
+- Even so eAccelerator is technically not mandatory, it is strongly recommended. 
 - SoX 12.17.5 or greater must be installed
 - GNU screen 3.9.15 or greater must be installed
 - ntp must be installed and syncd to same time source as any other servers

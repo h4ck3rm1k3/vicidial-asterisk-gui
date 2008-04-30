@@ -745,7 +745,11 @@ installation on another machine)
     NOTE: If using PHP5 you may need to add the following line to php.ini:
       short_open_tag = On
 
-   OPTIONAL- Load eaccelerator PHP-caching application:
+   OPTIONAL- Load eAccelerator PHP-caching application:
+   Even so this is technically an optional part, it is strongly recommended that you install eAccelerator
+   since it will slash PHPs processing power requirements greatly. Without eAccelerator load on the system 
+   can be ten times as high, which can cause all kinds of problems, this is especially true for single 
+   system setups. 
    - Go to http://eaccelerator.net and download the most recent package
 	- cd /usr/local
 	- wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.zip
