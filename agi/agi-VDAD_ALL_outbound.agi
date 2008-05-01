@@ -33,6 +33,7 @@
 # changes:
 # 80218-2027 - First Build
 # 80302-0232 - added drop_action and transfer to in-group
+# 80430-1144 - added term_reason to vicidial_log, QUEUETIMEOUT
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -900,7 +901,7 @@ if ($drop_action =~ /IN_GROUP/)
 
 		$Euniqueid=$uniqueid;
 		$Euniqueid =~ s/\.\d+//gi;
-	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}

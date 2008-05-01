@@ -74,6 +74,10 @@ there is already a qc status code in the system with this name:||
 QC STATUS CODE ADDED: ||
 code must be between 1 and 8 characters in length
 code name must be between 2 and 30 characters in length||
+CALL HANGUP REASON STATS||
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field, IN_GROUP will send the call to the inbound group selected in the After Hours Transfer Group select list. Default is MESSAGE||
+After Hours Transfer Group -<\/B> If After Hours Action is set to IN_GROUP, the call will be sent to this inbound group if it enters the in-group outside of the call time scheme defined for the in-group||
+After Hours Transfer Group: ||
 
 
 ############################################################ CLIENT

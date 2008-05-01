@@ -34,6 +34,7 @@
 # 70808-1425 - Moved VD_hangup section to the call_log end stage to improve efficiency
 # 71030-2039 - Added priority to hopper insertions
 # 80224-0040 - Fixed bugs in vicidial_log updates
+# 80430-0907 - Added term_reason to vicidial_log and vicidial_closer_log
 #
 
 
@@ -695,7 +696,7 @@ sub process_request {
 					########## FIND AND UPDATE vicidial_log ##########
 						$Euniqueid=$uniqueid;
 						$Euniqueid =~ s/\.\d+$//gi;
-					$stmtA = "SELECT start_epoch,status FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
+					$stmtA = "SELECT start_epoch,status,user,term_reason FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
 						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -705,8 +706,10 @@ sub process_request {
 					while ($sthArows > $epc_countCUSTDATA)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$VD_start_epoch	= "$aryA[0]";
-						$VD_status	= "$aryA[1]";
+						$VD_start_epoch	=	"$aryA[0]";
+						$VD_status =		"$aryA[1]";
+						$VD_user =			"$aryA[2]";
+						$VD_term_reason =	"$aryA[3]";
 						 $epc_countCUSTDATA++;
 						}
 					$sthA->finish();
@@ -727,7 +730,7 @@ sub process_request {
 						if ($Rsec < 10) {$Rsec = "0$Rsec";}
 							$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-						$stmtA = "SELECT start_epoch,status,closecallid FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -737,9 +740,11 @@ sub process_request {
 						while ($sthArows > $epc_countCUSTDATA)
 							{
 							@aryA = $sthA->fetchrow_array;
-							$VD_start_epoch	= "$aryA[0]";
-							$VD_status	= "$aryA[1]";
-							$VD_closecallid	= "$aryA[2]";
+							$VD_start_epoch	=	"$aryA[0]";
+							$VD_status =		"$aryA[1]";
+							$VD_closecallid	=	"$aryA[2]";
+							$VD_user =			"$aryA[3]";
+							$VD_term_reason =	"$aryA[4]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -755,7 +760,11 @@ sub process_request {
 						$SQL_status='';
 						if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) 
 							{
-							$SQL_status = "status='DROP',";
+							if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
+								{$term_reason = 'ABANDON';}
+							else
+								{$term_reason = 'CALLER';}
+							$SQL_status = "status='DROP',term_reason='$term_reason',";
 
 							########## FIND AND UPDATE vicidial_list ##########
 							$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$VD_lead_id';";
@@ -763,11 +772,15 @@ sub process_request {
 							$affected_rows = $dbhA->do($stmtA);
 							if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$VD_lead_id";   &agi_output;}
 							}
+						else 
+							{
+							$SQL_status = "term_reason='CALLER',";
+							}
 
 						$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\";";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-						$affected_rows = $dbhA->do($stmtA);
-						if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid|$VD_status|";   &agi_output;}
+						$VLaffected_rows = $dbhA->do($stmtA);
+						if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VLaffected_rows|$uniqueid|$VD_status|";   &agi_output;}
 
 
 
@@ -780,9 +793,16 @@ sub process_request {
 						else
 							{
 							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/) 
-								{$VDCLSQL_status = "";}
+								{$VDCLSQL_status = "term_reason='CALLER',";}
 							else
-								{$VDCLSQL_status = "status='DROP',queue_seconds='$VD_seconds',";}
+								{
+								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
+									{$term_reason = 'ABANDON';}
+								else
+									{$term_reason = 'CALLER';}
+
+								$VDCLSQL_status = "status='DROP',queue_seconds='$VD_seconds',term_reason='$term_reason',";
+								}
 
 							$VD_seconds = ($now_date_epoch - $VD_start_epoch);
 							$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";

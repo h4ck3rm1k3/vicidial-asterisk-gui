@@ -6981,7 +6981,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td colspan=2 align=center> Customer Information: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
 <td align=right><font class="body_text"> Title: </td>
-<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=20 name=last_name maxlength=30 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=23 name=last_name maxlength=30 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Address1: </td>
 <td align=left><font class="body_text"><input type=text size=50 name=address1 maxlength=100 class="cust_form" value=""></td>

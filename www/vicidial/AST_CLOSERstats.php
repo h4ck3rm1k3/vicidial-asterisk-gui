@@ -10,7 +10,8 @@
 # 60905-1326 - Added queue time stats
 # 71008-1436 - Added shift to be defined in dbconnect.php
 # 71025-0021 - Added status breakdown
-# 71218-1155 - added end_date for multi-day reports
+# 71218-1155 - Added end_date for multi-day reports
+# 80430-1920 - Added Customer hangup cause stats
 #
 
 require("dbconnect.php");
@@ -194,6 +195,47 @@ else
 
 echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
+
+
+
+##############################
+#########  CALL HANGUP REASON STATS
+
+$TOTALcalls = 0;
+
+echo "\n";
+echo "---------- CALL HANGUP REASON STATS\n";
+echo "+----------------------+------------+\n";
+echo "| HANGUP REASON        | CALLS      |\n";
+echo "+----------------------+------------+\n";
+
+$stmt="select count(*),term_reason from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by term_reason;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$TOTALcalls = ($TOTALcalls + $row[0]);
+
+	$REASONcount =	sprintf("%10s", $row[0]);while(strlen($REASONcount)>10) {$REASONcount = substr("$REASONcount", 0, -1);}
+	$reason =	sprintf("%-20s", $row[1]);while(strlen($reason)>20) {$reason = substr("$reason", 0, -1);}
+#	if (ereg("NONE",$reason)) {$reason = 'NO ANSWER           ';}
+
+	echo "| $reason | $REASONcount |\n";
+
+	$i++;
+	}
+
+$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+
+echo "+----------------------+------------+\n";
+echo "| TOTAL:               | $TOTALcalls |\n";
+echo "+----------------------+------------+\n";
+
 
 
 

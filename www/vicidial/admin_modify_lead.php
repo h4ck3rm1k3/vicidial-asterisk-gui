@@ -23,6 +23,7 @@
 # 70702-1259 - Added recording location link and truncation
 # 70906-2132 - Added closer_log records display
 # 80428-0144 - UTF8 cleanup
+# 80501-0454 - Added Hangup Reason to logs display
 #
 
 require("dbconnect.php");
@@ -318,7 +319,8 @@ else
 			$call_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[11]</A> </td>\n";
 			$call_log .= "<td align=right><font size=2> $row[3] </td>\n";
 			$call_log .= "<td align=right><font size=2> $row[2] </td>\n";
-			$call_log .= "<td align=right><font size=2> $row[1] </td></tr>\n";
+			$call_log .= "<td align=right><font size=2> $row[1] </td>\n";
+			$call_log .= "<td align=right><font size=2> $row[15] </td></tr>\n";
 
 		}
 
@@ -348,7 +350,8 @@ else
 			$closer_log .= "<td align=right><font size=2> $row[3] </td>\n";
 			$closer_log .= "<td align=right><font size=2> $row[2] </td>\n";
 			$closer_log .= "<td align=right><font size=2> $row[1] </td>\n";
-			$closer_log .= "<td align=right><font size=2> &nbsp; $row[14] </td></tr>\n";
+			$closer_log .= "<td align=right><font size=2> &nbsp; $row[14] </td>\n";
+			$closer_log .= "<td align=right><font size=2> &nbsp; $row[17] </td></tr>\n";
 
 		}
 
@@ -525,8 +528,8 @@ echo "<br><br>\n";
 echo "<center>\n";
 
 echo "<B>CALLS TO THIS LEAD:</B>\n";
-echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> HANGUP REASON</td></tr>\n";
 
 	echo "$call_log\n";
 
@@ -534,8 +537,8 @@ echo "</TABLE>\n";
 echo "<BR><BR>\n";
 
 echo "<B>CLOSER RECORDS FOR THIS LEAD:</B>\n";
-echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> WAIT</td></tr>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> TSR</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> WAIT</td><td align=right><font size=2> HANGUP REASON</td></tr>\n";
 
 	echo "$closer_log\n";
 

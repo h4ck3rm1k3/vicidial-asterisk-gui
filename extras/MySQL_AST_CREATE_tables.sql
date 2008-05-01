@@ -358,6 +358,7 @@ user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
 user_group VARCHAR(20),
+term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE',
 index (lead_id),
 index (call_date)
 );
@@ -380,6 +381,7 @@ processed ENUM('Y','N'),
 queue_seconds DECIMAL(7,2) default '0',
 user_group VARCHAR(20),
 xfercallid INT(9) UNSIGNED,
+term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE',
 index (lead_id),
 index (call_date)
 );
@@ -628,7 +630,7 @@ drop_call_seconds SMALLINT(4) unsigned default '360',
 drop_action ENUM('HANGUP','MESSAGE','VOICEMAIL','IN_GROUP') default 'MESSAGE',
 drop_exten VARCHAR(20)  default '8307',
 call_time_id VARCHAR(20) default '24hours',
-after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL') default 'MESSAGE',
+after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL','IN_GROUP') default 'MESSAGE',
 after_hours_message_filename VARCHAR(50) default 'vm-goodbye',
 after_hours_exten VARCHAR(20) default '8300',
 after_hours_voicemail VARCHAR(20),
@@ -642,7 +644,8 @@ default_xfer_group VARCHAR(20) default '---NONE---',
 queue_priority TINYINT(2) default '0',
 drop_inbound_group VARCHAR(20) default '---NONE---',
 ingroup_recording_override  ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
-ingroup_rec_filename VARCHAR(50) default 'NONE'
+ingroup_rec_filename VARCHAR(50) default 'NONE',
+afterhours_xfer_group VARCHAR(20) default '---NONE---'
 );
 
 CREATE TABLE vicidial_stations (
@@ -1045,6 +1048,20 @@ code VARCHAR(8) PRIMARY KEY NOT NULL,
 code_name VARCHAR(30)
 );
 
+ CREATE TABLE vicidial_agent_sph (
+campaign_group_id VARCHAR(20) NOT NULL,
+stat_date DATE NOT NULL,
+shift VARCHAR(20) NOT NULL,
+role ENUM('FRONTER','CLOSER') default 'FRONTER',
+user VARCHAR(20) NOT NULL,
+calls MEDIUMINT(8) UNSIGNED default '0',
+sales MEDIUMINT(8) UNSIGNED default '0',
+login_sec MEDIUMINT(8) UNSIGNED default '0',
+login_hours DECIMAL(5,2) DEFAULT '0.00',
+sph DECIMAL(6,2) DEFAULT '0.00',
+index (campaign_group_id),
+index (stat_date)
+);
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1092,4 +1109,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1081';
+UPDATE system_settings SET db_schema_version='1082';

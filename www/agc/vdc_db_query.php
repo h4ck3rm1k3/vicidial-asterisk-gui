@@ -147,10 +147,12 @@
 # 80317-2051 - Added in-group recording settings
 # 80402-0121 - Fixes for manual dial transfers on some systems, removed /n persist flag
 # 80424-0442 - Added non_latin lookup from system_settings
+# 80430-1006 - Added term_reason for vicidial_log and vicidial_closer_log
+# 80430-1957 - Changed to leave lead_id in vicidial_live_agents record until after dispo
 #
 
-$version = '2.0.5-71';
-$build = '80424-0442';
+$version = '2.0.5-73';
+$build = '80430-1957';
 
 require("dbconnect.php");
 
@@ -1092,6 +1094,7 @@ if ($stage == "end")
 		}
 	else
 		{
+		$term_reason='NONE';
 		if ($start_epoch < 1000)
 			{
 			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
@@ -1102,12 +1105,12 @@ if ($stage == "end")
 			if ($check_inbound > 0)
 				{
 				##### look for the start epoch in the vicidial_closer_log table
-				$stmt="SELECT start_epoch FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 				}
 			else
 				{
 				##### look for the start epoch in the vicidial_log table
-				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 				}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1115,7 +1118,8 @@ if ($stage == "end")
 			if ($VM_mancall_ct > 0)
 				{
 				$row=mysql_fetch_row($rslt);
-				$start_epoch =$row[0];
+				$start_epoch =		$row[0];
+				$VDterm_reason =	$row[1];
 				$length_in_sec = ($StarTtime - $start_epoch);
 				}
 			else
@@ -1126,14 +1130,15 @@ if ($stage == "end")
 			if ( ($length_in_sec < 1) and ($check_inbound > 0) )
 				{
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
-				$stmt="SELECT start_epoch FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VM_mancall_ct = mysql_num_rows($rslt);
 				if ($VM_mancall_ct > 0)
 					{
 					$row=mysql_fetch_row($rslt);
-					$start_epoch =$row[0];
+					$start_epoch =		$row[0];
+					$VDterm_reason =	$row[1];
 					$length_in_sec = ($StarTtime - $start_epoch);
 					}
 				else
@@ -1144,12 +1149,12 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
+		$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
+
 		$closer_logged=0;
 		if ($check_inbound > 0)
 			{
-			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
-
-			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by start_epoch desc limit 1;";
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -1258,7 +1263,7 @@ if ($stage == "end")
 
 			if ($enable_queuemetrics_logging > 0)
 				{
-				### check to see if lead should be alt_dialed
+				### grab call lead information needed for QM logging
 				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id';";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -1300,9 +1305,16 @@ if ($stage == "end")
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
+
+					$term_reason='AGENT';
+					}
+				else
+					{
+					$term_reason='CALLER';
 					}
 				mysql_close($linkB);
 				}
+
 
 			### delete call record from  vicidial_auto_calls
 			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and uniqueid='$uniqueid';";
@@ -1311,7 +1323,7 @@ if ($stage == "end")
 
 
 
-			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',lead_id='',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
+			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -1373,7 +1385,7 @@ if ($stage == "end")
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
-			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',lead_id='',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
+			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -1396,8 +1408,31 @@ if ($stage == "end")
 
 		if ($closer_logged < 1)
 			{
+			$SQLterm = "term_reason='$term_reason',";
+
+			if ( (ereg("NONE",$term_reason)) or (ereg("NONE",$VDterm_reason)) or (strlen($VDterm_reason) < 1) )
+				{
+				### check to see if lead should be alt_dialed
+				$stmt="SELECT term_reason from vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
+				$rslt=mysql_query($stmt, $link);
+				$VAC_qm_ct = mysql_num_rows($rslt);
+				if ($VAC_qm_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VDterm_reason	= $row[0];
+					}
+				if (ereg("CALLER",$VDterm_reason))
+					{
+					$SQLterm = "";
+					}
+				else
+					{
+					$SQLterm = "term_reason='AGENT',";
+					}
+				}
+
 			##### update the duration and end time in the vicidial_log table
-			$stmt="UPDATE vicidial_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id';";
+			$stmt="UPDATE vicidial_log set $SQLterm end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -1410,6 +1445,37 @@ if ($stage == "end")
 				{
 				echo "LOG NOT ENTERED\n\n";
 				}
+			}
+		else
+			{
+			$SQLterm = "term_reason='$term_reason'";
+
+			if ( (ereg("NONE",$term_reason)) or (ereg("NONE",$VDterm_reason)) or (strlen($VDterm_reason) < 1) )
+				{
+				### check to see if lead should be alt_dialed
+				$stmt="SELECT term_reason from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+				$rslt=mysql_query($stmt, $link);
+				$VAC_qm_ct = mysql_num_rows($rslt);
+				if ($VAC_qm_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VDterm_reason	= $row[0];
+					}
+				if (ereg("CALLER",$VDterm_reason))
+					{
+					$SQLterm = "";
+					}
+				else
+					{
+					$SQLterm = "term_reason='AGENT'";
+					}
+				}
+
+			##### update the duration and end time in the vicidial_log table
+			$stmt="UPDATE vicidial_closer_log set $SQLterm where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+			$affected_rows = mysql_affected_rows($link);
 			}
 		}
 
@@ -2113,6 +2179,11 @@ if ($ACTION == 'updateDISPO')
 	}
 	else
 	{
+	### update the comments in vicidial_live_agents record
+	$stmt = "UPDATE vicidial_live_agents set lead_id='' where user='$user' and server_ip='$server_ip';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+
 	$stmt="UPDATE vicidial_list set status='$dispo_choice', user='$user' where lead_id='$lead_id';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
@@ -2335,7 +2406,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	else
 	{
 	$random = (rand(1000000, 9999999) + 10000000);
-	$stmt="UPDATE vicidial_live_agents set lead_id='',uniqueid=0,callerid='',channel='', random_id='$random',comments='' where user='$user' and server_ip='$server_ip';";
+	$stmt="UPDATE vicidial_live_agents set uniqueid=0,callerid='',channel='', random_id='$random',comments='' where user='$user' and server_ip='$server_ip';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 

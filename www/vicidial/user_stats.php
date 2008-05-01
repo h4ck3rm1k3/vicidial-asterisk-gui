@@ -10,6 +10,7 @@
 # 70118-1605 - Added user group column to login/out and calls lists
 # 70702-1231 - Added recording location link and truncation
 # 80117-0316 - Added vicidial_user_closer_log entries to display
+# 80501-0506 - Added Hangup Reason to logs display
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -96,7 +97,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=680 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -266,7 +267,7 @@ echo "<br><br>\n";
 echo "<center>\n";
 
 echo "<B>CLOSER IN-GROUP SELECTION LOGS:</B>\n";
-echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
+echo "<TABLE width=670 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2> CAMPAIGN</td><td align=left><font size=2>BLEND</td><td align=left><font size=2> GROUPS</td></tr>\n";
 
 	$stmt="select * from vicidial_user_closer_log where user='" . mysql_real_escape_string($user) . "' and event_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and event_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by event_date desc limit 1000;";
@@ -293,14 +294,14 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 	}
 
 
-echo "</TABLE></center><BR><BR>\n";
+echo "</TABLE><BR><BR>\n";
 
 
 
 
 echo "<B>OUTBOUND CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
-echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> GROUP</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<TABLE width=670 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> GROUP</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> HANGUP REASON</td></tr>\n";
 
 	$stmt="select * from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
 	$rslt=mysql_query($stmt, $link);
@@ -324,18 +325,19 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 			echo "<td align=right><font size=2> $row[3] </td>\n";
 			echo "<td align=right><font size=2> $row[14] </td>\n";
 			echo "<td align=right><font size=2> $row[2] </td>\n";
-			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td></tr>\n";
+			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
+			echo "<td align=right><font size=2> $row[15] </td></tr>\n";
 
 	}
 
 
-echo "</TABLE></center><BR><BR>\n";
+echo "</TABLE><BR><BR>\n";
 
 
 
 echo "<B>CLOSER CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
-echo "<TABLE width=650 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> WAIT (S)</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td></tr>\n";
+echo "<TABLE width=670 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> WAIT (S)</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> HANGUP REASON</td></tr>\n";
 
 	$stmt="select * from vicidial_closer_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
 	$rslt=mysql_query($stmt, $link);
@@ -359,7 +361,8 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 			echo "<td align=right><font size=2> $row[3] </td>\n";
 			echo "<td align=right><font size=2> $row[14] </td>\n";
 			echo "<td align=right><font size=2> $row[2] </td>\n";
-			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td></tr>\n";
+			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
+			echo "<td align=right><font size=2> $row[17] </td></tr>\n";
 
 	}
 

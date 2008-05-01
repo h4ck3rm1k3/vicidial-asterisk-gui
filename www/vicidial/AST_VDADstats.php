@@ -4,12 +4,12 @@
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
-#
 # 60619-1718 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 61215-1139 - Added drop percentage of answered and round-2 decimal
 # 71008-1436 - Added shift to be defined in dbconnect.php
-# 71218-1155 - added end_date for multi-day reports
+# 71218-1155 - Added end_date for multi-day reports
+# 80430-1920 - Added Customer hangup cause stats
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -240,6 +240,49 @@ else
 
 echo "Total NA calls -Busy,Disconnect,RingNoAnswer: $NAcalls  $NApercent%\n";
 echo "Average Call Length for NA Calls in seconds:  $average_na_seconds\n";
+
+
+##############################
+#########  CALL HANGUP REASON STATS
+
+$TOTALcalls = 0;
+
+echo "\n";
+echo "---------- CALL HANGUP REASON STATS\n";
+echo "+----------------------+------------+\n";
+echo "| HANGUP REASON        | CALLS      |\n";
+echo "+----------------------+------------+\n";
+
+$stmt="select count(*),term_reason from vicidial_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by term_reason;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$TOTALcalls = ($TOTALcalls + $row[0]);
+
+	$REASONcount =	sprintf("%10s", $row[0]);while(strlen($REASONcount)>10) {$REASONcount = substr("$REASONcount", 0, -1);}
+	$reason =	sprintf("%-20s", $row[1]);while(strlen($reason)>20) {$reason = substr("$reason", 0, -1);}
+	if (ereg("NONE",$reason))	{$reason = 'NO ANSWER           ';}
+	if (ereg("CALLER",$reason)) {$reason = 'CUSTOMER            ';}
+
+	echo "| $reason | $REASONcount |\n";
+
+	$i++;
+	}
+
+$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+
+echo "+----------------------+------------+\n";
+echo "| TOTAL:               | $TOTALcalls |\n";
+echo "+----------------------+------------+\n";
+
+
+
 
 
 ##############################

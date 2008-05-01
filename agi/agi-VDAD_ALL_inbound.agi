@@ -58,6 +58,8 @@
 # 80227-0335 - added queue priority functionality
 # 80302-0232 - added drop_action and transfer to in-group
 # 80402-0142 - added code for manual dial transfer duplicate check
+# 80430-1144 - added term_reason to vicidial_closer_log, QUEUETIMEOUT, AFTERHOURS
+# 80501-0515 - added after hours transfer in-group
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -367,7 +369,7 @@ $sthA->finish();
 
 ### Grab inbound groups values from the database
 $cbc=0;
-$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group FROM vicidial_inbound_groups where group_id = '$channel_group';";
+$stmtA = "SELECT call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,drop_call_seconds,drop_action,drop_exten,next_agent_call,voicemail_ext,queue_priority,drop_inbound_group,afterhours_xfer_group FROM vicidial_inbound_groups where group_id = '$channel_group';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -395,6 +397,7 @@ while ($sthArows > $cbc)
 		$VDADvoicemail_ext =~ s/\D//gi;
 	$queue_priority =				"$aryA[16]";
 	$drop_inbound_group =			"$aryA[17]";
+	$afterhours_xfer_group =		"$aryA[18]";
 	$cbc++;
 	}
 $sthA->finish();
@@ -553,7 +556,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 	{
 	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
 
-	if ($after_hours_action =~ /EXTENSION|VOICEMAIL/)
+	if ($after_hours_action =~ /EXTENSION|VOICEMAIL|IN_GROUP/)
 		{
 		if ($after_hours_action =~ /EXTENSION/)
 			{
@@ -562,6 +565,11 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		if ($after_hours_action =~ /VOICEMAIL/)
 			{
 			$DROPexten = "$voicemail_dump_exten$after_hours_voicemail";
+			}
+		if ($after_hours_action =~ /IN_GROUP/)
+			{ # 90009*CL_uk3survy_*8301*10000123*universal*7275551212*1234*"
+			$S='*';
+			$DROPexten = "90009*$afterhours_xfer_group$S$S$insert_lead_id$S$S$phone_number$S$fronter$S";
 			}
 		if (length($DROPexten)>0)
 			{	### if DROP extension is defined then send the dropped call there instead of hangup
@@ -583,7 +591,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
 
-		$stmtA = "INSERT INTO vicidial_closer_log set status='DROP',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='AFTER HOURS DROP';";
+		$stmtA = "INSERT INTO vicidial_closer_log set status='DROP',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='AFTER HOURS DROP',term_reason='AFTERHOURS';";
 		$affected_rows = $dbhA->do($stmtA);
 		$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
 		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
@@ -1433,7 +1441,7 @@ if ($AGILOG) {$agi_string = "--    VDCL DROP: |$drop_action|$DROPexten|";   &agi
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
 
-	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
+	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 

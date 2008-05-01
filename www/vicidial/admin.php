@@ -707,6 +707,8 @@ if (isset($_GET["code"]))				{$code=$_GET["code"];}
 	elseif (isset($_POST["code"]))		{$code=$_POST["code"];}
 if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}	
 	elseif (isset($_POST["code_name"]))	{$code_name=$_POST["code_name"];}
+if (isset($_GET["afterhours_xfer_group"]))			{$afterhours_xfer_group=$_GET["afterhours_xfer_group"];}	
+	elseif (isset($_POST["afterhours_xfer_group"]))	{$afterhours_xfer_group=$_POST["afterhours_xfer_group"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -914,7 +916,6 @@ $pause_code = ereg_replace("[^0-9a-zA-Z]","",$pause_code);
 $vicidial_recording_override = ereg_replace("[^0-9a-zA-Z]","",$vicidial_recording_override);
 $ingroup_recording_override = ereg_replace("[^0-9a-zA-Z]","",$ingroup_recording_override);
 $queuemetrics_log_id = ereg_replace("[^0-9a-zA-Z]","",$queuemetrics_log_id);
-$after_hours_action = ereg_replace("[^0-9a-zA-Z]","",$after_hours_action);
 $after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
 $after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
 $qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
@@ -1006,6 +1007,8 @@ $drop_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_exten);
 $safe_harbor_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$safe_harbor_exten);
 $drop_action = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_action);
 $drop_inbound_group = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_inbound_group);
+$afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_group);
+$after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -2803,7 +2806,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-after_hours_action">
 <BR>
-<B>After Hours Action -</B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field. Default is MESSAGE.
+<B>After Hours Action -</B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field, IN_GROUP will send the call to the inbound group selected in the After Hours Transfer Group select list. Default is MESSAGE.
 
 <BR>
 <A NAME="vicidial_inbound_groups-after_hours_message_filename">
@@ -2819,6 +2822,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_inbound_groups-after_hours_voicemail">
 <BR>
 <B>After Hours Voicemail -</B> The voicemail box to send the call to if the Action is set to VOICEMAIL.
+
+<BR>
+<A NAME="vicidial_inbound_groups-afterhours_xfer_group">
+<BR>
+<B>After Hours Transfer Group -</B> If After Hours Action is set to IN_GROUP, the call will be sent to this inbound group if it enters the in-group outside of the call time scheme defined for the in-group.
 
 <BR>
 <A NAME="vicidial_inbound_groups-welcome_message_filename">
@@ -5627,7 +5635,7 @@ if ($ADD==2011)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>GROUP ADDED: $group_id</B>\n";
@@ -7081,7 +7089,7 @@ if ($ADD==4111)
 		{
 		echo "<br><B>GROUP MODIFIED: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -11554,6 +11562,7 @@ if ($ADD==3111)
 	$drop_inbound_group =		$row[30];
 	$ingroup_recording_override = $row[31];
 	$ingroup_rec_filename =		$row[32];
+	$afterhours_xfer_group =	$row[33];
 
 	##### get in-groups listings for dynamic pulldown
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
@@ -11563,12 +11572,15 @@ if ($ADD==3111)
 	$Xgroups_selected=0;
 	$Dgroups_menu='';
 	$Dgroups_selected=0;
+	$Agroups_menu='';
+	$Agroups_selected=0;
 	$o=0;
 	while ($Xgroups_to_print > $o) 
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$Xgroups_menu .= "<option ";
 		$Dgroups_menu .= "<option ";
+		$Agroups_menu .= "<option ";
 		if ($default_xfer_group == "$rowx[0]") 
 			{
 			$Xgroups_menu .= "SELECTED ";
@@ -11579,8 +11591,15 @@ if ($ADD==3111)
 			$Dgroups_menu .= "SELECTED ";
 			$Dgroups_selected++;
 			}
+		if ($afterhours_xfer_group == "$rowx[0]") 
+			{
+			$Agroups_menu .= "SELECTED ";
+			$Agroups_selected++;
+			}
 		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 		$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($group_id!=$rowx[0])
+			{$Agroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 		$o++;
 		}
 	if ($Xgroups_selected < 1) 
@@ -11591,6 +11610,10 @@ if ($ADD==3111)
 		{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
 	else 
 		{$Dgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+	if ($Agroups_selected < 1) 
+		{$Agroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Agroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
 
 
 	echo "<br>MODIFY A GROUPS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
@@ -11635,15 +11658,15 @@ if ($ADD==3111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Transfer-Conf Number 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_inbound_groups-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Drop Call Seconds: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=4 value=\"$drop_call_seconds\">$NWB#vicidial_inbound_groups-drop_call_seconds$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop Call Seconds: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=4 value=\"$drop_call_seconds\">$NWB#vicidial_inbound_groups-drop_call_seconds$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Drop Action: </td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_inbound_groups-drop_action$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop Action: </td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_inbound_groups-drop_action$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Drop Exten: </td><td align=left><input type=text name=drop_exten size=10 maxlength=20 value=\"$drop_exten\">$NWB#vicidial_inbound_groups-drop_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop Exten: </td><td align=left><input type=text name=drop_exten size=10 maxlength=20 value=\"$drop_exten\">$NWB#vicidial_inbound_groups-drop_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Drop Transfer Group: </td><td align=left><select size=1 name=drop_inbound_group>";
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop Transfer Group: </td><td align=left><select size=1 name=drop_inbound_group>";
 	echo "$Dgroups_menu";
 	echo "</select>$NWB#vicidial_inbound_groups-drop_inbound_group$NWE</td></tr>\n";
 
@@ -11652,13 +11675,17 @@ if ($ADD==3111)
 	echo "<option selected value=\"$call_time_id\">$call_time_id - $call_timename_list[$call_time_id]</option>\n";
 	echo "</select>$NWB#vicidial_inbound_groups-call_time_id$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>After Hours Action: </td><td align=left><select size=1 name=after_hours_action><option>HANGUP</option><option>MESSAGE</option><option>EXTENSION</option><option>VOICEMAIL</option><option SELECTED>$after_hours_action</option></select>$NWB#vicidial_inbound_groups-after_hours_action$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>After Hours Action: </td><td align=left><select size=1 name=after_hours_action><option>HANGUP</option><option>MESSAGE</option><option>EXTENSION</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$after_hours_action</option></select>$NWB#vicidial_inbound_groups-after_hours_action$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>After Hours Message Filename: </td><td align=left><input type=text name=after_hours_message_filename size=20 maxlength=50 value=\"$after_hours_message_filename\">$NWB#vicidial_inbound_groups-after_hours_message_filename$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>After Hours Message Filename: </td><td align=left><input type=text name=after_hours_message_filename size=20 maxlength=50 value=\"$after_hours_message_filename\">$NWB#vicidial_inbound_groups-after_hours_message_filename$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>After Hours Extension: </td><td align=left><input type=text name=after_hours_exten size=10 maxlength=20 value=\"$after_hours_exten\">$NWB#vicidial_inbound_groups-after_hours_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>After Hours Extension: </td><td align=left><input type=text name=after_hours_exten size=10 maxlength=20 value=\"$after_hours_exten\">$NWB#vicidial_inbound_groups-after_hours_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>After Hours Voicemail: </td><td align=left><input type=text name=after_hours_voicemail size=10 maxlength=20 value=\"$after_hours_voicemail\">$NWB#vicidial_inbound_groups-after_hours_voicemail$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>After Hours Voicemail: </td><td align=left><input type=text name=after_hours_voicemail size=10 maxlength=20 value=\"$after_hours_voicemail\">$NWB#vicidial_inbound_groups-after_hours_voicemail$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>After Hours Transfer Group: </td><td align=left><select size=1 name=afterhours_xfer_group>";
+	echo "$Agroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-afterhours_xfer_group$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Welcome Message Filename: </td><td align=left><input type=text name=welcome_message_filename size=20 maxlength=50 value=\"$welcome_message_filename\">$NWB#vicidial_inbound_groups-welcome_message_filename$NWE</td></tr>\n";
 

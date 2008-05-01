@@ -103,3 +103,26 @@ code_name VARCHAR(30)
 );
 
 UPDATE system_settings SET db_schema_version='1081';
+
+ CREATE TABLE vicidial_agent_sph (
+campaign_group_id VARCHAR(20) NOT NULL,
+stat_date DATE NOT NULL,
+shift VARCHAR(20) NOT NULL,
+role ENUM('FRONTER','CLOSER') default 'FRONTER',
+user VARCHAR(20) NOT NULL,
+calls MEDIUMINT(8) UNSIGNED default '0',
+sales MEDIUMINT(8) UNSIGNED default '0',
+login_sec MEDIUMINT(8) UNSIGNED default '0',
+login_hours DECIMAL(5,2) DEFAULT '0.00',
+sph DECIMAL(6,2) DEFAULT '0.00',
+index (campaign_group_id),
+index (stat_date)
+);
+
+ALTER TABLE vicidial_log ADD term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE';
+ALTER TABLE vicidial_closer_log ADD term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE';
+
+ALTER TABLE vicidial_inbound_groups MODIFY after_hours_action ENUM('HANGUP','MESSAGE','EXTENSION','VOICEMAIL','IN_GROUP') default 'MESSAGE';
+ALTER TABLE vicidial_inbound_groups ADD afterhours_xfer_group VARCHAR(20) default '---NONE---';
+
+UPDATE system_settings SET db_schema_version='1082';

@@ -103,6 +103,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 19. Several code changes for better UTF8 compatibility with the database as well
 	as special character leads in the agent screen, lead loading
 
+20. Added after hours redirect of calls to an in-group to another in-group
+
+21. Added collection of hangup reasons for inbound and outbound calls in the
+	vicidial_log and vicidial_closer_log tables
+
 
 
 
