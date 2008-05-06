@@ -298,7 +298,7 @@ if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $
 if ($affected_rows > 0)
 	{
 	# flag the lead as being Answered or Picked up
-	$stmtA = "UPDATE vicidial_list set status='PU' where lead_id='$CIDlead_id';";
+	$stmtA = "UPDATE vicidial_list set status='PU' where lead_id='$CIDlead_id' and status NOT IN('CALLBK');";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD vicidial_list PU update: |$affected_rows|$uniqueid|";   &agi_output;}
