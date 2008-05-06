@@ -709,6 +709,12 @@ if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}
 	elseif (isset($_POST["code_name"]))	{$code_name=$_POST["code_name"];}
 if (isset($_GET["afterhours_xfer_group"]))			{$afterhours_xfer_group=$_GET["afterhours_xfer_group"];}	
 	elseif (isset($_POST["afterhours_xfer_group"]))	{$afterhours_xfer_group=$_POST["afterhours_xfer_group"];}
+if (isset($_GET["alias_id"]))				{$alias_id=$_GET["alias_id"];}	
+	elseif (isset($_POST["alias_id"]))		{$alias_id=$_POST["alias_id"];}
+if (isset($_GET["alias_name"]))				{$alias_name=$_GET["alias_name"];}	
+	elseif (isset($_POST["alias_name"]))		{$alias_name=$_POST["alias_name"];}
+if (isset($_GET["logins_list"]))				{$logins_list=$_GET["logins_list"];}	
+	elseif (isset($_POST["logins_list"]))		{$logins_list=$_POST["logins_list"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1009,6 +1015,10 @@ $drop_action = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_action);
 $drop_inbound_group = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_inbound_group);
 $afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_group);
 $after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
+$alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$alias_id);
+
+### ALPHA-NUMERIC and underscore and dash and comma
+$logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -1048,6 +1058,8 @@ $vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
 $vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
 $vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
 $code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$code_name);
+$alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alias_name);
+
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1223,11 +1235,12 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80317-2037 - Added Recording override settings to in-groups
 # 80414-1505 - More work on QC, added vicidial_qc_codes
 # 80424-0442 - Added non_latin system_settings lookup at top to override dbconnect setting
+# 80505-0333 - Added phones_alias sections to allow for load-balanced-phone-logins
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-127';
-$build = '80424-0442';
+$admin_version = '2.0.5-128';
+$build = '80505-0333';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1377,6 +1390,7 @@ if ($ADD==11111111)		{$hh='filters';		echo "Add New Filter";}
 if ($ADD==111111111)	{$hh='admin';	$sh='times';	echo "Add New Call Time";}
 if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Add New State Call Time";}
 if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
+if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE ALIAS";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
@@ -1401,6 +1415,7 @@ if ($ADD==21111111)		{$hh='filters';		echo "New Filter Addition";}
 if ($ADD==211111111)	{$hh='admin';	$sh='times';	echo "New Call Time Addition";}
 if ($ADD==2111111111)	{$hh='admin';	$sh='times';	echo "New State Call Time Addition";}
 if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE";}
+if ($ADD==22111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE ALIAS";}
 if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
@@ -1449,6 +1464,7 @@ if ($ADD==311111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
 if ($ADD==321111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time State Definitions List";}
 if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
+if ($ADD==32111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
 if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
@@ -1476,6 +1492,7 @@ if ($ADD==41111111)		{$hh='filters';		echo "Modify Filter";}
 if ($ADD==411111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
 if ($ADD==4111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
+if ($ADD==42111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
 if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
@@ -1497,6 +1514,7 @@ if ($ADD==51111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==511111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
 if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
 if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
@@ -1518,6 +1536,7 @@ if ($ADD==61111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==611111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
 if ($ADD==6111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
 if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
 if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
@@ -1539,6 +1558,7 @@ if ($ADD==10000000)		{$hh='filters';		echo "Filters";}
 if ($ADD==100000000)	{$hh='admin';	$sh='times';	echo "Call Times";}
 if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "State Call Times";}
 if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "PHONE LIST";}
+if ($ADD==12000000000)	{$hh='admin';	$sh='phones';	echo "PHONE ALIAS LIST";}
 if ($ADD==100000000000)	{$hh='admin';	$sh='server';	echo "SERVER LIST";}
 if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo "CONFERENCE LIST";}
 if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo "VICIDIAL CONFERENCE LIST";}
@@ -3474,6 +3494,21 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <BR>
 <B>DBY Port -</B> The MySQL TCP port that this user should be using when connecting. Default is 3306. Secondary server, not used currently.
 
+<BR>
+<A NAME="phones-alias_id">
+<BR>
+<B>Alias ID -</B> The ID of the alias used to allow for phone load balanced logins. no spaces or other special characters allowed. Must be between 2 and 20 characters in length.
+
+<BR>
+<A NAME="phones-alias_name">
+<BR>
+<B>Alias Name -</B> The name used to describe a phones alias, Must be between 2 and 50 characters in length.
+
+<BR>
+<A NAME="phones-logins_list">
+<BR>
+<B>Phones Logins List -</B> The comma separated list of phone logins used when an agent logs in using phone load balanced logins. The Agent application will find the active server with the fewest agents logged into it and place a call from that server to the agent upon login.
+
 
 <BR><BR><BR><BR>
 
@@ -4267,7 +4302,7 @@ if (strlen($admin_hh) > 1) {
 		<? } 
 	if (strlen($phones_sh) > 1) { 
 		?>
-	<TR BGCOLOR=<?=$phones_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Phones </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Phone </a></TD></TR>
+	<TR BGCOLOR=<?=$phones_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Phones </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Phone </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Phone Alias List </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Phone Alias </a></TD></TR>
 		<? }
 	if (strlen($conference_sh) > 1) { 
 		?>
@@ -4921,26 +4956,57 @@ if ($ADD==11111111111)
 
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone extension: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial Plan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20 value=\"$row[1]\"> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Outbound CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20 value=\"$row[65]\"> (digits only)$NWB#phones-outbound_cid$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone IP address: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15 value=\"$row[3]\"> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Computer IP address: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15 value=\"$row[4]\"> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Dial Plan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Outbound CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20> (digits only)$NWB#phones-outbound_cid$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phone IP address: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Computer IP address: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
 	echo "$servers_list";
 	echo "<option SELECTED>$row[5]</option>\n";
 	echo "</select>$NWB#phones-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Login: </td><td align=left><input type=text name=login size=10 maxlength=10 value=\"$row[6]\">$NWB#phones-login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=10 maxlength=10 value=\"$row[7]\">$NWB#phones-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option>ACTIVE</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option><option selected>$row[8]</option></select>$NWB#phones-status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active Account: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[9]</option></select>$NWB#phones-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Type: </td><td align=left><input type=text name=phone_type size=20 maxlength=50 value=\"$row[10]\">$NWB#phones-phone_type$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=fullname size=20 maxlength=50 value=\"$row[11]\">$NWB#phones-fullname$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Company: </td><td align=left><input type=text name=company size=10 maxlength=10 value=\"$row[12]\">$NWB#phones-company$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Picture: </td><td align=left><input type=text name=picture size=20 maxlength=19 value=\"$row[13]\">$NWB#phones-picture$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Client Protocol: </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option><option selected>$row[16]</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$row[17]</option></select> (Do NOT Adjust for DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Login: </td><td align=left><input type=text name=login size=10 maxlength=10>$NWB#phones-login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=10 maxlength=10>$NWB#phones-pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option SELECTED>ACTIVE</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option></select>$NWB#phones-status$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active Account: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#phones-active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Type: </td><td align=left><input type=text name=phone_type size=20 maxlength=50>$NWB#phones-phone_type$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=fullname size=20 maxlength=50>$NWB#phones-fullname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Company: </td><td align=left><input type=text name=company size=10 maxlength=10>$NWB#phones-company$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Picture: </td><td align=left><input type=text name=picture size=20 maxlength=19>$NWB#phones-picture$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Client Protocol: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option SELECTED>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> (Do NOT Adjust for DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=12111111111 display the ADD NEW PHONE ALIAS SCREEN
+######################
+
+if ($ADD==12111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>ADD A NEW PHONE ALIAS<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=22111111111>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alias ID: </td><td align=left><input type=text name=alias_id size=20 maxlength=20 value=\"\">$NWB#phones-alias_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alias Name: </td><td align=left><input type=text name=alias_name size=30 maxlength=50> $NWB#phones-alias_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Logins List: </td><td align=left><input type=text name=logins_list size=50 maxlength=255> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -5900,17 +5966,86 @@ echo "<TABLE><TR><TD>\n";
 		{echo "<br>PHONE NOT ADDED - there is already a Phone in the system with this extension/server\n";}
 	else
 		{
-		 if ( (strlen($extension) < 1) or (strlen($server_ip) < 7) or (strlen($dialplan_number) < 1) or (strlen($voicemail_id) < 1) or (strlen($login) < 1)  or (strlen($pass) < 1))
-			{echo "<br>PHONE NOT ADDED - Please go back and look at the data you entered\n";}
-		 else
+		$stmt="SELECT count(*) from phones where login='$login';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>PHONE NOT ADDED - there is already a Phone in the system with this login\n";}
+		else
 			{
-			echo "<br>PHONE ADDED\n";
-
-			$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
+			$stmt="SELECT count(*) from phones_alias where alias_id='$login';";
 			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{echo "<br>PHONE NOT ADDED - there is already a Phone alias in the system with this login\n";}
+			else
+				{
+				 if ( (strlen($extension) < 1) or (strlen($server_ip) < 7) or (strlen($dialplan_number) < 1) or (strlen($voicemail_id) < 1) or (strlen($login) < 1)  or (strlen($pass) < 1))
+					{echo "<br>PHONE NOT ADDED - Please go back and look at the data you entered\n";}
+				 else
+					{
+					echo "<br>PHONE ADDED\n";
+
+					$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG CHANGES TO LOG FILE ###
+					if ($WeBRooTWritablE > 0)
+						{
+						$fp = fopen ("./admin_changes_log.txt", "a");
+						fwrite ($fp, "$date|ADD A NEW PHONE                |$stmt|\n");
+						fclose($fp);
+						}
+					}
+				}
 			}
 		}
 $ADD=31111111111;
+}
+
+
+######################
+# ADD=22111111111 adds new phone alias to the system
+######################
+
+if ($ADD==22111111111)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>PHONE ALIAS NOT ADDED - there is already a Phone Alias in the system with this ID\n";}
+	else
+		{
+		$stmt="SELECT count(*) from phones where login='$alias_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>PHONE ALIAS NOT ADDED - there is already a Phone Login in the system with this ID\n";}
+		else
+			{
+			 if ( (strlen($alias_id) < 1) or (strlen($alias_name) < 2) )
+				{echo "<br>PHONE ALIAS NOT ADDED - Please go back and look at the data you entered\n";}
+			 else
+				{
+				echo "<br>PHONE ALIAS ADDED\n";
+
+				$stmt="INSERT INTO phones_alias (alias_id,alias_name,logins_list) values('$alias_id','$alias_name','$logins_list');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW PHONE ALIAS          |$stmt|\n");
+					fclose($fp);
+					}
+				}
+			}
+		}
+$ADD=32111111111;
 }
 
 
@@ -5937,6 +6072,14 @@ echo "<TABLE><TR><TD>\n";
 
 			$stmt="INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_version) values('$server_id','$server_description','$server_ip','$active','$asterisk_version');";
 			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW SERVER               |$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 $ADD=311111111111;
@@ -7410,6 +7553,14 @@ if ($ADD==41111111111)
 
 			$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysql_real_escape_string($local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysql_real_escape_string($VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages' where extension='$old_extension' and server_ip='$old_server_ip';";
 			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|MODIFY PHONE          |$PHP_AUTH_USER|$ip|$stmt|\n");
+				fclose($fp);
+				}
 			}
 		}
 	}
@@ -7419,6 +7570,46 @@ if ($ADD==41111111111)
 	exit;
 	}
 $ADD=31111111111;	# go to phone modification form below
+}
+
+
+######################
+# ADD=42111111111 modify phone alias record in the system
+######################
+
+if ($ADD==42111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT count(*) from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+		 if ( (strlen($alias_id) < 1) or (strlen($alias_name) < 2) )
+		{echo "<br>PHONE ALIAS NOT MODIFIED - Please go back and look at the data you entered\n";}
+		 else
+		{
+		echo "<br>PHONE ALIAS MODIFIED: $alias_id\n";
+
+		$stmt="UPDATE phones_alias set alias_name='$alias_name', logins_list='$logins_list' where alias_id='$alias_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY PHONES ALIAS   |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=32111111111;	# go to phone alias modification form below
 }
 
 
@@ -7454,6 +7645,14 @@ if ($ADD==411111111111)
 
 				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active', balance_trunks_offlimits='$balance_trunks_offlimits' where server_id='$old_server_id';";
 				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY SERVER         |$PHP_AUTH_USER|$ip|$stmt|\n");
+					fclose($fp);
+					}
 				}
 			}
 		}
@@ -8140,6 +8339,28 @@ if ($ADD==51111111111)
 		echo "<br><br><a href=\"$PHP_SELF?ADD=61111111111&extension=$extension&server_ip=$server_ip&CoNfIrM=YES\">Click here to delete phone $extension - $server_ip</a><br><br><br>\n";
 		}
 $ADD='31111111111';		# go to phone modification below
+}
+
+
+######################
+# ADD=52111111111 confirmation before deletion of phone alias record
+######################
+
+if ($ADD==52111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($alias_id) < 1) or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>PHONE ALIAS NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Alias ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>PHONE ALIAS DELETION CONFIRMATION: $alias_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=62111111111&alias_id=$alias_id&CoNfIrM=YES\">Click here to delete phone alias $alias_id</a><br><br><br>\n";
+		}
+$ADD='32111111111';		# go to phone alias modification below
 }
 
 
@@ -8921,13 +9142,45 @@ if ($ADD==61111111111)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING PHONE!!!|$PHP_AUTH_USER|$ip|extension='$extension'|server_ip='$server_ip'|\n");
+			fwrite ($fp, "$date|!!!DELETING PHONE!!!|$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		echo "<br><B>PHONE DELETION COMPLETED: $extension - $server_ip</B>\n";
 		echo "<br><br>\n";
 		}
 $ADD='10000000000';		# go to phone list
+}
+
+
+######################
+# ADD=62111111111 delete phone alias record
+######################
+
+if ($ADD==62111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($alias_id) < 2) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>PHONE ALIAS NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Alias ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="DELETE from phones_alias where alias_id='$alias_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|!DELETE PHONE ALIAS!|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		echo "<br><B>PHONE ALIAS DELETION COMPLETED: $alias_id</B>\n";
+		echo "<br><br>\n";
+		}
+$ADD='12000000000';		# go to phone alias list
 }
 
 
@@ -12446,6 +12699,80 @@ if ($ADD==31111111111)
 
 
 ######################
+# ADD=32111111111 modify phone alias record in the system
+######################
+
+if ($ADD==32111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+
+	echo "<br>MODIFY A PHONE ALIAS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=42111111111>\n";
+	echo "<input type=hidden name=alias_id value=\"$row[0]\">\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alias ID: </td><td align=left><B>$row[0]</B> $NWB#phones-alias_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alias Name: </td><td align=left><input type=text name=alias_name size=30 maxlength=50 value=\"$row[1]\"> $NWB#phones-alias_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phones Logins List: </td><td align=left><input type=text name=logins_list size=50 maxlength=255 value=\"$row[2]\"> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+
+	### list of phones in this phones alias
+	$phone_alias_SQL = ereg_replace(',',"','",$row[2]);
+ 
+	echo "<center>\n";
+	echo "<br><b>PHONES WITHIN THIS PHONES ALIAS:</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>LOGIN</td><td>EXTENSION</td><td>SERVER</td><td>PROTOCOL</td><td>IP</td></tr>\n";
+
+		$stmt="SELECT login,extension,server_ip,protocol,phone_ip from phones where login IN ('$phone_alias_SQL');";
+		if ($DB) {echo "|$stmt|";}
+		$rsltx=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rsltx);
+
+		$o=0;
+		while ($lists_to_print > $o) {
+			$rowx=mysql_fetch_row($rsltx);
+			$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$rowx[1]&server_ip=$rowx[2]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[4]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+
+
+
+
+
+
+
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=52111111111&alias_id=$row[0]\">DELETE THIS PHONE ALIAS</a>\n";
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
 # ADD=311111111111 modify server record in the system
 ######################
 
@@ -13792,6 +14119,41 @@ echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[16]</td><td><font size=1>$row[5]</td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td><td><font size=1>$row[8]</td><td><font size=1>$row[11]</td><td><font size=1>$row[14]</td><td><font size=1>$row[15]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\">MODIFY</a> | <a href=\"./phone_stats.php?extension=$row[0]&server_ip=$row[5]\">STATS</a></td></tr>\n";
+		$o++;
+	}
+
+echo "</TABLE></center>\n";
+}
+
+######################
+# ADD=12000000000 display all phones alias
+######################
+if ($ADD==12000000000)
+{
+echo "<TABLE><TR><TD>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from phones_alias order by alias_id;";
+	$rslt=mysql_query($stmt, $link);
+	$phones_to_print = mysql_num_rows($rslt);
+
+echo "<br>PHONE ALIAS LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+echo "<tr bgcolor=black>";
+echo "<td><font size=1 color=white><B>ALIAS ID</B></a></td>";
+echo "<td><font size=1 color=white><B>ALIAS NAME</B></a></td>";
+echo "<td><font size=1 color=white><B>PHONE LOGINS LIST</B></a></td>";
+echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+
+	$o=0;
+	while ($phones_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=32111111111&extension=$row[0]&server_ip=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 	}
 

@@ -1063,6 +1063,13 @@ index (campaign_group_id),
 index (stat_date)
 );
 
+ CREATE TABLE phones_alias (
+alias_id VARCHAR(20) NOT NULL UNIQUE PRIMARY KEY,
+alias_name VARCHAR(50),
+logins_list VARCHAR(255)
+);
+
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1109,4 +1116,4 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1082';
+UPDATE system_settings SET db_schema_version='1083';

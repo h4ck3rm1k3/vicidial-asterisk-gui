@@ -173,10 +173,11 @@
 # 80407-2112 - Work on adding phone login load balancing across servers
 # 80416-0559 - Added ability to log computer_ip at login, set the $PhoneSComPIP variable
 # 80428-0413 - UTF8 changes and testing
+# 80505-0054 - Added multi-phones load-balanced alias option
 #
 
-$version = '2.0.5-152';
-$build = '80428-0413';
+$version = '2.0.5-153';
+$build = '80505-0054';
 
 require("dbconnect.php");
 
@@ -947,6 +948,28 @@ $VDloginDISPLAY=0;
 # will send multiple phones-table logins so that the script can determine the
 # server that has the fewest agents logged into it.
 #   login: ca101,cb101,cc101
+	$alias_found=0;
+$stmt="select count(*) from phones_alias where alias_id = '$phone_login';";
+$rslt=mysql_query($stmt, $link);
+$alias_ct = mysql_num_rows($rslt);
+if ($alias_ct > 0)
+	{
+	$row=mysql_fetch_row($rslt);
+	$alias_found = "$row[0]";
+	}
+if ($alias_found > 0)
+	{
+	$stmt="select alias_name,logins_list from phones_alias where alias_id = '$phone_login' limit 1;";
+	$rslt=mysql_query($stmt, $link);
+	$alias_ct = mysql_num_rows($rslt);
+	if ($alias_ct > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$alias_name = "$row[0]";
+		$phone_login = "$row[1]";
+		}
+	}
+
 $pa=0;
 if ( (eregi(',',$phone_login)) and (strlen($phone_login) > 2) )
 	{
@@ -957,7 +980,8 @@ if ( (eregi(',',$phone_login)) and (strlen($phone_login) > 2) )
 		{
 		if ($pa > 0)
 			{$phoneSQL .= " or ";}
-		$phoneSQL .= "(login='$phones_auto[$pa]' and pass='$phone_pass')";
+		$desc = ($phones_auto_ct - $pa); # traverse in reverse order
+		$phoneSQL .= "(login='$phones_auto[$desc]' and pass='$phone_pass')";
 		$pa++;
 		}
 	$phoneSQL .= ")";

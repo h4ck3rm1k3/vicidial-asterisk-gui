@@ -126,3 +126,11 @@ ALTER TABLE vicidial_inbound_groups MODIFY after_hours_action ENUM('HANGUP','MES
 ALTER TABLE vicidial_inbound_groups ADD afterhours_xfer_group VARCHAR(20) default '---NONE---';
 
 UPDATE system_settings SET db_schema_version='1082';
+
+ CREATE TABLE phones_alias (
+alias_id VARCHAR(20) NOT NULL UNIQUE PRIMARY KEY,
+alias_name VARCHAR(50),
+logins_list VARCHAR(255)
+);
+
+UPDATE system_settings SET db_schema_version='1083';

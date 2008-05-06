@@ -78,6 +78,39 @@ CALL HANGUP REASON STATS||
 After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field, IN_GROUP will send the call to the inbound group selected in the After Hours Transfer Group select list. Default is MESSAGE||
 After Hours Transfer Group -<\/B> If After Hours Action is set to IN_GROUP, the call will be sent to this inbound group if it enters the in-group outside of the call time scheme defined for the in-group||
 After Hours Transfer Group: ||
+Total calls taken in to this In-Group:||
+CALL HOLD TIME BREAKDOWN IN SECONDS||
+Date Range:||
+ADDING NEW PHONE ALIAS||
+ADD NEW PHONE ALIAS||
+MODIFY PHONE ALIAS||
+DELETE PHONE ALIAS||
+PHONE ALIAS LIST||
+Phone Alias List||
+Add A New Phone Alias||
+ADD A NEW PHONE ALIAS||
+Alias ID: ||
+Alias Name: ||
+Phone Logins List: ||
+PHONE ALIAS NOT ADDED||
+there is already a Phone Alias in the system with this ID||
+there is already a Phone Login in the system with this ID||
+PHONE ALIAS ADDED||
+PHONE ALIAS NOT MODIFIED||
+PHONE ALIAS MODIFIED||
+PHONE ALIAS NOT DELETED||
+PHONE ALIAS DELETION CONFIRMATION||
+Click here to delete phone alias||
+PHONE ALIAS DELETION COMPLETED||
+PHONE ALIAS LISTINGS||
+there is already a Phone alias in the system with this login||
+there is already a Phone in the system with this login||
+DELETE THIS PHONE ALIAS||
+MODIFY A PHONE ALIAS RECORD||
+Alias ID -<\/B> The ID of the alias used to allow for phone load balanced logins. no spaces or other special characters allowed. Must be between 2 and 20 characters in length||
+Alias Name -<\/B> The name used to describe a phones alias, Must be between 2 and 50 characters in length||
+Phones Logins List -<\/B> The comma separated list of phone logins used when an agent logs in using phone load balanced logins. The Agent application will find the active server with the fewest agents logged into it and place a call from that server to the agent upon login||
+PHONES WITHIN THIS PHONES ALIAS||
 
 
 ############################################################ CLIENT

@@ -648,10 +648,10 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://gulus.usherbrooke.ca/pub/appl/ssh/OpenSSH/portable/openssh-4.7p1.tar.gz
-	- gunzip openssh-4.7p1.tar.gz
-	- tar xvf openssh-4.7p1.tar
-	- cd openssh-4.7p1
+        - wget http://ftp.openssh.zone-h.org/pub/OpenBSD/OpenSSH/portable/openssh-5.0p1.tar.gz
+	- gunzip openssh-5.0p1.tar.gz
+	- tar xvf openssh-5.0p1.tar
+	- cd openssh-5.0p1
 	- ./configure
 	- make
 	- make install
@@ -686,26 +686,28 @@ installation on another machine)
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.0.61.tar.gz
-	- gunzip httpd-2.0.61.tar.gz
-	- tar xvf httpd-2.0.61.tar
-	- wget http://us2.php.net/distributions/php-4.4.8.tar.gz
+	- wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.8.tar.gz
+	- gunzip httpd-2.2.8.tar.gz
+	- tar xvf httpd-2.2.8.tar
+	- wget http://us2.php.net/distributions/php-5.2.6.tar.gz
 		NOTE: PHP 5.1.1 has also been tested with this release
-	- gunzip php-4.4.8.tar.gz
-	- tar xvf php-4.4.8.tar
-	- cd httpd-2.0.61
+	- gunzip php-5.2.6.tar.gz
+	- tar xvf php-5.2.6.tar
+	- cd httpd-2.2.8
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install
-	- cd ../php-4.4.8
+	- cd ../php-5.2.6
 	- ./configure --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql
 	- make
 	- make install
 	- cp php.ini-dist /usr/local/lib/php.ini
 	   NOTE: you will want to make sure NOTICE logging is turned off:
 	   error_reporting  =  E_ALL & ~E_NOTICE         ; (this is default)
-!!! REQUIRED !!! raise the memory limit for scripts in php.ini:
+!!! REQUIRED !!! be sure the memory limit for scripts in php.ini is AT LEAST 48M:
 	   memory_limit = 48M
+        Make sure short tags are enabled:
+           short_open_tag = On
 	some other fields to change if using web-based lead loader:
 	   max_execution_time = 330
 	   max_input_time = 360
@@ -716,9 +718,9 @@ installation on another machine)
 	- vi /usr/local/apache2/conf/httpd.conf
 		add the following lines:
 			"AddType application/x-httpd-php .php .phtml"
-			"LoadModule php4_module libexec/libphp4.so"
+			"LoadModule php4_module libexec/libphp5.so"
 			   or
-			"LoadModule php4_module modules/libphp4.so"
+			"LoadModule php4_module modules/libphp5.so"
 		modify the index.html line and add index.php to the list
 
 		to disable logging, change:
@@ -763,7 +765,7 @@ installation on another machine)
 	- vi /usr/local/lib/php.ini
 	    Add the following lines to the dynamic extensions section of php.ini:
 	     (you may need to change the extension location depending on your install of php)
-		extension="../../../usr/local/eaccelerator-0.9.5/modules/eaccelerator.so"
+		zend_extension="../../../usr/local/eaccelerator-0.9.5/modules/eaccelerator.so"
 		eaccelerator.shm_size="48"
 		eaccelerator.cache_dir="/tmp/eaccelerator"
 		eaccelerator.enable="1"

@@ -156,16 +156,16 @@ $row=mysql_fetch_row($rslt);
 
 $TOTALcalls =	sprintf("%10s", $row[0]);
 if ( ($row[0] < 1) or ($row[1] < 1) )
-	{$average_hold_seconds = '         0';}
+	{$average_call_seconds = '         0';}
 else
 	{
-	$average_hold_seconds = ($row[1] / $row[0]);
-	$average_hold_seconds = round($average_hold_seconds, 0);
-	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
+	$average_call_seconds = ($row[1] / $row[0]);
+	$average_call_seconds = round($average_call_seconds, 0);
+	$average_call_seconds =	sprintf("%10s", $average_call_seconds);
 	}
 
-echo "Total Calls placed from this Campaign:        $TOTALcalls\n";
-echo "Average Call Length for all Calls:            $average_hold_seconds seconds\n";
+echo "Total calls taken in to this In-Group:        $TOTALcalls\n";
+echo "Average Call Length for all Calls:            $average_call_seconds seconds\n";
 
 echo "\n";
 echo "---------- DROPS\n";
@@ -185,7 +185,9 @@ else
 	}
 
 if ( ($row[0] < 1) or ($row[1] < 1) )
-	{$average_hold_seconds = '         0';}
+	{
+	$average_hold_seconds = '         0';
+	}
 else
 	{
 	$average_hold_seconds = ($row[1] / $row[0]);
@@ -195,6 +197,115 @@ else
 
 echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
+
+
+
+
+##############################
+#########  CALL QUEUE STATS
+echo "\n";
+echo "---------- QUEUE STATS\n";
+
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+
+$QUEUEcalls =	sprintf("%10s", $row[0]);
+if ( ($QUEUEcalls < 1) or ($TOTALcalls < 1) )
+	{$QUEUEpercent = '0';}
+else
+	{
+	$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
+	$QUEUEpercent = round($QUEUEpercent, 0);
+	}
+
+if ( ($row[0] < 1) or ($row[1] < 1) )
+	{$average_queue_seconds = '         0';}
+else
+	{
+	$average_queue_seconds = ($row[1] / $row[0]);
+	$average_queue_seconds = round($average_queue_seconds, 2);
+	$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
+	}
+
+if ( ($TOTALcalls < 1) or ($row[1] < 1) )
+	{$average_total_queue_seconds = '         0';}
+else
+	{
+	$average_total_queue_seconds = ($row[1] / $TOTALcalls);
+	$average_total_queue_seconds = round($average_total_queue_seconds, 2);
+	$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
+	}
+
+echo "Total Calls That entered Queue:               $QUEUEcalls  $QUEUEpercent%\n";
+echo "Average QUEUE Length for queue calls:         $average_queue_seconds seconds\n";
+echo "Average QUEUE Length across all calls:        $average_total_queue_seconds seconds\n";
+
+
+
+##############################
+#########  CALL HOLD TIME BREAKDONW IN SECONDS
+
+$TOTALcalls = 0;
+
+echo "\n";
+echo "---------- CALL HOLD TIME BREAKDOWN IN SECONDS\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+echo "|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by queue_seconds;";
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$TOTALcalls = ($TOTALcalls + $row[0]);
+
+	if ($row[1] == 0) {$hd_0 = ($hd_0 + $row[0]);}
+	if ( ($row[1] > 0) and ($row{1} <= 5) ) {$hd_5 = ($hd_5 + $row[0]);}
+	if ( ($row[1] > 5) and ($row{1} <= 10) ) {$hd10 = ($hd10 + $row[0]);}
+	if ( ($row[1] > 10) and ($row{1} <= 15) ) {$hd15 = ($hd15 + $row[0]);}
+	if ( ($row[1] > 15) and ($row{1} <= 20) ) {$hd20 = ($hd20 + $row[0]);}
+	if ( ($row[1] > 20) and ($row{1} <= 25) ) {$hd25 = ($hd25 + $row[0]);}
+	if ( ($row[1] > 25) and ($row{1} <= 30) ) {$hd30 = ($hd30 + $row[0]);}
+	if ( ($row[1] > 30) and ($row{1} <= 35) ) {$hd35 = ($hd35 + $row[0]);}
+	if ( ($row[1] > 35) and ($row{1} <= 40) ) {$hd40 = ($hd40 + $row[0]);}
+	if ( ($row[1] > 40) and ($row{1} <= 45) ) {$hd45 = ($hd45 + $row[0]);}
+	if ( ($row[1] > 45) and ($row{1} <= 50) ) {$hd50 = ($hd50 + $row[0]);}
+	if ( ($row[1] > 50) and ($row{1} <= 55) ) {$hd55 = ($hd55 + $row[0]);}
+	if ( ($row[1] > 55) and ($row{1} <= 60) ) {$hd60 = ($hd60 + $row[0]);}
+	if ( ($row[1] > 60) and ($row{1} <= 90) ) {$hd90 = ($hd90 + $row[0]);}
+	if ($row[1] > 90) {$hd99 = ($hd99 + $row[0]);}
+	$i++;
+	}
+
+$hd_0 =	sprintf("%5s", $hd_0);
+$hd_5 =	sprintf("%5s", $hd_5);
+$hd10 =	sprintf("%5s", $hd10);
+$hd15 =	sprintf("%5s", $hd15);
+$hd20 =	sprintf("%5s", $hd20);
+$hd25 =	sprintf("%5s", $hd25);
+$hd30 =	sprintf("%5s", $hd30);
+$hd35 =	sprintf("%5s", $hd35);
+$hd40 =	sprintf("%5s", $hd40);
+$hd45 =	sprintf("%5s", $hd45);
+$hd50 =	sprintf("%5s", $hd50);
+$hd55 =	sprintf("%5s", $hd55);
+$hd60 =	sprintf("%5s", $hd60);
+$hd90 =	sprintf("%5s", $hd90);
+$hd99 =	sprintf("%5s", $hd99);
+
+$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+echo "| $hd_0 $hd_5 $hd10 $hd15 $hd20 $hd25 $hd30 $hd35 $hd40 $hd45 $hd50 $hd55 $hd60 $hd90 $hd99 | $TOTALcalls |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
 
 
 
@@ -314,47 +425,6 @@ echo "+--------+----------------------+------------+\n";
 echo "| TOTAL:                        | $TOTALcalls |\n";
 echo "+-------------------------------+------------+\n";
 
-
-
-
-echo "\n";
-echo "---------- QUEUE STATS\n";
-
-$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-
-$QUEUEcalls =	sprintf("%10s", $row[0]);
-if ( ($QUEUEcalls < 1) or ($TOTALcalls < 1) )
-	{$QUEUEpercent = '0';}
-else
-	{
-	$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
-	$QUEUEpercent = round($QUEUEpercent, 0);
-	}
-
-if ( ($row[0] < 1) or ($row[1] < 1) )
-	{$average_queue_seconds = '         0';}
-else
-	{
-	$average_queue_seconds = ($row[1] / $row[0]);
-	$average_queue_seconds = round($average_queue_seconds, 2);
-	$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
-	}
-
-if ( ($TOTALcalls < 1) or ($row[1] < 1) )
-	{$average_total_queue_seconds = '         0';}
-else
-	{
-	$average_total_queue_seconds = ($row[1] / $TOTALcalls);
-	$average_total_queue_seconds = round($average_total_queue_seconds, 2);
-	$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
-	}
-
-echo "Total Calls That entered Queue:               $QUEUEcalls  $QUEUEpercent%\n";
-echo "Average QUEUE Length for queue calls:         $average_queue_seconds seconds\n";
-echo "Average QUEUE Length across all calls:        $average_total_queue_seconds seconds\n";
 
 
 ##############################
