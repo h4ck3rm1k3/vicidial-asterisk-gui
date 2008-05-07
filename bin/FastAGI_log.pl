@@ -35,6 +35,7 @@
 # 71030-2039 - Added priority to hopper insertions
 # 80224-0040 - Fixed bugs in vicidial_log updates
 # 80430-0907 - Added term_reason to vicidial_log and vicidial_closer_log
+# 80507-1138 - Fixed vicidial_closer_log CALLER hangups
 #
 
 
@@ -714,7 +715,7 @@ sub process_request {
 						}
 					$sthA->finish();
 
-					if (!$epc_countCUSTDATA)
+					if ( (!$epc_countCUSTDATA) || ($calleridname =~ /^Y\d\d\d\d/) )
 						{
 						if ($AGILOG) {$agi_string = "no VDL record found: $uniqueid $calleridname $VD_lead_id $uniqueid $VD_uniqueid";   &agi_output;}
 
