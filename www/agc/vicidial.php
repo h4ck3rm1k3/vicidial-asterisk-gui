@@ -174,10 +174,11 @@
 # 80416-0559 - Added ability to log computer_ip at login, set the $PhoneSComPIP variable
 # 80428-0413 - UTF8 changes and testing
 # 80505-0054 - Added multi-phones load-balanced alias option
+# 80507-0932 - Fixed Script display bug (+ instead of space)
 #
 
-$version = '2.0.5-153';
-$build = '80505-0054';
+$version = '2.0.5-154';
+$build = '80507-0932';
 
 require("dbconnect.php");
 
@@ -2803,6 +2804,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{var redirecttype = 'RedirectXtraCX';}
 				else
 					{var redirecttype = 'RedirectXtra';}
+			//		{var redirecttype = 'RedirectXtraNeW';}
 				DispO3waychannel = redirectvalue;
 				DispO3wayXtrAchannel = redirectXTRAvalue;
 				DispO3wayCalLserverip = redirectserverip;
@@ -3641,6 +3643,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var textname = decoded;
 								URLDecode(scripttexts[campaign_script],'YES');
 								var texttext = decoded;
+								var regWFplus = new RegExp("\\+","ig");
+								textname = textname.replace(regWFplus, ' ');
+								texttext = texttext.replace(regWFplus, ' ');
 								var testscript = "<B>" + textname + "</B>\n\n<BR><BR>\n\n" + texttext;
 								document.getElementById("ScriptContents").innerHTML = testscript;
 								}
@@ -3859,6 +3864,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var textname = decoded;
 							URLDecode(scripttexts[campaign_script],'YES');
 							var texttext = decoded;
+							var regWFplus = new RegExp("\\+","ig");
+							textname = textname.replace(regWFplus, ' ');
+							texttext = texttext.replace(regWFplus, ' ');
 							var testscript = "<B>" + textname + "</B>\n\n<BR><BR>\n\n" + texttext;
 							document.getElementById("ScriptContents").innerHTML = testscript;
 							}
@@ -4286,6 +4294,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var textname = decoded;
 								URLDecode(scripttexts[CalL_ScripT_id],'YES');
 								var texttext = decoded;
+								var regWFplus = new RegExp("\\+","ig");
+								textname = textname.replace(regWFplus, ' ');
+								texttext = texttext.replace(regWFplus, ' ');
 								var testscript = "<B>" + textname + "</B>\n\n<BR><BR>\n\n" + texttext;
 								document.getElementById("ScriptContents").innerHTML = testscript;
 								}
@@ -6974,7 +6985,7 @@ RECORDING FILE:<BR>
 RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <center>
 <!-- <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + head_conf + "','');return false;\">Record</a> -->
-<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf','<?=$session_id ?>','');return false;"><IMG SRC="./images/vdc_LB_startrecording.gif" border=0 alt="Start Recording"></a></span><BR>
+<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf',session_id,'');return false;"><IMG SRC="./images/vdc_LB_startrecording.gif" border=0 alt="Start Recording"></a></span><BR>
 <span id="SpacerSpanA"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #FFFFFF" id="WebFormSpan"><IMG SRC="./images/vdc_LB_webform_OFF.gif" border=0 alt="Web Form"></span><BR>
 <span id="SpacerSpanB"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
@@ -6983,7 +6994,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <span id="SpacerSpanC"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
 <span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="./images/vdc_LB_hangupcustomer_OFF.gif" border=0 alt="Hangup Customer"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="./images/blank.gif" width=145 height=16 border=0></span><BR>
-<div class="text_input" id="SendDTMFdiv"><span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF('<?=$session_id ?>');return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF" align=bottom></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></div></span><BR>
+<div class="text_input" id="SendDTMFdiv"><span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF(session_id);return false;"><IMG SRC="./images/vdc_LB_senddtmf.gif" border=0 alt="Send DTMF" align=bottom></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></div></span><BR>
 </center>
 </font>
 </td>
