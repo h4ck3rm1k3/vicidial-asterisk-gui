@@ -36,6 +36,7 @@
 # 80224-0040 - Fixed bugs in vicidial_log updates
 # 80430-0907 - Added term_reason to vicidial_log and vicidial_closer_log
 # 80507-1138 - Fixed vicidial_closer_log CALLER hangups
+# 80510-0414 - Fixed crossover logging bugs
 #
 
 
@@ -253,6 +254,8 @@ sub process_request {
 	}
 	$HVcauses=0;
 	$fullCID=0;
+	$callerid='';
+	$calleridname='';
 	$|=1;
 	while(<STDIN>) {
 		chomp;
@@ -704,6 +707,7 @@ sub process_request {
 					$sthArows=$sthA->rows;
 					 $epc_countCUSTDATA=0;
 					 $VD_closecallid='';
+					 $VDL_update=0;
 					while ($sthArows > $epc_countCUSTDATA)
 						{
 						@aryA = $sthA->fetchrow_array;
@@ -731,7 +735,7 @@ sub process_request {
 						if ($Rsec < 10) {$Rsec = "0$Rsec";}
 							$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -746,6 +750,7 @@ sub process_request {
 							$VD_closecallid	=	"$aryA[2]";
 							$VD_user =			"$aryA[3]";
 							$VD_term_reason =	"$aryA[4]";
+							$VD_length_in_sec =	"$aryA[5]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -778,18 +783,21 @@ sub process_request {
 							$SQL_status = "term_reason='CALLER',";
 							}
 
-						$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\";";
-							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-						$VLaffected_rows = $dbhA->do($stmtA);
-						if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VLaffected_rows|$uniqueid|$VD_status|";   &agi_output;}
-
+						if ($calleridname !~ /^Y\d\d\d\d/)
+							{
+							$VDL_update=1;
+							$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set $SQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\";";
+								if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+							$VLaffected_rows = $dbhA->do($stmtA);
+							if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$VLaffected_rows|$uniqueid|$VD_status|";   &agi_output;}
+							}
 
 
 
 						########## UPDATE vicidial_closer_log ##########
-						if (length($VD_closecallid) < 1)
+						if ( (length($VD_closecallid) < 1) || ($VDL_update > 0) )
 							{
-							if ($AGILOG) {$agi_string = "no VDCL record found: $uniqueid $calleridname $VD_lead_id $uniqueid $VD_uniqueid";   &agi_output;}
+							if ($AGILOG) {$agi_string = "no VDCL record found: $uniqueid|$calleridname|$VD_lead_id|$uniqueid|$VD_uniqueid|$VDL_update|";   &agi_output;}
 							}
 						else
 							{
@@ -807,7 +815,7 @@ sub process_request {
 
 							$VD_seconds = ($now_date_epoch - $VD_start_epoch);
 							$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
-								if ($AGILOG) {$agi_string = "|$VDCLSQL_status|$VD_status|\n|$stmtA|";   &agi_output;}
+								if ($AGILOG) {$agi_string = "|$VDCLSQL_status|$VD_status|$VD_length_in_sec|$VD_term_reason|\n|$stmtA|";   &agi_output;}
 							$affected_rows = $dbhA->do($stmtA);
 							if ($AGILOG) {$agi_string = "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|";   &agi_output;}
 
