@@ -37,6 +37,7 @@
 # 80430-0907 - Added term_reason to vicidial_log and vicidial_closer_log
 # 80507-1138 - Fixed vicidial_closer_log CALLER hangups
 # 80510-0414 - Fixed crossover logging bugs
+# 80510-2058 - Fixed status override bug
 #
 
 
@@ -697,27 +698,31 @@ sub process_request {
 						}
 
 
-					########## FIND AND UPDATE vicidial_log ##########
-						$Euniqueid=$uniqueid;
-						$Euniqueid =~ s/\.\d+$//gi;
-					$stmtA = "SELECT start_epoch,status,user,term_reason FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
-						if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					$sthArows=$sthA->rows;
-					 $epc_countCUSTDATA=0;
-					 $VD_closecallid='';
-					 $VDL_update=0;
-					while ($sthArows > $epc_countCUSTDATA)
+					$epc_countCUSTDATA=0;
+					$VD_closecallid='';
+					$VDL_update=0;
+					$Euniqueid=$uniqueid;
+					$Euniqueid =~ s/\.\d+$//gi;
+
+					if ($calleridname !~ /^Y\d\d\d\d/)
 						{
-						@aryA = $sthA->fetchrow_array;
-						$VD_start_epoch	=	"$aryA[0]";
-						$VD_status =		"$aryA[1]";
-						$VD_user =			"$aryA[2]";
-						$VD_term_reason =	"$aryA[3]";
-						 $epc_countCUSTDATA++;
+						########## FIND AND UPDATE vicidial_log ##########
+						$stmtA = "SELECT start_epoch,status,user,term_reason FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
+							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						while ($sthArows > $epc_countCUSTDATA)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$VD_start_epoch	=	"$aryA[0]";
+							$VD_status =		"$aryA[1]";
+							$VD_user =			"$aryA[2]";
+							$VD_term_reason =	"$aryA[3]";
+							 $epc_countCUSTDATA++;
+							}
+						$sthA->finish();
 						}
-					$sthA->finish();
 
 					if ( (!$epc_countCUSTDATA) || ($calleridname =~ /^Y\d\d\d\d/) )
 						{
@@ -735,7 +740,7 @@ sub process_request {
 						if ($Rsec < 10) {$Rsec = "0$Rsec";}
 							$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -751,6 +756,7 @@ sub process_request {
 							$VD_user =			"$aryA[3]";
 							$VD_term_reason =	"$aryA[4]";
 							$VD_length_in_sec =	"$aryA[5]";
+							$VD_queue_seconds =	"$aryA[6]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -767,10 +773,15 @@ sub process_request {
 						if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) 
 							{
 							if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
-								{$term_reason = 'ABANDON';}
+								{$VDLSQL_term_reason = "term_reason='ABANDON',";}
 							else
-								{$term_reason = 'CALLER';}
-							$SQL_status = "status='DROP',term_reason='$term_reason',";
+								{
+								if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/)
+									{$VDLSQL_term_reason = "term_reason='CALLER',";}
+								else
+									{$VDLSQL_term_reason = '';}
+								}
+							$SQL_status = "status='DROP',$VDLSQL_term_reason";
 
 							########## FIND AND UPDATE vicidial_list ##########
 							$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$VD_lead_id';";
@@ -802,20 +813,35 @@ sub process_request {
 						else
 							{
 							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/) 
-								{$VDCLSQL_status = "term_reason='CALLER',";}
+								{$VDCLSQL_update = "term_reason='CALLER',";}
 							else
 								{
 								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
-									{$term_reason = 'ABANDON';}
+									{$VDCLSQL_term_reason = "term_reason='ABANDON',";}
 								else
-									{$term_reason = 'CALLER';}
+									{
+									if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/)
+										{$VDCLSQL_term_reason = "term_reason='CALLER',";}
+									else
+										{$VDCLSQL_term_reason = '';}
+									}
+								if ($VD_status =~ /QUEUE/)
+									{
+									$VDCLSQL_status = "status='DROP',";
+									$VDCLSQL_queue_seconds = "queue_seconds='$VD_seconds',";
+									}
+								else
+									{
+									$VDCLSQL_status = '';
+									$VDCLSQL_queue_seconds = '';
+									}
 
-								$VDCLSQL_status = "status='DROP',queue_seconds='$VD_seconds',term_reason='$term_reason',";
+								$VDCLSQL_update = "$VDCLSQL_status$VDCLSQL_term_reason$VDCLSQL_queue_seconds";
 								}
 
 							$VD_seconds = ($now_date_epoch - $VD_start_epoch);
-							$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_status end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
-								if ($AGILOG) {$agi_string = "|$VDCLSQL_status|$VD_status|$VD_length_in_sec|$VD_term_reason|\n|$stmtA|";   &agi_output;}
+							$stmtA = "UPDATE vicidial_closer_log set $VDCLSQL_update end_epoch='$now_date_epoch',length_in_sec='$VD_seconds' where closecallid = '$VD_closecallid';";
+								if ($AGILOG) {$agi_string = "|$VDCLSQL_update|$VD_status|$VD_length_in_sec|$VD_term_reason|$VD_queue_seconds|\n|$stmtA|";   &agi_output;}
 							$affected_rows = $dbhA->do($stmtA);
 							if ($AGILOG) {$agi_string = "--    VDCL update: |$affected_rows|$uniqueid|$VD_closecallid|";   &agi_output;}
 
