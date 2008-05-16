@@ -472,7 +472,8 @@ user_group VARCHAR(20) NOT NULL,
 group_name VARCHAR(40) NOT NULL,
 allowed_campaigns TEXT,
 qc_allowed_campaigns TEXT,
-qc_allowed_inbound_groups TEXT
+qc_allowed_inbound_groups TEXT,
+group_shifts TEXT
 );
 
  CREATE TABLE vicidial_campaigns (
@@ -943,7 +944,8 @@ vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 
 allow_sipsak_messages ENUM('0','1') default '0',
 admin_home_url VARCHAR(255) default '../vicidial/welcome.php',
 enable_agc_xfer_log ENUM('0','1') default '0',
-db_schema_version INT(8) UNSIGNED default '0'
+db_schema_version INT(8) UNSIGNED default '0',
+auto_user_add_value INT(9) UNSIGNED default '101',
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1069,6 +1071,14 @@ alias_name VARCHAR(50),
 logins_list VARCHAR(255)
 );
 
+ CREATE TABLE vicidial_shifts (
+shift_id VARCHAR(20) NOT NULL,
+shift_name VARCHAR(50),
+shift_start_time VARCHAR(4) default '0900',
+shift_length VARCHAR(5) default '16:00',
+shift_weekdays VARCHAR(7) default '0123456',
+index (shift_id)
+);
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1081,6 +1091,9 @@ ALTER TABLE parked_channels ENGINE=HEAP;
 ALTER TABLE server_updater ENGINE=HEAP;
 
 ALTER TABLE web_client_sessions ENGINE=HEAP;
+
+
+UPDATE system_settings SET auto_user_add_value='1101';
 
 
 INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
@@ -1116,4 +1129,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1083';
+UPDATE system_settings SET db_schema_version='1084';
+

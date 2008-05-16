@@ -108,6 +108,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 21. Added collection of hangup reasons for inbound and outbound calls in the
 	vicidial_log and vicidial_closer_log tables
 
+22. The start of a new timeclock feature (not finished), including the addition
+	of shifts to VICIDIAL user groups and the ability to auto-generate 
+	user IDs as you are adding users to the system.
+
+23. Added a new inbound/closer report for showing service levels
 
 
 

@@ -37,11 +37,29 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
 if (strlen($shift)<2) {$shift='ALL';}
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 6 and view_reports='1';";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
 	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level >= 7 and view_reports='1';";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
+
 
   if( (strlen($PHP_AUTH_USER)<2) or (strlen($PHP_AUTH_PW)<2) or (!$auth))
 	{
@@ -256,7 +274,6 @@ echo "|     0     5    10    15    20    25    30    35    40    45    50    55 
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
 
 $stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by queue_seconds;";
-if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $reasons_to_print = mysql_num_rows($rslt);
@@ -303,7 +320,6 @@ $hd99 =	sprintf("%5s", $hd99);
 
 $TOTALcalls =		sprintf("%10s", $TOTALcalls);
 
-echo "+-------------------------------------------------------------------------------------------+------------+\n";
 echo "| $hd_0 $hd_5 $hd10 $hd15 $hd20 $hd25 $hd30 $hd35 $hd40 $hd45 $hd50 $hd55 $hd60 $hd90 $hd99 | $TOTALcalls |\n";
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
 
@@ -321,7 +337,6 @@ echo "| HANGUP REASON        | CALLS      |\n";
 echo "+----------------------+------------+\n";
 
 $stmt="select count(*),term_reason from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by term_reason;";
-if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $reasons_to_print = mysql_num_rows($rslt);
@@ -387,7 +402,6 @@ while ($Cstatuses_to_print > $o)
 	}
 
 $stmt="select count(*),status from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
-if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statuses_to_print = mysql_num_rows($rslt);
@@ -599,7 +613,7 @@ else
 	}
 
 echo "<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
-echo "GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS PLACED FROM THIS CAMPAIGN\n";
+echo "GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS TAKEN INTO THIS IN-GROUP\n";
 
 $k=1;
 $Mk=0;

@@ -42,7 +42,6 @@ if (length($ARGV[0])>1)
 	if ($args =~ /--help/i)
 	{
 	print "allowed run time options:\n";
-	print "  [--all] = *DEFAULT* show GMT offset of records as they are inserted into hopper\n";
 	print "  [--db-only] = only backup the database\n";
 	print "  [--conf-only] = only backup the asterisk conf files\n";
 	print "  [--without-db] = do not backup the database\n";

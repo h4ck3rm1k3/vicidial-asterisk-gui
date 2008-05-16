@@ -505,16 +505,16 @@ rm -f /usr/lib/asterisk/modules/res_speech.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.18.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.8.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.19.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.9.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.3.tar.gz
 gunzip asterisk-1.4.18.tar.gz
 tar xvf asterisk-1.4.18.tar
-gunzip zaptel-1.4.8.tar.gz
-tar xvf zaptel-1.4.8.tar
+gunzip zaptel-1.4.9.tar.gz
+tar xvf zaptel-1.4.9.tar
 gunzip libpri-1.4.3.tar.gz
 tar xvf libpri-1.4.3.tar
-cd ./zaptel-1.4.8
+cd ./zaptel-1.4.9
 ./configure
 make
 make install

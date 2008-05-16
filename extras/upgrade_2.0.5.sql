@@ -134,3 +134,19 @@ logins_list VARCHAR(255)
 );
 
 UPDATE system_settings SET db_schema_version='1083';
+
+ALTER TABLE system_settings ADD auto_user_add_value INT(9) UNSIGNED default '101';
+UPDATE system_settings SET auto_user_add_value='1101';
+
+ CREATE TABLE vicidial_shifts (
+shift_id VARCHAR(20) NOT NULL,
+shift_name VARCHAR(50),
+shift_start_time VARCHAR(4) default '0900',
+shift_length VARCHAR(5) default '16:00',
+shift_weekdays VARCHAR(7) default '0123456',
+index (shift_id)
+);
+
+ALTER TABLE vicidial_user_groups ADD group_shifts TEXT;
+
+UPDATE system_settings SET db_schema_version='1084';

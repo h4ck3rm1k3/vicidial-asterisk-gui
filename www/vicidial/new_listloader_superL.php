@@ -20,11 +20,12 @@
 # 70417-1059 - Fixed default phone_code bug
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
 # 80428-0417 - UTF8 changes
+# 80514-1030 - removed filesize limit and raised number of errors to be displayed
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.4';
-$build = '70510-1518';
+$version = '2.0.5-25';
+$build = '80514-1030';
 
 
 require("dbconnect.php");
@@ -551,7 +552,7 @@ function ParseFileName() {
 
 							$good++;
 						} else {
-							if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead  $dup_lead_list</font><b>\n";}
+							if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead  $dup_lead_list</font><b>\n";}
 							$bad++;
 						}
 						$total++;
@@ -766,7 +767,7 @@ function ParseFileName() {
 
 					$good++;
 				} else {
-					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -787,7 +788,7 @@ function ParseFileName() {
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=false; document.forms[0].submit_file.disabled=false; document.forms[0].reload_page.disabled=false;</script>";
 	} 
 
-if ($leadfile && filesize($LF_path)<=8388608) {
+if ($leadfile) {
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 		if ($file_layout=="standard") {
 
@@ -990,7 +991,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 						$good++;
 					} else {
-						if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+						if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 						$bad++;
 					}
 					$total++;
@@ -1216,7 +1217,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					$good++;
 				} else {
-					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -1454,8 +1455,8 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 	# }
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=false; document.forms[0].submit_file.disabled=false; document.forms[0].reload_page.disabled=false;</script>";
 	}
-} else if (filesize($leadfile)>8388608) {
-		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: File exceeds the 8MB limit.</B></font></center>";
+#} else if (filesize($leadfile)>8388608) {
+#		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: File exceeds the 8MB limit.</B></font></center>";
 }
 ?>
 </form>

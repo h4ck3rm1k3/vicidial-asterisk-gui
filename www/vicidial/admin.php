@@ -715,6 +715,18 @@ if (isset($_GET["alias_name"]))				{$alias_name=$_GET["alias_name"];}
 	elseif (isset($_POST["alias_name"]))		{$alias_name=$_POST["alias_name"];}
 if (isset($_GET["logins_list"]))				{$logins_list=$_GET["logins_list"];}	
 	elseif (isset($_POST["logins_list"]))		{$logins_list=$_POST["logins_list"];}
+if (isset($_GET["shift_id"]))				{$shift_id=$_GET["shift_id"];}	
+	elseif (isset($_POST["shift_id"]))		{$shift_id=$_POST["shift_id"];}
+if (isset($_GET["shift_name"]))				{$shift_name=$_GET["shift_name"];}	
+	elseif (isset($_POST["shift_name"]))		{$shift_name=$_POST["shift_name"];}
+if (isset($_GET["shift_start_time"]))			{$shift_start_time=$_GET["shift_start_time"];}	
+	elseif (isset($_POST["shift_start_time"]))	{$shift_start_time=$_POST["shift_start_time"];}
+if (isset($_GET["shift_length"]))				{$shift_length=$_GET["shift_length"];}	
+	elseif (isset($_POST["shift_length"]))		{$shift_length=$_POST["shift_length"];}
+if (isset($_GET["shift_weekdays"]))				{$shift_weekdays=$_GET["shift_weekdays"];}	
+	elseif (isset($_POST["shift_weekdays"]))	{$shift_weekdays=$_POST["shift_weekdays"];}
+if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}	
+	elseif (isset($_POST["group_shifts"]))	{$group_shifts=$_POST["group_shifts"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -872,6 +884,10 @@ $qc_finish = ereg_replace("[^0-9]","",$qc_finish);
 $qc_commit = ereg_replace("[^0-9]","",$qc_commit);
 $campaign_shift_start_time = ereg_replace("[^0-9]","",$campaign_shift_start_time);
 $campaign_day_start_time = ereg_replace("[^0-9]","",$campaign_day_start_time);
+$shift_start_time = ereg_replace("[^0-9]","",$shift_start_time);
+
+### DIGITS and COLONS
+$shift_length = ereg_replace("[^\:0-9]","",$shift_length);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
@@ -1016,6 +1032,7 @@ $drop_inbound_group = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_inbound_group);
 $afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_group);
 $after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
 $alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$alias_id);
+$shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$shift_id);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1059,7 +1076,7 @@ $vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
 $vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
 $code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$code_name);
 $alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alias_name);
-
+$shift_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$shift_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1236,11 +1253,13 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80414-1505 - More work on QC, added vicidial_qc_codes
 # 80424-0442 - Added non_latin system_settings lookup at top to override dbconnect setting
 # 80505-0333 - Added phones_alias sections to allow for load-balanced-phone-logins
+# 80512-1529 - Added auto-generate of User ID feature
+# 80515-1345 - Added Shifts sub-section to Admin section
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-128';
-$build = '80505-0333';
+$admin_version = '2.0.5-130';
+$build = '80515-1345';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1388,6 +1407,7 @@ if ($ADD==111111)		{$hh='usergroups';	echo "Add New Users Group";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Add New Script";}
 if ($ADD==11111111)		{$hh='filters';		echo "Add New Filter";}
 if ($ADD==111111111)	{$hh='admin';	$sh='times';	echo "Add New Call Time";}
+if ($ADD==131111111)	{$hh='admin';	$sh='times';	echo "Add New Shift";}
 if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Add New State Call Time";}
 if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
 if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE ALIAS";}
@@ -1413,6 +1433,7 @@ if ($ADD==211111)		{$hh='usergroups';	echo "New Users Group Addition";}
 if ($ADD==2111111)		{$hh='scripts';		echo "New Script Addition";}
 if ($ADD==21111111)		{$hh='filters';		echo "New Filter Addition";}
 if ($ADD==211111111)	{$hh='admin';	$sh='times';	echo "New Call Time Addition";}
+if ($ADD==231111111)	{$hh='admin';	$sh='times';	echo "New Shift Addition";}
 if ($ADD==2111111111)	{$hh='admin';	$sh='times';	echo "New State Call Time Addition";}
 if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE";}
 if ($ADD==22111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE ALIAS";}
@@ -1462,6 +1483,7 @@ if ($ADD==3111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==31111111)		{$hh='filters';		echo "Modify Filter";}
 if ($ADD==311111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
 if ($ADD==321111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time State Definitions List";}
+if ($ADD==331111111)	{$hh='admin';	$sh='times';	echo "Modify Shift";}
 if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==32111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
@@ -1490,6 +1512,7 @@ if ($ADD==411111)		{$hh='usergroups';	echo "Modify Users Groups";}
 if ($ADD==4111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==41111111)		{$hh='filters';		echo "Modify Filter";}
 if ($ADD==411111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
+if ($ADD==431111111)	{$hh='admin';	$sh='times';	echo "Modify Shift";}
 if ($ADD==4111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==42111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
@@ -1512,6 +1535,7 @@ if ($ADD==511111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==5111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==51111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==511111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
+if ($ADD==531111111)	{$hh='admin';	$sh='times';	echo "Delete Shift";}
 if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
@@ -1534,6 +1558,7 @@ if ($ADD==611111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==6111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==61111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==611111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
+if ($ADD==631111111)	{$hh='admin';	$sh='times';	echo "Delete Shift";}
 if ($ADD==6111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
@@ -1556,6 +1581,7 @@ if ($ADD==100000)		{$hh='usergroups';	echo "User Groups";}
 if ($ADD==1000000)		{$hh='scripts';		echo "Scripts";}
 if ($ADD==10000000)		{$hh='filters';		echo "Filters";}
 if ($ADD==100000000)	{$hh='admin';	$sh='times';	echo "Call Times";}
+if ($ADD==130000000)	{$hh='admin';	$sh='times';	echo "Shifts";}
 if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "State Call Times";}
 if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "PHONE LIST";}
 if ($ADD==12000000000)	{$hh='admin';	$sh='phones';	echo "PHONE ALIAS LIST";}
@@ -3007,6 +3033,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Group Name -</B> This is the description of the vicidial user group max of 40 characters.
 
 <BR>
+<A NAME="vicidial_user_groups-group_shifts">
+<BR>
+<B>Group Shifts -</B> This is a selectable list of shifts that can restrict the agents login time on the system.
+
+<BR>
 <A NAME="vicidial_user_groups-allowed_campaigns">
 <BR>
 <B>Allowed Campaigns -</B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system.
@@ -3111,6 +3142,32 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_call_times-state_call_time_state">
 <B>State Call Time State -</B> This is the two letter code for the state that this calling time definition is for. For this to be in effect the local call time that is set in the campaign must have this state call time record in it as well as all of the leads having two letter state codes in them.
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_SHIFTS TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_shifts-shift_id">
+<BR>
+<B>Shift ID -</B> This is the short name of a Vicidial Shift Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters.
+
+<BR>
+<A NAME="vicidial_shifts-shift_name">
+<B>Shift Name -</B> This is a more descriptive name of the Shift Definition. This is a short summary of the Shift definition. max 50 characters, minimum of 2 characters.
+
+<BR>
+<A NAME="vicidial_shifts-shift_start_time">
+<B>Shift Start Time -</B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930 and 5:00 PM would be 1700.
+
+<BR>
+<A NAME="vicidial_shifts-shift_length">
+<B>Shift Length -</B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00 and 7 hours and 30 minutes would be 07:30.
+
+<BR>
+<A NAME="vicidial_shifts-shift_weekdays">
+<B>Shift Weekdays -</B> In this section you should choose the days of the week that this shift is active.
 
 
 
@@ -4169,10 +4226,103 @@ function scriptInsertField() {
   }
 }
 
-</script>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <?
+
+#### Javascript for auto-generate of user ID Button
+if ( ($ADD==1) or ($ADD=="1A") )
+{
+?>
+function user_auto()
+	{
+	var user_toggle = document.getElementById("user_toggle");
+	var user_field = document.getElementById("user");
+	if (user_toggle.value < 1)
+		{
+		user_field.value = 'AUTOGENERATEZZZZZZZZ';
+		user_field.disabled = true;
+		user_toggle.value = 1;
+		}
+	else
+		{
+		user_field.value = '';
+		user_field.disabled = false;
+		user_toggle.value = 0;
+		}
+	}
+
+function user_submit()
+	{
+	var user_field = document.getElementById("user");
+	user_field.disabled = false;
+	document.userform.submit();
+	}
+
+<?
+}
+
+### Javascript for shift end-time calculation and display
+if ( ($ADD==131111111) or ($ADD==331111111) )
+{
+?>
+function shift_time()
+	{
+	var start_time = document.getElementById("shift_start_time");
+	var end_time = document.getElementById("shift_end_time");
+	var length = document.getElementById("shift_length");
+
+	var start_time_hour=start_time.value.substring(0,2);
+	var start_time_min=start_time.value.substring(2,4);
+	var end_time_hour=end_time.value.substring(0,2);
+	var end_time_min=end_time.value.substring(2,4);
+	start_time_hour=(start_time_hour * 1);
+	start_time_min=(start_time_min * 1);
+	end_time_hour=(end_time_hour * 1);
+	end_time_min=(end_time_min * 1);
+
+	if (start_time.value == end_time.value)
+		{
+		var shift_length = '24:00';
+		}
+	else
+		{
+		if ( (start_time_hour > end_time_hour) || ( (start_time_hour == end_time_hour) && (start_time_min > end_time_min) ) )
+			{
+			var shift_hour = ( (24 - start_time_hour) + end_time_hour);
+			var shift_minute = ( (60 - start_time_min) + end_time_min);
+			if (shift_minute >= 60) 
+				{
+				shift_minute = (shift_minute - 60);
+				}
+			else
+				{
+				shift_hour = (shift_hour - 1);
+				}
+			}
+		else
+			{
+			var shift_hour = (end_time_hour - start_time_hour);
+			var shift_minute = (end_time_min - start_time_min);
+			}
+		if (shift_minute < 0) 
+			{
+			shift_minute = (shift_minute + 60);
+			shift_hour = (shift_hour - 1);
+			}
+
+		if (shift_hour < 10) {shift_hour = '0' + shift_hour}
+		if (shift_minute < 10) {shift_minute = '0' + shift_minute}
+		var shift_length = shift_hour + ':' + shift_minute;
+		}
+//	alert(start_time_hour + '|' + start_time_min + '|' + end_time_hour + '|' + end_time_min + '|--|' + shift_hour + ':' + shift_minute + '|' + shift_length + '|');
+
+	length.value = shift_length;
+	}
+
+<?
+}
+echo "</script>\n";
+echo "</head>\n";
+echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
 echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 
 $stmt="SELECT admin_home_url from system_settings;";
@@ -4298,7 +4448,7 @@ if (strlen($admin_hh) > 1) {
 	<?
 	if (strlen($times_sh) > 1) { 
 		?>
-	<TR BGCOLOR=<?=$times_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Call Times </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Call Time </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show State Call Times </a> &nbsp; &nbsp; |  &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New State Call Time </a> &nbsp; </TD></TR>
+	<TR BGCOLOR=<?=$times_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Call Times </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Call Time </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show State Call Times </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New State Call Time </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=130000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Shifts </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=131111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Shift </a></TD></TR>
 		<? } 
 	if (strlen($phones_sh) > 1) { 
 		?>
@@ -4363,10 +4513,11 @@ if ($ADD=="1")
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW USER<form action=$PHP_SELF method=POST>\n";
+	echo "<br>ADD A NEW USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
 	echo "<input type=hidden name=ADD value=2>\n";
+	echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>User Level: </td><td align=left><select size=1 name=user_level>";
@@ -4395,7 +4546,7 @@ if ($ADD=="1")
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
 	echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
 	else
@@ -4407,7 +4558,7 @@ if ($ADD=="1")
 
 
 ######################
-# ADD=1 display the COPY USER FORM SCREEN
+# ADD=1A display the COPY USER FORM SCREEN
 ######################
 
 if ($ADD=="1A")
@@ -4417,10 +4568,11 @@ if ($ADD=="1A")
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>COPY USER<form action=$PHP_SELF method=POST>\n";
+	echo "<br>COPY USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
 	echo "<input type=hidden name=ADD value=2A>\n";
+	echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
 
@@ -4442,7 +4594,7 @@ if ($ADD=="1A")
 		}
 	echo "$Uusers_list";
 	echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
 	else
@@ -4940,6 +5092,46 @@ if ($ADD==1111111111)
 
 
 ######################
+# ADD=131111111 display the ADD NEW SHIFT SCREEN
+######################
+
+if ($ADD==131111111)
+{
+	if ($LOGmodify_call_times==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br>ADD NEW SHIFT<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=231111111>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID: </td><td align=left><input type=text name=shift_id size=22 maxlength=20> (no spaces or punctuation)$NWB#vicidial_shifts-shift_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Name: </td><td align=left><input type=text name=shift_name size=50 maxlength=50> (short description of the shift)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Start Time: </td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time>\n";
+	echo " &nbsp; Shift End Time: <input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time>\n";
+	echo "<input type=button name=shift_calc value=\"Calculate Shift Length\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Length: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Weekdays: <BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\">Sunday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\">Monday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\">Tuesday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\">Wednesday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\">Thursday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\">Friday<BR>\n";
+	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\">Saturday<BR>\n";
+	echo "</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
 # ADD=11111111111 display the ADD NEW PHONE SCREEN
 ######################
 
@@ -5132,14 +5324,51 @@ if ($ADD=="2")
 		{echo "<br>USER NOT ADDED - there is already a user in the system with this user number\n";}
 	else
 		{
-		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 10) )
 			{
 			 echo "<br>USER NOT ADDED - Please go back and look at the data you entered\n";
-			 echo "<br>user id must be between 2 and 8 characters long\n";
+			 echo "<br>user id must be between 2 and 10 characters long\n";
 			 echo "<br>full name and password must be at least 2 characters long\n";
 			}
 		 else
 			{
+			if (ereg('AUTOGENERA',$user))
+				{
+				$new_user=0;
+				$auto_user_add_value=0;
+				while ($new_user < 2)
+					{
+					if ($new_user < 1)
+						{
+						$stmt = "SELECT auto_user_add_value FROM system_settings;";
+						$rslt=mysql_query($stmt, $link);
+						$ss_auav_ct = mysql_num_rows($rslt);
+						if ($ss_auav_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$auto_user_add_value = $row[0];
+							}
+						$new_user++;
+						}
+					$stmt = "SELECT count(*) FROM vicidial_users where user='$auto_user_add_value';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{
+						$new_user++;
+						}
+					else 
+						{
+						echo "<!-- AG: $auto_user_add_value -->\n";
+						$auto_user_add_value = ($auto_user_add_value + 7);
+						}
+					}
+				$user = $auto_user_add_value;
+				echo "<br><B>user_id has been auto-generated: $user</B><br>\n";
+
+				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
 			echo "<br><B>USER ADDED: $user</B>\n";
 
 			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass) values('$user','$pass','$full_name','$user_level','$user_group','$phone_login','$phone_pass');";
@@ -5172,14 +5401,53 @@ if ($ADD=="2A")
 		{echo "<br>USER NOT ADDED - there is already a user in the system with this user number\n";}
 	else
 		{
-		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 10) )
 			{
 			 echo "<br>USER NOT ADDED - Please go back and look at the data you entered\n";
-			 echo "<br>user id must be between 2 and 8 characters long\n";
+			 echo "<br>user id must be between 2 and 10 characters long\n";
 			 echo "<br>full name and password must be at least 2 characters long\n";
+			 echo "<!-- |$user|$pass|$full_name| -->\n";
 			}
 		 else
 			{
+			if (ereg('AUTOGENERA',$user))
+				{
+				$new_user=0;
+				$auto_user_add_value=0;
+				while ($new_user < 2)
+					{
+					if ($new_user < 1)
+						{
+						$stmt = "SELECT auto_user_add_value FROM system_settings;";
+						$rslt=mysql_query($stmt, $link);
+						$ss_auav_ct = mysql_num_rows($rslt);
+						if ($ss_auav_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$auto_user_add_value = $row[0];
+							}
+						$new_user++;
+						}
+					$stmt = "SELECT count(*) FROM vicidial_users where user='$auto_user_add_value';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{
+						$new_user++;
+						}
+					else 
+						{
+						echo "<!-- AG: $auto_user_add_value -->\n";
+						$auto_user_add_value = ($auto_user_add_value + 7);
+						}
+					}
+				$user = $auto_user_add_value;
+				echo "<br><B>user_id has been auto-generated: $user</B><br>\n";
+
+				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+
 			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
@@ -5948,6 +6216,55 @@ if ($ADD==2111111111)
 			}
 		}
 $ADD=3111111111;
+}
+
+
+######################
+# ADD=231111111 adds new shift definition to the system
+######################
+
+if ($ADD==231111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_shifts where shift_id='$shift_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>SHIFT DEFINITION NOT ADDED - there is already a shift entry with this ID\n";}
+	else
+		{
+		$shift_length_test = eregi_replace(':','',$shift_length);
+		 if ( (strlen($shift_id) < 2) or (strlen($shift_name) < 2) or (strlen($shift_start_time) < 4) or (strlen($shift_start_time) > 4) or (strlen($shift_length) < 5) or (strlen($shift_length) > 5) or ($shift_start_time > 2359) or ($shift_length_test > 2400) )
+			{
+			 echo "<br>SHIFT DEFINITION NOT ADDED - Please go back and look at the data you entered\n";
+			 echo "<br>Shift ID and name must be at least 2 characters in length\n";
+			 echo "<br>Shift Start Time must be 4 digits in length and be a valid time\n";
+			 echo "<br>Shift Length must be 5 characters in length and be 24 hours or less\n";
+			 }
+		 else
+			{
+			$p=0;
+			$shift_weekdays_ct = count($shift_weekdays);
+			while ($p <= $shift_weekdays_ct)
+				{
+				$SHIFT_weekdays .= "$shift_weekdays[$p]";
+				$p++;
+				}
+			$stmt="INSERT INTO vicidial_shifts SET shift_id='$shift_id',shift_name='$shift_name',shift_start_time='$shift_start_time',shift_length='$shift_length',shift_weekdays='$SHIFT_weekdays';";
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>SHIFT ADDED: $shift_id</B>\n";
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW SHIFT ENTRY          |$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=331111111;
 }
 
 
@@ -7312,7 +7629,15 @@ if ($ADD==411111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value' where user_group='$OLDuser_group';";
+		$p=0;
+		$GROUP_shifts=' ';
+		$group_shifts_ct = count($group_shifts);
+		while ($p <= $group_shifts_ct)
+			{
+			$GROUP_shifts .= "$group_shifts[$p] ";
+			$p++;
+			}
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
@@ -7525,6 +7850,57 @@ if ($ADD==4111111111)
 	exit;
 	}
 $ADD=3111111111;	# go to state call time modification form below
+}
+
+
+######################
+# ADD=431111111 modify shift in the system
+######################
+
+if ($ADD==431111111)
+{
+	if ($LOGmodify_call_times==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$shift_length_test = eregi_replace(':','',$shift_length);
+	 if ( (strlen($shift_id) < 2) or (strlen($shift_name) < 2) or (strlen($shift_start_time) < 4) or (strlen($shift_start_time) > 4) or (strlen($shift_length) < 5) or (strlen($shift_length) > 5) or ($shift_start_time > 2359) or ($shift_length_test > 2400) )
+		{
+		echo "<br>SHIFT DEFINITION NOT MODIFIED - Please go back and look at the data you entered\n";
+		echo "<br>Shift ID and name must be at least 2 characters in length\n";
+		echo "<br>Shift Start Time must be 4 digits in length and be a valid time\n";
+		echo "<br>Shift Length must be 5 characters in length and be 24 hours or less\n";
+		}
+	 else
+		{
+		$p=0;
+		$shift_weekdays_ct = count($shift_weekdays);
+		while ($p <= $shift_weekdays_ct)
+			{
+			$SHIFT_weekdays .= "$shift_weekdays[$p]";
+			$p++;
+			}
+		$shift_start_time = preg_replace('/\D/', '', $shift_start_time);
+		$stmt="UPDATE vicidial_shifts set shift_name='$shift_name', shift_start_time='$shift_start_time', shift_length='$shift_length', shift_weekdays='$SHIFT_weekdays' where shift_id='$shift_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>SHIFT MODIFIED</B>\n";
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY SHIFT ENTRY          |$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=331111111;	# go to shift modification form below
 }
 
 
@@ -8318,6 +8694,27 @@ if ($ADD==5111111111)
 $ADD='3111111111';		# go to state call time modification below
 }
 
+######################
+# ADD=531111111 confirmation before deletion of shift record
+######################
+
+if ($ADD==531111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($shift_id) < 2) or ($LOGdelete_call_times < 1) )
+		{
+		 echo "<br>SHIFT NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Shift ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>SHIFT DELETION CONFIRMATION: $shift_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=631111111&shift_id=$shift_id&CoNfIrM=YES\">Click here to delete shift $shift_id</a><br><br><br>\n";
+		}
+
+$ADD='331111111';		# go to call time modification below
+}
 
 ######################
 # ADD=51111111111 confirmation before deletion of phone record
@@ -9052,7 +9449,7 @@ if ($ADD==611111111)
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING CALL TIME!|$PHP_AUTH_USER|$ip|call_time_id='$call_time_id'|\n");
+			fwrite ($fp, "$date|!DELETING CALL TIME!|$PHP_AUTH_USER|$ip|$stmt|\n");
 			fclose($fp);
 			}
 		echo "<br><B>CALL TIME DELETION COMPLETED: $call_time_id</B>\n";
@@ -9116,6 +9513,39 @@ if ($ADD==6111111111)
 		}
 
 $ADD='1000000000';		# go to call times list
+}
+
+
+######################
+# ADD=631111111 delete shift record
+######################
+
+if ($ADD==631111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($shift_id) < 2) or ($LOGdelete_call_times < 1) )
+		{
+		 echo "<br>SHIFT NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Shift ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="DELETE from vicidial_shifts where shift_id='$shift_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|!DELETING SHIFT!!!!!|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		echo "<br><B>SHIFT DELETION COMPLETED: $shift_id</B>\n";
+		echo "<br><br>\n";
+		}
+
+$ADD='130000000';		# go to shifts list
 }
 
 
@@ -12084,6 +12514,7 @@ if ($ADD==311111)
 	$row=mysql_fetch_row($rslt);
 	$user_group =		$row[0];
 	$group_name =		$row[1];
+	$GROUP_shifts =		$row[5];
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br>MODIFY A USERS GROUP ENTRY<form action=$PHP_SELF method=POST>\n";
@@ -12092,16 +12523,42 @@ if ($ADD==311111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20 value=\"$user_group\"> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: </td><td align=left>\n";
-	echo "$campaigns_list";
-	echo "$NWB#vicidial_user_groups-allowed_campaigns$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: <BR>$NWB#vicidial_user_groups-allowed_campaigns$NWE</td><td align=left>\n";
+	echo "$campaigns_list <BR>&nbsp;";
+	echo "</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Campaigns: </td><td align=left>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Group Shifts: <BR>$NWB#vicidial_user_groups-group_shifts$NWE</td><td align=left>\n";
+	$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+	$rslt=mysql_query($stmt, $link);
+	$shifts_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($shifts_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$shift_id_value = $rowx[0];
+		$shift_name_value = $rowx[1];
+		echo "<input type=\"checkbox\" name=\"group_shifts[]\" value=\"$shift_id_value\"";
+		$p=0;
+		while ($p<100)
+			{
+			if (ereg(" $shift_id_value ", $GROUP_shifts))
+				{
+				echo " CHECKED";
+				}
+			$p++;
+			}
+		echo "> <a href=\"$PHP_SELF?ADD=331111111&shift_id=$shift_id_value\">$shift_id_value</a> - $shift_name_value<BR>\n";
+		$o++;
+		}
+	echo " <BR>&nbsp;</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Campaigns: <BR>$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td><td align=left>\n";
 	echo "$qc_campaigns_list";
-	echo "$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Inbound Groups: </td><td align=left>\n";
+	echo " <BR>&nbsp;</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Inbound Groups: <BR>$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td><td align=left>\n";
 	echo "$qc_groups_list";
-	echo "$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td></tr>\n";
+	echo " <BR>&nbsp;</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
@@ -12580,6 +13037,116 @@ if ($LOGdelete_call_times > 0)
 	echo "<br><br><a href=\"$PHP_SELF?ADD=5111111111&call_time_id=$call_time_id\">DELETE THIS STATE CALL TIME DEFINITION</a>\n";
 	}
 
+}
+else
+{
+echo "You are not authorized to view this page. Please go back.";
+}
+
+}
+
+
+
+######################
+# ADD=331111111 modify shift definition info in the system
+######################
+
+if ($ADD==331111111)
+{
+
+if ($LOGmodify_call_times==1)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_shifts where shift_id='$shift_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$shift_name =		$row[1];
+	$shift_start_time =	$row[2];
+	$shift_length =		$row[3];
+	$shift_weekdays =	$row[4];
+
+	$shift_start_hour = substr($shift_start_time,0,2);
+	$shift_start_min = substr($shift_start_time,2,2);
+	$shift_length_hour = substr($shift_length,0,2);
+	$shift_length_min = substr($shift_length,3,2);
+	$shift_end_hour = ($shift_start_hour + $shift_length_hour);
+	$shift_end_min = ($shift_start_min + $shift_length_min);
+	if ($shift_end_min >=60) 
+		{
+		$shift_end_min = ($shift_end_min - 60);
+		$shift_end_hour++;
+		}
+	if ($shift_end_hour >=24) 
+		{
+		$shift_end_hour = ($shift_end_hour - 24);
+		}
+	$shift_end_hour = sprintf("%02s", $shift_end_hour);	
+	$shift_end_min = sprintf("%02s", $shift_end_min);	
+	$shift_end = "$shift_end_hour$shift_end_min";
+
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>MODIFY A SHIFT<form action=$PHP_SELF method=POST>\n";
+echo "<input type=hidden name=ADD value=431111111>\n";
+echo "<input type=hidden name=shift_id value=\"$shift_id\">\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID: </td><td align=left><B>$shift_id</B></td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Name: </td><td align=left><input type=text name=shift_name size=50 maxlength=50 value=\"$shift_name\"> (short description of the shift)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Start Time: </td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time value=\"$shift_start_time\">\n";
+echo " &nbsp; Shift End Time: <input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time value=\"$shift_end\">\n";
+echo "<input type=button name=shift_calc value=\"Calculate Shift Length\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Length: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5 value=\"$shift_length\"> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Weekdays: <BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\"";
+	if (ereg('0',$shift_weekdays)) {echo " CHECKED";}
+echo ">Sunday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\"";
+	if (ereg('1',$shift_weekdays)) {echo " CHECKED";}
+echo ">Monday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\"";
+	if (ereg('2',$shift_weekdays)) {echo " CHECKED";}
+echo ">Tuesday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\"";
+	if (ereg('3',$shift_weekdays)) {echo " CHECKED";}
+echo ">Wednesday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\"";
+	if (ereg('4',$shift_weekdays)) {echo " CHECKED";}
+echo ">Thursday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\"";
+	if (ereg('5',$shift_weekdays)) {echo " CHECKED";}
+echo ">Friday<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\"";
+	if (ereg('6',$shift_weekdays)) {echo " CHECKED";}
+echo ">Saturday<BR>\n";
+echo "</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+echo "</TABLE></center>\n";
+
+echo "</TABLE><BR><BR>\n";
+echo "<B>USER GROUPS USING THIS SHIFT:</B><BR>\n";
+echo "<TABLE>\n";
+
+
+	$stmt="SELECT user_group,group_name from vicidial_user_groups where group_shifts LIKE\"% $shift_id %\";";
+	$rslt=mysql_query($stmt, $link);
+	$camps_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($camps_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+		$o++;
+	}
+
+
+echo "</TABLE>\n";
+echo "</center><BR><BR>\n";
+
+if ($LOGdelete_call_times > 0)
+	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=531111111&shift_id=$shift_id\">DELETE THIS SHIFT DEFINITION</a>\n";
+	}
 }
 else
 {
@@ -13076,7 +13643,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -13096,12 +13663,14 @@ if ($ADD==311111111111111)
 	$admin_home_url =				$row[14];
 	$enable_agc_xfer_log =			$row[15];
 	$db_schema_version =			$row[16];
+	$auto_user_add_value =			$row[17];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Version: </td><td align=left> $version</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>DB Schema Version: </td><td align=left> $db_schema_version</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Auto User-add Value: </td><td align=left> $auto_user_add_value</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Install Date: </td><td align=left> $install_date</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Use Non-Latin: </td><td align=left><select size=1 name=use_non_latin><option>1</option><option>0</option><option selected>$use_non_latin</option></select>$NWB#settings-use_non_latin$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Webroot Writable: </td><td align=left><select size=1 name=webroot_writable><option>1</option><option>0</option><option selected>$webroot_writable</option></select>$NWB#settings-webroot_writable$NWE</td></tr>\n";
@@ -14074,6 +14643,41 @@ echo "</TABLE></center>\n";
 }
 
 ######################
+# ADD=130000000 display all shifts
+######################
+if ($ADD==130000000)
+{
+echo "<TABLE><TR><TD>\n";
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_shifts order by shift_id";
+	$rslt=mysql_query($stmt, $link);
+	$filters_to_print = mysql_num_rows($rslt);
+
+echo "<br>SHIFT LISTINGS:\n";
+echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+
+	$o=0;
+	while ($filters_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2] </td>";
+		echo "<td><font size=1> $row[3] </td>";
+		echo "<td><font size=1> $row[4] </td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$o++;
+	}
+
+echo "</TABLE></center>\n";
+}
+
+######################
 # ADD=10000000000 display all phones
 ######################
 if ($ADD==10000000000)
@@ -14303,7 +14907,8 @@ if ($ADD==999999)
 	<UL>
 	<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
 	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD REPORT</a></FONT>
-	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>CLOSER REPORT</a></FONT>
+	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER REPORT</a></FONT>
+	<LI><a href="AST_CLOSER_service_level.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER SERVICE_LEVEL REPORT</a></FONT>
 	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>
 	<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - CLOSER REPORT</a></FONT>
 	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT SPREADSHEET PERFORMANCE</a></FONT>

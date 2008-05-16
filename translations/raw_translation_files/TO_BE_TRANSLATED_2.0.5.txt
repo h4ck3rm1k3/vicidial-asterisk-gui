@@ -111,6 +111,48 @@ Alias ID -<\/B> The ID of the alias used to allow for phone load balanced logins
 Alias Name -<\/B> The name used to describe a phones alias, Must be between 2 and 50 characters in length||
 Phones Logins List -<\/B> The comma separated list of phone logins used when an agent logs in using phone load balanced logins. The Agent application will find the active server with the fewest agents logged into it and place a call from that server to the agent upon login||
 PHONES WITHIN THIS PHONES ALIAS||
+Add New Shift||
+New Shift Addition||
+Modify Shift||
+Delete Shift||
+Shifts||
+Shift ID -<\/B> This is the short name of a Vicidial Shift Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters||
+Shift Name -<\/B> This is a more descriptive name of the Shift Definition. This is a short summary of the Shift definition. max 50 characters, minimum of 2 characters||
+Shift Start Time -<\/B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930 and 5:00 PM would be 1700||
+Shift Length -<\/B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00 and 7 hours and 30 minutes would be 07:30||
+Shift Weekdays -<\/B> In this section you should choose the days of the week that this shift is active||
+Show Shifts||
+Add A New Shift||
+Shift ID: ||
+Shift Name: ||
+Shift Start Time: ||
+Shift End Time: ||
+SHIFT DEFINITION NOT ADDED||
+there is already a shift entry with this ID||
+Shift ID and name must be at least 2 characters in length||
+Shift Start Time must be 4 digits in length and be a valid time||
+Shift Length must be 5 characters in length and be 24 hours or less||
+SHIFT ADDED: ||
+MODIFY A SHIFT||
+USER GROUPS USING THIS SHIFT:||
+DELETE THIS SHIFT DEFINITION||
+MODIFY A SHIFT||
+SHIFT NOT DELETED||
+SHIFT DELETION CONFIRMATION: ||
+Click here to delete shift||
+SHIFT DELETION COMPLETED:||
+SHIFT MODIFIED||
+SHIFT LISTINGS:||
+Shift Weekdays: ||
+Sunday||
+Monday||
+Tuesday||
+Wednesday||
+Thursday||
+Friday||
+Saturday||
+Group Shifts: ||
+Group Shifts -<\/B> This is a selectable list of shifts that can restrict the agents login time on the system||
 
 
 ############################################################ CLIENT
