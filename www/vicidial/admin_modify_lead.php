@@ -24,6 +24,7 @@
 # 70906-2132 - Added closer_log records display
 # 80428-0144 - UTF8 cleanup
 # 80501-0454 - Added Hangup Reason to logs display
+# 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
 #
 
 require("dbconnect.php");
@@ -109,6 +110,12 @@ if (isset($_GET["CBuser"]))				{$CBuser=$_GET["CBuser"];}
 	elseif (isset($_POST["CBuser"]))		{$CBuser=$_POST["CBuser"];}
 if (isset($_GET["modify_logs"]))			{$modify_logs=$_GET["modify_logs"];}
 	elseif (isset($_POST["modify_logs"]))	{$modify_logs=$_POST["modify_logs"];}
+if (isset($_GET["modify_closer_logs"]))			{$modify_closer_logs=$_GET["modify_closer_logs"];}
+	elseif (isset($_POST["modify_closer_logs"]))	{$modify_closer_logs=$_POST["modify_closer_logs"];}
+if (isset($_GET["modify_agent_logs"]))			{$modify_agent_logs=$_GET["modify_agent_logs"];}
+	elseif (isset($_POST["modify_agent_logs"]))	{$modify_agent_logs=$_POST["modify_agent_logs"];}
+if (isset($_GET["add_closer_record"]))			{$add_closer_record=$_GET["add_closer_record"];}
+	elseif (isset($_POST["add_closer_record"]))	{$add_closer_record=$_POST["add_closer_record"];}
 
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -196,13 +203,6 @@ echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead record modificati
 if ($end_call > 0)
 {
 
-$call_length = ($STARTtime - $call_began);
-
-	### insert a NEW record to the vicidial_closer_log table 
-	$stmt="INSERT INTO vicidial_closer_log (lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed) values('" . mysql_real_escape_string($lead_id) . "','" . mysql_real_escape_string($list_id) . "','" . mysql_real_escape_string($campaign_id) . "','" . mysql_real_escape_string($parked_time) . "','" . mysql_real_escape_string($call_began) . "','$STARTtime','" . mysql_real_escape_string($call_length) . "','" . mysql_real_escape_string($status) . "','" . mysql_real_escape_string($phone_code) . "','" . mysql_real_escape_string($phone_number) . "','$PHP_AUTH_USER','" . mysql_real_escape_string($comments) . "','Y')";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-
 	### update the lead record in the vicidial_list table 
 	$stmt="UPDATE vicidial_list set status='" . mysql_real_escape_string($status) . "',first_name='" . mysql_real_escape_string($first_name) . "',last_name='" . mysql_real_escape_string($last_name) . "',address1='" . mysql_real_escape_string($address1) . "',address2='" . mysql_real_escape_string($address2) . "',address3='" . mysql_real_escape_string($address3) . "',city='" . mysql_real_escape_string($city) . "',state='" . mysql_real_escape_string($state) . "',province='" . mysql_real_escape_string($province) . "',postal_code='" . mysql_real_escape_string($postal_code) . "',country_code='" . mysql_real_escape_string($country_code) . "',alt_phone='" . mysql_real_escape_string($alt_phone) . "',email='" . mysql_real_escape_string($email) . "',security_phrase='" . mysql_real_escape_string($security) . "',comments='" . mysql_real_escape_string($comments) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "'";
 	if ($DB) {echo "|$stmt|\n";}
@@ -239,17 +239,38 @@ $call_length = ($STARTtime - $call_began);
 
 		echo "<BR>Lead added to DNC List: $lead_id - $phone_number<BR>\n";
 	}
-	### update last record in vicidial_agent_log and vicidial_log tables 
+	### update last record in vicidial_log table
        if (($dispo != $status) and ($modify_logs > 0)) 
 	{
 		$stmt="UPDATE vicidial_log set status='" . mysql_real_escape_string($status) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "' order by call_date desc limit 1";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
+	}
 
+	### update last record in vicidial_closer_log table
+       if (($dispo != $status) and ($modify_closer_logs > 0)) 
+	{
+		$stmt="UPDATE vicidial_closer_log set status='" . mysql_real_escape_string($status) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "' order by call_date desc limit 1";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+	}
+
+	### update last record in vicidial_agent_log table
+       if (($dispo != $status) and ($modify_agent_logs > 0)) 
+	{
 		$stmt="UPDATE vicidial_agent_log set status='" . mysql_real_escape_string($status) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "' order by agent_log_id desc limit 1";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
 	}
+
+	if ($add_closer_record > 0)
+	{
+		### insert a NEW record to the vicidial_closer_log table 
+		$stmt="INSERT INTO vicidial_closer_log (lead_id,list_id,campaign_id,call_date,start_epoch,end_epoch,length_in_sec,status,phone_code,phone_number,user,comments,processed) values('" . mysql_real_escape_string($lead_id) . "','" . mysql_real_escape_string($list_id) . "','" . mysql_real_escape_string($campaign_id) . "','" . mysql_real_escape_string($parked_time) . "','$NOW_TIME','$STARTtime','1','" . mysql_real_escape_string($status) . "','" . mysql_real_escape_string($phone_code) . "','" . mysql_real_escape_string($phone_number) . "','$PHP_AUTH_USER','" . mysql_real_escape_string($comments) . "','Y')";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+	}
+
 
 }
 else
@@ -294,6 +315,7 @@ else
 	if ($lead_count > 0)
 	{
 
+	##### grab vicidial_log records #####
 	$stmt="select * from vicidial_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by uniqueid desc limit 500;";
 	$rslt=mysql_query($stmt, $link);
 	$logs_to_print = mysql_num_rows($rslt);
@@ -322,8 +344,44 @@ else
 			$call_log .= "<td align=right><font size=2> $row[1] </td>\n";
 			$call_log .= "<td align=right><font size=2> $row[15] </td></tr>\n";
 
+			$campaign_id = $row[3];
 		}
 
+	##### grab vicidial_agent_log records #####
+	$stmt="select * from vicidial_agent_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by agent_log_id desc limit 500;";
+	$rslt=mysql_query($stmt, $link);
+	$Alogs_to_print = mysql_num_rows($rslt);
+
+	$y=0;
+	$agent_log = '';
+	$Alog_campaign = '';
+	while ($Alogs_to_print > $y) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (strlen($Alog_campaign)<1) {$Alog_campaign = $row[5];}
+		if (eregi("1$|3$|5$|7$|9$", $y))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$y++;
+			$agent_log .= "<tr $bgcolor>";
+			$agent_log .= "<td><font size=1>$y</td>";
+			$agent_log .= "<td><font size=2>$row[3]</td>";
+			$agent_log .= "<td align=left><font size=2> $row[5]</td>\n";
+			$agent_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[1]</A> </td>\n";
+			$agent_log .= "<td align=right><font size=2> $row[7]</td>\n";
+			$agent_log .= "<td align=right><font size=2> $row[9] </td>\n";
+			$agent_log .= "<td align=right><font size=2> $row[11] </td>\n";
+			$agent_log .= "<td align=right><font size=2> $row[13] </td>\n";
+			$agent_log .= "<td align=right><font size=2> &nbsp; $row[14] </td>\n";
+			$agent_log .= "<td align=right><font size=2> &nbsp; $row[15] </td>\n";
+			$agent_log .= "<td align=right><font size=2> &nbsp; $row[17] </td></tr>\n";
+
+			$campaign_id = $row[5];
+		}
+
+	##### grab vicidial_closer_log records #####
 	$stmt="select * from vicidial_closer_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by closecallid desc limit 500;";
 	$rslt=mysql_query($stmt, $link);
 	$Clogs_to_print = mysql_num_rows($rslt);
@@ -353,8 +411,10 @@ else
 			$closer_log .= "<td align=right><font size=2> &nbsp; $row[14] </td>\n";
 			$closer_log .= "<td align=right><font size=2> &nbsp; $row[17] </td></tr>\n";
 
+			$campaign_id = $row[3];
 		}
 
+	##### grab vicidial_list data for lead #####
 		$stmt="SELECT * from vicidial_list where lead_id='" . mysql_real_escape_string($lead_id) . "'";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -364,7 +424,7 @@ else
 		   $tsr				= "$row[4]";
 		   $vendor_id		= "$row[5]";
 		   $list_id			= "$row[7]";
-		   $campaign_id		= "$row[8]";
+		   $gmt_offset_now	= "$row[8]";
 		   $phone_code		= "$row[10]";
 		   $phone_number	= "$row[11]";
 		   $title			= "$row[12]";
@@ -458,7 +518,11 @@ else
 			echo "</select> <i>(with $log_campaign statuses)</i></td></tr>\n";
 
 
-		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent and vicidial logs </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modify vicidial log </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent log </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modify closer log </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Add closer log record </td><td align=left><input type=checkbox name=add_closer_record value=\"1\"></td></tr>\n";
+
 
 		echo "<tr><td colspan=2 align=center><input type=submit name=submit value=\"SUBMIT\"></td></tr>\n";
 		echo "</table></form>\n";
@@ -543,6 +607,16 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 	echo "$closer_log\n";
 
 echo "</TABLE></center>\n";
+echo "<BR><BR>\n";
+
+
+echo "<B>AGENT LOG RECORDS FOR THIS LEAD:</B>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>CAMPAIGN</td><td align=left><font size=2> TSR</td><td align=left><font size=2> PAUSE</td><td align=right><font size=2> WAIT</td><td align=right><font size=2> TALK</td><td align=right><font size=2> DISPO</td><td align=right><font size=2> STATUS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2> SUB</td></tr>\n";
+
+	echo "$agent_log\n";
+
+echo "</TABLE>\n";
 echo "<BR><BR>\n";
 
 
