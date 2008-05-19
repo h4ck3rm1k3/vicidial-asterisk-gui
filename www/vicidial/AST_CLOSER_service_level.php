@@ -133,10 +133,12 @@ echo "PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT\n";
 
 else
 {
+### FOR SHIFTS IT IS BEST TO STICK TO 15-MINUTE INCREMENTS FOR START TIMES ###
+
 if ($shift == 'AM') 
 	{
-#	$time_BEGIN=$AM_shift_BEGIN;
-#	$time_END=$AM_shift_END;
+	$time_BEGIN=$AM_shift_BEGIN;
+	$time_END=$AM_shift_END;
 #	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
 #	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}   
@@ -146,8 +148,8 @@ if ($shift == 'AM')
 	}
 if ($shift == 'PM') 
 	{
-#	$time_BEGIN=$PM_shift_BEGIN;
-#	$time_END=$PM_shift_END;
+	$time_BEGIN=$PM_shift_BEGIN;
+	$time_END=$PM_shift_END;
 #	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 #	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
@@ -160,8 +162,8 @@ if ($shift == 'ALL')
 	}
 if ($shift == 'DAYTIME') 
 	{
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "07:00:00";}
-	if (strlen($time_END) < 6) {$time_END = "19:59:59";}
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
+	if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 	}
 
 $query_date_BEGIN = "$query_date $time_BEGIN";   
@@ -225,6 +227,14 @@ $active_time=0;
 $hour =		($SQtime_ARY[0] - 1);
 $startSEC = ($SQsec - 900);
 $endSEC =	($SQsec - 1);
+if ($SQtime_ARY[1] > 14) 
+	{
+	$h=1;
+	$hour++;
+	if ($hour < 10) {$hour = "0$hour";}
+	}
+if ($SQtime_ARY[1] > 29) {$h=2;}
+if ($SQtime_ARY[1] > 44) {$h=3;}
 while ($i < 96)
 	{
 	$startSEC = ($startSEC + 900);
@@ -454,7 +464,11 @@ while ($d < $DURATIONday)
 		$totTIME_MS = "$totTIME_M_int:$totTIME_S";
 		$totTIME_MS =		sprintf("%8s", $totTIME_MS);
 		}
-	else {$totCALLSavgDATE[$d] = 0;}
+	else 
+		{
+		$totCALLSavgDATE[$d] = 0;
+		$totTIME_MS='        ';
+		}
 
 	$totCALLSavgDATE[$d] =	sprintf("%6.0f", $totCALLSavgDATE[$d]);
 	$totDROPSavgDATE[$d] =	sprintf("%7.2f", $totDROPSavgDATE[$d]);
@@ -503,7 +517,11 @@ if ($totCALLSsec > 0)
 	$totTIME_MS = "$totTIME_M_int:$totTIME_S";
 	$totTIME_MS =		sprintf("%9s", $totTIME_MS);
 	}
-else {$totCALLSavg = 0;}
+else 
+	{
+	$totCALLSavg = 0;
+	$totTIME_MS='         ';
+	}
 
 
 	$FtotCALLSavg =	sprintf("%6.0f", $totCALLSavg);
@@ -750,31 +768,16 @@ while ($i < $TOTintervals)
 	}
 
 
-/*
-		echo "$HMdisplay[$i] $HMstart[$i] $HMend[$i] $HMSepoch[$i] $HMEepoch[$i] --- ";
-		echo " $qrtCALLS[$i]";
-		echo " $qrtDROPS[$i]";
-		echo " $qrtQUEUE[$i]";
-		echo " $qrtCALLSsec[$i]";
-		echo " $qrtDROPSsec[$i]";
-		echo " $qrtQUEUEsec[$i]";
-		echo " $qrtCALLSavg[$i]";
-		echo " $qrtDROPSavg[$i]";
-		echo " $qrtQUEUEavg[$i]";
-		echo " $qrtCALLSmax[$i]";
-		echo " $qrtDROPSmax[$i]";
-		echo " $qrtQUEUEmax[$i]";
-*/
-
-
-	$totQUEUEavgRAW = ($totCALLS / $totQUEUEsec);
-
-	$totQUEUEavg =	sprintf("%5s", $totQUEUEavgRAW); 
-		while (strlen($totQUEUEavg)>5) {$totQUEUEavg = ereg_replace(".$",'',$totQUEUEavg);}
-	$totQUEUEmax =	sprintf("%5s", $totQUEUEmax);
-		while (strlen($totQUEUEmax)>5) {$totQUEUEmax = ereg_replace(".$",'',$totQUEUEmax);}
-	$totDROPS =	sprintf("%5s", $totDROPS);
-	$totCALLS =	sprintf("%5s", $totCALLS);
+if ($totQUEUEsec > 0)
+	{$totQUEUEavgRAW = ($totCALLS / $totQUEUEsec);}
+else
+	{$totQUEUEavgRAW = 0;}
+$totQUEUEavg =	sprintf("%5s", $totQUEUEavgRAW); 
+	while (strlen($totQUEUEavg)>5) {$totQUEUEavg = ereg_replace(".$",'',$totQUEUEavg);}
+$totQUEUEmax =	sprintf("%5s", $totQUEUEmax);
+	while (strlen($totQUEUEmax)>5) {$totQUEUEmax = ereg_replace(".$",'',$totQUEUEmax);}
+$totDROPS =	sprintf("%5s", $totDROPS);
+$totCALLS =	sprintf("%5s", $totCALLS);
 
 
 echo "+-------------+-----------------------+-------+-------+  +-----------------------+-------+-------+\n";
