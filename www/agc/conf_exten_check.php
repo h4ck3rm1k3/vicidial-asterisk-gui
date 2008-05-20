@@ -36,6 +36,7 @@
 # 70319-1542 - Added agent disabled display function
 # 71122-0205 - Added vicidial_live_agent status output
 # 80424-0442 - Added non_latin lookup from system_settings
+# 80519-1425 - Added calls-in-queue tally
 #
 
 require("dbconnect.php");
@@ -95,6 +96,10 @@ $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 if (!isset($format))   {$format="text";}
 if (!isset($ACTION))   {$ACTION="refresh";}
 if (!isset($client))   {$client="agc";}
+
+$Alogin='N';
+$RingCalls='N';
+$DiaLCalls='N';
 
 $version = '2.0.4-12';
 $build = '71122-0205';
@@ -207,30 +212,45 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				if ($campagentstdisp == 'YES')
 					{
 					### grab the status of this agent to display
-					$stmt="SELECT status,campaign_id from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+					$stmt="SELECT status,campaign_id,closer_campaigns from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
 					$row=mysql_fetch_row($rslt);
 					$Alogin=$row[0];
 					$Acampaign=$row[1];
+					$AccampSQL=$row[2];
+					$AccampSQL = ereg_replace(' -','', $AccampSQL);
+					$AccampSQL = ereg_replace(' ',"','", $AccampSQL);
 
 					### grab the number of calls being placed from this server and campaign
-					$stmt="SELECT count(*) from vicidial_auto_calls where server_ip='$server_ip' and status NOT IN('XFER') and campaign_id='$Acampaign';";
+					$stmt="SELECT count(*) from vicidial_auto_calls where status IN('LIVE') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) );";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
 					$row=mysql_fetch_row($rslt);
 					$RingCalls=$row[0];
+					if ($RingCalls > 0) {$RingCalls = "<font class=\"queue_text_red\">Calls in Queue: $RingCalls</font>";}
+					else {$RingCalls = "<font class=\"queue_text\">Calls in Queue: $RingCalls</font>";}
+
+					### grab the number of calls being placed from this server and campaign
+					$stmt="SELECT count(*) from vicidial_auto_calls where status NOT IN('XFER') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) );";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					$DiaLCalls=$row[0];
+
 					}
 				else
 					{
 					$Alogin='N';
 					$RingCalls='N';
+					$DiaLCalls='N';
 					}
 				}
 			else
 				{
 				$Alogin='N';
 				$RingCalls='N';
+				$DiaLCalls='N';
 
 				### update the vicidial_live_agents every second with a new random number so it is shown to be alive
 				$stmt="UPDATE vicidial_live_agents set random_id='$random' where user='$user' and server_ip='$server_ip';";
@@ -242,7 +262,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($Acount < 1) {$Alogin='DEAD_VLA';}
 			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . "|\n";
 
 			}
 		$total_conf=0;

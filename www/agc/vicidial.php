@@ -175,10 +175,11 @@
 # 80428-0413 - UTF8 changes and testing
 # 80505-0054 - Added multi-phones load-balanced alias option
 # 80507-0932 - Fixed Script display bug (+ instead of space)
+# 80519-1425 - Added calls in queue display
 #
 
-$version = '2.0.5-154';
-$build = '80507-0932';
+$version = '2.0.5-155';
+$build = '80519-1425';
 
 require("dbconnect.php");
 
@@ -272,8 +273,9 @@ $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
 $view_scripts			= '1';	# set to 1 to show the SCRIPTS tab
 $dispo_check_all_pause	= '0';	# set to 1 to allow for persistent pause after dispo
-$agentcallsstatus		= '0';	# set to 1 to show agent status and call count
-   $campagentstatctmax	= '0';	# Number of seconds for campaign call and agent stats
+$callholdstatus			= '1';	# set to 1 to show calls on hold count
+$agentcallsstatus		= '0';	# set to 1 to show agent status and call dialed count
+   $campagentstatctmax	= '3';	# Number of seconds for campaign call and agent stats
 $show_campname_pulldown	= '1';	# set to 1 to show campaign name on login pulldown
 $webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
 $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
@@ -1884,6 +1886,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var AgainCalLSecondS = '';
 	var AgaiNCalLCID = '';
 	var CB_count_check = 60;
+	var callholdstatus = '<? echo $callholdstatus ?>'
 	var agentcallsstatus = '<? echo $agentcallsstatus ?>'
 	var campagentstatctmax = '<? echo $campagentstatctmax ?>'
 	var campagentstatct = '0';
@@ -2327,7 +2330,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (typeof(xmlhttprequestcheckconf) == "undefined") {
 			//alert (xmlhttprequestcheckconf == xmlhttpSendConf);
 			custchannellive--;
-			if (agentcallsstatus == '1')
+			if ( (agentcallsstatus == '1') || (callholdstatus == '1') )
 				{
 				campagentstatct++;
 				if (campagentstatct > campagentstatctmax) 
@@ -2387,12 +2390,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						 UnixTime = parseInt(UnixTime);
 						 UnixTimeMS = (UnixTime * 1000);
 						t.setTime(UnixTimeMS);
-						if ( (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
+						if ( (callholdstatus == '1') || (agentcallsstatus == '1') || (vicidial_agent_disable != 'NOT_ACTIVE') )
 							{
 							var Alogin_array = check_time_array[2].split("Logged-in: ");
 							var AGLogiN = Alogin_array[1];
 							var CamPCalLs_array = check_time_array[3].split("CampCalls: ");
 							var CamPCalLs = CamPCalLs_array[1];
+							var DiaLCalLs_array = check_time_array[5].split("DiaLCalls: ");
+							var DiaLCalLs = DiaLCalLs_array[1];
 							if (AGLogiN != 'N')
 								{
 								document.getElementById("AgentStatusStatus").innerHTML = AGLogiN;
@@ -2400,6 +2405,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							if (CamPCalLs != 'N')
 								{
 								document.getElementById("AgentStatusCalls").innerHTML = CamPCalLs;
+								}
+							if (DiaLCalLs != 'N')
+								{
+								document.getElementById("AgentStatusDiaLs").innerHTML = DiaLCalLs;
 								}
 							if ( (AGLogiN == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
 								{
@@ -6046,6 +6055,8 @@ else
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
 			if (agentcall_manual != '1')
 				{hideDiv('ManuaLDiaLButtons');}
+			if (callholdstatus != '1')
+				{hideDiv('AgentStatusCalls');}
 			if (agentcallsstatus != '1')
 				{hideDiv('AgentStatusSpan');}
 			if ( (auto_dial_level != 0) || (manual_dial_preview != 1) )
@@ -6575,6 +6586,8 @@ else
 	div.scroll_script {height: <?=$SSheight ?>px; width: <?=$SDwidth ?>px; background: #FFF5EC; overflow: scroll; font-size: 12px;  font-family: sans-serif;}
 	div.text_input {overflow: auto; font-size: 10px;  font-family: sans-serif;}
    .body_text {font-size: 13px;  font-family: sans-serif;}
+   .queue_text_red {font-size: 12px;  font-family: sans-serif; font-weight: bold; color: red}
+   .queue_text {font-size: 12px;  font-family: sans-serif; color: black}
    .preview_text {font-size: 13px;  font-family: sans-serif; background: #CCFFCC}
    .preview_text_red {font-size: 13px;  font-family: sans-serif; background: #FFCCCC}
    .body_small {font-size: 11px;  font-family: sans-serif;}
@@ -6617,7 +6630,7 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT>
 <TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="./images/vdc_tab_vicidial.gif" ALT="VICIDIAL" WIDTH=115 HEIGHT=30 BORDER=0></A></TD>
 <TD ALIGN=LEFT WIDTH=105><A HREF="#" onclick="ScriptPanelToFront();"><IMG SRC="./images/vdc_tab_script.gif" ALT="SCRIPT" WIDTH=105 HEIGHT=30 BORDER=0></A></TD>
-<TD WIDTH=<?=$HSwidth ?> VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; session ID: <span id=sessionIDspan></span></TD>
+<TD WIDTH=<?=$HSwidth ?> VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; session ID: <span id=sessionIDspan></span> &nbsp; &nbsp; <span id=AgentStatusCalls></span></TD>
 <TD WIDTH=109><IMG SRC="./images/agc_live_call_OFF.gif" NAME=livecall ALT="Live Call" WIDTH=109 HEIGHT=30 BORDER=0></TD>
 </TR></TABLE>
 </span>
@@ -6709,7 +6722,7 @@ echo "</head>\n";
 
 
 <span style="position:absolute;left:35px;top:<?=$CBheight ?>px;z-index:20;" id="AgentStatusSpan"><font class="body_text">
-Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="AgentStatusCalls"></span> 
+Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="AgentStatusDiaLs"></span> 
 </font></span>
 
 

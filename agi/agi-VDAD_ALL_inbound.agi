@@ -1312,6 +1312,22 @@ if ($agent_search_method =~ /^LO|^LB/)
 }
 if ($hold_message_counter > $prompt_interval)
 	{
+	$now_date_epoch = time();
+	$FDtarget = ($now_date_epoch + 10);
+	($Fsec,$Fmin,$Fhour,$Fmday,$Fmon,$Fyear,$Fwday,$Fyday,$Fisdst) = localtime($FDtarget);
+	$Fyear = ($Fyear + 1900);
+	$Fmon++;
+	if ($Fmon < 10) {$Fmon = "0$Fmon";}
+	if ($Fmday < 10) {$Fmday = "0$Fmday";}
+	if ($Fhour < 10) {$Fhour = "0$Fhour";}
+	if ($Fmin < 10) {$Fmin = "0$Fmin";}
+	if ($Fsec < 10) {$Fsec = "0$Fsec";}
+		$FDtsSQLdate = "$Fyear$Fmon$Fmday$Fhour$Fmin$Fsec";
+
+	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' where callerid='$callerid' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+
 	$AGI->stream_file('sip-silence'); # stop music-on-hold process
 	$AGI->stream_file("$onhold_prompt_filename"); # this prompt must be less than 10 seconds long
 	$hold_message_counter = 0;

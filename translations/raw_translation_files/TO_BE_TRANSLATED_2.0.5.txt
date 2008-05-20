@@ -160,6 +160,7 @@ Group Shifts -<\/B> This is a selectable list of shifts that can restrict the ag
 Gender: ||
 Date of Birth: ||
 YOU MUST BE PAUSED TO CHANGE GROUPS||
+Calls in Queue:||
 
 
 ############################################################  MANAGER Manual
