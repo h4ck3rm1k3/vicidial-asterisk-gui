@@ -27,6 +27,8 @@
 # ; 7. the sound file to play for a SURVEY when DNCing the call
 # ; 8. OPTIN or OPTOUT: if OPTIN call is only sent to agent with button press
 # ;     if OPTOUT call is sent to agent if no button press at all
+# ; 9. the status that is use for a SURVEY when someone opts out
+# ;     if the status is DNC it will also add them to the internal dnc table 
 #
 # ;outbound VICIDIAL calls:
 #exten => 8368,1,AGI(agi://127.0.0.1:4577/call_log)
@@ -37,9 +39,9 @@
 #
 # ;outbound VICIDIAL calls:
 #exten => 8366,1,AGI(agi://127.0.0.1:4577/call_log)
-#exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT)
-#exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT)
-#exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT)
+#exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
+#exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
+#exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 #exten => 8366,5,Hangup
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -204,6 +206,7 @@ if (length($ARGV[0])>1)
 	$opt_in_message =		$ARGV_vars[5];
 	$opt_out_message =		$ARGV_vars[6];
 	$opt_inout =			$ARGV_vars[7];
+	$opt_out_status =		$ARGV_vars[8];
 }
 
 if ($call_handle_method !~ /NORMAL|TEST|BROADCAST|SURVEY|REMIND/) {$call_handle_method='NORMAL';}
@@ -500,30 +503,29 @@ if ($call_handle_method =~ /SURVEY/)
 			&agi_output;
     		}
 
-	#	$stmtA ="UPDATE vicidial_log set status='DNC',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds' where uniqueid = '$uniqueid';";
 		$Euniqueid=$uniqueid;
                 $Euniqueid =~ s/\.\d+//gi;
 		$now_date_epoch = time();
 		$drop_seconds = $now_date_epoch - $start_time_epoch;
-        $stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DNC',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+        	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$opt_out_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
 		if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) 
 			{
-			$agi_string = "--    VDAD vicidial_log update: DNC|$affected_rows|$uniqueid";
+			$agi_string = "--    VDAD vicidial_log update: $opt_out_status|$affected_rows|$uniqueid";
 			&agi_output;
 			}
 
-		$stmtA = "UPDATE vicidial_list set status='DNC' where lead_id = '$CIDlead_id';";
+		$stmtA = "UPDATE vicidial_list set status='$opt_out_status' where lead_id = '$CIDlead_id';";
 		if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) 
 			{
-			$agi_string = "--    VDAD vicidial_list update: DNC|$affected_rows|$CIDlead_id";
+			$agi_string = "--    VDAD vicidial_list update: $opt_out_status|$affected_rows|$CIDlead_id";
 			&agi_output;
 			}
 
-		if ($use_internal_dnc =~ /Y/) 
+		if (($use_internal_dnc =~ /Y/) && ($opt_out_status eq "DNC"))
 			{
 			$stmtA = "INSERT INTO vicidial_dnc set phone_number='$VDADphone';";
 			if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
