@@ -150,3 +150,36 @@ index (shift_id)
 ALTER TABLE vicidial_user_groups ADD group_shifts TEXT;
 
 UPDATE system_settings SET db_schema_version='1084';
+
+CREATE INDEX lead_id ON vicidial_agent_log (lead_id);
+
+UPDATE system_settings SET db_schema_version='1085';
+
+ CREATE TABLE vicidial_timeclock_log (
+timeclock_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_epoch INT(10) UNSIGNED NOT NULL,
+event_date TIMESTAMP NOT NULL,
+login_sec INT(10) UNSIGNED,
+event VARCHAR(50) NOT NULL,
+user VARCHAR(20) NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+notes VARCHAR(255),
+manager_user VARCHAR(20),
+manager_ip VARCHAR(15),
+index (user)
+);
+
+ CREATE TABLE vicidial_timeclock_status (
+user VARCHAR(20) UNIQUE NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+event_epoch INT(10) UNSIGNED,
+event_date TIMESTAMP,
+status VARCHAR(50),
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+index (user)
+);
+
+UPDATE system_settings SET db_schema_version='1086';

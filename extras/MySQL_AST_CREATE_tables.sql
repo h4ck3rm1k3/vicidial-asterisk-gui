@@ -737,7 +737,8 @@ dispo_sec SMALLINT(5) UNSIGNED default '0',
 status VARCHAR(6),
 user_group VARCHAR(20),
 comments VARCHAR(20),
-sub_status VARCHAR(6)
+sub_status VARCHAR(6),
+index (lead_id)
 );
 
  CREATE TABLE vicidial_scripts (
@@ -1080,6 +1081,33 @@ shift_weekdays VARCHAR(7) default '0123456',
 index (shift_id)
 );
 
+ CREATE TABLE vicidial_timeclock_log (
+timeclock_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_epoch INT(10) UNSIGNED NOT NULL,
+event_date TIMESTAMP NOT NULL,
+login_sec INT(10) UNSIGNED,
+event VARCHAR(50) NOT NULL,
+user VARCHAR(20) NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+notes VARCHAR(255),
+manager_user VARCHAR(20),
+manager_ip VARCHAR(15),
+index (user)
+);
+
+ CREATE TABLE vicidial_timeclock_status (
+user VARCHAR(20) UNIQUE NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+event_epoch INT(10) UNSIGNED,
+event_date TIMESTAMP,
+status VARCHAR(50),
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+index (user)
+);
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1129,5 +1157,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1084';
+UPDATE system_settings SET db_schema_version='1086';
 

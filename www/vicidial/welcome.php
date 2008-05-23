@@ -14,6 +14,8 @@ echo "</TR>\n";
 echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
 echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=3><b> <a href=\"../agc/vicidial.php\">Agent Login</a> </TD></TR>\n";
 echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=3><b> <a href=\"../agc/timeclock.php?referrer=welcome\"> Timeclock</a> </TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
 echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=3><b> <a href=\"../vicidial/admin.php\">Administration</a> </TD></TR>\n";
 echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
 echo "</TABLE>\n";

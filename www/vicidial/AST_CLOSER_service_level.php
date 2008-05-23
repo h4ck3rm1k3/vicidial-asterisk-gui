@@ -455,7 +455,7 @@ while ($d < $DURATIONday)
 		$totCALLSavgDATE[$d] = ($totCALLSsecDATE[$d] / $totCALLSdate[$d]);
 
 		$totTIME_M = ($totCALLSsecDATE[$d] / 60);
-		$totTIME_M = round($totTIME_M, 2);
+		$totTIME_M_int = round($totTIME_M, 2);
 		$totTIME_M_int = intval("$totTIME_M");
 		$totTIME_S = ($totTIME_M - $totTIME_M_int);
 		$totTIME_S = ($totTIME_S * 60);
@@ -508,7 +508,7 @@ if ($totCALLSsec > 0)
 	$totCALLSavg = ($totCALLSsec / $totCALLS);
 
 	$totTIME_M = ($totCALLSsec / 60);
-	$totTIME_M = round($totTIME_M, 2);
+	$totTIME_M_int = round($totTIME_M, 2);
 	$totTIME_M_int = intval("$totTIME_M");
 	$totTIME_S = ($totTIME_M - $totTIME_M_int);
 	$totTIME_S = ($totTIME_S * 60);

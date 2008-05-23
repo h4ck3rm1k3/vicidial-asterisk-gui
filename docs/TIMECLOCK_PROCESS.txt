@@ -45,15 +45,12 @@ index (shift_id)
 # add field for allowable shifts for user groups
 ALTER TABLE vicidial_user_groups ADD group_shifts TEXT;
 
-
-
-
-
 # This table contains the log of timeclock activity
  CREATE TABLE vicidial_timeclock_log (
 timeclock_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 event_epoch INT(10) UNSIGNED NOT NULL,
 event_date TIMESTAMP NOT NULL,
+login_sec INT(10) UNSIGNED,
 event VARCHAR(50) NOT NULL,
 user VARCHAR(20) NOT NULL,
 user_group VARCHAR(20) NOT NULL,

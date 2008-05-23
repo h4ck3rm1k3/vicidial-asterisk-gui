@@ -153,6 +153,7 @@ Friday||
 Saturday||
 Group Shifts: ||
 Group Shifts -<\/B> This is a selectable list of shifts that can restrict the agents login time on the system||
+ Timeclock||
 
 
 ############################################################ CLIENT
@@ -161,10 +162,29 @@ Gender: ||
 Date of Birth: ||
 YOU MUST BE PAUSED TO CHANGE GROUPS||
 Calls in Queue:||
+ Timeclock||
+The user and password you entered are not active in the system||
+Please try again||
+You cannot log in or out within 30 seconds of your last login or logout||
+You have now logged-out||
+You logged out at ||
+Amount of time you were logged-in: ||
+ERROR: timeclock log entry already made: ||
+BACK to Agent Login Screen||
+BACK to Administration||
+BACK to Welcome Screen||
+Time since you were last logged-in: ||
+You last logged-out at: ||
+Click LOGIN below to log-in||
+Amount of time you have been logged-in: ||
+You logged-in at:||
+Click LOGOUT below to log-out||
 
 
 ############################################################  MANAGER Manual
 
+
+Add agc/timeclock.php to all agent definitions files
 
 ############################################################  AGENT Manual
 
