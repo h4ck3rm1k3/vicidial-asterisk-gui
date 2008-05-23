@@ -342,11 +342,33 @@ exten => 8500998,3,AGI(agi-dtmf.agi)
 exten => 8500998,4,Hangup
 
 ;#### VDAD STANDARD TRANSFER ENTRIES ####
+; Below are the parameters needed for the agi-VDAD_ALL_outbound.agi script to be run properly
+; 1. the method of call handling for the script:
+; 	- NORMAL -	 	<default> Standard outbound routing to agent
+; 	- TEST - 		For performance testing only
+; 	- BROADCAST -	For no-agent broadcast dialing
+; 	- SURVEY -		For survery question then on to agent
+; 	- REMINDER -	Reminder campaign
+; 	- REMINDX -		Reminder with transfer to agent
+; 2. the method of searching for an available agent:
+; 	- LB - <default> Load Balance total system
+; 	- LO - Load Balance Overflow only (priority to home server)
+; 	- SO - Home server only
+; 3. the sound file to play when doing a SURVEY, REMINDER, REMINDX campaign
+; 4. the acceptible dtmf digits for a SURVEY
+; 5. the out-opt digit for a SURVEY (must be in the digit map)
+; 6. the sound file to play for a SURVEY when transfering to an agent
+; 7. the sound file to play for a SURVEY when DNCing the call
+; 8. OPTIN or OPTOUT: if OPTIN call is only sent to agent with button press
+;     if OPTOUT call is sent to agent if no button press at all
+; 9. the status that is use for a SURVEY when someone opts out
+;     if the status is DNC it will also add them to the internal dnc table
+
 ; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
 exten => 8364,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8364,2,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
-exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
-exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8364,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8364,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8364,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script:
@@ -358,9 +380,9 @@ exten => 8365,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
 exten => 8366,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact)
-exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact)
-exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact)
+exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
+exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
+exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 exten => 8366,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
@@ -399,8 +421,8 @@ exten => 8372,5,Hangup
 ;; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
 ;exten => 8364,1,Playback(sip-silence)
 ;exten => 8364,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
-;exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+;exten => 8364,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8364,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 ;exten => 8364,5,Hangup
 ;
 ;; VICIDIAL_auto_dialer transfer script:
@@ -413,8 +435,8 @@ exten => 8372,5,Hangup
 ;; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
 ;exten => 8366,1,Playback(sip-silence)
 ;exten => 8366,2,AGI(agi://127.0.0.1:4577/call_log)
-;exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT)
-;exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT)
+;exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
+;exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 ;exten => 8366,5,Hangup
 ;
 ;; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
