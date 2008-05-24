@@ -5,10 +5,11 @@
 #
 # CHANGELOG
 # 80523-0134 - First Build 
+# 80524-0225 - Changed event_date to DATETIME, added timestamp field and tcid_link field
 #
 
-$version = '2.0.5-1';
-$build = '80523-0134';
+$version = '2.0.5-2';
+$build = '80524-0225';
 
 $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -264,7 +265,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				$LOGtimeMESSAGE = "You logged in at $NOW_TIME";
 
 				### Add a record to the timeclock log
-				$stmt="INSERT INTO vicidial_timeclock_log set event='LOGIN', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip';";
+				$stmt="INSERT INTO vicidial_timeclock_log set event='LOGIN', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip', event_date='$NOW_TIME';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
@@ -284,14 +285,15 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				$LOGtimeMESSAGE = "You logged out at $NOW_TIME<BR>Amount of time you were logged-in: $totTIME_HMS";
 
 				### Add a record to the timeclock log
-				$stmt="INSERT INTO vicidial_timeclock_log set event='LOGOUT', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip', login_sec='$last_action_sec';";
+				$stmt="INSERT INTO vicidial_timeclock_log set event='LOGOUT', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip', login_sec='$last_action_sec', event_date='$NOW_TIME';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
-				print "<!-- NEW vicidial_timeclock_log record inserted for $user:   |$affected_rows| -->\n";
+				$timeclock_id = mysql_insert_id($link);
+				print "<!-- NEW vicidial_timeclock_log record inserted for $user:   |$affected_rows|$timeclock_id| -->\n";
 
 				### Update last login record in the timeclock log
-				$stmt="UPDATE vicidial_timeclock_log set login_sec='$last_action_sec' where event='LOGIN' and user='$user' order by timeclock_id desc limit 1;";
+				$stmt="UPDATE vicidial_timeclock_log set login_sec='$last_action_sec',tcid_link='$timeclock_id' where event='LOGIN' and user='$user' order by timeclock_id desc limit 1;";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
