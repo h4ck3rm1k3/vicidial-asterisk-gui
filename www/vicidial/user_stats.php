@@ -11,6 +11,7 @@
 # 70702-1231 - Added recording location link and truncation
 # 80117-0316 - Added vicidial_user_closer_log entries to display
 # 80501-0506 - Added Hangup Reason to logs display
+# 80523-2012 - Added vicidial timeclock records display
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -130,6 +131,8 @@ echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
 
 echo "<br><center>\n";
 
+##### vicidial agent talk time and status #####
+
 echo "<B>TALK TIME AND STATUS:</B>\n";
 
 echo "<center><TABLE width=300 cellspacing=0 cellpadding=1>\n";
@@ -146,8 +149,8 @@ echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td
 
 		$call_seconds = $row[2];
 		$call_hours = ($call_seconds / 3600);
-		$call_hours = round($call_hours, 2);
-		$call_hours_int = intval("$call_hours");
+		$call_hours_int = round($call_hours, 2);
+		$call_hours_int = intval("$call_hours_int");
 		$call_minutes = ($call_hours - $call_hours_int);
 		$call_minutes = ($call_minutes * 60);
 		$call_minutes_int = round($call_minutes, 0);
@@ -168,8 +171,8 @@ echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td
 		$row=mysql_fetch_row($rslt);
 	$call_seconds = $row[0];
 	$call_hours = ($call_seconds / 3600);
-	$call_hours = round($call_hours, 2);
-	$call_hours_int = intval("$call_hours");
+	$call_hours_int = round($call_hours, 2);
+	$call_hours_int = intval("$call_hours_int");
 	$call_minutes = ($call_hours - $call_hours_int);
 	$call_minutes = ($call_minutes * 60);
 	$call_minutes_int = round($call_minutes, 0);
@@ -177,11 +180,15 @@ echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td
 
 echo "<tr><td><font size=2>TOTAL CALLS </td><td align=right><font size=2> $total_calls</td><td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
 echo "</TABLE></center>\n";
+
+
+##### Login and Logout time from vicidial agent interface #####
+
 echo "<br><br>\n";
 
 echo "<center>\n";
 
-echo "<B>LOGIN/LOGOUT TIME:</B>\n";
+echo "<B>VICIDIAL AGENT LOGIN/LOGOUT TIME:</B>\n";
 echo "<TABLE width=500 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
 
@@ -217,8 +224,8 @@ echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td
 				$event_seconds = ($event_stop_seconds - $event_start_seconds);
 				$total_login_time = ($total_login_time + $event_seconds);
 				$event_hours = ($event_seconds / 3600);
-				$event_hours = round($event_hours, 2);
-				$event_hours_int = intval("$event_hours");
+				$event_hours_int = round($event_hours, 2);
+				$event_hours_int = intval("$event_hours_int");
 				$event_minutes = ($event_hours - $event_hours_int);
 				$event_minutes = ($event_minutes * 60);
 				$event_minutes_int = round($event_minutes, 0);
@@ -247,7 +254,87 @@ echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td
 	}
 
 $total_login_hours = ($total_login_time / 3600);
-$total_login_hours = round($total_login_hours, 2);
+$total_login_hours_int = round($total_login_hours, 2);
+$total_login_hours_int = intval("$total_login_hours_int");
+$total_login_minutes = ($total_login_hours - $total_login_hours_int);
+$total_login_minutes = ($total_login_minutes * 60);
+$total_login_minutes_int = round($total_login_minutes, 0);
+if ($total_login_minutes_int < 10) {$total_login_minutes_int = "0$total_login_minutes_int";}
+
+echo "<tr><td><font size=2>TOTAL</td>";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_int</td></tr>\n";
+
+echo "</TABLE></center>\n";
+
+
+##### vicidial_timeclock log records for user #####
+
+$SQday_ARY =	explode('-',$begin_date);
+$EQday_ARY =	explode('-',$end_date);
+$SQepoch = mktime(0, 0, 0, $EQday_ARY[1], $EQday_ARY[2], $EQday_ARY[0]);
+$EQepoch = mktime(23, 59, 59, $SQday_ARY[1], $SQday_ARY[2], $SQday_ARY[0]);
+
+echo "<br><br>\n";
+
+echo "<center>\n";
+
+echo "<B>TIMECLOCK LOGIN/LOGOUT TIME:</B>\n";
+echo "<TABLE width=500 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> IP ADDRESS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
+
+	$stmt="SELECT event,event_epoch,user_group,login_sec,ip_address from vicidial_timeclock_log where user='" . mysql_real_escape_string($user) . "' and event_epoch >= '$SQepoch'  and event_epoch <= '$EQepoch';";
+	$rslt=mysql_query($stmt, $link);
+	$events_to_print = mysql_num_rows($rslt);
+
+	$total_logs=0;
+	$o=0;
+	while ($events_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		if ( ($row[0]=='START') or ($row[0]=='LOGIN') )
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		$TC_log_date = date("Y-m-d H:i:s", $row[1]);
+
+		if (ereg("LOGIN", $row[0]))
+			{
+			$login_sec='';
+			echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
+			echo "<td align=right><font size=2> $TC_log_date</td>\n";
+			echo "<td align=right><font size=2> $row[4]</td>\n";
+			echo "<td align=right><font size=2> $row[2]</td>\n";
+			echo "<td align=right><font size=2> </td></tr>\n";
+			}
+		if (ereg("LOGOUT", $row[0]))
+			{
+			$login_sec = $row[3];
+			$total_login_time = ($total_login_time + $login_sec);
+			$event_hours = ($login_sec / 3600);
+			$event_hours_int = round($event_hours, 2);
+			$event_hours_int = intval("$event_hours_int");
+			$event_minutes = ($event_hours - $event_hours_int);
+			$event_minutes = ($event_minutes * 60);
+			$event_minutes_int = round($event_minutes, 0);
+			if ($event_minutes_int < 10) {$event_minutes_int = "0$event_minutes_int";}
+			echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
+			echo "<td align=right><font size=2> $TC_log_date</td>\n";
+			echo "<td align=right><font size=2> $row[4]</td>\n";
+			echo "<td align=right><font size=2> $row[2]</td>\n";
+			echo "<td align=right><font size=2> $event_hours_int:$event_minutes_int</td></tr>\n";
+			}
+		$o++;
+	}
+if (strlen($login_sec)<1)
+	{
+	$login_sec = ($STARTtime - $row[1]);
+	$total_login_time = ($total_login_time + $login_sec);
+	}
+$total_login_hours = ($total_login_time / 3600);
+$total_login_hours_int = round($total_login_hours, 2);
 $total_login_hours_int = intval("$total_login_hours");
 $total_login_minutes = ($total_login_hours - $total_login_hours_int);
 $total_login_minutes = ($total_login_minutes * 60);
@@ -257,10 +344,13 @@ if ($total_login_minutes_int < 10) {$total_login_minutes_int = "0$total_login_mi
 echo "<tr><td><font size=2>TOTAL</td>";
 echo "<td align=right><font size=2> </td>\n";
 echo "<td align=right><font size=2> </td>\n";
-echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_int</td></tr>\n";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_int  </td></tr>\n";
 
 echo "</TABLE></center>\n";
 
+
+##### closer in-group selection logs #####
 
 echo "<br><br>\n";
 
@@ -297,7 +387,7 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 echo "</TABLE><BR><BR>\n";
 
 
-
+##### vicidial agent outbound calls for this time period #####
 
 echo "<B>OUTBOUND CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=670 cellspacing=0 cellpadding=1>\n";
@@ -334,8 +424,9 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 echo "</TABLE><BR><BR>\n";
 
 
+##### vicidial agent inbound calls for this time period #####
 
-echo "<B>CLOSER CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
+echo "<B>INBOUND/CLOSER CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=670 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2>LENGTH</td><td align=left><font size=2> STATUS</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> CAMPAIGN</td><td align=right><font size=2> WAIT (S)</td><td align=right><font size=2> LIST</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> HANGUP REASON</td></tr>\n";
 
@@ -370,7 +461,7 @@ echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left
 echo "</TABLE></center><BR><BR>\n";
 
 
-
+##### vicidial recordings for this time period #####
 
 echo "<B>RECORDINGS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
 echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
