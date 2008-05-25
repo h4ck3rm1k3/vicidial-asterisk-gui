@@ -13,6 +13,7 @@
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70619-1339 - Added Status Category tally display
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
+# 80525-1040 - Added IVR status summary display for inbound calls
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -305,6 +306,7 @@ $parked_to_print = mysql_num_rows($rslt);
 	$out_total=0;
 	$out_ring=0;
 	$out_live=0;
+	$in_ivr=0;
 	while ($i < $parked_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
@@ -313,6 +315,8 @@ $parked_to_print = mysql_num_rows($rslt);
 			{$out_live++;}
 		else
 			{
+			if (eregi("IVR",$row[0])) 
+				{$in_ivr++;}
 			if (eregi("CLOSER",$row[0])) 
 				{$nothing=1;}
 			else 
@@ -334,6 +338,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		
 		echo "$NFB$out_ring$NFE calls ringing &nbsp; &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$F &nbsp;$out_live $FG$NFE calls waiting for agents &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB &nbsp;$in_ivr$NFE calls in IVR &nbsp; &nbsp; &nbsp; \n";
 		}
 	else
 	{

@@ -66,6 +66,7 @@
 # 71029-1909 - Changed CLOSER-type campaign_id restriction
 # 71030-2054 - Added hopper priority sorting
 # 80227-0406 - added queue_priority
+# 80525-1040 - Added IVR vac status compatibility for inbound calls
 #
 
 
@@ -340,7 +341,7 @@ while($one_day_interval > 0)
 		$sthA->finish();
 
 		### see how many total VDAD calls are going on right now for max limiter
-		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$server_ip' and status IN('SENT','RINGING','LIVE','XFER','CLOSER');";
+		$stmtA = "SELECT count(*) FROM vicidial_auto_calls where server_ip='$server_ip' and status IN('SENT','RINGING','LIVE','XFER','CLOSER','IVR');";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -883,7 +884,7 @@ while($one_day_interval > 0)
 		@KLchannel = @MT;
 		$kill_vac=0;
 
-		$stmtA = "SELECT callerid,server_ip,channel,uniqueid FROM vicidial_auto_calls where server_ip='$server_ip' order by call_time;";
+		$stmtA = "SELECT callerid,server_ip,channel,uniqueid,status FROM vicidial_auto_calls where server_ip='$server_ip' order by call_time;";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -897,6 +898,7 @@ while($one_day_interval > 0)
 				$KLserver_ip[$kill_vac]		= "$aryA[1]";
 				$KLchannel[$kill_vac]		= "$aryA[2]";
 				$KLuniqueid[$kill_vac]		= "$aryA[3]";
+				$KLstatus[$kill_vac]		= "$aryA[4]";
 			$kill_vac++;
 			$rec_count++;
 			}
@@ -908,23 +910,28 @@ while($one_day_interval > 0)
 			if (length($KLserver_ip[$kill_vac]) > 7)
 				{
 				$end_epoch=0;   $CLuniqueid='';
+				$KLcalleridCHECK[$kill_vac]=$KLcallerid[$kill_vac];
+				$KLcalleridCHECK[$kill_vac] =~ s/\W//gi;
 
-				$stmtA = "SELECT end_epoch,uniqueid FROM call_log where caller_code='$KLcallerid[$kill_vac]' and server_ip='$KLserver_ip[$kill_vac]' order by end_epoch, start_time desc limit 1;";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				 $rec_countCUSTDATA=0;
-				while ($sthArows > $rec_count)
+				if ( (length($KLcalleridCHECK[$kill_vac]) > 17) && ($KLcalleridCHECK[$kill_vac] =~ /\d\d\d\d\d\d\d\d\d\d\d\d\d\d/) )
 					{
-					@aryA = $sthA->fetchrow_array;
-						$end_epoch		= "$aryA[0]";
-						$CLuniqueid		= "$aryA[1]";
-					$rec_count++;
+					$stmtA = "SELECT end_epoch,uniqueid FROM call_log where caller_code='$KLcallerid[$kill_vac]' and server_ip='$KLserver_ip[$kill_vac]' order by end_epoch, start_time desc limit 1;";
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					 $rec_countCUSTDATA=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+							$end_epoch		= "$aryA[0]";
+							$CLuniqueid		= "$aryA[1]";
+						$rec_count++;
+						}
+					$sthA->finish();
 					}
-				$sthA->finish();
 
-				if ( (length($KLuniqueid[$kill_vac]) > 15) && (length($CLuniqueid) < 15) )
+				if ( (length($KLuniqueid[$kill_vac]) > 11) && (length($CLuniqueid) < 12) )
 					{
 					$stmtA = "SELECT end_epoch,uniqueid FROM call_log where uniqueid='$KLuniqueid[$kill_vac]' and server_ip='$KLserver_ip[$kill_vac]' order by end_epoch, start_time desc limit 1;";
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
@@ -996,11 +1003,14 @@ while($one_day_interval > 0)
 
 							}
 
-						$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
-						$affected_rows = $dbhA->do($stmtA);
+						if ($CLlead_id > 0)
+							{
+							$stmtA = "UPDATE vicidial_list set status='$CLnew_status' where lead_id='$CLlead_id'";
+							$affected_rows = $dbhA->do($stmtA);
 
-						$event_string = "|     dead call vac lead marked $CLnew_status|$CLlead_id|$CLphone_number|$CLstatus|";
-						 &event_logger;
+							$event_string = "|     dead call vac lead marked $CLnew_status|$CLlead_id|$CLphone_number|$CLstatus|";
+							 &event_logger;
+							}
 
 						$stmtA = "UPDATE vicidial_live_agents set status='PAUSED',random_id='10' where  callerid='$KLcallerid[$kill_vac]';";
 						$affected_rows = $dbhA->do($stmtA);
@@ -1039,7 +1049,7 @@ while($one_day_interval > 0)
 							 $epc_countCAMPDATA++;
 							}
 						$sthA->finish();
-						if ($VD_auto_alt_dial_statuses =~ / $CLnew_status /)
+						if ( ($VD_auto_alt_dial_statuses =~ / $CLnew_status /) && ($CLlead_id > 0) )
 							{
 							if ( ($VD_auto_alt_dial =~ /(ALT_ONLY|ALT_AND_ADDR3)/) && ($CLalt_dial =~ /NONE|MAIN/) )
 								{
@@ -1171,7 +1181,7 @@ while($one_day_interval > 0)
 
 
 		### delete call records that are SENT for over 2 minutes
-		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$XDSQLdate' and status NOT IN('XFER','CLOSER','LIVE')";
+		$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$XDSQLdate' and status NOT IN('XFER','CLOSER','LIVE','IVR')";
 		$affected_rows = $dbhA->do($stmtA);
 
 		$event_string = "|     lagged call vac agent DELETED $affected_rows|$XDSQLdate|";
@@ -1197,7 +1207,7 @@ while($one_day_interval > 0)
 			}
 
 		### find call records that are LIVE and not updated for over 10 seconds
-		$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE');";
+		$stmtA = "SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where server_ip='$server_ip' and last_update_time < '$BDtsSQLdate' and status IN('LIVE','IVR');";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 		$sthArows=$sthA->rows;
@@ -1229,7 +1239,7 @@ while($one_day_interval > 0)
 			$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
 			 &event_logger;
 
-			if ($affected_rows > 0)
+			if ( ($affected_rows > 0) && ($CLlead_id > 0) )
 				{
 				$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
 				 &jam_event_logger;
@@ -1342,7 +1352,7 @@ while($one_day_interval > 0)
 			##### END QUEUEMETRICS LOGGING LOOKUP #####
 			###########################################
 
-			### delete call records that are LIVE for over 10 minutes
+			### delete call records that are LIVE for over 100 minutes
 			$stmtA = "DELETE FROM vicidial_auto_calls where server_ip='$server_ip' and call_time < '$TDSQLdate' and status NOT IN('XFER','CLOSER')";
 			$affected_rows = $dbhA->do($stmtA);
 
@@ -1506,7 +1516,7 @@ if ($Xmin < 10) {$Xmin = "0$Xmin";}
 if ($Xsec < 10) {$Xsec = "0$Xsec";}
 	$XDSQLdate = "$Xyear-$Xmon-$Xmday $Xhour:$Xmin:$Xsec";
 
-$TDtarget = ($secX - 600);
+$TDtarget = ($secX - 6000);
 ($Tsec,$Tmin,$Thour,$Tmday,$Tmon,$Tyear,$Twday,$Tyday,$Tisdst) = localtime($TDtarget);
 $Tyear = ($Tyear + 1900);
 $Tmon++;

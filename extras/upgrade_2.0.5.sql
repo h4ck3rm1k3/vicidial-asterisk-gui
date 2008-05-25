@@ -189,3 +189,16 @@ ALTER TABLE vicidial_timeclock_log ADD event_datestamp TIMESTAMP NOT NULL;
 ALTER TABLE vicidial_timeclock_log ADD tcid_link INT(9) UNSIGNED;
 
 UPDATE system_settings SET db_schema_version='1087';
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE vicidial_auto_calls MODIFY status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT','IVR') default 'PAUSED';
+
+UPDATE system_settings SET db_schema_version='1088';

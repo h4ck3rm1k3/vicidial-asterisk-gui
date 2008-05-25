@@ -38,6 +38,7 @@
 # 80507-1138 - Fixed vicidial_closer_log CALLER hangups
 # 80510-0414 - Fixed crossover logging bugs
 # 80510-2058 - Fixed status override bug
+# 80525-1040 - Added IVR vac status compatibility for inbound calls
 #
 
 
@@ -606,7 +607,7 @@ sub process_request {
 
 				########## FIND AND DELETE vicidial_auto_calls ##########
 				$VD_alt_dial = 'NONE';
-				$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
+				$stmtA = "SELECT lead_id,callerid,campaign_id,alt_dial,stage,UNIX_TIMESTAMP(call_time),uniqueid,status FROM vicidial_auto_calls where uniqueid = '$uniqueid' or callerid = '$callerid' limit 1;";
 					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -622,6 +623,7 @@ sub process_request {
 					$VD_stage =			"$aryA[4]";
 					$VD_start_epoch =	"$aryA[5]";
 					$VD_uniqueid =		"$aryA[6]";
+					$VD_status =		"$aryA[7]";
 					 $rec_countCUSTDATA++;
 					}
 				$sthA->finish();
@@ -632,9 +634,9 @@ sub process_request {
 					}
 				else
 					{
-					$stmtA = "DELETE FROM vicidial_auto_calls where uniqueid='$uniqueid' or callerid = '$callerid' order by call_time desc limit 1;";
+					$stmtA = "DELETE FROM vicidial_auto_calls where ( ( (status!='IVR') and (uniqueid='$uniqueid' or callerid = '$callerid') ) or ( (status='IVR') and (uniqueid='$uniqueid') ) ) order by call_time desc limit 1;";
 					$affected_rows = $dbhA->do($stmtA);
-					if ($AGILOG) {$agi_string = "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_uniqueid|$VD_callerid|$VARserver_ip";   &agi_output;}
+					if ($AGILOG) {$agi_string = "--    VDAC record deleted: |$affected_rows|   |$VD_lead_id|$uniqueid|$VD_uniqueid|$VD_callerid|$VARserver_ip|$VD_status|";   &agi_output;}
 
 					#############################################
 					##### START QUEUEMETRICS LOGGING LOOKUP #####

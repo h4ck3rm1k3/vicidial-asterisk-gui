@@ -33,6 +33,7 @@
 # 80422-0033 - Added phonediaplay option, allow for toggle-sorting on sortable fields
 # 80422-1001 - Fixed sort by phone login
 # 80424-0515 - Added non_latin lookup from system_settings
+# 80525-1040 - Added IVR status display and summary for inbound calls
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -552,6 +553,7 @@ $parked_to_print = mysql_num_rows($rslt);
 	$out_total=0;
 	$out_ring=0;
 	$out_live=0;
+	$in_ivr=0;
 	while ($i < $parked_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
@@ -574,6 +576,22 @@ $parked_to_print = mysql_num_rows($rslt);
 			}
 		else
 			{
+			if (eregi("IVR",$row[0])) 
+				{
+				$in_ivr++;
+
+				if ($CALLSdisplay > 0)
+					{
+					$CDstatus[$k] =			$row[0];
+					$CDcampaign_id[$k] =	$row[1];
+					$CDphone_number[$k] =	$row[2];
+					$CDserver_ip[$k] =		$row[3];
+					$CDcall_time[$k] =		$row[4];
+					$CDcall_type[$k] =		$row[5];
+					$CDqueue_priority[$k] =	$row[6];
+					$k++;
+					}
+				}
 			if (eregi("CLOSER",$row[0])) 
 				{$nothing=1;}
 			else 
@@ -596,6 +614,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		
 		echo "$NFB$out_ring$NFE calls ringing &nbsp; &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$F &nbsp;$out_live $FG$NFE calls waiting for agents &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB &nbsp;$in_ivr$NFE calls in IVR &nbsp; &nbsp; &nbsp; \n";
 		}
 	else
 	{
