@@ -323,7 +323,7 @@ index (last_call_finish)
 auto_call_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 campaign_id VARCHAR(20),			
-status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT') default 'PAUSED',
+status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT','IVR') default 'PAUSED',
 lead_id INT(9) UNSIGNED NOT NULL,
 uniqueid VARCHAR(20),
 callerid VARCHAR(20),
@@ -1159,5 +1159,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1087';
+UPDATE system_settings SET db_schema_version='1088';
 
