@@ -14,6 +14,7 @@
 # 80122-0320 - Added build_phones_conf flag to generate phones conf entries from phones table records
 # 80227-1536 - Added ip_relay to keepalive list
 # 80316-2208 - Added $PATHlogs/archive for backups
+# 80526-1345 - Added Timeclock auto-logout option 9
 #
 
 ############################################
@@ -163,6 +164,7 @@ if (length($ARGV[0])>1)
 	print "     6 - FastAGI_log\n";
 	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 	print "     8 - ip_relay (used for blind agent monitoring)\n";
+	print "     9 - Timeclock auto-logout\n";
 	print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
 	print "  [--FTP_host=192.168.0.2] = define recording archive server IP address at runtime\n";
 	print "  [--FTP_user=cron] = define archive server name at runtime\n";
@@ -1560,6 +1562,7 @@ else
 			print " 6 - FastAGI_log\n";
 			print " 7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 			print " 8 - ip_relay (used for blind agent monitoring)\n";
+			print " 9 - Timeclock auto logout\n";
 			print "Enter active keepalives or press enter for default: [$VARactive_keepalives] ";
 			$PROMPTactive_keepalives = <STDIN>;
 			chomp($PROMPTactive_keepalives);
@@ -2067,6 +2070,7 @@ print conf "#  5 - AST_VDadapt (If multi-server system, this must only be on one
 print conf "#  6 - FastAGI_log\n";
 print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
+print conf "#  9 - Timeclock auto logout\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
 print conf "# FTP recording archive connection information\n";

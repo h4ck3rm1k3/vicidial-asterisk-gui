@@ -727,6 +727,9 @@ if (isset($_GET["shift_weekdays"]))				{$shift_weekdays=$_GET["shift_weekdays"];
 	elseif (isset($_POST["shift_weekdays"]))	{$shift_weekdays=$_POST["shift_weekdays"];}
 if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}	
 	elseif (isset($_POST["group_shifts"]))	{$group_shifts=$_POST["group_shifts"];}
+if (isset($_GET["timeclock_end_of_day"]))			{$timeclock_end_of_day=$_GET["timeclock_end_of_day"];}	
+	elseif (isset($_POST["timeclock_end_of_day"]))	{$timeclock_end_of_day=$_POST["timeclock_end_of_day"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -885,6 +888,7 @@ $qc_commit = ereg_replace("[^0-9]","",$qc_commit);
 $campaign_shift_start_time = ereg_replace("[^0-9]","",$campaign_shift_start_time);
 $campaign_day_start_time = ereg_replace("[^0-9]","",$campaign_day_start_time);
 $shift_start_time = ereg_replace("[^0-9]","",$shift_start_time);
+$timeclock_end_of_day = ereg_replace("[^0-9]","",$timeclock_end_of_day);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -3777,6 +3781,16 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <A NAME="settings-enable_agc_xfer_log">
 <BR>
 <B>Enable Agent Transfer Logfile -</B> This option will log to a text logfile on the webserver every time a call is transferred to an agent. Default is 0, disabled.
+
+<BR>
+<A NAME="settings-timeclock_end_of_day">
+<BR>
+<B>Timeclock End Of Day -</B> This setting defines when all users are to be auto logged out of the timeclock system. Only runs once a day. must be only 4 digits 2 digit hour and 2 digit minutes in 24 hour time. Default is 0000.
+
+<BR>
+<A NAME="settings-timeclock_last_reset_date">
+<BR>
+<B>Timeclock Last Auto Logout -</B> This field displays the date of the last auto-logout.
 
 
 
@@ -8188,7 +8202,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -13643,7 +13657,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -13664,6 +13678,8 @@ if ($ADD==311111111111111)
 	$enable_agc_xfer_log =			$row[15];
 	$db_schema_version =			$row[16];
 	$auto_user_add_value =			$row[17];
+	$timeclock_end_of_day =			$row[18];
+	$timeclock_last_reset_date =	$row[19];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -13675,7 +13691,6 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Use Non-Latin: </td><td align=left><select size=1 name=use_non_latin><option>1</option><option>0</option><option selected>$use_non_latin</option></select>$NWB#settings-use_non_latin$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Webroot Writable: </td><td align=left><select size=1 name=webroot_writable><option>1</option><option>0</option><option selected>$webroot_writable</option></select>$NWB#settings-webroot_writable$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
-
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Name: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Login: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
@@ -13702,8 +13717,8 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allow SIPSAK Messages: </td><td align=left><select size=1 name=allow_sipsak_messages><option>1</option><option>0</option><option selected>$allow_sipsak_messages</option></select>$NWB#settings-allow_sipsak_messages$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Admin Home URL: </td><td align=left><input type=text name=admin_home_url size=50 maxlength=255 value=\"$admin_home_url\">$NWB#settings-admin_home_url$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Enable Agent Transfer Logfile: </td><td align=left><select size=1 name=enable_agc_xfer_log><option>1</option><option>0</option><option selected>$enable_agc_xfer_log</option></select>$NWB#settings-enable_agc_xfer_log$NWE</td></tr>\n";
-
-
+	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock End Of Day: </td><td align=left><input type=text name=timeclock_end_of_day size=5 maxlength=4 value=\"$timeclock_end_of_day\">$NWB#settings-timeclock_end_of_day$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock Last Auto Logout: </td><td align=left> $timeclock_last_reset_date</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "</form>\n";

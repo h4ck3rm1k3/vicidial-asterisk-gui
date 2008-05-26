@@ -1,6 +1,6 @@
 Timeclock process flow					  2008-05-12
 
-** THIS TIMECLOCK FUNCTIONALITY PROSESS IS PLANNED FOR THE 2.0.5 RELEASE **
+** THIS TIMECLOCK FUNCTIONALITY PROCESS IS PLANNED FOR THE 2.0.5 RELEASE **
 
 This will outline the process I have thought through for adding a timeclock component to the VICIDIAL system. The objective is to add the following features to make VICIDIAL a more well-rounded product:
 - Allow vicidial users to clock-in to the system
@@ -23,6 +23,7 @@ To facilitate more workforce management, as is desired with the addition of a ti
 Newly Created Scripts:
 timeclock.php - linked to from vicidial.php/admin.php/welcome.php to give easy access for users to use the timeclock and then go back to what they were doing.
 
+timeclock_auto_logout.pl - script that runs at the defined system_settings.timeclock_end_of_day field that will go through all agents that are currently logged into the timeclock for the day and log them out with the AUTOLOGOUT event. Only runs once a day. Triggered by the ADMIN_keepalive_all.pl script. Defined to run by the '9' flag in the keepalive settings of the astguiclient.conf file
 
 
 More to come...
@@ -99,3 +100,6 @@ index (timeclock_id),
 index (user)
 );
 
+# system settings added fields to define the time when all logged-in agents are to be auto-logged out
+ALTER TABLE system_settings ADD timeclock_end_of_day VARCHAR(4) default '0000';
+ALTER TABLE system_settings ADD timeclock_last_reset_date DATE;

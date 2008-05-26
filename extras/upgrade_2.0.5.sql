@@ -213,3 +213,9 @@ index (user)
 );
 
 UPDATE system_settings SET db_schema_version='1089';
+
+ALTER TABLE system_settings ADD timeclock_end_of_day VARCHAR(4) default '0000';
+ALTER TABLE system_settings ADD timeclock_last_reset_date DATE;
+
+UPDATE system_settings SET db_schema_version='1090';
+

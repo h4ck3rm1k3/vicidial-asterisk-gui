@@ -260,7 +260,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 
 		if ($commit == 'YES')
 			{
-			if ( ( ($status=='AUTO_LOGOUT') or ($status=='START') or ($status=='LOGOUT') ) and ($stage=='login') )
+			if ( ( ($status=='AUTOLOGOUT') or ($status=='START') or ($status=='LOGOUT') ) and ($stage=='login') )
 				{
 				$VDdisplayMESSAGE = "You have now logged-in";
 				$LOGtimeMESSAGE = "You logged in at $NOW_TIME";
@@ -330,7 +330,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				print "<!-- vicidial_timeclock_audit_log record updated for $user:   |$affected_rows| -->\n";
 				}
 
-			if ( ( ( ($status=='AUTO_LOGOUT') or ($status=='START') or ($status=='LOGOUT') ) and ($stage=='logout') ) or ( ($status=='LOGIN') and ($stage=='login') ) )
+			if ( ( ( ($status=='AUTOLOGOUT') or ($status=='START') or ($status=='LOGOUT') ) and ($stage=='logout') ) or ( ($status=='LOGIN') and ($stage=='login') ) )
 				{echo "ERROR: timeclock log entry already made: $status|$stage";  exit;}
 
 			if ($referrer=='agent') 
@@ -364,7 +364,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 
 
 
-		if ( ($status=='AUTO_LOGOUT') or ($status=='START') or ($status=='LOGOUT') )
+		if ( ($status=='AUTOLOGOUT') or ($status=='START') or ($status=='LOGOUT') )
 			{
 			$VDdisplayMESSAGE = "Time since you were last logged-in: $totTIME_HMS";
 			$log_action = 'login';

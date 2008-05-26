@@ -947,6 +947,8 @@ admin_home_url VARCHAR(255) default '../vicidial/welcome.php',
 enable_agc_xfer_log ENUM('0','1') default '0',
 db_schema_version INT(8) UNSIGNED default '0',
 auto_user_add_value INT(9) UNSIGNED default '101',
+timeclock_end_of_day VARCHAR(4) default '0000',
+timeclock_last_reset_date DATE
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1175,5 +1177,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1089';
+UPDATE system_settings SET db_schema_version='1090';
 

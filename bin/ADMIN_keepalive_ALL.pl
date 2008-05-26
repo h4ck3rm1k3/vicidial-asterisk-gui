@@ -12,6 +12,7 @@
 # 61011-1348 - first build
 # 61120-2011 - added option 7 for AST_VDauto_dial_FILL.pl
 # 80227-1526 - added option 8 for ip_relay
+# 80526-1350 - added option 9 for timeclock auto-logout
 #
 
 $DB=0; # Debug flag
@@ -85,6 +86,7 @@ foreach(@conf)
 #	6 - FastAGI_log\n";
 #	7 - AST_VDauto_dial_FILL\n";
 #	8 - ip_relay for blind monitoring\n";
+#	9 - Timeclock auto logout\n";
 
 if ($VARactive_keepalives =~ /X/)
 	{
@@ -100,6 +102,7 @@ $AST_VDadapt=0;
 $FastAGI_log=0;
 $AST_VDauto_dial_FILL=0;
 $ip_relay=0;
+$timeclock_auto_logout=0;
 $runningAST_update=0;
 $runningAST_send=0;
 $runningAST_listen=0;
@@ -149,6 +152,11 @@ if ($VARactive_keepalives =~ /8/)
 	{
 	$ip_relay=1;
 	if ($DB) {print "ip_relay set to keepalive\n";}
+	}
+if ($VARactive_keepalives =~ /9/) 
+	{
+	$timeclock_auto_logout=1;
+	if ($DB) {print "Check to see if Timeclock auto logout should run\n";}
 	}
 
 $REGhome = $PATHhome;
@@ -418,6 +426,13 @@ if ( ($ip_relay > 0) && ($runningip_relay < 1) )
 }
 
 
+
+### run the Timeclock auto-logout process ###
+if ($timeclock_auto_logout > 0)
+	{
+	if ($DB) {print "running Timeclock auto-logout process...\n";}
+	`/usr/bin/screen -d -m -S Timeclock $PATHhome/ADMIN_timeclock_auto_logout.pl 2>/dev/null 1>&2`;
+	}
 
 
 if ($DB) {print "DONE\n";}

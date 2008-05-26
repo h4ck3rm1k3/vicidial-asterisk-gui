@@ -154,6 +154,10 @@ Saturday||
 Group Shifts: ||
 Group Shifts -<\/B> This is a selectable list of shifts that can restrict the agents login time on the system||
  Timeclock||
+Timeclock End Of Day -<\/B> This setting defines when all users are to be auto logged out of the timeclock system. Only runs once a day. must be only 4 digits 2 digit hour and 2 digit minutes in 24 hour time. Default is 0000||
+Timeclock Last Auto Logout -<\/B> This field displays the date of the last auto-logout||
+Timeclock Last Auto Logout: ||
+Timeclock End Of Day: ||
 
 
 ############################################################ CLIENT
