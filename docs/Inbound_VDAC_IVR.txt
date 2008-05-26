@@ -4,6 +4,8 @@ This doc goes over the addition of the IVR status to the vicidial_auto_calls tab
 
 The agi-VDAD_inbound_calltime_check.agi script does a check for the calltime scheme of the defined in-group(queue) as well as using the after-hours method for that in-group and the associated after-hours message if defined. Also, this script can place a record in the vicidial_auto_calls status in the IVR status. Calls in this status do not affect the dial ratios of blended campaigns, but they will display in the AST_timeonVDADall.php real-time status pages.
 
+A log of the calls going into this agi-VDAD_inbound_calltime_check.agi script is also inserted into the live_inbound_log table.
+
 
 
 The example below shows how to do a very simple IVR before sending to a queue asking if the caller wants English, Spanish, French or German language service.

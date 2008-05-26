@@ -1110,6 +1110,22 @@ shift_id VARCHAR(20),
 index (user)
 );
 
+ CREATE TABLE vicidial_timeclock_audit_log (
+timeclock_id INT(9) UNSIGNED NOT NULL,
+event_epoch INT(10) UNSIGNED NOT NULL,
+event_date DATETIME NOT NULL,
+login_sec INT(10) UNSIGNED,
+event VARCHAR(50) NOT NULL,
+user VARCHAR(20) NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+event_datestamp TIMESTAMP NOT NULL,
+tcid_link INT(9) UNSIGNED,
+index (timeclock_id),
+index (user)
+);
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1159,5 +1175,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1088';
+UPDATE system_settings SET db_schema_version='1089';
 

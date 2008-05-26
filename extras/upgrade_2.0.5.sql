@@ -158,7 +158,7 @@ UPDATE system_settings SET db_schema_version='1085';
  CREATE TABLE vicidial_timeclock_log (
 timeclock_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 event_epoch INT(10) UNSIGNED NOT NULL,
-event_date TIMESTAMP NOT NULL,
+event_date DATETIME NOT NULL,
 login_sec INT(10) UNSIGNED,
 event VARCHAR(50) NOT NULL,
 user VARCHAR(20) NOT NULL,
@@ -168,6 +168,8 @@ shift_id VARCHAR(20),
 notes VARCHAR(255),
 manager_user VARCHAR(20),
 manager_ip VARCHAR(15),
+event_datestamp TIMESTAMP NOT NULL,
+tcid_link INT(9) UNSIGNED,
 index (user)
 );
 
@@ -193,3 +195,21 @@ UPDATE system_settings SET db_schema_version='1087';
 ALTER TABLE vicidial_auto_calls MODIFY status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT','IVR') default 'PAUSED';
 
 UPDATE system_settings SET db_schema_version='1088';
+
+ CREATE TABLE vicidial_timeclock_audit_log (
+timeclock_id INT(9) UNSIGNED NOT NULL,
+event_epoch INT(10) UNSIGNED NOT NULL,
+event_date DATETIME NOT NULL,
+login_sec INT(10) UNSIGNED,
+event VARCHAR(50) NOT NULL,
+user VARCHAR(20) NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+event_datestamp TIMESTAMP NOT NULL,
+tcid_link INT(9) UNSIGNED,
+index (timeclock_id),
+index (user)
+);
+
+UPDATE system_settings SET db_schema_version='1089';

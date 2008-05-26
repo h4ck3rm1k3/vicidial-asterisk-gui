@@ -6,10 +6,11 @@
 # CHANGELOG
 # 80523-0134 - First Build 
 # 80524-0225 - Changed event_date to DATETIME, added timestamp field and tcid_link field
+# 80525-2351 - Added an audit log that is not to be editable
 #
 
-$version = '2.0.5-2';
-$build = '80524-0225';
+$version = '2.0.5-3';
+$build = '80525-2351';
 
 $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -269,7 +270,8 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
-				print "<!-- NEW vicidial_timeclock_log record inserted for $user:   |$affected_rows| -->\n";
+				$timeclock_id = mysql_insert_id($link);
+				print "<!-- NEW vicidial_timeclock_log record inserted for $user:   |$affected_rows|$timeclock_id| -->\n";
 
 				### Update the user's timeclock status record
 				$stmt="UPDATE vicidial_timeclock_status set status='LOGIN', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip';";
@@ -277,6 +279,13 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
 				print "<!-- vicidial_timeclock_status record updated for $user:   |$affected_rows| -->\n";
+
+				### Add a record to the timeclock audit log
+				$stmt="INSERT INTO vicidial_timeclock_audit_log set timeclock_id='$timeclock_id', event='LOGIN', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip', event_date='$NOW_TIME';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$affected_rows = mysql_affected_rows($link);
+				print "<!-- NEW vicidial_timeclock_audit_log record inserted for $user:   |$affected_rows| -->\n";
 				}
 
 			if ( ($status=='LOGIN') and ($stage=='logout') )
@@ -305,6 +314,20 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
 				print "<!-- vicidial_timeclock_status record updated for $user:   |$affected_rows| -->\n";
+
+				### Add a record to the timeclock audit log
+				$stmt="INSERT INTO vicidial_timeclock_audit_log set timeclock_id='$timeclock_id', event='LOGOUT', user='$user', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip', login_sec='$last_action_sec', event_date='$NOW_TIME';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$affected_rows = mysql_affected_rows($link);
+				print "<!-- NEW vicidial_timeclock_audit_log record inserted for $user:   |$affected_rows| -->\n";
+
+				### Update last login record in the timeclock audit log
+				$stmt="UPDATE vicidial_timeclock_audit_log set login_sec='$last_action_sec',tcid_link='$timeclock_id' where event='LOGIN' and user='$user' order by timeclock_id desc limit 1;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$affected_rows = mysql_affected_rows($link);
+				print "<!-- vicidial_timeclock_audit_log record updated for $user:   |$affected_rows| -->\n";
 				}
 
 			if ( ( ( ($status=='AUTO_LOGOUT') or ($status=='START') or ($status=='LOGOUT') ) and ($stage=='logout') ) or ( ($status=='LOGIN') and ($stage=='login') ) )

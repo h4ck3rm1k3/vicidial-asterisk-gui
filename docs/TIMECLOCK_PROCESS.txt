@@ -81,3 +81,21 @@ ip_address VARCHAR(15),
 shift_id VARCHAR(20),
 index (user)
 );
+
+# This table contains the audit log of timeclock activity(non-editable)
+ CREATE TABLE vicidial_timeclock_audit_log (
+timeclock_id INT(9) UNSIGNED NOT NULL,
+event_epoch INT(10) UNSIGNED NOT NULL,
+event_date DATETIME NOT NULL,
+login_sec INT(10) UNSIGNED,
+event VARCHAR(50) NOT NULL,
+user VARCHAR(20) NOT NULL,
+user_group VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15),
+shift_id VARCHAR(20),
+event_datestamp TIMESTAMP NOT NULL,
+tcid_link INT(9) UNSIGNED,
+index (timeclock_id),
+index (user)
+);
+

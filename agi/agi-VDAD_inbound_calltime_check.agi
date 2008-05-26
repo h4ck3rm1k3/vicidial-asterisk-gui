@@ -388,7 +388,7 @@ if ($log_to_vac == 'YES')
 	if ($AGILOG) {$agi_string = "--    VAC : |$affected_rowsV|$uniqueid|$callerid|$extension|";   &agi_output;}
 	}
 
-$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate')";
+$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','$channel_group','$phone_number')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rowsL = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    LIL : |$affected_rowsL|$uniqueid|$callerid|$extension|";   &agi_output;}
