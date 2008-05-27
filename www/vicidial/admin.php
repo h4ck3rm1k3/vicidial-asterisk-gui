@@ -14772,7 +14772,7 @@ echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=32111111111&extension=$row[0]&server_ip=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 	}
 

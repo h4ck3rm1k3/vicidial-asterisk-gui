@@ -22,16 +22,18 @@ $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["begin_date"]))				{$begin_date=$_GET["begin_date"];}
-	elseif (isset($_POST["begin_date"]))		{$begin_date=$_POST["begin_date"];}
+	elseif (isset($_POST["begin_date"]))	{$begin_date=$_POST["begin_date"];}
 if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
-if (isset($_GET["user"]))				{$user=$_GET["user"];}
-	elseif (isset($_POST["user"]))		{$user=$_POST["user"];}
+if (isset($_GET["user"]))					{$user=$_GET["user"];}
+	elseif (isset($_POST["user"]))			{$user=$_POST["user"];}
 if (isset($_GET["campaign"]))				{$campaign=$_GET["campaign"];}
 	elseif (isset($_POST["campaign"]))		{$campaign=$_POST["campaign"];}
-if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
+if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
+if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
-if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
+if (isset($_GET["SUBMIT"]))					{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -109,6 +111,7 @@ echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVET
 
 echo "<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=user value=\"$user\">\n";
+echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=text name=begin_date value=\"$begin_date\" size=10 maxsize=10> to \n";
 echo "<input type=text name=end_date value=\"$end_date\" size=10 maxsize=10> &nbsp;\n";
 echo "<input type=submit name=submit value=submit>\n";
@@ -274,8 +277,8 @@ echo "</TABLE></center>\n";
 
 $SQday_ARY =	explode('-',$begin_date);
 $EQday_ARY =	explode('-',$end_date);
-$SQepoch = mktime(0, 0, 0, $EQday_ARY[1], $EQday_ARY[2], $EQday_ARY[0]);
-$EQepoch = mktime(23, 59, 59, $SQday_ARY[1], $SQday_ARY[2], $SQday_ARY[0]);
+$SQepoch = mktime(0, 0, 0, $SQday_ARY[1], $SQday_ARY[2], $SQday_ARY[0]);
+$EQepoch = mktime(23, 59, 59, $EQday_ARY[1], $EQday_ARY[2], $EQday_ARY[0]);
 
 echo "<br><br>\n";
 
@@ -286,6 +289,7 @@ echo "<TABLE width=500 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> IP ADDRESS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
 
 	$stmt="SELECT event,event_epoch,user_group,login_sec,ip_address from vicidial_timeclock_log where user='" . mysql_real_escape_string($user) . "' and event_epoch >= '$SQepoch'  and event_epoch <= '$EQepoch';";
+	if ($DB>0) {echo "|$stmt|";}
 	$rslt=mysql_query($stmt, $link);
 	$events_to_print = mysql_num_rows($rslt);
 

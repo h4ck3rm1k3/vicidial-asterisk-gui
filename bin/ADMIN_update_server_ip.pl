@@ -438,10 +438,7 @@ if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 
 print "\nSERVER IP ADDRESS CHANGE FOR VICIDIAL FINISHED!\n";
 print "\nPlease remember to change your extensions.conf entries for the new IP address:\n";
-print "exten => _$VARremDIALstr*8600XXX,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*8600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*78600XXX,1,Goto(default,${EXTEN:16},1)\n";
-print "exten => _$VARremDIALstr*78600XXX*.,1,Goto(default,${EXTEN:16},1)\n";
+print "exten => _$VARremDIALstr*.,1,Goto(default,${EXTEN:16},1)\n";
 print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 
