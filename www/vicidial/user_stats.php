@@ -136,7 +136,7 @@ echo "<br><center>\n";
 
 ##### vicidial agent talk time and status #####
 
-echo "<B>TALK TIME AND STATUS:</B>\n";
+echo "<B>VICIDIAL TALK TIME AND STATUS:</B>\n";
 
 echo "<center><TABLE width=300 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
@@ -273,6 +273,9 @@ echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_
 echo "</TABLE></center>\n";
 
 
+
+
+
 ##### vicidial_timeclock log records for user #####
 
 $SQday_ARY =	explode('-',$begin_date);
@@ -285,10 +288,10 @@ echo "<br><br>\n";
 echo "<center>\n";
 
 echo "<B>TIMECLOCK LOGIN/LOGOUT TIME:</B>\n";
-echo "<TABLE width=500 cellspacing=0 cellpadding=1>\n";
-echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> IP ADDRESS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
+echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=2>ID </td><td><font size=2>EDIT </td><td align=right><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> IP ADDRESS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
 
-	$stmt="SELECT event,event_epoch,user_group,login_sec,ip_address from vicidial_timeclock_log where user='" . mysql_real_escape_string($user) . "' and event_epoch >= '$SQepoch'  and event_epoch <= '$EQepoch';";
+	$stmt="SELECT event,event_epoch,user_group,login_sec,ip_address,timeclock_id,manager_user from vicidial_timeclock_log where user='" . mysql_real_escape_string($user) . "' and event_epoch >= '$SQepoch'  and event_epoch <= '$EQepoch';";
 	if ($DB>0) {echo "|$stmt|";}
 	$rslt=mysql_query($stmt, $link);
 	$events_to_print = mysql_num_rows($rslt);
@@ -304,10 +307,15 @@ echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td
 
 		$TC_log_date = date("Y-m-d H:i:s", $row[1]);
 
+		$manager_edit='';
+		if (strlen($row[6])>0) {$manager_edit = ' * ';}
+
 		if (ereg("LOGIN", $row[0]))
 			{
 			$login_sec='';
-			echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
+			echo "<tr $bgcolor><td><font size=2>$row[5]</td>";
+			echo "<td align=right><font size=2>$manager_edit</td>";
+			echo "<td align=right><font size=2>$row[0]</td>";
 			echo "<td align=right><font size=2> $TC_log_date</td>\n";
 			echo "<td align=right><font size=2> $row[4]</td>\n";
 			echo "<td align=right><font size=2> $row[2]</td>\n";
@@ -324,7 +332,9 @@ echo "<tr><td><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td
 			$event_minutes = ($event_minutes * 60);
 			$event_minutes_int = round($event_minutes, 0);
 			if ($event_minutes_int < 10) {$event_minutes_int = "0$event_minutes_int";}
-			echo "<tr $bgcolor><td><font size=2>$row[0]</td>";
+			echo "<tr $bgcolor><td><font size=2>$row[5]</td>";
+			echo "<td align=right><font size=2>$manager_edit</td>";
+			echo "<td align=right><font size=2>$row[0]</td>";
 			echo "<td align=right><font size=2> $TC_log_date</td>\n";
 			echo "<td align=right><font size=2> $row[4]</td>\n";
 			echo "<td align=right><font size=2> $row[2]</td>\n";
@@ -345,10 +355,11 @@ $total_login_minutes = ($total_login_minutes * 60);
 $total_login_minutes_int = round($total_login_minutes, 0);
 if ($total_login_minutes_int < 10) {$total_login_minutes_int = "0$total_login_minutes_int";}
 
-echo "<tr><td><font size=2>TOTAL</td>";
+echo "<tr><td align=right><font size=2> </td>";
 echo "<td align=right><font size=2> </td>\n";
 echo "<td align=right><font size=2> </td>\n";
 echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2><font size=2>TOTAL </td>\n";
 echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_int  </td></tr>\n";
 
 echo "</TABLE></center>\n";

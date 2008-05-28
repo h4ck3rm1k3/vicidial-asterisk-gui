@@ -451,8 +451,12 @@ qc_enabled ENUM('1','0') default '0',
 qc_user_level INT(2) default '1',
 qc_pass ENUM('1','0') default '0',
 qc_finish ENUM('1','0') default '0',
-qc_commit ENUM('1','0') default '0'
+qc_commit ENUM('1','0') default '0',
+add_timeclock_log ENUM('1','0') default '0',
+modify_timeclock_log ENUM('1','0') default '0',
+delete_timeclock_log ENUM('1','0') default '0'
 );
+
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
 
@@ -555,8 +559,22 @@ campaign_shift_start_time VARCHAR(4) default '0900',
 campaign_shift_length VARCHAR(5) default '16:00',
 campaign_day_start_time VARCHAR(4) default '0100',
 qc_web_form_address VARCHAR(255),
-qc_script VARCHAR(10)
+qc_script VARCHAR(10),
+survey_first_audio_file VARCHAR(50) default 'US_pol_survey_hello',
+survey_dtmf_digits VARCHAR(16) default '1238',
+survey_ni_digit VARCHAR(1) default '8',
+survey_opt_in_audio_file VARCHAR(50) default 'US_pol_survey_transfer',
+survey_ni_audio_file VARCHAR(50) default 'US_thanks_no_contact',
+survey_method ENUM('AGENT_XFER','VOICEMAIL','EXTENSION','HANGUP','CAMPREC_60_WAV') default 'AGENT_XFER',
+survey_no_response_action ENUM('OPTIN','OPTOUT') default 'OPTIN',
+survey_ni_status VARCHAR(6) default 'NI',
+survey_response_digit_map VARCHAR(255) default '1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|',
+survey_xfer_exten VARCHAR(20) default '8300',
+survey_camp_record_dir VARCHAR(255) default '/home/survey'
 );
+
+
+
 
  CREATE TABLE vicidial_lists (
 list_id BIGINT(14) UNSIGNED PRIMARY KEY NOT NULL,
@@ -1128,6 +1146,20 @@ index (timeclock_id),
 index (user)
 );
 
+ CREATE TABLE vicidial_admin_log (
+admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_date DATETIME NOT NULL,
+user VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15) NOT NULL,
+event_section VARCHAR(30) NOT NULL,
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGOUT','CLEAR','OTHER') default 'OTHER',
+record_id VARCHAR(50) NOT NULL,
+event_code VARCHAR(255) NOT NULL,
+event_sql TEXT,
+index (user),
+index (record_id)
+);
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1177,5 +1209,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1090';
+UPDATE system_settings SET db_schema_version='1091';
 

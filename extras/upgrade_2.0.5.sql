@@ -219,3 +219,39 @@ ALTER TABLE system_settings ADD timeclock_last_reset_date DATE;
 
 UPDATE system_settings SET db_schema_version='1090';
 
+ALTER TABLE vicidial_campaigns ADD survey_first_audio_file VARCHAR(50) default 'US_pol_survey_hello';
+ALTER TABLE vicidial_campaigns ADD survey_dtmf_digits VARCHAR(16) default '1238';
+ALTER TABLE vicidial_campaigns ADD survey_ni_digit VARCHAR(1) default '8';
+ALTER TABLE vicidial_campaigns ADD survey_opt_in_audio_file VARCHAR(50) default 'US_pol_survey_transfer';
+ALTER TABLE vicidial_campaigns ADD survey_ni_audio_file VARCHAR(50) default 'US_thanks_no_contact';
+ALTER TABLE vicidial_campaigns ADD survey_method ENUM('AGENT_XFER','VOICEMAIL','EXTENSION','HANGUP','CAMPREC_60_WAV') default 'AGENT_XFER';
+ALTER TABLE vicidial_campaigns ADD survey_no_response_action ENUM('OPTIN','OPTOUT') default 'OPTIN';
+ALTER TABLE vicidial_campaigns ADD survey_ni_status VARCHAR(6) default 'NI';
+ALTER TABLE vicidial_campaigns ADD survey_response_digit_map VARCHAR(255) default '1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|';
+ALTER TABLE vicidial_campaigns ADD survey_xfer_exten VARCHAR(20) default '8300';
+ALTER TABLE vicidial_campaigns ADD survey_camp_record_dir VARCHAR(255) default '/home/survey';
+
+INSERT INTO vicidial_statuses values('SVYEXT','Survey sent to Extension','N','N','UNDEFINED');
+INSERT INTO vicidial_statuses values('SVYVM','Survey sent to Voicemail','N','N','UNDEFINED');
+INSERT INTO vicidial_statuses values('SVYHU','Survey Hungup','N','N','UNDEFINED');
+INSERT INTO vicidial_statuses values('SVYREC','Survey sent to Record','N','N','UNDEFINED');
+
+ALTER TABLE vicidial_users ADD add_timeclock_log ENUM('1','0') default '0';
+ALTER TABLE vicidial_users ADD modify_timeclock_log ENUM('1','0') default '0';
+ALTER TABLE vicidial_users ADD delete_timeclock_log ENUM('1','0') default '0';
+
+ CREATE TABLE vicidial_admin_log (
+admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_date DATETIME NOT NULL,
+user VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15) NOT NULL,
+event_section VARCHAR(30) NOT NULL,
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGOUT','CLEAR','OTHER') default 'OTHER',
+record_id VARCHAR(50) NOT NULL,
+event_code VARCHAR(255) NOT NULL,
+event_sql TEXT,
+index (user),
+index (record_id)
+);
+
+UPDATE system_settings SET db_schema_version='1091';

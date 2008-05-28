@@ -30,7 +30,46 @@ More to come...
 
 
 
+New associated features:
 
+VICIDIAL Administrator Log:
+The admin log will replace the older flat-file log of administrator and manager activity. This log will allow for much easier viewing of the changes that have taken place for a specific record and other activities that managers and administrators do from the VICIDIAL administration interface. There will be event types and record IDs that identify the kind of record and the specific record worked with by a specific administrator. This table will be utilized at first only by the timeclock apps, but as the code is developed it will fully replace the admin log file.
+
+Administrator Sections:
+USER
+TIMECLOCK
+CAMPAIGN
+CAMPAIGN DIAL STATUS
+CAMPAIGN HOPPER
+CAMPAIGN STATUS
+CAMPAIGN HOTKEY
+CAMPAIGN RECYCLE
+CAMPAIGN AUTO-ALT-DIAL
+CAMPAIGN PAUSE CODE
+CAMPAIGN LIST MIX
+CAMPAIGN QC
+LIST
+LIST DNC
+SCRIPT
+FILTER
+IN-GROUP
+USER GROUP
+REMOTE AGENT
+PHONE
+PHONE ALIAS
+CALLTIME
+STATE CALLTIME
+SHIFT
+CONFERENCE
+VICIDIAL CONFERENCE
+SERVER
+SERVER TRUNK
+SYSTEM SETTINGS
+SYSTEM STATUS
+STATUS CATEGORY
+QC STATUS
+REPORT
+OTHER
 
 
 The Database Changes:
@@ -103,3 +142,23 @@ index (user)
 # system settings added fields to define the time when all logged-in agents are to be auto-logged out
 ALTER TABLE system_settings ADD timeclock_end_of_day VARCHAR(4) default '0000';
 ALTER TABLE system_settings ADD timeclock_last_reset_date DATE;
+
+# vicidial_users added fields for permissions to allow users to edit timeclock_log records
+ALTER TABLE vicidial_users ADD add_timeclock_log ENUM('1','0') default '0'
+ALTER TABLE vicidial_users ADD modify_timeclock_log ENUM('1','0') default '0'
+ALTER TABLE vicidial_users ADD delete_timeclock_log ENUM('1','0') default '0'
+
+# added new table for administrator activity log
+ CREATE TABLE vicidial_admin_log (
+admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_date DATETIME NOT NULL,
+user VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15) NOT NULL,
+event_section VARCHAR(30) NOT NULL,
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGOUT','CLEAR','OTHER') default 'OTHER',
+record_id VARCHAR(50) NOT NULL,
+event_code VARCHAR(255) NOT NULL,
+event_sql TEXT,
+index (user),
+index (record_id)
+);

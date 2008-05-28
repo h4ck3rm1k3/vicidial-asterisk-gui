@@ -14,6 +14,7 @@
 # ; 	- TEST - 		For performance testing only
 # ; 	- BROADCAST -	For no-agent broadcast dialing
 # ; 	- SURVEY -		For survery question then on to agent
+# ; 	- SURVEYCAMP -	For survery question using campaign settings
 # ; 	- REMINDER -	Reminder campaign
 # ; 	- REMINDX -		Reminder with transfer to agent
 # ; 2. the method of searching for an available agent:
@@ -37,7 +38,7 @@
 #exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 #exten => 8368,5,Hangup
 #
-# ;outbound VICIDIAL calls:
+# ;outbound VICIDIAL SURVEY calls:
 #exten => 8366,1,AGI(agi://127.0.0.1:4577/call_log)
 #exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
 #exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEY-----LB-----US_pol_survey_hello-----1238-----8-----US_pol_survey_transfer-----US_thanks_no_contact-----OPTOUT-----DNC)
@@ -51,6 +52,7 @@
 # 80302-0232 - added drop_action and transfer to in-group
 # 80430-1144 - added term_reason to vicidial_log, QUEUETIMEOUT
 # 80520-0059 - added SURVEY ability and digit maps
+# 80527-2329 - added SURVEYCAMP ability to pull settings from database
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -58,6 +60,7 @@ $AGILOG = '0';
 
 $DROP_TIME = 9;	### default number of seconds to wait until you drop a waiting call
 $at='@';
+$US='_';
 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -65,7 +68,7 @@ $year = ($year + 1900);
 $mon++;
 if ($mon < 10) {$mon = "0$mon";}
 if ($mday < 10) {$mday = "0$mday";}
-if ($hour < 10) {$Fhour = "0$hour";}
+if ($hour < 10) {$hour = "0$hour";}
 if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 
@@ -76,6 +79,7 @@ $start_time_epoch = $now_date_epoch;
 $start_time=$now_date;
 	$CIDdate = "$mon$mday$hour$min$sec";
 	$tsSQLdate = "$year$mon$mday$hour$min$sec";
+	$filedate = "$US$year-$mon-$mday$US$hour$min$sec";
 	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 	$SQLdateBEGIN = $SQLdate;
 
@@ -198,15 +202,15 @@ if (length($ARGV[0])>1)
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
-	$call_handle_method = 	$ARGV_vars[0];
-	$agent_search_method = 	$ARGV_vars[1];
-	$playback_message =		$ARGV_vars[2];
-	$digit_map =			$ARGV_vars[3];
-	$opt_out_digit =		$ARGV_vars[4];
-	$opt_in_message =		$ARGV_vars[5];
-	$opt_out_message =		$ARGV_vars[6];
-	$opt_inout =			$ARGV_vars[7];
-	$opt_out_status =		$ARGV_vars[8];
+	$call_handle_method =		$ARGV_vars[0];
+	$agent_search_method = 		$ARGV_vars[1];
+	$survey_first_audio_file =	$ARGV_vars[2];
+	$survey_dtmf_digits =		$ARGV_vars[3];
+	$survey_ni_digit =			$ARGV_vars[4];
+	$survey_opt_in_audio_file =	$ARGV_vars[5];
+	$survey_ni_audio_file =		$ARGV_vars[6];
+	$survey_no_response_action =$ARGV_vars[7];
+	$survey_ni_status =			$ARGV_vars[8];
 }
 
 if ($call_handle_method !~ /NORMAL|TEST|BROADCAST|SURVEY|REMIND/) {$call_handle_method='NORMAL';}
@@ -454,6 +458,7 @@ if ($affected_rows > 0)
 	}
 
 
+################################################################################
 ##### PLAY REMINDER MESSAGE #####
 if ($call_handle_method =~ /REMIND/)
 	{
@@ -461,10 +466,15 @@ if ($call_handle_method =~ /REMIND/)
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
 
-	$AGI->stream_file("$playback_message");
+	$AGI->stream_file("$survey_first_audio_file");
 	}
 
-##### DO THE SURVEY #####
+
+
+
+
+################################################################################
+##### START DO THE SURVEY #####
 if ($call_handle_method =~ /SURVEY/)
 	{
 	$AGI->stream_file('sip-silence');
@@ -473,12 +483,50 @@ if ($call_handle_method =~ /SURVEY/)
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
 
-	# play the message and let them press a number
-	$opt_code = enter_pin_number($playback_message,$digit_map);
+	### check to see if the SURVEY settings should be pulled from the campaign settings in the database
+	if ($call_handle_method =~ /SURVEYCAMP/)
+		{
+		$stmtA = "SELECT survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir FROM vicidial_campaigns where campaign_id='$VDADcampaign';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
 
+			$survey_first_audio_file =		"$aryA[0]";
+			$survey_dtmf_digits =			"$aryA[1]";
+			$survey_ni_digit =				"$aryA[2]";
+			$survey_opt_in_audio_file =		"$aryA[3]";
+			$survey_ni_audio_file =			"$aryA[4]";
+			$survey_method =				"$aryA[5]";
+			$survey_no_response_action =	"$aryA[6]";
+			$survey_ni_status =				"$aryA[7]";
+			$survey_response_digit_map =	"$aryA[8]";
+			$survey_xfer_exten =			"$aryA[9]";
+			$survey_camp_record_dir =		"$aryA[10]";
+
+			@digit_map = split(/\|/,$survey_response_digit_map);
+
+			$rec_count++;
+			}
+		$sthA->finish();
+		}
+
+	# play the message and let them press a number
+	$opt_code = enter_pin_number($survey_first_audio_file,$survey_dtmf_digits);
 	if (length($opt_code) < 1) {$opt_code = 'X';}
+	$opt_description = $opt_code;
+
+	$w=0;
+	foreach (@digit_map)
+		{
+		if ($digit_map[$w] =~ /^$opt_code/) {$opt_description = $digit_map[$w]}
+		$w++;
+		}
+
 	# record what they entered
-	$stmtA = "UPDATE vicidial_list set security_phrase='$opt_code' where lead_id = '$CIDlead_id';";
+	$stmtA = "UPDATE vicidial_list set security_phrase='$opt_description' where lead_id = '$CIDlead_id';";
 	if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) 
@@ -488,11 +536,11 @@ if ($call_handle_method =~ /SURVEY/)
 		}
 
 	# they opted out
-	if ("$opt_code" eq "$opt_out_digit")
+	if ("$opt_code" eq "$survey_ni_digit")
 		{
-		if ( $opt_out_message ne "") 
+		if ( $survey_ni_audio_file ne "") 
 			{
-			$AGI->stream_file($opt_out_message);
+			$AGI->stream_file($survey_ni_audio_file);
 			}
 
 		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
@@ -507,25 +555,25 @@ if ($call_handle_method =~ /SURVEY/)
                 $Euniqueid =~ s/\.\d+//gi;
 		$now_date_epoch = time();
 		$drop_seconds = $now_date_epoch - $start_time_epoch;
-        	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$opt_out_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+        	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$survey_ni_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
 		if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) 
 			{
-			$agi_string = "--    VDAD vicidial_log update: $opt_out_status|$affected_rows|$uniqueid";
+			$agi_string = "--    VDAD vicidial_log update: $survey_ni_status|$affected_rows|$uniqueid|$drop_seconds|";
 			&agi_output;
 			}
 
-		$stmtA = "UPDATE vicidial_list set status='$opt_out_status' where lead_id = '$CIDlead_id';";
+		$stmtA = "UPDATE vicidial_list set status='$survey_ni_status' where lead_id = '$CIDlead_id';";
 		if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) 
 			{
-			$agi_string = "--    VDAD vicidial_list update: $opt_out_status|$affected_rows|$CIDlead_id";
+			$agi_string = "--    VDAD vicidial_list update: $survey_ni_status|$affected_rows|$CIDlead_id";
 			&agi_output;
 			}
 
-		if (($use_internal_dnc =~ /Y/) && ($opt_out_status eq "DNC"))
+		if (($use_internal_dnc =~ /Y/) && ($survey_ni_status eq "DNC"))
 			{
 			$stmtA = "INSERT INTO vicidial_dnc set phone_number='$VDADphone';";
 			if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
@@ -544,7 +592,7 @@ if ($call_handle_method =~ /SURVEY/)
 	else
 		{
 		# they opted in
-		if ( ($opt_code =~ /\d/) || ($opt_inout =~ /OPTOUT/) )
+		if ( ($opt_code =~ /\d/) || ($survey_no_response_action =~ /OPTOUT/) )
 	 		{
 			$now_date_epoch = time();
 			$FDtarget = ($now_date_epoch + 60);
@@ -562,9 +610,139 @@ if ($call_handle_method =~ /SURVEY/)
 			$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
 
-			if ( $opt_in_message ne "") 
+			if ( $survey_opt_in_audio_file ne "") 
 				{
-				$AGI->stream_file($opt_in_message);
+				$AGI->stream_file($survey_opt_in_audio_file);
+				}
+
+			if ($survey_method =~ /VOICEMAIL|EXTENSION|HANGUP/)
+				{
+				$DROPexten='';
+				if ($survey_method =~ /VOICEMAIL/)
+					{
+					$survey_status='SVYVM';
+					if (length($VDADvoicemail_ext)>0)
+						{$DROPexten = "$voicemail_dump_exten$VDADvoicemail_ext";}
+					}
+				if ($survey_method =~ /EXTENSION/)
+					{
+					$survey_status='SVYEXT';
+					if (length($survey_xfer_exten)>0)
+						{$DROPexten = "$survey_xfer_exten";}
+					}
+				if ($survey_method =~ /HANGUP/)
+					{
+					$survey_status='SVYHU';
+					}
+				
+				$Euniqueid=$uniqueid;
+						$Euniqueid =~ s/\.\d+//gi;
+				$now_date_epoch = time();
+				$drop_seconds = $now_date_epoch - $start_time_epoch;
+					$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$survey_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+				if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vicidial_log update: $survey_status|$affected_rows|$uniqueid|$drop_seconds|";
+					&agi_output;
+					}
+
+				$stmtA = "UPDATE vicidial_list set status='$survey_status' where lead_id = '$CIDlead_id';";
+				if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vicidial_list update: $survey_status|$affected_rows|$CIDlead_id";
+					&agi_output;
+					}
+
+				if (length($DROPexten) > 0)
+					{
+					if ($AGILOG) {$agi_string = "exiting the VDAD SURVEY app, transferring call to $DROPexten";   &agi_output;}
+					print "SET CONTEXT $ext_context\n";
+						checkresult($result);
+					print "SET EXTENSION $DROPexten\n";
+						checkresult($result);
+					print "SET PRIORITY 1\n";
+						checkresult($result);
+					}
+
+				if ($survey_method =~ /HANGUP/)
+					{
+					$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) 
+						{
+						$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";
+						&agi_output;
+						}
+
+					$AGI->hangup();
+					}
+				}
+
+			if ($survey_method =~ /CAMPREC/)
+				{
+				if ($survey_method =~ /60/)
+					{$timeout=60000;}
+				if ($survey_method =~ /WAV/)
+					{$format='WAV';}
+				if ($survey_method =~ /GSM/)
+					{$format='GSM';}
+
+				$survey_status='SVYREC';
+
+				$Euniqueid=$uniqueid;
+						$Euniqueid =~ s/\.\d+//gi;
+				$now_date_epoch = time();
+				$drop_seconds = $now_date_epoch - $start_time_epoch;
+					$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$survey_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+				if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vicidial_log update: $survey_status|$affected_rows|$uniqueid|$drop_seconds|";
+					&agi_output;
+					}
+
+				$stmtA = "UPDATE vicidial_list set status='$survey_status' where lead_id = '$CIDlead_id';";
+				if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vicidial_list update: $survey_status|$affected_rows|$CIDlead_id";
+					&agi_output;
+					}
+
+				if ( -e ('$survey_camp_record_dir/$VDADcampaign')) 
+					{$do_nothing=1;}
+				else
+					{`mkdir -p --mode=0666 $survey_camp_record_dir/$VDADcampaign`;}
+
+				$AGI->stream_file('beep');
+
+				$interrupt_digit = $AGI->record_file("$survey_camp_record_dir/$VDADcampaign/$VDADphone$filedate", "$format", '123456789*#', "$timeout", 1);
+				if ($AGILOG) 
+					{
+					$agi_string = "RECORDING FINISHED: $interrupt_digit|$survey_camp_record_dir/$VDADcampaign/$VDADphone$filedate|";
+					&agi_output;
+					}
+
+				$now_date_epoch = time();
+				$drop_seconds = $now_date_epoch - $start_time_epoch;
+					$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$survey_status', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+				if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vicidial_log update: $survey_status|$affected_rows|$uniqueid|$drop_seconds|";
+					&agi_output;
+					}
+
+				$AGI->hangup();
+
+				exit;
 				}
 			}
 		else
@@ -575,6 +753,11 @@ if ($call_handle_method =~ /SURVEY/)
 			}
 		}
 	}
+################################################################################
+##### END DO THE SURVEY #####
+
+
+
 
 
 $drop_timer=0;
@@ -1074,7 +1257,7 @@ sub enter_pin_number
 {
 
 $sound = $_[0];
-$digit_map = $_[1];
+$survey_dtmf_digits = $_[1];
 
 $digits_to_collect =~ s/DIGITID//gi;
 
@@ -1086,7 +1269,7 @@ undef $digit;
 $interrupt_digit='';
 undef $interrupt_digit;
 
-$interrupt_digit = $AGI->stream_file("$sound","$digit_map");
+$interrupt_digit = $AGI->stream_file("$sound","$survey_dtmf_digits");
 
 	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
 

@@ -158,6 +158,38 @@ Timeclock End Of Day -<\/B> This setting defines when all users are to be auto l
 Timeclock Last Auto Logout -<\/B> This field displays the date of the last auto-logout||
 Timeclock Last Auto Logout: ||
 Timeclock End Of Day: ||
+SURVEY SETTINGS FOR THIS CAMPAIGN:||
+Modify Campaign Survey||
+Survey First Audio File -<\/B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.||
+Survey DTMF Digits -<\/B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are ||
+Survey Not Interested Digit -<\/B> This field is where you define the customer digit pressed that will show they are Not Interested.||
+Survey Not Interested Status -<\/B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list.||
+Survey Opt-in Audio File -<\/B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.||
+Survey Not Interested Audio File -<\/B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up||
+Survey Method -<\/B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.||
+Survey No-Response Action -<\/B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.||
+Survey Response Digit Map -<\/B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.||
+Survey Xfer Extension -<\/B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension||
+Survey Campaign Recording Directory -<\/B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.||
+SURVEY SETTINGS NOT MODIFIED||
+SURVEY SETTINGS MODIFIED||
+Survey First Audio File||
+Survey DTMF Digits||
+Survey Not Interested Digit||
+Survey Not Interested Status||
+Survey Opt-in Audio File||
+Survey Not Interested Audio File||
+Survey Method||
+Survey No-Response Action||
+Survey Response Digit Map||
+Survey Xfer Extension||
+Survey Campaign Recording Directory||
+Add Timeclock Log Record -<\/B> This option allows the user to add records to the timeclock log||
+Modify Timeclock Log Record -<\/B> This option allows the user to modify records in the timeclock log||
+Delete Timeclock Log Record -<\/B> This option allows the user to delete records in the timeclock log||
+Add Timeclock Log Record||
+Modify Timeclock Log Record||
+Delete Timeclock Log Record||
 
 
 ############################################################ CLIENT

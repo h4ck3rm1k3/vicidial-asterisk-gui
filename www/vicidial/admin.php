@@ -729,7 +729,34 @@ if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}
 	elseif (isset($_POST["group_shifts"]))	{$group_shifts=$_POST["group_shifts"];}
 if (isset($_GET["timeclock_end_of_day"]))			{$timeclock_end_of_day=$_GET["timeclock_end_of_day"];}	
 	elseif (isset($_POST["timeclock_end_of_day"]))	{$timeclock_end_of_day=$_POST["timeclock_end_of_day"];}
-
+if (isset($_GET["survey_first_audio_file"]))			{$survey_first_audio_file=$_GET["survey_first_audio_file"];}	
+	elseif (isset($_POST["survey_first_audio_file"]))	{$survey_first_audio_file=$_POST["survey_first_audio_file"];}
+if (isset($_GET["survey_dtmf_digits"]))					{$survey_dtmf_digits=$_GET["survey_dtmf_digits"];}	
+	elseif (isset($_POST["survey_dtmf_digits"]))		{$survey_dtmf_digits=$_POST["survey_dtmf_digits"];}
+if (isset($_GET["survey_ni_digit"]))					{$survey_ni_digit=$_GET["survey_ni_digit"];}	
+	elseif (isset($_POST["survey_ni_digit"]))			{$survey_ni_digit=$_POST["survey_ni_digit"];}
+if (isset($_GET["survey_opt_in_audio_file"]))			{$survey_opt_in_audio_file=$_GET["survey_opt_in_audio_file"];}	
+	elseif (isset($_POST["survey_opt_in_audio_file"]))	{$survey_opt_in_audio_file=$_POST["survey_opt_in_audio_file"];}
+if (isset($_GET["survey_ni_audio_file"]))				{$survey_ni_audio_file=$_GET["survey_ni_audio_file"];}	
+	elseif (isset($_POST["survey_ni_audio_file"]))		{$survey_ni_audio_file=$_POST["survey_ni_audio_file"];}
+if (isset($_GET["survey_method"]))						{$survey_method=$_GET["survey_method"];}	
+	elseif (isset($_POST["survey_method"]))				{$survey_method=$_POST["survey_method"];}
+if (isset($_GET["survey_no_response_action"]))			{$survey_no_response_action=$_GET["survey_no_response_action"];}	
+	elseif (isset($_POST["survey_no_response_action"]))	{$survey_no_response_action=$_POST["survey_no_response_action"];}
+if (isset($_GET["survey_ni_status"]))					{$survey_ni_status=$_GET["survey_ni_status"];}	
+	elseif (isset($_POST["survey_ni_status"]))			{$survey_ni_status=$_POST["survey_ni_status"];}
+if (isset($_GET["survey_response_digit_map"]))			{$survey_response_digit_map=$_GET["survey_response_digit_map"];}	
+	elseif (isset($_POST["survey_response_digit_map"]))	{$survey_response_digit_map=$_POST["survey_response_digit_map"];}
+if (isset($_GET["survey_xfer_exten"]))					{$survey_xfer_exten=$_GET["survey_xfer_exten"];}	
+	elseif (isset($_POST["survey_xfer_exten"]))			{$survey_xfer_exten=$_POST["survey_xfer_exten"];}
+if (isset($_GET["survey_camp_record_dir"]))				{$survey_camp_record_dir=$_GET["survey_camp_record_dir"];}	
+	elseif (isset($_POST["survey_camp_record_dir"]))	{$survey_camp_record_dir=$_POST["survey_camp_record_dir"];}
+if (isset($_GET["add_timeclock_log"]))				{$add_timeclock_log=$_GET["add_timeclock_log"];}	
+	elseif (isset($_POST["add_timeclock_log"]))		{$add_timeclock_log=$_POST["add_timeclock_log"];}
+if (isset($_GET["modify_timeclock_log"]))			{$modify_timeclock_log=$_GET["modify_timeclock_log"];}	
+	elseif (isset($_POST["modify_timeclock_log"]))	{$modify_timeclock_log=$_POST["modify_timeclock_log"];}
+if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete_timeclock_log"];}	
+	elseif (isset($_POST["delete_timeclock_log"]))	{$delete_timeclock_log=$_POST["delete_timeclock_log"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -889,9 +916,17 @@ $campaign_shift_start_time = ereg_replace("[^0-9]","",$campaign_shift_start_time
 $campaign_day_start_time = ereg_replace("[^0-9]","",$campaign_day_start_time);
 $shift_start_time = ereg_replace("[^0-9]","",$shift_start_time);
 $timeclock_end_of_day = ereg_replace("[^0-9]","",$timeclock_end_of_day);
+$survey_xfer_exten = ereg_replace("[^0-9]","",$survey_xfer_exten);
+$add_timeclock_log = ereg_replace("[^0-9]","",$add_timeclock_log);
+$modify_timeclock_log = ereg_replace("[^0-9]","",$modify_timeclock_log);
+$delete_timeclock_log = ereg_replace("[^0-9]","",$delete_timeclock_log);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
+
+### DIGITS and HASHES and STARS
+$survey_dtmf_digits = ereg_replace("[^\#\*0-9]","",$survey_dtmf_digits);
+$survey_ni_digit = ereg_replace("[^\#\*0-9]","",$survey_ni_digit);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
@@ -946,6 +981,8 @@ $after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
 $after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
 $qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
 $code = ereg_replace("[^0-9a-zA-Z]","",$code);
+$survey_no_response_action = ereg_replace("[^0-9a-zA-Z]","",$survey_no_response_action);
+$survey_ni_status = ereg_replace("[^0-9a-zA-Z]","",$survey_ni_status);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1037,6 +1074,10 @@ $afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_grou
 $after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
 $alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$alias_id);
 $shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$shift_id);
+$survey_first_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_first_audio_file);
+$survey_opt_in_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_opt_in_audio_file);
+$survey_ni_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_ni_audio_file);
+$survey_method = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_method);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1103,6 +1144,8 @@ $campaign_shift_length = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$campaign_shi
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 $list_mix_container = ereg_replace(";","",$list_mix_container);
+$survey_response_digit_map = ereg_replace(";","",$survey_response_digit_map);
+$survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
@@ -1259,11 +1302,13 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 80505-0333 - Added phones_alias sections to allow for load-balanced-phone-logins
 # 80512-1529 - Added auto-generate of User ID feature
 # 80515-1345 - Added Shifts sub-section to Admin section
+# 80528-0001 - Added campaign survey sub-section
+# 80528-1102 - Added user timeclock edit options
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-130';
-$build = '80515-1345';
+$admin_version = '2.0.5-131';
+$build = '80528-0001';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1418,8 +1463,8 @@ if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE ALIAS";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
-if ($ADD=="2")			{$hh='users';		echo "New User Addition";}
-if ($ADD=="2A")			{$hh='users';		echo "New Copied User Addition";}
+if ($ADD=='2')			{$hh='users';		echo "New User Addition";}
+if ($ADD=='2A')			{$hh='users';		echo "New Copied User Addition";}
 if ($ADD==20)			{$hh='campaigns';	$sh='basic';	echo "New Copied Campaign Addition";}
 if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "New Campaign Addition";}
 if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "New Campaign Status Addition";}
@@ -1460,6 +1505,7 @@ if ($ADD==31)
 		if ($SUB==27)	{echo " - Agent Pause Codes";}
 		if ($SUB==28)	{echo " - QC";}
 		if ($SUB==29)	{echo " - List Mixes";}
+		if ($SUB=='20A')	{echo " - Survey";}
 		}
 if ($ADD==34)
 		{
@@ -1471,6 +1517,7 @@ if ($ADD==34)
 		if ($SUB==27)	{echo " - Agent Pause Codes";}
 		if ($SUB==28)	{echo " - QC";}
 		if ($SUB==29)	{echo " - List Mixes";}
+		if ($SUB=='20A')	{echo " - Survey";}
 		}
 if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Campaign Statuses";}
 if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Campaign HotKeys";}
@@ -1509,6 +1556,7 @@ if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Modify Campaign Lead Recy
 if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Modify Agent Pause Code";}
 if ($ADD==48)			{$hh='campaigns';	$sh='qc';	echo "Modify Campaign QC Settings";}
 if ($ADD==49)			{$hh='campaigns';	$sh='listmix';	echo "Modify Campaign List Mix";}
+if ($ADD=='40A')		{$hh='campaigns';	$sh='survey';	echo "Modify Campaign Survey";}
 if ($ADD==411)			{$hh='lists';		echo "Modify List";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Modify In-Group";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Modify Remote Agents";}
@@ -2312,6 +2360,22 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>QC Record Commit -</B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone.
 
+<BR>
+<A NAME="vicidial_users-add_timeclock_log">
+<BR>
+<B>Add Timeclock Log Record -</B> This option allows the user to add records to the timeclock log.
+
+<BR>
+<A NAME="vicidial_users-modify_timeclock_log">
+<BR>
+<B>Modify Timeclock Log Record -</B> This option allows the user to modify records in the timeclock log.
+
+<BR>
+<A NAME="vicidial_users-delete_timeclock_log">
+<BR>
+<B>Delete Timeclock Log Record -</B> This option allows the user to delete records in the timeclock log.
+
+
 
 
 
@@ -2704,6 +2768,63 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-qc_script">
 <BR>
 <B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_first_audio_file">
+<BR>
+<B>Survey First Audio File -</B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_dtmf_digits">
+<BR>
+<B>Survey DTMF Digits -</B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are 0123456789*#
+
+<BR>
+<A NAME="vicidial_campaigns-survey_ni_digit">
+<BR>
+<B>Survey Not Interested Digit -</B> This field is where you define the customer digit pressed that will show they are Not Interested.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_ni_status">
+<BR>
+<B>Survey Not Interested Status -</B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_opt_in_audio_file">
+<BR>
+<B>Survey Opt-in Audio File -</B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_ni_audio_file">
+<BR>
+<B>Survey Not Interested Audio File -</B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_method">
+<BR>
+<B>Survey Method -</B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_no_response_action">
+<BR>
+<B>Survey No-Response Action -</B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_response_digit_map">
+<BR>
+<B>Survey Response Digit Map -</B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_xfer_exten">
+<BR>
+<B>Survey Xfer Extension -</B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension.
+
+<BR>
+<A NAME="vicidial_campaigns-survey_camp_record_dir">
+<BR>
+<B>Survey Campaign Recording Directory -</B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.
+
+
 
 
 
@@ -5462,7 +5583,7 @@ if ($ADD=="2A")
 				$rslt=mysql_query($stmt, $link);
 				}
 
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -5566,7 +5687,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -6702,7 +6823,7 @@ if ($ADD=="4A")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 
@@ -7220,6 +7341,46 @@ $ADD=31;	# go to campaign modification form below
 
 
 ######################
+# ADD=40A modify campaign survey settings in the system
+######################
+
+if ($ADD=='40A')
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>SURVEY SETTINGS NOT MODIFIED - Please go back and look at the data you entered\n";
+		}
+	 else
+		{
+		echo "<br><B>SURVEY SETTINGS MODIFIED: $campaign_id</B>\n";
+
+		$stmt="UPDATE vicidial_campaigns SET survey_first_audio_file='$survey_first_audio_file',survey_dtmf_digits='$survey_dtmf_digits',survey_ni_digit='$survey_ni_digit',survey_opt_in_audio_file='$survey_opt_in_audio_file',survey_ni_audio_file='$survey_ni_audio_file',survey_method='$survey_method',survey_no_response_action='$survey_no_response_action',survey_ni_status='$survey_ni_status',survey_response_digit_map='$survey_response_digit_map',survey_xfer_exten='$survey_xfer_exten',survey_camp_record_dir='$survey_camp_record_dir',voicemail_ext='$voicemail_ext' where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY CAMP SV SETTING|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$SUB='20A';
+$ADD=31;	# go to campaign modification form below
+}
+
+
+######################
 # ADD=49 modify campaign list mix in the system
 ######################
 
@@ -7508,8 +7669,8 @@ if ($ADD==411)
 		if ($reset_list == 'Y')
 			{
 			echo "<br>RESETTING LIST-CALLED-STATUS\n";
-			$stmt="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
-			$rslt=mysql_query($stmt, $link);
+			$stmtB="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
+			$rslt=mysql_query($stmtB, $link);
 
 			### LOG RESET TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
@@ -7522,15 +7683,15 @@ if ($ADD==411)
 		if ($campaign_id != "$old_campaign_id")
 			{
 			echo "<br>REMOVING LIST HOPPER LEADS FROM OLD CAMPAIGN HOPPER ($old_campaign_id)\n";
-			$stmt="DELETE from vicidial_hopper where list_id='$list_id' and campaign_id='$old_campaign_id';";
-			$rslt=mysql_query($stmt, $link);
+			$stmtC="DELETE from vicidial_hopper where list_id='$list_id' and campaign_id='$old_campaign_id';";
+			$rslt=mysql_query($stmtC, $link);
 			}
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
 			{
 			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY LIST INFO    |$PHP_AUTH_USER|$ip|list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description' where list_id='$list_id'|\n");
+			fwrite ($fp, "$date|MODIFY LIST INFO    |$PHP_AUTH_USER|$ip|$stmt|$stmtB|$stmtC|\n");
 			fclose($fp);
 			}
 		}
@@ -9840,6 +10001,9 @@ if ($ADD==3)
 	$qc_pass =				$row[48];
 	$qc_finish =			$row[49];
 	$qc_commit =			$row[50];
+	$add_timeclock_log =	$row[51];
+	$modify_timeclock_log = $row[52];
+	$delete_timeclock_log = $row[53];
 
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
@@ -9961,8 +10125,12 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B9CBFD><td align=right>Modify Call Times: </td><td align=left><select size=1 name=modify_call_times><option>0</option><option>1</option><option SELECTED>$modify_call_times</option></select>$NWB#vicidial_users-modify_call_times$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Delete Call Times: </td><td align=left><select size=1 name=delete_call_times><option>0</option><option>1</option><option SELECTED>$delete_call_times</option></select>$NWB#vicidial_users-delete_call_times$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Modify Servers: </td><td align=left><select size=1 name=modify_servers><option>0</option><option>1</option><option SELECTED>$modify_servers</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>Add Timeclock Log Record: </td><td align=left><select size=1 name=add_timeclock_log><option>0</option><option>1</option><option SELECTED>$add_timeclock_log</option></select>$NWB#vicidial_users-add_timeclock_log$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Modify Timeclock Log Record: </td><td align=left><select size=1 name=modify_timeclock_log><option>0</option><option>1</option><option SELECTED>$modify_timeclock_log</option></select>$NWB#vicidial_users-modify_timeclock_log$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>Delete Timeclock Log Record: </td><td align=left><select size=1 name=delete_timeclock_log><option>0</option><option>1</option><option SELECTED>$delete_timeclock_log</option></select>$NWB#vicidial_users-delete_timeclock_log$NWE</td></tr>\n";
 			}
-		echo "<tr bgcolor=#9BB9FB><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 		echo "</TABLE></center>\n";
 
 		if ($LOGdelete_users > 0)
@@ -10085,6 +10253,17 @@ if ($ADD==31)
 		$campaign_day_start_time = $row[76];
 		$qc_web_form_address = $row[77];
 		$qc_script = $row[78];
+		$survey_first_audio_file = $row[79];
+		$survey_dtmf_digits = $row[80];
+		$survey_ni_digit = $row[81];
+		$survey_opt_in_audio_file = $row[82];
+		$survey_ni_audio_file = $row[83];
+		$survey_method = $row[84];
+		$survey_no_response_action = $row[85];
+		$survey_ni_status = $row[86];
+		$survey_response_digit_map = $row[87];
+		$survey_xfer_exten = $row[88];
+		$survey_camp_record_dir = $row[89];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -10136,13 +10315,25 @@ if ($ADD==31)
 	$statuses_list='';
 	$dial_statuses_list='';
 	$qc_statuses_list='';
+	$survey_ni_status_list='';
 
 	$o=0;
 	while ($statuses_to_print > $o) 
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
+		if ($rowx[0] != 'CBHOLD') 
+			{
+			$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($survey_ni_status == $rowx[0])
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0] - $rowx[1]</option>\n";
+				}
+			else
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				}
+			}
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
@@ -10259,6 +10450,8 @@ if ($ADD==31)
 		else		{$camp_qc_color=$campaigns_color;}
 	if ($SUB==29)	{$camp_listmix_color=$subcamp_color;}
 		else		{$camp_listmix_color=$campaigns_color;}
+	if ($SUB=='20A')	{$camp_survey_color=$subcamp_color;}
+		else		{$camp_survey_color=$campaigns_color;}
 	echo "<TABLE WIDTH=$page_width CELLPADDING=2 CELLSPACING=0><TR BGCOLOR=\"$campaigns_color\">\n";
 	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
 	echo "<TD><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Basic </font></a></TD>";
@@ -10270,6 +10463,7 @@ if ($ADD==31)
 	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Pause Codes</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_qc_color\"><a href=\"$PHP_SELF?ADD=31&SUB=28&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">QC</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_survey_color\"><a href=\"$PHP_SELF?ADD=31&SUB=20A&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Survey</font></a></TD>";
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
 
@@ -10875,12 +11069,39 @@ if ($ADD==31)
 		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Shift Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_shift_start_time value=\"$campaign_shift_start_time\"> $NWB#vicidial_campaigns-campaign_shift_start_time$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right>Campaign Shift Length: </td><td><input type=text size=6 maxlength=5 name=campaign_shift_length value=\"$campaign_shift_length\"> $NWB#vicidial_campaigns-campaign_shift_length$NWE</td></tr>\n";
 		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Day Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_day_start_time value=\"$campaign_day_start_time\"> $NWB#vicidial_campaigns-campaign_day_start_time$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
 		echo "<tr bgcolor=#9BB9FB><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=50 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_campaigns-qc_web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
 		echo "$QCscripts_list";
 		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
 		echo "</select>$NWB#vicidial_campaigns-qc_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
+		echo "</table>\n";
+		echo "<BR></center></FORM><br>\n";
+		}
+
+	##### CAMPAIGN SURVEY SETTINGS #####
+	if ($SUB=='20A')
+		{
+
+		echo "<center><br><b>SURVEY SETTINGS FOR THIS CAMPAIGN:</b><br>\n";
+		echo "<form action=$PHP_SELF method=POST><center><TABLE width=750 cellspacing=3>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right><input type=hidden name=ADD value=40A>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey First Audio File: </td><td><input type=text size=50 maxlength=50 name=survey_first_audio_file value=\"$survey_first_audio_file\"> $NWB#vicidial_campaigns-survey_first_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey DTMF Digits: </td><td><input type=text size=16 maxlength=16 name=survey_dtmf_digits value=\"$survey_dtmf_digits\"> $NWB#vicidial_campaigns-survey_dtmf_digits$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Not Interested Digit: </td><td><input type=text size=5 maxlength=1 name=survey_ni_digit value=\"$survey_ni_digit\"> $NWB#vicidial_campaigns-survey_ni_digit$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Opt-in Audio File: </td><td><input type=text size=50 maxlength=50 name=survey_opt_in_audio_file value=\"$survey_opt_in_audio_file\"> $NWB#vicidial_campaigns-survey_opt_in_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Not Interested Audio File: </td><td><input type=text size=50 maxlength=50 name=survey_ni_audio_file value=\"$survey_ni_audio_file\"> $NWB#vicidial_campaigns-survey_ni_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Method: </td><td><select size=1 name=survey_method><option>AGENT_XFER</option><option>VOICEMAIL</option><option>EXTENSION</option><option>HANGUP</option><option>CAMPREC_60_WAV</option><option SELECTED>$survey_method</option></select> $NWB#vicidial_campaigns-survey_method$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey No-Response Action: </td><td><select size=1 name=survey_no_response_action><option>OPTIN</option><option>OPTOUT</option><option SELECTED>$survey_no_response_action</option></select> $NWB#vicidial_campaigns-survey_no_response_action$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Not Interested Status: </td><td><select name=survey_ni_status>$survey_ni_status_list</select> $NWB#vicidial_campaigns-survey_ni_status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Response Digit Map: </td><td><input type=text size=70 maxlength=100 name=survey_response_digit_map value=\"$survey_response_digit_map\"> $NWB#vicidial_campaigns-survey_response_digit_map$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Survey Xfer Extension: </td><td><input type=text size=12 maxlength=20 name=survey_xfer_exten value=\"$survey_xfer_exten\"> $NWB#vicidial_campaigns-survey_xfer_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Survey Campaign Recording Directory: </td><td><input type=text size=70 maxlength=255 name=survey_camp_record_dir value=\"$survey_camp_record_dir\"> $NWB#vicidial_campaigns-survey_camp_record_dir$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Voicemail: </td><td><input type=text size=12 maxlength=20 name=voicemail_ext value=\"$voicemail_ext\"> $NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
 		echo "</table>\n";
 		echo "<BR></center></FORM><br>\n";
 		}
