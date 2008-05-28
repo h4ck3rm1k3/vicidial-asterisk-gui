@@ -514,6 +514,7 @@ if ($call_handle_method =~ /SURVEY/)
 		}
 
 	# play the message and let them press a number
+	$digits_to_collect = '1';
 	$opt_code = enter_pin_number($survey_first_audio_file,$survey_dtmf_digits);
 	if (length($opt_code) < 1) {$opt_code = 'X';}
 	$opt_description = $opt_code;
@@ -526,7 +527,7 @@ if ($call_handle_method =~ /SURVEY/)
 		}
 
 	# record what they entered
-	$stmtA = "UPDATE vicidial_list set security_phrase='$opt_description' where lead_id = '$CIDlead_id';";
+	$stmtA = "UPDATE vicidial_list set security_phrase='$opt_description',status='PM' where lead_id = '$CIDlead_id';";
 	if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) 
@@ -536,7 +537,7 @@ if ($call_handle_method =~ /SURVEY/)
 		}
 
 	# they opted out
-	if ("$opt_code" eq "$survey_ni_digit")
+	if ($opt_code =~ /$survey_ni_digit/)
 		{
 		if ( $survey_ni_audio_file ne "") 
 			{
@@ -722,7 +723,7 @@ if ($call_handle_method =~ /SURVEY/)
 
 				$AGI->stream_file('beep');
 
-				$interrupt_digit = $AGI->record_file("$survey_camp_record_dir/$VDADcampaign/$VDADphone$filedate", "$format", '123456789*#', "$timeout", 1);
+				$interrupt_digit = $AGI->record_file("$survey_camp_record_dir/$VDADcampaign/$VDADphone$filedate", "$format", '123456789*#', "$timeout", '0', 1, '10');
 				if ($AGILOG) 
 					{
 					$agi_string = "RECORDING FINISHED: $interrupt_digit|$survey_camp_record_dir/$VDADcampaign/$VDADphone$filedate|";
@@ -747,6 +748,27 @@ if ($call_handle_method =~ /SURVEY/)
 			}
 		else
 			{
+			$Euniqueid=$uniqueid;
+					$Euniqueid =~ s/\.\d+//gi;
+			$now_date_epoch = time();
+			$drop_seconds = $now_date_epoch - $start_time_epoch;
+				$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='PM', end_epoch='$now_date_epoch', length_in_sec='$drop_seconds', term_reason='CALLER' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+			if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) 
+				{
+				$agi_string = "--    VDAD vicidial_log update: PM|$affected_rows|$uniqueid|$drop_seconds|";
+				&agi_output;
+				}
+
+			$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) 
+				{
+				$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";
+				&agi_output;
+				}
+
 			$AGI->hangup();
 
 			exit;
@@ -1283,7 +1305,7 @@ if ($interrupt_digit > 1)
 	$totalDTMF=$interrupt_digit;
 	}
 
-$digit_loop_counter=0;
+$digit_loop_counter = length($totalDTMF);
 
 while ( ($digit_loop_counter < $digits_to_collect) )
 	{

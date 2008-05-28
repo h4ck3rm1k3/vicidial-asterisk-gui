@@ -121,6 +121,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	as well as display in real-time stats. See Inbound_VDAC_IVR.txt doc for
 	more information
 
+26. Auto-dial survey broadcast campaigns can now be fully configured within the 
+	admin.php interface and they have new options shown in the Survey sub-
+	section
+
 
 
 
