@@ -8,6 +8,7 @@
 # 80509-0943 - First build
 # 80510-1500 - Added fixed scale hold time graph
 # 80519-0413 - rewrote time intervals code and stats gathering code
+# 80528-2320 - fixed small calculation bugs and display bugs, added more shifts
 #
 
 require("dbconnect.php");
@@ -117,6 +118,10 @@ echo "<option value=\"AM\">AM</option>\n";
 echo "<option value=\"PM\">PM</option>\n";
 echo "<option value=\"ALL\">ALL</option>\n";
 echo "<option value=\"DAYTIME\">DAYTIME</option>\n";
+echo "<option value=\"10AM-6PM\">10AM-6PM</option>\n";
+echo "<option value=\"9AM-1AM\">9AM-1AM</option>\n";
+echo "<option value=\"845-1745\">845-1745</option>\n";
+echo "<option value=\"1745-100\">1745-100</option>\n";
 echo "</SELECT>\n";
 echo "<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
@@ -137,8 +142,8 @@ else
 
 if ($shift == 'AM') 
 	{
-	$time_BEGIN=$AM_shift_BEGIN;
-	$time_END=$AM_shift_END;
+#	$time_BEGIN=$AM_shift_BEGIN;
+#	$time_END=$AM_shift_END;
 #	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
 #	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}   
@@ -148,8 +153,8 @@ if ($shift == 'AM')
 	}
 if ($shift == 'PM') 
 	{
-	$time_BEGIN=$PM_shift_BEGIN;
-	$time_END=$PM_shift_END;
+#	$time_BEGIN=$PM_shift_BEGIN;
+#	$time_END=$PM_shift_END;
 #	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
 #	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "12:00:00";}
@@ -163,6 +168,26 @@ if ($shift == 'ALL')
 if ($shift == 'DAYTIME') 
 	{
 	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
+	if (strlen($time_END) < 6) {$time_END = "00:59:59";}
+	}
+if ($shift == '10AM-6PM') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "10:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "17:59:59";}
+	}
+if ($shift == '9AM-1AM') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "09:00:00";}
+	if (strlen($time_END) < 6) {$time_END = "00:59:59";}
+	}
+if ($shift == '845-1745') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "08:45:00";}
+	if (strlen($time_END) < 6) {$time_END = "17:44:59";}
+	}
+if ($shift == '1745-100') 
+	{
+	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "17:45:00";}
 	if (strlen($time_END) < 6) {$time_END = "00:59:59";}
 	}
 
@@ -359,6 +384,9 @@ while ($j < $TOTintervals)
 	{
 	$jd__0[$j]=0; $jd_20[$j]=0; $jd_40[$j]=0; $jd_60[$j]=0; $jd_80[$j]=0; $jd100[$j]=0; $jd120[$j]=0; $jd121[$j]=0;
 	$Phd__0[$j]=0; $Phd_20[$j]=0; $Phd_40[$j]=0; $Phd_60[$j]=0; $Phd_80[$j]=0; $Phd100[$j]=0; $Phd120[$j]=0; $Phd121[$j]=0;
+	$qrtCALLS[$j]=0; $qrtCALLSsec[$j]=0; $qrtCALLSmax[$j]=0;
+	$qrtDROPS[$j]=0; $qrtDROPSsec[$j]=0; $qrtDROPSmax[$j]=0;
+	$qrtQUEUE[$j]=0; $qrtQUEUEsec[$j]=0; $qrtQUEUEmax[$j]=0;
 	$i=0;
 	while ($i < $records_to_grab)
 		{
@@ -675,7 +703,6 @@ while ($i < $TOTintervals)
 			}
 		else
 			{
-			$Aavg_hold[$TOT_lines] = $qrtQUEUEavg[$i];
 			$TOT_lines++;
 			$qrtQUEUEavg[$i] =	sprintf("%5s", $qrtQUEUEavg[$i]);
 			$qrtQUEUEmax[$i] =	sprintf("%5s", $qrtQUEUEmax[$i]);
@@ -686,7 +713,6 @@ while ($i < $TOTintervals)
 		}
 	else
 		{
-		$Aavg_hold[$TOT_lines] = $qrtQUEUEavg[$i];
 		$TOT_lines++;
 		$no_lines_yet=0;
 		$Xavg_hold = ($Gavg_hold * $hold_multiplier);
@@ -719,7 +745,7 @@ while ($i < $TOTintervals)
 			$qrtCALLS[$i] =	sprintf("%5s", $qrtCALLS[$i]);
 			echo "  |";
 			$k=0;   while ($k <= 22) {echo " ";   $k++;}
-			echo "| $qrtCALLS[$i] |       |\n";
+			echo "| $qrtCALLS[$i] |     0 |\n";
 			}
 		}
 	else
@@ -772,7 +798,7 @@ if ($totQUEUEsec > 0)
 	{$totQUEUEavgRAW = ($totCALLS / $totQUEUEsec);}
 else
 	{$totQUEUEavgRAW = 0;}
-$totQUEUEavg =	sprintf("%5s", $totQUEUEavgRAW); 
+$totQUEUEavg =	sprintf("%5s", $totQUEUEavg); 
 	while (strlen($totQUEUEavg)>5) {$totQUEUEavg = ereg_replace(".$",'',$totQUEUEavg);}
 $totQUEUEmax =	sprintf("%5s", $totQUEUEmax);
 	while (strlen($totQUEUEmax)>5) {$totQUEUEmax = ereg_replace(".$",'',$totQUEUEmax);}
@@ -802,14 +828,23 @@ $APhd__0=0; $APhd_20=0; $APhd_40=0; $APhd_60=0; $APhd_80=0; $APhd100=0; $APhd120
 $h=0;
 while ($h < $TOTintervals)
 	{
+	$Aavg_hold[$h] = $qrtQUEUEavg[$h]; 
 	if ($hd__0[$h] > 0) {$Phd__0[$h] = round( ( ($hd__0[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd__0[$h]=0;}
 	if ($hd_20[$h] > 0) {$Phd_20[$h] = round( ( ($hd_20[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd_20[$h]=0;}
 	if ($hd_40[$h] > 0) {$Phd_40[$h] = round( ( ($hd_40[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd_40[$h]=0;}
 	if ($hd_60[$h] > 0) {$Phd_60[$h] = round( ( ($hd_60[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd_60[$h]=0;}
 	if ($hd_80[$h] > 0) {$Phd_80[$h] = round( ( ($hd_80[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd_80[$h]=0;}
 	if ($hd100[$h] > 0) {$Phd100[$h] = round( ( ($hd100[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd100[$h]=0;}
 	if ($hd120[$h] > 0) {$Phd120[$h] = round( ( ($hd120[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd120[$h]=0;}
 	if ($hd121[$h] > 0) {$Phd121[$h] = round( ( ($hd121[$h] / $qrtCALLS[$h]) * 100) );}
+		else {$Phd121[$h]=0;}
 		while (strlen($qrtQUEUEavg[$h])>4) {$qrtQUEUEavg[$h] = ereg_replace(".$",'',$qrtQUEUEavg[$h]);}
 	$hd__0[$h] =	sprintf("%4s", $hd__0[$h]);
 	$hd_20[$h] =	sprintf("%4s", $hd_20[$h]);
@@ -867,6 +902,7 @@ while ($h < $TOTintervals)
 		}
 
 	$Aavg_hold[$h] = sprintf("%4s", $Aavg_hold[$h]);
+	while (strlen($Aavg_hold[$h])>4) {$Aavg_hold[$h] = ereg_replace("^.",'',$Aavg_hold[$h]);}
 
 	echo "|$HMdisplay[$h]| $qrtCALLS[$h] | $Phd__0[$h] $Phd_20[$h] $Phd_40[$h] $Phd_60[$h] $Phd_80[$h] $Phd100[$h] $Phd120[$h] $Phd121[$h] | | $Aavg_hold[$h] |$qrtQUEUEavg_scale[$h]|\n";
 	
@@ -901,172 +937,6 @@ echo "+-------------+-------+-----------------------------------------+ +------+
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $STARTtime);
 echo "\nRun Time: $RUNtime seconds\n";
-
-
-
-
-
-exit;
-
-
-
-
-
-
-
-
-
-
-$stmt="select queue_seconds,UNIX_TIMESTAMP(call_date),length_in_sec,status from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "';";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$records_to_print = mysql_num_rows($rslt);
-$i=0;
-while ($i < $records_to_print)
-	{
-	$row=mysql_fetch_row($rslt);
-	$qs[$i] = $row[0];
-	$ut[$i] = $row[1];
-	$i++;
-	}
-
-$h=0;
-$APhd__0=0; $APhd_20=0; $APhd_40=0; $APhd_60=0; $APhd_80=0; $APhd100=0; $APhd120=0; $APhd121=0;
-$SAdate_count = count($SAdate);
-while ($h < $SAdate_count)
-	{
-	$qrtQUEUEavg_scale='';	$calls=0; 
-	$hd__0=0; $hd_20=0; $hd_40=0; $hd_60=0; $hd_80=0; $hd100=0; $hd120=0; $hd121=0;
-	$Phd__0=0; $Phd_20=0; $Phd_40=0; $Phd_60=0; $Phd_80=0; $Phd100=0; $Phd120=0; $Phd121=0;
-	$SAdate_ARY = explode(' ',$SAdate[$h]);
-	$SAday_ARY = explode('-',$SAdate_ARY[0]);
-	$SAtime_ARY = explode(':',$SAdate_ARY[1]);
-	$EAdate_ARY = explode(' ',$EAdate[$h]);
-	$EAday_ARY = explode('-',$EAdate_ARY[0]);
-	$EAtime_ARY = explode(':',$EAdate_ARY[1]);
-
-	$SAepoch = mktime($SAtime_ARY[0], $SAtime_ARY[1], $SAtime_ARY[2], $SAday_ARY[1], $SAday_ARY[2], $SAday_ARY[0]);
-	$EAepoch = mktime($EAtime_ARY[0], $EAtime_ARY[1], $EAtime_ARY[2], $EAday_ARY[1], $EAday_ARY[2], $EAday_ARY[0]);
-
-	$i=0;
-	while ($i < $records_to_print)
-		{
-		if ( ($ut[$i] >= $SAepoch) and ($ut[$i] < $EAepoch) )
-			{
-			$calls++;
-			if ($qs[$i] == 0) {$hd__0++;}
-			if ( ($qs[$i] > 0) and ($qs[$i] <= 20) ) {$hd_20++;}
-			if ( ($qs[$i] > 20) and ($qs[$i] <= 40) ) {$hd_40++;}
-			if ( ($qs[$i] > 40) and ($qs[$i] <= 60) ) {$hd_60++;}
-			if ( ($qs[$i] > 60) and ($qs[$i] <= 80) ) {$hd_80++;}
-			if ( ($qs[$i] > 80) and ($qs[$i] <= 100) ) {$hd100++;}
-			if ( ($qs[$i] > 100) and ($qs[$i] <= 120) ) {$hd120++;}
-			if ($qs[$i] > 120) {$hd121++;}
-			}
-		$i++;
-		}
-	
-	if ($hd__0 > 0) {$Phd__0 = round( ( ($hd__0 / $calls) * 100) );}
-	if ($hd_20 > 0) {$Phd_20 = round( ( ($hd_20 / $calls) * 100) );}
-	if ($hd_40 > 0) {$Phd_40 = round( ( ($hd_40 / $calls) * 100) );}
-	if ($hd_60 > 0) {$Phd_60 = round( ( ($hd_60 / $calls) * 100) );}
-	if ($hd_80 > 0) {$Phd_80 = round( ( ($hd_80 / $calls) * 100) );}
-	if ($hd100 > 0) {$Phd100 = round( ( ($hd100 / $calls) * 100) );}
-	if ($hd120 > 0) {$Phd120 = round( ( ($hd120 / $calls) * 100) );}
-	if ($hd121 > 0) {$Phd121 = round( ( ($hd121 / $calls) * 100) );}
-	$Aavg_hold[$h] =	sprintf("%4s", $Aavg_hold[$h]);
-	$calls =	sprintf("%5s", $calls);
-	$hd__0 =	sprintf("%4s", $hd__0);
-	$hd_20 =	sprintf("%4s", $hd_20);
-	$hd_40 =	sprintf("%4s", $hd_40);
-	$hd_60 =	sprintf("%4s", $hd_60);
-	$hd_80 =	sprintf("%4s", $hd_80);
-	$hd100 =	sprintf("%4s", $hd100);
-	$hd120 =	sprintf("%4s", $hd120);
-	$hd121 =	sprintf("%4s", $hd121);
-	$Phd__0 =	sprintf("%4s", $Phd__0);
-	$Phd_20 =	sprintf("%4s", $Phd_20);
-	$Phd_40 =	sprintf("%4s", $Phd_40);
-	$Phd_60 =	sprintf("%4s", $Phd_60);
-	$Phd_80 =	sprintf("%4s", $Phd_80);
-	$Phd100 =	sprintf("%4s", $Phd100);
-	$Phd120 =	sprintf("%4s", $Phd120);
-	$Phd121 =	sprintf("%4s", $Phd121);
-
-	$ALLcalls = ($ALLcalls + $calls);
-	$ALLhd__0 = ($ALLhd__0 + $hd__0);
-	$ALLhd_20 = ($ALLhd_20 + $hd_20);
-	$ALLhd_40 = ($ALLhd_40 + $hd_40);
-	$ALLhd_60 = ($ALLhd_60 + $hd_60);
-	$ALLhd_80 = ($ALLhd_80 + $hd_80);
-	$ALLhd100 = ($ALLhd100 + $hd100);
-	$ALLhd120 = ($ALLhd120 + $hd120);
-	$ALLhd121 = ($ALLhd121 + $hd121);
-
-	if ( ($Aavg_hold[$h] < 1) or ($Aavg_hold[$h] > 119) )
-		{
-		if ($Aavg_hold[$h] < 1)		{$qrtQUEUEavg_scale = '                                ';}
-		if ($Aavg_hold[$h] > 119)	{$qrtQUEUEavg_scale = '<SPAN class="orange">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</SPAN>';}
-		}
-	else
-		{
-		$qrtQUEUEavg_val = ( (32 / 120) * $Aavg_hold[$h] );
-		$k=0;
-		$blank=0;
-		while ($k < 32)
-			{
-			if ($k <= $qrtQUEUEavg_val) 
-				{
-				if ($k < 1) {$qrtQUEUEavg_scale .= '<SPAN class="orange">';}
-				$qrtQUEUEavg_scale .= 'x';
-				}
-			else 
-				{
-				if ( ($k > 0) and ($blank < 1) ) {$qrtQUEUEavg_scale .= '</SPAN>';}
-				$qrtQUEUEavg_scale .= ' ';
-				$blank++;
-				}
-			$k++;
-			if ( ($k > 31) and ($blank < 1) ) {$qrtQUEUEavg_scale .= '</SPAN>';}
-			}
-		}
-
-	$time = " $SAtime[$h]-$EAtime[$h] ";
-	if (ereg(':00-',$time)) {$time = "+$SAtime[$h]-$EAtime[$h]+";}
-	echo "|$time| $calls | $Phd__0 $Phd_20 $Phd_40 $Phd_60 $Phd_80 $Phd100 $Phd120 $Phd121 | | $Aavg_hold[$h] |$qrtQUEUEavg_scale|\n";
-	
-	$h++;
-	}
-
-if ($ALLhd__0 > 0) {$APhd__0 = round( ( ($ALLhd__0 / $ALLcalls) * 100) );}
-if ($ALLhd_20 > 0) {$APhd_20 = round( ( ($ALLhd_20 / $ALLcalls) * 100) );}
-if ($ALLhd_40 > 0) {$APhd_40 = round( ( ($ALLhd_40 / $ALLcalls) * 100) );}
-if ($ALLhd_60 > 0) {$APhd_60 = round( ( ($ALLhd_60 / $ALLcalls) * 100) );}
-if ($ALLhd_80 > 0) {$APhd_80 = round( ( ($ALLhd_80 / $ALLcalls) * 100) );}
-if ($ALLhd100 > 0) {$APhd100 = round( ( ($ALLhd100 / $ALLcalls) * 100) );}
-if ($ALLhd120 > 0) {$APhd120 = round( ( ($ALLhd120 / $ALLcalls) * 100) );}
-if ($ALLhd121 > 0) {$APhd121 = round( ( ($ALLhd121 / $ALLcalls) * 100) );}
-
-$ALLcalls =	sprintf("%5s", $ALLcalls);
-$APhd__0 =	sprintf("%4s", $APhd__0);
-$APhd_20 =	sprintf("%4s", $APhd_20);
-$APhd_40 =	sprintf("%4s", $APhd_40);
-$APhd_60 =	sprintf("%4s", $APhd_60);
-$APhd_80 =	sprintf("%4s", $APhd_80);
-$APhd100 =	sprintf("%4s", $APhd100);
-$APhd120 =	sprintf("%4s", $APhd120);
-$APhd121 =	sprintf("%4s", $APhd121);
-
-$TOT_AVG =	sprintf("%4s", $TOT_AVGraw); 
-	while (strlen($TOT_AVG)>4) {$TOT_AVG = ereg_replace(".$",'',$TOT_AVG);}
-
-echo "+-------------+-------+-----------------------------------------+ +------+--------------------------------+\n";
-echo "| TOTAL       | $ALLcalls | $APhd__0 $APhd_20 $APhd_40 $APhd_60 $APhd_80 $APhd100 $APhd120 $APhd121 | | $totQUEUEavg |\n";
-echo "+-------------+-------+-----------------------------------------+ +------+\n";
-
-$ENDtime = date("U");
-$RUNtime = ($ENDtime - $STARTtime);
-echo "\nRun Time: $RUNtime seconds\n";
 }
 
 
@@ -1075,115 +945,3 @@ echo "\nRun Time: $RUNtime seconds\n";
 </PRE>
 
 </BODY></HTML>
-
-
-
-
-
-
-
-
-<?
-/*
-
-
-
-
-
-
-#############################################################
-##### BEGIN SUMMARY TOTALS SECTION #####
-
-echo "---------- TOTALS\n";
-
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "';";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-
-$TOTALcalls =	sprintf("%10s", $row[0]);
-if ( ($row[0] < 1) or ($row[1] < 1) )
-	{$average_call_seconds = '         0';}
-else
-	{
-	$average_call_seconds = ($row[1] / $row[0]);
-	$average_call_seconds = round($average_call_seconds, 0);
-	$average_call_seconds =	sprintf("%10s", $average_call_seconds);
-	}
-
-echo "Total calls taken into this In-Group:  $TOTALcalls\n";
-echo "Average Call Length for all Calls:     $average_call_seconds seconds\n";
-
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP' and (length_in_sec <= 999 or length_in_sec is null);";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-
-$DROPcalls =	sprintf("%10s", $row[0]);
-if ( ($DROPcalls < 1) or ($TOTALcalls < 1) )
-	{$DROPpercent = '0';}
-else
-	{
-	$DROPpercent = (($DROPcalls / $TOTALcalls) * 100);
-	$DROPpercent = round($DROPpercent, 0);
-	}
-
-if ( ($row[0] < 1) or ($row[1] < 1) )
-	{
-	$average_hold_seconds = '         0';
-	}
-else
-	{
-	$average_hold_seconds = ($row[1] / $row[0]);
-	$average_hold_seconds = round($average_hold_seconds, 0);
-	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
-	}
-
-echo "Total DROP Calls:                      $DROPcalls  $DROPpercent%\n";
-echo "Average hold time for DROP Calls:      $average_hold_seconds seconds\n";
-
-
-
-#########  CALL QUEUE STATS
-
-$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$row=mysql_fetch_row($rslt);
-
-$QUEUEcalls =	sprintf("%10s", $row[0]);
-if ( ($QUEUEcalls < 1) or ($TOTALcalls < 1) )
-	{$QUEUEpercent = '0';}
-else
-	{
-	$QUEUEpercent = (($QUEUEcalls / $TOTALcalls) * 100);
-	$QUEUEpercent = round($QUEUEpercent, 0);
-	}
-
-if ( ($row[0] < 1) or ($row[1] < 1) )
-	{$average_queue_seconds = '         0';}
-else
-	{
-	$average_queue_seconds = ($row[1] / $row[0]);
-	$average_queue_seconds = round($average_queue_seconds, 2);
-	$average_queue_seconds = sprintf("%10.2f", $average_queue_seconds);
-	}
-
-if ( ($TOTALcalls < 1) or ($row[1] < 1) )
-	{$average_total_queue_seconds = '         0';}
-else
-	{
-	$average_total_queue_seconds = ($row[1] / $TOTALcalls);
-	$average_total_queue_seconds = round($average_total_queue_seconds, 2);
-	$average_total_queue_seconds = sprintf("%10.2f", $average_total_queue_seconds);
-	}
-
-echo "Total Calls That entered Queue:        $QUEUEcalls  $QUEUEpercent%\n";
-echo "Average QUEUE Length for queue calls:  $average_queue_seconds seconds\n";
-echo "Average QUEUE Length across all calls: $average_total_queue_seconds seconds\n";
-
-
-
-
-*/
-?>

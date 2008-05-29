@@ -134,8 +134,8 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 		echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
 		echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-		echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
-		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
+		echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCFFCC\"><TR BGCOLOR=WHITE>";
+		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vtc_tab_vicidial.gif\" BORDER=0></TD>";
 		echo "<TD ALIGN=CENTER VALIGN=MIDDLE><B> Timeclock </B></TD>";
 		echo "</TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
@@ -239,8 +239,8 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 			echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 			echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
 			echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-			echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
-			echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
+			echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCFFCC\"><TR BGCOLOR=WHITE>";
+			echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vtc_tab_vicidial.gif\" BORDER=0></TD>";
 			echo "<TD ALIGN=CENTER VALIGN=MIDDLE><B> Timeclock </B></TD>";
 			echo "</TR>\n";
 			echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
@@ -346,8 +346,8 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 			echo"</HEAD>\n";
 			echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 			echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-			echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
-			echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
+			echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCFFCC\"><TR BGCOLOR=WHITE>";
+			echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vtc_tab_vicidial.gif\" BORDER=0></TD>";
 			echo "<TD ALIGN=CENTER VALIGN=MIDDLE><B> Timeclock </B></TD>";
 			echo "</TR>\n";
 			echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
@@ -396,8 +396,8 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 		echo "<INPUT TYPE=HIDDEN NAME=user VALUE=\"$user\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=pass VALUE=\"$pass\">\n";
 		echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-		echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
-		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
+		echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCFFCC\"><TR BGCOLOR=WHITE>";
+		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vtc_tab_vicidial.gif\" BORDER=0></TD>";
 		echo "<TD ALIGN=CENTER VALIGN=MIDDLE><B> Timeclock </B></TD>";
 		echo "</TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
@@ -432,8 +432,8 @@ else
 	echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
 	echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
-	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
+	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCFFCC\"><TR BGCOLOR=WHITE>";
+	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vtc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE><B> Timeclock </B></TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
