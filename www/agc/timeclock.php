@@ -7,10 +7,11 @@
 # 80523-0134 - First Build 
 # 80524-0225 - Changed event_date to DATETIME, added timestamp field and tcid_link field
 # 80525-2351 - Added an audit log that is not to be editable
+# 80602-0641 - Fixed status update bug
 #
 
-$version = '2.0.5-3';
-$build = '80525-2351';
+$version = '2.0.5-4';
+$build = '80602-0641';
 
 $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -274,7 +275,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				print "<!-- NEW vicidial_timeclock_log record inserted for $user:   |$affected_rows|$timeclock_id| -->\n";
 
 				### Update the user's timeclock status record
-				$stmt="UPDATE vicidial_timeclock_status set status='LOGIN', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip';";
+				$stmt="UPDATE vicidial_timeclock_status set status='LOGIN', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip' where user='$user';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
@@ -309,7 +310,7 @@ if ( ($stage == 'login') or ($stage == 'logout') )
 				print "<!-- vicidial_timeclock_log record updated for $user:   |$affected_rows| -->\n";
 
 				### Update the user's timeclock status record
-				$stmt="UPDATE vicidial_timeclock_status set status='LOGOUT', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip';";
+				$stmt="UPDATE vicidial_timeclock_status set status='LOGOUT', user_group='$user_group', event_epoch='$StarTtimE', ip_address='$ip' where user='$user';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);

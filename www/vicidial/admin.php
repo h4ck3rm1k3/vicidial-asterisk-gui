@@ -12834,6 +12834,7 @@ if ($ADD==311111)
 
 
 	echo "<br><br><a href=\"$PHP_SELF?ADD=8111&user_group=$user_group\">Click here to see all CallBack Holds in this user group</a><BR><BR>\n";
+	echo "<br><br><a href=\"./timeclock_status.php?user_group=$user_group\">Click here to see the Timeclock Status for this user group</a><BR><BR>\n";
 
 	if ($LOGdelete_user_groups > 0)
 		{
@@ -15148,7 +15149,8 @@ if ($ADD==999999)
 	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>
 	<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - CLOSER REPORT</a></FONT>
 	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT SPREADSHEET PERFORMANCE</a></FONT>
-	<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>
+	<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>  &nbsp; &nbsp; 
+	    <a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER GROUP TIMECLOCK STATUS REPORT</a></FONT>
 	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
 <?
 	if ($enable_queuemetrics_logging_LU > 0)

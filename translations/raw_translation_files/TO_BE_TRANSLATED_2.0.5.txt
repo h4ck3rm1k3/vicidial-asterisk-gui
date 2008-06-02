@@ -190,6 +190,8 @@ Delete Timeclock Log Record -<\/B> This option allows the user to delete records
 Add Timeclock Log Record||
 Modify Timeclock Log Record||
 Delete Timeclock Log Record||
+USER GROUP TIMECLOCK STATUS REPORT||
+Click here to see the Timeclock Status for this user group||
 
 
 ############################################################ CLIENT

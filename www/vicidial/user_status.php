@@ -30,6 +30,23 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin,webroot_writable FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =		$row[0];
+	$webroot_writable =	$row[1];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
@@ -40,6 +57,7 @@ if (!isset($begin_date)) {$begin_date = $TODAY;}
 if (!isset($end_date)) {$end_date = $TODAY;}
 
 	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and view_reports='1';";
+	if ($non_latin > 0) { $rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$auth=$row[0];
@@ -66,13 +84,19 @@ $browser = getenv("HTTP_USER_AGENT");
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname=$row[0];
 			$change_agent_campaign=$row[1];
-		fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
-		fclose($fp);
+		if ($webroot_writable > 0)
+			{
+			fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
+			fclose($fp);
+			}
 		}
 	else
 		{
-		fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
-		fclose($fp);
+		if ($webroot_writable > 0)
+			{
+			fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
+			fclose($fp);
+			}
 		}
 
 	$stmt="SELECT full_name,user_group from vicidial_users where user='" . mysql_real_escape_string($user) . "';";
@@ -96,6 +120,19 @@ $browser = getenv("HTTP_USER_AGENT");
 		$Acampaign =		$row[7];
 		$Alast_call =		$row[14];
 		$Acl_campaigns =	$row[15];
+		$i++;
+		}
+
+	$stmt="SELECT event_date,status,ip_address from vicidial_timeclock_status where user='" . mysql_real_escape_string($user) . "';";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$tc_logs_to_print = mysql_num_rows($rslt);
+	if ($tc_logs_to_print > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$Tevent_date =		$row[0];
+		$Tstatus =			$row[1];
+		$Tip_address =		$row[2];
 		$i++;
 		}
 
@@ -194,9 +231,25 @@ if ($agents_to_print > 0)
 
 else
 {
-	echo "Agent is not logged in\n<BR>";
+	echo "Agent is not logged in to VICIDIAL\n<BR>";
 
 }
+
+echo "\n<BR>";
+
+if ( ($Tstatus == "LOGIN") or ($Tstatus == "START") )
+{
+	echo "User $user - is logged in to the timeclock. <BR>Login time: $Tevent_date from $Tip_address<BR>\n";
+	
+	exit;
+}
+else
+{
+	echo "User $user - is NOT logged in to the timeclock. <BR>Last logout time: $Tevent_date from $Tip_address<BR>\n";
+	
+	exit;
+}
+
 
 
 echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name \n";

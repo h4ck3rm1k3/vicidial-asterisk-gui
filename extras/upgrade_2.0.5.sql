@@ -255,3 +255,7 @@ index (record_id)
 );
 
 UPDATE system_settings SET db_schema_version='1091';
+
+CREATE INDEX user ON vicidial_agent_log (user);
+
+UPDATE system_settings SET db_schema_version='1092';

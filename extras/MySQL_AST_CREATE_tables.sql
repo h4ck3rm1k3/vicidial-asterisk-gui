@@ -756,7 +756,8 @@ status VARCHAR(6),
 user_group VARCHAR(20),
 comments VARCHAR(20),
 sub_status VARCHAR(6),
-index (lead_id)
+index (lead_id),
+index (user)
 );
 
  CREATE TABLE vicidial_scripts (
