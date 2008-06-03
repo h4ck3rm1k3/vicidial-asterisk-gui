@@ -231,6 +231,7 @@ INSERT INTO vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');
 INSERT INTO vicidial_statuses values('DNC','DO NOT CALL','Y','Y','UNDEFINED');
+INSERT INTO vicidial_statuses values('DNCL','DO NOT CALL Hopper Match','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('SALE','Sale Made','Y','Y','UNDEFINED');
 INSERT INTO vicidial_statuses values('N','No Answer','Y','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('NI','Not Interested','Y','Y','UNDEFINED');

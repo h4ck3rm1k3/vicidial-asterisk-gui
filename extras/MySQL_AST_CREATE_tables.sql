@@ -1153,11 +1153,13 @@ event_date DATETIME NOT NULL,
 user VARCHAR(20) NOT NULL,
 ip_address VARCHAR(15) NOT NULL,
 event_section VARCHAR(30) NOT NULL,
-event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGOUT','CLEAR','OTHER') default 'OTHER',
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OTHER') default 'OTHER',
 record_id VARCHAR(50) NOT NULL,
 event_code VARCHAR(255) NOT NULL,
 event_sql TEXT,
+event_notes TEXT,
 index (user),
+index (event_section),
 index (record_id)
 );
 
@@ -1210,5 +1212,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1091';
+UPDATE system_settings SET db_schema_version='1093';
 

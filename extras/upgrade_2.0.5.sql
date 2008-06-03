@@ -259,3 +259,23 @@ UPDATE system_settings SET db_schema_version='1091';
 CREATE INDEX user ON vicidial_agent_log (user);
 
 UPDATE system_settings SET db_schema_version='1092';
+
+DROP TABLE vicidial_admin_log;
+
+ CREATE TABLE vicidial_admin_log (
+admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+event_date DATETIME NOT NULL,
+user VARCHAR(20) NOT NULL,
+ip_address VARCHAR(15) NOT NULL,
+event_section VARCHAR(30) NOT NULL,
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OTHER') default 'OTHER',
+record_id VARCHAR(50) NOT NULL,
+event_code VARCHAR(255) NOT NULL,
+event_sql TEXT,
+event_notes TEXT,
+index (user),
+index (event_section),
+index (record_id)
+);
+
+UPDATE system_settings SET db_schema_version='1093';
