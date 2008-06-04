@@ -100,7 +100,7 @@ eventLogger($conf{PATHlogs}, 'process', $event_string);
 
 my $one_day_interval = 182;		# 2 day loops for 12 months
 while ($one_day_interval > 0) {
-	my $endless_loop = 864000;		# 2 days at .20 seconds per loop
+	my $endless_loop = 1728000;		# 2 days at .10 seconds per loop
 	my $affected_rows;
 	my $NEW_actions;
 	while ($endless_loop > 0) {
@@ -226,11 +226,11 @@ while ($one_day_interval > 0) {
 		}
 
 		if ($affected_rows) {
-			### sleep for 5 hundredths of a second if just send an ACTION
-			usleep(1*50*1000);
+			### sleep for 1 hundredth of a second if just send an ACTION
+			usleep(1*10*1000);
 		} else {
-			### sleep for 20 hundredths of a second if no actions sent
-			usleep(1*200*1000);
+			### sleep for 10 hundredths of a second if no actions sent
+			usleep(1*100*1000);
 		}
 
 		$endless_loop--;

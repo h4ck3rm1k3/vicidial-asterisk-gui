@@ -851,8 +851,8 @@ while($one_day_interval > 0)
 									$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,callerid,phone_code,phone_number,call_time,call_type,alt_dial,queue_priority) values('$DBIPaddress[$user_CIPct]','$DBIPcampaign[$user_CIPct]','SENT','$lead_id','$VqueryCID','$phone_code','$phone_number','$SQLdate','OUT','$alt_dial','$DBIPqueue_priority[$user_CIPct]')";
 									$affected_rows = $dbhA->do($stmtA);
 
-								### sleep for a tenth of a second to not flood the server with new calls
-								usleep(1*100*1000);
+								### sleep for a five hundredths of a second to not flood the server with new calls
+								usleep(1*50*1000);
 
 								}
 							}
