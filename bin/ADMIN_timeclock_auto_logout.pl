@@ -12,6 +12,7 @@
 #
 # CHANGELOG
 # 80526-0958 - First Build
+# 80604-0733 - fixed minor bug in update
 #
 
 # constants
@@ -211,7 +212,7 @@ if ( ($force_run > 0) || ( ($nowtest >= $logtest) && ($timeclock_last_reset_date
 		$event_string = "USER VTL UPDATE|$affected_rows|$stmtA|";
 			&event_logger;
 
-		$stmtA = "UPDATE vicidial_timeclock_status set status='AUTOLOGOUT', user_group='$user_group[$i]', event_epoch='$now_date_epoch', ip_address='$VARserver_ip';";
+		$stmtA = "UPDATE vicidial_timeclock_status set status='AUTOLOGOUT', user_group='$user_group[$i]', event_epoch='$now_date_epoch', ip_address='$VARserver_ip' where user='$user[$i]';";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($DBX) {print "|$affected_rows|$stmtA|\n";}
 		$event_string = "USER VTS UPDATE|$affected_rows|$stmtA|";
