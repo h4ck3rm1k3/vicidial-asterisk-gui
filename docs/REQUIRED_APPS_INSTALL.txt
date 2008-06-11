@@ -505,11 +505,11 @@ rm -f /usr/lib/asterisk/modules/res_speech.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.19.tar.gz
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.20.1.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.9.tar.gz
 wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.3.tar.gz
-gunzip asterisk-1.4.18.tar.gz
-tar xvf asterisk-1.4.18.tar
+gunzip asterisk-1.4.20.1.tar.gz
+tar xvf asterisk-1.4.20.1.tar
 gunzip zaptel-1.4.9.tar.gz
 tar xvf zaptel-1.4.9.tar
 gunzip libpri-1.4.3.tar.gz
@@ -522,7 +522,7 @@ cd ../libpri-1.4.3
 make clean
 make
 make install
-cd ../asterisk-1.4.18
+cd ../asterisk-1.4.20.1
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h

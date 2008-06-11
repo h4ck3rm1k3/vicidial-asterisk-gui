@@ -60,9 +60,9 @@ $HHteod = substr($timeclock_end_of_day,0,2);
 $MMteod = substr($timeclock_end_of_day,2,2);
 
 if ($HHMM < $timeclock_end_of_day)
-	{$EoD = mktime($HHteod, $MMteod, 0, date("m"), date("d")-1, date("Y"));}
+	{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d")-1, date("Y"));}
 else
-	{$EoD = mktime($HHteod, $MMteod, 0, date("m"), date("d"), date("Y"));}
+	{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d"), date("Y"));}
 
 $EoDdate = date("Y-m-d H:i:s", $EoD);
 

@@ -113,7 +113,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 	user IDs as you are adding users to the system. timeclock.php user login
 	page created and linked to from admin/agent/welcome screens
 
-23. Added a new inbound/closer report for showing service levels
+23. Added a new inbound/closer(queues) report for showing service levels
 
 24. Added Calls in Queue counter to agent vicidial.php screen
 
@@ -124,6 +124,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 26. Auto-dial survey broadcast campaigns can now be fully configured within the 
 	admin.php interface and they have new options shown in the Survey sub-
 	section
+
+27. Changed add-to-DNC list to allow for multiple phone numbers per submission
 
 
 

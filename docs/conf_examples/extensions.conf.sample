@@ -415,6 +415,14 @@ exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,5,Hangup
 
+; VICIDIAL SURVEY transfer script AMD with Load Balanced:
+exten => 8373,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => 8373,2,AMD(2000|2000|1000|5000|120|50|4|256) 
+exten => 8373,3,AGI(VD_amd.agi,${EXTEN})
+exten => 8373,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8373,6,Hangup
+
 ;#### VDAD SIP UNREGISTERED TRANSFER ENTRIES ####
 ;#### Use these entries IN PLACE OF the entries above if you are using SIP trunks
 ;#### and are not registering your provider in sip.conf
@@ -468,6 +476,16 @@ exten => 8372,5,Hangup
 ;exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 ;exten => 8372,5,Hangup
+;
+;; VICIDIAL SURVEY transfer script AMD with Load Balanced:
+;exten => 8373,1,Playback(sip-silence)
+;exten => 8373,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8373,3,AMD(2000|2000|1000|5000|120|50|4|256) 
+;exten => 8373,4,AGI(VD_amd.agi,${EXTEN})
+;exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8373,6,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8373,7,Hangup
+;
 
 
 

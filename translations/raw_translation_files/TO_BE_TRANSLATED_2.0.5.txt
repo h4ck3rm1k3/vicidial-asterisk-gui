@@ -192,6 +192,10 @@ Modify Timeclock Log Record||
 Delete Timeclock Log Record||
 USER GROUP TIMECLOCK STATUS REPORT||
 Click here to see the Timeclock Status for this user group||
+ADD NUMBERS TO THE DNC LIST||
+Phone Numbers: ||
+one phone number per line only||
+VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list||
 
 
 ############################################################ CLIENT

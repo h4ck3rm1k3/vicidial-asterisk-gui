@@ -12,6 +12,7 @@
 # 80316-2211 - First Build
 # 80317-1609 - Added Sangoma conf file backup and changed FTP settings
 # 80328-0135 - Do not attempt to archive /etc/my.cnf is --without-db flag is set
+# 80611-0549 - Added DB option to backup all tables except for log tables
 #
 
 
@@ -43,6 +44,7 @@ if (length($ARGV[0])>1)
 	{
 	print "allowed run time options:\n";
 	print "  [--db-only] = only backup the database\n";
+	print "  [--db-without-logs] = do not backup the log tables in the database\n";
 	print "  [--conf-only] = only backup the asterisk conf files\n";
 	print "  [--without-db] = do not backup the database\n";
 	print "  [--without-conf] = do not backup the conf files\n";
@@ -75,6 +77,11 @@ if (length($ARGV[0])>1)
 		{
 		$db_only=1;
 		print "\n----- Backup Database Only -----\n\n";
+		}
+	if ($args =~ /--db-without-logs/i)
+		{
+		$db_without_logs=1;
+		print "\n----- Backup Database Without Logs -----\n\n";
 		}
 	if ($args =~ /--conf-only/i)
 		{
@@ -160,6 +167,9 @@ foreach(@conf)
 	$i++;
 	}
 
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+
 if (!$ARCHIVEpath) {$ARCHIVEpath = "$PATHlogs/archive";}
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -231,7 +241,47 @@ $sgSTRING='';
 if ( ($without_db < 1) && ($conf_only < 1) )
 	{
 	### BACKUP THE MYSQL FILES ON THE DB SERVER ###
-	`$mysqldumpbin --lock-tables --flush-logs $VARDB_database | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz`;
+	if ($db_without_logs)
+		{
+		use DBI;
+			
+		### connect to MySQL database defined in the conf file
+		$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+		or die "Couldn't connect to database: " . DBI->errstr;
+
+		$stmtA = "show tables;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		$log_tables='';
+		$archive_tables='';
+		while ($sthArows > $rec_count)
+			{
+			 @aryA = $sthA->fetchrow_array;
+			 if ($aryA[0] =~ /_log|server_performance|vicidial_ivr|vicidial_hopper|vicidial_manager|web_client_sessions|imm_outcomes/) 
+				{
+				$log_tables .= " $aryA[0]";
+				}
+			 else 
+				{
+				$archive_tables .= " $aryA[0]";
+				}
+			 $rec_count++;
+			}
+		$sthA->finish();
+
+		$dump_non_log_command = "$mysqldumpbin --lock-tables --flush-logs $VARDB_database $archive_tables | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz";
+		$dump_log_command = "$mysqldumpbin --lock-tables --flush-logs --no-data --no-create-db $VARDB_database $log_tables | $gzipbin > $ARCHIVEpath/temp/LOGS_$VARserver_ip$VARDB_database$wday.gz";
+
+		if ($DBX) {print "$dump_non_log_command\n$dump_log_command";}
+		`$dump_non_log_command`;
+		`$dump_log_command`;
+		}
+	else
+		{
+		`$mysqldumpbin --lock-tables --flush-logs $VARDB_database | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz`;
+		}
 	}
 
 if ( ($without_conf < 1) && ($db_only < 1) )

@@ -757,6 +757,8 @@ if (isset($_GET["modify_timeclock_log"]))			{$modify_timeclock_log=$_GET["modify
 	elseif (isset($_POST["modify_timeclock_log"]))	{$modify_timeclock_log=$_POST["modify_timeclock_log"];}
 if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete_timeclock_log"];}	
 	elseif (isset($_POST["delete_timeclock_log"]))	{$delete_timeclock_log=$_POST["delete_timeclock_log"];}
+if (isset($_GET["phone_numbers"]))					{$phone_numbers=$_GET["phone_numbers"];}	
+	elseif (isset($_POST["phone_numbers"]))			{$phone_numbers=$_POST["phone_numbers"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -932,6 +934,9 @@ $survey_ni_digit = ereg_replace("[^\#\*0-9]","",$survey_ni_digit);
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
 $campaign_rank = ereg_replace("[^-0-9]","",$campaign_rank);
 $queue_priority = ereg_replace("[^-0-9]","",$queue_priority);
+
+### DIGITS and NEWLINES
+$phone_numbers = ereg_replace("[^\n0-9]","",$phone_numbers);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -1304,11 +1309,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 80515-1345 - Added Shifts sub-section to Admin section
 # 80528-0001 - Added campaign survey sub-section
 # 80528-1102 - Added user timeclock edit options
+# 80608-1304 - Changed add-to-DNC to allow for multiple entries per submission
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-131';
-$build = '80528-0001';
+$admin_version = '2.0.5-132';
+$build = '80608-1304';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2875,7 +2881,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_list-dnc">
 <BR>
-<B>VICIDIAL DNC List -</B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add a number to this list so that it will not be called by campaigns that use the internal DNC list.
+<B>VICIDIAL DNC List -</B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list.
 
 
 
@@ -4882,34 +4888,42 @@ if ($ADD==121)
 echo "<TABLE><TR><TD>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-if (strlen($phone_number) > 2)
+if (strlen($phone_numbers) > 2)
 	{
-	$stmt="SELECT count(*) from vicidial_dnc where phone_number='$phone_number';";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	if ($row[0] > 0)
-		{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $phone_number<BR><BR>\n";}
-	else
+	$PN = explode("\n",$phone_numbers);
+	$PNct = count($PN);
+	$p=0;
+	while ($p < $PNct)
 		{
-		$stmt="INSERT INTO vicidial_dnc (phone_number) values('$phone_number');";
+		$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
 		$rslt=mysql_query($stmt, $link);
-
-		echo "<br><B>DNC ADDED: $phone_number</B><BR><BR>\n";
-
-		### LOG INSERTION TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p]\n";}
+		else
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|ADD A NEW DNC NUMBER|$PHP_AUTH_USER|$ip|'$phone_number'|\n");
-			fclose($fp);
+			$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>DNC ADDED: $PN[$p]</B>\n";
+
 			}
+		$p++;
+		}
+
+	### LOG INSERTION TO LOG FILE ###
+	if ($WeBRooTWritablE > 0)
+		{
+		$fp = fopen ("./admin_changes_log.txt", "a");
+		fwrite ($fp, "$date|ADD A NEW DNC NUMBER|$PHP_AUTH_USER|$ip|'$phone_number'|\n");
+		fclose($fp);
 		}
 	}
 
-echo "<br>ADD A NUMBER TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
+echo "<br>ADD NUMBERS TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=121>\n";
 echo "<center><TABLE width=$section_width cellspacing=3>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Phone Number: </td><td align=left><input type=text name=phone_number size=14 maxlength=12> (digits only)$NWB#vicidial_list-dnc$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Phone Numbers: <BR><BR> (one phone number per line only)<BR>$NWB#vicidial_list-dnc$NWE</td><td align=left><TEXTAREA name=phone_numbers ROWS=20 COLS=20></TEXTAREA></td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 echo "</TABLE></center>\n";
 

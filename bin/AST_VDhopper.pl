@@ -1087,11 +1087,13 @@ foreach(@campaign_id)
 			@REC_gmt_to_hopper=@MT;
 			@REC_state_to_hopper=@MT;
 			@REC_status_to_hopper=@MT;
+			@REC_modify_to_hopper=@MT;
+			@REC_user_to_hopper=@MT;
 			if ($rec_ct[$i] > 0)
 				{
 				if ($DB) {print "     looking for RECYCLE leads, maximum of 100\n";}
 
-				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status FROM vicidial_list where $recycle_SQL[$i] and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] limit 100;";
+				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user FROM vicidial_list where $recycle_SQL[$i] and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] limit 100;";
 				if ($DBX) {print "     |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1107,6 +1109,8 @@ foreach(@campaign_id)
 					$REC_phone_to_hopper[$REC_rec_countLEADS] = "$aryA[3]";
 					$REC_state_to_hopper[$REC_rec_countLEADS] = "$aryA[4]";
 					$REC_status_to_hopper[$REC_rec_countLEADS] = "$aryA[5]";
+					$REC_modify_to_hopper[$REC_rec_countLEADS] = "$aryA[6]";
+					$REC_user_to_hopper[$REC_rec_countLEADS] = "$aryA[7]";
 					if ($DB_show_offset) {print "LEAD_ADD: $aryA[2] $aryA[3] $aryA[4]\n";}
 					$REC_rec_countLEADS++;
 					}
@@ -1127,6 +1131,8 @@ foreach(@campaign_id)
 			@NEW_gmt_to_hopper=@MT;
 			@NEW_state_to_hopper=@MT;
 			@NEW_status_to_hopper=@MT;
+			@NEW_modify_to_hopper=@MT;
+			@NEW_user_to_hopper=@MT;
 			if ($NEW_count > 0)
 				{
 				$NEW_level = int($hopper_level[$i] / $NEW_count);   
@@ -1134,7 +1140,7 @@ foreach(@campaign_id)
 			#	$order_stmt = 'order by called_count, lead_id asc';
 				if ($DB) {print "     looking for $NEW_level NEW leads mixed in with $OTHER_level other leads\n";}
 
-				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status FROM vicidial_list where called_since_last_reset='N' and status IN('NEW') and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $NEW_level;";
+				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user FROM vicidial_list where called_since_last_reset='N' and status IN('NEW') and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $NEW_level;";
 				if ($DBX) {print "     |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1148,6 +1154,8 @@ foreach(@campaign_id)
 					$NEW_phone_to_hopper[$NEW_rec_countLEADS] = "$aryA[3]";
 					$NEW_state_to_hopper[$NEW_rec_countLEADS] = "$aryA[4]";
 					$NEW_status_to_hopper[$NEW_rec_countLEADS] = "$aryA[5]";
+					$NEW_modify_to_hopper[$NEW_rec_countLEADS] = "$aryA[6]";
+					$NEW_user_to_hopper[$NEW_rec_countLEADS] = "$aryA[7]";
 					if ($DB_show_offset) {print "LEAD_ADD: $aryA[2] $aryA[3] $aryA[4]\n";}
 					$NEW_rec_countLEADS++;
 					}
@@ -1167,10 +1175,12 @@ foreach(@campaign_id)
 			@state_to_hopper=@MT;
 			@phone_to_hopper=@MT;
 			@status_to_hopper=@MT;
+			@modify_to_hopper=@MT;
+			@user_to_hopper=@MT;
 			if ($campaign_leads_to_call[$i] > 0)
 				{
 				if ($DB) {print "     lead call order:      $order_stmt\n";}
-				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $OTHER_level;";
+				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status,modify_date,user FROM vicidial_list where called_since_last_reset='N' and status IN($STATUSsql[$i]) and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] $order_stmt limit $OTHER_level;";
 				if ($DBX) {print "     |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1193,6 +1203,8 @@ foreach(@campaign_id)
 							$state_to_hopper[$rec_countLEADS] = "$NEW_state_to_hopper[$NEW_in]";
 							$phone_to_hopper[$rec_countLEADS] = "$NEW_phone_to_hopper[$NEW_in]";
 							$status_to_hopper[$rec_countLEADS] = "$NEW_status_to_hopper[$NEW_in]";
+							$modify_to_hopper[$rec_countLEADS] = "$NEW_modify_to_hopper[$NEW_in]";
+							$user_to_hopper[$rec_countLEADS] = "$NEW_user_to_hopper[$NEW_in]";
 							if ($DB_show_offset) {print "LEAD_ADD:    $NEW_leads_to_hopper[$NEW_in]   $NEW_phone_to_hopper[$NEW_in]\n";}
 							$rec_countLEADS++;
 							$NEW_in++;
@@ -1207,6 +1219,8 @@ foreach(@campaign_id)
 						$state_to_hopper[$rec_countLEADS] = "$REC_state_to_hopper[$REC_insert_count]";
 						$phone_to_hopper[$rec_countLEADS] = "$REC_phone_to_hopper[$REC_insert_count]";
 						$status_to_hopper[$rec_countLEADS] = "$REC_status_to_hopper[$REC_insert_count]";
+						$modify_to_hopper[$rec_countLEADS] = "$REC_modify_to_hopper[$REC_insert_count]";
+						$user_to_hopper[$rec_countLEADS] = "$REC_user_to_hopper[$REC_insert_count]";
 						$rec_countLEADS++;
 						$REC_insert_count++;
 						}
@@ -1216,6 +1230,8 @@ foreach(@campaign_id)
 					$state_to_hopper[$rec_countLEADS] = "$aryA[4]";
 					$phone_to_hopper[$rec_countLEADS] = "$aryA[3]";
 					$status_to_hopper[$rec_countLEADS] = "$aryA[5]";
+					$modify_to_hopper[$rec_countLEADS] = "$aryA[6]";
+					$user_to_hopper[$rec_countLEADS] = "$aryA[7]";
 					if ($DB_show_offset) {print "LEAD_ADD: $aryA[2] $aryA[3] $aryA[4]\n";}
 					$rec_countLEADS++;
 					$rec_count++;
@@ -1231,6 +1247,8 @@ foreach(@campaign_id)
 				$state_to_hopper[$rec_countLEADS] = "$REC_state_to_hopper[$REC_insert_count]";
 				$phone_to_hopper[$rec_countLEADS] = "$REC_phone_to_hopper[$REC_insert_count]";
 				$status_to_hopper[$rec_countLEADS] = "$REC_status_to_hopper[$REC_insert_count]";
+				$modify_to_hopper[$rec_countLEADS] = "$REC_modify_to_hopper[$REC_insert_count]";
+				$user_to_hopper[$rec_countLEADS] = "$REC_user_to_hopper[$REC_insert_count]";
 				$rec_countLEADS++;
 				$REC_insert_count++;
 				}
@@ -1274,7 +1292,7 @@ foreach(@campaign_id)
 						if ($DBX) {print "LEAD INSERTED: $affected_rows|$leads_to_hopper[$h]|\n";}
 						if ($DB_detail) 
 							{
-							$detail_string = "|$campaign_id[$i]|$leads_to_hopper[$h]|$phone_to_hopper[$h]|$state_to_hopper[$h]|$gmt_to_hopper[$h]|$status_to_hopper[$h]|";
+							$detail_string = "|$campaign_id[$i]|$leads_to_hopper[$h]|$phone_to_hopper[$h]|$state_to_hopper[$h]|$gmt_to_hopper[$h]|$status_to_hopper[$h]|$modify_to_hopper[$h]|$user_to_hopper[$h]|";
 							&detail_logger;
 							}
 						}
