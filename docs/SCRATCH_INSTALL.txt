@@ -456,6 +456,9 @@ following modules first:   (say YES if asked to install prerequisites)
    - install Proc::ProcessTable		(needed for super list loader Excel)
    - install IO::Scalar			(needed for super list loader Excel)
    - install Spreadsheet::ParseExcel	(needed for super list loader Excel)
+- if Spreadsheet::ParseExcel fails to install try running the following:
+   - force install Scalar::Util         (this will enable weak references)
+   - install Spreadsheet::ParseExcel
 - then quit cpan, you are done
 5. Go to http://asterisk.gnuinter.net/ and download the asterisk-perl module
 (backup link: http://www.freedomphones.net/files/asterisk-perl-0.08.tar.gz)
