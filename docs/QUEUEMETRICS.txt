@@ -133,7 +133,7 @@ agent actions - used by vicidial.php, vdc_db_query.php and AST_VDremote_agents.p
 	UNPAUSE
 	PAUSEREASON
 
-call actions before going to agent - used by agi-VDADtransfer scripts
+call actions before going to agent - used by agi-VDAD_ALL_inbound/outbound scripts
 	ENTERQUEUE(url|callerid)
 	CONNECT(holdtime)
 	EXITWITHTIMEOUT(position) 

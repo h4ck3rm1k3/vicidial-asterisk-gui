@@ -6,6 +6,7 @@
 # CHANGES
 #
 # 80529-0055 - First build
+# 80617-1416 - Fixed totals tally bug
 #
 
 require("dbconnect.php");
@@ -217,7 +218,8 @@ echo "<PRE><FONT SIZE=3>\n";
 echo "VICIDIAL: User Timeclock Report                        $NOW_TIME\n";
 
 echo "Time range: $query_date to $end_date\n\n";
-echo "---------- USER TIMECLOCK DETAILS -------------\n</PRE>\n";
+echo "---------- USER TIMECLOCK DETAILS -------------\n";
+echo "These totals do NOT include any active sessions\n</PRE>\n";
 
 echo "<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR BGCOLOR=BLACK>\n";
 echo "<TD ALIGN=CENTER><FONT class=\"header_white\">#</TD>\n";
@@ -237,7 +239,7 @@ if ($order == 'name_down')	{$order_SQL = "order by full_name desc";}
 if (strlen($user) > 0)		{$user_SQL = "and vicidial_timeclock_log.user='$user'";}
 else {$user_SQL='';}
 
-$stmt="select vicidial_users.user,full_name,sum(login_sec) as login from vicidial_users,vicidial_timeclock_log where event_date >= '$query_date 00:00:00' and event_date <= '$end_date 23:59:59' and vicidial_users.user=vicidial_timeclock_log.user $user_SQL group by vicidial_users.user $order_SQL limit 100000;";
+$stmt="select vicidial_users.user,full_name,sum(login_sec) as login from vicidial_users,vicidial_timeclock_log where event IN('LOGIN','START') and event_date >= '$query_date 00:00:00' and event_date <= '$end_date 23:59:59' and vicidial_users.user=vicidial_timeclock_log.user $user_SQL group by vicidial_users.user $order_SQL limit 100000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -280,7 +282,7 @@ while ($j < $rows_to_print)
 
 	echo "<TR $bgcolor>\n";
 	echo "<TD ALIGN=LEFT><FONT class=\"data_records_fix_small\">$j</TD>\n";
-	echo "<TD><FONT class=\"data_records\">$user_id[$i] </TD>\n";
+	echo "<TD><FONT class=\"data_records\"><A HREF=\"user_status.php?user=$user_id[$i]\">$user_id[$i]</A> </TD>\n";
 	echo "<TD><FONT class=\"data_records\">$full_name[$i] </TD>\n";
 	echo "<TD ALIGN=RIGHT><FONT class=\"data_records_fix\"> $hours[$i]</TD>\n";
 	echo "</TR>\n";

@@ -10,6 +10,7 @@
 # 71008-1436 - Added shift to be defined in dbconnect.php
 # 71218-1155 - Added end_date for multi-day reports
 # 80430-1920 - Added Customer hangup cause stats
+# 80620-0031 - Fixed human answered calculation for drop perfentage
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -22,15 +23,17 @@ $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
-	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
+	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
 if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
 if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
+if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -195,7 +198,34 @@ $DROPcalls =	sprintf("%10s", $row[0]);
 $DROPcallsRAW =	$row[0];
 $DROPseconds =	$row[1];
 
-$stmt="select count(*) from vicidial_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and status NOT IN('NA','B');";
+
+# GET LIST OF HUMAN-ANSWERED STATUSES
+$stmt = "SELECT status from vicidial_statuses where human_answered='Y';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$p=0;
+while ($p < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$camp_ANS_STAT_SQL .=	 "'$row[0]',";
+	$p++;
+	}
+$stmt = "SELECT status from vicidial_campaign_statuses where campaign_id='" . mysql_real_escape_string($group) . "' and human_answered='Y';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$p=0;
+while ($p < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$camp_ANS_STAT_SQL .=	 "'$row[0]',";
+	$p++;
+	}
+$camp_ANS_STAT_SQL = eregi_replace(",$",'',$camp_ANS_STAT_SQL);
+
+
+$stmt="select count(*) from vicidial_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and status IN($camp_ANS_STAT_SQL);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);

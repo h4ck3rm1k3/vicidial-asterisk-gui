@@ -5,6 +5,7 @@ Timeclock process flow					  2008-05-12
 This will outline the process I have thought through for adding a timeclock component to the VICIDIAL system. The objective is to add the following features to make VICIDIAL a more well-rounded product:
 - Allow vicidial users to clock-in to the system
 - Add a SHIFT section to administration
+
 - Allow restrictions of agent-login by shift
 - Allow ability to not allow agents to log-in to any VICIDIAL page(admin or agent) without clocking in.
 - Have reports showing all timeclock totals for various parameters(user-group/campaign/time-period/in-groups/etc...)

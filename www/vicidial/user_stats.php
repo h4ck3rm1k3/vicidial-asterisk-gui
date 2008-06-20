@@ -12,6 +12,7 @@
 # 80117-0316 - Added vicidial_user_closer_log entries to display
 # 80501-0506 - Added Hangup Reason to logs display
 # 80523-2012 - Added vicidial timeclock records display
+# 80617-1402 - Fixed timeclock total logged-in time
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -278,6 +279,7 @@ echo "</TABLE></center>\n";
 
 ##### vicidial_timeclock log records for user #####
 
+$total_login_time=0;
 $SQday_ARY =	explode('-',$begin_date);
 $EQday_ARY =	explode('-',$end_date);
 $SQepoch = mktime(0, 0, 0, $SQday_ARY[1], $SQday_ARY[2], $SQday_ARY[0]);
@@ -338,7 +340,9 @@ echo "<tr><td><font size=2>ID </td><td><font size=2>EDIT </td><td align=right><f
 			echo "<td align=right><font size=2> $TC_log_date</td>\n";
 			echo "<td align=right><font size=2> $row[4]</td>\n";
 			echo "<td align=right><font size=2> $row[2]</td>\n";
-			echo "<td align=right><font size=2> $event_hours_int:$event_minutes_int</td></tr>\n";
+			echo "<td align=right><font size=2> $event_hours_int:$event_minutes_int";
+			if ($DB) {echo " - $total_login_time - $login_sec";}
+			echo "</td></tr>\n";
 			}
 		$o++;
 	}
@@ -346,14 +350,17 @@ if (strlen($login_sec)<1)
 	{
 	$login_sec = ($STARTtime - $row[1]);
 	$total_login_time = ($total_login_time + $login_sec);
+		if ($DB) {echo "LOGIN ONLY - $total_login_time - $login_sec";}
 	}
 $total_login_hours = ($total_login_time / 3600);
 $total_login_hours_int = round($total_login_hours, 2);
-$total_login_hours_int = intval("$total_login_hours");
+$total_login_hours_int = intval("$total_login_hours_int");
 $total_login_minutes = ($total_login_hours - $total_login_hours_int);
 $total_login_minutes = ($total_login_minutes * 60);
 $total_login_minutes_int = round($total_login_minutes, 0);
 if ($total_login_minutes_int < 10) {$total_login_minutes_int = "0$total_login_minutes_int";}
+
+	if ($DB) {echo " - $total_login_time - $login_sec";}
 
 echo "<tr><td align=right><font size=2> </td>";
 echo "<td align=right><font size=2> </td>\n";

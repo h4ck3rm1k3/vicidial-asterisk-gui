@@ -34,6 +34,7 @@
 # 80422-1001 - Fixed sort by phone login
 # 80424-0515 - Added non_latin lookup from system_settings
 # 80525-1040 - Added IVR status display and summary for inbound calls
+# 80619-2047 - Added DISPO status for post-call-work while paused
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -785,7 +786,7 @@ else {$groupSQL = " and vicidial_live_agents.campaign_id='" . mysql_real_escape_
 if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
-$stmt="select extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
+$stmt="select extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
 if ($non_latin > 0)
 {
 $rslt=mysql_query("SET NAMES 'UTF8'");
@@ -814,6 +815,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		$Acomments[$i] = 		$row[11];
 		$Acalls_today[$i] =		$row[12];
 		$Acallerid[$i] =		$row[13];
+		$Alead_id[$i] =			$row[14];
 
 		$i++;
 		}
@@ -883,6 +885,13 @@ $talking_to_print = mysql_num_rows($rslt);
 			if (eregi("READY|PAUSED",$Astatus[$i]))
 			{
 			$Acall_time[$i]=$Acall_finish[$i];
+
+			if ($Alead_id[$i] > 0)
+				{
+				$Astatus[$i] =	'DISPO';
+				$Lstatus =		'DISPO';
+				$status =		' DISPO';
+				}
 			}
 			if ($non_latin < 1)
 			{
@@ -920,7 +929,7 @@ $talking_to_print = mysql_num_rows($rslt);
 					{$CM='I';}
 				else
 					{$CM='M';}
-				} 
+				}
 			}
 		else {$CM=' ';}
 
@@ -972,6 +981,19 @@ $talking_to_print = mysql_num_rows($rslt);
 			if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 	#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 			}
+		if ($Lstatus=='DISPO')
+			{
+			if ($call_time_M_int >= 360) 
+				{$j++; continue;} 
+			else
+				{
+				$agent_paused++;  $agent_total++;
+				$G=''; $EG='';
+				if ($call_time_S >= 10) {$G='<SPAN class="khaki"><B>'; $EG='</B></SPAN>';}
+				if ($call_time_M_int >= 1) {$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>';}
+				if ($call_time_M_int >= 5) {$G='<SPAN class="olive"><B>'; $EG='</B></SPAN>';}
+				}
+			}
 		if (eregi("PAUSED",$Astatus[$i])) 
 			{
 			if ($call_time_M_int >= 360) 
@@ -988,7 +1010,7 @@ $talking_to_print = mysql_num_rows($rslt);
 #		if ( (strlen($Acall_server_ip[$i])> 4) and ($Acall_server_ip[$i] != "$Aserver_ip[$i]") )
 #				{$G='<SPAN class="orange"><B>'; $EG='</B></SPAN>';}
 
-		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) ) {$agent_incall++;  $agent_total++;}
+		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) or (eregi("DISPO",$status)) ) {$agent_incall++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$agent_ready++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) 
 			{

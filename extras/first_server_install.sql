@@ -239,6 +239,7 @@ INSERT INTO vicidial_statuses values('NP','No Pitch No Price','Y','Y','UNDEFINED
 INSERT INTO vicidial_statuses values('PU','Call Picked Up','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('PM','Played Message','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('XFER','Call Transferred','Y','Y','UNDEFINED');
+INSERT INTO vicidial_statuses values('ERI','Agent Error','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('SVYEXT','Survey sent to Extension','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('SVYVM','Survey sent to Voicemail','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('SVYHU','Survey Hungup','N','N','UNDEFINED');
