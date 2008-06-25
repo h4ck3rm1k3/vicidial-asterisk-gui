@@ -155,6 +155,8 @@ use Net::Server::PreFork; # any personality will do
 
 
 sub process_request {
+	my $self = shift;
+
 	$process = 'begin';
 	$script = 'VDfastAGI';
 	########## Get current time, parse configs, get logging preferences ##########
@@ -250,6 +252,8 @@ sub process_request {
 	if ($AGILOG) 
 		{
 		$agi_string = "+++++++++++++++++ FastAGI Start ++++++++++++++++++++++++++++++++++++++++"; 
+		&agi_output;
+		$agi_string = "Connection accepted from $ast_server_ip";
 		&agi_output;
 		}
 
