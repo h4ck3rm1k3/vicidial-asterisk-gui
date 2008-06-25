@@ -315,7 +315,7 @@ echo "<tr><td><font size=2>ID </td><td><font size=2>EDIT </td><td align=right><f
 		if (ereg("LOGIN", $row[0]))
 			{
 			$login_sec='';
-			echo "<tr $bgcolor><td><font size=2>$row[5]</td>";
+			echo "<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
 			echo "<td align=right><font size=2>$manager_edit</td>";
 			echo "<td align=right><font size=2>$row[0]</td>";
 			echo "<td align=right><font size=2> $TC_log_date</td>\n";
@@ -334,7 +334,7 @@ echo "<tr><td><font size=2>ID </td><td><font size=2>EDIT </td><td align=right><f
 			$event_minutes = ($event_minutes * 60);
 			$event_minutes_int = round($event_minutes, 0);
 			if ($event_minutes_int < 10) {$event_minutes_int = "0$event_minutes_int";}
-			echo "<tr $bgcolor><td><font size=2>$row[5]</td>";
+			echo "<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
 			echo "<td align=right><font size=2>$manager_edit</td>";
 			echo "<td align=right><font size=2>$row[0]</td>";
 			echo "<td align=right><font size=2> $TC_log_date</td>\n";

@@ -279,3 +279,14 @@ index (record_id)
 );
 
 UPDATE system_settings SET db_schema_version='1093';
+
+ALTER TABLE vicidial_live_agents ADD external_hangup VARCHAR(1) default '';
+ALTER TABLE vicidial_live_agents ADD external_status VARCHAR(6) default '';
+
+ALTER TABLE vicidial_list MODIFY gender ENUM('M','F','U') default 'U';
+
+ALTER TABLE system_settings ADD vdc_header_date_format VARCHAR(50) default 'MS_DASH_24HR  2008-06-24 23:59:59';
+ALTER TABLE system_settings ADD vdc_customer_date_format VARCHAR(50) default 'AL_TEXT_AMPM  OCT 24, 2008 11:59:59 PM';
+ALTER TABLE system_settings ADD vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000';
+
+UPDATE system_settings SET db_schema_version='1094';

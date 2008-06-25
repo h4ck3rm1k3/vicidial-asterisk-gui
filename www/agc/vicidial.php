@@ -178,10 +178,11 @@
 # 80507-0932 - Fixed Script display bug (+ instead of space)
 # 80519-1425 - Added calls in queue display
 # 80523-1630 - Added Tiemclock links
+# 80625-0047 - Added U option for gender, added date/phone display options
 #
 
-$version = '2.0.5-156';
-$build = '80523-1630';
+$version = '2.0.5-157';
+$build = '80625-0047';
 
 require("dbconnect.php");
 
@@ -253,7 +254,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysql_num_rows($rslt);
@@ -262,6 +263,9 @@ while ($i < $qm_conf_ct)
 	{
 	$row=mysql_fetch_row($rslt);
 	$non_latin =					$row[0];
+	$vdc_header_date_format =		$row[1];
+	$vdc_customer_date_format =		$row[2];
+	$vdc_header_phone_format =		$row[3];
 	$i++;
 	}
 ##### END SETTINGS LOOKUP #####
@@ -1949,6 +1953,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var LogouTKicKAlL = '<? echo $LogouTKicKAlL ?>';
 	var flag_channels = '<? echo $flag_channels ?>';
 	var flag_string = '<? echo $flag_string ?>';
+	var vdc_header_date_format = '<? echo $vdc_header_date_format ?>';
+	var vdc_customer_date_format = '<? echo $vdc_customer_date_format ?>';
+	var vdc_header_phone_format = '<? echo $vdc_header_phone_format ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -3340,7 +3347,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						{
 						MD_ring_secondS++;
 						var dispnum = lead_dial_number;
-						var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+
+						var status_display_number = phone_number_format(dispnum);
 
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + CIDcheck + " &nbsp; Waiting for Ring... " + MD_ring_secondS + " seconds";
 				//		alert("channel not found yet:\n" + campaign);
@@ -3408,7 +3416,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								MD_channel_look=0;
 								var dispnum = lead_dial_number;
-								var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+								var status_display_number = phone_number_format(dispnum);
 
 								document.getElementById("MainStatuSSpan").innerHTML = " Called: " + status_display_number + " UID: " + CIDcheck + " &nbsp;"; 
 
@@ -3554,13 +3562,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						var dispnum = document.vicidial_form.phone_number.value;
-						var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+						var status_display_number = phone_number_format(dispnum);
 
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; " + man_status;
 						if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
-						var gIndex = 1;
-						if (document.vicidial_form.gender.value == 'M') {var gIndex = 0;}
+						var gIndex = 0;
+						if (document.vicidial_form.gender.value == 'M') {var gIndex = 1;}
+						if (document.vicidial_form.gender.value == 'F') {var gIndex = 2;}
 						document.getElementById("gender_list").selectedIndex = gIndex;
 
 						var genderIndex = document.getElementById("gender_list").selectedIndex;
@@ -3869,7 +3878,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						custchannellive=1;
 
 						var dispnum = manDiaLonly_num;
-						var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+						var status_display_number = phone_number_format(dispnum);
 
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; Waiting for Ring...";
 
@@ -4177,13 +4186,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							dialed_label									= check_VDIC_array[37];
 							source_id										= check_VDIC_array[38];
 							
-							var gIndex = 1;
-							if (document.vicidial_form.gender.value == 'M') {var gIndex = 0;}
+							var gIndex = 0;
+							if (document.vicidial_form.gender.value == 'M') {var gIndex = 1;}
+							if (document.vicidial_form.gender.value == 'F') {var gIndex = 2;}
 							document.getElementById("gender_list").selectedIndex = gIndex;
 
 							lead_dial_number = document.vicidial_form.phone_number.value;
 							var dispnum = document.vicidial_form.phone_number.value;
-							var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+							var status_display_number = phone_number_format(dispnum);
 
 							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + status_display_number + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
 
@@ -4205,7 +4215,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 									document.getElementById("MainStatuSSpan").style.background = VDIC_data_VDIG[2];
 									}
 								var dispnum = document.vicidial_form.phone_number.value;
-								var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+								var status_display_number = phone_number_format(dispnum);
 
 								document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + status_display_number + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
 								}
@@ -5869,6 +5879,54 @@ function utf8_decode(utftext) {
 
 
 // ################################################################################
+// phone number format
+function phone_number_format(formatphone) {
+	// customer_local_time, status date display 9999999999
+	//	vdc_header_phone_format
+	//	US_DASH 000-000-0000 - USA dash separated phone number<BR>
+	//	US_PARN (000)000-0000 - USA dash separated number with area code in parenthesis<BR>
+	//	UK_DASH 00 0000-0000 - UK dash separated phone number with space after city code<BR>
+	//	AU_SPAC 000 000 000 - Australia space separated phone number<BR>
+	//	IT_DASH 0000-000-000 - Italy dash separated phone number<BR>
+	//	FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
+	var regUS_DASHphone = new RegExp("US_DASH","g");
+	var regUS_PARNphone = new RegExp("US_PARN","g");
+	var regUK_DASHphone = new RegExp("UK_DASH","g");
+	var regAU_SPACphone = new RegExp("AU_SPAC","g");
+	var regIT_DASHphone = new RegExp("IT_DASH","g");
+	var regFR_SPACphone = new RegExp("FR_SPAC","g");
+	var status_display_number = formatphone;
+	var dispnum = formatphone;
+	if (vdc_header_phone_format.match(regUS_DASHphone))
+		{
+		var status_display_number = dispnum.substring(0,3) + '-' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+		}
+	if (vdc_header_phone_format.match(regUS_PARNphone))
+		{
+		var status_display_number = '(' + dispnum.substring(0,3) + ')' + dispnum.substring(3,6) + '-' + dispnum.substring(6,10);
+		}
+	if (vdc_header_phone_format.match(regUK_DASHphone))
+		{
+		var status_display_number = dispnum.substring(0,2) + ' ' + dispnum.substring(2,6) + '-' + dispnum.substring(6,10);
+		}
+	if (vdc_header_phone_format.match(regAU_SPACphone))
+		{
+		var status_display_number = dispnum.substring(0,3) + ' ' + dispnum.substring(3,6) + ' ' + dispnum.substring(6,9);
+		}
+	if (vdc_header_phone_format.match(regIT_DASHphone))
+		{
+		var status_display_number = dispnum.substring(0,4) + '-' + dispnum.substring(4,7) + '-' + dispnum.substring(8,10);
+		}
+	if (vdc_header_phone_format.match(regFR_SPACphone))
+		{
+		var status_display_number = dispnum.substring(0,2) + ' ' + dispnum.substring(2,4) + ' ' + dispnum.substring(4,6) + ' ' + dispnum.substring(6,8) + ' ' + dispnum.substring(8,10);
+		}
+
+	return status_display_number;
+	};
+
+
+// ################################################################################
 // Move the Dispo frame out of the way and change the link to maximize
 	function DispoMinimize()
 		{
@@ -6284,6 +6342,11 @@ else
 		var hours = t.getHours();
 		var min = t.getMinutes();
 		var sec = t.getSeconds();
+		var regMSdate = new RegExp("MS_","g");
+		var regUSdate = new RegExp("US_","g");
+		var regEUdate = new RegExp("EU_","g");
+		var regALdate = new RegExp("AL_","g");
+		var regAMPMdate = new RegExp("AMPM","g");
 		if (year < 1000) {year+=1900}
 		if (month< 10) {month= "0" + month}
 		if (daym< 10) {daym= "0" + daym}
@@ -6294,7 +6357,49 @@ else
 		filedate = year + "" + month + "" + daym + "-" + hours + "" + min + "" + sec;
 		tinydate = Tyear + "" + month + "" + daym + "" + hours + "" + min + "" + sec;
 		SQLdate = year + "-" + month + "-" + daym + " " + hours + ":" + min + ":" + sec;
-		document.getElementById("status").innerHTML = year + "-" + month + "-" + daym + " " + hours + ":" + min + ":" + sec  + display_message;
+
+		var status_date = '';
+		var status_time = hours + ":" + min + ":" + sec;
+		if (vdc_header_date_format.match(regMSdate))
+			{
+			status_date = year + "-" + month + "-" + daym;
+			}
+		if (vdc_header_date_format.match(regUSdate))
+			{
+			status_date = month + "/" + daym + "/" + year;
+			}
+		if (vdc_header_date_format.match(regEUdate))
+			{
+			status_date = daym + "/" + month + "/" + year;
+			}
+		if (vdc_header_date_format.match(regALdate))
+			{
+			var statusmon='';
+			if (mon == 1) {statusmon = "JAN";}
+			if (mon == 2) {statusmon = "FEB";}
+			if (mon == 3) {statusmon = "MAR";}
+			if (mon == 4) {statusmon = "APR";}
+			if (mon == 5) {statusmon = "MAY";}
+			if (mon == 6) {statusmon = "JUN";}
+			if (mon == 7) {statusmon = "JLY";}
+			if (mon == 8) {statusmon = "AUG";}
+			if (mon == 9) {statusmon = "SEP";}
+			if (mon == 10) {statusmon = "OCT";}
+			if (mon == 11) {statusmon = "NOV";}
+			if (mon == 12) {statusmon = "DEC";}
+
+			status_date = statusmon + " " + daym;
+			}
+		if (vdc_header_date_format.match(regAMPMdate))
+			{
+			var AMPM = 'AM';
+			if (hours == 12) {AMPM = 'PM';}
+			if (hours == 0) {AMPM = 'AM'; hours = '12';}
+			if (hours > 12) {hours = (hours - 12);   AMPM = 'PM';}
+			status_time = hours + ":" + min + ":" + sec + " " + AMPM;
+			}
+
+		document.getElementById("status").innerHTML = status_date + " " + status_time  + display_message;
 		if (VD_live_customer_call==1)
 			{
 			var customer_gmt = parseFloat(document.vicidial_form.gmt_offset_now.value);
@@ -6303,35 +6408,64 @@ else
 			var UnixTimec = (UnixTime + (3600 * customer_gmt_diff));
 			var UnixTimeMSc = (UnixTimec * 1000);
 			c.setTime(UnixTimeMSc);
+			var Cyear= c.getYear()
 			var Cmon= c.getMonth()
-		//		Cmon++;
+				Cmon++;
 			var Cdaym= c.getDate()
 			var Chours = c.getHours();
 			var Cmin = c.getMinutes();
 			var Csec = c.getSeconds();
+			if (Cyear < 1000) {Cyear+=1900}
 			if (Cmon < 10) {Cmon= "0" + Cmon}
 			if (Cdaym < 10) {Cdaym= "0" + Cdaym}
 			if (Chours < 10) {Chours = "0" + Chours;}
 			if ( (Cmin < 10) && (Cmin.length < 2) ) {Cmin = "0" + Cmin;}
 			if ( (Csec < 10) && (Csec.length < 2) ) {Csec = "0" + Csec;}
-			if (Cmon == 0) {Cmon = "JAN";}
-			if (Cmon == 1) {Cmon = "FEB";}
-			if (Cmon == 2) {Cmon = "MAR";}
-			if (Cmon == 3) {Cmon = "APR";}
-			if (Cmon == 4) {Cmon = "MAY";}
-			if (Cmon == 5) {Cmon = "JUN";}
-			if (Cmon == 6) {Cmon = "JLY";}
-			if (Cmon == 7) {Cmon = "AUG";}
-			if (Cmon == 8) {Cmon = "SEP";}
-			if (Cmon == 9) {Cmon = "OCT";}
-			if (Cmon == 10) {Cmon = "NOV";}
-			if (Cmon == 11) {Cmon = "DEC";}
-			if (Chours == 12) {AMPM = 'PM';}
-			if (Chours > 12) {Chours = (Chours - 12);   AMPM = 'PM';}
 			if (Cmin < 10) {Cmin = "0" + Cmin;}
 			if (Csec < 10) {Csec = "0" + Csec;}
 
-			var customer_local_time = Cmon + " " + Cdaym + "   " + Chours + ":" + Cmin + ":" + Csec + " " + AMPM;
+		var customer_date = '';
+		var customer_time = Chours + ":" + Cmin + ":" + Csec;
+		if (vdc_customer_date_format.match(regMSdate))
+			{
+			customer_date = Cyear + "-" + Cmon + "-" + Cdaym;
+			}
+		if (vdc_customer_date_format.match(regUSdate))
+			{
+			customer_date = Cmon + "/" + Cdaym + "/" + Cyear;
+			}
+		if (vdc_customer_date_format.match(regEUdate))
+			{
+			customer_date = Cdaym + "/" + Cmon + "/" + Cyear;
+			}
+		if (vdc_customer_date_format.match(regALdate))
+			{
+			var customermon='';
+			if (Cmon == 1) {customermon = "JAN";}
+			if (Cmon == 2) {customermon = "FEB";}
+			if (Cmon == 3) {customermon = "MAR";}
+			if (Cmon == 4) {customermon = "APR";}
+			if (Cmon == 5) {customermon = "MAY";}
+			if (Cmon == 6) {customermon = "JUN";}
+			if (Cmon == 7) {customermon = "JLY";}
+			if (Cmon == 8) {customermon = "AUG";}
+			if (Cmon == 9) {customermon = "SEP";}
+			if (Cmon == 10) {customermon = "OCT";}
+			if (Cmon == 11) {customermon = "NOV";}
+			if (Cmon == 12) {customermon = "DEC";}
+
+			customer_date = customermon + " " + Cdaym + " ";
+			}
+		if (vdc_customer_date_format.match(regAMPMdate))
+			{
+			var AMPM = 'AM';
+			if (Chours == 12) {AMPM = 'PM';}
+			if (Chours == 0) {AMPM = 'AM'; Chours = '12';}
+			if (Chours > 12) {Chours = (Chours - 12);   AMPM = 'PM';}
+			customer_time = Chours + ":" + Cmin + ":" + Csec + " " + AMPM;
+			}
+
+			var customer_local_time = customer_date + " " + customer_time;
 			document.vicidial_form.custdatetime.value		= customer_local_time;
 
 			}
@@ -7036,7 +7170,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <div class="text_input" id="MainPanelCustInfo">
 <table><tr>
 <td align=right><font class="body_text"> seconds: </td>
-<td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Channel: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Cust Time: <input type=text size=22 name=custdatetime class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Channel: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Cust Time: <input type=text size=27 name=custdatetime class="cust_form" value=""></td>
 </tr><tr>
 <td colspan=2 align=center> Customer Information: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
@@ -7053,7 +7187,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; State: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PostCode: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Province: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <select size=1 name=gender_list class="cust_form" id=gender_list><option value="M">M - Male</option><option value="F">F - Female</option></select></td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
 <td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=12 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>

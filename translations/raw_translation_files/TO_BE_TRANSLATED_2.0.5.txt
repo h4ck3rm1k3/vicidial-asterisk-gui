@@ -196,6 +196,25 @@ ADD NUMBERS TO THE DNC LIST||
 Phone Numbers: ||
 one phone number per line only||
 VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list||
+ Time Sheet ||
+Timeclock Record Edit||
+Default date format with year month day||
+USA date format with month day year||
+European date format with day month year||
+Text date format with abbreviated month day||
+followed by 24 hour time||
+followed by 12 hour time||
+Agent Screen Header Date Format -<\/B> This menu allows you to choose the format of the date that shows up at the top of the VICIDIAL agent screen. The options for this setting are: default is||
+Agent Screen Customer Date Format -<\/B> This menu allows you to choose the format of the customer time zone date that shows up at the top of the Customer Information section of the VICIDIAL agent screen. The options for this setting are: default is||
+Agent Screen Customer Phone Format -<\/B> This menu allows you to choose the format of the customer phone number that shows up in the status section of the VICIDIAL agent screen. The options for this setting are: default is||
+dash separated phone number||
+dash separated number with area code in parenthesis||
+No formatting||
+with space after city code||
+space separated phone number||
+Agent Screen Header Date Format||
+Agent Screen Customer Date Format||
+Agent Screen Customer Phone Format||
 
 
 ############################################################ CLIENT
@@ -221,6 +240,7 @@ Click LOGIN below to log-in||
 Amount of time you have been logged-in: ||
 You logged-in at:||
 Click LOGOUT below to log-out||
+Undefined||
 
 
 ############################################################  MANAGER Manual

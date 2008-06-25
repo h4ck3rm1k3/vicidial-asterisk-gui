@@ -7,6 +7,7 @@
 #
 # 60619-1729 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 80624-0132 - Added vicidial_timeclock entries
 #
 
 require("dbconnect.php");
@@ -17,13 +18,13 @@ $PHP_SELF=$_SERVER['PHP_SELF'];
 if (isset($_GET["agent"]))				{$agent=$_GET["agent"];}
 	elseif (isset($_POST["agent"]))		{$agent=$_POST["agent"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
-	elseif (isset($_POST["query_date"]))		{$query_date=$_POST["query_date"];}
-if (isset($_GET["calls_summary"]))				{$calls_summary=$_GET["calls_summary"];}
-	elseif (isset($_POST["calls_summary"]))		{$calls_summary=$_POST["calls_summary"];}
+	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
+if (isset($_GET["calls_summary"]))			{$calls_summary=$_GET["calls_summary"];}
+	elseif (isset($_POST["calls_summary"]))	{$calls_summary=$_POST["calls_summary"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -276,6 +277,104 @@ $login_time = ($end - $start);
 
 echo "-----------------------------------------\n";
 echo "TOTAL LOGGED-IN TIME:    $pfLOGIN_TIME_HMS\n";
+
+
+### timeclock records
+
+
+##### vicidial_timeclock log records for user #####
+
+$total_login_time=0;
+$SQday_ARY =	explode('-',$query_date_BEGIN);
+$EQday_ARY =	explode('-',$query_date_END);
+$SQepoch = mktime(0, 0, 0, $SQday_ARY[1], $SQday_ARY[2], $SQday_ARY[0]);
+$EQepoch = mktime(23, 59, 59, $EQday_ARY[1], $EQday_ARY[2], $EQday_ARY[0]);
+
+echo "\n";
+
+echo "<B>TIMECLOCK LOGIN/LOGOUT TIME:</B>\n";
+echo "<TABLE width=550 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=2>ID </td><td><font size=2>EDIT </td><td align=right><font size=2>EVENT </td><td align=right><font size=2> DATE</td><td align=right><font size=2> IP ADDRESS</td><td align=right><font size=2> GROUP</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
+
+	$stmt="SELECT event,event_epoch,user_group,login_sec,ip_address,timeclock_id,manager_user from vicidial_timeclock_log where user='$agent' and event_epoch >= '$SQepoch'  and event_epoch <= '$EQepoch';";
+	if ($DB>0) {echo "|$stmt|";}
+	$rslt=mysql_query($stmt, $link);
+	$events_to_print = mysql_num_rows($rslt);
+
+	$total_logs=0;
+	$o=0;
+	while ($events_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		if ( ($row[0]=='START') or ($row[0]=='LOGIN') )
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		$TC_log_date = date("Y-m-d H:i:s", $row[1]);
+
+		$manager_edit='';
+		if (strlen($row[6])>0) {$manager_edit = ' * ';}
+
+		if (ereg("LOGIN", $row[0]))
+			{
+			$login_sec='';
+			echo "<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
+			echo "<td align=right><font size=2>$manager_edit</td>";
+			echo "<td align=right><font size=2>$row[0]</td>";
+			echo "<td align=right><font size=2> $TC_log_date</td>\n";
+			echo "<td align=right><font size=2> $row[4]</td>\n";
+			echo "<td align=right><font size=2> $row[2]</td>\n";
+			echo "<td align=right><font size=2> </td></tr>\n";
+			}
+		if (ereg("LOGOUT", $row[0]))
+			{
+			$login_sec = $row[3];
+			$total_login_time = ($total_login_time + $login_sec);
+			$event_hours = ($login_sec / 3600);
+			$event_hours_int = round($event_hours, 2);
+			$event_hours_int = intval("$event_hours_int");
+			$event_minutes = ($event_hours - $event_hours_int);
+			$event_minutes = ($event_minutes * 60);
+			$event_minutes_int = round($event_minutes, 0);
+			if ($event_minutes_int < 10) {$event_minutes_int = "0$event_minutes_int";}
+			echo "<tr $bgcolor><td><font size=2><A HREF=\"./timeclock_edit.php?timeclock_id=$row[5]\">$row[5]</A></td>";
+			echo "<td align=right><font size=2>$manager_edit</td>";
+			echo "<td align=right><font size=2>$row[0]</td>";
+			echo "<td align=right><font size=2> $TC_log_date</td>\n";
+			echo "<td align=right><font size=2> $row[4]</td>\n";
+			echo "<td align=right><font size=2> $row[2]</td>\n";
+			echo "<td align=right><font size=2> $event_hours_int:$event_minutes_int";
+			if ($DB) {echo " - $total_login_time - $login_sec";}
+			echo "</td></tr>\n";
+			}
+		$o++;
+	}
+if (strlen($login_sec)<1)
+	{
+	$login_sec = ($STARTtime - $row[1]);
+	$total_login_time = ($total_login_time + $login_sec);
+		if ($DB) {echo "LOGIN ONLY - $total_login_time - $login_sec";}
+	}
+$total_login_hours = ($total_login_time / 3600);
+$total_login_hours_int = round($total_login_hours, 2);
+$total_login_hours_int = intval("$total_login_hours_int");
+$total_login_minutes = ($total_login_hours - $total_login_hours_int);
+$total_login_minutes = ($total_login_minutes * 60);
+$total_login_minutes_int = round($total_login_minutes, 0);
+if ($total_login_minutes_int < 10) {$total_login_minutes_int = "0$total_login_minutes_int";}
+
+	if ($DB) {echo " - $total_login_time - $login_sec";}
+
+echo "<tr><td align=right><font size=2> </td>";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2> </td>\n";
+echo "<td align=right><font size=2><font size=2>TOTAL </td>\n";
+echo "<td align=right><font size=2> $total_login_hours_int:$total_login_minutes_int  </td></tr>\n";
+
+echo "</TABLE>\n";
+
+
 
 }
 

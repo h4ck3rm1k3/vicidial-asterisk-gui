@@ -787,10 +787,6 @@ if (strlen($usergroup)<1) {$usergroupSQL = '';}
 else {$usergroupSQL = " and user_group='" . mysql_real_escape_string($usergroup) . "'";}
 
 $stmt="select extension,vicidial_live_agents.user,conf_exten,vicidial_live_agents.status,vicidial_live_agents.server_ip,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),call_server_ip,vicidial_live_agents.campaign_id,vicidial_users.user_group,vicidial_users.full_name,vicidial_live_agents.comments,vicidial_live_agents.calls_today,vicidial_live_agents.callerid,lead_id from vicidial_live_agents,vicidial_users where vicidial_live_agents.user=vicidial_users.user $groupSQL $usergroupSQL order by $orderSQL;";
-if ($non_latin > 0)
-{
-$rslt=mysql_query("SET NAMES 'UTF8'");
-}
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $talking_to_print = mysql_num_rows($rslt);
@@ -853,10 +849,6 @@ $talking_to_print = mysql_num_rows($rslt);
 			}
 
 		$stmt="select login from phones where server_ip='$Aserver_ip[$i]' and $exten and protocol='$protocol';";
-		if ($non_latin > 0)
-		{
-		$rslt=mysql_query("SET NAMES 'UTF8'");
-		}
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$Alogin[$i] = "$row[0]-----$i";
@@ -1041,10 +1033,6 @@ $talking_to_print = mysql_num_rows($rslt);
 		if ($CM == 'I') 
 			{
 			$stmt="select campaign_id,stage from vicidial_auto_calls where callerid='$Acallerid[$i]' LIMIT 1;";
-			if ($non_latin > 0)
-			{
-			$rslt=mysql_query("SET NAMES 'UTF8'");
-			}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$ingrp_to_print = mysql_num_rows($rslt);

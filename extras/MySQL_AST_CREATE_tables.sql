@@ -75,7 +75,7 @@ server_description VARCHAR(255),
 server_ip VARCHAR(15) NOT NULL,
 active ENUM('Y','N'),
 asterisk_version VARCHAR(20) default '1.2.9',
-max_vicidial_trunks SMALLINT(4) default '96',
+max_vicidial_trunks SMALLINT(4) default '23',
 telnet_host VARCHAR(20) NOT NULL default 'localhost',
 telnet_port INT(5) NOT NULL default '5038',
 ASTmgrUSERNAME VARCHAR(20) NOT NULL default 'cron',
@@ -262,7 +262,7 @@ state VARCHAR(2),
 province VARCHAR(50),
 postal_code VARCHAR(10),
 country_code VARCHAR(3),
-gender ENUM('M','F'),
+gender ENUM('M','F','U') default 'U',
 date_of_birth DATE,
 alt_phone VARCHAR(12),
 email VARCHAR(70),
@@ -313,6 +313,8 @@ user_level INT(2) default '0',
 comments VARCHAR(20),
 campaign_weight TINYINT(1) default '0',
 calls_today SMALLINT(5) UNSIGNED default '0',
+external_hangup VARCHAR(1) default '',
+external_status VARCHAR(6) default '',
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -967,7 +969,10 @@ enable_agc_xfer_log ENUM('0','1') default '0',
 db_schema_version INT(8) UNSIGNED default '0',
 auto_user_add_value INT(9) UNSIGNED default '101',
 timeclock_end_of_day VARCHAR(4) default '0000',
-timeclock_last_reset_date DATE
+timeclock_last_reset_date DATE,
+vdc_header_date_format VARCHAR(50) default 'MS_DASH_24HR  2008-06-24 23:59:59',
+vdc_customer_date_format VARCHAR(50) default 'AL_TEXT_AMPM  OCT 24, 2008 11:59:59 PM',
+vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000'
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1212,5 +1217,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1093';
+UPDATE system_settings SET db_schema_version='1094';
 

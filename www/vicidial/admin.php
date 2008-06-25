@@ -759,6 +759,13 @@ if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete
 	elseif (isset($_POST["delete_timeclock_log"]))	{$delete_timeclock_log=$_POST["delete_timeclock_log"];}
 if (isset($_GET["phone_numbers"]))					{$phone_numbers=$_GET["phone_numbers"];}	
 	elseif (isset($_POST["phone_numbers"]))			{$phone_numbers=$_POST["phone_numbers"];}
+if (isset($_GET["vdc_header_date_format"]))					{$vdc_header_date_format=$_GET["vdc_header_date_format"];}	
+	elseif (isset($_POST["vdc_header_date_format"]))		{$vdc_header_date_format=$_POST["vdc_header_date_format"];}
+if (isset($_GET["vdc_customer_date_format"]))				{$vdc_customer_date_format=$_GET["vdc_customer_date_format"];}	
+	elseif (isset($_POST["vdc_customer_date_format"]))		{$vdc_customer_date_format=$_POST["vdc_customer_date_format"];}
+if (isset($_GET["vdc_header_phone_format"]))				{$vdc_header_phone_format=$_GET["vdc_header_phone_format"];}	
+	elseif (isset($_POST["vdc_header_phone_format"]))		{$vdc_header_phone_format=$_POST["vdc_header_phone_format"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1146,6 +1153,13 @@ $welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_m
 $onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
 $campaign_shift_length = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$campaign_shift_length);
 
+### ALPHA-NUMERIC and underscore and dash and slash and at and space and colon
+$vdc_header_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_header_date_format);
+$vdc_customer_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_customer_date_format);
+
+### ALPHA-NUMERIC and underscore and dash and at and space and parantheses
+$vdc_header_phone_format = ereg_replace("[^- \(\)\_0-9a-zA-Z]","",$vdc_header_phone_format);
+
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 $list_mix_container = ereg_replace(";","",$list_mix_container);
@@ -1310,11 +1324,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 80528-0001 - Added campaign survey sub-section
 # 80528-1102 - Added user timeclock edit options
 # 80608-1304 - Changed add-to-DNC to allow for multiple entries per submission
+# 80625-0032 - Added time/phone display format options to system settings
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-132';
-$build = '80608-1304';
+$admin_version = '2.0.5-133';
+$build = '80625-0032';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -3919,6 +3934,44 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <BR>
 <B>Timeclock Last Auto Logout -</B> This field displays the date of the last auto-logout.
 
+<BR>
+<A NAME="settings-vdc_header_date_format">
+<BR>
+<B>Agent Screen Header Date Format -</B> This menu allows you to choose the format of the date that shows up at the top of the VICIDIAL agent screen. The options for this setting are: default is MS_DASH_24HR<BR>
+MS_DASH_24HR  2008-06-24 23:59:59 - Default date format with year month day followed by 24 hour time<BR>
+US_SLASH_24HR 06/24/2008 23:59:59 - USA date format with month day year followed by 24 hour time<BR>
+EU_SLASH_24HR 24/06/2008 23:59:59 - European date format with day month year followed by 24 hour time<BR>
+AL_TEXT_24HR  JUN 24 23:59:59 - Text date format with abbreviated month day followed by 24 hour time<BR>
+MS_DASH_AMPM  2008-06-24 11:59:59 PM - Default date format with year month day followed by 12 hour time<BR>
+US_SLASH_AMPM 06/24/2008 11:59:59 PM - USA date format with month day year followed by 12 hour time<BR>
+EU_SLASH_AMPM 24/06/2008 11:59:59 PM - European date format with day month year followed by 12 hour time<BR>
+AL_TEXT_AMPM  JUN 24 11:59:59 PM - Text date format with abbreviated month day followed by 12 hour time<BR>
+
+<BR>
+<A NAME="settings-vdc_customer_date_format">
+<BR>
+<B>Agent Screen Customer Date Format -</B> This menu allows you to choose the format of the customer time zone date that shows up at the top of the Customer Information section of the VICIDIAL agent screen. The options for this setting are: default is AL_TEXT_AMPM<BR>
+MS_DASH_24HR  2008-06-24 23:59:59 - Default date format with year month day followed by 24 hour time<BR>
+US_SLASH_24HR 06/24/2008 23:59:59 - USA date format with month day year followed by 24 hour time<BR>
+EU_SLASH_24HR 24/06/2008 23:59:59 - European date format with day month year followed by 24 hour time<BR>
+AL_TEXT_24HR  JUN 24 23:59:59 - Text date format with abbreviated month day followed by 24 hour time<BR>
+MS_DASH_AMPM  2008-06-24 11:59:59 PM - Default date format with year month day followed by 12 hour time<BR>
+US_SLASH_AMPM 06/24/2008 11:59:59 PM - USA date format with month day year followed by 12 hour time<BR>
+EU_SLASH_AMPM 24/06/2008 11:59:59 PM - European date format with day month year followed by 12 hour time<BR>
+AL_TEXT_AMPM  JUN 24 11:59:59 PM - Text date format with abbreviated month day followed by 12 hour time<BR>
+
+<BR>
+<A NAME="settings-vdc_header_phone_format">
+<BR>
+<B>Agent Screen Customer Phone Format -</B> This menu allows you to choose the format of the customer phone number that shows up in the status section of the VICIDIAL agent screen. The options for this setting are: default is US_PARN<BR>
+US_DASH 000-000-0000 - USA dash separated phone number<BR>
+US_PARN (000)000-0000 - USA dash separated number with area code in parenthesis<BR>
+MS_NODS 0000000000 - No formatting<BR>
+UK_DASH 00 0000-0000 - UK dash separated phone number with space after city code<BR>
+AU_SPAC 000 000 000 - Australia space separated phone number<BR>
+IT_DASH 0000-000-000 - Italy dash separated phone number<BR>
+FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
+
 
 
 
@@ -4490,7 +4543,7 @@ $admin_home_url_LU =	$row[0];
 
 <? if (strlen($users_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Users </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./user_stats.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> User Stats </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./user_status.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> User Status </a> </TD></TR>
+<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Users </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy User </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A User </a> &nbsp; | &nbsp; <a href="./user_stats.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> User Stats </a> &nbsp; | &nbsp; <a href="./user_status.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> User Status </a> &nbsp; | &nbsp; <a href="./AST_agent_time_sheet.php?agent=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Time Sheet </a> </TD></TR>
 <? } 
 if (strlen($campaigns_hh) > 1) 
 	{ 
@@ -8377,7 +8430,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -13893,7 +13946,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -13916,6 +13969,9 @@ if ($ADD==311111111111111)
 	$auto_user_add_value =			$row[17];
 	$timeclock_end_of_day =			$row[18];
 	$timeclock_last_reset_date =	$row[19];
+	$vdc_header_date_format =		$row[20];
+	$vdc_customer_date_format =		$row[21];
+	$vdc_header_phone_format =		$row[22];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -13955,6 +14011,38 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Enable Agent Transfer Logfile: </td><td align=left><select size=1 name=enable_agc_xfer_log><option>1</option><option>0</option><option selected>$enable_agc_xfer_log</option></select>$NWB#settings-enable_agc_xfer_log$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock End Of Day: </td><td align=left><input type=text name=timeclock_end_of_day size=5 maxlength=4 value=\"$timeclock_end_of_day\">$NWB#settings-timeclock_end_of_day$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock Last Auto Logout: </td><td align=left> $timeclock_last_reset_date</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Header Date Format: </td><td align=left><select size=1 name=vdc_header_date_format>\n";
+	echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
+	echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
+	echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+	echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
+	echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
+	echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
+	echo "<option>EU_SLASH_AMPM 24/06/2008 11:59:59 PM</option>\n";
+	echo "<option>AL_TEXT_AMPM  JUN 24 11:59:59 PM</option>\n";
+	echo "<option selected value=\"$vdc_header_date_format\">$vdc_header_date_format</option>\n";
+	echo "</select>$NWB#settings-vdc_header_date_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Customer Date Format: </td><td align=left><select size=1 name=vdc_customer_date_format>\n";
+	echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
+	echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
+	echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+	echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
+	echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
+	echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
+	echo "<option>EU_SLASH_AMPM 24/06/2008 11:59:59 PM</option>\n";
+	echo "<option>AL_TEXT_AMPM  JUN 24 11:59:59 PM</option>\n";
+	echo "<option selected value=\"$vdc_customer_date_format\">$vdc_customer_date_format</option>\n";
+	echo "</select>$NWB#settings-vdc_customer_date_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Customer Phone Format: </td><td align=left><select size=1 name=vdc_header_phone_format>\n";
+	echo "<option>US_DASH 000-000-0000</option>\n";
+	echo "<option>US_PARN (000)000-0000</option>\n";
+	echo "<option>MS_NODS 0000000000</option>\n";
+	echo "<option>UK_DASH 00 0000-0000</option>\n";
+	echo "<option>AU_SPAC 000 000 000</option>\n";
+	echo "<option>IT_DASH 0000-000-000</option>\n";
+	echo "<option>FR_SPAC 00 00 00 00 00</option>\n";
+	echo "<option selected value=\"$vdc_header_phone_format\">$vdc_header_phone_format</option>\n";
+	echo "</select>$NWB#settings-vdc_header_phone_format$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "</form>\n";
