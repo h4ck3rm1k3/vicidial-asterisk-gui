@@ -109,7 +109,7 @@ if ( (!$vendor_id) and (!$phone)  and (!$lead_id) )
 	echo "<form method=post name=search action=\"$PHP_SELF\">\n";
 	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<b>Please enter a:<br> Vendor ID(vendor lead code): <input type=text name=vendor_id size=10 maxlength=10> or \n";
-	echo "<br><b>a Home Phone Number: <input type=text name=phone size=10 maxlength=10> or\n";
+	echo "<br><b>a Home Phone Number: <input type=text name=phone size=20 maxlength=16> or\n";
 	echo "<br><b>a lead ID: <input type=text name=lead_id size=10 maxlength=10> <br><br>\n";
 	echo "<input type=submit name=submit value=SUBMIT></b>\n";
 	echo "</form>\n</center>\n";
