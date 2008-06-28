@@ -503,7 +503,7 @@ local_call_time VARCHAR(10) DEFAULT '9am-9pm',
 voicemail_ext VARCHAR(10),
 dial_timeout TINYINT UNSIGNED default '60',
 dial_prefix VARCHAR(20) default '9',
-campaign_cid VARCHAR(10) default '0000000000',
+campaign_cid VARCHAR(20) default '0000000000',
 campaign_vdad_exten VARCHAR(20) default '8365',
 campaign_rec_exten VARCHAR(20) default '8309',
 campaign_recording ENUM('NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'ONDEMAND',
@@ -1217,5 +1217,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1094';
+UPDATE system_settings SET db_schema_version='1095';
 

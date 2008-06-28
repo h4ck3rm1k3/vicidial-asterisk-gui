@@ -4,11 +4,14 @@ Timeclock process flow					  2008-05-12
 
 This will outline the process I have thought through for adding a timeclock component to the VICIDIAL system. The objective is to add the following features to make VICIDIAL a more well-rounded product:
 - Allow vicidial users to clock-in to the system
+- Allow vicidial managers to clock users in and out as well as edit timeclock records
+- Maintain an audit trail for manager-modified records
 - Add a SHIFT section to administration
+- Have reports showing all timeclock totals for various parameters(user-group/time-period/user/current-status/etc...)
 
+Future planned features:
 - Allow restrictions of agent-login by shift
 - Allow ability to not allow agents to log-in to any VICIDIAL page(admin or agent) without clocking in.
-- Have reports showing all timeclock totals for various parameters(user-group/campaign/time-period/in-groups/etc...)
 - ability to allow managers to alter timeclock records with audit trail
 - reports showing user log activity outside of shift timeframes
 
@@ -25,6 +28,11 @@ Newly Created Scripts:
 timeclock.php - linked to from vicidial.php/admin.php/welcome.php to give easy access for users to use the timeclock and then go back to what they were doing.
 
 timeclock_auto_logout.pl - script that runs at the defined system_settings.timeclock_end_of_day field that will go through all agents that are currently logged into the timeclock for the day and log them out with the AUTOLOGOUT event. Only runs once a day. Triggered by the ADMIN_keepalive_all.pl script. Defined to run by the '9' flag in the keepalive settings of the astguiclient.conf file
+
+timeclock_report.php - report linked from the reports page that shows completed timeclock records by user and user-group across a timeframe
+
+timeclock_edit.php - page that allows managers to edit existing completed timeclock records
+
 
 
 More to come...

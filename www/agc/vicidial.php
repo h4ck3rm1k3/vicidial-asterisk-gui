@@ -3559,6 +3559,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						CBcomments										= MDnextResponse_array[31];
 						dialed_number									= MDnextResponse_array[32];
 						dialed_label									= MDnextResponse_array[33];
+						source_id										= MDnextResponse_array[34];
 						
 						lead_dial_number = document.vicidial_form.phone_number.value;
 						var dispnum = document.vicidial_form.phone_number.value;

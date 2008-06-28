@@ -127,6 +127,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 27. Changed add-to-DNC list to allow for multiple phone numbers per submission
 
+28. Date/time and phone formats that appear in the VICIDIAL agent screen are now
+	customizable as defined in the Admin -> System Settings screen.
 
 
 

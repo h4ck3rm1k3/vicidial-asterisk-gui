@@ -290,3 +290,7 @@ ALTER TABLE system_settings ADD vdc_customer_date_format VARCHAR(50) default 'AL
 ALTER TABLE system_settings ADD vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000';
 
 UPDATE system_settings SET db_schema_version='1094';
+
+ALTER TABLE vicidial_campaigns MODIFY campaign_cid VARCHAR(20) default '0000000000';
+
+UPDATE system_settings SET db_schema_version='1095';
