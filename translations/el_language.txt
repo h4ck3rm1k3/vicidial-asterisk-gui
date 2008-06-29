@@ -309,7 +309,7 @@ digits only please|παρακαλώ μόνο ψηφία|
 Dial Now|Κάλεσε Τώρα|
 CB Comments|Σχόλια CB|
 Title|Τίτλος|
-STATUS|ΚΑΤΑΣΤΑΣΗ|
+ STATUS| ΚΑΤΑΣΤΑΣΗ|
 RESET|ΕΠΑΝΑΦΟΡΑ|
 CLEAR FORM|ΕΠΑΝΑΦΟΡΑ|
 SUBMIT|ΥΠΟΒΑΛΕΤΕ|
@@ -354,7 +354,7 @@ Welcome|Χρήστης|
 VOICEMAIL|ΦΩΝ.ΤΑΧ.|
  NEW| ΝΕΟ|
  OLD| ΠΑΛΑΙΟ|
-PAUSE|ΠΑΥΣΗ|
+STOP|ΣΤΑΣΗ|
 START|ΕΝΑΡΞΗ|
 Pause|Παύση|
 Resume|Επανάληψη|

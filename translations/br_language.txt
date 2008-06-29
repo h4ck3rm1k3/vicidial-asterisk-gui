@@ -308,7 +308,7 @@ digits only please|digitos apenas por favor|
 Dial Now|Discar Agora|
 CB Comments|Comentarios do CB|
 Title|Título|
-STATUS|STATUS|
+ STATUS| STATUS|
 RESET|REINICIAR|
 CLEAR FORM|LIMPAR FORMULARIO|
 SUBMIT|ENVIAR|
@@ -354,7 +354,7 @@ Welcome|Bem vindo|
 VOICEMAIL|CAIXA POSTAL|
  NEW| NOVO|
  OLD| VELHO|
-PAUSE|PAUSAR|
+STOP|BATENTE|
 START|INICIAR|
 Pause|Pausa|
 Resume|Início|

@@ -311,7 +311,7 @@ Dial Now|Dial Ahora|
 CB Comments|Comentarios de los CBES|
 Title|Título|
 Your Status|Su Estado|
-STATUS|ESTADO|
+ STATUS| ESTADO|
 RESET|REINICIAR|
 CLEAR FORM|REINICIAR|
 SUBMIT|ENVIAR|
@@ -356,7 +356,7 @@ Welcome|Bienvenido|
 VOICEMAIL|BUZÓN DE VOZ|
  NEW| NUEVO|
  OLD| VIEJO|
-PAUSE|PAUSA|
+STOP|PARADA|
 START|COMIENZO|
 Pause|Pausa|
 Resume|Comienzo|

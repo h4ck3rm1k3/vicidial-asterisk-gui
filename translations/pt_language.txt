@@ -311,7 +311,7 @@ Dial Now|Seletor Agora|
 CB Comments|Comentários dos CB|
 Title|Título|
 Your Status|Seu Status|
-STATUS|STATUS|
+ STATUS| STATUS|
 RESET|RESTAURAÇÃO|
 CLEAR FORM|RESTAURAÇÃO|
 SUBMIT|SUBMETA|
@@ -356,7 +356,7 @@ Welcome|Boa vinda|
 VOICEMAIL|VOICEMAIL|
  NEW| NOVO|
  OLD| VELHO|
-PAUSE|PAUSA|
+STOP|BATENTE|
 START|COMEÇO|
 Pause|Pausa|
 Resume|Resumo|

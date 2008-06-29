@@ -311,7 +311,7 @@ Dial Now|Jetzt wählen|
 CB Comments|WV Anmerkungen|
 Title|Titel|
 Your Status|Ihr Status|
-STATUS|STATUS|
+ STATUS| STATUS|
 RESET|ZURÜCKSETZEN|
 CLEAR FORM|FORMULAR ZURÜCKSETZEN|
 SUBMIT|ÜBERNEHMEN|
@@ -356,7 +356,7 @@ Welcome|Willkommen|
 VOICEMAIL|VOICEMAIL|
  NEW| NEU|
  OLD| ALT|
-PAUSE|PAUSE|
+STOP|ANSCHLAG|
 START|START|
 Pause|Pause|
 Resume|WiederAufnehmen|

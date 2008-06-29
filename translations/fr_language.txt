@@ -311,7 +311,7 @@ Dial Now|Appel Manuel|
 CB Comments|Commentaires du Rappel|
 Title|Titre|
 Your Status|Votre Statut|
-STATUS|STATUT|
+ STATUS| STATUT|
 RESET|REINITIALISATION|
 CLEAR FORM|EFFACER LE FORMULAIRE|
 SUBMIT|VALIDER|
@@ -356,7 +356,7 @@ Welcome|Bienvenue|
 VOICEMAIL|Boite Vocale|
  NEW| NOUVEAU|
  OLD| ANCIEN|
-PAUSE|PAUSE|
+STOP|ARRÊT|
 START|DEBUT|
 Pause|Pause|
 Resume|Résumé|

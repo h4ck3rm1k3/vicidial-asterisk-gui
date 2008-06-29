@@ -2837,7 +2837,7 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:46px;z-index:20;" id="ActiveLinesPanel">
 <table border=0 BGCOLOR="#CDE0C2" width=640>
 <tr><td colspan=3>
-<a href="#" onclick="pause();return false;">PAUSE</a> | <a href="#" onclick="start();return false;">START</a> &nbsp; &nbsp; Refresh rate: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Faster</a> | <a href="#" onclick="slower();return false;">Slower</a></p>
+<a href="#" onclick="pause();return false;">STOP</a> | <a href="#" onclick="start();return false;">START</a> &nbsp; &nbsp; Refresh rate: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Faster</a> | <a href="#" onclick="slower();return false;">Slower</a></p>
 	<div id="status"><em>Initializing..</em></div>
 </td></tr>
 <tr><td>Active Extensions <BR> 

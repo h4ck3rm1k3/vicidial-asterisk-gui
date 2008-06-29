@@ -1,4 +1,4 @@
-# it_language.txt - this file is for the internationalization of the astGUIclient 
+﻿# it_language.txt - this file is for the internationalization of the astGUIclient 
 # client web pages. The associated install.pl file will take the language as an 
 # argument and alter the php scripts to the language typed in the command line:
 # example: ./install.pl --language=it
@@ -102,12 +102,12 @@ astGUIclient web client|web client astGUIclient|
 VICIDIAL web client|VICIDIAL web client|
 VICIDIAL web-client version|Versione di VICIDIAL web-client|
 You can only monitor Zap channels|Puoi soltanto monitorare i canali Zap|
-Stop Record|Ferma Registrazione|
-you are logged into this phone|Sei collegato con questo telefono|
+Stop Record|Ferma la registrazione|
+you are logged into this phone|Sei loggato su questo telefono|
 Back to Main Window|Torna alla schermata principale|
 LIVE CALLS ON THIS PHONE|CHIAMATE IN CORSO SU QUESTO TELEFONO|
-LIVE CALLS IN THIS CONFERENCE|CHIAMATE IN CORSO IN QUESTA CONFERENZA|
-LIVE CALL TRANSFER|TRASFERIMENTO CHIAMATA IN CORSO|
+LIVE CALLS IN THIS CONFERENCE|CHIAMATE IN CORSO SU QUESTA CONFERENZA|
+LIVE CALL TRANSFER|TRASFERIMENTO DELLA CHIAMATA IN CORSO|
 CLIENT CHANNEL|CANALE CLIENT|
 REMOTE CHANNEL|CANALE REMOTO|
 CLICK HERE TO LOG IN AGAIN|FAI CLICK QUI PER AUTENTICARTI DI NUOVO|
@@ -115,80 +115,80 @@ ACTIVE DISPLAY PAUSED|DISPLAY ATTIVO IN PAUSA|
 Main Panel|Pannello Principale|
 Active Lines Panel|Pannello Linee Attive|
 Conferences Panel|Pannello Conferenze|
-Check Voicemail|Controlla Posta Vocale|
-Live Call|Chimata in corso|
+Check Voicemail|Controlla Voicemail|
+Live Call|Chiamata in corso|
 Hangup Trunk|Disconnetti il Trunk|
 Hijack Trunk|Dirotta il Trunk|
 Listen Trunk|Ascolta il Trunk|
 Active Local Menu|Menu Locale Attivo|
 Hangup Local|Disconnetti locale|
 Hijack Local|Dirotta Locale|
-Listen Local|Ascolta locale|
+Listen Local|Ascolta Locale|
 Channel to be transferred|Canale trasferito|
 Extensions Menu|Menu Interni|
-Send to selected extension|Invia all` interno selezionato|
+Send to selected extension|Invia all`interno selezionato|
 Send to selected vmail box|Invia alla VoiceMail selezionata|
-Send to this number|Invia a questo numero |
-click on a number below to send to a conference|Seleziona un numero per inviarlo ad una conferenza|
+Send to this number|Invia a questo numero|
+click on a number below to send to a conference|Seleziona uno dei numeri sotto per inviarlo ad una conferenza|
 Send my channel too|Invia anche il mio canale|
 Conferences Menu|Menu Conferenze|
-LOCAL Extensions Dial|Chiamata Interni locali|
+LOCAL Extensions Dial|LOCAL Extensions Dial|
 Phone calling from|Chiamata proveniente da|
-Call selected extension|Chiama l` interno selezionato|
+Call selected extension|Chiama l`interno selezionato|
 Call selected vmail box|Chiama la VoiceMail selezionata|
-LOCAL DIAL EXTENSIONS|INTERNI DI CHIAMATA LOCALE|
+LOCAL DIAL EXTENSIONS|LOCAL DIAL EXTENSIONS|
 OUTBOUND CALLS|CHIAMATE OUTBOUND|
 INBOUND CALLS|CHIAMATE INBOUND|
-Refresh rate|Frequenza di aggiornamento|
-MANUAL DIAL|Chiamata Manuale|
+Refresh rate|Frequenza di refresh|
+MANUAL DIAL|CHIAMATA MANUALE|
 CALL DATE\/TIME|DATA/ORA CHIAMATA|
 LOCAL HANGUP|DISCONNETTI LOCALE|
 PARKED CALLS|CHIAMATE IN ATTESA|
 PARKED BY|MESSO IN ATTESA DA|
 PARKED TIME|TEMPO IN ATTESA|
-Registered to|Registrato a|
+Registered to|Registrato su|
 Enter Conference|Entra in Conferenza|
 Dial From Conf|Chiama dalla Conferenza|
 Active Extensions|Interni Attivi|
 Outside Lines|Linee Esterne|
 Local Extensions|Interni Locali|
-Data Goes Here|I Dati vanno inseriti qui|
+Data Goes Here|I Dati vanno qui|
 Trunk Action|Azione Trunk|
 Local Action|Azione Locale|
 Conferences List|Lista delle conferenze|
-Click on a conference room number on the left for info on that conference|Seleziona una conferenza sulla sinistra per informazioni su di essa|
+Click on a conference room number on the left for info on that conference|Fai click su una delle conferenze room sulla sinistra per avere informazioni a riguardo|
 List Display|Visualizza Lista|
-Live Extensions|Interni Attivi|
-Busy Extensions|Interni Occupati|
+Live Extensions|Estensioni Attive|
+Busy Extensions|Estensioni Occupate|
 Outside Lines|Linee Esterne|
-script runtime|tempo di esecuzione dello script|
-Call Log Display|Visualizza il Call Log|
+script runtime|script runtime|
+Call Log Display|Visualizza il Log della chiamata|
 is not valid|non e` valido|
 or protocol|o protocollo|
-Conf Extension Check|Controllo interni della conferenza|
-has been registered to|e` stato registrato a|
+Conf Extension Check|Conf Extension Check|
+has been registered to|e` stato registrato su|
 LIVE INBOUND CALL|CHIAMATA INBOUND IN CORSO|
 Number Dialed|Numero chiamato|
 SEND TO MY VOICEMAIL|INVIA ALLA MIA VOICEMAIL|
-Live Extension Check|Controllo Interni Attivi |
+Live Extension Check|Controllo Interni Attivi|
 Manager Send|Invio Manager|
 command not inserted|comando non inserito|
 command sent for|comando inviato per|
 One of these variables|Una di queste variabili|
-must be greater than 2 characters|deve essere piu` grande di 2 caratteri|
-must be greater than 14 characters|deve essere piu` grande di 14 caratteri|
-must be set|deve essere settato|
-not sent|non trasmesso|
+must be greater than 2 characters|deve avere piu' di 2 caratteri|
+must be greater than 14 characters|deve avere piu' di 14 caratteri|
+must be set|deve essere impostato|
+not sent|non inviato|
 Cannot find empty conference|Impossibile trovare conferenze vuote|
 is not live|non e` attivo|
 RECORDING WILL LAST UP TO 60 MINUTES|LA REGISTRAZIONE DURERA` FINO A 60 MINUTI|
 Parked Calls Display|Display Chiamate in Attesa|
 Database Query Script|Script per query su Database|
 Group Choice|Scelta del Gruppo|
-has been registered to user|e` stato registrato dall` utente|
+has been registered to user|e` stato registrato dall`utente|
 HOPPER EMPTY|LISTA DI CHIAMATA VUOTA|
 LOG NOT ENTERED|LOG NON INSERITO|
-has been changed to|e` stato cambiato|
+has been changed to|e` cambiato|
 information has been updated|le informazioni sono state aggiornate|
 is now in status|e` ora nello stato|
 Voicemail Check|Controllo Voicemail|
@@ -203,58 +203,58 @@ Login incorrect, please try again|Login errato, prova di nuovo|
 Campaign Login|Login Campagna|
 Sorry, your phone login and password are not active in this system, please try again|Spiacente, il telefono inserito non e` attivo in questo sistema, riprova di nuovo|
 leads left to call in hopper|Contatti rimanenti nella lista da chiamare|
-CAMPAIGN CUSTOM PARKING|CONFERENZA PERSONALIZZATA DELLA CAMPAGNA|
-CAMPAIGN DEFAULT PARKING|CONFERENZA PREDEFINITA DELLA CAMPAGNA|
-CAMPAIGN CUSTOM WEB FORM|EWB FORM PERSONALIZZATO DELLA CAMPAGNA |
-CAMPAIGN DEFAULT WEB FORM|WEB FORM PREDEFINITO DELLA CAMPAGNA|
+CAMPAIGN CUSTOM PARKING|CAMPAIGN CUSTOM PARKING|
+CAMPAIGN DEFAULT PARKING|CAMPAIGN DEFAULT PARKING|
+CAMPAIGN CUSTOM WEB FORM|CAMPAIGN CUSTOM WEB FORM|
+CAMPAIGN DEFAULT WEB FORM|CAMPAIGN DEFAULT WEB FORM|
 CAMPAIGN ALLOWS CLOSERS|LA CAMPAGNA PERMETTE FUORI LISTA|
 CAMPAIGN ALLOWS NO CLOSERS|LA CAMPAGNA NON PERMETTE FUORI LISTA|
-USING PREVIOUS MEETME ROOM|USA LA STANZA PER LA CONFERENZA PRECEDENTE|
-USING NEW MEETME ROOM|USA UNA NUOVA STANZA PER LA CONFERENZA|
-old QUEUE and INCALL reverted list|lista invertita di vecchi QUEUE e INCALL|
-old QUEUE and INCALL reverted hopper|hopper invertito di vecchi QUEUE e INCALL|
-old vicidial_live_agents records cleared|vecchie annotazioni dei vicidial_live_agents eliminate|
-campaign is set to auto_dial_level|la campagna e` stata settata al livello di auto-dial|
-new vicidial_live_agents record inserted|nuovo record operatore attivo inserito|
-campaign is set to manual dial|la campagna e` settata per la chiamata manuale|
+USING PREVIOUS MEETME ROOM|USA LA MEETME ROOM PRECEDENTE|
+USING NEW MEETME ROOM|USA UNA NUOVA MEETME ROOM|
+old QUEUE and INCALL reverted list|lista invertita INCALL ed old QUEUE|
+old QUEUE and INCALL reverted hopper|INCALL hopper invertito ed old QUEUE|
+old vicidial_live_agents records cleared|vecchi record di vicidial_live_agents eliminati|
+campaign is set to auto_dial_level|la campagna e` settata in auto-dial|
+new vicidial_live_agents record inserted|nuovo record vicidial_live_agents inserito|
+campaign is set to manual dial|la campagna e` settata in manual_dial|
 Sorry, there are no leads in the hopper for this campaign|Spiacenti, non ci sono contatti da chiamare per questa campagna|
-Dial Next Number|Chiama il numero seguente|
+Dial Next Number|Chiama il prossimo numero|
 LIVE CALLS IN YOUR SESSION|CHIAMATE ATTIVE NELLA VOSTRA SESSIONE|
-Stop Recording|Ferma Registrazione|
-Start Recording|Inizia Registrazione|
-Transfer number must have more than 1 digit|Il numero per il trasferimento deve avere piu` di 1 carattere|
+Stop Recording|Stop Recording|
+Start Recording|Start Recording|
+Transfer number must have more than 1 digit|Il numero per il trasferimento deve avere piu` di 1 digit|
 Grab Parked Call|Riprendi la chiamata in attesa|
 Park Call|Metti in attesa la chiamata|
-Waiting for Ring|In attesa dello Squillo|
-Called 3rd party|Chiamata la terza parte della conferenza a 3|
+Waiting for Ring|In attesa del Ring|
+Called 3rd party|Chiamata la terza parte|
 LEAVE 3-WAY CALL|LASCIA LA CONFERENZA A 3|
 Dial With Customer|Chiama il Cliente|
-Park Customer Dial|Metti in attesa il cliente in chiamata|
-Hangup Xfer Line|Aggancia la linea trasferita|
-Hangup Both Lines|Aggancia entrambe le linee|
-Hangup Customer|Aggancia il cliente|
+Park Customer Dial|Metti in attesa il cliente|
+Hangup Xfer Line|Riaggancia la linea trasferita|
+Hangup Both Lines|Riaggancia entrambe le linee|
+Hangup Customer|Riaggancia il cliente|
 Transfer - Conference|Trasferimento - Conferenza|
-LOCAL CLOSER|OPERATORE LOCALE|
-INTERNAL CLOSER|OPERATORE INTERNO|
-Dial Blind Transfer|Effettua il trasferimento cieco|
-Dial timed out, contact your system administrator|Tempo di chiamata scaduto, contatta l`amministratore di sistema|
-No more leads in the hopper for campaign|Non ci sono contatti da chiamare per la campagna|
+LOCAL CLOSER|LOCAL CLOSER|
+INTERNAL CLOSER|INTERNAL CLOSER|
+Dial Blind Transfer|Effettua il Blind Transfer|
+Dial timed out, contact your system administrator|Tempo di chiamata scaduto, contatta l`amministratore del sistema|
+No more leads in the hopper for campaign|Non ci sono contatti da chiamare nella campagna|
 Web Form|Web Form|
 You Must Select a Disposition|Devi selezionare un esito|
 GROUPS NOT SELECTED|GRUPPI NON SELEZIONATI|
 SELECTED GROUPS|GRUPPI SELEZIONATI|
 You cannot log out during a Dial attempt|Non puoi disconnetterti durante un tentativo di chiamata|
-Wait 50 seconds for the dial to fail out if it is not answered|Attendere 50 secondi se non c`e` risposta|
-STILL A LIVE CALL! Hang it up then you can log out|CHIAMATA ATTIVA IN CORSO! Riaggancia e quindi puoi disconnetterti|
-Hide conference call channel information|Nascondi le informazioni sul canale della conferenza|
-Show conference call channel information|Mostra le informazioni sul canale della conferenza|
-Logged in as User|Login come Utente|
-Noone is in your session|Nessuno e` nella tua sessione|
+Wait 50 seconds for the dial to fail out if it is not answered|Attende 50 secondi prima di fallire se non c`e` risposta|
+STILL A LIVE CALL! Hang it up then you can log out|LA CHIAMATA IN CORSO E' ANCORA ATTIVA! Riaggancia e quindi puoi disconnetterti|
+Hide conference call channel information|Nascondi le informazioni relative al canale della conferenza|
+Show conference call channel information|Mostra le informazioni relative al canale della conferenza|
+Logged in as User|Loggato come Utente|
+Noone is in your session|Non c'è nessuno nella tua sessione|
 Customer has hung up|Il cliente ha riagganciato|
 End-of-call Disposition Selection|Selezione Esito di fine chiamata|
-CLOSER INBOUND GROUP SELECTION|SELEZIONE OPERATORE INBOUND|
-Closer Inbound Group Selection|Selezione OPERATORE Inbound|
-BLENDED CALLING|CHIAMATA MESCOLATA|
+CLOSER INBOUND GROUP SELECTION|SELEZIONE del CLOSER INBOUND GROUP|
+Closer Inbound Group Selection|Selezione del Closer Inbound Group|
+BLENDED CALLING|CHIAMATA MISTA|
 outbound activated|outbound attivato|
 Preview the Lead then|Anteprima del contatto, quindi|
 Lead was not reverted, there was an error|Il contatto non e` ritornato, c`e` un errore|
@@ -262,18 +262,18 @@ call was not placed, there was an error|chiamata non effettuata, c`e` un errore|
 Number to call|Numero da chiamare|
 Customer Information|Dati Cliente|
 Lead Dispositioned As|Esito Contatto|
-Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call|Tutti i cambiamenti fatti sulle informazioni del cliente sotto non saranno salvati, bisogna effettuare le modifiche prima di riagganciare|
+Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call|Tutti i cambiamenti eseguiti sui dati del cliente non saranno salvati, bisogna effettuare le modifiche prima di riagganciare|
 When active, simply press the keyboard key for the desired disposition for this call. The call will then be hungup and dispositioned automatically|Se attivo, premi il tasto corrispondente all`esito desiderato e la chiamata sara` riagganciata automaticamente|
-Disposition Hot Keys|tasti funzione per esiti|
-Cust Time|Ora Cliente|
+Disposition Hot Keys|Tasti Funzione per Esiti|
+Cust Time|Cust Time|
 RECORD ID|ID RECORD|
 RECORDING FILE|FILE REGISTRAZIONE|
 HOT KEYS ACTIVE|TASTI FUNZIONE ATTIVI|
 HOT KEYS INACTIVE|TASTI FUNZIONE DISATTIVATI|
-DIAL OVERRIDE|CHIAMATA AUTOMATICA|
-SKIP LEAD|SALTA CONTATTO|
-DIAL LEAD|CHIAMA CONTATTO|
-LEAD PREVIEW|ANTEPRIMA CONTATTO|
+DIAL OVERRIDE|DIAL OVERRIDE|
+SKIP LEAD|SKIP LEAD|
+DIAL LEAD|DIAL LEAD|
+LEAD PREVIEW|LEAD PREVIEW|
 PAUSE AGENT DIALING|PAUSA OPERATORE|
 DISPOSITION CALL|ESITO CHIAMATA|
  session ID| ID sessione|
@@ -283,37 +283,37 @@ maximize|ingrandisci|
 minimize|minimizza|
 You must choose a date|Devi scegliere una data|
 Select a Date Below|Seleziona una data qui sotto|
-Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.|Selezionare un richiamo per chiamare il cliente ora. Una volta cliccata, la riga sara` rimossa dalla lista.|
+Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.|Selezionare una callback per chiamare il cliente ora. Una volta fatto click, il record sara` rimosso dalla lista.|
 If you want to dial a number and have it NOT be added as a new lead , enter in the exact dialstring that you want to call in the Dial Override field below. To hangup this call you will have to open the CALLS IN THIS SESSION link at the bottom of the screen and hang it up by clicking on its channel link there|Se vuoi chiamare un numero e NON vuoi cha sia aggiunto come nuovo contatto, inserisci il numero che vuoi chiamare nel campo "dial override". Per chiudere la conversazione devi aprire la schermata CHIAMATE NELLA SESSIONE in basso e riagganciare cliccando sul link del canale visualizzato|
-YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD|NON PUOI SALTARE UN RICHIAMO O UNA CHIAMATA. DEVI CHIAMARE IL CONTATTO|
+YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD|NON PUOI SALTARE UNA CALLBACK O UNA CHIAMATA. DEVI CHIAMARE IL CONTATTO|
 YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE|DEVI ESSERE IN PAUSA PER EFFETTUARE UNA CHIAMATA MANUALE QUANDO SEI IN MODALITA` AUTODIAL|
 Enter information below for the new lead you wish to call|Inserisci le informazioni per il nuovo contatto da chiamare|
-YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|DEVI ESSERE IN PAUSA PER CONTROLLARE I RICHIAMI IN MODALITA AUTODIAL|
+YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|DEVI ESSERE IN PAUSA PER CONTROLLARE LA CALLBACK IN MODALITA AUTODIAL|
 Note: all new manual dial leads will go into list |Nota: tutti i nuovi contatti chiamati manualmente andranno nella lista |
 YOU DO NOT HAVE PERMISSIONS TO TRANSFER CALLS|NON HAI L`AUTORIZZAZIONE PER TRASFERIRE CHIAMATE|
 will be added to the beginning of this number|sara` aggiunto all`inizio di questo numero|
-This is usually a 1 in the USA-Canada|E solitamente un 1 negli USA e Canada|
+This is usually a 1 in the USA-Canada|Vale 1 negli USA ed in Canada|
 NEW MANUAL DIAL LEAD FOR|NUOVA CHIAMATA MANUALE PER IL CONTATTO|
-Finish and Disposition Call|Termina e dai un esito alla chiamata|
+Finish and Disposition Call|Termina e definisci un Esito per la chiamata|
 10 digits max - digits only|10 cifre massimo, solo numeri|
-Note: a dial prefix of|Nota: prefisso di chiamata |
+Note: a dial prefix of|Nota: prefisso di chiamata|
 Hangup Again|Aggancia di nuovo|
 Go Back|Torna Indietro|
 Call Agent Again|Chiama l`operatore di nuovo|
-MY CALLBACK ONLY|RICHIAMO PERSONALE (nessun altro potra` richiamarlo)|
-NO ACTIVE CALLBACKS|NON CI SONO RICHIAMI ATTIVI|
-ACTIVE CALLBACKS|RICHIAMI ATTIVI|
+MY CALLBACK ONLY|CALLBACK PERSONALE (nessun altro potra` richiamarlo)|
+NO ACTIVE CALLBACKS|NON CI SONO CALLBACK ATTIVE|
+ACTIVE CALLBACKS|CALLBACK ATTIVE|
 CALLBACKS FOR AGENT|RICHIAMI PER L`OPERATORE|
 Dial Code:|Codice di Chiamata:|
 Dial Override|Chiamata automatica|
-digits only please|solo cifre per favore|
+digits only please|solo digit per favore|
 Dial Now|Chiama Ora|
 CB Comments|Note Richiamo|
 Title|Titolo|
-Your Status|Tuo stato|
-STATUS|STATO|
+Your Status|Il tuo stato|
+ STATUS| STATO|
 RESET|RESET|
-CLEAR FORM|PULISCI SCHERMATA|
+CLEAR FORM|PULISCI IL FORM|
 SUBMIT|INVIA|
 Incoming|In entrata|
 Calling|In Chiamata|
@@ -350,13 +350,13 @@ Channel|Canale|
 Extensions|Interni|
 Conferences|Conferenze|
 Conference|Conferenza|
-Recording|In Registrazione|
-Record|Registrazione|
+Recording|Registrazione|
+Record|Record|
 Welcome|Benvenuto|
 VOICEMAIL|VOICEMAIL|
  NEW| NUOVO|
  OLD| VECCHIO|
-PAUSE|PAUSA|
+STOP|ARRESTO|
 START|INIZIO|
 Pause|Pausa|
 Resume|Riprendi|
@@ -375,7 +375,7 @@ City|Citta`|
 State|Stato|
 PostCode|CAP|
 Province|Provincia|
-Vendor ID|ID Fornitore|
+Vendor ID|Vendor ID|
 DialCode|Prefisso|
 Alt. Phone|Num. Alternativo|
 Show|Mostra|
@@ -401,7 +401,7 @@ Search Existing Leads|Cerca Contatti esistenti|
 This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Questa opzione tentera` di trovare il numero di telefono nel sistema prima di inserire un nuovo contatto|
 Finish Wrapup and Move On|Termina riposo e continua|
 seconds remaining in wrapup|secondi di riposo restanti|
-Call Wrapup:|Tempo di riposo:|
+Call Wrapup:|Call Wrapup:|
 ### months of the year for CallBack date select screen ###
 January|Gennaio|
 February|Febbraio|
@@ -446,3 +446,6 @@ Minutes:|Minuti:|
 Gender: |Sesso: |
 M - Male|M - Maschio|
 F - Female|F - Femmina|
+### BEGIN translation phrases for 2.0.5 release build 890
+Date of Birth: |Data di Nascita: |
+YOU MUST BE PAUSED TO CHANGE GROUPS|DEVI ESSERE IN PAUSA PER CAMBIARE GRUPPO|
