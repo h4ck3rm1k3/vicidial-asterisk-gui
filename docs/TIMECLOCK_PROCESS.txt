@@ -8,11 +8,11 @@ This will outline the process I have thought through for adding a timeclock comp
 - Maintain an audit trail for manager-modified records
 - Add a SHIFT section to administration
 - Have reports showing all timeclock totals for various parameters(user-group/time-period/user/current-status/etc...)
+- ability to allow managers to alter timeclock records with audit trail
 
 Future planned features:
 - Allow restrictions of agent-login by shift
 - Allow ability to not allow agents to log-in to any VICIDIAL page(admin or agent) without clocking in.
-- ability to allow managers to alter timeclock records with audit trail
 - reports showing user log activity outside of shift timeframes
 
 

@@ -215,6 +215,8 @@ space separated phone number||
 Agent Screen Header Date Format||
 Agent Screen Customer Date Format||
 Agent Screen Customer Phone Format||
+ERROR- There is a problem with the data that you entered, please go back||
+A timeclock session cannot overlap another timeclock session||
 
 
 ############################################################ CLIENT

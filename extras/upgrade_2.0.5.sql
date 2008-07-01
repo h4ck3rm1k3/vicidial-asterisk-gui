@@ -240,20 +240,6 @@ ALTER TABLE vicidial_users ADD add_timeclock_log ENUM('1','0') default '0';
 ALTER TABLE vicidial_users ADD modify_timeclock_log ENUM('1','0') default '0';
 ALTER TABLE vicidial_users ADD delete_timeclock_log ENUM('1','0') default '0';
 
- CREATE TABLE vicidial_admin_log (
-admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-event_date DATETIME NOT NULL,
-user VARCHAR(20) NOT NULL,
-ip_address VARCHAR(15) NOT NULL,
-event_section VARCHAR(30) NOT NULL,
-event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGOUT','CLEAR','OTHER') default 'OTHER',
-record_id VARCHAR(50) NOT NULL,
-event_code VARCHAR(255) NOT NULL,
-event_sql TEXT,
-index (user),
-index (record_id)
-);
-
 UPDATE system_settings SET db_schema_version='1091';
 
 CREATE INDEX user ON vicidial_agent_log (user);
@@ -294,3 +280,4 @@ UPDATE system_settings SET db_schema_version='1094';
 ALTER TABLE vicidial_campaigns MODIFY campaign_cid VARCHAR(20) default '0000000000';
 
 UPDATE system_settings SET db_schema_version='1095';
+
