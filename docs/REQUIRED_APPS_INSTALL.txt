@@ -346,7 +346,7 @@ tar xvf zaptel-1.2.25.tar
 gunzip libpri-1.2.7.tar.gz
 tar xvf libpri-1.2.7.tar
 cd ./zaptel-1.2.25
-wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
+wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
 cd newt-0.51.6

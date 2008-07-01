@@ -41,7 +41,7 @@ tar xvf zaptel-1.2.25.tar
 gunzip libpri-1.2.7.tar.gz
 tar xvf libpri-1.2.7.tar
 cd ./zaptel-1.2.25
-wget http://www.freedomphones.net/files/newt-0.51.6.tar.gz
+wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
 cd newt-0.51.6
@@ -136,7 +136,7 @@ them:
 configure it.
 
 NOTES: If you want to install zttool diagnostics you may need the newt package installed:
-http://www.freedomphones.net/files/newt-0.51.6.tar.gz
+http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
 ln -s /usr/lib/libnewt.so.0.51.6 /usr/lib/libnewt.so.0.51
 then go to your zaptel folder and do 'make zttool' 
 
@@ -211,7 +211,7 @@ package(as of this writing it is 2.0.4.1)
 package, it's the conf.gsm file(this is the half-hour music file that we use 
 to put people on hold). I have a free classical music file that is available 
 free for download at the following two sites:
-	http://www.freedomphones.net/conf.gsm
+	http://downloads.vicidial.com/sounds/conf.gsm
 	http://astguiclient.sf.net/conf.gsm
    Once you have downloaded it, you will need to copy it to this folder:
 		/var/lib/asterisk/sounds/
@@ -219,7 +219,7 @@ free for download at the following two sites:
    'cp /var/lib/asterisk/sounds/conf.gsm /var/lib/asterisk/sounds/park.gsm'
   Here are the steps spelled out:
 	cd /var/lib/asterisk/sounds
-	wget http://www.freedomphones.net/conf.gsm 
+	wget http://downloads.vicidial.com/sounds/conf.gsm
 	cp conf.gsm park.gsm
    - you are done
 

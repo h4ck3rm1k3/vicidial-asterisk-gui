@@ -130,6 +130,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 28. Date/time and phone formats that appear in the VICIDIAL agent screen are now
 	customizable as defined in the Admin -> System Settings screen.
 
+29. Added manual dial and inbound queue_log logging capability for better
+	QueueMetrics compatibility
+
+
 
 
 

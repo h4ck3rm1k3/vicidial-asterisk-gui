@@ -986,7 +986,7 @@ $talking_to_print = mysql_num_rows($rslt);
 				if ($call_time_M_int >= 5) {$G='<SPAN class="olive"><B>'; $EG='</B></SPAN>';}
 				}
 			}
-		if (eregi("PAUSED",$Astatus[$i])) 
+		if ($Lstatus=='PAUSED') 
 			{
 			if ($call_time_M_int >= 360) 
 				{$j++; continue;} 
@@ -1002,7 +1002,7 @@ $talking_to_print = mysql_num_rows($rslt);
 #		if ( (strlen($Acall_server_ip[$i])> 4) and ($Acall_server_ip[$i] != "$Aserver_ip[$i]") )
 #				{$G='<SPAN class="orange"><B>'; $EG='</B></SPAN>';}
 
-		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) or (eregi("DISPO",$status)) ) {$agent_incall++;  $agent_total++;}
+		if ( (eregi("INCALL",$status)) or (eregi("QUEUE",$status)) ) {$agent_incall++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) {$agent_ready++;  $agent_total++;}
 		if ( (eregi("READY",$status)) or (eregi("CLOSER",$status)) ) 
 			{

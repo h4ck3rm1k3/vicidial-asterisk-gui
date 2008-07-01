@@ -179,10 +179,11 @@
 # 80519-1425 - Added calls in queue display
 # 80523-1630 - Added Tiemclock links
 # 80625-0047 - Added U option for gender, added date/phone display options
+# 80630-2210 - Added queue_log entries for Manual Dial
 #
 
-$version = '2.0.5-157';
-$build = '80625-0047';
+$version = '2.0.5-158';
+$build = '80630-2210';
 
 require("dbconnect.php");
 
@@ -3868,13 +3869,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					MDOnextResponse = xmlhttp.responseText;
 
 					var MDOnextResponse_array=MDOnextResponse.split("\n");
-					MDnextCID = MDOnextResponse_array[0];
+					MDnextCID =	MDOnextResponse_array[0];
 					if (MDnextCID == " CALL NOT PLACED")
 						{
 						alert("call was not placed, there was an error:\n" + MDOnextResponse);
 						}
 					else
 						{
+						LasTCID =	MDOnextResponse_array[0];
 						MD_channel_look=1;
 						custchannellive=1;
 

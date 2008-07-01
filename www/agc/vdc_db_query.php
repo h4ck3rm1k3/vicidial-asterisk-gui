@@ -149,10 +149,11 @@
 # 80424-0442 - Added non_latin lookup from system_settings
 # 80430-1006 - Added term_reason for vicidial_log and vicidial_closer_log
 # 80430-1957 - Changed to leave lead_id in vicidial_live_agents record until after dispo
+# 80630-2153 - Added queue_log logging for Manual dial calls
 #
 
-$version = '2.0.5-73';
-$build = '80430-1957';
+$version = '2.0.5-74';
+$build = '80630-2153';
 
 require("dbconnect.php");
 
@@ -803,6 +804,53 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$stmt = "UPDATE vicidial_campaign_agents set calls_today='$calls_today' where user='$user' and campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
+
+				#############################################
+				##### START QUEUEMETRICS LOGGING LOOKUP #####
+				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$qm_conf_ct = mysql_num_rows($rslt);
+				$i=0;
+				while ($i < $qm_conf_ct)
+					{
+					$row=mysql_fetch_row($rslt);
+					$enable_queuemetrics_logging =	$row[0];
+					$queuemetrics_server_ip	=		$row[1];
+					$queuemetrics_dbname =			$row[2];
+					$queuemetrics_login	=			$row[3];
+					$queuemetrics_pass =			$row[4];
+					$queuemetrics_log_id =			$row[5];
+					$i++;
+					}
+				##### END QUEUEMETRICS LOGGING LOOKUP #####
+				###########################################
+				if ($enable_queuemetrics_logging > 0)
+					{
+					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+					mysql_select_db("$queuemetrics_dbname", $linkB);
+
+					# UNPAUSEALL
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNPAUSEALL',serverid='$queuemetrics_log_id';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkB);
+					$affected_rows = mysql_affected_rows($linkB);
+
+					# ENTERQUEUE
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MqueryCID',queue='$campaign',agent='NONE',verb='ENTERQUEUE',data2='$phone_number',serverid='$queuemetrics_log_id';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkB);
+					$affected_rows = mysql_affected_rows($linkB);
+
+					# CONNECT
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MqueryCID',queue='$campaign',agent='Agent/$user',verb='CONNECT',data1='0',serverid='$queuemetrics_log_id';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkB);
+					$affected_rows = mysql_affected_rows($linkB);
+
+					mysql_close($linkB);
+					}
+
 				}
 
 			$comments = eregi_replace("\r",'',$comments);
@@ -963,6 +1011,53 @@ if ($ACTION == 'manDiaLonly')
 		$rslt=mysql_query($stmt, $link);
 
 		echo "$MqueryCID\n";
+
+		#############################################
+		##### START QUEUEMETRICS LOGGING LOOKUP #####
+		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$qm_conf_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $qm_conf_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_queuemetrics_logging =	$row[0];
+			$queuemetrics_server_ip	=		$row[1];
+			$queuemetrics_dbname =			$row[2];
+			$queuemetrics_login	=			$row[3];
+			$queuemetrics_pass =			$row[4];
+			$queuemetrics_log_id =			$row[5];
+			$i++;
+			}
+		##### END QUEUEMETRICS LOGGING LOOKUP #####
+		###########################################
+		if ($enable_queuemetrics_logging > 0)
+			{
+			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+			mysql_select_db("$queuemetrics_dbname", $linkB);
+
+			# UNPAUSEALL
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNPAUSEALL',serverid='$queuemetrics_log_id';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $linkB);
+			$affected_rows = mysql_affected_rows($linkB);
+
+			# ENTERQUEUE
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MqueryCID',queue='$campaign',agent='NONE',verb='ENTERQUEUE',data2='$phone_number',serverid='$queuemetrics_log_id';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $linkB);
+			$affected_rows = mysql_affected_rows($linkB);
+
+			# CONNECT
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MqueryCID',queue='$campaign',agent='Agent/$user',verb='CONNECT',data1='0',serverid='$queuemetrics_log_id';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $linkB);
+			$affected_rows = mysql_affected_rows($linkB);
+
+			mysql_close($linkB);
+			}
+
 	}
 }
 
@@ -2438,7 +2533,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		###########################################
 		if ($enable_queuemetrics_logging > 0)
 			{
-			if (ereg('READY',$stage)) {$QMstatus='UNPAUSEALL';}
+			if ( (ereg('READY',$stage)) or (ereg('CLOSER',$stage)) ) {$QMstatus='UNPAUSEALL';}
 			if (ereg('PAUSE',$stage)) {$QMstatus='PAUSEALL';}
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);

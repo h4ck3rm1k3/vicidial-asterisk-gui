@@ -1,6 +1,6 @@
 VICIDIAL and QueueMetrics
 
-queue_log logging was added to VICIDIAL outbound calling as an option in the 2.0.3 release tree.
+queue_log logging was added to VICIDIAL outbound auto calling as an option in the 2.0.3 release tree.
 
 This document goes over the features and needed changes made to VICIDIAL to enable it to insert activity records into the queue_log and other tables in MySQL that QueueMetrics uses for it's statistical analysis and reports. This document should not be taken as a HOWTO for proper installation steps to get QueueMetrics working.
 
@@ -8,7 +8,7 @@ QueueMetrics is a closed-source, commercial product written by Loway Research in
 
 This feature was added to the package at the request of several users of VICIDIAL and was achieved with some help from the makers of QueueMetrics(although all VICIDIAL code changes were done entirely by Matt Florell).
 
-This feature is currently only functional on outbound dialing.
+This feature is functional on outbound manual dialing, auto dialing and inbound call handling as of 2008-06-30(SVN trunk 2.0.5).
 
 
 
@@ -108,6 +108,25 @@ mysql> describe queue_log;
 | serverid  | varchar(10)      | NO   |     | 0       |       |
 +-----------+------------------+------+-----+---------+-------+
 
+Use the following query to create a queue_log table in your asterisk database
+to gather queue_log entries without doing a full QueueMetrics install:
+
+ CREATE TABLE queue_log (
+partition VARCHAR(20) NOT NULL,
+time_id INT(11) UNSIGNED  NOT NULL default '0',
+call_id VARCHAR(30) NOT NULL,
+queue VARCHAR(30) NOT NULL,
+agent VARCHAR(30) NOT NULL,
+verb VARCHAR(30) NOT NULL,
+data1 VARCHAR(30) NOT NULL,
+data2 VARCHAR(30) NOT NULL,
+data3 VARCHAR(30) NOT NULL,
+data4 VARCHAR(30) NOT NULL,
+serverid VARCHAR(10) NOT NULL default '0',
+unique_row_count INT(10) UNSIGNED NOT NULL,
+index(time_id)
+ );
+
 partition: set to "P01" for the first partition, should match up with configuration.properties presets
 
 time_id: epoch, unixtime (seconds since 1970-01-01 00:00:00) [1170345603]
@@ -164,12 +183,12 @@ data3: ??
 
 data4: ??
 
-serverid: number of the server the call came from [for VICIDIAL use the system_settings.queuemetrics_log_id field]
+serverid: number of the server the call came from [for VICIDIAL use the database system_settings.queuemetrics_log_id field]
 
 
 
 
-On the vicidial side of things, we will add the following columns to the system_settings table:
+On the vicidial database side of things, we will add the following columns to the system_settings table:
 enable_queuemetrics_logging ENUM('0','1') default '0',
 queuemetrics_server_ip VARCHAR(15),
 queuemetrics_dbname VARCHAR(50),

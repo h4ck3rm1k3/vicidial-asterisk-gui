@@ -61,6 +61,7 @@
 # 80430-1144 - added term_reason to vicidial_closer_log, QUEUETIMEOUT, AFTERHOURS
 # 80501-0515 - added after hours transfer in-group
 # 80525-1040 - added ability to convert IVR status inbound calls to LIVE in-group calls
+# 80630-2232 - added queue_log logging of inbound calls
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -639,6 +640,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 
 
 
+
 ##### PLAY WELCOME MESSAGE #####
 if ($welcome_message_filename !~ /---NONE---/)
 	{
@@ -701,6 +703,60 @@ if ($call_handle_method =~ /CLOSER|DIGITID$/)
 		if ($AGILOG) {$agi_string = "--    VDXL : |$insert_lead_id|$insert_xfer_id|insert to vicidial_xfer_log";   &agi_output;}
 	}
 
+#############################################
+##### START QUEUEMETRICS LOGGING LOOKUP #####
+$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,queuemetrics_eq_prepend FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	 @aryA = $sthA->fetchrow_array;
+		$enable_queuemetrics_logging =	"$aryA[0]";
+		$queuemetrics_server_ip	=	"$aryA[1]";
+		$queuemetrics_dbname =		"$aryA[2]";
+		$queuemetrics_login=		"$aryA[3]";
+		$queuemetrics_pass =		"$aryA[4]";
+		$queuemetrics_log_id =		"$aryA[5]";
+		$queuemetrics_eq_prepend =	"$aryA[6]";
+	 $rec_count++;
+	}
+$sthA->finish();
+##### END QUEUEMETRICS LOGGING LOOKUP #####
+###########################################
+if ($enable_queuemetrics_logging > 0)
+	{
+	 $data2 = "$phone_number";
+
+	if ( (length($queuemetrics_eq_prepend) > 0) && ($queuemetrics_eq_prepend !~ /NONE/) )
+		{
+		$stmtA = "SELECT $queuemetrics_eq_prepend FROM vicidial_list where lead_id='$CIDlead_id';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			 $DASH='-';
+			 @aryA = $sthA->fetchrow_array;
+			 $QMprepend =	"$aryA[0]";
+			 $rec_count++;
+			 $data2 = "$QMprepend$DASH$phone_number";
+			}
+		$sthA->finish();
+		}
+
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	 or die "Couldn't connect to database: " . DBI->errstr;
+
+	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='ENTERQUEUE',data2='$data2',serverid='$queuemetrics_log_id';";
+	$Baffected_rows = $dbhB->do($stmtB);
+
+	$dbhB->disconnect();
+	}
 
 ### check for an IVR status record in vicidial_auto_calls
 $Uaffected_rows=0;
@@ -945,6 +1001,19 @@ if ($agent_search_method =~ /^SO|^LO/)
 				$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer','$queue_priority')";
 				$affected_rows = $dbhA->do($stmtA);
 					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
+				}
+
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+				 or die "Couldn't connect to database: " . DBI->errstr;
+
+				if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+				$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='Agent/$VDADuser',verb='CONNECT',data1='$drop_timer',serverid='$queuemetrics_log_id';";
+				$Baffected_rows = $dbhB->do($stmtB);
+
+				$dbhB->disconnect();
 				}
 
 		if ($call_handle_method =~ /CLOSER|DIGITID$/)
@@ -1209,6 +1278,19 @@ if ($agent_search_method =~ /^LO|^LB/)
 					if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 				}
 
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+				 or die "Couldn't connect to database: " . DBI->errstr;
+
+				if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+				$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='Agent/$VDADuser',verb='CONNECT',data1='$drop_timer',serverid='$queuemetrics_log_id';";
+				$Baffected_rows = $dbhB->do($stmtB);
+
+				$dbhB->disconnect();
+				}
+
 			$stmtA = "UPDATE vicidial_xfer_log set closer='$VDADuser' where lead_id = '$insert_lead_id' order by call_date desc limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDXL vicidial_xfer_log update: |$affected_rows|$insert_lead_id|$VDADuser\n|$stmtA|";   &agi_output;}
@@ -1425,6 +1507,19 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 	$tsSQLdate = "$year$mon$mday$hour$min$sec";
 	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 	$VDADvoicemail_ext = '';
+
+if ($enable_queuemetrics_logging > 0)
+	{
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	 or die "Couldn't connect to database: " . DBI->errstr;
+
+	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHTIMEOUT',data1='1',serverid='$queuemetrics_log_id';";
+	$Baffected_rows = $dbhB->do($stmtB);
+
+	$dbhB->disconnect();
+	}
 
 $DROPexten = '';
 if ($drop_seconds < 1) 

@@ -15,28 +15,28 @@ require("dbconnect.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
-if (isset($_GET["LOGINbegin_date"]))			{$LOGINbegin_date=$_GET["LOGINbegin_date"];}
-	elseif (isset($_POST["LOGINbegin_date"]))	{$LOGINbegin_date=$_POST["LOGINbegin_date"];}
-if (isset($_GET["LOGINend_date"]))				{$LOGINend_date=$_GET["LOGINend_date"];}
-	elseif (isset($_POST["LOGINend_date"]))		{$LOGINend_date=$_POST["LOGINend_date"];}
-if (isset($_GET["LOGOUTbegin_date"]))			{$LOGOUTbegin_date=$_GET["LOGOUTbegin_date"];}
-	elseif (isset($_POST["LOGOUTbegin_date"]))	{$LOGOUTbegin_date=$_POST["LOGOUTbegin_date"];}
-if (isset($_GET["LOGOUTend_date"]))				{$LOGOUTend_date=$_GET["LOGOUTend_date"];}
-	elseif (isset($_POST["LOGOUTend_date"]))	{$LOGOUTend_date=$_POST["LOGOUTend_date"];}
-if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
-	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
-if (isset($_GET["user"]))				{$user=$_GET["user"];}
-	elseif (isset($_POST["user"]))		{$user=$_POST["user"];}
-if (isset($_GET["stage"]))				{$stage=$_GET["stage"];}
-	elseif (isset($_POST["stage"]))		{$stage=$_POST["stage"];}
+if (isset($_GET["LOGINepoch"]))					{$LOGINepoch=$_GET["LOGINepoch"];}
+	elseif (isset($_POST["LOGINepoch"]))		{$LOGINepoch=$_POST["LOGINepoch"];}
+if (isset($_GET["LOGOUTepoch"]))				{$LOGOUTepoch=$_GET["LOGOUTepoch"];}
+	elseif (isset($_POST["LOGOUTepoch"]))		{$LOGOUTepoch=$_POST["LOGOUTepoch"];}
+if (isset($_GET["notes"]))						{$notes=$_GET["notes"];}
+	elseif (isset($_POST["notes"]))				{$notes=$_POST["notes"];}
+if (isset($_GET["LOGINevent_id"]))				{$LOGINevent_id=$_GET["LOGINevent_id"];}
+	elseif (isset($_POST["LOGINevent_id"]))		{$LOGINevent_id=$_POST["LOGINevent_id"];}
+if (isset($_GET["LOGOUTevent_id"]))				{$LOGOUTevent_id=$_GET["LOGOUTevent_id"];}
+	elseif (isset($_POST["LOGOUTevent_id"]))	{$LOGOUTevent_id=$_POST["LOGOUTevent_id"];}
+if (isset($_GET["user"]))						{$user=$_GET["user"];}
+	elseif (isset($_POST["user"]))				{$user=$_POST["user"];}
+if (isset($_GET["stage"]))						{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))				{$stage=$_POST["stage"];}
 if (isset($_GET["timeclock_id"]))				{$timeclock_id=$_GET["timeclock_id"];}
 	elseif (isset($_POST["timeclock_id"]))		{$timeclock_id=$_POST["timeclock_id"];}
-if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
-	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
-if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
-if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["DB"]))							{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))				{$DB=$_POST["DB"];}
+if (isset($_GET["submit"]))						{$submit=$_GET["submit"];}
+	elseif (isset($_POST["submit"]))			{$submit=$_POST["submit"];}
+if (isset($_GET["SUBMIT"]))						{$SUBMIT=$_GET["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))			{$SUBMIT=$_POST["SUBMIT"];}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -151,6 +151,50 @@ $browser = getenv("HTTP_USER_AGENT");
 	if (strlen($LOGOUTevent_id)<1)
 		{$invalid_record++;}
 
+	### 
+	if ($invalid_record < 1)
+		{
+		$stmt="SELECT event_epoch,event_date,login_sec,event,user,user_group,ip_address,shift_id,notes,manager_user,manager_ip,event_datestamp from vicidial_timeclock_log where timeclock_id='$LOGINevent_id';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$tc_logs_to_print = mysql_num_rows($rslt);
+		if ($tc_logs_to_print > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$LOGINevent_epoch =		$row[0];
+			$LOGINevent_date =		$row[1];
+			$LOGINlogin_sec =		$row[2];
+			$LOGINevent =			$row[3];
+			$LOGINuser =			$row[4];
+			$LOGINuser_group =		$row[5];
+			$LOGINip_address =		$row[6];
+			$LOGINshift_id =		$row[7];
+			$LOGINnotes =			$row[8];
+			$LOGINmanager_user =	$row[9];
+			$LOGINmanager_ip =		$row[10];
+			$LOGINevent_datestamp =	$row[11];
+			}
+		$stmt="SELECT event_epoch,event_date,login_sec,event,user,user_group,ip_address,shift_id,notes,manager_user,manager_ip,event_datestamp from vicidial_timeclock_log where timeclock_id='$LOGOUTevent_id';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$tc_logs_to_print = mysql_num_rows($rslt);
+		if ($tc_logs_to_print > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$LOGOUTevent_epoch =	$row[0];
+			$LOGOUTevent_date =		$row[1];
+			$LOGOUTlogin_sec =		$row[2];
+			$LOGOUTevent =			$row[3];
+			$LOGOUTuser =			$row[4];
+			$LOGOUTuser_group =		$row[5];
+			$LOGOUTip_address =		$row[6];
+			$LOGOUTshift_id =		$row[7];
+			$LOGOUTnotes =			$row[8];
+			$LOGOUTmanager_user =	$row[9];
+			$LOGOUTmanager_ip =		$row[10];
+			$LOGOUTevent_datestamp =$row[11];
+			}
+		}
 	}
 
 
@@ -158,14 +202,85 @@ $browser = getenv("HTTP_USER_AGENT");
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: Timeclock Record Edit</title>
+<title>VICIDIAL ADMIN: Timeclock Record Edit
 <?
+echo "</title>\n";
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+echo "<script language=\"Javascript\">\n";
 ?>
+
+function run_submit()
+	{
+	calculate_hours();
+	var go_submit = document.getElementById("go_submit");
+	if (go_submit.disabled == false)
+		{
+		document.edit_log.submit();
+		}
+	}
+
+// Calculate login time
+function calculate_hours() 
+	{
+	var i=0;
+	var total_percent=0;
+	var SPANlogin_time = document.getElementById("LOGINlogin_time");
+	var LI_date = document.getElementById("LOGINbegin_date");
+	var LO_date = document.getElementById("LOGOUTbegin_date");
+	var LI_datetime = LI_date.value;
+	var LO_datetime = LO_date.value;
+	var LI_datetime_array=LI_datetime.split(" ");
+	var LI_date_array=LI_datetime_array[0].split("-");
+	var LI_time_array=LI_datetime_array[1].split(":");
+	var LO_datetime_array=LO_datetime.split(" ");
+	var LO_date_array=LO_datetime_array[0].split("-");
+	var LO_time_array=LO_datetime_array[1].split(":");
+
+	// Calculate milliseconds since 1970 for each date string and find diff
+	var LI_sec = ( ( (LI_time_array[2] * 1) * 1000) );
+	var LI_min = ( ( ( (LI_time_array[1] * 1) * 1000) * 60 ) );
+	var LI_hour = ( ( ( (LI_time_array[0] * 1) * 1000) * 3600 ) );
+	var LI_date_epoch = Date.parse(LI_date_array[0] + '/' + LI_date_array[1] + '/' + LI_date_array[2]);
+	var LI_epoch = (LI_date_epoch + LI_sec + LI_min + LI_hour);
+	var LO_sec = ( ( (LO_time_array[2] * 1) * 1000) );
+	var LO_min = ( ( ( (LO_time_array[1] * 1) * 1000) * 60 ) );
+	var LO_hour = ( ( ( (LO_time_array[0] * 1) * 1000) * 3600 ) );
+	var LO_date_epoch = Date.parse(LO_date_array[0] + '/' + LO_date_array[1] + '/' + LO_date_array[2]);
+	var LO_epoch = (LO_date_epoch + LO_sec + LO_min + LO_hour);
+	var epoch_diff = ( (LO_epoch - LI_epoch) / 1000 );
+	var temp_diff = epoch_diff;
+
+	document.getElementById("login_time").innerHTML = "ERROR, Please check date fields";
+
+	var go_submit = document.getElementById("go_submit");
+	go_submit.disabled = true;
+	if ( (epoch_diff < 86401) && (epoch_diff > 0) )
+		{
+		go_submit.disabled = false;
+
+		hours = Math.floor(temp_diff / (60 * 60)); 
+		temp_diff -= hours * (60 * 60);
+
+		mins = Math.floor(temp_diff / 60); 
+		temp_diff -= mins * 60;
+
+		secs = Math.floor(temp_diff); 
+		temp_diff -= secs;
+
+		document.getElementById("login_time").innerHTML = hours + ":" + mins;
+
+		var form_LI_epoch = document.getElementById("LOGINepoch");
+		var form_LO_epoch = document.getElementById("LOGOUTepoch");
+		form_LI_epoch.value = (LI_epoch / 1000);
+		form_LO_epoch.value = (LO_epoch / 1000);
+		}
+	}
+
+</script>
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: Timeclock Record Edit for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: Timeclock Record Edit for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -177,6 +292,19 @@ echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVET
 
 if ( ($invalid_record < 1) or (strlen($timeclock_id)<1) )
 {
+
+if ($stage == "edit_TC_log")
+	{
+	echo "$LOGINepoch<BR>\n";
+	echo "$LOGOUTepoch<BR>\n";
+	echo "$notes<BR>\n";
+	echo "$LOGINevent_id<BR>\n";
+	echo "$LOGOUTevent_id<BR>\n";
+	echo "$LOGINuser<BR>\n";
+	exit;
+	}
+
+
 ##### BEGIN TIMECLOCK LOGOUT OF A USER #####
 if ( ( ($stage == "tc_log_user_OUT") or ($stage == "tc_log_user_IN") ) and ($modify_timeclock_log > 0) )
 	{
@@ -344,15 +472,69 @@ echo "\n<BR>";
 
 if ($modify_timeclock_log > 0)
 	{
-		$LOGINevent_id =	$timeclock_id;
-		$LOGOUTevent_id =	$tcid_link;
+	$LOGINevent_id =	$timeclock_id;
+	$LOGOUTevent_id =	$tcid_link;
+
+	$event_hours = ($LOGINlogin_sec / 3600);
+	$event_hours_int = round($event_hours, 2);
+	$event_hours_int = intval("$event_hours_int");
+	$event_minutes = ($event_hours - $event_hours_int);
+	$event_minutes = ($event_minutes * 60);
+	$event_minutes_int = round($event_minutes, 0);
+	if ($event_minutes_int < 10) {$event_minutes_int = "0$event_minutes_int";}
+
+	$stmt="SELECT full_name from vicidial_users where user='$LOGINuser';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$full_name =		$row[0];
 
 	echo "<BR><BR>\n";
-	echo "<form action=$PHP_SELF method=POST>\n";
+	echo "<form action=$PHP_SELF method=POST name=edit_log id=edit_log>\n";
 	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<input type=hidden name=user value=\"$user\">\n";
-	echo "<input type=hidden name=stage value=\"$TC_log_change_stage\">\n";
-	echo "<input type=submit name=submit value=\"$TC_log_change_button\"><BR></form>\n";
+	echo "<input type=hidden name=stage value=edit_TC_log>\n";
+	echo "<input type=hidden name=LOGINepoch id=LOGINepoch value=\"$LOGINevent_epoch\">\n";
+	echo "<input type=hidden name=LOGOUTepoch id=LOGOUTepoch value=\"$LOGOUTevent_epoch\">\n";
+	echo "<input type=hidden name=LOGINevent_id id=LOGINevent_id value=\"$LOGINevent_id\">\n";
+	echo "<input type=hidden name=LOGOUTevent_id id=LOGOUTevent_id value=\"$LOGOUTevent_id\">\n";
+	echo "<input type=hidden name=stage value=edit_TC_log>\n";
+	echo "<TABLE BORDER=0><TR><TD COLSPAN=3 ALIGN=LEFT>\n";
+	echo " &nbsp; &nbsp; &nbsp; &nbsp;USER: $LOGINuser ($full_name) &nbsp; &nbsp; &nbsp; &nbsp; \n";
+	echo "HOURS: <span name=login_time id=login_time> $event_hours_int:$event_minutes_int </span>\n";
+	echo "</TD></TR>\n";
+	echo "<TR><TD>\n";
+	echo "<TABLE BORDER=0>\n";
+	echo "<TR><TD ALIGN=RIGHT>LOGIN TIME: </TD><TD ALIGN=RIGHT><input type=text name=LOGINbegin_date id=LOGINbegin_date value=\"$LOGINevent_date\" size=20 maxlength=20 onchange=\"calculate_hours();\"></TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>TIMECLOCK ID: </TD><TD ALIGN=RIGHT>$LOGINevent_id</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>USER GROUP: </TD><TD ALIGN=RIGHT>$LOGINuser_group</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>IP ADDRESS: </TD><TD ALIGN=RIGHT>$LOGINip_address</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>MANAGER USER: </TD><TD ALIGN=RIGHT>$LOGINmanager_user</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>MANAGER IP: </TD><TD ALIGN=RIGHT>$LOGINmanager_ip</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>NOTES: </TD><TD ALIGN=RIGHT>$LOGINnotes</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>LAST CHANGE: </TD><TD ALIGN=RIGHT>$LOGINevent_datestamp</TD></TR>\n";
+	echo "</TABLE>\n";
+
+	echo "</TD><TD> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+	echo "</TD><TD>\n";
+	echo "<TABLE BORDER=0>\n";
+	echo "<TR><TD ALIGN=RIGHT>LOGOUT TIME: </TD><TD ALIGN=RIGHT><input type=text name=LOGOUTbegin_date id=LOGOUTbegin_date value=\"$LOGOUTevent_date\" size=20 maxlength=20 onchange=\"calculate_hours();\"></TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>TIMECLOCK ID: </TD><TD ALIGN=RIGHT>$LOGOUTevent_id</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>USER GROUP: </TD><TD ALIGN=RIGHT>$LOGOUTuser_group</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>IP ADDRESS: </TD><TD ALIGN=RIGHT>$LOGOUTip_address</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>MANAGER USER: </TD><TD ALIGN=RIGHT>$LOGOUTmanager_user</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>MANAGER IP: </TD><TD ALIGN=RIGHT>$LOGOUTmanager_ip</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>NOTES: </TD><TD ALIGN=RIGHT>$LOGOUTnotes</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>LAST CHANGE: </TD><TD ALIGN=RIGHT>$LOGOUTevent_datestamp</TD></TR>\n";
+	echo "</TABLE>\n";
+	echo "</TD></TR>\n";
+
+	echo "<TR><TD COLSPAN=3 ALIGN=LEFT>\n";
+	echo "NEW NOTES: <input type=text name=notes value='' size=80 maxlength=255>\n";
+	echo "</TD></TR>\n";
+	echo "<TR><TD COLSPAN=3 ALIGN=CENTER>\n";
+	echo "<input type=button name=go_submit id=go_submit value=SUBMIT onclick=\"run_submit();\"><BR></form>\n";
+	echo "</TD></TR></TABLE>\n";
 	echo "<BR><BR>\n";
 	}
 
