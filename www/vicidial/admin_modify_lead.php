@@ -25,6 +25,7 @@
 # 80428-0144 - UTF8 cleanup
 # 80501-0454 - Added Hangup Reason to logs display
 # 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
+# 80701-0832 - Changed to allow for altering of main phone number
 #
 
 require("dbconnect.php");
@@ -36,6 +37,8 @@ if (isset($_GET["vendor_id"]))				{$vendor_id=$_GET["vendor_id"];}
 	elseif (isset($_POST["vendor_id"]))		{$vendor_id=$_POST["vendor_id"];}
 if (isset($_GET["phone"]))				{$phone=$_GET["phone"];}
 	elseif (isset($_POST["phone"]))		{$phone=$_POST["phone"];}
+if (isset($_GET["old_phone"]))				{$old_phone=$_GET["old_phone"];}
+	elseif (isset($_POST["old_phone"]))		{$old_phone=$_POST["old_phone"];}
 if (isset($_GET["lead_id"]))				{$lead_id=$_GET["lead_id"];}
 	elseif (isset($_POST["lead_id"]))		{$lead_id=$_POST["lead_id"];}
 if (isset($_GET["first_name"]))				{$first_name=$_GET["first_name"];}
@@ -117,7 +120,6 @@ if (isset($_GET["modify_agent_logs"]))			{$modify_agent_logs=$_GET["modify_agent
 if (isset($_GET["add_closer_record"]))			{$add_closer_record=$_GET["add_closer_record"];}
 	elseif (isset($_POST["add_closer_record"]))	{$add_closer_record=$_POST["add_closer_record"];}
 
-
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
@@ -140,6 +142,14 @@ while ($i < $qm_conf_ct)
 	}
 ##### END SETTINGS LOOKUP #####
 ###########################################
+
+if ($non_latin < 1)
+	{
+	$old_phone = ereg_replace("[^0-9]","",$old_phone);
+	$phone_number = ereg_replace("[^0-9]","",$phone_number);
+	$alt_phone = ereg_replace("[^0-9]","",$alt_phone);
+	}
+if (strlen($phone_number)<6) {$phone_number=$old_phone;}
 
 $stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and modify_leads='1';";
 if ($DB) {echo "|$stmt|\n";}
@@ -204,7 +214,7 @@ if ($end_call > 0)
 {
 
 	### update the lead record in the vicidial_list table 
-	$stmt="UPDATE vicidial_list set status='" . mysql_real_escape_string($status) . "',first_name='" . mysql_real_escape_string($first_name) . "',last_name='" . mysql_real_escape_string($last_name) . "',address1='" . mysql_real_escape_string($address1) . "',address2='" . mysql_real_escape_string($address2) . "',address3='" . mysql_real_escape_string($address3) . "',city='" . mysql_real_escape_string($city) . "',state='" . mysql_real_escape_string($state) . "',province='" . mysql_real_escape_string($province) . "',postal_code='" . mysql_real_escape_string($postal_code) . "',country_code='" . mysql_real_escape_string($country_code) . "',alt_phone='" . mysql_real_escape_string($alt_phone) . "',email='" . mysql_real_escape_string($email) . "',security_phrase='" . mysql_real_escape_string($security) . "',comments='" . mysql_real_escape_string($comments) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "'";
+	$stmt="UPDATE vicidial_list set status='" . mysql_real_escape_string($status) . "',first_name='" . mysql_real_escape_string($first_name) . "',last_name='" . mysql_real_escape_string($last_name) . "',address1='" . mysql_real_escape_string($address1) . "',address2='" . mysql_real_escape_string($address2) . "',address3='" . mysql_real_escape_string($address3) . "',city='" . mysql_real_escape_string($city) . "',state='" . mysql_real_escape_string($state) . "',province='" . mysql_real_escape_string($province) . "',postal_code='" . mysql_real_escape_string($postal_code) . "',country_code='" . mysql_real_escape_string($country_code) . "',alt_phone='" . mysql_real_escape_string($alt_phone) . "',phone_number='$phone_number',email='" . mysql_real_escape_string($email) . "',security_phrase='" . mysql_real_escape_string($security) . "',comments='" . mysql_real_escape_string($comments) . "' where lead_id='" . mysql_real_escape_string($lead_id) . "'";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
 
@@ -454,7 +464,7 @@ else
 		echo "<input type=hidden name=list_id value=\"$list_id\">\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 		echo "<input type=hidden name=phone_code value=\"$phone_code\">\n";
-		echo "<input type=hidden name=phone_number value=\"$phone_number\">\n";
+		echo "<input type=hidden name=old_phone value=\"$phone_number\">\n";
 		echo "<input type=hidden name=server_ip value=\"$server_ip\">\n";
 		echo "<input type=hidden name=extension value=\"$extension\">\n";
 		echo "<input type=hidden name=channel value=\"$channel\">\n";
@@ -474,7 +484,8 @@ else
 
 		echo "<tr><td align=right>Province : </td><td align=left><input type=text name=province size=30 maxlength=30 value=\"$province\"></td></tr>\n";
 		echo "<tr><td align=right>Country : </td><td align=left><input type=text name=country_code size=3 maxlength=3 value=\"$country_code\"></td></tr>\n";
-		echo "<tr><td align=right>Alt Phone : </td><td align=left><input type=text name=alt_phone size=10 maxlength=10 value=\"$alt_phone\"></td></tr>\n";
+		echo "<tr><td align=right>Main Phone : </td><td align=left><input type=text name=phone_number size=20 maxlength=20 value=\"$phone_number\"></td></tr>\n";
+		echo "<tr><td align=right>Alt Phone : </td><td align=left><input type=text name=alt_phone size=20 maxlength=20 value=\"$alt_phone\"></td></tr>\n";
 		echo "<tr><td align=right>Email : </td><td align=left><input type=text name=email size=30 maxlength=50 value=\"$email\"></td></tr>\n";
 		echo "<tr><td align=right>Security : </td><td align=left><input type=text name=security size=30 maxlength=100 value=\"$security\"></td></tr>\n";
 		echo "<tr><td align=right>Comments : </td><td align=left><input type=text name=comments size=30 maxlength=255 value=\"$comments\"></td></tr>\n";
