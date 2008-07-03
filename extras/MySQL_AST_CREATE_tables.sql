@@ -456,7 +456,9 @@ qc_finish ENUM('1','0') default '0',
 qc_commit ENUM('1','0') default '0',
 add_timeclock_log ENUM('1','0') default '0',
 modify_timeclock_log ENUM('1','0') default '0',
-delete_timeclock_log ENUM('1','0') default '0'
+delete_timeclock_log ENUM('1','0') default '0',
+alter_custphone_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
+vdc_agent_api_access ENUM('0','1') default '0'
 );
 
 
@@ -572,11 +574,9 @@ survey_no_response_action ENUM('OPTIN','OPTOUT') default 'OPTIN',
 survey_ni_status VARCHAR(6) default 'NI',
 survey_response_digit_map VARCHAR(255) default '1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|',
 survey_xfer_exten VARCHAR(20) default '8300',
-survey_camp_record_dir VARCHAR(255) default '/home/survey'
+survey_camp_record_dir VARCHAR(255) default '/home/survey',
+disable_alter_custphone ENUM('Y','N') default 'Y'
 );
-
-
-
 
  CREATE TABLE vicidial_lists (
 list_id BIGINT(14) UNSIGNED PRIMARY KEY NOT NULL,
@@ -972,7 +972,8 @@ timeclock_end_of_day VARCHAR(4) default '0000',
 timeclock_last_reset_date DATE,
 vdc_header_date_format VARCHAR(50) default 'MS_DASH_24HR  2008-06-24 23:59:59',
 vdc_customer_date_format VARCHAR(50) default 'AL_TEXT_AMPM  OCT 24, 2008 11:59:59 PM',
-vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000'
+vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000',
+vdc_agent_api_active ENUM('0','1') default '0'
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1217,5 +1218,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1095';
+UPDATE system_settings SET db_schema_version='1096';
 

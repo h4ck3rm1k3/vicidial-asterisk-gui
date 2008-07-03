@@ -150,10 +150,11 @@
 # 80430-1006 - Added term_reason for vicidial_log and vicidial_closer_log
 # 80430-1957 - Changed to leave lead_id in vicidial_live_agents record until after dispo
 # 80630-2153 - Added queue_log logging for Manual dial calls
+# 80703-0139 - Added alter customer phone permissions
 #
 
-$version = '2.0.5-74';
-$build = '80630-2153';
+$version = '2.0.5-75';
+$build = '80703-0139';
 
 require("dbconnect.php");
 
@@ -1267,7 +1268,7 @@ if ($stage == "end")
 		if ($DB) {echo "$stmt\n";}
 		$qm_conf_ct = mysql_num_rows($rslt);
 		$i=0;
-		while ($i < $qm_conf_ct)
+		if ($qm_conf_ct > 0)
 			{
 			$row=mysql_fetch_row($rslt);
 			$enable_queuemetrics_logging =	$row[0];
@@ -1276,7 +1277,12 @@ if ($stage == "end")
 			$queuemetrics_login	=			$row[3];
 			$queuemetrics_pass =			$row[4];
 			$queuemetrics_log_id =			$row[5];
-			$i++;
+
+			if ($enable_queuemetrics_logging > 0)
+				{
+				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+				mysql_select_db("$queuemetrics_dbname", $linkB);
+				}
 			}
 		##### END QUEUEMETRICS LOGGING LOOKUP #####
 		###########################################
@@ -1381,9 +1387,6 @@ if ($stage == "end")
 				$CLstage = preg_replace("/.*-/",'',$CLstage);
 				if (strlen($CLstage) < 1) {$CLstage=0;}
 
-				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
-				mysql_select_db("$queuemetrics_dbname", $linkB);
-
 				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETECALLER';";
 				$rslt=mysql_query($stmt, $linkB);
 				if ($DB) {echo "$stmt\n";}
@@ -1407,7 +1410,7 @@ if ($stage == "end")
 					{
 					$term_reason='CALLER';
 					}
-				mysql_close($linkB);
+
 				}
 
 
@@ -1415,8 +1418,6 @@ if ($stage == "end")
 			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
-
-
 
 			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
@@ -1426,15 +1427,10 @@ if ($stage == "end")
 				{
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
-					mysql_select_db("$queuemetrics_dbname", $linkB);
-
 					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
-
-					mysql_close($linkB);
 					}
 				}
 			}
@@ -1465,15 +1461,10 @@ if ($stage == "end")
 				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
 				if ($CLstage < 0.25) {$CLstage=0;}
 
-				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
-				mysql_select_db("$queuemetrics_dbname", $linkB);
-
 				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
-
-				mysql_close($linkB);
 				}
 
 			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and uniqueid='$uniqueid';";
@@ -1488,15 +1479,10 @@ if ($stage == "end")
 				{
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
-					mysql_select_db("$queuemetrics_dbname", $linkB);
-
 					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
-
-					mysql_close($linkB);
 					}
 				}
 			}
@@ -2429,7 +2415,7 @@ if ($ACTION == 'updateLEAD')
 	else
 	{
 
-	$stmt = "SELECT disable_alter_custdata FROM vicidial_campaigns where campaign_id='$campaign'";
+	$stmt = "SELECT disable_alter_custdata,disable_alter_custphone FROM vicidial_campaigns where campaign_id='$campaign'";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$dac_conf_ct = mysql_num_rows($rslt);
@@ -2438,13 +2424,21 @@ if ($ACTION == 'updateLEAD')
 		{
 		$row=mysql_fetch_row($rslt);
 		$disable_alter_custdata =	$row[0];
+		$disable_alter_custphone =	$row[1];
 		$i++;
 		}
-	if (ereg('Y',$disable_alter_custdata))
+	if ( (ereg('Y',$disable_alter_custdata)) or (ereg('Y',$disable_alter_custphone)) )
 		{
-		$DO_NOT_UPDATE=1;
-		$DO_NOT_UPDATE_text=' NOT';
-		$stmt = "SELECT alter_custdata_override FROM vicidial_users where user='$user'";
+		if (ereg('Y',$disable_alter_custdata))
+			{
+			$DO_NOT_UPDATE=1;
+			$DO_NOT_UPDATE_text=' NOT';
+			}
+		if (ereg('Y',$disable_alter_custphone))
+			{
+			$DO_NOT_UPDATEphone=1;
+			}
+		$stmt = "SELECT alter_custdata_override,alter_custphone_override FROM vicidial_users where user='$user'";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$aco_conf_ct = mysql_num_rows($rslt);
@@ -2453,12 +2447,17 @@ if ($ACTION == 'updateLEAD')
 			{
 			$row=mysql_fetch_row($rslt);
 			$alter_custdata_override =	$row[0];
+			$alter_custphone_override = $row[1];
 			$i++;
 			}
 		if (ereg('ALLOW_ALTER',$alter_custdata_override))
 			{
 			$DO_NOT_UPDATE=0;
 			$DO_NOT_UPDATE_text='';
+			}
+		if (ereg('ALLOW_ALTER',$alter_custphone_override))
+			{
+			$DO_NOT_UPDATEphone=0;
 			}
 		}
 
@@ -2470,7 +2469,11 @@ if ($ACTION == 'updateLEAD')
 		$comments = eregi_replace("--QUES--",'?',$comments);
 		$comments = eregi_replace("--POUND--",'#',$comments);
 
-		$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysql_real_escape_string($vendor_lead_code) . "', title='" . mysql_real_escape_string($title) . "', first_name='" . mysql_real_escape_string($first_name) . "', middle_initial='" . mysql_real_escape_string($middle_initial) . "', last_name='" . mysql_real_escape_string($last_name) . "', address1='" . mysql_real_escape_string($address1) . "', address2='" . mysql_real_escape_string($address2) . "', address3='" . mysql_real_escape_string($address3) . "', city='" . mysql_real_escape_string($city) . "', state='" . mysql_real_escape_string($state) . "', province='" . mysql_real_escape_string($province) . "', postal_code='" . mysql_real_escape_string($postal_code) . "', country_code='" . mysql_real_escape_string($country_code) . "', gender='" . mysql_real_escape_string($gender) . "', date_of_birth='" . mysql_real_escape_string($date_of_birth) . "', alt_phone='" . mysql_real_escape_string($alt_phone) . "', email='" . mysql_real_escape_string($email) . "', security_phrase='" . mysql_real_escape_string($security_phrase) . "', comments='" . mysql_real_escape_string($comments) . "' where lead_id='$lead_id';";
+		$phoneSQL='';
+		if ($DO_NOT_UPDATEphone < 1)
+			{$phoneSQL = ",phone_number='$phone_number'";}
+
+		$stmt="UPDATE vicidial_list set vendor_lead_code='" . mysql_real_escape_string($vendor_lead_code) . "', title='" . mysql_real_escape_string($title) . "', first_name='" . mysql_real_escape_string($first_name) . "', middle_initial='" . mysql_real_escape_string($middle_initial) . "', last_name='" . mysql_real_escape_string($last_name) . "', address1='" . mysql_real_escape_string($address1) . "', address2='" . mysql_real_escape_string($address2) . "', address3='" . mysql_real_escape_string($address3) . "', city='" . mysql_real_escape_string($city) . "', state='" . mysql_real_escape_string($state) . "', province='" . mysql_real_escape_string($province) . "', postal_code='" . mysql_real_escape_string($postal_code) . "', country_code='" . mysql_real_escape_string($country_code) . "', gender='" . mysql_real_escape_string($gender) . "', date_of_birth='" . mysql_real_escape_string($date_of_birth) . "', alt_phone='" . mysql_real_escape_string($alt_phone) . "', email='" . mysql_real_escape_string($email) . "', security_phrase='" . mysql_real_escape_string($security_phrase) . "', comments='" . mysql_real_escape_string($comments) . "' $phoneSQL where lead_id='$lead_id';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}

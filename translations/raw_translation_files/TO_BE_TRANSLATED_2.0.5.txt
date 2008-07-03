@@ -217,6 +217,14 @@ Agent Screen Customer Date Format||
 Agent Screen Customer Phone Format||
 ERROR- There is a problem with the data that you entered, please go back||
 A timeclock session cannot overlap another timeclock session||
+Disable Alter Customer Phone -<\/B> If set to Y, does not change the customer phone number when an agent dispositions the call. Default is Y||
+Agent API Access -<\/B> This option allows the account to be used with the vicidial agent API commands||
+Agent Alter Customer Phone Override -<\/B> This option will override whatever the option is in the campaign for altering of customer phone number. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer phone number, no matter what the campaign setting is. Default is NOT_ACTIVE||
+Agent API Active -<\/B> If set to 1, this will allow the Agent API interface to function. Default is 0||
+Agent Alter Customer Phone Override: ||
+Agent API Access: ||
+Disable Alter Customer Phone: ||
+Agent API Active: ||
 
 
 ############################################################ CLIENT

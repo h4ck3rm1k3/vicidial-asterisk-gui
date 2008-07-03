@@ -177,13 +177,14 @@
 # 80505-0054 - Added multi-phones load-balanced alias option
 # 80507-0932 - Fixed Script display bug (+ instead of space)
 # 80519-1425 - Added calls in queue display
-# 80523-1630 - Added Tiemclock links
+# 80523-1630 - Added Timeclock links
 # 80625-0047 - Added U option for gender, added date/phone display options
 # 80630-2210 - Added queue_log entries for Manual Dial
-#
+# 80703-0139 - Added alter customer phone permissions
+# 
 
-$version = '2.0.5-158';
-$build = '80630-2210';
+$version = '2.0.5-159';
+$build = '80703-0139';
 
 require("dbconnect.php");
 
@@ -642,7 +643,7 @@ $VDloginDISPLAY=0;
 		$login=strtoupper($VD_login);
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
-		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override from vicidial_users where user='$VD_login' and pass='$VD_pass'";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
 		$LOGfullname=$row[0];
@@ -657,6 +658,7 @@ $VDloginDISPLAY=0;
 		$VU_closer_default_blended=$row[9];
 		$VU_user_group=$row[10];
 		$VU_vicidial_recording_override=$row[11];
+		$VU_alter_custphone_override=$row[12];
 
 		if ($WeBRooTWritablE > 0)
 			{
@@ -776,7 +778,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -813,6 +815,7 @@ $VDloginDISPLAY=0;
 				$manual_dial_list_id =		$row[30];
 				$default_xfer_group =		$row[31];
 				$xfer_groups =				$row[32];
+				$disable_alter_custphone =	$row[33];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -823,6 +826,8 @@ $VDloginDISPLAY=0;
 				{$scheduled_callbacks='1';}
 			if ($VU_vicidial_recording=='0')
 				{$campaign_recording='NEVER';}
+			if ($VU_alter_custphone_override=='ALLOW_ALTER')
+				{$disable_alter_custphone='N';}
 			if ($alt_number_dialing=='Y')
 				{$alt_phone_dialing='1';}
 			else
@@ -1957,6 +1962,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var vdc_header_date_format = '<? echo $vdc_header_date_format ?>';
 	var vdc_customer_date_format = '<? echo $vdc_customer_date_format ?>';
 	var vdc_header_phone_format = '<? echo $vdc_header_phone_format ?>';
+	var disable_alter_custphone = '<? echo $disable_alter_custphone ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2840,7 +2846,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
 				DispO3wayCalLcamptail = '';
 
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value+ "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id;
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id;
 
 				if (taskdebugnote == 'FIRST') 
 					{
@@ -3530,6 +3536,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						document.vicidial_form.list_id.value			= MDnextResponse_array[5];
 						document.vicidial_form.gmt_offset_now.value		= MDnextResponse_array[6];
 						document.vicidial_form.phone_code.value			= MDnextResponse_array[7];
+						if (disable_alter_custphone=='Y')
+							{
+							var tmp_pn = document.getElementById("phone_numberDISP");
+							tmp_pn.innerHTML							= MDnextResponse_array[8];
+							}
 						document.vicidial_form.phone_number.value		= MDnextResponse_array[8];
 						document.vicidial_form.title.value				= MDnextResponse_array[9];
 						document.vicidial_form.first_name.value			= MDnextResponse_array[10];
@@ -3764,7 +3775,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							document.vicidial_form.list_id.value		='';
 							document.vicidial_form.gmt_offset_now.value	='';
 							document.vicidial_form.phone_code.value		='';
-							document.vicidial_form.phone_number.value	='';
+							if (disable_alter_custphone=='Y')
+								{
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								tmp_pn.innerHTML			= ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
+								}
+							document.vicidial_form.phone_number.value	= '';
 							document.vicidial_form.title.value			='';
 							document.vicidial_form.first_name.value		='';
 							document.vicidial_form.middle_initial.value	='';
@@ -3825,7 +3841,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				dialed_number = lead_dial_number;
 				dialed_label = 'ADDR3';
 				WebFormRefresH('');
-			}
+				}
 			else
 				{
 				var manDiaLonly_num = document.vicidial_form.phone_number.value;
@@ -4159,6 +4175,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							document.vicidial_form.list_id.value			= check_VDIC_array[9];
 							document.vicidial_form.gmt_offset_now.value		= check_VDIC_array[10];
 							document.vicidial_form.phone_code.value			= check_VDIC_array[11];
+							if (disable_alter_custphone=='Y')
+								{
+								var tmp_pn = document.getElementById("phone_numberDISP");
+								tmp_pn.innerHTML							= check_VDIC_array[12];
+								}
 							document.vicidial_form.phone_number.value		= check_VDIC_array[12];
 							document.vicidial_form.title.value				= check_VDIC_array[13];
 							document.vicidial_form.first_name.value			= check_VDIC_array[14];
@@ -5060,7 +5081,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.vicidial_form.list_id.value		='';
 				document.vicidial_form.gmt_offset_now.value	='';
 				document.vicidial_form.phone_code.value		='';
-				document.vicidial_form.phone_number.value	='';
+				if (disable_alter_custphone=='Y')
+					{
+					var tmp_pn = document.getElementById("phone_numberDISP");
+					tmp_pn.innerHTML			= ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
+					}
+				document.vicidial_form.phone_number.value	= '';
 				document.vicidial_form.title.value			='';
 				document.vicidial_form.first_name.value		='';
 				document.vicidial_form.middle_initial.value	='';
@@ -7193,7 +7219,21 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
-<td align=left><font class="body_text"><input type=text size=11 name=phone_number maxlength=12 class="cust_form" value="">&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
+<td align=left><font class="body_text">
+<? 
+if ($disable_alter_custphone=='Y') 
+	{
+	echo "<font class=\"body_text\"><span id=phone_numberDISP> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span></font>";
+	echo "<input type=hidden name=phone_number value=\"\">";
+	}
+else
+	{
+	echo "<input type=text size=11 name=phone_number maxlength=12 class=\"cust_form\" value=\"\">";
+	}
+?>
+
+
+&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Show: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>

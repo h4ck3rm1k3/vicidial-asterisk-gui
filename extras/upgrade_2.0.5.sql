@@ -281,3 +281,11 @@ ALTER TABLE vicidial_campaigns MODIFY campaign_cid VARCHAR(20) default '00000000
 
 UPDATE system_settings SET db_schema_version='1095';
 
+ALTER TABLE vicidial_campaigns ADD disable_alter_custphone ENUM('Y','N') default 'Y';
+
+ALTER TABLE vicidial_users ADD alter_custphone_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE';
+ALTER TABLE vicidial_users ADD vdc_agent_api_access ENUM('0','1') default '0';
+
+ALTER TABLE system_settings ADD vdc_agent_api_active ENUM('0','1') default '0';
+
+UPDATE system_settings SET db_schema_version='1096';
