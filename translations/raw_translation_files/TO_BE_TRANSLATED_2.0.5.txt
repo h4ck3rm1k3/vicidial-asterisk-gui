@@ -227,6 +227,7 @@ Disable Alter Customer Phone: ||
 Agent API Active: ||
 Agent Display Queue Count -<\/B> If set to Y, when a customer is waiting for an agent, the Queue Calls display at the top of the agent screen will turn red and show the number of waiting calls. Default is Y||
 Agent Display Queue Count: ||
+agents in dead calls||
 
 
 ############################################################ CLIENT

@@ -3550,6 +3550,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							{alert("No more leads in the hopper for campaign:\n" + campaign);}
 						else
 							{alert("This phone number is in the DNC list:\n" + mdnPhonENumbeR);}
+						
+						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+
 						}
 					else
 						{

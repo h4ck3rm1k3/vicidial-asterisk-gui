@@ -35,6 +35,7 @@
 # 80424-0515 - Added non_latin lookup from system_settings
 # 80525-1040 - Added IVR status display and summary for inbound calls
 # 80619-2047 - Added DISPO status for post-call-work while paused
+# 80704-0543 - Added DEAD status for agents INCALL with no live call
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -220,6 +221,7 @@ $F=''; $FG=''; $B=''; $BG='';
 	.yellow {color: black; background-color: yellow}
 	.khaki {color: black; background-color: #F0E68C}
 	.orange {color: black; background-color: orange}
+	.black {color: white; background-color: black}
 
 	.r1 {color: black; background-color: #FFCCCC}
 	.r2 {color: black; background-color: #FF9999}
@@ -676,6 +678,7 @@ if ($p<1)
 $agent_incall=0;
 $agent_ready=0;
 $agent_paused=0;
+$agent_dead=0;
 $agent_total=0;
 
 $phoneord=$orderby;
@@ -816,6 +819,22 @@ $talking_to_print = mysql_num_rows($rslt);
 		$i++;
 		}
 
+$callerids='';
+$stmt="select callerid from vicidial_auto_calls;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$calls_to_list = mysql_num_rows($rslt);
+	if ($calls_to_list > 0)
+	{
+	$i=0;
+	while ($i < $calls_to_list)
+		{
+		$row=mysql_fetch_row($rslt);
+		$callerids .=	"$row[0]|";
+		$i++;
+		}
+	}
+
 ### Lookup phone logins
 	$i=0;
 	while ($i < $talking_to_print)
@@ -913,6 +932,13 @@ $talking_to_print = mysql_num_rows($rslt);
 
 		if (eregi("INCALL",$Lstatus)) 
 			{
+			if (!ereg("$Acallerid[$i]\|",$callerids))
+				{
+				$Astatus[$i] =	'DEAD';
+				$Lstatus =		'DEAD';
+				$status =		' DEAD ';
+				}
+
 			if ( (eregi("AUTO",$comments)) or (strlen($comments)<1) )
 				{$CM='A';}
 			else
@@ -972,6 +998,17 @@ $talking_to_print = mysql_num_rows($rslt);
 			if ($call_time_M_int >= 1) {$G='<SPAN class="violet"><B>'; $EG='</B></SPAN>';}
 			if ($call_time_M_int >= 5) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 	#		if ($call_time_M_int >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
+			}
+		if ($Lstatus=='DEAD')
+			{
+			if ($call_time_M_int >= 360) 
+				{$j++; continue;} 
+			else
+				{
+				$agent_dead++;  $agent_total++;
+				$G=''; $EG='';
+				if ($call_time_S >= 10) {$G='<SPAN class="black"><B>'; $EG='</B></SPAN>';}
+				}
 			}
 		if ($Lstatus=='DISPO')
 			{
@@ -1068,6 +1105,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		$Aecho .= "  <SPAN class=\"khaki\"><B>          </SPAN> - Agent Paused > 10 seconds</B>\n";
 		$Aecho .= "  <SPAN class=\"yellow\"><B>          </SPAN> - Agent Paused > 1 minute</B>\n";
 		$Aecho .= "  <SPAN class=\"olive\"><B>          </SPAN> - Agent Paused > 5 minutes</B>\n";
+		$Aecho .= "  <SPAN class=\"black\"><B>          </SPAN> - Agent on a dead call</B>\n";
 
 		if ($agent_ready > 0) {$B='<FONT class="b1">'; $BG='</FONT>';}
 		if ($agent_ready > 4) {$B='<FONT class="b2">'; $BG='</FONT>';}
@@ -1081,6 +1119,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		echo "$NFB$agent_incall$NFE agents in calls &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$B &nbsp;$agent_ready $BG$NFE agents waiting &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$agent_paused$NFE paused agents &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB$agent_dead$NFE agents in dead calls&nbsp; &nbsp; &nbsp; \n";
 		
 		echo "<PRE><FONT SIZE=2>";
 		echo "";
