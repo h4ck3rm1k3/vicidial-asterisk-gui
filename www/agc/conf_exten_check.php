@@ -37,6 +37,7 @@
 # 71122-0205 - Added vicidial_live_agent status output
 # 80424-0442 - Added non_latin lookup from system_settings
 # 80519-1425 - Added calls-in-queue tally
+# 80703-1106 - Added API functionality for Hangup and Dispo
 #
 
 require("dbconnect.php");
@@ -259,10 +260,19 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 
 				}
 
+			### grab the API hangup and API dispo fields in vicidial_live_agents
+			$stmt="SELECT external_hangup,external_status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$external_hangup =	$row[0];
+			$external_status =	$row[1];
+			if (strlen($external_status)<1) {$external_status = '::::::::::';}
+
 			if ($Acount < 1) {$Alogin='DEAD_VLA';}
 			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
 
 			}
 		$total_conf=0;

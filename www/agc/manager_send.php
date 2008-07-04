@@ -400,6 +400,10 @@ if ($ACTION=="HangupConfDial")
 ######################
 if ($ACTION=="Hangup")
 {
+$stmt="UPDATE vicidial_live_agents SET external_hangup='0' where user='$user';";
+	if ($format=='debug') {echo "\n<!-- $stmt -->";}
+$rslt=mysql_query($stmt, $link);
+
 	$row='';   $rowx='';
 	$channel_live=1;
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )

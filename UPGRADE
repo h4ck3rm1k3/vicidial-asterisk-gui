@@ -133,7 +133,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 29. Added manual dial and inbound queue_log logging capability for better
 	QueueMetrics compatibility
 
-
+30. Added some basic agent interface API functions and an agc/api.php script
 
 
 

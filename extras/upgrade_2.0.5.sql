@@ -289,3 +289,7 @@ ALTER TABLE vicidial_users ADD vdc_agent_api_access ENUM('0','1') default '0';
 ALTER TABLE system_settings ADD vdc_agent_api_active ENUM('0','1') default '0';
 
 UPDATE system_settings SET db_schema_version='1096';
+
+ALTER TABLE vicidial_campaigns ADD display_queue_count ENUM('Y','N') default 'Y';
+
+UPDATE system_settings SET db_schema_version='1097';

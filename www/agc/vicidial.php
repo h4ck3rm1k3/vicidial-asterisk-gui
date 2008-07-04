@@ -181,10 +181,11 @@
 # 80625-0047 - Added U option for gender, added date/phone display options
 # 80630-2210 - Added queue_log entries for Manual Dial
 # 80703-0139 - Added alter customer phone permissions
-# 
+# 80703-1106 - Added API functionality for Hangup and Dispo, added Agent Display Queue Count
+#
 
-$version = '2.0.5-159';
-$build = '80703-0139';
+$version = '2.0.5-160';
+$build = '80703-1106';
 
 require("dbconnect.php");
 
@@ -320,6 +321,7 @@ $MNwidth =  ($MASTERwidth + 330);	# 760 - main frame
 $XFwidth =  ($MASTERwidth + 320);	# 750 - transfer/conference
 $HCwidth =  ($MASTERwidth + 310);	# 740 - hotkeys and callbacks
 $AMwidth =  ($MASTERwidth + 270);	# 700 - agent mute and preset-dial links
+$SCwidth =  ($MASTERwidth + 230);	# 670 - live call seconds counter
 $SSwidth =  ($MASTERwidth + 176);	# 606 - scroll script
 $SDwidth =  ($MASTERwidth + 170);	# 600 - scroll script, customer data and calls-in-session
 $HKwidth =  ($MASTERwidth + 70);	# 500 - Hotkeys button
@@ -778,7 +780,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -816,6 +818,7 @@ $VDloginDISPLAY=0;
 				$default_xfer_group =		$row[31];
 				$xfer_groups =				$row[32];
 				$disable_alter_custphone =	$row[33];
+				$display_queue_count =		$row[34];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -832,6 +835,9 @@ $VDloginDISPLAY=0;
 				{$alt_phone_dialing='1';}
 			else
 				{$alt_phone_dialing='0';}
+			if ($display_queue_count=='N')
+				{$callholdstatus='0';}
+
 			$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
 			$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
 			$closer_campaigns = "'$closer_campaigns'";
@@ -2459,6 +2465,24 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							}
 						else {PausENotifYCounTer=0;}
 
+						var APIHanguP_array = check_time_array[6].split("APIHanguP: ");
+						var APIHanguP = APIHanguP_array[1];
+						var APIStatuS_array = check_time_array[7].split("APIStatuS: ");
+						var APIStatuS = APIStatuS_array[1];
+						if ( (APIHanguP==1) && (VD_live_customer_call==1) )
+							{
+							hideDiv('CustomerGoneBox');
+							WaitingForNextStep=0;
+							custchannellive=0;
+
+							dialedcall_send_hangup();
+							}
+						if ( (APIStatuS.length < 10) && (APIStatuS.length > 0) && (AgentDispoing > 0) )
+							{
+							document.vicidial_form.DispoSelection.value = APIStatuS;
+							DispoSelect_submit();
+							}
+
 						var check_conf_array=check_ALL_array[1].split("|");
 						var live_conf_calls = check_conf_array[0];
 						var conf_chan_array = check_conf_array[1].split(" ~");
@@ -3417,6 +3441,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								lastcustchannel = MDlookResponse_array[1];
 								if( document.images ) { document.images['livecall'].src = image_livecall_ON.src;}
 								document.vicidial_form.SecondS.value		= 0;
+								document.getElementById("SecondSDISP").innerHTML = '0';
 
 								VD_live_customer_call = 1;
 								VD_live_call_secondS = 0;
@@ -4159,6 +4184,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							lastcustserverip = VDIC_data_VDAC[4];
 							if( document.images ) { document.images['livecall'].src = image_livecall_ON.src;}
 							document.vicidial_form.SecondS.value		= 0;
+							document.getElementById("SecondSDISP").innerHTML = '0';
 
 							VD_live_customer_call = 1;
 							VD_live_call_secondS = 0;
@@ -6267,6 +6293,7 @@ else
 					{
 					VD_live_call_secondS++;
 					document.vicidial_form.SecondS.value		= VD_live_call_secondS;
+					document.getElementById("SecondSDISP").innerHTML = VD_live_call_secondS;
 					}
 				if (XD_live_customer_call==1)
 					{
@@ -6792,7 +6819,7 @@ echo "</head>\n";
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR=white WIDTH=<?=$MNwidth ?> MARGINWIDTH=0 MARGINHEIGHT=0 LEFTMARGIN=0 TOPMARGIN=0 VALIGN=TOP ALIGN=LEFT>
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=3 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
-<font class="body_text">
+<font class="queue_text">
 <?	echo "Logged in as User: $VD_login on Phone: $SIP_user to campaign: $VD_campaign&nbsp; \n"; ?>
 </TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text">
 <? if ($INgrpCT > 0) {echo "<a href=\"#\" onclick=\"OpeNGrouPSelectioN();return false;\">GROUPS</a> &nbsp; &nbsp; \n";} ?>
@@ -6826,6 +6853,10 @@ echo "</head>\n";
 
 <span style="position:absolute;left:500px;top:<?=$CBheight ?>px;z-index:14;" id="PauseCodeButtons"><font class="body_text">
 <span id="PauseCodeLinkSpan"></span> <BR>
+</font></span>
+
+<span style="position:absolute;left:<?=$SCwidth ?>px;top:49px;z-index:18;" id="SecondSspan"><font class="body_text"> seconds: 
+<span id="SecondSDISP"> &nbsp; &nbsp; </span>
 </font></span>
 
 <span style="position:absolute;left:<?=$AMwidth ?>px;top:<?=$AMheight ?>px;z-index:22;" id="AgentMuteANDPreseTDiaL"><font class="body_text">
@@ -7196,10 +7227,11 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <input type=hidden name=country_code value="">
 <input type=hidden name=uniqueid value="">
 <input type=hidden name=callserverip value="">
+<input type=hidden name=SecondS value="">
 <div class="text_input" id="MainPanelCustInfo">
 <table><tr>
-<td align=right><font class="body_text"> seconds: </td>
-<td align=left><font class="body_text"><input type=text size=3 name=SecondS class="cust_form" value="">&nbsp; Channel: <input type=text size=6 name=callchannel class="cust_form" value="">&nbsp; Cust Time: <input type=text size=27 name=custdatetime class="cust_form" value=""></td>
+<td align=right></td>
+<td align=left><font class="body_text">&nbsp; Cust Time: <input type=text size=27 name=custdatetime class="cust_form" value=""> &nbsp; Channel: <input type=text size=20 name=callchannel class="cust_form" value=""></td>
 </tr><tr>
 <td colspan=2 align=center> Customer Information: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>

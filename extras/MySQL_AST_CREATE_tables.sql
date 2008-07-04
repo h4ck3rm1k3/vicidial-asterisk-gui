@@ -575,7 +575,8 @@ survey_ni_status VARCHAR(6) default 'NI',
 survey_response_digit_map VARCHAR(255) default '1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|',
 survey_xfer_exten VARCHAR(20) default '8300',
 survey_camp_record_dir VARCHAR(255) default '/home/survey',
-disable_alter_custphone ENUM('Y','N') default 'Y'
+disable_alter_custphone ENUM('Y','N') default 'Y',
+display_queue_count ENUM('Y','N') default 'Y'
 );
 
  CREATE TABLE vicidial_lists (
@@ -1218,5 +1219,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1096';
+UPDATE system_settings SET db_schema_version='1097';
 

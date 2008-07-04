@@ -1,0 +1,38 @@
+AGENT API DOCUMENT			2008-07-03
+
+This document describes the functions of an API(Application Programming Interface)
+for the VICIDIAL Agent screen. This functionality will be rather limited at first
+and will be built upon as critical functions are identified and programmed into it.
+
+
+
+API functions:
+external_hangup - sends command to hangup the current phone call for one specific agent(Hangup Customer)
+external_status - sends command to set the disposition for one specific agent and move on to next call
+
+
+
+New scripts:
+/agc/api.php - the script that is accessed to execute commands
+
+
+
+Example URL strings for API calls:
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_status&value=A
+
+
+
+Example MySQL queries for executing API functions:
+update vicidial_live_agents set external_hangup=1 where user='1000';
+update vicidial_live_agents set external_status='A' where user='1000';
+update vicidial_live_agents set status='PAUSED' where user='1000';
+
+
+Database changes:
+ALTER TABLE vicidial_live_agents ADD external_hangup VARCHAR(1) default '';
+ALTER TABLE vicidial_live_agents ADD external_status VARCHAR(6) default '';
+
+ALTER TABLE vicidial_users ADD vdc_agent_api_access ENUM('0','1') default '0';
+
+ALTER TABLE system_settings ADD vdc_agent_api_active ENUM('0','1') default '0';
