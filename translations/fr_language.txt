@@ -389,7 +389,7 @@ ADDRESS3|ADRESSE3|
 FINISH LEAD|TERMINER LA SAISIE|
 Dial Alt Phone Number|Appel Numéro 2nd.|
 Phone|Téléphone|
-DIAL|COMPOSER|
+ DIAL| COMPOSER|
 SUBMIT FAVORITES CHANGES - requires logout|Modification de paramétrage - vous devrez vous fermer la session|
 BACK TO MAIN WINDOW - ignore changes made|RETOUR À LA FENÊTRE PRINCIPALE - annuler les modifications|
 AVAILABLE EXTENSIONS|EXTENSIONS DISPONIBLES|

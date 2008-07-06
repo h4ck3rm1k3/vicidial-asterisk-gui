@@ -389,7 +389,7 @@ ADDRESS3|ENDEREÇO3|
 FINISH LEAD|REVESTIMENTO|
 Dial Alt Phone Number|Número Alt Do Seletor|
 Phone|Telefone|
-DIAL|SELETOR|
+ DIAL| SELETOR|
 SUBMIT FAVORITES CHANGES - requires logout|SUBMETA MUDANÇAS dos FAVORITOS - requer o logout|
 BACK TO MAIN WINDOW - ignore changes made|PARA TRÁS À JANELA PRINCIPAL - ignore as mudanças feitas|
 AVAILABLE EXTENSIONS|EXTENSÕES DISPONÍVEIS|

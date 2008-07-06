@@ -387,7 +387,7 @@ ADDRESS3|3ΔΙΕΥΘΥΝΣΗ|
 FINISH LEAD|ΤΕΛΕΙΩΣΤΕ|
 Dial Alt Phone Number|Κλήση εναλκού αριθμού|
 Phone|Τηλ|
-DIAL|ΚΛΗΣΗ|
+ DIAL| ΚΛΗΣΗ|
 SUBMIT FAVORITES CHANGES - requires logout|ΥΠΟΒΑΛΤΕ τις ΑΛΛΑΓΕΣ ΣΥΜΠΑΘΕΙΩΝ - απαιτεί την αποσύνδεση|
 BACK TO MAIN WINDOW - ignore changes made|ΠΙΣΩ στο ΚΥΡΙΟ ΠΑΡΑΘΥΡΟ - αγνοήστε τις αλλαγές που γίνονται|
 AVAILABLE EXTENSIONS|ΔΙΑΘΕΣΙΜΕΣ ΕΠΕΚΤΑΣΕΙΣ|
