@@ -7,6 +7,7 @@
 #
 # 80529-0055 - First build
 # 80617-1416 - Fixed totals tally bug
+# 80707-0754 - Fixed groups bug, changed formatting
 #
 
 require("dbconnect.php");
@@ -35,7 +36,7 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
 
 if (strlen($shift)<2) {$shift='ALL';}
-if (strlen($order)<2) {$order='sales_down';}
+if (strlen($order)<2) {$order='hours_down';}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -154,7 +155,7 @@ if ( (ereg("--ALL--",$user_group_string) ) or ($user_group_ct < 1) )
 else
 	{
 	$user_group_SQL = eregi_replace(",$",'',$user_group_SQL);
-	$user_group_SQL = "user_group_id IN($user_group_SQL)";
+	$user_group_SQL = "and vicidial_timeclock_log.user_group IN($user_group_SQL)";
 	}
 
 if ($DB > 0)
@@ -198,6 +199,8 @@ echo "<option>user_up</option>\n";
 echo "<option>user_down</option>\n";
 echo "<option>name_up</option>\n";
 echo "<option>name_down</option>\n";
+echo "<option>group_up</option>\n";
+echo "<option>group_down</option>\n";
 echo "</SELECT><BR><CENTER>\n";
 
 echo "</TD><TD ALIGN=LEFT VALIGN=TOP>\n";
@@ -225,6 +228,7 @@ echo "<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR BGCOLOR=BLACK>\n";
 echo "<TD ALIGN=CENTER><FONT class=\"header_white\">#</TD>\n";
 echo "<TD ALIGN=CENTER><FONT class=\"header_white\">&nbsp; USER &nbsp;</TD>\n";
 echo "<TD ALIGN=CENTER><FONT class=\"header_white\">&nbsp; NAME &nbsp;</TD>\n";
+echo "<TD ALIGN=CENTER><FONT class=\"header_white\">&nbsp; GROUP &nbsp;</TD>\n";
 echo "<TD ALIGN=CENTER><FONT class=\"header_white\">&nbsp; HOURS &nbsp;</TD>\n";
 echo "</TR>\n";
 
@@ -235,11 +239,13 @@ if ($order == 'user_up')	{$order_SQL = "order by vicidial_users.user";}
 if ($order == 'user_down')	{$order_SQL = "order by vicidial_users.user desc";}
 if ($order == 'name_up')	{$order_SQL = "order by full_name";}
 if ($order == 'name_down')	{$order_SQL = "order by full_name desc";}
+if ($order == 'group_up')	{$order_SQL = "order by vicidial_timeclock_log.user_group";}
+if ($order == 'group_down')	{$order_SQL = "order by vicidial_timeclock_log.user_group desc";}
 
 if (strlen($user) > 0)		{$user_SQL = "and vicidial_timeclock_log.user='$user'";}
 else {$user_SQL='';}
 
-$stmt="select vicidial_users.user,full_name,sum(login_sec) as login from vicidial_users,vicidial_timeclock_log where event IN('LOGIN','START') and event_date >= '$query_date 00:00:00' and event_date <= '$end_date 23:59:59' and vicidial_users.user=vicidial_timeclock_log.user $user_SQL group by vicidial_users.user $order_SQL limit 100000;";
+$stmt="select vicidial_users.user,full_name,sum(login_sec) as login,vicidial_timeclock_log.user_group from vicidial_users,vicidial_timeclock_log where event IN('LOGIN','START') and event_date >= '$query_date 00:00:00' and event_date <= '$end_date 23:59:59' and vicidial_users.user=vicidial_timeclock_log.user $user_SQL $user_group_SQL group by vicidial_users.user,vicidial_timeclock_log.user_group $order_SQL limit 100000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -251,6 +257,7 @@ while ($i < $rows_to_print)
 	$user_id[$i] =		$row[0];
 	$full_name[$i] =	$row[1];
 	$login_sec[$i] =	$row[2];	$TOTlogin_sec = ($TOTlogin_sec + $row[2]);
+	$u_group[$i] =		$row[3];
 
 	if ($login_sec[$i] > 0)
 		{
@@ -284,6 +291,7 @@ while ($j < $rows_to_print)
 	echo "<TD ALIGN=LEFT><FONT class=\"data_records_fix_small\">$j</TD>\n";
 	echo "<TD><FONT class=\"data_records\"><A HREF=\"user_status.php?user=$user_id[$i]\">$user_id[$i]</A> </TD>\n";
 	echo "<TD><FONT class=\"data_records\">$full_name[$i] </TD>\n";
+	echo "<TD><FONT class=\"data_records\">$u_group[$i] </TD>\n";
 	echo "<TD ALIGN=RIGHT><FONT class=\"data_records_fix\"> $hours[$i]</TD>\n";
 	echo "</TR>\n";
 
@@ -304,7 +312,7 @@ $TOThours =	$TOTdbHOURS;
 
 
 echo "<TR BGCOLOR=#E6E6E6>\n";
-echo "<TD ALIGN=LEFT COLSPAN=3><FONT class=\"data_records\">TOTALS</TD>\n";
+echo "<TD ALIGN=LEFT COLSPAN=4><FONT class=\"data_records\">TOTALS</TD>\n";
 echo "<TD ALIGN=RIGHT><FONT class=\"data_records_fix\"> $TOThours</TD>\n";
 echo "</TR>\n";
 
