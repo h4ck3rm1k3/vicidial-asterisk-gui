@@ -151,10 +151,11 @@
 # 80430-1957 - Changed to leave lead_id in vicidial_live_agents record until after dispo
 # 80630-2153 - Added queue_log logging for Manual dial calls
 # 80703-0139 - Added alter customer phone permissions
+# 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 #
 
-$version = '2.0.5-75';
-$build = '80703-0139';
+$version = '2.0.5-76';
+$build = '80707-2325';
 
 require("dbconnect.php");
 
@@ -1122,6 +1123,7 @@ if ($ACTION == 'manDiaLlogCaLL')
 {
 	$MT[0]='';
 	$row='';   $rowx='';
+	$vidSQL='';
 
 if ($stage == "start")
 	{
@@ -1201,12 +1203,12 @@ if ($stage == "end")
 			if ($check_inbound > 0)
 				{
 				##### look for the start epoch in the vicidial_closer_log table
-				$stmt="SELECT start_epoch,term_reason FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason,closecallid FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 				}
 			else
 				{
 				##### look for the start epoch in the vicidial_log table
-				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$stmt="SELECT start_epoch,term_reason,uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 				}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1216,6 +1218,7 @@ if ($stage == "end")
 				$row=mysql_fetch_row($rslt);
 				$start_epoch =		$row[0];
 				$VDterm_reason =	$row[1];
+				$VDvicidial_id =	$row[2];
 				$length_in_sec = ($StarTtime - $start_epoch);
 				}
 			else
@@ -1494,13 +1497,14 @@ if ($stage == "end")
 			if ( (ereg("NONE",$term_reason)) or (ereg("NONE",$VDterm_reason)) or (strlen($VDterm_reason) < 1) )
 				{
 				### check to see if lead should be alt_dialed
-				$stmt="SELECT term_reason from vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
+				$stmt="SELECT term_reason,uniqueid from vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				$VAC_qm_ct = mysql_num_rows($rslt);
 				if ($VAC_qm_ct > 0)
 					{
 					$row=mysql_fetch_row($rslt);
 					$VDterm_reason	= $row[0];
+					$VDvicidial_id	= $row[1];
 					}
 				if (ereg("CALLER",$VDterm_reason))
 					{
@@ -1534,13 +1538,14 @@ if ($stage == "end")
 			if ( (ereg("NONE",$term_reason)) or (ereg("NONE",$VDterm_reason)) or (strlen($VDterm_reason) < 1) )
 				{
 				### check to see if lead should be alt_dialed
-				$stmt="SELECT term_reason from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+				$stmt="SELECT term_reason,closecallid from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				$VAC_qm_ct = mysql_num_rows($rslt);
 				if ($VAC_qm_ct > 0)
 					{
 					$row=mysql_fetch_row($rslt);
 					$VDterm_reason	= $row[0];
+					$VDvicidial_id	= $row[1];
 					}
 				if (ereg("CALLER",$VDterm_reason))
 					{
@@ -1615,7 +1620,7 @@ if ($stage == "end")
 				echo "REC_STOP|$rec_channels[$loop_count]|$filename[$loop_count]|";
 				if (strlen($filename)>2)
 					{
-					$stmt="SELECT recording_id,start_epoch FROM recording_log where filename='$filename[$loop_count]'";
+					$stmt="SELECT recording_id,start_epoch,vicidial_id FROM recording_log where filename='$filename[$loop_count]'";
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 					if ($rslt) {$fn_count = mysql_num_rows($rslt);}
@@ -1623,13 +1628,15 @@ if ($stage == "end")
 						{
 						$row=mysql_fetch_row($rslt);
 						$recording_id = $row[0];
-						$start_time = $row[1];
+						$start_time =	$row[1];
+						$vicidial_id =	$row[2];
 
+						if (strlen($vicidial_id)<1) {$vidSQL = ",vicidial_id='$VDvicidial_id'";}
 						$length_in_sec = ($StarTtime - $start_time);
 						$length_in_min = ($length_in_sec / 60);
 						$length_in_min = sprintf("%8.2f", $length_in_min);
 
-						$stmt="UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where filename='$filename[$loop_count]' and end_epoch is NULL;";
+						$stmt="UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' $vidSQL where filename='$filename[$loop_count]' and end_epoch is NULL;";
 							if ($format=='debug') {echo "\n<!-- $stmt -->";}
 						$rslt=mysql_query($stmt, $link);
 

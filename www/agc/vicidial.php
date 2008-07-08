@@ -182,10 +182,11 @@
 # 80630-2210 - Added queue_log entries for Manual Dial
 # 80703-0139 - Added alter customer phone permissions
 # 80703-1106 - Added API functionality for Hangup and Dispo, added Agent Display Queue Count
+# 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 #
 
-$version = '2.0.5-160';
-$build = '80703-1106';
+$version = '2.0.5-161';
+$build = '80707-2325';
 
 require("dbconnect.php");
 
@@ -1969,6 +1970,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var vdc_customer_date_format = '<? echo $vdc_customer_date_format ?>';
 	var vdc_header_phone_format = '<? echo $vdc_header_phone_format ?>';
 	var disable_alter_custphone = '<? echo $disable_alter_custphone ?>';
+	var inOUT = 'OUT';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2630,6 +2632,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Send MonitorConf/StopMonitorConf command for recording of conferences
 	function conf_send_recording(taskconfrectype,taskconfrec,taskconffile) 
 		{
+		if (inOUT == 'OUT')
+			{
+			var tmp_vicidial_id = document.vicidial_form.uniqueid.value;
+			}
+		else
+			{
+			var tmp_vicidial_id = 'IN';
+			}
 		var xmlhttp=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
@@ -2698,7 +2708,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;
 					}
 				}
-			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&lead_id=" + document.vicidial_form.lead_id.value + "&ext_priority=1";
+			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + query_recording_exten + "&ext_context=" + ext_context + "&lead_id=" + document.vicidial_form.lead_id.value + "&ext_priority=1&uniqueid=" + tmp_vicidial_id;
 			xmlhttp.open('POST', 'manager_send.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(confmonitor_query); 
@@ -4099,6 +4109,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (typeof(xmlhttprequestcheckauto) == "undefined") 
 			{
+			inOUT = 'OUT';
 			all_record = 'NO';
 			all_record_count=0;
 			document.vicidial_form.lead_id.value = '';
@@ -4263,6 +4274,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							if (VDIC_data_VDIG[1].length > 0)
 								{
+								inOUT = 'IN';
 								if (VDIC_data_VDIG[2].length > 2)
 									{
 									document.getElementById("MainStatuSSpan").style.background = VDIC_data_VDIG[2];
@@ -5051,7 +5063,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Update vicidial_list lead record with disposition selection
 	function DispoSelect_submit()
 		{
-
+		inOUT = 'OUT';
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
 		if (DispoChoice.length < 1) {alert("You Must Select a Disposition");}

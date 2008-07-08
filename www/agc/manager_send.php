@@ -71,6 +71,7 @@
 # 80331-1433 - Added second transfer try for VICIDIAL transfers on manual dial calls
 # 80402-0121 - Fixes for manual dial transfers on some systems
 # 80424-0442 - Added non_latin lookup from system_settings
+# 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 #
 
 require("dbconnect.php");
@@ -1244,6 +1245,8 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 {
 	$row='';   $rowx='';
 	$channel_live=1;
+	$uniqueidSQL='';
+
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
@@ -1270,6 +1273,26 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 		}
 	else
 		{
+		if ($uniqueid=='IN')
+			{
+			$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
+
+			### check to see if lead should be alt_dialed
+			$stmt="SELECT closecallid from vicidial_closer_log where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+			$rslt=mysql_query($stmt, $link);
+			$VAC_qm_ct = mysql_num_rows($rslt);
+			if ($VAC_qm_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$uniqueidSQL	= ",vicidial_id='$row[0]'";
+				}
+			}
+		else
+			{
+			if (strlen($uniqueid) > 8)
+				{$uniqueidSQL	= ",vicidial_id='$uniqueid'";}
+			}
+		
 		$stmt="SELECT recording_id,start_epoch FROM recording_log where filename='$filename'";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1283,7 +1306,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			$length_in_min = ($length_in_sec / 60);
 			$length_in_min = sprintf("%8.2f", $length_in_min);
 
-			$stmt = "UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' where filename='$filename'";
+			$stmt = "UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' $uniqueidSQL where filename='$filename'";
 				if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			}

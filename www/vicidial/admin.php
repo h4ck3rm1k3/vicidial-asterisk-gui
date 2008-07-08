@@ -13993,7 +13993,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -14020,6 +14020,7 @@ if ($ADD==311111111111111)
 	$vdc_customer_date_format =		$row[21];
 	$vdc_header_phone_format =		$row[22];
 	$vdc_agent_api_active =			$row[23];
+	$qc_last_pull_time = 			$row[24];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -14059,6 +14060,7 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Enable Agent Transfer Logfile: </td><td align=left><select size=1 name=enable_agc_xfer_log><option>1</option><option>0</option><option selected>$enable_agc_xfer_log</option></select>$NWB#settings-enable_agc_xfer_log$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock End Of Day: </td><td align=left><input type=text name=timeclock_end_of_day size=5 maxlength=4 value=\"$timeclock_end_of_day\">$NWB#settings-timeclock_end_of_day$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Timeclock Last Auto Logout: </td><td align=left> $timeclock_last_reset_date</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Last Pull Time: </td><td align=left> $qc_last_pull_time</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Header Date Format: </td><td align=left><select size=1 name=vdc_header_date_format>\n";
 	echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
 	echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";

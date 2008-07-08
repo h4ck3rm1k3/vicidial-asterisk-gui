@@ -293,3 +293,15 @@ UPDATE system_settings SET db_schema_version='1096';
 ALTER TABLE vicidial_campaigns ADD display_queue_count ENUM('Y','N') default 'Y';
 
 UPDATE system_settings SET db_schema_version='1097';
+
+ALTER TABLE vicidial_list MODIFY source_id VARCHAR(50);
+
+ALTER TABLE recording_log ADD vicidial_id VARCHAR(20);
+CREATE INDEX vicidial_id ON recording_log (vicidial_id);
+ALTER TABLE recording_log MODIFY start_epoch INT(10) UNSIGNED;
+ALTER TABLE recording_log MODIFY end_epoch INT(10) UNSIGNED;
+ALTER TABLE recording_log MODIFY length_in_sec MEDIUMINT(8) UNSIGNED;
+
+ALTER TABLE system_settings ADD qc_last_pull_time DATETIME;
+
+UPDATE system_settings SET db_schema_version='1098';

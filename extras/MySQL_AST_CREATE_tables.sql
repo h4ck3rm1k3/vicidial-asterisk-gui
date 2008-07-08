@@ -132,18 +132,20 @@ channel VARCHAR(100),
 server_ip VARCHAR(15),
 extension VARCHAR(100),
 start_time DATETIME,
-start_epoch INT(10),
+start_epoch INT(10) UNSIGNED,
 end_time DATETIME,
-end_epoch INT(10),
-length_in_sec INT(10),
+end_epoch INT(10) UNSIGNED,
+length_in_sec MEDIUMINT(8) UNSIGNED,
 length_in_min DOUBLE(8,2),
 filename VARCHAR(50),
 location VARCHAR(255),
 lead_id INT(9) UNSIGNED,
 user VARCHAR(20),
-index (filename),
+vicidial_id VARCHAR(20),
+index(filename),
 index(lead_id),
-index(user)
+index(user),
+index(vicidial_id)
 );
 
  CREATE TABLE live_inbound (
@@ -244,7 +246,7 @@ modify_date TIMESTAMP,
 status VARCHAR(6),
 user VARCHAR(20),
 vendor_lead_code VARCHAR(20),
-source_id VARCHAR(6),
+source_id VARCHAR(50),
 list_id BIGINT(14) UNSIGNED,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 called_since_last_reset ENUM('Y','N','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10') default 'N',
@@ -974,7 +976,8 @@ timeclock_last_reset_date DATE,
 vdc_header_date_format VARCHAR(50) default 'MS_DASH_24HR  2008-06-24 23:59:59',
 vdc_customer_date_format VARCHAR(50) default 'AL_TEXT_AMPM  OCT 24, 2008 11:59:59 PM',
 vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000',
-vdc_agent_api_active ENUM('0','1') default '0'
+vdc_agent_api_active ENUM('0','1') default '0',
+qc_last_pull_time DATETIME
 );
 
  CREATE TABLE vicidial_campaigns_list_mix (
@@ -1219,5 +1222,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1097';
+UPDATE system_settings SET db_schema_version='1098';
 

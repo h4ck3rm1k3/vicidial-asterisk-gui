@@ -40,6 +40,12 @@
 #exten => 1234,2,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----INB-----7274515134-----Closer-----park----------999-----1-----OUTB)
 #exten => 1234,3,Hangup
 #
+# ;inbound with removal of first digit of callerID on all calls:
+#exten => 1234,1,Answer                  ; Answer the line
+#exten => 1234,n,set(CALLERID(num)=${CALLERID(num):1})
+#exten => 1234,n,AGI(agi-VDAD_ALL_inbound.agi,CID-----LB-----INB-----7274515134-----Closer-----park----------999-----1-----OUTB)
+#exten => 1234,n,Hangup
+#
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:

@@ -10,6 +10,15 @@ This will outline the process I have thought through for adding a Quality Assura
 
 
 
+The back-end process will work like this:
+- ADMIN_keepalive_ALL.pl script will look for the 'Q' in the keepalive definition in /etc/astguiclient.conf file. If it is set, it will trigger a script to gather the QC records every five minutes(with a 15 second delay) since the last QC gathering as defined in the system_settings table qc_last_pull_time field(which is populated with the START time of the last QC-pull run).
+- There will also be an optional method of pulling QC records available to the QC managers that enables them to specify a date range to pull and insert records
+- Selected records from the vicidial_log and vicidial_closer_log tables will be taken and inserted into the qc_vicidial_list_original table and the qc_vicidial_list table at the same time.
+- QC agents are then able to run their process starting with the earliest records for their selected campaign/groups
+- After QC agents have PASSed, FINISHed and COMMITted the QC records, then they can be exported
+
+
+
 
 The QC agent will login to a new qc.php screen within the agc web directory. They will then have a screen very similar to the vicidial.php login screen(but in a different color) that will have a user/pass to fill in. Then when they login they will see a green screen similar to the vicidial.php inbound(CLOSER-type) screen that will show them their allowable qc in-groups and campaigns. The agent will then choose which in-groups and campaigns that they want to QC the records for and then they will submit and they will be logged-in to the QC system.
 
@@ -35,12 +44,45 @@ COMMIT - QC record is committed to the system and cannot be modified by anyone
 
 The Database Changes:
 
+# This table contains the original lead information before changes
+ CREATE TABLE qc_vicidial_list_original (
+qc_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+original_id VARCHAR(20) UNIQUE NOT NULL,
+modify_date TIMESTAMP,
+status VARCHAR(6),
+qc_import_date DATETIME,
+user VARCHAR(20),
+closer VARCHAR(20),
+vendor_lead_code VARCHAR(20),
+source_id VARCHAR(50),
+list_id BIGINT(14) UNSIGNED,
+phone_code VARCHAR(10),	
+phone_number VARCHAR(12),
+title VARCHAR(4),
+first_name VARCHAR(30),
+middle_initial VARCHAR(1),
+last_name VARCHAR(30),
+address1 VARCHAR(100),
+address2 VARCHAR(100),
+address3 VARCHAR(100),
+city VARCHAR(50),
+state VARCHAR(2),
+province VARCHAR(50),
+postal_code VARCHAR(10),
+country_code VARCHAR(3),
+gender ENUM('M','F','U') default 'U',
+date_of_birth DATE,
+alt_phone VARCHAR(12),
+email VARCHAR(70),
+security_phrase VARCHAR(100),
+comments VARCHAR(255),
+);
+
 # This table contains the updated QC record
  CREATE TABLE qc_vicidial_list (
-qc_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+qc_id INT(9) UNSIGNED NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
-vicidial_log_id INT(9) UNSIGNED NOT NULL,
-closecallid INT(9) UNSIGNED NOT NULL,
+original_id VARCHAR(20) NOT NULL,
 modify_date TIMESTAMP,
 status VARCHAR(6),
 qc_status VARCHAR(6),
@@ -57,7 +99,7 @@ qc_changed ENUM('0','1') default '0',
 user VARCHAR(20),
 closer VARCHAR(20),
 vendor_lead_code VARCHAR(20),
-source_id VARCHAR(6),
+source_id VARCHAR(50),
 list_id BIGINT(14) UNSIGNED,
 phone_code VARCHAR(10),	
 phone_number VARCHAR(12),
@@ -73,51 +115,18 @@ state VARCHAR(2),
 province VARCHAR(50),
 postal_code VARCHAR(10),
 country_code VARCHAR(3),
-gender ENUM('M','F'),
+gender ENUM('M','F','U') default 'U',
 date_of_birth DATE,
 alt_phone VARCHAR(12),
 email VARCHAR(70),
 security_phrase VARCHAR(100),
 comments VARCHAR(255),
-index (phone_number),
+index (qc_id),
 index (lead_id),
+index (original_id),
+index (phone_number),
 index (status),
 index (qc_stage)
-);
-
-# This table contains the original lead information before changes
- CREATE TABLE qc_vicidial_list_original (
-qc_id INT(9) UNSIGNED PRIMARY KEY NOT NULL,
-modify_date TIMESTAMP,
-status VARCHAR(6),
-qc_date DATETIME,
-qc_user VARCHAR(20),
-qc_stage VARCHAR(6),
-user VARCHAR(20),
-closer VARCHAR(20),
-vendor_lead_code VARCHAR(20),
-source_id VARCHAR(6),
-list_id BIGINT(14) UNSIGNED,
-phone_code VARCHAR(10),	
-phone_number VARCHAR(12),
-title VARCHAR(4),
-first_name VARCHAR(30),
-middle_initial VARCHAR(1),
-last_name VARCHAR(30),
-address1 VARCHAR(100),
-address2 VARCHAR(100),
-address3 VARCHAR(100),
-city VARCHAR(50),
-state VARCHAR(2),
-province VARCHAR(50),
-postal_code VARCHAR(10),
-country_code VARCHAR(3),
-gender ENUM('M','F'),
-date_of_birth DATE,
-alt_phone VARCHAR(12),
-email VARCHAR(70),
-security_phrase VARCHAR(100),
-comments VARCHAR(255),
 );
 
 # This table contains the session information for qc_agents
@@ -144,12 +153,7 @@ qc_user_level INT(2) default '0',
 campaign_group_id VARCHAR(20)
 );
 
-# For the log table, some fields will need to be added to the vicidial_log table:
-ALTER TABLE vicidial_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
-
-# For the closer log table, some fields will need to be added to the vicidial_closer_log table:
-ALTER TABLE vicidial_closer_log ADD qc_stage ENUM('NONE','LOCK_1','PASS','LOCK_2','FINISH',COMMIT') default 'NONE';
-
+ALTER TABLE system_settings ADD qc_last_pull_time DATETIME;
 
 
 
