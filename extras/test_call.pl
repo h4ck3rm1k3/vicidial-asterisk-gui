@@ -11,7 +11,7 @@ my $cid_num = shift;
 # check if they typed --help
 if (($phone_number eq "--help") || ($exten eq "--help") || ($cid_name eq "--help") || ( $cid_num eq "--help")) {
 	print "useage: test_call.pl phone_number extension caller_id_name caller_id_number\n";
-	print "example: test_call.pl 97275551212 600 test 7775551212\n";
+	print "example: test_call.pl 917275551212 600 test 7775551212\n";
 	exit;
 }
 
