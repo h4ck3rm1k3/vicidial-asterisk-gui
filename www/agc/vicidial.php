@@ -183,10 +183,11 @@
 # 80703-0139 - Added alter customer phone permissions
 # 80703-1106 - Added API functionality for Hangup and Dispo, added Agent Display Queue Count
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
+# 80709-0358 - Added Default alt phone dial hard-code option
 #
 
-$version = '2.0.5-161';
-$build = '80707-2325';
+$version = '2.0.5-162';
+$build = '80709-0358';
 
 require("dbconnect.php");
 
@@ -836,7 +837,10 @@ $VDloginDISPLAY=0;
 			if ($alt_number_dialing=='Y')
 				{$alt_phone_dialing='1';}
 			else
-				{$alt_phone_dialing='0';}
+				{
+				$alt_phone_dialing='0';
+				$DefaulTAlTDiaL='0';
+				}
 			if ($display_queue_count=='N')
 				{$callholdstatus='0';}
 
