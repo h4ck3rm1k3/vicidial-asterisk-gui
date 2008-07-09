@@ -31,7 +31,7 @@ Each qc_user_level will have different permissions for the qc system:
 4- can check records of other QC agents
 5- can view stats on qc system
 6- can view finished and non-committed records and alter them
-7- Manager level
+7- Manager level (can do anything including delete QC records)
 
 The qc_stage is a status within QC that tells what is going on with the record:
 NONE - record has never been QCd
@@ -40,6 +40,7 @@ PASS - QC agent has passed the record
 LOCK_2 - a QC agent is reviewing the record for possible finishing
 FINISH - record is ready to be processed
 COMMIT - QC record is committed to the system and cannot be modified by anyone
+DEAD - QC record is old and present for logs only, newer record has taken it's place
 
 
 The Database Changes:
@@ -47,10 +48,11 @@ The Database Changes:
 # This table contains the original lead information before changes
  CREATE TABLE qc_vicidial_list_original (
 qc_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+qc_import_date DATETIME,
 original_id VARCHAR(20) UNIQUE NOT NULL,
+campaign_group_id VARCHAR(20),
 modify_date TIMESTAMP,
 status VARCHAR(6),
-qc_import_date DATETIME,
 user VARCHAR(20),
 closer VARCHAR(20),
 vendor_lead_code VARCHAR(20),
@@ -78,7 +80,7 @@ security_phrase VARCHAR(100),
 comments VARCHAR(255),
 );
 
-# This table contains the updated QC record
+# This table contains the updated QC records
  CREATE TABLE qc_vicidial_list (
 qc_id INT(9) UNSIGNED NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
@@ -134,7 +136,7 @@ index (qc_stage)
 qc_session_id INT(9) UNSIGNED PRIMARY KEY NOT NULL,
 user VARCHAR(20),
 qc_user_level INT(2) default '0',
-status ENUM('READY','QUEUE','INCALL','PAUSED','CLOSER') default 'PAUSED',
+status ENUM('READY','INQC','PAUSED') default 'PAUSED',
 qc_id INT(9) UNSIGNED NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 selected_inbound_groups TEXT,

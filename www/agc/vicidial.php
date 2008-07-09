@@ -297,6 +297,7 @@ $LogiNAJAX				= '1';	# set to 1 to do lookups on campaigns for login
 $HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "session calls"
 $LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent logout
 $PhoneSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
+$DefaulTAlTDiaL			= '0';	# set to 1 to enable ALT DIAL by default if enabled for the campaign
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -1931,6 +1932,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var manual_dial_preview = '<? echo $manual_dial_preview ?>';
 	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
 	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
+	var DefaulTAlTDiaL = '<? echo $DefaulTAlTDiaL ?>';
 	var wrapup_seconds = '<? echo $wrapup_seconds ?>';
 	var wrapup_message = '<? echo $wrapup_message ?>';
 	var wrapup_counter = 0;
@@ -6205,6 +6207,9 @@ else
 				{clearDiv('DiaLDiaLAltPhonE');}
 			if (volumecontrol_active != '1')
 				{hideDiv('VolumeControlSpan');}
+			if (DefaulTAlTDiaL == '1')
+				{document.vicidial_form.DiaLAltPhonE.checked=true;}
+
 			document.vicidial_form.LeadLookuP.checked=true;
 
 			if (agent_pause_codes_active=='Y')
@@ -6641,6 +6646,8 @@ else
 				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALT PHONE DIAL<BR></font>";
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = buildDivHTML;
 				}
+			if (DefaulTAlTDiaL == '1')
+				{document.vicidial_form.DiaLAltPhonE.checked=true;}
 			}
 		}
 	function buildDiv(divvar)
@@ -6663,6 +6670,8 @@ else
 				document.getElementById(divvar).innerHTML = buildDivHTML;
 				if (reselect_alt_dial==1)
 					{document.vicidial_form.DiaLAltPhonE.checked=true}
+				if (DefaulTAlTDiaL == '1')
+					{document.vicidial_form.DiaLAltPhonE.checked=true;}
 				}
 			}
 		}

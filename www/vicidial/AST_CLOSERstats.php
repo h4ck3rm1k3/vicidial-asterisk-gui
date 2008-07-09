@@ -12,6 +12,7 @@
 # 71025-0021 - Added status breakdown
 # 71218-1155 - Added end_date for multi-day reports
 # 80430-1920 - Added Customer hangup cause stats
+# 80709-0331 - Added time stats to call statuses
 #
 
 require("dbconnect.php");
@@ -173,11 +174,12 @@ if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
 $TOTALcalls =	sprintf("%10s", $row[0]);
-if ( ($row[0] < 1) or ($row[1] < 1) )
+$TOTALsec =		$row[1];
+if ( ($row[0] < 1) or ($TOTALsec < 1) )
 	{$average_call_seconds = '         0';}
 else
 	{
-	$average_call_seconds = ($row[1] / $row[0]);
+	$average_call_seconds = ($TOTALsec / $row[0]);
 	$average_call_seconds = round($average_call_seconds, 0);
 	$average_call_seconds =	sprintf("%10s", $average_call_seconds);
 	}
@@ -372,10 +374,11 @@ $TOTALcalls = 0;
 
 echo "\n";
 echo "---------- CALL STATUS STATS\n";
-echo "+--------+----------------------+------------+\n";
-echo "| STATUS | DESCRIPTION          | CALLS      |\n";
-echo "+--------+----------------------+------------+\n";
+echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "| STATUS | DESCRIPTION          | CALLS      | TOTAL TIME | AVG TIME |CALLS/HOUR|\n";
+echo "+--------+----------------------+------------+------------+----------+----------+\n";
 
+## first get all statuses and names
 $stmt="SELECT * from vicidial_statuses order by status";
 $rslt=mysql_query($stmt, $link);
 $statuses_to_print = mysql_num_rows($rslt);
@@ -401,7 +404,8 @@ while ($Cstatuses_to_print > $o)
 	$o++;
 	}
 
-$stmt="select count(*),status from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+## get counts and time totals for all statuses in this campaign
+$stmt="select count(*),status,sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statuses_to_print = mysql_num_rows($rslt);
@@ -410,11 +414,45 @@ while ($i < $statuses_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
 
-	$TOTALcalls = ($TOTALcalls + $row[0]);
+	$STATUScount =	$row[0];
+	$RAWstatus =	$row[1];
+	$TOTALcalls =	($TOTALcalls + $row[0]);
+	$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );
+		$STATUSrate =	sprintf("%.2f", $STATUSrate);
+
+	$STATUShours_H =	($row[2] / 3600);
+	$STATUShours_H_int = round($STATUShours_H, 2);
+	$STATUShours_H_int = intval("$STATUShours_H_int");
+	$STATUShours_M = ($STATUShours_H - $STATUShours_H_int);
+	$STATUShours_M = ($STATUShours_M * 60);
+	$STATUShours_M_int = round($STATUShours_M, 2);
+	$STATUShours_M_int = intval("$STATUShours_M_int");
+	$STATUShours_S = ($STATUShours_M - $STATUShours_M_int);
+	$STATUShours_S = ($STATUShours_S * 60);
+	$STATUShours_S = round($STATUShours_S, 0);
+	if ($STATUShours_S < 10) {$STATUShours_S = "0$STATUShours_S";}
+	if ($STATUShours_M_int < 10) {$STATUShours_M_int = "0$STATUShours_M_int";}
+	$STATUShours = "$STATUShours_H_int:$STATUShours_M_int:$STATUShours_S";
+
+	$STATUSavg_H =	(($row[2] / 3600) / $STATUScount);
+	$STATUSavg_H_int = round($STATUSavg_H, 2);
+	$STATUSavg_H_int = intval("$STATUSavg_H_int");
+	$STATUSavg_M = ($STATUSavg_H - $STATUSavg_H_int);
+	$STATUSavg_M = ($STATUSavg_M * 60);
+	$STATUSavg_M_int = round($STATUSavg_M, 2);
+	$STATUSavg_M_int = intval("$STATUSavg_M_int");
+	$STATUSavg_S = ($STATUSavg_M - $STATUSavg_M_int);
+	$STATUSavg_S = ($STATUSavg_S * 60);
+	$STATUSavg_S = round($STATUSavg_S, 0);
+	if ($STATUSavg_S < 10) {$STATUSavg_S = "0$STATUSavg_S";}
+	if ($STATUSavg_M_int < 10) {$STATUSavg_M_int = "0$STATUSavg_M_int";}
+	$STATUSavg = "$STATUSavg_H_int:$STATUSavg_M_int:$STATUSavg_S";
 
 	$STATUScount =	sprintf("%10s", $row[0]);while(strlen($STATUScount)>10) {$STATUScount = substr("$STATUScount", 0, -1);}
-	$RAWstatus = $row[1];
 	$status =	sprintf("%-6s", $row[1]);while(strlen($status)>6) {$status = substr("$status", 0, -1);}
+	$STATUShours =	sprintf("%10s", $STATUShours);while(strlen($STATUShours)>10) {$STATUShours = substr("$STATUShours", 0, -1);}
+	$STATUSavg =	sprintf("%8s", $STATUSavg);while(strlen($STATUSavg)>8) {$STATUSavg = substr("$STATUSavg", 0, -1);}
+	$STATUSrate =	sprintf("%8s", $STATUSrate);while(strlen($STATUSrate)>8) {$STATUSrate = substr("$STATUSrate", 0, -1);}
 
 	if ($non_latin < 1)
 		{
@@ -428,17 +466,58 @@ while ($i < $statuses_to_print)
 		}
 
 
-	echo "| $status | $status_name | $STATUScount |\n";
+	echo "| $status | $status_name | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate |\n";
 
 	$i++;
 	}
 
-$TOTALcalls =		sprintf("%10s", $TOTALcalls);
+if ($TOTALcalls < 1)
+	{
+	$TOTALhours =	'0:00:00';
+	$TOTALavg =		'0:00:00';
+	$TOTALrate =	'0.00';
+	}
+else
+	{
+	$TOTALrate =	($TOTALcalls / ($TOTALsec / 3600) );
+		$TOTALrate =	sprintf("%.2f", $TOTALrate);
 
-echo "+--------+----------------------+------------+\n";
-echo "| TOTAL:                        | $TOTALcalls |\n";
-echo "+-------------------------------+------------+\n";
+	$TOTALhours_H =	($TOTALsec / 3600);
+	$TOTALhours_H_int = round($TOTALhours_H, 2);
+	$TOTALhours_H_int = intval("$TOTALhours_H_int");
+	$TOTALhours_M = ($TOTALhours_H - $TOTALhours_H_int);
+	$TOTALhours_M = ($TOTALhours_M * 60);
+	$TOTALhours_M_int = round($TOTALhours_M, 2);
+	$TOTALhours_M_int = intval("$TOTALhours_M_int");
+	$TOTALhours_S = ($TOTALhours_M - $TOTALhours_M_int);
+	$TOTALhours_S = ($TOTALhours_S * 60);
+	$TOTALhours_S = round($TOTALhours_S, 0);
+	if ($TOTALhours_S < 10) {$TOTALhours_S = "0$TOTALhours_S";}
+	if ($TOTALhours_M_int < 10) {$TOTALhours_M_int = "0$TOTALhours_M_int";}
+	$TOTALhours = "$TOTALhours_H_int:$TOTALhours_M_int:$TOTALhours_S";
 
+	$TOTALavg_H =	(($TOTALsec / 3600) / $TOTALcalls);
+	$TOTALavg_H_int = round($TOTALavg_H, 2);
+	$TOTALavg_H_int = intval("$TOTALavg_H_int");
+	$TOTALavg_M = ($TOTALavg_H - $TOTALavg_H_int);
+	$TOTALavg_M = ($TOTALavg_M * 60);
+	$TOTALavg_M_int = round($TOTALavg_M, 2);
+	$TOTALavg_M_int = intval("$TOTALavg_M_int");
+	$TOTALavg_S = ($TOTALavg_M - $TOTALavg_M_int);
+	$TOTALavg_S = ($TOTALavg_S * 60);
+	$TOTALavg_S = round($TOTALavg_S, 0);
+	if ($TOTALavg_S < 10) {$TOTALavg_S = "0$TOTALavg_S";}
+	if ($TOTALavg_M_int < 10) {$TOTALavg_M_int = "0$TOTALavg_M_int";}
+	$TOTALavg = "$TOTALavg_H_int:$TOTALavg_M_int:$TOTALavg_S";
+	}
+$TOTALcalls =	sprintf("%10s", $TOTALcalls);
+$TOTALhours =	sprintf("%10s", $TOTALhours);while(strlen($TOTALhours)>10) {$TOTALhours = substr("$TOTALhours", 0, -1);}
+$TOTALavg =	sprintf("%8s", $TOTALavg);while(strlen($TOTALavg)>8) {$TOTALavg = substr("$TOTALavg", 0, -1);}
+$TOTALrate =	sprintf("%8s", $TOTALrate);while(strlen($TOTALrate)>8) {$TOTALrate = substr("$TOTALrate", 0, -1);}
+
+echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "| TOTAL:                        | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |\n";
+echo "+--------+----------------------+------------+------------+----------+----------+\n";
 
 
 ##############################
@@ -474,8 +553,8 @@ while ($i < $users_to_print)
 	$USERavgTALK =	$row[4];
 
 	$USERtotTALK_M = ($USERtotTALK / 60);
-	$USERtotTALK_M = round($USERtotTALK_M, 2);
-	$USERtotTALK_M_int = intval("$USERtotTALK_M");
+	$USERtotTALK_M_int = round($USERtotTALK_M, 2);
+	$USERtotTALK_M_int = intval("$USERtotTALK_M_int");
 	$USERtotTALK_S = ($USERtotTALK_M - $USERtotTALK_M_int);
 	$USERtotTALK_S = ($USERtotTALK_S * 60);
 	$USERtotTALK_S = round($USERtotTALK_S, 0);
@@ -484,8 +563,8 @@ while ($i < $users_to_print)
 	$USERtotTALK_MS =		sprintf("%8s", $USERtotTALK_MS);
 
 	$USERavgTALK_M = ($USERavgTALK / 60);
-	$USERavgTALK_M = round($USERavgTALK_M, 2);
-	$USERavgTALK_M_int = intval("$USERavgTALK_M");
+	$USERavgTALK_M_int = round($USERavgTALK_M, 2);
+	$USERavgTALK_M_int = intval("$USERavgTALK_M_int");
 	$USERavgTALK_S = ($USERavgTALK_M - $USERavgTALK_M_int);
 	$USERavgTALK_S = ($USERavgTALK_S * 60);
 	$USERavgTALK_S = round($USERavgTALK_S, 0);
@@ -502,8 +581,8 @@ if (!$TOTcalls) {$TOTcalls = 1;}
 $TOTavg = ($TOTtime / $TOTcalls);
 $TOTavg = round($TOTavg, 0);
 $TOTavg_M = ($TOTavg / 60);
-$TOTavg_M = round($TOTavg_M, 2);
-$TOTavg_M_int = intval("$TOTavg_M");
+$TOTavg_M_int = round($TOTavg_M, 2);
+$TOTavg_M_int = intval("$TOTavg_M_int");
 $TOTavg_S = ($TOTavg_M - $TOTavg_M_int);
 $TOTavg_S = ($TOTavg_S * 60);
 $TOTavg_S = round($TOTavg_S, 0);
@@ -512,8 +591,8 @@ $TOTavg_MS = "$TOTavg_M_int:$TOTavg_S";
 $TOTavg =		sprintf("%6s", $TOTavg_MS);
 
 $TOTtime_M = ($TOTtime / 60);
-$TOTtime_M = round($TOTtime_M, 2);
-$TOTtime_M_int = intval("$TOTtime_M");
+$TOTtime_M_int = round($TOTtime_M, 2);
+$TOTtime_M_int = intval("$TOTtime_M_int");
 $TOTtime_S = ($TOTtime_M - $TOTtime_M_int);
 $TOTtime_S = ($TOTtime_S * 60);
 $TOTtime_S = round($TOTtime_S, 0);
