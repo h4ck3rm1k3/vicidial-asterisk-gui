@@ -1929,6 +1929,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var reselect_preview_dial = 0;
 	var reselect_alt_dial = 0;
 	var alt_dial_active = 0;
+	var alt_dial_status_display = 0;
 	var mdnLisT_id = '<? echo $manual_dial_list_id ?>';
 	var VU_vicidial_transfers = '<? echo $VU_vicidial_transfers ?>';
 	var agentonly_callbacks = '<? echo $agentonly_callbacks ?>';
@@ -3001,6 +3002,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		alt_phone_dialing=starting_alt_phone_dialing;
 		alt_dial_active = 0;
+		alt_dial_status_display = 0;
 		open_dispo_screen=1;
 		document.getElementById("MainStatuSSpan").innerHTML = "Dial Next Number";
 		}
@@ -3017,6 +3019,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					reselect_alt_dial = 1;
 					alt_dial_active = 1;
+					alt_dial_status_display = 1;
 					var man_status = "Dial Alt Phone Number: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">MAIN PHONE</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTPhoneE')\"><font class=\"preview_text\">ALT PHONE</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">ADDRESS3</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">FINISH LEAD</font></a>"; 
 					document.getElementById("MainStatuSSpan").innerHTML = man_status;
 					}
@@ -3397,8 +3400,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						var status_display_number = phone_number_format(dispnum);
 
-						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + CIDcheck + " &nbsp; Waiting for Ring... " + MD_ring_secondS + " seconds";
-				//		alert("channel not found yet:\n" + campaign);
+						if (alt_dial_status_display=='0')
+							{
+					//		alert(document.getElementById("MainStatuSSpan").innerHTML);
+							document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + CIDcheck + " &nbsp; Waiting for Ring... " + MD_ring_secondS + " seconds";
+					//		alert("channel not found yet:\n" + campaign);
+							}
 						}
 					else
 						{
@@ -3866,6 +3873,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Send the Manual Dial Only - dial the previewed lead
 	function ManualDialOnly(taskaltnum)
 		{
+		alt_dial_status_display = 0;
 		all_record = 'NO';
 		all_record_count=0;
 		if (taskaltnum == 'ALTPhoneE')
@@ -3943,10 +3951,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var dispnum = manDiaLonly_num;
 						var status_display_number = phone_number_format(dispnum);
 
-						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; Waiting for Ring...";
-
-						document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
-
+						if (alt_dial_status_display=='0')
+							{
+							document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; Waiting for Ring...";
+							
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"./images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Hangup Customer\"></a>";
+							}
 						if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
 
