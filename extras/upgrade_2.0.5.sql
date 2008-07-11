@@ -305,3 +305,7 @@ ALTER TABLE recording_log MODIFY length_in_sec MEDIUMINT(8) UNSIGNED;
 ALTER TABLE system_settings ADD qc_last_pull_time DATETIME;
 
 UPDATE system_settings SET db_schema_version='1098';
+
+ALTER TABLE vicidial_campaigns MODIFY manual_dial_list_id BIGINT(14) UNSIGNED default '998';
+
+UPDATE system_settings SET db_schema_version='1099';

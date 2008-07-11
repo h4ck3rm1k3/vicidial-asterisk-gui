@@ -553,7 +553,7 @@ disable_alter_custdata ENUM('Y','N') default 'N',
 no_hopper_leads_logins ENUM('Y','N') default 'N',
 list_order_mix VARCHAR(20) default 'DISABLED',
 campaign_allow_inbound ENUM('Y','N') default 'N',
-manual_dial_list_id BIGINT(14) UNSIGNED,
+manual_dial_list_id BIGINT(14) UNSIGNED default '998',
 default_xfer_group VARCHAR(20) default '---NONE---',
 xfer_groups  TEXT default '',
 queue_priority TINYINT(2) default '50',
@@ -1190,6 +1190,7 @@ UPDATE system_settings SET auto_user_add_value='1101';
 
 
 INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
+INSERT INTO vicidial_lists SET list_id='998',list_name='Default Manual list',campaign_id='TESTCAMP',active='N';
 
 INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
 
