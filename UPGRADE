@@ -135,6 +135,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 30. Added some basic agent interface API functions and an agc/api.php script
 
+31. A field has been added to vicidial_list(last_local_call_time) to sort by
+	the last time a lead was called as well as for lead recycling changes.
+
+
+
 
 
 ########## UPGRADING FROM 2.0.3 TO 2.0.4 ##########

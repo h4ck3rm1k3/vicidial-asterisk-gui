@@ -27,6 +27,7 @@
 # 70815-2128 - Added entry_date to import leads format (field 26)
 # 80128-0105 - Fixed bugs in file loading
 # 80428-0320 - UTF8 update
+# 80713-0023 - added last_local_call_time field default of 2008-01-01
 #
 
 $secX = time();
@@ -675,7 +676,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 			if ($multi_insert_counter > 8)
 				{
 				### insert good deal into pending_transactions table ###
-				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count');";
+				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00');";
 						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
 						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
 
@@ -685,7 +686,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				}
 			else
 				{
-				$multistmt .= "('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count'),";
+				$multistmt .= "('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00'),";
 				$multi_insert_counter++;
 				}
 

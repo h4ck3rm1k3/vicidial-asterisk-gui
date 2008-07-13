@@ -67,6 +67,7 @@
 # 71030-2054 - Added hopper priority sorting
 # 80227-0406 - added queue_priority
 # 80525-1040 - Added IVR vac status compatibility for inbound calls
+# 80713-0624 - Added vicidial_list_last_local_call_time field
 #
 
 
@@ -780,6 +781,18 @@ while($one_day_interval > 0)
 										}
 									}
 								else {$CSLR = 'Y';}
+								
+								$LLCT_DATE_offset = ($LOCAL_GMT_OFF - $gmt_offset_now);
+								$LLCT_DATE_offset_epoch = ( $secX - ($LLCT_DATE_offset * 3600) );
+								($Lsec,$Lmin,$Lhour,$Lmday,$Lmon,$Lyear,$Lwday,$Lyday,$Lisdst) = localtime($LLCT_DATE_offset_epoch);
+								$Lyear = ($Lyear + 1900);
+								$Lmon++;
+								if ($Lmon < 10) {$Lmon = "0$Lmon";}
+								if ($Lmday < 10) {$Lmday = "0$Lmday";}
+								if ($Lhour < 10) {$Lhour = "0$Lhour";}
+								if ($Lmin < 10) {$Lmin = "0$Lmin";}
+								if ($Lsec < 10) {$Lsec = "0$Lsec";}
+									$LLCT_DATE = "$Lyear-$Lmon-$Lmday $Lhour:$Lmin:$Lsec";
 
 								if ( ($alt_dial =~ /ALT|ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT|ADDR/) )
 									{
@@ -793,11 +806,11 @@ while($one_day_interval > 0)
 										$address3 =~ s/\D//gi;
 										$phone_number = $address3;
 										}
-									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',user='VDAD' where lead_id='$lead_id'";
+									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
 									}
 								else
 									{
-									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD' where lead_id='$lead_id'";
+									$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR', called_count='$called_count',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
 									}
 								$affected_rows = $dbhA->do($stmtA);
 

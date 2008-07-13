@@ -309,3 +309,8 @@ UPDATE system_settings SET db_schema_version='1098';
 ALTER TABLE vicidial_campaigns MODIFY manual_dial_list_id BIGINT(14) UNSIGNED default '998';
 
 UPDATE system_settings SET db_schema_version='1099';
+
+ALTER TABLE vicidial_list ADD last_local_call_time DATETIME;
+CREATE INDEX last_local_call_time ON vicidial_list (last_local_call_time);
+
+UPDATE system_settings SET db_schema_version='1100';

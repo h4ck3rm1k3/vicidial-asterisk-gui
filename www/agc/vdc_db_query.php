@@ -152,10 +152,11 @@
 # 80630-2153 - Added queue_log logging for Manual dial calls
 # 80703-0139 - Added alter customer phone permissions
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
+# 80713-0624 - Added vicidial_list_last_local_call_time field
 #
 
-$version = '2.0.5-76';
-$build = '80707-2325';
+$version = '2.0.5-77';
+$build = '80713-0624';
 
 require("dbconnect.php");
 
@@ -608,7 +609,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				else
 					{
 					### insert a new lead in the system with this phone number
-					$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate';";
+					$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $link);
 					$affected_rows = mysql_affected_rows($link);
@@ -619,7 +620,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 			else
 				{
 				### insert a new lead in the system with this phone number
-				$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate';";
+				$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				$affected_rows = mysql_affected_rows($link);
@@ -740,8 +741,20 @@ if ($ACTION == 'manDiaLnextCaLL')
 					}
 				}
 
+			$stmt = "SELECT local_gmt FROM servers where active='Y' limit 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$server_ct = mysql_num_rows($rslt);
+			if ($server_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$local_gmt =	$row[0];
+				}
+			$LLCT_DATE_offset = ($local_gmt - $gmt_offset_now);
+			$LLCT_DATE = date("Y-m-d H:i:s", mktime(date("H")-$LLCT_DATE_offset,date("i"),date("s"),date("m"),date("d"),date("Y")));
+
 			### flag the lead as called and change it's status to INCALL
-			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='Y', called_count='$called_count',user='$user' where lead_id='$lead_id';";
+			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='Y', called_count='$called_count',user='$user',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 

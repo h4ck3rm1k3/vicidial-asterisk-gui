@@ -229,6 +229,7 @@ Agent Display Queue Count -<\/B> If set to Y, when a customer is waiting for an 
 Agent Display Queue Count: ||
 agents in dead calls||
 QC Last Pull Time: ||
+and less than 43200 seconds or 12 hours||
 
 
 ############################################################ CLIENT

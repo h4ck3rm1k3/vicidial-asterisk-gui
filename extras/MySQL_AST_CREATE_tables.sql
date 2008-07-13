@@ -271,12 +271,14 @@ email VARCHAR(70),
 security_phrase VARCHAR(100),
 comments VARCHAR(255),
 called_count SMALLINT(5) UNSIGNED default '0',
+last_local_call_time DATETIME
 index (phone_number),
 index (list_id),
 index (called_since_last_reset),
 index (status),
 index (gmt_offset_now),
-index (postal_code)
+index (postal_code),
+index (last_local_call_time)
 );
 
  CREATE TABLE vicidial_hopper (
@@ -911,7 +913,7 @@ recycle_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 campaign_id VARCHAR(8),
 status VARCHAR(6) NOT NULL,
 attempt_delay SMALLINT(5) UNSIGNED default '1800',
-attempt_maximum TINYINT(3) UNSIGNED default '32',
+attempt_maximum TINYINT(3) UNSIGNED default '2',
 active ENUM('Y','N') default 'N',
 index (campaign_id)
 );
@@ -1223,5 +1225,5 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1098';
+UPDATE system_settings SET db_schema_version='1100';
 
