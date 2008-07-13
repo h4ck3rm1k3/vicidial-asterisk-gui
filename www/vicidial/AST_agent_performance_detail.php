@@ -10,6 +10,7 @@
 #            - Fixed zero division bug
 # 71218-1155 - added end_date for multi-day reports
 # 80428-0144 - UTF8 cleanup
+# 80712-1007 - tally bug fixes and time display change
 #
 
 require("dbconnect.php");
@@ -21,16 +22,18 @@ if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
 if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
 	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
-if (isset($_GET["group"]))				{$group=$_GET["group"];}
-	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
+if (isset($_GET["group"]))					{$group=$_GET["group"];}
+	elseif (isset($_POST["group"]))			{$group=$_POST["group"];}
 if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
 	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
-if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
-	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
-if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
-if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["shift"]))					{$shift=$_GET["shift"];}
+	elseif (isset($_POST["shift"]))			{$shift=$_POST["shift"];}
+if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
+if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
+	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+if (isset($_GET["SUBMIT"]))					{$SUBMIT=$_GET["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 
 if (strlen($shift)<2) {$shift='ALL';}
 
@@ -114,6 +117,7 @@ while ($i < $user_groups_to_print)
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
+echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
 echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
@@ -211,7 +215,7 @@ $i=0;
 while ($i < $rows_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
-	$row[0] = ($row[0] - 1);	# subtract 1 for login/logout event compensation
+#	$row[0] = ($row[0] - 1);	# subtract 1 for login/logout event compensation
 	
 	$calls[$i] =		$row[0];
 	$talk_sec[$i] =		$row[1];
@@ -328,8 +332,8 @@ while ($m < $k)
 	}
 
 	$USERtime_M = ($Stime / 60);
-	$USERtime_M = round($USERtime_M, 2);
-	$USERtime_M_int = intval("$USERtime_M");
+	$USERtime_M_int = round($USERtime_M, 2);
+	$USERtime_M_int = intval("$USERtime_M_int");
 	$USERtime_S = ($USERtime_M - $USERtime_M_int);
 	$USERtime_S = ($USERtime_S * 60);
 	$USERtime_S = round($USERtime_S, 0);
@@ -338,8 +342,8 @@ while ($m < $k)
 	$pfUSERtime_MS =		sprintf("%7s", $USERtime_MS);
 
 	$USERtotTALK_M = ($Stalk_sec / 60);
-	$USERtotTALK_M = round($USERtotTALK_M, 2);
-	$USERtotTALK_M_int = intval("$USERtotTALK_M");
+	$USERtotTALK_M_int = round($USERtotTALK_M, 2);
+	$USERtotTALK_M_int = intval("$USERtotTALK_M_int");
 	$USERtotTALK_S = ($USERtotTALK_M - $USERtotTALK_M_int);
 	$USERtotTALK_S = ($USERtotTALK_S * 60);
 	$USERtotTALK_S = round($USERtotTALK_S, 0);
@@ -348,8 +352,8 @@ while ($m < $k)
 	$pfUSERtotTALK_MS =		sprintf("%6s", $USERtotTALK_MS);
 
 	$USERavgTALK_M = ($Stalk_avg / 60);
-	$USERavgTALK_M = round($USERavgTALK_M, 2);
-	$USERavgTALK_M_int = intval("$USERavgTALK_M");
+	$USERavgTALK_M_int = round($USERavgTALK_M, 2);
+	$USERavgTALK_M_int = intval("$USERavgTALK_M_int");
 	$USERavgTALK_S = ($USERavgTALK_M - $USERavgTALK_M_int);
 	$USERavgTALK_S = ($USERavgTALK_S * 60);
 	$USERavgTALK_S = round($USERavgTALK_S, 0);
@@ -358,8 +362,8 @@ while ($m < $k)
 	$pfUSERavgTALK_MS =		sprintf("%6s", $USERavgTALK_MS);
 
 	$USERtotPAUSE_M = ($Spause_sec / 60);
-	$USERtotPAUSE_M = round($USERtotPAUSE_M, 2);
-	$USERtotPAUSE_M_int = intval("$USERtotPAUSE_M");
+	$USERtotPAUSE_M_int = round($USERtotPAUSE_M, 2);
+	$USERtotPAUSE_M_int = intval("$USERtotPAUSE_M_int");
 	$USERtotPAUSE_S = ($USERtotPAUSE_M - $USERtotPAUSE_M_int);
 	$USERtotPAUSE_S = ($USERtotPAUSE_S * 60);
 	$USERtotPAUSE_S = round($USERtotPAUSE_S, 0);
@@ -368,8 +372,8 @@ while ($m < $k)
 	$pfUSERtotPAUSE_MS =		sprintf("%6s", $USERtotPAUSE_MS);
 
 	$USERavgPAUSE_M = ($Spause_avg / 60);
-	$USERavgPAUSE_M = round($USERavgPAUSE_M, 2);
-	$USERavgPAUSE_M_int = intval("$USERavgPAUSE_M");
+	$USERavgPAUSE_M_int = round($USERavgPAUSE_M, 2);
+	$USERavgPAUSE_M_int = intval("$USERavgPAUSE_M_int");
 	$USERavgPAUSE_S = ($USERavgPAUSE_M - $USERavgPAUSE_M_int);
 	$USERavgPAUSE_S = ($USERavgPAUSE_S * 60);
 	$USERavgPAUSE_S = round($USERavgPAUSE_S, 0);
@@ -378,8 +382,8 @@ while ($m < $k)
 	$pfUSERavgPAUSE_MS =		sprintf("%6s", $USERavgPAUSE_MS);
 
 	$USERtotWAIT_M = ($Swait_sec / 60);
-	$USERtotWAIT_M = round($USERtotWAIT_M, 2);
-	$USERtotWAIT_M_int = intval("$USERtotWAIT_M");
+	$USERtotWAIT_M_int = round($USERtotWAIT_M, 2);
+	$USERtotWAIT_M_int = intval("$USERtotWAIT_M_int");
 	$USERtotWAIT_S = ($USERtotWAIT_M - $USERtotWAIT_M_int);
 	$USERtotWAIT_S = ($USERtotWAIT_S * 60);
 	$USERtotWAIT_S = round($USERtotWAIT_S, 0);
@@ -388,8 +392,8 @@ while ($m < $k)
 	$pfUSERtotWAIT_MS =		sprintf("%6s", $USERtotWAIT_MS);
 
 	$USERavgWAIT_M = ($Swait_avg / 60);
-	$USERavgWAIT_M = round($USERavgWAIT_M, 2);
-	$USERavgWAIT_M_int = intval("$USERavgWAIT_M");
+	$USERavgWAIT_M_int = round($USERavgWAIT_M, 2);
+	$USERavgWAIT_M_int = intval("$USERavgWAIT_M_int");
 	$USERavgWAIT_S = ($USERavgWAIT_M - $USERavgWAIT_M_int);
 	$USERavgWAIT_S = ($USERavgWAIT_S * 60);
 	$USERavgWAIT_S = round($USERavgWAIT_S, 0);
@@ -398,8 +402,8 @@ while ($m < $k)
 	$pfUSERavgWAIT_MS =		sprintf("%6s", $USERavgWAIT_MS);
 	
 	$USERtotDISPO_M = ($Sdispo_sec / 60);
-	$USERtotDISPO_M = round($USERtotDISPO_M, 2);
-	$USERtotDISPO_M_int = intval("$USERtotDISPO_M");
+	$USERtotDISPO_M_int = round($USERtotDISPO_M, 2);
+	$USERtotDISPO_M_int = intval("$USERtotDISPO_M_int");
 	$USERtotDISPO_S = ($USERtotDISPO_M - $USERtotDISPO_M_int);
 	$USERtotDISPO_S = ($USERtotDISPO_S * 60);
 	$USERtotDISPO_S = round($USERtotDISPO_S, 0);
@@ -408,8 +412,8 @@ while ($m < $k)
 	$pfUSERtotDISPO_MS =		sprintf("%6s", $USERtotDISPO_MS);
 
 	$USERavgDISPO_M = ($Sdispo_avg / 60);
-	$USERavgDISPO_M = round($USERavgDISPO_M, 2);
-	$USERavgDISPO_M_int = intval("$USERavgDISPO_M");
+	$USERavgDISPO_M_int = round($USERavgDISPO_M, 2);
+	$USERavgDISPO_M_int = intval("$USERavgDISPO_M_int");
 	$USERavgDISPO_S = ($USERavgDISPO_M - $USERavgDISPO_M_int);
 	$USERavgDISPO_S = ($USERavgDISPO_S * 60);
 	$USERavgDISPO_S = round($USERavgDISPO_S, 0);
@@ -462,8 +466,8 @@ while ($n < $j)
 	$TOT_AGENTS = sprintf("%-4s", $m);
 
 	$TOTtime_M = ($TOTtime / 60);
-	$TOTtime_M = round($TOTtime_M, 2);
-	$TOTtime_M_int = intval("$TOTtime_M");
+	$TOTtime_M_int = round($TOTtime_M, 2);
+	$TOTtime_M_int = intval("$TOTtime_M_int");
 	$TOTtime_S = ($TOTtime_M - $TOTtime_M_int);
 	$TOTtime_S = ($TOTtime_S * 60);
 	$TOTtime_S = round($TOTtime_S, 0);
@@ -473,8 +477,8 @@ while ($n < $j)
 		while(strlen($TOTtime_MS)>8) {$TOTtime_MS = substr("$TOTtime_MS", 0, -1);}
 
 	$TOTtotTALK_M = ($TOTtotTALK / 60);
-	$TOTtotTALK_M = round($TOTtotTALK_M, 2);
-	$TOTtotTALK_M_int = intval("$TOTtotTALK_M");
+	$TOTtotTALK_M_int = round($TOTtotTALK_M, 2);
+	$TOTtotTALK_M_int = intval("$TOTtotTALK_M_int");
 	$TOTtotTALK_S = ($TOTtotTALK_M - $TOTtotTALK_M_int);
 	$TOTtotTALK_S = ($TOTtotTALK_S * 60);
 	$TOTtotTALK_S = round($TOTtotTALK_S, 0);
@@ -484,8 +488,8 @@ while ($n < $j)
 		while(strlen($TOTtotTALK_MS)>8) {$TOTtotTALK_MS = substr("$TOTtotTALK_MS", 0, -1);}
 
 	$TOTtotDISPO_M = ($TOTtotDISPO / 60);
-	$TOTtotDISPO_M = round($TOTtotDISPO_M, 2);
-	$TOTtotDISPO_M_int = intval("$TOTtotDISPO_M");
+	$TOTtotDISPO_M_int = round($TOTtotDISPO_M, 2);
+	$TOTtotDISPO_M_int = intval("$TOTtotDISPO_M_int");
 	$TOTtotDISPO_S = ($TOTtotDISPO_M - $TOTtotDISPO_M_int);
 	$TOTtotDISPO_S = ($TOTtotDISPO_S * 60);
 	$TOTtotDISPO_S = round($TOTtotDISPO_S, 0);
@@ -495,8 +499,8 @@ while ($n < $j)
 		while(strlen($TOTtotDISPO_MS)>8) {$TOTtotDISPO_MS = substr("$TOTtotDISPO_MS", 0, -1);}
 
 	$TOTtotPAUSE_M = ($TOTtotPAUSE / 60);
-	$TOTtotPAUSE_M = round($TOTtotPAUSE_M, 2);
-	$TOTtotPAUSE_M_int = intval("$TOTtotPAUSE_M");
+	$TOTtotPAUSE_M_int = round($TOTtotPAUSE_M, 2);
+	$TOTtotPAUSE_M_int = intval("$TOTtotPAUSE_M_int");
 	$TOTtotPAUSE_S = ($TOTtotPAUSE_M - $TOTtotPAUSE_M_int);
 	$TOTtotPAUSE_S = ($TOTtotPAUSE_S * 60);
 	$TOTtotPAUSE_S = round($TOTtotPAUSE_S, 0);
@@ -506,8 +510,8 @@ while ($n < $j)
 		while(strlen($TOTtotPAUSE_MS)>8) {$TOTtotPAUSE_MS = substr("$TOTtotPAUSE_MS", 0, -1);}
 
 	$TOTtotWAIT_M = ($TOTtotWAIT / 60);
-	$TOTtotWAIT_M = round($TOTtotWAIT_M, 2);
-	$TOTtotWAIT_M_int = intval("$TOTtotWAIT_M");
+	$TOTtotWAIT_M_int = round($TOTtotWAIT_M, 2);
+	$TOTtotWAIT_M_int = intval("$TOTtotWAIT_M_int");
 	$TOTtotWAIT_S = ($TOTtotWAIT_M - $TOTtotWAIT_M_int);
 	$TOTtotWAIT_S = ($TOTtotWAIT_S * 60);
 	$TOTtotWAIT_S = round($TOTtotWAIT_S, 0);
@@ -518,8 +522,8 @@ while ($n < $j)
 
 
 	$TOTavgTALK_M = ( ($TOTtotTALK / $TOTcalls) / 60);
-	$TOTavgTALK_M = round($TOTavgTALK_M, 2);
-	$TOTavgTALK_M_int = intval("$TOTavgTALK_M");
+	$TOTavgTALK_M_int = round($TOTavgTALK_M, 2);
+	$TOTavgTALK_M_int = intval("$TOTavgTALK_M_int");
 	$TOTavgTALK_S = ($TOTavgTALK_M - $TOTavgTALK_M_int);
 	$TOTavgTALK_S = ($TOTavgTALK_S * 60);
 	$TOTavgTALK_S = round($TOTavgTALK_S, 0);
@@ -529,8 +533,8 @@ while ($n < $j)
 		while(strlen($TOTavgTALK_MS)>6) {$TOTavgTALK_MS = substr("$TOTavgTALK_MS", 0, -1);}
 
 	$TOTavgDISPO_M = ( ($TOTtotDISPO / $TOTcalls) / 60);
-	$TOTavgDISPO_M = round($TOTavgDISPO_M, 2);
-	$TOTavgDISPO_M_int = intval("$TOTavgDISPO_M");
+	$TOTavgDISPO_M_int = round($TOTavgDISPO_M, 2);
+	$TOTavgDISPO_M_int = intval("$TOTavgDISPO_M_int");
 	$TOTavgDISPO_S = ($TOTavgDISPO_M - $TOTavgDISPO_M_int);
 	$TOTavgDISPO_S = ($TOTavgDISPO_S * 60);
 	$TOTavgDISPO_S = round($TOTavgDISPO_S, 0);
@@ -540,8 +544,8 @@ while ($n < $j)
 		while(strlen($TOTavgDISPO_MS)>6) {$TOTavgDISPO_MS = substr("$TOTavgDISPO_MS", 0, -1);}
 
 	$TOTavgPAUSE_M = ( ($TOTtotPAUSE / $TOTcalls) / 60);
-	$TOTavgPAUSE_M = round($TOTavgPAUSE_M, 2);
-	$TOTavgPAUSE_M_int = intval("$TOTavgPAUSE_M");
+	$TOTavgPAUSE_M_int = round($TOTavgPAUSE_M, 2);
+	$TOTavgPAUSE_M_int = intval("$TOTavgPAUSE_M_int");
 	$TOTavgPAUSE_S = ($TOTavgPAUSE_M - $TOTavgPAUSE_M_int);
 	$TOTavgPAUSE_S = ($TOTavgPAUSE_S * 60);
 	$TOTavgPAUSE_S = round($TOTavgPAUSE_S, 0);
@@ -551,8 +555,8 @@ while ($n < $j)
 		while(strlen($TOTavgPAUSE_MS)>6) {$TOTavgPAUSE_MS = substr("$TOTavgPAUSE_MS", 0, -1);}
 
 	$TOTavgWAIT_M = ( ($TOTtotWAIT / $TOTcalls) / 60);
-	$TOTavgWAIT_M = round($TOTavgWAIT_M, 2);
-	$TOTavgWAIT_M_int = intval("$TOTavgWAIT_M");
+	$TOTavgWAIT_M_int = round($TOTavgWAIT_M, 2);
+	$TOTavgWAIT_M_int = intval("$TOTavgWAIT_M_int");
 	$TOTavgWAIT_S = ($TOTavgWAIT_M - $TOTavgWAIT_M_int);
 	$TOTavgWAIT_S = ($TOTavgWAIT_S * 60);
 	$TOTavgWAIT_S = round($TOTavgWAIT_S, 0);
