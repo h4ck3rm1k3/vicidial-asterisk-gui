@@ -12,6 +12,10 @@
 # 80714-0530 - first build
 #
 
+$DB=0;
+$liveupdate=0;
+$calculate_recycle_counts=1;
+
 $secX = time();
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -25,7 +29,6 @@ if ($mday < 10) {$mday = "0$mday";}
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";
 $inSD = $pulldate0;
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-
 
 
 # default path to astguiclient configuration file:
@@ -76,9 +79,6 @@ use DBI;
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
-#$DB=1;
-
-$liveupdate=0;
 
 if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/dupleads.$year-$mon-$mday";}
 
@@ -86,7 +86,7 @@ print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_last_local_call_time_UPDATE.pl --\n\n
 print "populates the new last_local_call_time field in the vicidial_list table from records in the vicidial_log and vicidial_closer_log table. \n\n";
 
 
-$stmtA = "select lead_id,list_id from vicidial_list;";
+$stmtA = "select lead_id,list_id,called_count from vicidial_list limit 10000000;";
 if($DBX){print STDERR "\n|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -100,6 +100,7 @@ while ( ($sthArows > $i) && ($nonDUP=='0') )
 		{
 		$lead_id[$i] =	"$aryA[0]";
 		$list_id[$i] =	"$aryA[1]";
+		$Ncount[$i] =	"$aryA[2]";
 		}
 	$i++;
 	}
@@ -143,9 +144,20 @@ foreach(@lead_id)
 	if ($Cepoch > $Nepoch) {$NEWcall_date = $Ccall_date;}
 	else {$NEWcall_date = $Ncall_date;}
 
-	$stmtA = "UPDATE vicidial_list set last_local_call_time='$NEWcall_date' where lead_id='$lead_id[$b]';";
+	if ($calculate_recycle_counts > 0)
+		{
+		if ( ($Ncount[$b]==0) or ($Ncount[$b]=='') ) {$Ncount[$b] = 'N';}
+		if ($Ncount[$b]==1) {$Ncount[$b] = 'Y';}
+		if ( ($Ncount[$b]>1) && ($Ncount[$b]<11) ) {$Ncount[$b] = ($Ncount[$b] - 1); $Ncount[$b] = "Y$Ncount[$b]";}
+		if ($Ncount[$b]>10) {$Ncount[$b] = 'Y10';}
+		$called_since_last_resetSQL = ",called_since_last_reset='$Ncount[$b]'";
+		}
+	else
+		{$called_since_last_resetSQL = "";}
+
+	$stmtA = "UPDATE vicidial_list set last_local_call_time='$NEWcall_date' $called_since_last_resetSQL where lead_id='$lead_id[$b]';";
 	$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
-		if($DB){print STDERR "|$b|$lead_id[$b]|$Ncall_date|$Ccall_date|$list_id[$b]||$stmtA|\n";}
+		if($DB){print STDERR "|$b|$lead_id[$b]|$Ncall_date|$Ccall_date|$list_id[$b]|$Ncount[$b]|$stmtA|\n";}
 
 	$b++;
 

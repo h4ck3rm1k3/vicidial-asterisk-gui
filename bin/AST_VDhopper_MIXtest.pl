@@ -558,40 +558,75 @@ foreach(@campaign_id)
 		else {$lct_begin = $Gct_saturday_start;}
 		}
 
-	if ($wyesterday < 1)	#### Sunday local time
+
+	$dayBACKsec=0;
+	$weekBACK=0;
+	while ( ($lct_end < 1) && ($weekBACK <= 1) )
 		{
-		if (($Gct_sunday_start < 1) && ($Gct_sunday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_sunday_stop;}
-		}
-	if ($wyesterday==1)	#### Monday local time
-		{
-		if (($Gct_monday_start < 1) && ($Gct_monday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_monday_stop;}
-		}
-	if ($wyesterday==2)	#### Tuesday local time
-		{
-		if (($Gct_tuesday_start < 1) && ($Gct_tuesday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_tuesday_stop;}
-		}
-	if ($wyesterday==3)	#### Wednesday local time
-		{
-		if (($Gct_wednesday_start < 1) && ($Gct_wednesday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_wednesday_stop;}
-		}
-	if ($wyesterday==4)	#### Thursday local time
-		{
-		if (($Gct_thursday_start < 1) && ($Gct_thursday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_thursday_stop;}
-		}
-	if ($wyesterday==5)	#### Friday local time
-		{
-		if (($Gct_friday_start < 1) && ($Gct_friday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_friday_stop;}
-		}
-	if ($wyesterday==6)	#### Saturday local time
-		{
-		if (($Gct_saturday_start < 1) && ($Gct_saturday_stop < 1)) {$lct_end = $Gct_default_stop;}
-		else {$lct_end = $Gct_saturday_stop;}
+		if ($wyesterday==6)	#### Saturday local time
+			{
+			if ($Gct_saturday_start > 2399) {$wyesterday = 0;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_saturday_start < 1) && ($Gct_saturday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_saturday_stop;}
+				}
+			}
+		if ($wyesterday==5)	#### Friday local time
+			{
+			if ($Gct_friday_start > 2399) {$wyesterday = 1;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_friday_start < 1) && ($Gct_friday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_friday_stop;}
+				}
+			}
+		if ($wyesterday==4)	#### Thursday local time
+			{
+			if ($Gct_thursday_start > 2399) {$wyesterday = 2;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_thursday_start < 1) && ($Gct_thursday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_thursday_stop;}
+				}
+			}
+		if ($wyesterday==3)	#### Wednesday local time
+			{
+			if ($Gct_wednesday_start > 2399) {$wyesterday = 3;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_wednesday_start < 1) && ($Gct_wednesday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_wednesday_stop;}
+				}
+			}
+		if ($wyesterday==2)	#### Tuesday local time
+			{
+			if ($Gct_tuesday_start > 2399) {$wyesterday = 4;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_tuesday_start < 1) && ($Gct_tuesday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_tuesday_stop;}
+				}
+			}
+		if ($wyesterday==1)	#### Monday local time
+			{
+			if ($Gct_monday_start > 2399) {$wyesterday = 5;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_monday_start < 1) && ($Gct_monday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_monday_stop;}
+				}
+			}
+		if ($wyesterday==0)	#### Sunday local time
+			{
+			if ($Gct_sunday_start > 2399) {$wyesterday = 6;   $dayBACKsec = ($dayBACKsec + 86400);   if ($DBX) {print "DayBACK: $wyesterday\n";}}
+			else
+				{
+				if (($Gct_sunday_start < 1) && ($Gct_sunday_stop < 1)) {$lct_end = $Gct_default_stop;}
+				else {$lct_end = $Gct_sunday_stop;}
+				}
+			}
+		$weekBACK++;
 		}
 
 	$lct_end = sprintf("%04d", $lct_end);
@@ -601,7 +636,7 @@ foreach(@campaign_id)
 	$lct_begin_hour = substr($lct_begin, 0, 2);
 	$lct_begin_min = substr($lct_begin, 2, 2);
 
-	$lct_gap = ( ( ( ( (24 - $lct_end_hour) + $lct_begin_hour) * 3600) + ($lct_begin_min * 60) ) - ($lct_end_min * 60) );
+	$lct_gap = ( ( ( ( ( (24 - $lct_end_hour) + $lct_begin_hour) * 3600) + ($lct_begin_min * 60) ) - ($lct_end_min * 60) ) + $dayBACKsec);
 
 	if ($DBX) {print "LocalCallTime No-Call Gap: |$lct_gap|$lct_end($lct_end_hour $lct_end_min)|$lct_begin($lct_begin_hour $lct_begin_min)|$wtoday|$wyesterday|\n";}
 
@@ -1267,9 +1302,9 @@ foreach(@campaign_id)
 			@REC_status_to_hopper=@MT;
 			if ($rec_ct[$i] > 0)
 				{
-				if ($DB) {print "     looking for RECYCLE leads, maximum of 100\n";}
+				if ($DB) {print "     looking for RECYCLE leads, maximum of $hopper_level[$i]\n";}
 
-				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status FROM vicidial_list where $recycle_SQL[$i] and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] limit 100;";
+				$stmtA = "SELECT lead_id,list_id,gmt_offset_now,phone_number,state,status FROM vicidial_list where $recycle_SQL[$i] and list_id IN($camp_lists[$i]) and lead_id NOT IN($lead_id_lists) and ($all_gmtSQL[$i]) $lead_filter_sql[$i] limit $hopper_level[$i];";
 				if ($DBX) {print "     |$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;

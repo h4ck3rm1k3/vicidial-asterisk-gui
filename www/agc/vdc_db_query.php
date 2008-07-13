@@ -669,6 +669,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$source_id		= trim("$row[6]");
 				$list_id		= trim("$row[7]");
 				$gmt_offset_now	= trim("$row[8]");
+				$called_since_last_reset = trim("$row[9]");
 				$phone_code		= trim("$row[10]");
 				$phone_number	= trim("$row[11]");
 				$title			= trim("$row[12]");
@@ -753,8 +754,16 @@ if ($ACTION == 'manDiaLnextCaLL')
 			$LLCT_DATE_offset = ($local_gmt - $gmt_offset_now);
 			$LLCT_DATE = date("Y-m-d H:i:s", mktime(date("H")-$LLCT_DATE_offset,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
+			if (ereg('Y',$called_since_last_reset))
+				{
+				$called_since_last_reset = ereg_replace('Y','',$called_since_last_reset);
+				if (strlen($called_since_last_reset) < 1) {$called_since_last_reset = 0;}
+				$called_since_last_reset++;
+				$called_since_last_reset = "Y$called_since_last_reset";
+				}
+			else {$called_since_last_reset = 'Y';}
 			### flag the lead as called and change it's status to INCALL
-			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='Y', called_count='$called_count',user='$user',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id';";
+			$stmt = "UPDATE vicidial_list set status='INCALL', called_since_last_reset='$called_since_last_reset', called_count='$called_count',user='$user',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
