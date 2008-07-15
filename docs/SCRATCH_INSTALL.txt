@@ -1316,7 +1316,7 @@ register to if you plan on using G729 as your codec: iax-g729.binfone.com
 
 	[default]
 	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
+	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN:1},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 	[incoming]
@@ -1511,12 +1511,12 @@ exten => _56XXX,1,AgentCallbackLogin(||${EXTEN:1}@default)
 
 ### OPTIONAL IAX trunk extensions entries for long distance dialing over IAX
 	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,o)
+	exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN:1},55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 ### OPTIONAL SIP trunk extensions entries for long distance dialing over SIP
 	exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-	exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
+	exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN:1}@SIPtrunk,55,o)
 	exten => _91NXXNXXXXXX,3,Hangup
 
 ### OPTIONAL IAX Load Balance extens to allow for Overflow and Balanced VDAD

@@ -136,11 +136,11 @@ exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,To)
 exten => _91NXXNXXXXXX,3,Hangup
 ; dial a long distance outbound number through BINFONE
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-; exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN},55,To)
+; exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN:1},55,To)
 ; exten => _91NXXNXXXXXX,3,Hangup
 ; dial a long distance outbound number through a SIP provider
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
-; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN}@SIPtrunk,55,o)
+; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN:1}@SIPtrunk,55,o)
 ; exten => _91NXXNXXXXXX,3,Hangup
 
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
