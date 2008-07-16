@@ -230,6 +230,8 @@ Agent Display Queue Count: ||
 agents in dead calls||
 QC Last Pull Time: ||
 and less than 43200 seconds or 12 hours||
+LEADS AT LIMIT||
+Lead counts taken from active lists in the campaign only||
 
 
 ############################################################ CLIENT

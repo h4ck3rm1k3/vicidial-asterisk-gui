@@ -2,27 +2,34 @@ QC(Quality Control) process flow					  2008-01-03
 
 ** THIS QC FUNCTIONALITY PROSESS IS PLANNED FOR THE 2.0.5 RELEASE **
 
-This will outline the process I have thought through for adding a Quality Assurance(QA) or Quality Control(QC) process to the VICIDIAL system. The objective is to add the following features to make VICIDIAL a more well-rounded product:
-- ability to define which statuses/lists are to be able to be QCd per campaign
-- ability to give agents permission to QC records for their allowable campaigns
+This will outline the process I have thought through for adding a Quality Assurance(QA) or Quality Control(QC) process to the VICIDIAL system. As the needs have changed for sponsor client and VICIDIAL has evolved since this functionality was first put into the planning stages, there have been several changes to how the QC process is going to be built. The objective is to add the following QC features to make VICIDIAL a more well-rounded product:
+- ability to define which statuses are to be able to be QCd per campaign and inbound group(queue)
+- ability to give agents permission to QC records for their allowable campaigns/inbound groups
 - ability to log all access and changes to QCd records
 - creation of some basic reports on QC activity
 
 
 
 The back-end process will work like this:
-- ADMIN_keepalive_ALL.pl script will look for the 'Q' in the keepalive definition in /etc/astguiclient.conf file. If it is set, it will trigger a script to gather the QC records every five minutes(with a 15 second delay) since the last QC gathering as defined in the system_settings table qc_last_pull_time field(which is populated with the START time of the last QC-pull run).
+- ADMIN_keepalive_ALL.pl script will look for the 'Q' in the keepalive definition in /etc/astguiclient.conf file. If it is set, it will trigger a script to gather the QC records every five minutes(with a 15 second delay) since the last QC gathering as defined in the system_settings table qc_last_pull_time field(which is populated with the START time of the last QC-pull run). The time interval for this might be made configurable.
 - There will also be an optional method of pulling QC records available to the QC managers that enables them to specify a date range to pull and insert records
-- Selected records from the vicidial_log and vicidial_closer_log tables will be taken and inserted into the qc_vicidial_list_original table and the qc_vicidial_list table at the same time.
-- QC agents are then able to run their process starting with the earliest records for their selected campaign/groups
+- Selected records from the vicidial_list table (keyed on the the vicidial_log and vicidial_closer_log tables) will be taken and inserted into the qc_vicidial_list_original table.
+- QC agents are then able to run their process starting with the earliest records for their selected campaign/inbound groups
 - After QC agents have PASSed, FINISHed and COMMITted the QC records, then they can be exported
 
 
 
 
-The QC agent will login to a new qc.php screen within the agc web directory. They will then have a screen very similar to the vicidial.php login screen(but in a different color) that will have a user/pass to fill in. Then when they login they will see a green screen similar to the vicidial.php inbound(CLOSER-type) screen that will show them their allowable qc in-groups and campaigns. The agent will then choose which in-groups and campaigns that they want to QC the records for and then they will submit and they will be logged-in to the QC system.
+The QC agent will login to the new qc.php screen within the agc web directory. They will then have a screen very similar to the vicidial.php login screen(but in a different color) that will have a user/pass to fill in. Then when they login they will see a green screen similar to the vicidial.php inbound(CLOSER-type) screen that will show them their allowable qc inbound-groups and campaigns. The agent will then choose which in-groups and campaigns that they want to QC the records for and then they will submit and they will be logged-in to the QC system.
 
 Upon login, they will be able to see the count of QC-able records and they can click on a link to bring up the next record to be QCd. 
+
+Upon clicking on a link, the qc.php application will insert a record into the qc_vicidial_list to keep track of changes and other information on the qc record session.
+
+The SCRIPTS tab and web form will both function exactly as they do in the vicidial.php application, with the exception that there will be added qc_web_form_address and qc_script options for both campaigns and inbound groups. There will also be an option to have any of these launched upon a new record appearing on the QC agent's screen.
+
+The qc.php user interface will be using AJAX as a method to bring up records and keep track of QC-agent activity and performance.
+
 
 Each qc_user_level will have different permissions for the qc system:
 1- modify nothing
@@ -49,7 +56,8 @@ The Database Changes:
  CREATE TABLE qc_vicidial_list_original (
 qc_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 qc_import_date DATETIME,
-original_id VARCHAR(20) UNIQUE NOT NULL,
+call_date DATETIME,
+log_id VARCHAR(20) UNIQUE NOT NULL,
 campaign_group_id VARCHAR(20),
 modify_date TIMESTAMP,
 status VARCHAR(6),
@@ -82,9 +90,10 @@ comments VARCHAR(255),
 
 # This table contains the updated QC records
  CREATE TABLE qc_vicidial_list (
+qc_list_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 qc_id INT(9) UNSIGNED NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
-original_id VARCHAR(20) NOT NULL,
+log_id VARCHAR(20) NOT NULL,
 modify_date TIMESTAMP,
 status VARCHAR(6),
 qc_status VARCHAR(6),
@@ -155,7 +164,19 @@ qc_user_level INT(2) default '0',
 campaign_group_id VARCHAR(20)
 );
 
+# For the inbound groups table, some fields will need to be added to the vicidial_campaigns table:
+ALTER TABLE vicidial_inbound_groups ADD qc_enabled ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD qc_statuses TEXT;
+ALTER TABLE vicidial_inbound_groups ADD qc_web_form_address VARCHAR(255);
+ALTER TABLE vicidial_inbound_groups ADD qc_script VARCHAR(10);
+ALTER TABLE vicidial_inbound_groups ADD qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE';
+
+ALTER TABLE vicidial_campaigns ADD qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE';
+
 ALTER TABLE system_settings ADD qc_last_pull_time DATETIME;
+
+
+
 
 
 

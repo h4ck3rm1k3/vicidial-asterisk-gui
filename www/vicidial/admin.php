@@ -1340,11 +1340,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 80608-1304 - Changed add-to-DNC to allow for multiple entries per submission
 # 80625-0032 - Added time/phone display format options to system settings
 # 80703-0124 - Added alter cust phone and api settings
+# 80715-1130 - Added Recycle leads limit count
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-134';
-$build = '80703-0124';
+$admin_version = '2.0.5-135';
+$build = '80715-1130';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -11022,32 +11023,82 @@ if ($ADD==31)
 	##### CAMPAIGN LEAD RECYCLING #####
 	if ($SUB==25)
 		{
-		echo "<br><br><b>LEAD RECYCLING WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
-		echo "<TABLE width=500 cellspacing=3>\n";
-		echo "<tr><td>STATUS</td><td>ATTEMPT DELAY</td><td>ATTEMPT MAXIMUM</td><td>ACTIVE</td><td> </td><td>DELETE</td></tr>\n";
+		### display counts on leads that have hit the limit in this campaign
+		$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
+		$rslt=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rslt);
+		$camp_lists='';
+		$o=0;
+		while ($lists_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			if (ereg("Y", $rowx[1])) {$camp_lists .= "'$rowx[0]',";}
+			$o++;
+			}
+		$camp_lists = eregi_replace(".$","",$camp_lists);
 
-			$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
-			$rslt=mysql_query($stmt, $link);
-			$recycle_to_print = mysql_num_rows($rslt);
-			$o=0;
-			while ($recycle_to_print > $o) {
-				$rowx=mysql_fetch_row($rslt);
-				$o++;
+		$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$recycle_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($recycle_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$RECYCLE_status[$o] =	$rowx[2];
+			$RECYCLE_delay[$o] =	$rowx[3];
+			$RECYCLE_attempt[$o] =	$rowx[4];
+			$RECYCLE_active[$o] =	$rowx[5];
+			$RECYCLE_count[$o] = "'Y','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";
+			if ($RECYCLE_attempt[$o]==1) {$RECYCLE_count[$o] = "'Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==2) {$RECYCLE_count[$o] = "'Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==3) {$RECYCLE_count[$o] = "'Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==4) {$RECYCLE_count[$o] = "'Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==5) {$RECYCLE_count[$o] = "'Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==6) {$RECYCLE_count[$o] = "'Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==7) {$RECYCLE_count[$o] = "'Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==8) {$RECYCLE_count[$o] = "'Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==9) {$RECYCLE_count[$o] = "'Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]>9) {$RECYCLE_count[$o] = "'Y10'";}
+			$o++;
+			}
+		$o=0;
+
+		echo "<br><br><b>LEAD RECYCLING WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
+		echo "<TABLE width=700 cellspacing=3>\n";
+		echo "<tr><td>STATUS</td><td>ATTEMPT DELAY</td><td>ATTEMPT MAXIMUM</td><td>LEADS AT LIMIT</td><td>ACTIVE</td><td> </td><td>DELETE</td></tr>\n";
+
+		while ($recycle_to_print > $o) 
+			{
+			$recycle_limit=0;
+			if (strlen($camp_lists) > 2)
+				{
+				$stmt="SELECT count(*) from vicidial_list where status='$RECYCLE_status[$o]' and list_id IN($camp_lists) and called_since_last_reset IN($RECYCLE_count[$o]);";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				$counts_to_print = mysql_num_rows($rslt);
+				if ($counts_to_print > 0) 
+					{
+					$rowx=mysql_fetch_row($rslt);
+					$recycle_limit = $rowx[0];
+					}
+				}
 
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=1>$rowx[2]<form action=$PHP_SELF method=POST>\n";
-			echo "<input type=hidden name=status value=\"$rowx[2]\">\n";
+			echo "<tr $bgcolor><td><font size=2> &nbsp; $RECYCLE_status[$o]<form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=status value=\"$RECYCLE_status[$o]\">\n";
 			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 			echo "<input type=hidden name=ADD value=45></td>\n";
-			echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
-			echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
-			echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$rowx[5]</option></select></td>\n";
+			echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$RECYCLE_delay[$o]\"></td>\n";
+			echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$RECYCLE_attempt[$o]\"></td>\n";
+			echo "<td align=right><font size=2>$recycle_limit &nbsp; </td>\n";
+			echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$RECYCLE_active[$o]</option></select></td>\n";
 			echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
-			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$rowx[2]\">DELETE</a></td></tr>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$RECYCLE_status[$o]\">DELETE</a></td></tr>\n";
+			$o++;
 			}
 
 		echo "</table>\n";
@@ -11064,6 +11115,8 @@ if ($ADD==31)
 		echo "<input type=submit name=submit value=ADD><BR>\n";
 
 		echo "</FORM><br>\n";
+		echo "<br>\n";
+		echo "* Lead counts taken from active lists in the campaign only.\n";
 		}
 
 	##### CAMPAIGN AUTO-ALT-NUMBER DIALING #####
