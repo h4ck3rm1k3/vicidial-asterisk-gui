@@ -1,4 +1,4 @@
- CREATE TABLE phones (
+CREATE TABLE phones (
 extension VARCHAR(100),
 dialplan_number VARCHAR(20),
 voicemail_id VARCHAR(10),
@@ -69,7 +69,7 @@ enable_sipsak_messages ENUM('0','1') default '0',
 index (server_ip)
 );
 
- CREATE TABLE servers (
+CREATE TABLE servers (
 server_id VARCHAR(10) NOT NULL,
 server_description VARCHAR(255),
 server_ip VARCHAR(15) NOT NULL,
@@ -95,7 +95,7 @@ balance_trunks_offlimits SMALLINT(5) UNSIGNED default '0'
 );
 
 
- CREATE TABLE live_channels (
+CREATE TABLE live_channels (
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 channel_group VARCHAR(30),
@@ -103,7 +103,7 @@ extension VARCHAR(100),
 channel_data VARCHAR(100)
 );
 
- CREATE TABLE live_sip_channels (
+CREATE TABLE live_sip_channels (
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 channel_group VARCHAR(30),
@@ -111,7 +111,7 @@ extension VARCHAR(100),
 channel_data VARCHAR(100)
 );
 
- CREATE TABLE parked_channels (
+CREATE TABLE parked_channels (
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 channel_group VARCHAR(30),
@@ -120,13 +120,13 @@ parked_by VARCHAR(100),
 parked_time DATETIME
 );
 
- CREATE TABLE conferences (
+CREATE TABLE conferences (
 conf_exten INT(7) UNSIGNED NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 extension VARCHAR(100)
 );
 
- CREATE TABLE recording_log (
+CREATE TABLE recording_log (
 recording_id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 channel VARCHAR(100),
 server_ip VARCHAR(15),
@@ -148,7 +148,7 @@ index(user),
 index(vicidial_id)
 );
 
- CREATE TABLE live_inbound (
+CREATE TABLE live_inbound (
 uniqueid VARCHAR(20) NOT NULL,
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
@@ -165,7 +165,7 @@ comment_d VARCHAR(50),
 comment_e VARCHAR(50)
 );
 
- CREATE TABLE inbound_numbers (
+CREATE TABLE inbound_numbers (
 extension VARCHAR(30) NOT NULL,
 full_number VARCHAR(30) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
@@ -173,12 +173,12 @@ inbound_name VARCHAR(30),
 department VARCHAR(30)
 );
 
- CREATE TABLE server_updater (
+CREATE TABLE server_updater (
 server_ip VARCHAR(15) NOT NULL,
 last_update DATETIME
 );
 
- CREATE TABLE call_log (
+CREATE TABLE call_log (
 uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 channel VARCHAR(100),
 channel_group VARCHAR(30),
@@ -198,7 +198,7 @@ index (server_ip),
 index (channel)
 );
 
- CREATE TABLE park_log (
+CREATE TABLE park_log (
 uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 status VARCHAR(10),
 channel VARCHAR(100),
@@ -214,7 +214,7 @@ user VARCHAR(20),
 index (parked_time)
 );
 
- CREATE TABLE vicidial_manager (
+CREATE TABLE vicidial_manager (
 man_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 uniqueid VARCHAR(20),
 entry_date DATETIME,
@@ -239,7 +239,7 @@ index (uniqueid),
 index serverstat(server_ip,status)
 );
 
- CREATE TABLE vicidial_list (
+CREATE TABLE vicidial_list (
 lead_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 entry_date DATETIME,
 modify_date TIMESTAMP,
@@ -271,7 +271,7 @@ email VARCHAR(70),
 security_phrase VARCHAR(100),
 comments VARCHAR(255),
 called_count SMALLINT(5) UNSIGNED default '0',
-last_local_call_time DATETIME
+last_local_call_time DATETIME,
 index (phone_number),
 index (list_id),
 index (called_since_last_reset),
@@ -281,7 +281,7 @@ index (postal_code),
 index (last_local_call_time)
 );
 
- CREATE TABLE vicidial_hopper (
+CREATE TABLE vicidial_hopper (
 hopper_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 campaign_id VARCHAR(8),			
@@ -295,7 +295,7 @@ priority TINYINT(2) default '0',
 index (lead_id)
 );
 
- CREATE TABLE vicidial_live_agents (
+CREATE TABLE vicidial_live_agents (
 live_agent_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20),
 server_ip VARCHAR(15) NOT NULL,
@@ -325,7 +325,7 @@ index (last_update_time),
 index (last_call_finish)
 );
 
- CREATE TABLE vicidial_auto_calls (
+CREATE TABLE vicidial_auto_calls (
 auto_call_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 campaign_id VARCHAR(20),			
@@ -348,7 +348,7 @@ index (call_time),
 index (last_update_time)
 );
 
- CREATE TABLE vicidial_log (
+CREATE TABLE vicidial_log (
 uniqueid VARCHAR(20) PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 list_id BIGINT(14) UNSIGNED,
@@ -369,7 +369,7 @@ index (lead_id),
 index (call_date)
 );
 
- CREATE TABLE vicidial_closer_log (
+CREATE TABLE vicidial_closer_log (
 closecallid INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 list_id BIGINT(14) UNSIGNED,
@@ -392,7 +392,7 @@ index (lead_id),
 index (call_date)
 );
 
- CREATE TABLE vicidial_xfer_log (
+CREATE TABLE vicidial_xfer_log (
 xfercallid INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED NOT NULL,
 list_id BIGINT(14) UNSIGNED,
@@ -406,7 +406,7 @@ index (lead_id),
 index (call_date)
 );
 
- CREATE TABLE vicidial_users (
+CREATE TABLE vicidial_users (
 user_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20) NOT NULL,
 pass VARCHAR(20) NOT NULL,
@@ -468,7 +468,7 @@ vdc_agent_api_access ENUM('0','1') default '0'
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
 
- CREATE TABLE vicidial_user_log (
+CREATE TABLE vicidial_user_log (
 user_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20),
 event VARCHAR(50),
@@ -479,7 +479,7 @@ user_group VARCHAR(20),
 index (user)
 );
 
- CREATE TABLE vicidial_user_groups (
+CREATE TABLE vicidial_user_groups (
 user_group VARCHAR(20) NOT NULL,
 group_name VARCHAR(40) NOT NULL,
 allowed_campaigns TEXT,
@@ -488,7 +488,7 @@ qc_allowed_inbound_groups TEXT,
 group_shifts TEXT
 );
 
- CREATE TABLE vicidial_campaigns (
+CREATE TABLE vicidial_campaigns (
 campaign_id VARCHAR(8) PRIMARY KEY NOT NULL,
 campaign_name VARCHAR(40),
 active ENUM('Y','N'),
@@ -563,9 +563,9 @@ drop_inbound_group VARCHAR(20) default '---NONE---',
 qc_enabled ENUM('Y','N') default 'N',
 qc_statuses TEXT,
 qc_lists TEXT,
-campaign_shift_start_time VARCHAR(4) default '0900',
-campaign_shift_length VARCHAR(5) default '16:00',
-campaign_day_start_time VARCHAR(4) default '0100',
+qc_shift_id VARCHAR(20) default '24HRMIDNIGHT',
+qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE',
+qc_show_recording ENUM('Y','N') default 'Y',
 qc_web_form_address VARCHAR(255),
 qc_script VARCHAR(10),
 survey_first_audio_file VARCHAR(50) default 'US_pol_survey_hello',
@@ -583,7 +583,7 @@ disable_alter_custphone ENUM('Y','N') default 'Y',
 display_queue_count ENUM('Y','N') default 'Y'
 );
 
- CREATE TABLE vicidial_lists (
+CREATE TABLE vicidial_lists (
 list_id BIGINT(14) UNSIGNED PRIMARY KEY NOT NULL,
 list_name VARCHAR(30),
 campaign_id VARCHAR(8),
@@ -593,7 +593,7 @@ list_changedate DATETIME,
 list_lastcalldate DATETIME
 );
 
- CREATE TABLE vicidial_statuses (
+CREATE TABLE vicidial_statuses (
 status VARCHAR(6) PRIMARY KEY NOT NULL,
 status_name VARCHAR(30),
 selectable ENUM('Y','N'),
@@ -601,7 +601,7 @@ human_answered ENUM('Y','N') default 'N',
 category VARCHAR(20) default 'UNDEFINED'
 );
 
- CREATE TABLE vicidial_campaign_statuses (
+CREATE TABLE vicidial_campaign_statuses (
 status VARCHAR(6) NOT NULL,
 status_name VARCHAR(30),
 selectable ENUM('Y','N'),
@@ -611,7 +611,7 @@ category VARCHAR(20) default 'UNDEFINED',
 index (campaign_id)
 );
 
- CREATE TABLE vicidial_campaign_hotkeys (
+CREATE TABLE vicidial_campaign_hotkeys (
 status VARCHAR(6) NOT NULL,
 hotkey VARCHAR(1) NOT NULL,
 status_name VARCHAR(30),
@@ -620,13 +620,13 @@ campaign_id VARCHAR(8),
 index (campaign_id)
 );
 
- CREATE TABLE vicidial_conferences (
+CREATE TABLE vicidial_conferences (
 conf_exten INT(7) UNSIGNED NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 extension VARCHAR(100)
 );
 
- CREATE TABLE vicidial_phone_codes (
+CREATE TABLE vicidial_phone_codes (
 country_code SMALLINT(5) UNSIGNED,
 country CHAR(3),
 areacode CHAR(3),
@@ -637,7 +637,7 @@ DST_range VARCHAR(8),
 geographic_description VARCHAR(30)
 );
 
- CREATE TABLE vicidial_inbound_groups (
+CREATE TABLE vicidial_inbound_groups (
 group_id VARCHAR(20) PRIMARY KEY NOT NULL,
 group_name VARCHAR(30),
 group_color VARCHAR(7),
@@ -671,7 +671,14 @@ queue_priority TINYINT(2) default '0',
 drop_inbound_group VARCHAR(20) default '---NONE---',
 ingroup_recording_override  ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
 ingroup_rec_filename VARCHAR(50) default 'NONE',
-afterhours_xfer_group VARCHAR(20) default '---NONE---'
+afterhours_xfer_group VARCHAR(20) default '---NONE---',
+qc_enabled ENUM('Y','N') default 'N',
+qc_statuses TEXT,
+qc_shift_id VARCHAR(20) default '24HRMIDNIGHT',
+qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE',
+qc_show_recording ENUM('Y','N') default 'Y',
+qc_web_form_address VARCHAR(255),
+qc_script VARCHAR(10)
 );
 
 CREATE TABLE vicidial_stations (
@@ -685,7 +692,7 @@ DB_pass VARCHAR(15),
 DB_port VARCHAR(6)
 );
 
- CREATE TABLE vicidial_remote_agents (
+CREATE TABLE vicidial_remote_agents (
 remote_agent_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user_start VARCHAR(20),
 number_of_lines TINYINT UNSIGNED default '1',
@@ -696,7 +703,7 @@ campaign_id VARCHAR(8),
 closer_campaigns TEXT
 );
 
- CREATE TABLE live_inbound_log (
+CREATE TABLE live_inbound_log (
 uniqueid VARCHAR(20) NOT NULL,
 channel VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
@@ -716,7 +723,7 @@ index (phone_ext),
 index (start_time)
 );
 
- CREATE TABLE web_client_sessions (
+CREATE TABLE web_client_sessions (
 extension VARCHAR(100) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 program ENUM('agc','vicidial','monitor','other') default 'agc',
@@ -724,7 +731,7 @@ start_time DATETIME NOT NULL,
 session_name VARCHAR(40) UNIQUE NOT NULL
 );
 
- CREATE TABLE server_performance (
+CREATE TABLE server_performance (
 start_time DATETIME NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 sysload INT(6) NOT NULL,
@@ -744,7 +751,7 @@ cpu_system_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
 cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0'
 );
 
- CREATE TABLE vicidial_agent_log (
+CREATE TABLE vicidial_agent_log (
 agent_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 user VARCHAR(20),
 server_ip VARCHAR(15) NOT NULL,
@@ -767,7 +774,7 @@ index (lead_id),
 index (user)
 );
 
- CREATE TABLE vicidial_scripts (
+CREATE TABLE vicidial_scripts (
 script_id VARCHAR(10) PRIMARY KEY NOT NULL,
 script_name VARCHAR(50),
 script_comments VARCHAR(255),
@@ -775,13 +782,13 @@ script_text TEXT,
 active ENUM('Y','N')
 );
 
- CREATE TABLE phone_favorites (
+CREATE TABLE phone_favorites (
 extension VARCHAR(100),
 server_ip VARCHAR(15),
 extensions_list TEXT
 );
 
- CREATE TABLE vicidial_callbacks (
+CREATE TABLE vicidial_callbacks (
 callback_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 lead_id INT(9) UNSIGNED,
 list_id BIGINT(14) UNSIGNED,		
@@ -799,7 +806,7 @@ index (status),
 index (callback_time)
 );
 
- CREATE TABLE vicidial_list_pins (
+CREATE TABLE vicidial_list_pins (
 pins_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 entry_time DATETIME,
 phone_number VARCHAR(12),
@@ -813,14 +820,14 @@ index (phone_number),
 index (entry_time)
 );
 
- CREATE TABLE vicidial_lead_filters (
+CREATE TABLE vicidial_lead_filters (
 lead_filter_id VARCHAR(10) PRIMARY KEY NOT NULL,
 lead_filter_name VARCHAR(30) NOT NULL,
 lead_filter_comments VARCHAR(255),
 lead_filter_sql TEXT
 );
 
- CREATE TABLE vicidial_call_times (
+CREATE TABLE vicidial_call_times (
 call_time_id VARCHAR(10) PRIMARY KEY NOT NULL,
 call_time_name VARCHAR(30) NOT NULL,
 call_time_comments VARCHAR(255) default '',
@@ -843,7 +850,7 @@ ct_saturday_stop SMALLINT(4) unsigned default '0',
 ct_state_call_times TEXT default ''
 );
 
- CREATE TABLE vicidial_state_call_times (
+CREATE TABLE vicidial_state_call_times (
 state_call_time_id VARCHAR(10) PRIMARY KEY NOT NULL,
 state_call_time_state VARCHAR(2) NOT NULL,
 state_call_time_name VARCHAR(30) NOT NULL,
@@ -866,7 +873,7 @@ sct_saturday_start SMALLINT(4) unsigned default '0',
 sct_saturday_stop SMALLINT(4) unsigned default '0'
 );
 
- CREATE TABLE vicidial_campaign_stats (
+CREATE TABLE vicidial_campaign_stats (
 campaign_id VARCHAR(20) PRIMARY KEY NOT NULL,
 update_time TIMESTAMP,
 dialable_leads INT(9) UNSIGNED default '0',
@@ -904,11 +911,11 @@ status_category_4 VARCHAR(20),
 status_category_count_4 INT(9) UNSIGNED default '0'
 );
 
- CREATE TABLE vicidial_dnc (
+CREATE TABLE vicidial_dnc (
 phone_number VARCHAR(12) PRIMARY KEY NOT NULL
 );
 
- CREATE TABLE vicidial_lead_recycle (
+CREATE TABLE vicidial_lead_recycle (
 recycle_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 campaign_id VARCHAR(8),
 status VARCHAR(6) NOT NULL,
@@ -918,7 +925,7 @@ active ENUM('Y','N') default 'N',
 index (campaign_id)
 );
 
- CREATE TABLE vicidial_campaign_server_stats (
+CREATE TABLE vicidial_campaign_server_stats (
 campaign_id VARCHAR(20) NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
 update_time TIMESTAMP,
@@ -927,7 +934,7 @@ index (campaign_id),
 index (server_ip)
 );
 
- CREATE TABLE vicidial_server_trunks (
+CREATE TABLE vicidial_server_trunks (
 server_ip VARCHAR(15) NOT NULL,
 campaign_id VARCHAR(20) NOT NULL,
 dedicated_trunks SMALLINT(5) UNSIGNED default '0',
@@ -936,7 +943,7 @@ index (campaign_id),
 index (server_ip)
 );
 
- CREATE TABLE vicidial_postal_codes (
+CREATE TABLE vicidial_postal_codes (
 postal_code VARCHAR(10) NOT NULL,
 state VARCHAR(4),
 GMT_offset VARCHAR(5),
@@ -946,7 +953,7 @@ country CHAR(3),
 country_code SMALLINT(5) UNSIGNED
 );
 
- CREATE TABLE vicidial_pause_codes (
+CREATE TABLE vicidial_pause_codes (
 pause_code VARCHAR(6) NOT NULL,
 pause_code_name VARCHAR(30),
 billable ENUM('NO','YES','HALF') default 'NO',
@@ -954,7 +961,7 @@ campaign_id VARCHAR(8),
 index (campaign_id)
 );
 
- CREATE TABLE system_settings (
+CREATE TABLE system_settings (
 version VARCHAR(50),
 install_date VARCHAR(50),
 use_non_latin ENUM('0','1') default '0',
@@ -982,7 +989,7 @@ vdc_agent_api_active ENUM('0','1') default '0',
 qc_last_pull_time DATETIME
 );
 
- CREATE TABLE vicidial_campaigns_list_mix (
+CREATE TABLE vicidial_campaigns_list_mix (
 vcl_id VARCHAR(20) PRIMARY KEY NOT NULL,
 vcl_name VARCHAR(50),
 campaign_id VARCHAR(8),
@@ -992,7 +999,7 @@ status ENUM('ACTIVE','INACTIVE') default 'INACTIVE',
 index (campaign_id)
 );
 
- CREATE TABLE vicidial_status_categories (
+CREATE TABLE vicidial_status_categories (
 vsc_id VARCHAR(20) PRIMARY KEY NOT NULL,
 vsc_name VARCHAR(50),
 vsc_description VARCHAR(255),
@@ -1069,7 +1076,7 @@ index (campaign_id),
 index (user)
 );
 
- CREATE TABLE vicidial_user_closer_log (
+CREATE TABLE vicidial_user_closer_log (
 user VARCHAR(20),
 campaign_id VARCHAR(20),
 event_date DATETIME,
@@ -1079,12 +1086,12 @@ index (user),
 index (event_date)
 );
 
- CREATE TABLE vicidial_qc_codes (
+CREATE TABLE vicidial_qc_codes (
 code VARCHAR(8) PRIMARY KEY NOT NULL,
 code_name VARCHAR(30)
 );
 
- CREATE TABLE vicidial_agent_sph (
+CREATE TABLE vicidial_agent_sph (
 campaign_group_id VARCHAR(20) NOT NULL,
 stat_date DATE NOT NULL,
 shift VARCHAR(20) NOT NULL,
@@ -1099,13 +1106,13 @@ index (campaign_group_id),
 index (stat_date)
 );
 
- CREATE TABLE phones_alias (
+CREATE TABLE phones_alias (
 alias_id VARCHAR(20) NOT NULL UNIQUE PRIMARY KEY,
 alias_name VARCHAR(50),
 logins_list VARCHAR(255)
 );
 
- CREATE TABLE vicidial_shifts (
+CREATE TABLE vicidial_shifts (
 shift_id VARCHAR(20) NOT NULL,
 shift_name VARCHAR(50),
 shift_start_time VARCHAR(4) default '0900',
@@ -1114,7 +1121,7 @@ shift_weekdays VARCHAR(7) default '0123456',
 index (shift_id)
 );
 
- CREATE TABLE vicidial_timeclock_log (
+CREATE TABLE vicidial_timeclock_log (
 timeclock_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 event_epoch INT(10) UNSIGNED NOT NULL,
 event_date DATETIME NOT NULL,
@@ -1132,7 +1139,7 @@ tcid_link INT(9) UNSIGNED,
 index (user)
 );
 
- CREATE TABLE vicidial_timeclock_status (
+CREATE TABLE vicidial_timeclock_status (
 user VARCHAR(20) UNIQUE NOT NULL,
 user_group VARCHAR(20) NOT NULL,
 event_epoch INT(10) UNSIGNED,
@@ -1143,7 +1150,7 @@ shift_id VARCHAR(20),
 index (user)
 );
 
- CREATE TABLE vicidial_timeclock_audit_log (
+CREATE TABLE vicidial_timeclock_audit_log (
 timeclock_id INT(9) UNSIGNED NOT NULL,
 event_epoch INT(10) UNSIGNED NOT NULL,
 event_date DATETIME NOT NULL,
@@ -1159,7 +1166,7 @@ index (timeclock_id),
 index (user)
 );
 
- CREATE TABLE vicidial_admin_log (
+CREATE TABLE vicidial_admin_log (
 admin_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 event_date DATETIME NOT NULL,
 user VARCHAR(20) NOT NULL,
@@ -1225,5 +1232,9 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='utah',state_call_t
 INSERT INTO vicidial_state_call_times SET state_call_time_id='washington',state_call_time_state='WA',state_call_time_name='Washington 8am',sct_default_start='800',sct_default_stop='2100';
 INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_call_time_state='WY',state_call_time_name='Wyoming 8am-8pm',sct_default_start='800',sct_default_stop='2000';
 
-UPDATE system_settings SET db_schema_version='1100';
+INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 days a week',shift_start_time='0000',shift_length='24:00',shift_weekdays='0123456';
+
+UPDATE system_settings SET qc_last_pull_time=NOW();
+
+UPDATE system_settings SET db_schema_version='1101';
 

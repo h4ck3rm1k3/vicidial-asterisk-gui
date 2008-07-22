@@ -2447,47 +2447,47 @@ exten => _851XXXXX,3,Hangup
 
 #### VDAD STANDARD TRANSFER ENTRIES ####
 ; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
-exten => 8364,1,Playback(sip-silence)
-exten => 8364,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8364,3,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
-exten => 8364,4,AGI(agi-VDADtransferBROADCAST.agi,${EXTEN})
+exten => 8364,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => 8364,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8364,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8364,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8364,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script:
 exten => 8365,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8365,2,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
+exten => 8365,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+exten => 8365,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+exten => 8365,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
 exten => 8365,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
 exten => 8366,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8366,2,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
-exten => 8366,3,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
-exten => 8366,4,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
+exten => 8366,2,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
 exten => 8366,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
 exten => 8367,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8367,2,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+exten => 8367,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+exten => 8367,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+exten => 8367,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
 exten => 8367,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script Load Balanced:
 exten => 8368,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8368,2,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8368,2,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8368,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8368,5,Hangup
 
 ; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
 exten => 8369,1,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8369,2,AMD(3500|1500|300|5000|120|50|5|256)
+exten => 8369,2,AMD(2000|2000|1000|5000|120|50|4|256) 
 exten => 8369,3,AGI(VD_amd.agi,${EXTEN})
-exten => 8369,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+exten => 8369,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+exten => 8369,6,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 exten => 8369,7,Hangup
 
 ; VICIDIAL auto-dial reminder script
@@ -2497,52 +2497,76 @@ exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
 exten => 8372,5,Hangup
 
+; VICIDIAL SURVEY transfer script AMD with Load Balanced:
+exten => 8373,1,AGI(agi://127.0.0.1:4577/call_log)
+exten => 8373,2,AMD(2000|2000|1000|5000|120|50|4|256) 
+exten => 8373,3,AGI(VD_amd.agi,${EXTEN})
+exten => 8373,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+exten => 8373,6,Hangup
+
 #### VDAD SIP UNREGISTERED TRANSFER ENTRIES ####
 #### Use these entries IN PLACE OF the entries above if you are using SIP trunks
 #### and are not registering your provider in sip.conf
-; VICIDIAL_auto_dialer transfer script:
-exten => 8365,1,Playback(sip-silence)
-exten => 8365,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8365,3,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,4,AGI(agi-VDADtransfer.agi,${EXTEN})
-exten => 8365,5,Hangup
-
-; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
-exten => 8366,1,Playback(sip-silence)
-exten => 8366,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8366,3,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
-exten => 8366,4,AGI(agi-VDADtransferSURVEY.agi,${EXTEN})
-exten => 8366,5,Hangup
-
-; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
-exten => 8367,1,Playback(sip-silence)
-exten => 8367,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-exten => 8367,5,Hangup
-
-; VICIDIAL_auto_dialer transfer script Load Balanced:
-exten => 8368,1,Playback(sip-silence)
-exten => 8368,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8368,5,Hangup
-
-; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
-exten => 8369,1,Playback(sip-silence)
-exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8369,3,AMD(3500|1500|300|5000|120|50|5|256)
-exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
-exten => 8369,5,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,6,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-exten => 8369,7,Hangup
-
-; VICIDIAL auto-dial reminder script
-exten => 8372,1,Playback(sip-silence)
-exten => 8372,2,AGI(agi://127.0.0.1:4577/call_log)
-exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
-exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
-exten => 8372,5,Hangup
+;; VICIDIAL_auto_dialer transfer script for no-agent campaigns:
+;exten => 8364,1,Playback(sip-silence)
+;exten => 8364,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8364,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8364,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8364,5,Hangup
+;
+;; VICIDIAL_auto_dialer transfer script:
+;exten => 8365,1,Playback(sip-silence)
+;exten => 8365,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8365,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+;exten => 8365,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----SO)
+;exten => 8365,5,Hangup
+;
+;; VICIDIAL_auto_dialer transfer script SURVEY at beginning:
+;exten => 8366,1,Playback(sip-silence)
+;exten => 8366,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8366,3,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8366,4,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8366,5,Hangup
+;
+;; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
+;exten => 8367,1,Playback(sip-silence)
+;exten => 8367,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8367,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+;exten => 8367,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+;exten => 8367,5,Hangup
+;
+;; VICIDIAL_auto_dialer transfer script Load Balanced:
+;exten => 8368,1,Playback(sip-silence)
+;exten => 8368,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8368,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8368,5,Hangup
+;
+;; VICIDIAL_auto_dialer transfer script AMD with Load Balanced:
+;exten => 8369,1,Playback(sip-silence)
+;exten => 8369,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8369,3,AMD(2000|2000|1000|5000|120|50|4|256) 
+;exten => 8369,4,AGI(VD_amd.agi,${EXTEN})
+;exten => 8369,5,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8369,6,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+;exten => 8369,7,Hangup
+;
+;; VICIDIAL auto-dial reminder script
+;exten => 8372,1,Playback(sip-silence)
+;exten => 8372,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8372,3,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
+;exten => 8372,4,AGI(agi-VDADautoREMINDER.agi,${EXTEN})
+;exten => 8372,5,Hangup
+;
+;; VICIDIAL SURVEY transfer script AMD with Load Balanced:
+;exten => 8373,1,Playback(sip-silence)
+;exten => 8373,2,AGI(agi://127.0.0.1:4577/call_log)
+;exten => 8373,3,AMD(2000|2000|1000|5000|120|50|4|256) 
+;exten => 8373,4,AGI(VD_amd.agi,${EXTEN})
+;exten => 8373,5,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8373,6,AGI(agi-VDAD_ALL_outbound.agi,SURVEYCAMP-----LB)
+;exten => 8373,7,Hangup
 
 
 

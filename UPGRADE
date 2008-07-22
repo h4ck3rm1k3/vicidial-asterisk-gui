@@ -138,6 +138,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 31. A field has been added to vicidial_list(last_local_call_time) to sort by
 	the last time a lead was called as well as for lead recycling changes.
 
+32. IMPORTANT FOR RECORDINGS!!!
+   The recording extensions have been changed within VICIDIAL so you need to
+   add the following lines to your extensions.conf
+     ; quiet monitor-only entry and leaving conferences for VICIDIAL (recording)
+     exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
+
 
 
 

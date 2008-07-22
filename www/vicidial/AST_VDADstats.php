@@ -12,6 +12,7 @@
 # 80430-1920 - Added Customer hangup cause stats
 # 80620-0031 - Fixed human answered calculation for drop perfentage
 # 80709-0230 - Added time stats to call statuses
+# 80717-2118 - Added calls/hour out of agent login time in status summary
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -21,6 +22,8 @@ require("dbconnect.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
+if (isset($_GET["agent_hours"]))				{$agent_hours=$_GET["agent_hours"];}
+	elseif (isset($_POST["agent_hours"]))		{$agent_hours=$_POST["agent_hours"];}
 if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
@@ -108,6 +111,7 @@ while ($i < $groups_to_print)
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: VDAD Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
+echo "<INPUT TYPE=HIDDEN NAME=agent_hours VALUE=\"$agent_hours\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
 echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
@@ -342,9 +346,10 @@ $TOTALcalls = 0;
 
 echo "\n";
 echo "---------- CALL STATUS STATS\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
-echo "| STATUS | DESCRIPTION          | CALLS      | TOTAL TIME | AVG TIME |CALLS/HOUR|\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "+--------+----------------------+------------+----------------------------------+----------+\n";
+echo "|        |                      |            |      CALL TIME                   |AGENT TIME|\n";
+echo "| STATUS | DESCRIPTION          | CALLS      | TOTAL TIME | AVG TIME |CALLS/HOUR|CALLS/HOUR|\n";
+echo "+--------+----------------------+------------+------------+----------+----------+----------+\n";
 
 ## first get all statuses and names
 $stmt="SELECT * from vicidial_statuses order by status";
@@ -372,6 +377,17 @@ while ($Cstatuses_to_print > $o)
 	$o++;
 	}
 
+## Pull the count of agent seconds for the total tally
+$stmt="SELECT sum(pause_sec + wait_sec + talk_sec + dispo_sec) from vicidial_agent_log where event_time >= '$query_date_BEGIN' and event_time <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 and wait_sec<36000 and talk_sec<36000 and dispo_sec<36000;";
+$rslt=mysql_query($stmt, $link);
+$Ctally_to_print = mysql_num_rows($rslt);
+if ($Ctally_to_print > 0) 
+	{
+	$rowx=mysql_fetch_row($rslt);
+	$AGENTsec = "$rowx[0]";
+	}
+
+
 ## get counts and time totals for all statuses in this campaign
 $stmt="select count(*),status,sum(length_in_sec) from vicidial_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
@@ -388,6 +404,8 @@ while ($i < $statuses_to_print)
 	$TOTALcalls =	($TOTALcalls + $row[0]);
 	$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );
 		$STATUSrate =	sprintf("%.2f", $STATUSrate);
+	$AGENTrate =	($STATUScount / ($AGENTsec / 3600) );
+		$AGENTrate =	sprintf("%.2f", $AGENTrate);
 
 	$STATUShours_H =	($row[2] / 3600);
 	$STATUShours_H_int = round($STATUShours_H, 2);
@@ -422,6 +440,7 @@ while ($i < $statuses_to_print)
 	$STATUShours =	sprintf("%10s", $STATUShours);while(strlen($STATUShours)>10) {$STATUShours = substr("$STATUShours", 0, -1);}
 	$STATUSavg =	sprintf("%8s", $STATUSavg);while(strlen($STATUSavg)>8) {$STATUSavg = substr("$STATUSavg", 0, -1);}
 	$STATUSrate =	sprintf("%8s", $STATUSrate);while(strlen($STATUSrate)>8) {$STATUSrate = substr("$STATUSrate", 0, -1);}
+	$AGENTrate =	sprintf("%8s", $AGENTrate);while(strlen($AGENTrate)>8) {$AGENTrate = substr("$AGENTrate", 0, -1);}
 
 	if ($non_latin < 1)
 		{
@@ -435,7 +454,7 @@ while ($i < $statuses_to_print)
 		}
 
 
-	echo "| $status | $status_name | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate |\n";
+	echo "| $status | $status_name | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate | $AGENTrate |\n";
 
 	$i++;
 	}
@@ -450,6 +469,22 @@ else
 	{
 	$TOTALrate =	($TOTALcalls / ($TOTALsec / 3600) );
 		$TOTALrate =	sprintf("%.2f", $TOTALrate);
+	$aTOTALrate =	($TOTALcalls / ($AGENTsec / 3600) );
+		$aTOTALrate =	sprintf("%.2f", $aTOTALrate);
+
+	$aTOTALhours_H =	($AGENTsec / 3600);
+	$aTOTALhours_H_int = round($aTOTALhours_H, 2);
+	$aTOTALhours_H_int = intval("$aTOTALhours_H_int");
+	$aTOTALhours_M = ($aTOTALhours_H - $aTOTALhours_H_int);
+	$aTOTALhours_M = ($aTOTALhours_M * 60);
+	$aTOTALhours_M_int = round($aTOTALhours_M, 2);
+	$aTOTALhours_M_int = intval("$aTOTALhours_M_int");
+	$aTOTALhours_S = ($aTOTALhours_M - $aTOTALhours_M_int);
+	$aTOTALhours_S = ($aTOTALhours_S * 60);
+	$aTOTALhours_S = round($aTOTALhours_S, 0);
+	if ($aTOTALhours_S < 10) {$aTOTALhours_S = "0$aTOTALhours_S";}
+	if ($aTOTALhours_M_int < 10) {$aTOTALhours_M_int = "0$aTOTALhours_M_int";}
+	$aTOTALhours = "$aTOTALhours_H_int:$aTOTALhours_M_int:$aTOTALhours_S";
 
 	$TOTALhours_H =	($TOTALsec / 3600);
 	$TOTALhours_H_int = round($TOTALhours_H, 2);
@@ -481,12 +516,15 @@ else
 	}
 $TOTALcalls =	sprintf("%10s", $TOTALcalls);
 $TOTALhours =	sprintf("%10s", $TOTALhours);while(strlen($TOTALhours)>10) {$TOTALhours = substr("$TOTALhours", 0, -1);}
+$aTOTALhours =	sprintf("%10s", $aTOTALhours);while(strlen($aTOTALhours)>10) {$aTOTALhours = substr("$aTOTALhours", 0, -1);}
 $TOTALavg =	sprintf("%8s", $TOTALavg);while(strlen($TOTALavg)>8) {$TOTALavg = substr("$TOTALavg", 0, -1);}
 $TOTALrate =	sprintf("%8s", $TOTALrate);while(strlen($TOTALrate)>8) {$TOTALrate = substr("$TOTALrate", 0, -1);}
+$aTOTALrate =	sprintf("%8s", $aTOTALrate);while(strlen($aTOTALrate)>8) {$aTOTALrate = substr("$aTOTALrate", 0, -1);}
 
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
-echo "| TOTAL:                        | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "+--------+----------------------+------------+------------+----------+----------+----------+\n";
+echo "| TOTAL:                        | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |          |\n";
+echo "|   AGENT TIME                               | $aTOTALhours |                     | $aTOTALrate |\n";
+echo "+--------------------------------------------+------------+---------------------+----------+\n";
 
 
 ##############################

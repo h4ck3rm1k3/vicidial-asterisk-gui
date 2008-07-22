@@ -932,12 +932,13 @@ $calls_to_list = mysql_num_rows($rslt);
 
 		if (eregi("INCALL",$Lstatus)) 
 			{
-			if (!ereg("$Acallerid[$i]\|",$callerids))
-				{
-				$Astatus[$i] =	'DEAD';
-				$Lstatus =		'DEAD';
-				$status =		' DEAD ';
-				}
+	### temporarily deactivate DEAD calls display until bug is fixed
+	#		if (!ereg("$Acallerid[$i]\|",$callerids))
+	#			{
+	#			$Astatus[$i] =	'DEAD';
+	#			$Lstatus =		'DEAD';
+	#			$status =		' DEAD ';
+	#			}
 
 			if ( (eregi("AUTO",$comments)) or (strlen($comments)<1) )
 				{$CM='A';}

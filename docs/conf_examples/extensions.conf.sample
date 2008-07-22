@@ -237,10 +237,12 @@ exten => _86000[0-4]X,1,Meetme,${EXTEN}|q
 exten => _86000[5-9]X,1,Meetme,${EXTEN}|F
 exten => _86001XX,1,Meetme,${EXTEN}|F
 exten => _8600200,1,Meetme,${EXTEN}|F
-; quiet entry and leaving conferences for VICIDIAL
+; quiet entry and leaving conferences for VICIDIAL (inbound announce and SendDTMF)
 exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
-; quiet monitor extensions for meetme rooms (for room managers)
+; quiet monitor-only extensions for meetme rooms (for room managers)
 exten => _68600XXX,1,Meetme,${EXTEN:1}|Fmq
+; quiet monitor-only entry and leaving conferences for VICIDIAL (recording)
+exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
 
 ; voicelab exten
 exten => _86009XX,1,Meetme,${EXTEN}|Fmq
@@ -329,8 +331,8 @@ exten => 8501,2,Hangup
 
 ; this is used to allow the GUI to send live calls directly into voicemail
 ;     don't forget to set GUI variable $voicemail_dump_exten to this extension
-exten => _85026666666666.,1,Wait(2)
-exten => _85026666666666.,2,Voicemail(${EXTEN:14})
+exten => _85026666666666.,1,Wait(1)
+exten => _85026666666666.,2,Voicemail(${EXTEN:14}|u)
 exten => _85026666666666.,3,Hangup
 
 ; this is used for sending DTMF signals within conference calls, the client app

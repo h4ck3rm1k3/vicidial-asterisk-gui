@@ -54,7 +54,7 @@
 #  - $comments - ('Good Customer',...)
 #  - $auto_dial_level - ('0','1','1.2',...)
 #  - $VDstop_rec_after_each_call - ('0','1')
-#  - $conf_silent_prefix - ('7','8','',...)
+#  - $conf_silent_prefix - ('7','8','5',...)
 #  - $extension - ('123','user123','25-1',...)
 #  - $protocol - ('Zap','SIP','IAX2',...)
 #  - $user_abb - ('1234','6666',...)
@@ -71,6 +71,7 @@
 #  - $no_delete_sessions - ('0','1')
 #  - $LogouTKicKAlL - ('0','1');
 #  - $closer_blended = ('0','1');
+#  - $inOUT = ('IN','OUT');
 
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -152,11 +153,13 @@
 # 80630-2153 - Added queue_log logging for Manual dial calls
 # 80703-0139 - Added alter customer phone permissions
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
-# 80713-0624 - Added vicidial_list_last_local_call_time field
+# 80713-0624 - Added vicidial_list.last_local_call_time field
+# 80717-1604 - Modified logging function to use inOUT to determine call direction and place to log
+# 80719-1147 - Changed recording conf prefix
 #
 
-$version = '2.0.5-77';
-$build = '80713-0624';
+$version = '2.0.5-79';
+$build = '80719-1147';
 
 require("dbconnect.php");
 
@@ -293,7 +296,8 @@ if (isset($_GET["LogouTKicKAlL"]))				{$LogouTKicKAlL=$_GET["LogouTKicKAlL"];}
 	elseif (isset($_POST["LogouTKicKAlL"]))		{$LogouTKicKAlL=$_POST["LogouTKicKAlL"];}
 if (isset($_GET["closer_blended"]))				{$closer_blended=$_GET["closer_blended"];}
 	elseif (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
-
+if (isset($_GET["inOUT"]))						{$inOUT=$_GET["inOUT"];}
+	elseif (isset($_POST["inOUT"]))				{$inOUT=$_POST["inOUT"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -1217,15 +1221,12 @@ if ($stage == "end")
 		$term_reason='NONE';
 		if ($start_epoch < 1000)
 			{
-			$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
-			$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				$check_inbound = $row[0];
-			if ($check_inbound > 0)
+			if ($inOUT == 'IN')
 				{
+				$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
+
 				##### look for the start epoch in the vicidial_closer_log table
-				$stmt="SELECT start_epoch,term_reason,closecallid FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason,closecallid FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
 				}
 			else
 				{
@@ -1248,8 +1249,12 @@ if ($stage == "end")
 				$length_in_sec = 0;
 				}
 
-			if ( ($length_in_sec < 1) and ($check_inbound > 0) )
+			if ( ($length_in_sec < 1) and ($inOUT == 'IN') )
 				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|INBND_LOG_1|$uniqueid|$lead_id|$user|$inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$start_epoch|\n");
+				fclose($fp);
+
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
 				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
 				$rslt=mysql_query($stmt, $link);
@@ -1272,17 +1277,21 @@ if ($stage == "end")
 		
 		$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
-		$closer_logged=0;
-		if ($check_inbound > 0)
+		if ($inOUT == 'IN')
 			{
-			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
+			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
 			if ($affected_rows > 0)
 				{
-				$closer_logged=1;
 				echo "$uniqueid\n$channel\n";
+				}
+			else
+				{
+				$fp = fopen ("./vicidial_debug.txt", "a");
+				fwrite ($fp, "$NOW_TIME|INBND_LOG_2|$uniqueid|$lead_id|$user|$inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$start_epoch|\n");
+				fclose($fp);
 				}
 			}
 
@@ -1512,7 +1521,7 @@ if ($stage == "end")
 				}
 			}
 
-		if ($closer_logged < 1)
+		if ($inOUT == 'OUT')
 			{
 			$SQLterm = "term_reason='$term_reason',";
 
@@ -1539,7 +1548,7 @@ if ($stage == "end")
 				}
 
 			##### update the duration and end time in the vicidial_log table
-			$stmt="UPDATE vicidial_log set $SQLterm end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
+			$stmt="UPDATE vicidial_log set $SQLterm end_epoch='$StarTtime', length_in_sec='$length_in_sec' where uniqueid='$uniqueid' and lead_id='$lead_id' and user='$user' order by call_date desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -1653,7 +1662,20 @@ if ($stage == "end")
 						$start_time =	$row[1];
 						$vicidial_id =	$row[2];
 
-						if (strlen($vicidial_id)<1) {$vidSQL = ",vicidial_id='$VDvicidial_id'";}
+						if (strlen($vicidial_id)<1) 
+							{$vidSQL = ",vicidial_id='$VDvicidial_id'";}
+						else
+							{
+							if ( (ereg('.',$vicidial_id)) and ($inOUT == 'IN') )
+								{
+								if (!ereg('.',$VDvicidial_id))
+									{$vidSQL = ",vicidial_id='$VDvicidial_id'";}
+
+								$fp = fopen ("./vicidial_debug.txt", "a");
+								fwrite ($fp, "$NOW_TIME|INBND_LOG_3|$uniqueid|$lead_id|$user|$inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|\n");
+								fclose($fp);
+								}
+							}
 						$length_in_sec = ($StarTtime - $start_time);
 						$length_in_min = ($length_in_sec / 60);
 						$length_in_min = sprintf("%8.2f", $length_in_min);

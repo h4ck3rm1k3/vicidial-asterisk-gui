@@ -35,17 +35,9 @@ Drop Transfer Group -<\/B> If Drop Action is set to IN_GROUP, the call will be s
 QC SETTINGS FOR THIS CAMPAIGN||
 QC Enabled: ||
 QC Statuses: ||
-QC Lists: ||
-Campaign Shift Start Time: ||
-Campaign Shift Length: ||
-Campaign Day Start Time: ||
 Modify Campaign QC Settings||
 QC Enabled -<\/B> Setting this field to Y allows for the agent Quality Control features to work. Default is N||
 QC Statuses -<\/B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review||
-QC Lists -<\/B> This area is where you select which lists of leads should be gone over by the QC system. Place a check next to the list that you want QC to review||
-Campaign Shift Start Time -<\/B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930||
-Campaign Shift Length -<\/B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00||
-Campaign Day Start Time -<\/B> This is the time that the a new campaign day begins. Must only be numbers, 1:00 AM would be 0100||
 QC SETTINGS NOT MODIFIED||
 QC SETTINGS MODIFIED||
 QC WebForm Address -<\/B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen||
@@ -232,6 +224,14 @@ QC Last Pull Time: ||
 and less than 43200 seconds or 12 hours||
 LEADS AT LIMIT||
 Lead counts taken from active lists in the campaign only||
+QC Get Record Launch-<\/B> This allows one of the following actions to be triggered upon a QC agent receiving a new record||
+QC Show Recording -<\/B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen||
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions||
+QC Get Record Launch||
+QC Show Recording||
+QC Shift||
+Inbound Group QC Settings||
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions||
 
 
 ############################################################ CLIENT

@@ -691,12 +691,12 @@ if (isset($_GET["qc_statuses"]))			{$qc_statuses=$_GET["qc_statuses"];}
 	elseif (isset($_POST["qc_statuses"]))	{$qc_statuses=$_POST["qc_statuses"];}
 if (isset($_GET["qc_lists"]))				{$qc_lists=$_GET["qc_lists"];}
 	elseif (isset($_POST["qc_lists"]))		{$qc_lists=$_POST["qc_lists"];}
-if (isset($_GET["campaign_shift_start_time"]))			{$campaign_shift_start_time=$_GET["campaign_shift_start_time"];}
-	elseif (isset($_POST["campaign_shift_start_time"]))	{$campaign_shift_start_time=$_POST["campaign_shift_start_time"];}
-if (isset($_GET["campaign_shift_length"]))				{$campaign_shift_length=$_GET["campaign_shift_length"];}
-	elseif (isset($_POST["campaign_shift_length"]))		{$campaign_shift_length=$_POST["campaign_shift_length"];}
-if (isset($_GET["campaign_day_start_time"]))			{$campaign_day_start_time=$_GET["campaign_day_start_time"];}
-	elseif (isset($_POST["campaign_day_start_time"]))	{$campaign_day_start_time=$_POST["campaign_day_start_time"];}
+if (isset($_GET["qc_get_record_launch"]))			{$qc_get_record_launch=$_GET["qc_get_record_launch"];}
+	elseif (isset($_POST["qc_get_record_launch"]))	{$qc_get_record_launch=$_POST["qc_get_record_launch"];}
+if (isset($_GET["qc_show_recording"]))				{$qc_show_recording=$_GET["qc_show_recording"];}
+	elseif (isset($_POST["qc_show_recording"]))		{$qc_show_recording=$_POST["qc_show_recording"];}
+if (isset($_GET["qc_shift_id"]))				{$qc_shift_id=$_GET["qc_shift_id"];}
+	elseif (isset($_POST["qc_shift_id"]))		{$qc_shift_id=$_POST["qc_shift_id"];}
 if (isset($_GET["qc_web_form_address"]))				{$qc_web_form_address=$_GET["qc_web_form_address"];}
 	elseif (isset($_POST["qc_web_form_address"]))	{$qc_web_form_address=$_POST["qc_web_form_address"];}
 if (isset($_GET["qc_script"]))						{$qc_script=$_GET["qc_script"];}
@@ -930,8 +930,6 @@ $qc_user_level = ereg_replace("[^0-9]","",$qc_user_level);
 $qc_pass = ereg_replace("[^0-9]","",$qc_pass);
 $qc_finish = ereg_replace("[^0-9]","",$qc_finish);
 $qc_commit = ereg_replace("[^0-9]","",$qc_commit);
-$campaign_shift_start_time = ereg_replace("[^0-9]","",$campaign_shift_start_time);
-$campaign_day_start_time = ereg_replace("[^0-9]","",$campaign_day_start_time);
 $shift_start_time = ereg_replace("[^0-9]","",$shift_start_time);
 $timeclock_end_of_day = ereg_replace("[^0-9]","",$timeclock_end_of_day);
 $survey_xfer_exten = ereg_replace("[^0-9]","",$survey_xfer_exten);
@@ -980,6 +978,7 @@ $tovdad_display = ereg_replace("[^NY]","",$tovdad_display);
 $campaign_allow_inbound = ereg_replace("[^NY]","",$campaign_allow_inbound);
 $disable_alter_custphone = ereg_replace("[^NY]","",$disable_alter_custphone);
 $display_queue_count = ereg_replace("[^NY]","",$display_queue_count);
+$qc_show_recording = ereg_replace("[^NY]","",$qc_show_recording);
 
 $qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
 
@@ -1008,6 +1007,7 @@ $qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
 $code = ereg_replace("[^0-9a-zA-Z]","",$code);
 $survey_no_response_action = ereg_replace("[^0-9a-zA-Z]","",$survey_no_response_action);
 $survey_ni_status = ereg_replace("[^0-9a-zA-Z]","",$survey_ni_status);
+$qc_get_record_launch = ereg_replace("[^0-9a-zA-Z]","",$qc_get_record_launch);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1099,6 +1099,7 @@ $afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_grou
 $after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
 $alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$alias_id);
 $shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$shift_id);
+$qc_shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$qc_shift_id);
 $survey_first_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_first_audio_file);
 $survey_opt_in_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_opt_in_audio_file);
 $survey_ni_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_ni_audio_file);
@@ -1165,7 +1166,6 @@ $queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pas
 $after_hours_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$after_hours_message_filename);
 $welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_message_filename);
 $onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
-$campaign_shift_length = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$campaign_shift_length);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and space and colon
 $vdc_header_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_header_date_format);
@@ -1341,11 +1341,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 80625-0032 - Added time/phone display format options to system settings
 # 80703-0124 - Added alter cust phone and api settings
 # 80715-1130 - Added Recycle leads limit count
+# 80719-1351 - Changed QC settings in campaigns and In-Groups
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-135';
-$build = '80715-1130';
+$admin_version = '2.0.5-136';
+$build = '80719-1351';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2796,24 +2797,19 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
 
 <BR>
-<A NAME="vicidial_campaigns-qc_lists">
+<A NAME="vicidial_campaigns-qc_shift_id">
 <BR>
-<B>QC Lists -</B> This area is where you select which lists of leads should be gone over by the QC system. Place a check next to the list that you want QC to review. 
+<B>QC Shift -</B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions.
 
 <BR>
-<A NAME="vicidial_campaigns-campaign_shift_start_time">
+<A NAME="vicidial_campaigns-qc_get_record_launch">
 <BR>
-<B>Campaign Shift Start Time -</B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930.
+<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
 
 <BR>
-<A NAME="vicidial_campaigns-campaign_shift_length">
+<A NAME="vicidial_campaigns-qc_show_recording">
 <BR>
-<B>Campaign Shift Length -</B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00.
-
-<BR>
-<A NAME="vicidial_campaigns-campaign_day_start_time">
-<BR>
-<B>Campaign Day Start Time -</B> This is the time that the a new campaign day begins. Must only be numbers, 1:00 AM would be 0100.
+<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
 
 <BR>
 <A NAME="vicidial_campaigns-qc_web_form_address">
@@ -3099,6 +3095,41 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_inbound_groups-ingroup_rec_filename">
 <BR>
 <B>In-Group Recording Filename -</B> This field will override the Campaign Recording Filenaming Scheme unless it is set to NONE. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max. Default is NONE.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_enabled">
+<BR>
+<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_statuses">
+<BR>
+<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_shift_id">
+<BR>
+<B>QC Shift -</B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_get_record_launch">
+<BR>
+<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_show_recording">
+<BR>
+<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_web_form_address">
+<BR>
+<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
+
+<BR>
+<A NAME="vicidial_inbound_groups-qc_script">
+<BR>
+<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
 
 
 
@@ -4472,7 +4503,7 @@ function user_auto()
 	var user_field = document.getElementById("user");
 	if (user_toggle.value < 1)
 		{
-		user_field.value = 'AUTOGENERATEZZZZZZZZ';
+		user_field.value = 'AUTOGENERATEZZZ';
 		user_field.disabled = true;
 		user_toggle.value = 1;
 		}
@@ -5566,6 +5597,10 @@ if ($ADD=="2")
 		{echo "<br>USER NOT ADDED - there is already a user in the system with this user number\n";}
 	else
 		{
+		if (ereg('AUTOGENERA',$user))
+			{
+			$user = 'AUTOGENERA';
+			}
 		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 10) )
 			{
 			 echo "<br>USER NOT ADDED - Please go back and look at the data you entered\n";
@@ -5794,7 +5829,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,campaign_shift_start_time,campaign_shift_length,campaign_day_start_time,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -6211,7 +6246,7 @@ if ($ADD==2011)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>GROUP ADDED: $group_id</B>\n";
@@ -7425,7 +7460,7 @@ if ($ADD==48)
 
 		echo "<br><B>QC SETTINGS MODIFIED: $campaign_id</B>\n";
 
-		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',campaign_shift_start_time='$campaign_shift_start_time',campaign_shift_length='$campaign_shift_length',campaign_day_start_time='$campaign_day_start_time',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script' where campaign_id='$campaign_id';";
+		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_shift_id='$qc_shift_id' where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -7829,9 +7864,27 @@ if ($ADD==4111)
 		}
 	 else
 		{
+		$p=0;
+		$qc_statuses_ct = count($qc_statuses);
+		while ($p < $qc_statuses_ct)
+			{
+			$QC_statuses .= " $qc_statuses[$p]";
+			$p++;
+			}
+		$p=0;
+		$qc_lists_ct = count($qc_lists);
+		while ($p < $qc_lists_ct)
+			{
+			$QC_lists .= " $qc_lists[$p]";
+			$p++;
+			}
+		
+		if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
+		if (strlen($QC_lists)>0) {$QC_lists .= " -";}
+
 		echo "<br><B>GROUP MODIFIED: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group',qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_shift_id='$qc_shift_id',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -10358,9 +10411,9 @@ if ($ADD==31)
 		$qc_enabled = $row[71];
 		$qc_statuses = $row[72];
 		$qc_lists = $row[73];
-		$campaign_shift_start_time = $row[74];
-		$campaign_shift_length = $row[75];
-		$campaign_day_start_time = $row[76];
+		$qc_shift_id = $row[74];
+		$qc_get_record_launch = $row[75];
+		$qc_show_recording = $row[76];
 		$qc_web_form_address = $row[77];
 		$qc_script = $row[78];
 		$survey_first_audio_file = $row[79];
@@ -11226,21 +11279,55 @@ if ($ADD==31)
 			$p++;
 			}
 
+		##### get scripts listings for pulldown
+		$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
+		$rslt=mysql_query($stmt, $link);
+		$scripts_to_print = mysql_num_rows($rslt);
+		$QCscripts_list="";
+		$o=0;
+		while ($scripts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$scriptname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+		##### get shifts listings for pulldown
+		$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+		$rslt=mysql_query($stmt, $link);
+		$shifts_to_print = mysql_num_rows($rslt);
+		$QCshifts_list="";
+		$o=0;
+		while ($shifts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$shiftname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
 		echo "<br><br><b>QC SETTINGS FOR THIS CAMPAIGN:</b><br>\n";
-		echo "<form action=$PHP_SELF method=POST><center><TABLE width=500 cellspacing=3>\n";
+		echo "<form action=$PHP_SELF method=POST><center><TABLE width=700 cellspacing=3>\n";
 		echo "<tr bgcolor=#B9CBFD><td align=right><input type=hidden name=ADD value=48>\n";
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 		echo "QC Enabled: </td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_campaigns-qc_enabled$NWE</td></tr>\n";
 		echo "<tr bgcolor=#9BB9FB><td align=right>QC Statuses: <BR> $NWB#vicidial_campaigns-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
-		echo "<tr bgcolor=#B9CBFD><td align=right>QC Lists: <BR> $NWB#vicidial_campaigns-qc_lists$NWE</td><td>$qc_lists_list</td></tr>\n";
-		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Shift Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_shift_start_time value=\"$campaign_shift_start_time\"> $NWB#vicidial_campaigns-campaign_shift_start_time$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B9CBFD><td align=right>Campaign Shift Length: </td><td><input type=text size=6 maxlength=5 name=campaign_shift_length value=\"$campaign_shift_length\"> $NWB#vicidial_campaigns-campaign_shift_length$NWE</td></tr>\n";
-		echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Day Start Time: </td><td><input type=text size=6 maxlength=4 name=campaign_day_start_time value=\"$campaign_day_start_time\"> $NWB#vicidial_campaigns-campaign_day_start_time$NWE</td></tr>\n";
-		echo "<tr bgcolor=#9BB9FB><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=50 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_campaigns-qc_web_form_address$NWE</td></tr>\n";
+#		echo "<tr bgcolor=#B9CBFD><td align=right>QC Lists: <BR> $NWB#vicidial_campaigns-qc_lists$NWE</td><td>$qc_lists_list</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=50 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_campaigns-qc_web_form_address$NWE</td></tr>\n";
+
 		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
 		echo "$QCscripts_list";
 		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
 		echo "</select>$NWB#vicidial_campaigns-qc_script$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
+		echo "$QCshifts_list";
+		echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-qc_shift_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_campaigns-qc_get_record_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Show Recording: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_campaigns-qc_show_recording$NWE</td></tr>\n";
+
 		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
 		echo "</table>\n";
 		echo "<BR></center></FORM><br>\n";
@@ -12648,6 +12735,13 @@ if ($ADD==3111)
 	$ingroup_recording_override = $row[31];
 	$ingroup_rec_filename =		$row[32];
 	$afterhours_xfer_group =	$row[33];
+	$qc_enabled =				$row[34];
+	$qc_statuses =				$row[35];
+	$qc_shift_id =				$row[36];
+	$qc_get_record_launch =		$row[37];
+	$qc_show_recording =		$row[38];
+	$qc_web_form_address =		$row[39];
+	$qc_script =				$row[40];
 
 	##### get in-groups listings for dynamic pulldown
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
@@ -12793,7 +12887,111 @@ if ($ADD==3111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>In-Group Recording Filename: </td><td align=left><input type=text name=ingroup_rec_filename size=50 maxlength=50 value=\"$ingroup_rec_filename\">$NWB#vicidial_inbound_groups-ingroup_rec_filename$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> &nbsp; </td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> Inbound Group QC Settings: </td></tr>\n";
+
+	##### get status listings for dynamic pulldown
+	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+	$QCstatuses = explode(" ", $qc_statuses);
+	$QCs_to_print = (count($QCstatuses) -0);
+	$stmt="SELECT * from vicidial_statuses where status NOT IN('QUEUE','INCALL') order by status";
+	$rslt=mysql_query($stmt, $link);
+	$statuses_to_print = mysql_num_rows($rslt);
+	$qc_statuses_list='';
+
+	$o=0;
+	while ($statuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
+		$o++;
+		}
+
+	$stmt="SELECT distinct(status),status_name from vicidial_campaign_statuses order by status";
+	$rslt=mysql_query($stmt, $link);
+	$Cstatuses_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($Cstatuses_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		if (!ereg("\"$rowx[0]\"",$qc_statuses_list))
+			{
+			$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+			$p=0;
+			while ($p < $QCs_to_print)
+				{
+				if ($rowx[0] == $QCstatuses[$p]) 
+					{
+					$qc_statuses_list .= " CHECKED";
+					}
+				$p++;
+				}
+			$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+			}
+		$o++;
+		}
+
+	##### get scripts listings for pulldown
+	$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
+	$rslt=mysql_query($stmt, $link);
+	$scripts_to_print = mysql_num_rows($rslt);
+	$QCscripts_list="";
+	$o=0;
+	while ($scripts_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$scriptname_list["$rowx[0]"] = "$rowx[1]";
+		$o++;
+		}
+	##### get shifts listings for pulldown
+	$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+	$rslt=mysql_query($stmt, $link);
+	$shifts_to_print = mysql_num_rows($rslt);
+	$QCshifts_list="";
+	$o=0;
+	while ($shifts_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$shiftname_list["$rowx[0]"] = "$rowx[1]";
+		$o++;
+		}
+
+	echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_inbound_groups-qc_enabled$NWE</td></tr>\n";
+	echo "<tr bgcolor=#9BB9FB><td align=right>QC Statuses: <BR> $NWB#vicidial_inbound_groups-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
+	echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=50 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_inbound_groups-qc_web_form_address$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
+	echo "$QCscripts_list";
+	echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
+	echo "</select>$NWB#vicidial_inbound_groups-qc_script$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
+	echo "$QCshifts_list";
+	echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
+	echo "</select>$NWB#vicidial_inbound_groups-qc_shift_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_inbound_groups-qc_get_record_launch$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B9CBFD><td align=right>QC Show Recording: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_inbound_groups-qc_show_recording$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
+	echo "</table>\n";
+	echo "<BR></center></FORM><br>\n";
+
 
 	### list of agent rank or skill-level for this inbound group
 	echo "<center>\n";

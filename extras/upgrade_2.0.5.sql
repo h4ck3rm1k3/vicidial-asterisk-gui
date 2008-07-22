@@ -314,3 +314,24 @@ ALTER TABLE vicidial_list ADD last_local_call_time DATETIME;
 CREATE INDEX last_local_call_time ON vicidial_list (last_local_call_time);
 
 UPDATE system_settings SET db_schema_version='1100';
+
+INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 days a week',shift_start_time='0000',shift_length='24:00',shift_weekdays='0123456';
+
+ALTER TABLE vicidial_campaigns CHANGE campaign_shift_start_time qc_shift_id VARCHAR(20) default '24HRMIDNIGHT';
+ALTER TABLE vicidial_campaigns CHANGE campaign_shift_length qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE';
+ALTER TABLE vicidial_campaigns CHANGE campaign_day_start_time qc_show_recording ENUM('Y','N') default 'Y';
+UPDATE vicidial_campaigns SET qc_shift_id='24HRMIDNIGHT';
+UPDATE vicidial_campaigns SET qc_get_record_launch='NONE';
+UPDATE vicidial_campaigns SET qc_show_recording='Y';
+
+ALTER TABLE vicidial_inbound_groups ADD qc_enabled ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD qc_statuses TEXT;
+ALTER TABLE vicidial_inbound_groups ADD qc_shift_id VARCHAR(20) default '24HRMIDNIGHT';
+ALTER TABLE vicidial_inbound_groups ADD qc_get_record_launch ENUM('NONE','SCRIPT','WEBFORM','QCSCRIPT','QCWEBFORM') default 'NONE';
+ALTER TABLE vicidial_inbound_groups ADD qc_show_recording ENUM('Y','N') default 'Y';
+ALTER TABLE vicidial_inbound_groups ADD qc_web_form_address VARCHAR(255);
+ALTER TABLE vicidial_inbound_groups ADD qc_script VARCHAR(10);
+
+UPDATE system_settings SET qc_last_pull_time="2008-01-01";
+
+UPDATE system_settings SET db_schema_version='1101';

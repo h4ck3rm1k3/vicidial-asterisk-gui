@@ -71,6 +71,7 @@
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
+$dtmf_silent_prefix = '7';
 
 $DROP_TIME = 360;	### default number of seconds to wait until you drop a waiting call
 $start_moh=1;
@@ -1040,7 +1041,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 				$VHqueryCID = "VH$CIDdate$VDADconf_exten";
 
 				### insert a NEW record to the vicidial_manager table to play the alert message to the agent
-				$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$VHqueryCID','Exten: $agent_alert_exten','Context: $ext_context','Channel: Local/7$VDADconf_exten$at$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: 10','','','','')";
+				$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Originate','$VHqueryCID','Exten: $agent_alert_exten','Context: $ext_context','Channel: Local/$dtmf_silent_prefix$VDADconf_exten$at$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: 10','','','','')";
 				$affected_rows = $dbhA->do($stmtA);  
 				if ($AGILOG) {$agi_string = "--    VDCL agent alert: |$VHqueryCID|7$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
 
@@ -1317,7 +1318,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 				$VDADremDIALstr = "$a$S$b$S$c$S$d$S";
 				}
 			$alertVDADremDIALstr = "$VDADremDIALstr";
-			$alertVDADremDIALstr .= "7$VDADconf_exten";
+			$alertVDADremDIALstr .= "$dtmf_silent_prefix$VDADconf_exten";
 			$VDADremDIALstr .= "$VDADconf_exten";
 
 			### if agent alert exten is not disabled, then trigger the alert and wait
@@ -1513,7 +1514,7 @@ $now_date = "$year-$mon-$mday $hour:$min:$sec";
 	$CIDdate = "$mon$mday$hour$min$sec";
 	$tsSQLdate = "$year$mon$mday$hour$min$sec";
 	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
-	$VDADvoicemail_ext = '';
+#	$VDADvoicemail_ext = '';
 
 if ($enable_queuemetrics_logging > 0)
 	{

@@ -80,7 +80,7 @@ exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG---
 ; Extension 7275551212 - Inbound local number from PRI with 10 digit delivery
 exten => 7275551212,1,Ringing
 exten => 7275551212,2,Wait(1)
-exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----{CALLERID(all)}-----${CALLERID(num)}-----${CALLERID(name)})
+exten => 7275551212,3,AGI(agi://127.0.0.1:4577/call_log--fullCID--${EXTEN}-----${CALLERID(all)}-----${CALLERID(num)}-----${CALLERID(name)})
 exten => 7275551212,4,Answer
 exten => 7275551212,5,Dial(sip/spa2000&sip/spa2001,30,To)
 exten => 7275551212,6,Voicemail,u2000
@@ -241,6 +241,8 @@ exten => _8600200,1,Meetme,${EXTEN}|F
 exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
 ; quiet monitor extensions for meetme rooms (for room managers)
 exten => _68600XXX,1,Meetme,${EXTEN:1}|Fmq
+; quiet monitor-only entry and leaving conferences for VICIDIAL (recording)
+exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
 
 ; voicelab exten
 exten => _86009XX,1,Meetme,${EXTEN}|Fmq
@@ -329,8 +331,8 @@ exten => 8501,2,Hangup
 
 ; this is used to allow the GUI to send live calls directly into voicemail
 ;     don't forget to set GUI variable $voicemail_dump_exten to this extension
-exten => _85026666666666.,1,Wait(2)
-exten => _85026666666666.,2,Voicemail(${EXTEN:14})
+exten => _85026666666666.,1,Wait(1)
+exten => _85026666666666.,2,Voicemail(${EXTEN:14}|u)
 exten => _85026666666666.,3,Hangup
 
 ; this is used for sending DTMF signals within conference calls, the client app
