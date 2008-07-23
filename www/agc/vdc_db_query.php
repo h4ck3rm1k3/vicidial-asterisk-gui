@@ -635,7 +635,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		else
 			{
 			### grab the next lead in the hopper for this campaign and reserve it for the user
-			$stmt = "UPDATE vicidial_hopper set status='QUEUE', user='$user' where campaign_id='$campaign' and status='READY' order by hopper_id LIMIT 1";
+			$stmt = "UPDATE vicidial_hopper set status='QUEUE', user='$user' where campaign_id='$campaign' and status='READY' order by priority desc,hopper_id LIMIT 1";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
@@ -693,7 +693,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$alt_phone		= trim("$row[26]");
 				$email			= trim("$row[27]");
 				$security		= trim("$row[28]");
-				$comments		= trim("$row[29]");
+				$comments		= stripslashes(trim("$row[29]"));
 				$called_count	= trim("$row[30]");
 				}
 
@@ -1851,7 +1851,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			$alt_phone		= trim("$row[26]");
 			$email			= trim("$row[27]");
 			$security		= trim("$row[28]");
-			$comments		= trim("$row[29]");
+			$comments		= stripslashes(trim("$row[29]"));
 			$called_count	= trim("$row[30]");
 			}
 
