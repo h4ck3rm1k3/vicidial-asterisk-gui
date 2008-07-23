@@ -13,6 +13,7 @@
 # 71218-1155 - Added end_date for multi-day reports
 # 80430-1920 - Added Customer hangup cause stats
 # 80709-0331 - Added time stats to call statuses
+# 80722-2149 - Added Status Category stats
 #
 
 require("dbconnect.php");
@@ -86,6 +87,20 @@ while ($i < $groups_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
 	$groups[$i] =$row[0];
+	$i++;
+	}
+
+$stmt="select vsc_id,vsc_name from vicidial_status_categories;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statcats_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $statcats_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$vsc_id[$i] =	$row[0];
+	$vsc_name[$i] =	$row[1];
+	$vsc_count[$i] = 0;
 	$i++;
 	}
 ?>
@@ -219,7 +234,42 @@ echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n"
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
 
 
-
+# GET LIST OF ALL STATUSES and create SQL from human_answered statuses
+$q=0;
+$stmt = "SELECT status,status_name,human_answered,category from vicidial_statuses;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$p=0;
+while ($p < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$status[$q] =			$row[0];
+	$status_name[$q] =		$row[1];
+	$human_answered[$q] =	$row[2];
+	$category[$q] =			$row[3];
+	$statname_list["$status[$q]"] = "$status_name[$q]";
+	$statcat_list["$status[$q]"] = "$category[$q]";
+	$q++;
+	$p++;
+	}
+$stmt = "SELECT status,status_name,human_answered,category from vicidial_campaign_statuses';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$statuses_to_print = mysql_num_rows($rslt);
+$p=0;
+while ($p < $statuses_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+	$status[$q] =			$row[0];
+	$status_name[$q] =		$row[1];
+	$human_answered[$q] =	$row[2];
+	$category[$q] =			$row[3];
+	$statname_list["$status[$q]"] = "$status_name[$q]";
+	$statcat_list["$status[$q]"] = "$category[$q]";
+	$q++;
+	$p++;
+	}
 
 ##############################
 #########  CALL QUEUE STATS
@@ -374,35 +424,10 @@ $TOTALcalls = 0;
 
 echo "\n";
 echo "---------- CALL STATUS STATS\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
-echo "| STATUS | DESCRIPTION          | CALLS      | TOTAL TIME | AVG TIME |CALLS/HOUR|\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "+--------+----------------------+----------------------+------------+------------+----------+----------+\n";
+echo "| STATUS | DESCRIPTION          | CATEGORY             | CALLS      | TOTAL TIME | AVG TIME |CALLS/HOUR|\n";
+echo "+--------+----------------------+----------------------+------------+------------+----------+----------+\n";
 
-## first get all statuses and names
-$stmt="SELECT * from vicidial_statuses order by status";
-$rslt=mysql_query($stmt, $link);
-$statuses_to_print = mysql_num_rows($rslt);
-$statuses_list='';
-
-$o=0;
-while ($statuses_to_print > $o) 
-	{
-	$rowx=mysql_fetch_row($rslt);
-	$statname_list["$rowx[0]"] = "$rowx[1]";
-	$o++;
-	}
-
-$stmt="SELECT * from vicidial_campaign_statuses order by status";
-$rslt=mysql_query($stmt, $link);
-$Cstatuses_to_print = mysql_num_rows($rslt);
-
-$o=0;
-while ($Cstatuses_to_print > $o) 
-	{
-	$rowx=mysql_fetch_row($rslt);
-	$statname_list["$rowx[0]"] = "$rowx[1]";
-	$o++;
-	}
 
 ## get counts and time totals for all statuses in this campaign
 $stmt="select count(*),status,sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
@@ -416,6 +441,16 @@ while ($i < $statuses_to_print)
 
 	$STATUScount =	$row[0];
 	$RAWstatus =	$row[1];
+	$r=0;  $foundstat=0;
+	while ($r < $statcats_to_print)
+		{
+		if ( ($statcat_list[$RAWstatus] == "$vsc_id[$r]") and ($foundstat < 1) )
+			{
+			$vsc_count[$r] = ($vsc_count[$r] + $STATUScount);
+			}
+		$r++;
+		}
+
 	$TOTALcalls =	($TOTALcalls + $row[0]);
 	$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );
 		$STATUSrate =	sprintf("%.2f", $STATUSrate);
@@ -456,17 +491,21 @@ while ($i < $statuses_to_print)
 
 	if ($non_latin < 1)
 		{
-		 $status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
-		 while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
+		$status_name =	sprintf("%-20s", $statname_list[$RAWstatus]); 
+		while(strlen($status_name)>20) {$status_name = substr("$status_name", 0, -1);}	
+		$statcat =	sprintf("%-20s", $statcat_list[$RAWstatus]); 
+		while(strlen($statcat)>20) {$statcat = substr("$statcat", 0, -1);}	
 		}
 	else
 		{
-		 $status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
-		 while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
+		$status_name =	sprintf("%-60s", $statname_list[$RAWstatus]); 
+		while(mb_strlen($status_name,'utf-8')>20) {$status_name = mb_substr("$status_name", 0, -1,'utf-8');}	
+		$statcat =	sprintf("%-60s", $statcat_list[$RAWstatus]); 
+		while(mb_strlen($statcat,'utf-8')>20) {$statcat = mb_substr("$statcat", 0, -1,'utf-8');}	
 		}
 
 
-	echo "| $status | $status_name | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate |\n";
+	echo "| $status | $status_name | $statcat | $STATUScount | $STATUShours | $STATUSavg | $STATUSrate |\n";
 
 	$i++;
 	}
@@ -515,9 +554,39 @@ $TOTALhours =	sprintf("%10s", $TOTALhours);while(strlen($TOTALhours)>10) {$TOTAL
 $TOTALavg =	sprintf("%8s", $TOTALavg);while(strlen($TOTALavg)>8) {$TOTALavg = substr("$TOTALavg", 0, -1);}
 $TOTALrate =	sprintf("%8s", $TOTALrate);while(strlen($TOTALrate)>8) {$TOTALrate = substr("$TOTALrate", 0, -1);}
 
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
-echo "| TOTAL:                        | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |\n";
-echo "+--------+----------------------+------------+------------+----------+----------+\n";
+echo "+--------+----------------------+----------------------+------------+------------+----------+----------+\n";
+echo "| TOTAL:                                               | $TOTALcalls | $TOTALhours | $TOTALavg | $TOTALrate |\n";
+echo "+------------------------------------------------------+------------+------------+----------+----------+\n";
+
+
+##############################
+#########  STATUS CATEGORY STATS
+
+echo "\n";
+echo "---------- STATUS CATEGORY STATS\n";
+echo "+----------------------+------------+--------------------------------+\n";
+echo "| CATEGORY             | CALLS      | DESCRIPTION                    |\n";
+echo "+----------------------+------------+--------------------------------+\n";
+
+$TOTCATcalls=0;
+$r=0;
+while ($r < $statcats_to_print)
+	{
+	$TOTCATcalls = ($TOTCATcalls + $vsc_count[$r]);
+	$category =	sprintf("%-20s", $vsc_id[$r]); while(strlen($category)>20) {$category = substr("$category", 0, -1);}
+	$CATcount =	sprintf("%10s", $vsc_count[$r]); while(strlen($CATcount)>10) {$CATcount = substr("$CATcount", 0, -1);}
+	$CATname =	sprintf("%-30s", $vsc_name[$r]); while(strlen($CATname)>30) {$CATname = substr("$CATname", 0, -1);}
+
+	echo "| $category | $CATcount | $CATname |\n";
+
+	$r++;
+	}
+
+$TOTCATcalls =	sprintf("%10s", $TOTCATcalls); while(strlen($TOTCATcalls)>10) {$TOTCATcalls = substr("$TOTCATcalls", 0, -1);}
+
+echo "+----------------------+------------+--------------------------------+\n";
+echo "| TOTAL                | $TOTCATcalls |\n";
+echo "+----------------------+------------+\n";
 
 
 ##############################
