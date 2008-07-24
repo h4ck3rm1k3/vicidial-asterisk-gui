@@ -563,7 +563,7 @@ echo "+------------------------------------------------------+------------+-----
 #########  STATUS CATEGORY STATS
 
 echo "\n";
-echo "---------- STATUS CATEGORY STATS\n";
+echo "---------- CUSTOM STATUS CATEGORY STATS\n";
 echo "+----------------------+------------+--------------------------------+\n";
 echo "| CATEGORY             | CALLS      | DESCRIPTION                    |\n";
 echo "+----------------------+------------+--------------------------------+\n";
@@ -572,12 +572,15 @@ $TOTCATcalls=0;
 $r=0;
 while ($r < $statcats_to_print)
 	{
-	$TOTCATcalls = ($TOTCATcalls + $vsc_count[$r]);
-	$category =	sprintf("%-20s", $vsc_id[$r]); while(strlen($category)>20) {$category = substr("$category", 0, -1);}
-	$CATcount =	sprintf("%10s", $vsc_count[$r]); while(strlen($CATcount)>10) {$CATcount = substr("$CATcount", 0, -1);}
-	$CATname =	sprintf("%-30s", $vsc_name[$r]); while(strlen($CATname)>30) {$CATname = substr("$CATname", 0, -1);}
+	if ($vsc_id[$r] != 'UNDEFINED')
+		{
+		$TOTCATcalls = ($TOTCATcalls + $vsc_count[$r]);
+		$category =	sprintf("%-20s", $vsc_id[$r]); while(strlen($category)>20) {$category = substr("$category", 0, -1);}
+		$CATcount =	sprintf("%10s", $vsc_count[$r]); while(strlen($CATcount)>10) {$CATcount = substr("$CATcount", 0, -1);}
+		$CATname =	sprintf("%-30s", $vsc_name[$r]); while(strlen($CATname)>30) {$CATname = substr("$CATname", 0, -1);}
 
-	echo "| $category | $CATcount | $CATname |\n";
+		echo "| $category | $CATcount | $CATname |\n";
+		}
 
 	$r++;
 	}
