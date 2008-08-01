@@ -1,0 +1,84 @@
+NON-AGENT API DOCUMENT			2008-07-24
+
+This document describes the functions of an API(Application Programming Interface)
+for all functions NOT relating to the VICIDIAL Agent screen. This functionality 
+will be rather limited at first and will be built upon as critical functions are
+identified and programmed into it.
+
+There is also a new agent API script, for more information on that, please read
+the AGENT_API.txt document.
+
+
+
+
+New scripts:
+/vicidial/non_agent_api.php - the script that is accessed to execute commands
+
+
+
+
+API Functions:
+
+NOTE: Just as with the Agent API, the non-agent API requires the user and pass of a
+valid api-enabled vicidial_users account to execute actions.
+
+
+
+add_lead - adds a new lead to the vicidial_list table with several fields and options
+
+NOTE: api user for this function must have modify_leads set to 1
+
+REQUIRED FIELDS-
+phone_number -		must be all numbers, 6-16 digits
+phone_code -		must be all numbers, 1-4 digits, defaults to 1 if not set
+list_id -		must be all numbers, 3-12 digits, defaults to 999 if not set
+
+SETTINGS FIELDS-
+dnc_check -		Y or N, default is N
+add_to_hopper -		Y or N, default is N
+hopper_priority -	99 to -99, the higher number the higher priority, default is 0
+hopper_local_call_time_check - Y or N, default is N. Validate the local call time before inserting lead in the hopper
+
+OPTIONAL FIELDS-
+vendor_lead_code -	1-20 characters
+source_id  -		1-50 characters
+gmt_offset_now -	overridden by auto-lookup of phone_code and area_code portion of phone number if applicable
+title -			1-4 characters
+first_name -		1-30 characters
+middle_initial -	1 character
+last_name -		1-30 characters
+address1 -		1-100 characters
+address2 -		1-100 characters
+address3 -		1-100 characters
+city -			1-50 characters
+state -			2 characters
+province -		1-50 characters
+postal_code -		1-10 characters
+country_code -		3 characters
+gender -		U, M, F (Undefined, Male, Female) - defaults to 'U'
+date_of_birth -		YYYY-MM-DD
+alt_phone -		1-12 characters
+email -			1-70 characters
+security_phrase -	1-100 characters
+comments -		1-255 characters
+
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&phone_number=7275551111
+
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&phone_number=7275551212&phone_code=1&list_id=999&dnc_check=N&first_name=Bob&last_name=Wilson
+
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&phone_number=7275551111&phone_code=1&list_id=999&dnc_check=N&first_name=Bob&last_name=Wilson&add_to_hopper=Y&hopper_local_call_time_check=Y
+
+
+
+Example responses:
+SUCCESS: add_lead LEAD HAS BEEN ADDED - 7275551111|6666|999|193715|-4
+NOTICE: add_lead ADDED TO HOPPER - 7275551111|6666|193715|1677922
+
+SUCCESS: add_lead LEAD HAS BEEN ADDED - 7275551111|6666|999|193716|-4
+NOTICE: add_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME - 7275551111|6666|193716|-4|0
+
+ERROR: add_lead INVALID PHONE NUMBER - 72755|6666 
+
+ERROR: add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM - 6666|0 

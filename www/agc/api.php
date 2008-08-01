@@ -66,6 +66,10 @@ if ($non_latin < 1)
 $user=ereg_replace("[^0-9a-zA-Z]","",$user);
 $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 $agent_user=ereg_replace("[^0-9a-zA-Z]","",$agent_user);
+$function = ereg_replace("[^-\_0-9a-zA-Z]","",$function);
+$value = ereg_replace("[^-\_0-9a-zA-Z]","",$value);
+$extra_value = ereg_replace("[^-\_0-9a-zA-Z]","",$extra_value);
+$format = ereg_replace("[^0-9a-zA-Z]","",$format);
 }
 
 $StarTtime = date("U");

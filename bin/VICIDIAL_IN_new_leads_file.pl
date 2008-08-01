@@ -28,6 +28,7 @@
 # 80128-0105 - Fixed bugs in file loading
 # 80428-0320 - UTF8 update
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
+# 80730-1607 - added minicsv format
 #
 
 $secX = time();
@@ -43,7 +44,7 @@ if ($mday < 10) {$mday = "0$mday";}
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";
 $inSD = $pulldate0;
 $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-
+$MT[0]='';
 
 
 # default path to astguiclient configuration file:
@@ -110,6 +111,7 @@ if (length($ARGV[0])>1)
 	print "  [-t] = test\n";
 	print "  [--forcegmt] = forces gmt value of column after comments column\n";
 	print "  [--debug] = debug output\n";
+	print "  [--format=standard] = ability to define a format, standard is default, formats allowed shown in examples\n";
 	print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
 	print "  [--forcephonecode=44] = overrides the phone_code given in the lead with the 44\n";
 	print "  [--duplicate-check] = checks for the same phone number in the same list id before inserting lead\n";
@@ -118,9 +120,13 @@ if (length($ARGV[0])>1)
 	print "  [--postal-code-gmt] = checks for the time zone based on the postal code given where available\n";
 	print "  [-h] = this help screen\n\n";
 	print "\n";
-	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table:\n\n";
-	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count|status|entry_date\n\n";
+	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table (examples):\n\n";
+	print "standard:\n";
+	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count|status|entry_date\n";
 	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS|2|B|2007-08-09 00:00:00\n\n";
+	print "minicsv:\n";
+	print "address1,city,name,phone_number,state,postal_code\n";
+	print "\"105 Fifth St\",\"Steinhatchee\",\"Frank Smith\",\"3525556601\",\"FL\",\"32359\"\n\n";
 
 	exit;
 	}
@@ -161,6 +167,16 @@ if (length($ARGV[0])>1)
 		else
 			{$forcelistid = '';}
 
+		if ($args =~ /-format=/i)
+		{
+		@data_in = split(/-format=/,$args);
+			$format = $data_in[1];
+			$format =~ s/ .*//gi;
+		print "\n----- FORMAT OVERRIDE: $format -----\n\n";
+		}
+		else
+			{$format = 'standard';}
+
 		if ($args =~ /--forcephonecode=/i)
 		{
 		@data_in = split(/--forcephonecode=/,$args);
@@ -199,6 +215,7 @@ print "no command line options set\n";
 $args = "";
 $i=0;
 $forcelistid = '';
+$format='standard';
 }
 ### end parsing run-time options ###
 
@@ -301,7 +318,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 #if ($DB)
 	while (<infile>)
 	{
-
+	@m=@MT;
 #		print "$a| $number\n";
 		$number = $_;
 		chomp($number);
@@ -319,10 +336,44 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		$number =~ s/\"//gi;
 	@m = split(/\|/, $number);
 
-# This is the format for the lead files
+
+# This is the format for the minicsv lead files
+#"105 Fifth St","Steinhatchee","Frank Smith","3525556601","FL","32359"
+	if ($format=='minicsv')
+		{
+		@name=@MT;
+		$vendor_lead_code =		'';
+		$source_code =			'';
+		$list_id =				'995';
+		$phone_code =			'1';
+		$phone_number =			$m[3];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+			$USarea = 			substr($phone_number, 0, 3);
+		$title =				'';
+		$full_name =			$m[2];		@name = split(/ /, $full_name);
+		$first_name =			$name[1];		chomp($first_name);
+		$last_name =			"$name[0] $name[2]";		chomp($first_name);
+		$middle_initial =		'';
+		$address1 =				$m[0];		chomp($address1);
+		$address2 =				'';
+		$address3 =				'';
+		$city =					$m[1];		chomp($city);
+		$state =				$m[4];		chomp($state);
+		$province =				'';
+		$postal_code =			$m[5];		chomp($postal_code);
+		$country =				'USA';
+		$gender =				'U';
+		$date_of_birth =		'0000-00-00';
+		$alt_phone =			'';
+		$email =				'';
+		$security_phrase =		'';
+		$comments =				'';
+		$called_count =			0;
+		$status =				'NEW';
+		}
+# This is the format for the standard lead files
 #3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS
-
-
+	else
+		{
 		$vendor_lead_code =		$m[0];		chomp($vendor_lead_code);
 		$source_code =			$m[1];		chomp($source_code); $source_id = $source_code;
 		$list_id =				$m[2];		chomp($list_id);
@@ -357,376 +408,377 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 				$iD[1] = sprintf("%02d", $iD[1]);
 				$insert_date = "$iD[2]-$iD[0]-$iD[1]";
 				}
+		}
 
-		if (length($forcelistid) > 0)
-			{
-			$list_id =	$forcelistid;		# set list_id to override value
-			}
-		if (length($forcephonecode) > 0)
-			{
-			$phone_code =	$forcephonecode;	# set phone_code to override value
-			}
+	if (length($forcelistid) > 0)
+		{
+		$list_id =	$forcelistid;		# set list_id to override value
+		}
+	if (length($forcephonecode) > 0)
+		{
+		$phone_code =	$forcephonecode;	# set phone_code to override value
+		}
 
-		##### Check for duplicate phone numbers in vicidial_list table entire database #####
-		if ($dupchecksys > 0)
+	##### Check for duplicate phone numbers in vicidial_list table entire database #####
+	if ($dupchecksys > 0)
+		{
+		$dup_lead=0;
+		$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
 			{
-			$dup_lead=0;
-			$stmtA = "select count(*) from vicidial_list where phone_number='$phone_number';";
+			@aryA = $sthA->fetchrow_array;
+			$dup_lead = $aryA[0];
+			$dup_lead_list=$list_id;
+			}
+		$sthA->finish();
+		if ($dup_lead < 1)
+			{
+			if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+				{$dup_lead++;}
+			}
+		}
+	##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
+	if ($dupcheck > 0)
+		{
+		$dup_lead=0;
+		$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$dup_lead_list = $aryA[0];
+			$dup_lead++;
+			}
+		$sthA->finish();
+		if ($dup_lead < 1)
+			{
+			if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+				{$dup_lead++;}
+			}
+		}
+	##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
+	if ($dupcheckcamp > 0)
+		{
+		$dup_lead=0;
+		$dup_lists='';
+
+		$stmtA = "select count(*) from vicidial_lists where list_id='$list_id';";
+			if($DBX){print STDERR "\n|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			@aryA = $sthA->fetchrow_array;
+			$ci_recs = $aryA[0];
+		$sthA->finish();
+		if ($ci_recs > 0)
+			{
+			$stmtA = "select campaign_id from vicidial_lists where list_id='$list_id';";
 				if($DBX){print STDERR "\n|$stmtA|\n";}
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				@aryA = $sthA->fetchrow_array;
+				$dup_camp = $aryA[0];
+			$sthA->finish();
+
+			$stmtA = "select list_id from vicidial_lists where campaign_id='$dup_camp';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
-			if ($sthArows > 0)
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
-				$dup_lead = $aryA[0];
-				$dup_lead_list=$list_id;
+				$dup_lists .=	"'$aryA[0]',";
+				$rec_count++;
 				}
 			$sthA->finish();
-			if ($dup_lead < 1)
-				{
-				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
-					{$dup_lead++;}
-				}
-			}
-		##### Check for duplicate phone numbers in vicidial_list table for one list_id #####
-		if ($dupcheck > 0)
-			{
-			$dup_lead=0;
-			$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id='$list_id' limit 1;";
-				if($DBX){print STDERR "\n|$stmtA|\n";}
+
+			chop($dup_lists);
+			$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
-			if ($sthArows > 0)
+			$rec_count=0;
+			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
-				$dup_lead_list = $aryA[0];
-				$dup_lead++;
+				$dup_lead_list =	"'$aryA[0]',";
+				$rec_count++;
+				$dup_lead=1;
 				}
 			$sthA->finish();
-			if ($dup_lead < 1)
-				{
-				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
-					{$dup_lead++;}
-				}
 			}
-		##### Check for duplicate phone numbers in vicidial_list table for all lists in a campaign #####
-		if ($dupcheckcamp > 0)
+		if ($dup_lead < 1)
 			{
-			$dup_lead=0;
-			$dup_lists='';
-
-			$stmtA = "select count(*) from vicidial_lists where list_id='$list_id';";
-				if($DBX){print STDERR "\n|$stmtA|\n";}
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				@aryA = $sthA->fetchrow_array;
-				$ci_recs = $aryA[0];
-			$sthA->finish();
-			if ($ci_recs > 0)
-				{
-				$stmtA = "select campaign_id from vicidial_lists where list_id='$list_id';";
-					if($DBX){print STDERR "\n|$stmtA|\n";}
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-					@aryA = $sthA->fetchrow_array;
-					$dup_camp = $aryA[0];
-				$sthA->finish();
-
-				$stmtA = "select list_id from vicidial_lists where campaign_id='$dup_camp';";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$dup_lists .=	"'$aryA[0]',";
-					$rec_count++;
-					}
-				$sthA->finish();
-
-				chop($dup_lists);
-				$stmtA = "select list_id from vicidial_list where phone_number='$phone_number' and list_id IN($dup_lists) limit 1;";
-				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
-					{
-					@aryA = $sthA->fetchrow_array;
-					$dup_lead_list =	"'$aryA[0]',";
-					$rec_count++;
-					$dup_lead=1;
-					}
-				$sthA->finish();
-				}
-			if ($dup_lead < 1)
-				{
-				if ($phone_list =~ /\|$phone_number$US$list_id\|/)
-					{$dup_lead++;}
-				}
+			if ($phone_list =~ /\|$phone_number$US$list_id\|/)
+				{$dup_lead++;}
 			}
+		}
 
-		if ( (length($phone_number)>6) && ($dup_lead < 1) )
+	if ( (length($phone_number)>6) && ($dup_lead < 1) )
+		{
+		$phone_list .= "$phone_number$US$list_id|";
+		# set default values
+		$modify_date =			"";
+		$user =					"";
+		$called_since_last_reset='N';
+		$gmt_offset =			'0';
+
+		if ($forcegmt > 0)
 			{
-			$phone_list .= "$phone_number$US$list_id|";
-			# set default values
-			$modify_date =			"";
-			$user =					"";
-			$called_since_last_reset='N';
-			$gmt_offset =			'0';
-
-			if ($forcegmt > 0)
-				{
-				$gmt_offset =	$m[23];		# set GMT offset value to 24th field value
-				}
-			else
-				{
-				$postalgmt_found=0;
-				if ( ($postalgmt > 0) && (length($postal_code)>4) )
-					{
-					if ($phone_code =~ /^1$/)
-						{
-						$stmtA = "select * from vicidial_postal_codes where country_code='$phone_code' and postal_code LIKE \"$postal_code%\";";
-							if($DBX){print STDERR "\n|$stmtA|\n";}
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						$rec_count=0;
-						while ($sthArows > $rec_count)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$gmt_offset =	$aryA[2];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$aryA[3];
-							$dst_range =	$aryA[4];
-							$PC_processed++;
-							$rec_count++;
-							$postalgmt_found++;
-							if ($DBX) {print "     Postal GMT record found for $postal_code: |$gmt_offset|$dst|$dst_range|\n";}
-							}
-						$sthA->finish();
-						}
-					}
-				if ($postalgmt_found < 1)
-					{
-					$PC_processed=0;
-					### UNITED STATES ###
-					if ($phone_code =~ /^1$/)
-						{
-						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-							if($DBX){print STDERR "\n|$stmtA|\n";}
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						$rec_count=0;
-						while ($sthArows > $rec_count)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$aryA[5];
-							$dst_range =	$aryA[6];
-							$PC_processed++;
-							$rec_count++;
-							}
-						$sthA->finish();
-						}
-					### MEXICO ###
-					if ($phone_code =~ /^52$/)
-						{
-						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
-							if($DBX){print STDERR "\n|$stmtA|\n";}
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						$rec_count=0;
-						while ($sthArows > $rec_count)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$aryA[5];
-							$dst_range =	$aryA[6];
-							$PC_processed++;
-							$rec_count++;
-							}
-						$sthA->finish();
-						}
-					### AUSTRALIA ###
-					if ($phone_code =~ /^61$/)
-						{
-						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
-							if($DBX){print STDERR "\n|$stmtA|\n";}
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						$rec_count=0;
-						while ($sthArows > $rec_count)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$aryA[5];
-							$dst_range =	$aryA[6];
-							$PC_processed++;
-							$rec_count++;
-							}
-						$sthA->finish();
-						}
-					### ALL OTHER COUNTRY CODES ###
-					if (!$PC_processed)
-						{
-						$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code';";
-							if($DBX){print STDERR "\n|$stmtA|\n";}
-						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-						$sthArows=$sthA->rows;
-						$rec_count=0;
-						while ($sthArows > $rec_count)
-							{
-							@aryA = $sthA->fetchrow_array;
-							$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
-							$dst =			$aryA[5];
-							$dst_range =	$aryA[6];
-							$PC_processed++;
-							$rec_count++;
-							}
-						$sthA->finish();
-						}
-					}
-
-				### Find out if DST to raise the gmt offset ###
-					$AC_GMT_diff = ($area_GMT - $LOCAL_GMT_OFF_STD);
-					$AC_localtime = ($secX + (3600 * $AC_GMT_diff));
-				($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($AC_localtime);
-				$year = ($year + 1900);
-				$mon++;
-				if ($mon < 10) {$mon = "0$mon";}
-				if ($mday < 10) {$mday = "0$mday";}
-				if ($hour < 10) {$hour = "0$hour";}
-				if ($min < 10) {$min = "0$min";}
-				if ($sec < 10) {$sec = "0$sec";}
-				$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
-				
-				$AC_processed=0;
-
-				if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
-					{
-					if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
-					&USACAN_dstcalc;
-					if ($DBX) {print "     DST: $USACAN_DST\n";}
-					if ($USACAN_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /FSA-LSO/) )
-					{
-					if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
-					&NA_dstcalc;
-					if ($DBX) {print "     DST: $NA_DST\n";}
-					if ($NA_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /LSM-LSO/) )
-					{
-					if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
-					&GBR_dstcalc;
-					if ($DBX) {print "     DST: $GBR_DST\n";}
-					if ($GBR_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /LSO-LSM/) )
-					{
-					if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
-					&AUS_dstcalc;
-					if ($DBX) {print "     DST: $AUS_DST\n";}
-					if ($AUS_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /FSO-LSM/) )
-					{
-					if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
-					&AUST_dstcalc;
-					if ($DBX) {print "     DST: $AUST_DST\n";}
-					if ($AUST_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /FSO-TSM/) )
-					{
-					if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
-					&NZL_dstcalc;
-					if ($DBX) {print "     DST: $NZL_DST\n";}
-					if ($NZL_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if ( (!$AC_processed) && ($dst_range =~ /TSO-LSF/) )
-					{
-					if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
-					&BZL_dstcalc;
-					if ($DBX) {print "     DST: $BZL_DST\n";}
-					if ($BZL_DST) {$gmt_offset++;}
-					$AC_processed++;
-					}
-				if (!$AC_processed)
-					{
-					if ($DBX) {print "     No DST Method Found\n";}
-					if ($DBX) {print "     DST: 0\n";}
-					$AC_processed++;
-					}
-
-				}
-			if ($multi_insert_counter > 8)
-				{
-				### insert good deal into pending_transactions table ###
-				$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00');";
-						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
-						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
-
-				$multistmt='';
-				$multi_insert_counter=0;
-				$c++;
-				}
-			else
-				{
-				$multistmt .= "('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00'),";
-				$multi_insert_counter++;
-				}
-
-			$b++;
+			$gmt_offset =	$m[23];		# set GMT offset value to 24th field value
 			}
 		else
 			{
-			if ($dup_lead > 0)
-				{print "DUPLICATE: $phone|$list_id|$dup_lead_list|";   $f++;}
-			else
-				{print "BAD Home_Phone: $phone|$vendor_id";   $e++;}
-			}
-		
-		$a++;
+			$postalgmt_found=0;
+			if ( ($postalgmt > 0) && (length($postal_code)>4) )
+				{
+				if ($phone_code =~ /^1$/)
+					{
+					$stmtA = "select * from vicidial_postal_codes where country_code='$phone_code' and postal_code LIKE \"$postal_code%\";";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[2];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[3];
+						$dst_range =	$aryA[4];
+						$PC_processed++;
+						$rec_count++;
+						$postalgmt_found++;
+						if ($DBX) {print "     Postal GMT record found for $postal_code: |$gmt_offset|$dst|$dst_range|\n";}
+						}
+					$sthA->finish();
+					}
+				}
+			if ($postalgmt_found < 1)
+				{
+				$PC_processed=0;
+				### UNITED STATES ###
+				if ($phone_code =~ /^1$/)
+					{
+					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
+						}
+					$sthA->finish();
+					}
+				### MEXICO ###
+				if ($phone_code =~ /^52$/)
+					{
+					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and areacode='$USarea';";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
+						}
+					$sthA->finish();
+					}
+				### AUSTRALIA ###
+				if ($phone_code =~ /^61$/)
+					{
+					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code' and state='$state';";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
+						}
+					$sthA->finish();
+					}
+				### ALL OTHER COUNTRY CODES ###
+				if (!$PC_processed)
+					{
+					$stmtA = "select * from vicidial_phone_codes where country_code='$phone_code';";
+						if($DBX){print STDERR "\n|$stmtA|\n";}
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+					$sthArows=$sthA->rows;
+					$rec_count=0;
+					while ($sthArows > $rec_count)
+						{
+						@aryA = $sthA->fetchrow_array;
+						$gmt_offset =	$aryA[4];  $gmt_offset =~ s/\+| //gi;
+						$dst =			$aryA[5];
+						$dst_range =	$aryA[6];
+						$PC_processed++;
+						$rec_count++;
+						}
+					$sthA->finish();
+					}
+				}
 
-		if ($a =~ /100$/i) {print STDERR "0     $a\r";}
-		if ($a =~ /200$/i) {print STDERR "+     $a\r";}
-		if ($a =~ /300$/i) {print STDERR "|     $a\r";}
-		if ($a =~ /400$/i) {print STDERR "\\     $a\r";}
-		if ($a =~ /500$/i) {print STDERR "-     $a\r";}
-		if ($a =~ /600$/i) {print STDERR "/     $a\r";}
-		if ($a =~ /700$/i) {print STDERR "|     $a\r";}
-		if ($a =~ /800$/i) {print STDERR "+     $a\r";}
-		if ($a =~ /900$/i) {print STDERR "0     $a\r";}
-		if ($a =~ /000$/i) {print "$a|$b|$c|$d|$e|$phone_number|\n";}
+			### Find out if DST to raise the gmt offset ###
+				$AC_GMT_diff = ($area_GMT - $LOCAL_GMT_OFF_STD);
+				$AC_localtime = ($secX + (3600 * $AC_GMT_diff));
+			($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($AC_localtime);
+			$year = ($year + 1900);
+			$mon++;
+			if ($mon < 10) {$mon = "0$mon";}
+			if ($mday < 10) {$mday = "0$mday";}
+			if ($hour < 10) {$hour = "0$hour";}
+			if ($min < 10) {$min = "0$min";}
+			if ($sec < 10) {$sec = "0$sec";}
+			$dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
+			
+			$AC_processed=0;
+
+			if ( (!$AC_processed) && ($dst_range =~ /SSM-FSN/) )
+				{
+				if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+				&USACAN_dstcalc;
+				if ($DBX) {print "     DST: $USACAN_DST\n";}
+				if ($USACAN_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /FSA-LSO/) )
+				{
+				if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+				&NA_dstcalc;
+				if ($DBX) {print "     DST: $NA_DST\n";}
+				if ($NA_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /LSM-LSO/) )
+				{
+				if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
+				&GBR_dstcalc;
+				if ($DBX) {print "     DST: $GBR_DST\n";}
+				if ($GBR_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /LSO-LSM/) )
+				{
+				if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
+				&AUS_dstcalc;
+				if ($DBX) {print "     DST: $AUS_DST\n";}
+				if ($AUS_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /FSO-LSM/) )
+				{
+				if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
+				&AUST_dstcalc;
+				if ($DBX) {print "     DST: $AUST_DST\n";}
+				if ($AUST_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /FSO-TSM/) )
+				{
+				if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
+				&NZL_dstcalc;
+				if ($DBX) {print "     DST: $NZL_DST\n";}
+				if ($NZL_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if ( (!$AC_processed) && ($dst_range =~ /TSO-LSF/) )
+				{
+				if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+				&BZL_dstcalc;
+				if ($DBX) {print "     DST: $BZL_DST\n";}
+				if ($BZL_DST) {$gmt_offset++;}
+				$AC_processed++;
+				}
+			if (!$AC_processed)
+				{
+				if ($DBX) {print "     No DST Method Found\n";}
+				if ($DBX) {print "     DST: 0\n";}
+				$AC_processed++;
+				}
+
+			}
+		if ($multi_insert_counter > 8)
+			{
+			### insert good deal into pending_transactions table ###
+			$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00');";
+					if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
+					if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
+
+			$multistmt='';
+			$multi_insert_counter=0;
+			$c++;
+			}
+		else
+			{
+			$multistmt .= "('','$insert_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments','$called_count','2008-01-01 00:00:00'),";
+			$multi_insert_counter++;
+			}
+
+		$b++;
+		}
+	else
+		{
+		if ($dup_lead > 0)
+			{print "DUPLICATE: $phone|$list_id|$dup_lead_list|";   $f++;}
+		else
+			{print "BAD Home_Phone: $phone|$vendor_id";   $e++;}
+		}
+	
+	$a++;
+
+	if ($a =~ /100$/i) {print STDERR "0     $a\r";}
+	if ($a =~ /200$/i) {print STDERR "+     $a\r";}
+	if ($a =~ /300$/i) {print STDERR "|     $a\r";}
+	if ($a =~ /400$/i) {print STDERR "\\     $a\r";}
+	if ($a =~ /500$/i) {print STDERR "-     $a\r";}
+	if ($a =~ /600$/i) {print STDERR "/     $a\r";}
+	if ($a =~ /700$/i) {print STDERR "|     $a\r";}
+	if ($a =~ /800$/i) {print STDERR "+     $a\r";}
+	if ($a =~ /900$/i) {print STDERR "0     $a\r";}
+	if ($a =~ /000$/i) {print "$a|$b|$c|$d|$e|$phone_number|\n";}
 
 	}
 
-			if (length($multistmt) > 10)
-				{
-				chop($multistmt);
-				### insert good deal into pending_transactions table ###
-				$stmtZ = "INSERT INTO vicidial_list values$multistmt;";
-						if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
-						if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
+if (length($multistmt) > 10)
+	{
+	chop($multistmt);
+	### insert good deal into pending_transactions table ###
+	$stmtZ = "INSERT INTO vicidial_list values$multistmt;";
+			if (!$T) {$affected_rows = $dbhA->do($stmtZ); } #  or die  "Couldn't execute query: |$stmtZ|\n";
+			if($DB){print STDERR "\n|$affected_rows|$stmtZ|\n";}
 
-				$multistmt='';
-				$multi_insert_counter=0;
-				$c++;
-				}
+	$multistmt='';
+	$multi_insert_counter=0;
+	$c++;
+	}
 
 	### open the stats out file for writing ###
 	open(Sout, ">>$VDHLOGfile")

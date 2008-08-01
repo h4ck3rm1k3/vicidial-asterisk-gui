@@ -34,6 +34,7 @@
 # 
 # 80302-1958 - First Build
 # 80317-2349 - Added FTP debug if debugX
+# 80731-2253 - Changed size comparisons for more efficiency
 #
 
 $GSM=0;   $MP3=0;   $OGG=0;   $WAV=0;   $NODATEDIR=0;
@@ -178,7 +179,8 @@ foreach(@conf)
 $server_ip = $VARserver_ip;		# Asterisk server IP
 if (!$VARDB_port) {$VARDB_port='3306';}
 
-use DBI;	  
+use Time::HiRes ('gettimeofday','usleep','sleep');  # necessary to have perl sleep command of less than one second
+use DBI;
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
@@ -192,25 +194,38 @@ if ($MP3 > 0) {$dir2 = "$PATHDONEmonitor/MP3";}
 if ($GSM > 0) {$dir2 = "$PATHDONEmonitor/GSM";}
 if ($OGG > 0) {$dir2 = "$PATHDONEmonitor/OGG";}
 
- opendir(FILE, "$dir2/");
- @FILES = readdir(FILE);
+opendir(FILE, "$dir2/");
+@FILES = readdir(FILE);
 
+### Loop through files first to gather filesizes
 $i=0;
 foreach(@FILES)
    {
-	$size1 = 0;
-	$size2 = 0;
+	$FILEsize1[$i] = 0;
+	if ( (length($FILES[$i]) > 4) && (!-d $FILES[$i]) )
+		{
+		$FILEsize1[$i] = (-s "$dir1/$FILES[$i]");
+		if ($DBX) {print "$FILES[$i] $FILEsize1[$i]\n";}
+		}
+	$i++;
+   }
+
+sleep(5);
+
+
+### Loop through files a second time to gather filesizes again 5 seconds later
+$i=0;
+foreach(@FILES)
+   {
+	$FILEsize2[$i] = 0;
 
 	if ( (length($FILES[$i]) > 4) && (!-d $FILES[$i]) )
 		{
 
-		$size1 = (-s "$dir2/$FILES[$i]");
-		if ($DBX) {print "$FILES[$i] $size1\n";}
-		sleep(1);
-		$size2 = (-s "$dir2/$FILES[$i]");
-		if ($DBX) {print "$FILES[$i] $size2\n\n";}
+		$FILEsize2[$i] = (-s "$dir1/$FILES[$i]");
+		if ($DBX) {print "$FILES[$i] $FILEsize2[$i]\n\n";}
 
-		if ( ($FILES[$i] !~ /out\.|in\.|lost\+found/i) && ($size1 eq $size2) && (length($FILES[$i]) > 4))
+		if ( ($FILES[$i] !~ /out\.|in\.|lost\+found/i) && ($FILEsize1[$i] eq $FILEsize2[$i]) && (length($FILES[$i]) > 4))
 			{
 			$recording_id='';
 			$ALLfile = $FILES[$i];
@@ -266,6 +281,10 @@ foreach(@FILES)
 					}
 				}
 	### END Remote file transfer
+
+			### sleep for twenty hundredths of a second to not flood the server with disk activity
+			usleep(1*200*1000);
+
 			}
 		}
 	$i++;

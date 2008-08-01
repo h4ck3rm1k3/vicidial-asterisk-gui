@@ -4,6 +4,9 @@ This document describes the functions of an API(Application Programming Interfac
 for the VICIDIAL Agent screen. This functionality will be rather limited at first
 and will be built upon as critical functions are identified and programmed into it.
 
+There is also a new NON-agent API script, for more information on that, please
+read the NON-AGENT_API.txt document.
+
 
 
 API functions:
