@@ -253,7 +253,7 @@ while ($p < $statuses_to_print)
 	$q++;
 	$p++;
 	}
-$stmt = "SELECT status,status_name,human_answered,category from vicidial_campaign_statuses';";
+$stmt = "SELECT status,status_name,human_answered,category from vicidial_campaign_statuses;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statuses_to_print = mysql_num_rows($rslt);

@@ -1249,12 +1249,12 @@ while($one_day_interval > 0)
 			$stmtA = "DELETE from vicidial_auto_calls where auto_call_id='$auto_call_id'";
 			$affected_rows = $dbhA->do($stmtA);
 
-			$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+			$event_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|$auto_call_id|$CLcallerid|$CLuniqueid|$CLphone_number|$CLstatus|";
 			 &event_logger;
 
 			if ( ($affected_rows > 0) && ($CLlead_id > 0) )
 				{
-				$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|";
+				$jam_string = "|     lagged call vdac call DELETED $affected_rows|$BDtsSQLdate|$auto_call_id|$CLcallerid|$CLuniqueid|$CLphone_number|$CLstatus|";
 				 &jam_event_logger;
 
 				$CLstage =~ s/LIVE|-//gi;

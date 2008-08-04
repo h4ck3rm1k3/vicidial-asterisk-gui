@@ -333,6 +333,7 @@ if (!isset($format))   {$format="text";}
 	if ($format == 'debug')	{$DB=1;}
 if (!isset($ACTION))   {$ACTION="refresh";}
 
+$txt = '.txt';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -1150,6 +1151,7 @@ if ($ACTION == 'manDiaLlogCaLL')
 	$MT[0]='';
 	$row='';   $rowx='';
 	$vidSQL='';
+	$VDterm_reason='';
 
 if ($stage == "start")
 	{
@@ -1210,7 +1212,26 @@ if ($stage == "start")
 
 if ($stage == "end")
 	{
-	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) )
+	##### get call type from vicidial_live_agents table
+	$VLA_inOUT='NONE';
+	$stmt="SELECT comments FROM vicidial_live_agents where user='$user' order by last_update_time desc limit 1;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$VLA_inOUT_ct = mysql_num_rows($rslt);
+	if ($VLA_inOUT_ct > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$VLA_inOUT =		$row[0];
+		}
+
+	if ( (strlen($uniqueid)<1) and ($VLA_inOUT == 'INBOUND') )
+		{
+		$fp = fopen ("./vicidial_debug.txt", "a");
+		fwrite ($fp, "$NOW_TIME|INBND_LOG_0|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$start_epoch|$phone_number|$agent_log_id|\n");
+		fclose($fp);
+		$uniqueid='6666.1';
+		}
+	if ( (strlen($uniqueid)<1) or (strlen($lead_id)<1) )
 		{
 		echo "LOG NOT ENTERED\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id is not valid\n";
@@ -1221,17 +1242,19 @@ if ($stage == "end")
 		$term_reason='NONE';
 		if ($start_epoch < 1000)
 			{
-			if ($inOUT == 'IN')
+			if ($VLA_inOUT == 'INBOUND')
 				{
 				$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
 				##### look for the start epoch in the vicidial_closer_log table
 				$stmt="SELECT start_epoch,term_reason,closecallid FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
+				$VDIDselect =		"VDCL_LID $lead_id $phone_number $user $four_hours_ago";
 				}
 			else
 				{
 				##### look for the start epoch in the vicidial_log table
 				$stmt="SELECT start_epoch,term_reason,uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$VDIDselect =		"VDL_UIDLID $uniqueid $lead_id";
 				}
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1249,7 +1272,7 @@ if ($stage == "end")
 				$length_in_sec = 0;
 				}
 
-			if ( ($length_in_sec < 1) and ($inOUT == 'IN') )
+			if ( ($length_in_sec < 1) and ($VLA_inOUT == 'INBOUND') )
 				{
 				$fp = fopen ("./vicidial_debug.txt", "a");
 				fwrite ($fp, "$NOW_TIME|INBND_LOG_1|$uniqueid|$lead_id|$user|$inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$start_epoch|\n");
@@ -1277,7 +1300,7 @@ if ($stage == "end")
 		
 		$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
-		if ($inOUT == 'IN')
+		if ($VLA_inOUT == 'INBOUND')
 			{
 			$stmt = "UPDATE vicidial_closer_log set end_epoch='$StarTtime', length_in_sec='$length_in_sec' where lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by call_date desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
@@ -1521,7 +1544,7 @@ if ($stage == "end")
 				}
 			}
 
-		if ($inOUT == 'OUT')
+		if ($VLA_inOUT == 'AUTO')
 			{
 			$SQLterm = "term_reason='$term_reason',";
 
@@ -1536,6 +1559,7 @@ if ($stage == "end")
 					$row=mysql_fetch_row($rslt);
 					$VDterm_reason	= $row[0];
 					$VDvicidial_id	= $row[1];
+					$VDIDselect =		"VDL_UIDLID $uniqueid $lead_id";
 					}
 				if (ereg("CALLER",$VDterm_reason))
 					{
@@ -1577,6 +1601,7 @@ if ($stage == "end")
 					$row=mysql_fetch_row($rslt);
 					$VDterm_reason	= $row[0];
 					$VDvicidial_id	= $row[1];
+					$VDIDselect =		"VDCL_LID4HOUR $lead_id $four_hours_ago";
 					}
 				if (ereg("CALLER",$VDterm_reason))
 					{
@@ -1666,13 +1691,13 @@ if ($stage == "end")
 							{$vidSQL = ",vicidial_id='$VDvicidial_id'";}
 						else
 							{
-							if ( (ereg('.',$vicidial_id)) and ($inOUT == 'IN') )
+							if ( (ereg('.',$vicidial_id)) and ($VLA_inOUT == 'INBOUND') )
 								{
 								if (!ereg('.',$VDvicidial_id))
 									{$vidSQL = ",vicidial_id='$VDvicidial_id'";}
 
 								$fp = fopen ("./vicidial_debug.txt", "a");
-								fwrite ($fp, "$NOW_TIME|INBND_LOG_3|$uniqueid|$lead_id|$user|$inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|\n");
+								fwrite ($fp, "$NOW_TIME|INBND_LOG_3|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|\n");
 								fclose($fp);
 								}
 							}
@@ -1685,6 +1710,10 @@ if ($stage == "end")
 						$rslt=mysql_query($stmt, $link);
 
 						echo "$recording_id|$length_in_min|";
+
+						$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
+						fwrite ($fp, "$NOW_TIME|RECORD_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
+						fclose($fp);
 						}
 					else {echo "||";}
 					}
@@ -1778,7 +1807,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 	else
 	{
 	### grab the call and lead info from the vicidial_live_agents table
-	$stmt = "SELECT lead_id,uniqueid,callerid,channel,call_server_ip FROM vicidial_live_agents where server_ip = '$server_ip' and user='$user' and campaign_id='$campaign' and status='QUEUE';";
+	$stmt = "SELECT lead_id,uniqueid,callerid,channel,call_server_ip,comments FROM vicidial_live_agents where server_ip = '$server_ip' and user='$user' and campaign_id='$campaign' and status='QUEUE';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$queue_leadID_ct = mysql_num_rows($rslt);
@@ -1791,6 +1820,8 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$callerid	=$row[2];
 		$channel	=$row[3];
 		$call_server_ip	=$row[4];
+		$VLAcomments=$row[5];
+
 			if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 		echo "1\n" . $lead_id . '|' . $uniqueid . '|' . $callerid . '|' . $channel . '|' . $call_server_ip . "|\n";
 
@@ -1809,7 +1840,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$calls_today++;
 
 		### update the agent status to INCALL in vicidial_live_agents
-		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',comments='AUTO',calls_today='$calls_today',external_hangup=0,external_status='' where user='$user' and server_ip='$server_ip';";
+		$stmt = "UPDATE vicidial_live_agents set status='INCALL',last_call_time='$NOW_TIME',calls_today='$calls_today',external_hangup=0,external_status='' where user='$user' and server_ip='$server_ip';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 

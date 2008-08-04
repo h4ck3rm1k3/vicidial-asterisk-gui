@@ -3522,6 +3522,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Send the Manual Dial Next Number request
 	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE)
 		{
+		inOUT = 'OUT';
 		all_record = 'NO';
 		all_record_count=0;
 		document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
@@ -3879,6 +3880,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Send the Manual Dial Only - dial the previewed lead
 	function ManualDialOnly(taskaltnum)
 		{
+		inOUT = 'OUT';
 		alt_dial_status_display = 0;
 		all_record = 'NO';
 		all_record_count=0;
@@ -4131,7 +4133,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (typeof(xmlhttprequestcheckauto) == "undefined") 
 			{
-			inOUT = 'OUT';
 			all_record = 'NO';
 			all_record_count=0;
 			document.vicidial_form.lead_id.value = '';
@@ -5085,7 +5086,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Update vicidial_list lead record with disposition selection
 	function DispoSelect_submit()
 		{
-		inOUT = 'OUT';
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
 		if (DispoChoice.length < 1) {alert("You Must Select a Disposition");}
@@ -5171,6 +5171,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.vicidial_form.called_count.value	='';
 				VDCL_group_id = '';
 				fronter = '';
+				inOUT = 'OUT';
 
 				if (manual_dial_in_progress==1)
 					{

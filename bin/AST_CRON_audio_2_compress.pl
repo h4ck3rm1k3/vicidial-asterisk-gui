@@ -205,7 +205,7 @@ $i=0;
 foreach(@FILES)
    {
 	$FILEsize1[$i] = 0;
-	if ( (length($FILES[$i]) > 4) && (!-d $FILES[$i]) )
+	if ( (length($FILES[$i]) > 4) && (!-d "$dir1/$FILES[$i]") )
 		{
 		$FILEsize1[$i] = (-s "$dir1/$FILES[$i]");
 		if ($DBX) {print "$FILES[$i] $FILEsize1[$i]\n";}
@@ -222,7 +222,7 @@ foreach(@FILES)
    {
 	$FILEsize2[$i] = 0;
 
-	if ( (length($FILES[$i]) > 4) && (!-d $FILES[$i]) )
+	if ( (length($FILES[$i]) > 4) && (!-d "$dir1/$FILES[$i]") )
 		{
 
 		$FILEsize2[$i] = (-s "$dir1/$FILES[$i]");
