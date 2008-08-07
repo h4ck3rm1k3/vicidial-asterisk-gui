@@ -1714,9 +1714,9 @@ if ($stage == "end")
 
 						echo "$recording_id|$length_in_min|";
 
-						$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
-						fwrite ($fp, "$NOW_TIME|RECORD_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
-						fclose($fp);
+			#			$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
+			#			fwrite ($fp, "$NOW_TIME|RECORD_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
+			#			fclose($fp);
 						}
 					else {echo "||";}
 					}
