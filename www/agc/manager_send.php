@@ -34,6 +34,7 @@
 #  - $CalLCID - ('VD01234567890123456',...)
 #  - $stage - ('UP','DOWN','2NDXfeR')
 #  - $session_id - ('8600051')
+#  - $FROMvdc - ('YES','NO')
 
 # CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
@@ -143,6 +144,8 @@ if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["all
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 if (isset($_GET["session_id"]))				{$session_id=$_GET["session_id"];}
 	elseif (isset($_POST["session_id"]))		{$session_id=$_POST["session_id"];}
+if (isset($_GET["FROMvdc"]))				{$FROMvdc=$_GET["FROMvdc"];}
+	elseif (isset($_POST["FROMvdc"]))		{$FROMvdc=$_POST["FROMvdc"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -1255,6 +1258,8 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	else
 	{
 
+	$VDvicidial_id='';
+
 	if ($ACTION=="MonitorConf")
 		{
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$filename','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $filename','','','','','');";
@@ -1264,12 +1269,50 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 		$stmt = "INSERT INTO recording_log (channel,server_ip,extension,start_time,start_epoch,filename,lead_id,user) values('$channel','$server_ip','$exten','$NOW_TIME','$StarTtime','$filename','$lead_id','$user')";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+		$RLaffected_rows = mysql_affected_rows($link);
+		if ($RLaffected_rows > 0)
+			{
+			$recording_id = mysql_insert_id($link);
+			}
 
-		$stmt="SELECT recording_id FROM recording_log where filename='$filename'";
-		$rslt=mysql_query($stmt, $link);
-		if ($DB) {echo "$stmt\n";}
-		$row=mysql_fetch_row($rslt);
-		$recording_id = $row[0];
+		if ($FROMvdc=='YES')
+			{
+			##### get call type from vicidial_live_agents table
+			$VLA_inOUT='NONE';
+			$stmt="SELECT comments FROM vicidial_live_agents where user='$user' order by last_update_time desc limit 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$VLA_inOUT_ct = mysql_num_rows($rslt);
+			if ($VLA_inOUT_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$VLA_inOUT =		$row[0];
+				}
+			if ($VLA_inOUT == 'INBOUND')
+				{
+				$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
+
+				##### look for the vicidial ID in the vicidial_closer_log table
+				$stmt="SELECT closecallid FROM vicidial_closer_log where lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
+				}
+			else
+				{
+				##### look for the vicidial ID in the vicidial_log table
+				$stmt="SELECT uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				}
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$VM_mancall_ct = mysql_num_rows($rslt);
+			if ($VM_mancall_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$VDvicidial_id =	$row[0];
+
+				$stmt = "UPDATE recording_log SET vicidial_id='$VDvicidial_id' where recording_id='$recording_id';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			}
 		}
 	else
 		{

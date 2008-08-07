@@ -1544,7 +1544,7 @@ if ($stage == "end")
 				}
 			}
 
-		if ($VLA_inOUT == 'AUTO')
+		if ( ($VLA_inOUT == 'AUTO') or ($VLA_inOUT == 'MANUAL') )
 			{
 			$SQLterm = "term_reason='$term_reason',";
 
@@ -1676,7 +1676,7 @@ if ($stage == "end")
 				echo "REC_STOP|$rec_channels[$loop_count]|$filename[$loop_count]|";
 				if (strlen($filename)>2)
 					{
-					$stmt="SELECT recording_id,start_epoch,vicidial_id FROM recording_log where filename='$filename[$loop_count]'";
+					$stmt="SELECT recording_id,start_epoch,vicidial_id,lead_id FROM recording_log where filename='$filename[$loop_count]'";
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 					if ($rslt) {$fn_count = mysql_num_rows($rslt);}
@@ -1686,7 +1686,10 @@ if ($stage == "end")
 						$recording_id = $row[0];
 						$start_time =	$row[1];
 						$vicidial_id =	$row[2];
+						$RClead_id =	$row[3];
 
+						if ( (strlen($RClead_id)<1) or ($RClead_id < 1) or ($RClead_id=='NULL') )
+							{$lidSQL = ",lead_id='$lead_id'";}
 						if (strlen($vicidial_id)<1) 
 							{$vidSQL = ",vicidial_id='$VDvicidial_id'";}
 						else
@@ -1705,14 +1708,14 @@ if ($stage == "end")
 						$length_in_min = ($length_in_sec / 60);
 						$length_in_min = sprintf("%8.2f", $length_in_min);
 
-						$stmt="UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' $vidSQL where filename='$filename[$loop_count]' and end_epoch is NULL;";
+						$stmt="UPDATE recording_log set end_time='$NOW_TIME',end_epoch='$StarTtime',length_in_sec=$length_in_sec,length_in_min='$length_in_min' $vidSQL $lidSQL where filename='$filename[$loop_count]' and end_epoch is NULL;";
 							if ($format=='debug') {echo "\n<!-- $stmt -->";}
 						$rslt=mysql_query($stmt, $link);
 
 						echo "$recording_id|$length_in_min|";
 
 						$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
-						fwrite ($fp, "$NOW_TIME|RECORD_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
+						fwrite ($fp, "$NOW_TIME|RECORD_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
 						fclose($fp);
 						}
 					else {echo "||";}

@@ -26,6 +26,7 @@
 # 80501-0454 - Added Hangup Reason to logs display
 # 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
 # 80701-0832 - Changed to allow for altering of main phone number
+# 80805-2106 - Changed comments to TEXTAREA
 #
 
 require("dbconnect.php");
@@ -488,7 +489,7 @@ else
 		echo "<tr><td align=right>Alt Phone : </td><td align=left><input type=text name=alt_phone size=20 maxlength=20 value=\"$alt_phone\"></td></tr>\n";
 		echo "<tr><td align=right>Email : </td><td align=left><input type=text name=email size=30 maxlength=50 value=\"$email\"></td></tr>\n";
 		echo "<tr><td align=right>Security : </td><td align=left><input type=text name=security size=30 maxlength=100 value=\"$security\"></td></tr>\n";
-		echo "<tr><td align=right>Comments : </td><td align=left><input type=text name=comments size=30 maxlength=255 value=\"$comments\"></td></tr>\n";
+		echo "<tr><td align=right>Comments : </td><td align=left><TEXTAREA name=comments ROWS=3 COLS=65>$comments</TEXTAREA></td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Disposition: </td><td align=left><select size=1 name=status>\n";
 
 				$stmt="SELECT * from vicidial_statuses where selectable='Y' order by status";
