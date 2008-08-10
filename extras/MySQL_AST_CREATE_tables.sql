@@ -1003,7 +1003,9 @@ CREATE TABLE vicidial_status_categories (
 vsc_id VARCHAR(20) PRIMARY KEY NOT NULL,
 vsc_name VARCHAR(50),
 vsc_description VARCHAR(255),
-tovdad_display ENUM('Y','N') default 'N'
+tovdad_display ENUM('Y','N') default 'N',
+sale_category ENUM('Y','N') default 'N',
+dead_lead_category ENUM('Y','N') default 'N'
 );
 
 CREATE TABLE vicidial_ivr (

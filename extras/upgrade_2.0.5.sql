@@ -335,3 +335,8 @@ ALTER TABLE vicidial_inbound_groups ADD qc_script VARCHAR(10);
 UPDATE system_settings SET qc_last_pull_time="2008-01-01";
 
 UPDATE system_settings SET db_schema_version='1101';
+
+ALTER TABLE vicidial_status_categories ADD sale_category ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_status_categories ADD dead_lead_category ENUM('Y','N') default 'N';
+
+UPDATE system_settings SET db_schema_version='1102';

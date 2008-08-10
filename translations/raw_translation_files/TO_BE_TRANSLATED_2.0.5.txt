@@ -232,6 +232,9 @@ QC Show Recording||
 QC Shift||
 Inbound Group QC Settings||
 QC Shift -<\/B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions||
+The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.||
+Sale Category: ||
+Dead Lead Category: ||
 
 
 ############################################################ CLIENT

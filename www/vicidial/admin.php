@@ -775,6 +775,11 @@ if (isset($_GET["vdc_agent_api_active"]))				{$vdc_agent_api_active=$_GET["vdc_a
 	elseif (isset($_POST["vdc_agent_api_active"]))		{$vdc_agent_api_active=$_POST["vdc_agent_api_active"];}
 if (isset($_GET["display_queue_count"]))				{$display_queue_count=$_GET["display_queue_count"];}	
 	elseif (isset($_POST["display_queue_count"]))		{$display_queue_count=$_POST["display_queue_count"];}
+if (isset($_GET["sale_category"]))				{$sale_category=$_GET["sale_category"];}	
+	elseif (isset($_POST["sale_category"]))		{$sale_category=$_POST["sale_category"];}
+if (isset($_GET["dead_lead_category"]))				{$dead_lead_category=$_GET["dead_lead_category"];}	
+	elseif (isset($_POST["dead_lead_category"]))	{$dead_lead_category=$_POST["dead_lead_category"];}
+
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -979,6 +984,8 @@ $campaign_allow_inbound = ereg_replace("[^NY]","",$campaign_allow_inbound);
 $disable_alter_custphone = ereg_replace("[^NY]","",$disable_alter_custphone);
 $display_queue_count = ereg_replace("[^NY]","",$display_queue_count);
 $qc_show_recording = ereg_replace("[^NY]","",$qc_show_recording);
+$sale_category = ereg_replace("[^NY]","",$sale_category);
+$dead_lead_category = ereg_replace("[^NY]","",$dead_lead_category);
 
 $qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
 
@@ -1342,11 +1349,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 80703-0124 - Added alter cust phone and api settings
 # 80715-1130 - Added Recycle leads limit count
 # 80719-1351 - Changed QC settings in campaigns and In-Groups
+# 80809-2305 - Added Sale and Dead Lead categories to status categories page
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-136';
-$build = '80719-1351';
+$admin_version = '2.0.5-137';
+$build = '80809-2305';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -4060,7 +4068,7 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <B><FONT SIZE=3>VICIDIAL_STATUS_CATEGORIES TABLE</FONT></B><BR><BR>
 <A NAME="vicidial_status_categories">
 <BR>
-<B>Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report.</B>
+<B>Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report.</B> The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.
 
 
 <BR><BR><BR><BR>
@@ -6879,7 +6887,7 @@ if ($ADD==231111111111111)
 				echo "<br><B>ERROR: There are already 4 Status Categories set to TimeOnVDAD Display</B>\n";
 				}
 
-			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display');";
+			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display,sale_category,dead_lead_category) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display','$sale_category','$dead_lead_category');";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG CHANGES TO LOG FILE ###
@@ -8660,7 +8668,7 @@ if ($ADD==431111111111111)
 				echo "<br><B>ERROR: There are already 4 Status Categories set to TimeOnVDAD Display</B>\n";
 				}
 
-			$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display' where vsc_id='$vsc_id';";
+			$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display',sale_category='$sale_category',dead_lead_category='$dead_lead_category' where vsc_id='$vsc_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG CHANGES TO LOG FILE ###
@@ -14479,7 +14487,7 @@ if ($ADD==331111111111111)
 	echo "<br><center>\n";
 	echo "<b>VICIDIAL STATUS CATEGORIES: &nbsp; $NWB#vicidial_status_categories$NWE</b><br>\n";
 	echo "<TABLE width=700 cellspacing=3>\n";
-	echo "<tr><td>CATEGORY</td><td>NAME</td><td>TOVDAD</td><td>STATUSES IN THIS CATEGORY</td></tr>\n";
+	echo "<tr><td>CATEGORY</td><td>NAME</td><td>STATUSES IN THIS CATEGORY</td></tr>\n";
 
 		$stmt="SELECT * from vicidial_status_categories order by vsc_id;";
 		$rslt=mysql_query($stmt, $link);
@@ -14488,12 +14496,12 @@ if ($ADD==331111111111111)
 		while ($statuses_to_print > $o) 
 			{
 			$rowx=mysql_fetch_row($rslt);
-
-			$Avsc_id[$o] = $rowx[0];
-			$Avsc_name[$o] = $rowx[1];
-			$Avsc_description[$o] = $rowx[2];
-			$Atovdad_display[$o] = $rowx[3];
-
+			$Avsc_id[$o] =				$rowx[0];
+			$Avsc_name[$o] =			$rowx[1];
+			$Avsc_description[$o] =		$rowx[2];
+			$Atovdad_display[$o] =		$rowx[3];
+			$Asale_category[$o] =		$rowx[4];
+			$Adead_lead_category[$o] =	$rowx[5];
 			$o++;
 			}
 		$p=0;
@@ -14532,12 +14540,13 @@ if ($ADD==331111111111111)
 			echo "<input type=hidden name=vsc_id value=\"$Avsc_id[$p]\">\n";
 			echo "<font size=2><B>$Avsc_id[$p]</B></td>\n";
 			echo "<td><input type=text name=vsc_name size=30 maxlength=50 value=\"$Avsc_name[$p]\"></td>\n";
-			echo "<td><select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select></td>\n";
 			echo "<td><font size=1>\n";
 			echo "$CATstatuses";
 			echo "</td></tr>\n";
-			echo "<tr $bgcolor><td colspan=4><font size=1>Description: <input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
-			echo "<tr $bgcolor><td colspan=4 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo "<tr $bgcolor>\n";
+			echo "<td colspan=3>TO VDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select> &nbsp; &nbsp; Sale Category: <select size=1 name=sale_category><option>Y</option><option>N</option><option selected>$Asale_category[$p]</option></select> &nbsp; &nbsp; Dead Lead Category: <select size=1 name=dead_lead_category><option>Y</option><option>N</option><option selected>$Adead_lead_category[$p]</option></select> &nbsp; </td></tr>\n";
+			echo "<tr $bgcolor><td colspan=3><font size=1>Description: <input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
+			echo "<tr $bgcolor><td colspan=3 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; <a href=\"$PHP_SELF?ADD=431111111111111&vsc_id=$Avsc_id[$p]&stage=delete\">DELETE</a></td></tr>\n";
 			echo "<tr><td colspan=4><font size=1> &nbsp; </form></td></tr>\n";
 
@@ -14549,8 +14558,10 @@ if ($ADD==331111111111111)
 	echo "<br>ADD NEW STATUS CATEGORY<BR><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=231111111111111>\n";
 	echo "Category ID: <input type=text name=vsc_id size=20 maxlength=20> &nbsp; \n";
-	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; \n";
-	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
+	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; <BR>\n";
+	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option selected>N</option></select> &nbsp; \n";
+	echo "Sale Category: <select size=1 name=sale_category><option>Y</option><option selected>N</option></select> &nbsp; \n";
+	echo "Dead Lead Category: <select size=1 name=dead_lead_category><option>Y</option><option selected>N</option></select> &nbsp; <BR>\n";
 	echo "Description: <input type=text name=vsc_description size=80 maxlength=255> &nbsp; \n";
 	echo "<input type=submit name=submit value=ADD><BR>\n";
 
