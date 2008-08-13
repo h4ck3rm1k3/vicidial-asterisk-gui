@@ -29,9 +29,12 @@
 # 80428-0320 - UTF8 update
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
 # 80730-1607 - added minicsv format
+# 80812-1204 - added FTP grab options and summary email options
 #
 
 $secX = time();
+$MT[0]='';
+$Ealert='';
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -82,6 +85,14 @@ foreach(@conf)
 		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
 	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
 		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_host/) && ($CLIREPORT_host < 1) )
+		{$VARREPORT_host = $line;   $VARREPORT_host =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_user/) && ($CLIREPORT_user < 1) )
+		{$VARREPORT_user = $line;   $VARREPORT_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_pass/) && ($CLIREPORT_pass < 1) )
+		{$VARREPORT_pass = $line;   $VARREPORT_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARREPORT_port/) && ($CLIREPORT_port < 1) )
+		{$VARREPORT_port = $line;   $VARREPORT_port =~ s/.*=//gi;}
 	$i++;
 	}
 
@@ -96,127 +107,170 @@ print "This program is designed to take a tab delimited file and import it into 
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
-{
+	{
 	$i=0;
 	while ($#ARGV >= $i)
-	{
-	$args = "$args $ARGV[$i]";
-	$i++;
-	}
+		{
+		$args = "$args $ARGV[$i]";
+		$i++;
+		}
 
 	if ($args =~ /--help|-h/i)
-	{
-	print "allowed run time options:\n";
-	print "  [-q] = quiet\n";
-	print "  [-t] = test\n";
-	print "  [--forcegmt] = forces gmt value of column after comments column\n";
-	print "  [--debug] = debug output\n";
-	print "  [--format=standard] = ability to define a format, standard is default, formats allowed shown in examples\n";
-	print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
-	print "  [--forcephonecode=44] = overrides the phone_code given in the lead with the 44\n";
-	print "  [--duplicate-check] = checks for the same phone number in the same list id before inserting lead\n";
-	print "  [--duplicate-campaign-check] = checks for the same phone number in the same campaign before inserting lead\n";
-	print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
-	print "  [--postal-code-gmt] = checks for the time zone based on the postal code given where available\n";
-	print "  [-h] = this help screen\n\n";
-	print "\n";
-	print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table (examples):\n\n";
-	print "standard:\n";
-	print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count|status|entry_date\n";
-	print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS|2|B|2007-08-09 00:00:00\n\n";
-	print "minicsv:\n";
-	print "address1,city,name,phone_number,state,postal_code\n";
-	print "\"105 Fifth St\",\"Steinhatchee\",\"Frank Smith\",\"3525556601\",\"FL\",\"32359\"\n\n";
+		{
+		print "allowed run time options:\n";
+		print "  [-q] = quiet\n";
+		print "  [-t] = test\n";
+		print "  [--forcegmt] = forces gmt value of column after comments column\n";
+		print "  [--debug] = debug output\n";
+		print "  [--format=standard] = ability to define a format, standard is default, formats allowed shown in examples\n";
+		print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
+		print "  [--forcephonecode=44] = overrides the phone_code given in the lead with the 44\n";
+		print "  [--duplicate-check] = checks for the same phone number in the same list id before inserting lead\n";
+		print "  [--duplicate-campaign-check] = checks for the same phone number in the same campaign before inserting lead\n";
+		print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
+		print "  [--postal-code-gmt] = checks for the time zone based on the postal code given where available\n";
+		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
+		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
+		print "  [--email-list=test@test.com:test2@test.com] = send email results for each file to these addresses\n";
+		print "  [--email-sender=vicidial@localhost] = sender for the email results\n";
+		print "  [-h] = this help screen\n\n";
+		print "\n";
+		print "This script takes in lead files in the following order when they are placed in the $PATHhome/LEADS_IN directory to be imported into the vicidial_list table (examples):\n\n";
+		print "standard:\n";
+		print "vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count|status|entry_date\n";
+		print "3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS|2|B|2007-08-09 00:00:00\n\n";
+		print "minicsv:\n";
+		print "address1,city,name,phone_number,state,postal_code\n";
+		print "\"105 Fifth St\",\"Steinhatchee\",\"Frank Smith\",\"3525556601\",\"FL\",\"32359\"\n\n";
 
-	exit;
-	}
+		exit;
+		}
 	else
-	{
+		{
 		if ($args =~ /-debug/i)
-		{
-		$DB=1;
-		print "\n-----DEBUGGING -----\n\n";
-		}
+			{
+			$DB=1;
+			print "\n----- DEBUGGING -----\n\n";
+			}
 		if ($args =~ /-debugX/i)
-		{
-		$DBX=1;
-		print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
-		}
+			{
+			$DBX=1;
+			print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
+			}
+		else {$DBX=0;}
+
 		if ($args =~ /-q/i)
-		{
-		$q=1;
-		}
+			{
+			$q=1;
+			}
 		if ($args =~ /-t/i)
-		{
-		$T=1;
-		$TEST=1;
-		print "\n----- TESTING -----\n\n";
-		}
+			{
+			$T=1;
+			$TEST=1;
+			print "\n----- TESTING -----\n\n";
+			}
 		if ($args =~ /-forcegmt/i)
-		{
-		$forcegmt=1;
-		print "\n----- FORCE GMT -----\n\n";
-		}
+			{
+			$forcegmt=1;
+			print "\n----- FORCE GMT -----\n\n";
+			}
 		if ($args =~ /-forcelistid=/i)
-		{
-		@data_in = split(/-forcelistid=/,$args);
-			$forcelistid = $data_in[1];
-			$forcelistid =~ s/ .*//gi;
-		print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";
-		}
+			{
+			@data_in = split(/-forcelistid=/,$args);
+				$forcelistid = $data_in[1];
+				$forcelistid =~ s/ .*//gi;
+			print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";
+			}
 		else
 			{$forcelistid = '';}
 
 		if ($args =~ /-format=/i)
-		{
-		@data_in = split(/-format=/,$args);
-			$format = $data_in[1];
-			$format =~ s/ .*//gi;
-		print "\n----- FORMAT OVERRIDE: $format -----\n\n";
-		}
+			{
+			@data_in = split(/-format=/,$args);
+				$format = $data_in[1];
+				$format =~ s/ .*//gi;
+			print "\n----- FORMAT OVERRIDE: $format -----\n\n";
+			}
 		else
 			{$format = 'standard';}
 
 		if ($args =~ /--forcephonecode=/i)
-		{
-		@data_in = split(/--forcephonecode=/,$args);
-			$forcephonecode = $data_in[1];
-			$forcephonecode =~ s/ .*//gi;
-		print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";
-		}
+			{
+			@data_in = split(/--forcephonecode=/,$args);
+				$forcephonecode = $data_in[1];
+				$forcephonecode =~ s/ .*//gi;
+			print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";
+			}
 		else
 			{$forcephonecode = '';}
 
 		if ($args =~ /-duplicate-check/i)
-		{
-		$dupcheck=1;
-		print "\n----- DUPLICATE CHECK -----\n\n";
-		}
+			{
+			$dupcheck=1;
+			print "\n----- DUPLICATE CHECK -----\n\n";
+			}
 		if ($args =~ /-duplicate-campaign-check/i)
-		{
-		$dupcheckcamp=1;
-		print "\n----- DUPLICATE CAMPAIGN CHECK -----\n\n";
-		}
+			{
+			$dupcheckcamp=1;
+			print "\n----- DUPLICATE CAMPAIGN CHECK -----\n\n";
+			}
 		if ($args =~ /-duplicate-system-check/i)
-		{
-		$dupchecksys=1;
-		print "\n----- DUPLICATE SYSTEM CHECK -----\n\n";
-		}
+			{
+			$dupchecksys=1;
+			print "\n----- DUPLICATE SYSTEM CHECK -----\n\n";
+			}
 		if ($args =~ /-postal-code-gmt/i)
-		{
-		$postalgmt=1;
-		print "\n----- POSTAL CODE TIMEZONE -----\n\n";
+			{
+			$postalgmt=1;
+			print "\n----- POSTAL CODE TIMEZONE -----\n\n";
+			}
+		if ($args =~ /-ftp-pull/i)
+			{
+			$ftp_pull=1;
+			print "\n----- FTP LEAD FILE PULL -----\n\n";
+			}
+		if ($args =~ /--ftp-dir=/i)
+			{
+			@data_in = split(/--ftp-dir=/,$args);
+				$ftp_dir = $data_in[1];
+				$ftp_dir =~ s/ .*//gi;
+			print "\n----- REMOTE FTP DIRECTORY: $ftp_dir -----\n\n";
+			}
+		else
+			{$ftp_dir = '';}
+
+		if ($args =~ /--email-list=/i)
+			{
+			@data_in = split(/--email-list=/,$args);
+				$email_list = $data_in[1];
+				$email_list =~ s/ .*//gi;
+				$email_list =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION: $email_list -----\n\n";
+			}
+		else
+			{$email_list = '';}
+
+		if ($args =~ /--email-sender=/i)
+			{
+			@data_in = split(/--email-sender=/,$args);
+				$email_sender = $data_in[1];
+				$email_sender =~ s/ .*//gi;
+				$email_sender =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION SENDER: $email_sender -----\n\n";
+			}
+		else
+			{$email_sender = 'vicidial@localhost';}
+
 		}
 	}
-}
 else
-{
-print "no command line options set\n";
-$args = "";
-$i=0;
-$forcelistid = '';
-$format='standard';
-}
+	{
+	print "no command line options set\n";
+	$args = "";
+	$i=0;
+	$forcelistid = '';
+	$format='standard';
+	}
 ### end parsing run-time options ###
 
 $i=0;
@@ -254,8 +308,51 @@ $dir2 = "$PATHhome/LEADS_IN/DONE";
 
 	if($DBX){print STDERR "\nLEADS_IN directory: |$dir1|\n";}
 
- opendir(FILE, "$dir1/");
- @FILES = readdir(FILE);
+if ($ftp_pull > 0)
+	{
+	use Net::FTP;
+
+	$files_copied_count=0;
+
+	$ftp = Net::FTP->new("$VARREPORT_host", Port => "$VARREPORT_port", Debug => "$DBX",  Passive => 1)
+					or die "Can't connect: $@\n";
+	$ftp->login("$VARREPORT_user","$VARREPORT_pass") or die "Cannot log in /: $!";
+	  @FILES = $ftp->dir("$ftp_dir")
+	or die "Can't get a list of files in $ftp_dir: $!";
+
+	foreach(@FILES)
+		{
+		if ($DBX > 0) {print "$FILES[$i]\n";}
+		if ($FILES[$i] !~ /^d/i)
+			{
+			chomp($FILES[$i]);
+			@FILEDETAILS = split(/ \d\d:\d\d /, $FILES[$i]);
+			$FILES[$i] = "$FILEDETAILS[1]";
+			$FILES[$i] =~ s/ *$//gi;
+
+			if (length($FILES[$i]) > 4)
+				{
+				$GOODfname = $FILES[$i];
+				$FILES[$i] =~ s/ /_/gi;
+				$FILES[$i] =~ s/\(|\)|\||\\|\/|\'|\"|//gi;
+				$ftp->rename("$ftp_dir/$GOODfname","$ftp_dir/$FILES[$i]");
+				$FILEname = $FILES[$i];
+				$ftp->get("$ftp_dir/$FILES[$i]", "$dir1/$FILES[$i]");
+
+				if (!$TEST) {$ftp->rename("$ftp_dir/$FILES[$i]", "$ftp_dir/DONE/$FILES[$i]");}
+				if ($DB > 0) {print "FTP FILE COPIED: $FILES[$i]\n";}
+				$files_copied_count++;
+				}
+			}
+		$i++;
+		}
+	if (!$q) {print "$ftp_dir - $VARREPORT_host - $#FILES - $files_copied_count\n";}
+	}
+
+
+@FILES=@MT;
+opendir(FILE, "$dir1/");
+@FILES = readdir(FILE);
 
 foreach(@FILES)
    {
@@ -339,7 +436,7 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 
 # This is the format for the minicsv lead files
 #"105 Fifth St","Steinhatchee","Frank Smith","3525556601","FL","32359"
-	if ($format=='minicsv')
+	if ($format =~ /minicsv/)
 		{
 		@name=@MT;
 		$vendor_lead_code =		'';
@@ -418,6 +515,8 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 		{
 		$phone_code =	$forcephonecode;	# set phone_code to override value
 		}
+
+	if ($DBX) {print "$a|$phone_number\n";}
 
 	##### Check for duplicate phone numbers in vicidial_list table entire database #####
 	if ($dupchecksys > 0)
@@ -747,9 +846,9 @@ if ($DB) {print "SEED TIME  $secX      :   $year-$mon-$mday $hour:$min:$sec  LOC
 	else
 		{
 		if ($dup_lead > 0)
-			{print "DUPLICATE: $phone|$list_id|$dup_lead_list|";   $f++;}
+			{print "DUPLICATE: $phone_number|$list_id|$dup_lead_list|$a\n";   $f++;}
 		else
-			{print "BAD Home_Phone: $phone|$vendor_id";   $e++;}
+			{print "BAD Home_Phone: $phone_number|$vendor_id|$a\n";   $e++;}
 		}
 	
 	$a++;
@@ -780,33 +879,31 @@ if (length($multistmt) > 10)
 	$c++;
 	}
 
+
 	### open the stats out file for writing ###
 	open(Sout, ">>$VDHLOGfile")
 			|| die "Can't open $VDHLOGfile: $!\n";
 
 
 	### close file handler and DB connections ###
-	print "\n\nTOTALS FOR $FILEname:\n";
-	print "Transactions sent:$a\n";
-	print "INSERTED:         $b\n";
-	print "INSERT STATEMENTS:$c\n";
-	print "ERROR:            $e\n";
+	$Falert  = "\n\nTOTALS FOR $FILEname:\n";
+	$Falert .= "Lines in lead file: $a\n";
+	$Falert .= "INSERTED:           $b\n";
+	$Falert .= "INSERT STATEMENTS:  $c\n";
+	$Falert .= "ERROR:              $e\n";
 	if ($f > 0)
-		{print "DUPLICATES:       $f\n";}
+		{$Falert .= "DUPLICATES:         $f\n";}
 
-	print Sout "\nTOTALS FOR $FILEname:\n";
-	print Sout "Transactions sent:$a\n";
-	print Sout "INSERTED:         $b\n";
-	print Sout "INSERT STATEMENTS:$c\n";
-	print Sout "ERROR:            $e\n";
-	if ($f > 0)
-		{print Sout "DUPLICATES:       $f\n";}
+	print "$Falert";
+	print Sout "$Falert";
+	$Ealert .= "$Falert";
 
 	close(infile);
 	close(Sout);
 	chmod 0777, "$VDHLOGfile";
 
-			if (!$T) {`mv -f $dir1/$FILEname $dir2/$FILEname`;}
+	### Move file to the DONE directory locally
+	if (!$T) {`mv -f $dir1/$FILEname $dir2/$FILEname`;}
 
 			}
 		}
@@ -822,6 +919,28 @@ $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
 print "script execution time in seconds: $secZ     minutes: $secZm\n";
+
+
+###### EMAIL SECTION
+
+if ( (length($Ealert)>5) && (length($email_list) > 3) )
+	{
+	print "Sending email: $email_list\n";
+
+	use MIME::QuotedPrint;
+	use MIME::Base64;
+	use Mail::Sendmail;
+
+	$mailsubject = "VICIDIAL LEAD FILE LOAD $pulldate0";
+
+	  %mail = ( To      => "$email_list",
+							From    => "$email_sender",
+							Subject => "$mailsubject",
+							Message => "VICIDIAL LEAD FILE LOAD $pulldate0\n\n$Ealert\n"
+					   );
+			sendmail(%mail) or die $mail::Sendmail::error;
+		   print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
+	}
 
 exit;
 
