@@ -68,6 +68,7 @@
 # 80501-0515 - added after hours transfer in-group
 # 80525-1040 - added ability to convert IVR status inbound calls to LIVE in-group calls
 # 80630-2232 - added queue_log logging of inbound calls
+# 80821-0133 - fixed non-play issue with hold message
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -1441,6 +1442,7 @@ if ($hold_message_counter > $prompt_interval)
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
 
+	$AGI->stream_file('sip-silence'); # stop music-on-hold process
 	$AGI->stream_file('sip-silence'); # stop music-on-hold process
 	$AGI->stream_file("$onhold_prompt_filename"); # this prompt must be less than 10 seconds long
 	$hold_message_counter = 0;
