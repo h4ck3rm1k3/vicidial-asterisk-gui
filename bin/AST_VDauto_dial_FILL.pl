@@ -22,6 +22,7 @@
 # 71111-2349 - fixed overdialing bug
 # 80227-0406 - fixed auto-alt-dial and added queue_priority
 # 80713-0624 - Added vicidial_list_last_local_call_time field
+# 80831-0400 - Added new alt-dial options
 #
 
 
@@ -644,18 +645,43 @@ while($one_day_interval > 0)
 											if ($Lsec < 10) {$Lsec = "0$Lsec";}
 												$LLCT_DATE = "$Lyear-$Lmon-$Lmday $Lhour:$Lmin:$Lsec";
 
-											if ( ($alt_dial =~ /ALT|ADDR3/) && ($DBIPautoaltdial[$camp_CIPct] =~ /ALT|ADDR/) )
+											if ( ($alt_dial =~ /ALT|ADDR3|X/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT|ADDR|X/) )
 												{
-												if ( ($alt_dial =~ /ALT/) && ($DBIPautoaltdial[$camp_CIPct] =~ /ALT/) )
+												if ( ($alt_dial =~ /ALT/) && ($DBIPautoaltdial[$user_CIPct] =~ /ALT/) )
 													{
 													$alt_phone =~ s/\D//gi;
 													$phone_number = $alt_phone;
 													}
-												if ( ($alt_dial =~ /ADDR3/) && ($DBIPautoaltdial[$camp_CIPct] =~ /ADDR3/) )
+												if ( ($alt_dial =~ /ADDR3/) && ($DBIPautoaltdial[$user_CIPct] =~ /ADDR3/) )
 													{
 													$address3 =~ s/\D//gi;
 													$phone_number = $address3;
 													}
+												if  ( ($alt_dial =~ /^X/) && ($DBIPautoaltdial[$user_CIPct] =~ /^X/) )
+													{
+													if ($alt_dial =~ /LAST/) 
+														{
+														$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' order by alt_phone_count desc limit 1;";
+														}
+													else
+														{
+														$Talt_dial = $alt_dial;
+														$Talt_dial =~ s/\D//gi;
+														$stmtA = "SELECT phone_code,phone_number FROM vicidial_list_alt_phones where lead_id='$lead_id' and alt_phone_count='$Talt_dial';";										
+														}
+													$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+													$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+													$sthArows=$sthA->rows;
+													if ($sthArows > 0)
+														{
+														@aryA = $sthA->fetchrow_array;
+														$phone_code	=	"$aryA[0]";
+														$phone_number =	"$aryA[1]";
+														$phone_number =~ s/\D//gi;
+														}
+													$sthA->finish();
+													}
+
 												$stmtA = "UPDATE vicidial_list set called_since_last_reset='$CSLR',user='VDAD',last_local_call_time='$LLCT_DATE' where lead_id='$lead_id'";
 												}
 											else
@@ -690,7 +716,9 @@ while($one_day_interval > 0)
 
 												if ($lists_update !~ /'$list_id'/) {$lists_update .= "'$list_id',"; $LUcount++;}
 
-											   $lead_id_call_list .= "$lead_id|";
+												$lead_id_call_list .= "$lead_id|";
+
+												if (length($alt_dial)<1) {$alt_dial='MAIN';}
 
 												### whether to omit phone_code or not
 												if ($DBIPomitcode[$camp_CIPct] > 0) 

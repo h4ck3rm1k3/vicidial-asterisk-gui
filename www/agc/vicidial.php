@@ -185,10 +185,13 @@
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 # 80709-0358 - Added Default alt phone dial hard-code option
 # 80719-1147 - Changed recording and senddtmf conf prefix
+# 80815-1014 - Added manual dial list restriction option
+# 80823-2123 - Fixed form scroll for IE, added copy to clipboard(IE-only feature)
+# 80831-0548 - Added Extended alt-dial-phone display information for non-manual calls
 #
 
-$version = '2.0.5-163';
-$build = '80719-1147';
+$version = '2.0.5-166';
+$build = '80831-0548';
 
 require("dbconnect.php");
 
@@ -788,7 +791,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -827,6 +830,9 @@ $VDloginDISPLAY=0;
 				$xfer_groups =				$row[32];
 				$disable_alter_custphone =	$row[33];
 				$display_queue_count =		$row[34];
+				$manual_dial_filter =		$row[35];
+				$CopY_tO_ClipboarD =		$row[36];
+
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -1983,7 +1989,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var vdc_customer_date_format = '<? echo $vdc_customer_date_format ?>';
 	var vdc_header_phone_format = '<? echo $vdc_header_phone_format ?>';
 	var disable_alter_custphone = '<? echo $disable_alter_custphone ?>';
+	var manual_dial_filter = '<? echo $manual_dial_filter ?>';
+	var CopY_tO_ClipboarD = '<? echo $CopY_tO_ClipboarD ?>';
 	var inOUT = 'OUT';
+	var useIE = '<? echo $useIE ?>';
+	var random = '<? echo $random ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -3016,7 +3026,16 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Insert or update the vicidial_log entry for a customer call
 	function DialLog(taskMDstage)
 		{
-		if (taskMDstage == "start") {var MDlogEPOCH = 0;}
+		if (taskMDstage == "start") 
+			{
+			var MDlogEPOCH = 0;
+			var UID_test = document.vicidial_form.uniqueid.value;
+			if (UID_test.length < 4)
+				{
+				UID_test = epoch_sec + '.' + random;
+				document.vicidial_form.uniqueid.value = UID_test;
+				}
+			}
 		else
 			{
 			if (alt_phone_dialing == 1)
@@ -3058,7 +3077,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			"&list_id=" + document.vicidial_form.list_id.value + 
 			"&length_in_sec=0&phone_code=" + document.vicidial_form.phone_code.value + 
 			"&phone_number=" + lead_dial_number + 
-			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&DB=0";
+			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&alt_dial=" + dialed_label + "&DB=0";
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		//		document.getElementById("busycallsdebug").innerHTML = "vdc_db_query.php?" + manDiaLlog_query;
@@ -3560,7 +3579,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + dial_timeout + "&dial_prefix=" + dial_prefix + "&campaign_cid=" + campaign_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&omit_phone_code=" + omit_phone_code;
+			manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + dial_timeout + "&dial_prefix=" + dial_prefix + "&campaign_cid=" + campaign_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter;
+		//			alert(manual_dial_filter + "\n" +manDiaLnext_query);
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(manDiaLnext_query); 
@@ -3569,20 +3589,42 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 					{
 					var MDnextResponse = null;
-				//	alert(xmlhttp.responseText);
+			//		alert(xmlhttp.responseText);
 					MDnextResponse = xmlhttp.responseText;
 
 					var MDnextResponse_array=MDnextResponse.split("\n");
 					MDnextCID = MDnextResponse_array[0];
-					if ( (MDnextCID == "HOPPER EMPTY") || (MDnextCID == "DNC NUMBER") )
-						{
-						if (MDnextCID == "HOPPER EMPTY")
-							{alert("No more leads in the hopper for campaign:\n" + campaign);}
-						else
-							{alert("This phone number is in the DNC list:\n" + mdnPhonENumbeR);}
-						
-						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
 
+					var regMNCvar = new RegExp("HOPPER","ig");
+					var regMDFvarDNC = new RegExp("DNC","ig");
+					var regMDFvarCAMP = new RegExp("CAMPLISTS","ig");
+					if ( (MDnextCID.match(regMNCvar)) || (MDnextCID.match(regMDFvarDNC)) || (MDnextCID.match(regMDFvarCAMP)) )
+						{
+						var alert_displayed=0;
+						alt_phone_dialing=starting_alt_phone_dialing;
+						auto_dial_level=starting_dial_level;
+						MainPanelToFront();
+						CalLBacKsCounTCheck();
+
+						if (MDnextCID.match(regMNCvar))
+							{alert("No more leads in the hopper for campaign:\n" + campaign);   alert_displayed=1;}
+						if (MDnextCID.match(regMDFvarDNC))
+							{alert("This phone number is in the DNC list:\n" + mdnPhonENumbeR);   alert_displayed=1;}
+						if (MDnextCID.match(regMDFvarCAMP))
+							{alert("This phone number is not in the campaign lists:\n" + mdnPhonENumbeR);   alert_displayed=1;}
+						if (alert_displayed==0)						
+							{alert("Unspecified error:\n" + mdnPhonENumbeR + "|" + MDnextCID);   alert_displayed=1;}
+
+						if (starting_dial_level == 0)
+							{
+							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+							}
+						else
+							{
+							document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
+							document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+							reselect_alt_dial = 0;
+							}
 						}
 					else
 						{
@@ -3636,7 +3678,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var status_display_number = phone_number_format(dispnum);
 
 						document.getElementById("MainStatuSSpan").innerHTML = " Calling: " + status_display_number + " UID: " + MDnextCID + " &nbsp; " + man_status;
-						if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
+						if ( (dialed_label.length < 2) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
 						var gIndex = 0;
 						if (document.vicidial_form.gender.value == 'M') {var gIndex = 1;}
@@ -3911,6 +3953,28 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				WebFormRefresH('');
 				}
 			}
+		if (dialed_label == 'ALT')
+			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: ALT </B>";}
+		if (dialed_label == 'ADDR3')
+			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: ADDRESS3 </B>";}
+		var REGalt_dial = new RegExp("X","g");
+		if (dialed_label.match(REGalt_dial))
+			{
+			document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: " + dialed_label + "</B>";
+			document.getElementById("EAcommentsBoxA").innerHTML = "<b>Phone Code and Number: </b>" + EAphone_code + " " + EAphone_number;
+
+			var EAactive_link = '';
+			if (EAalt_phone_active == 'Y') 
+				{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','N');\">Change this phone number to INACTIVE</a>";}
+			else
+				{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','Y');\">Change this phone number to ACTIVE</a>";}
+
+			document.getElementById("EAcommentsBoxB").innerHTML = "<b>Active: </b>" + EAalt_phone_active + "<BR>" + EAactive_link;
+			document.getElementById("EAcommentsBoxC").innerHTML = "<b>Alt Count: </b>" + EAalt_phone_count;
+			document.getElementById("EAcommentsBoxD").innerHTML = "<b>Notes: </b><br>" + EAalt_phone_notes;
+			showDiv('EAcommentsBox');
+			}
+
 		var xmlhttp=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
@@ -4126,6 +4190,55 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 
+// ################################################################################
+// Check to see if there is a call being sent from the auto-dialer to agent conf
+	function alt_phone_change(APCphone,APCcount,APCleadID,APCactive)
+		{
+
+		var EAactive_link = '';
+		if (APCactive == 'Y') 
+			{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','N');\">Change this phone number to INACTIVE</a>";}
+		else
+			{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','Y');\">Change this phone number to ACTIVE</a>";}
+
+		document.getElementById("EAcommentsBoxB").innerHTML = "<b>Active: </b>" + EAalt_phone_active + "<BR>" + EAactive_link;
+
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			APC_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ACTION=alt_phone_change" + "&phone_number=" + APCphone + "&lead_id=" + APCleadID + "&called_count=" + APCcount + "&stage=" + APCactive;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(APC_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+			//		alert(xmlhttp.responseText);
+					}
+				}
+			delete xmlhttp;
+			}
+		}
+
 
 // ################################################################################
 // Check to see if there is a call being sent from the auto-dialer to agent conf
@@ -4272,6 +4385,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							dialed_number									= check_VDIC_array[36];
 							dialed_label									= check_VDIC_array[37];
 							source_id										= check_VDIC_array[38];
+							EAphone_code									= check_VDIC_array[39];
+							EAphone_number									= check_VDIC_array[40];
+							EAalt_phone_notes								= check_VDIC_array[41];
+							EAalt_phone_active								= check_VDIC_array[42];
+							EAalt_phone_count								= check_VDIC_array[43];
 							
 							var gIndex = 0;
 							if (document.vicidial_form.gender.value == 'M') {var gIndex = 1;}
@@ -4281,8 +4399,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							lead_dial_number = document.vicidial_form.phone_number.value;
 							var dispnum = document.vicidial_form.phone_number.value;
 							var status_display_number = phone_number_format(dispnum);
+							var callnum = dialed_number;
+							var dial_display_number = phone_number_format(callnum);
 
-							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + status_display_number + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
+							document.getElementById("MainStatuSSpan").innerHTML = " Incoming: " + dial_display_number + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
 
 							if (LeaDPreVDispO == 'CALLBK')
 								{
@@ -4293,6 +4413,27 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent: </b>" + CBuser;
 								document.getElementById("CBcommentsBoxD").innerHTML = "<b>Comments: </b><br>" + CBcomments;
 								showDiv('CBcommentsBox');
+								}
+							if (dialed_label == 'ALT')
+								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: ALT </B>";}
+							if (dialed_label == 'ADDR3')
+								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: ADDRESS3 </B>";}
+							var REGalt_dial = new RegExp("X","g");
+							if (dialed_label.match(REGalt_dial))
+								{
+								document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT DIAL NUMBER: " + dialed_label + "</B>";
+								document.getElementById("EAcommentsBoxA").innerHTML = "<b>Phone Code and Number: </b>" + EAphone_code + " " + EAphone_number;
+
+								var EAactive_link = '';
+								if (EAalt_phone_active == 'Y') 
+									{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','N');\">Change this phone number to INACTIVE</a>";}
+								else
+									{EAactive_link = "<a href=\"#\" onclick=\"alt_phone_change('" + EAphone_number + "','" + EAalt_phone_count + "','" + document.vicidial_form.lead_id.value + "','Y');\">Change this phone number to ACTIVE</a>";}
+
+								document.getElementById("EAcommentsBoxB").innerHTML = "<b>Active: </b>" + EAalt_phone_active + "<BR>" + EAactive_link;
+								document.getElementById("EAcommentsBoxC").innerHTML = "<b>Alt Count: </b>" + EAalt_phone_count;
+								document.getElementById("EAcommentsBoxD").innerHTML = "<b>Notes: </b>" + EAalt_phone_notes;
+								showDiv('EAcommentsBox');
 								}
 
 							if (VDIC_data_VDIG[1].length > 0)
@@ -4332,7 +4473,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								{var group = VDCL_group_id;}
 							else
 								{var group = campaign;}
-							if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
+							if ( (dialed_label.length < 2) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
 							var genderIndex = document.getElementById("gender_list").selectedIndex;
 							var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
@@ -4430,6 +4571,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								}
 
+							if ( (CopY_tO_ClipboarD != 'NONE') && (useIE > 0) )
+								{
+								var tmp_clip = document.getElementById(CopY_tO_ClipboarD);
+								window.clipboardData.setData('Text', tmp_clip.value)
+								}
+
 							}
 						else
 							{
@@ -4445,17 +4592,20 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // refresh the content of the web form URL
-	function WebFormRefresH(taskrefresh) 
+	function WebFormRefresH(taskrefresh,submittask) 
 		{
 		if (VDCL_group_id.length > 1)
 			{var group = VDCL_group_id;}
 		else
 			{var group = campaign;}
-		if ( (dialed_label.length < 3) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
+		if ( (dialed_label.length < 2) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
-		var genderIndex = document.getElementById("gender_list").selectedIndex;
-		var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
-		document.vicidial_form.gender.value = genderValue;
+		if (submittask != 'YES')
+			{
+			var genderIndex = document.getElementById("gender_list").selectedIndex;
+			var genderValue =  document.getElementById('gender_list').options[genderIndex].value;
+			document.vicidial_form.gender.value = genderValue;
+			}
 
 		web_form_vars = 
 		"lead_id=" + document.vicidial_form.lead_id.value + 
@@ -5073,7 +5223,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 			LeaDDispO = DispoChoice;
 	
-			WebFormRefresH();
+			WebFormRefresH('NO','YES');
 
 			window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 
@@ -5177,6 +5327,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					manual_dial_finished();
 					}
+				document.getElementById("GENDERhideFORie").innerHTML = '<span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span>';
 				hideDiv('DispoSelectBox');
 				hideDiv('DispoButtonHideA');
 				hideDiv('DispoButtonHideB');
@@ -5186,6 +5337,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Hangup Again</a>";
 
 				CBcommentsBoxhide();
+				EAcommentsBoxhide();
 
 				AgentDispoing = 0;
 
@@ -6075,6 +6227,27 @@ function phone_number_format(formatphone) {
 
 
 // ################################################################################
+// Hide the EAcommentsBox span upon click
+	function EAcommentsBoxhide(minimizetask)
+		{
+		hideDiv('EAcommentsBox');
+		if (minimizetask=='YES')
+			{showDiv('EAcommentsMinBox');}
+		else
+			{hideDiv('EAcommentsMinBox');}
+		}
+
+
+// ################################################################################
+// Show the EAcommentsBox span upon click
+	function EAcommentsBoxshow()
+		{
+		showDiv('EAcommentsBox');
+		hideDiv('EAcommentsMinBox');
+		}
+
+
+// ################################################################################
 // Populating the date field in the callback frame prior to submission
 	function CB_date_pick(taskdate)
 		{
@@ -6194,6 +6367,8 @@ else
 			{
 			hideDiv('NothingBox');
 			hideDiv('CBcommentsBox');
+			hideDiv('EAcommentsBox');
+			hideDiv('EAcommentsMinBox');
 			hideDiv('HotKeyActionBox');
 			hideDiv('HotKeyEntriesBox');
 			hideDiv('MainPanel');
@@ -6277,6 +6452,7 @@ else
 					wrapup_waiting=1;
 					}
 				CustomerData_update();
+				document.getElementById("GENDERhideFORie").innerHTML = '';
 				showDiv('DispoSelectBox');
 				DispoSelectContent_create('','ReSET');
 				WaitingForNextStep=1;
@@ -6849,7 +7025,8 @@ else
    .skb_text {font-size: 13px;  font-family: sans-serif; font-weight: bold;}
    .ON_conf {font-size: 11px;  font-family: monospace; color: black; background: #FFFF99}
    .OFF_conf {font-size: 11px;  font-family: monospace; color: black; background: #FFCC77}
-   .cust_form {font-family: sans-serif; font-size: 10px; overflow: auto}
+   .cust_form {font-family: sans-serif; font-size: 10px; overflow: hidden}
+   .cust_form_text {font-family: sans-serif; font-size: 10px; overflow: auto}
 
 -->
 </style>
@@ -7055,7 +7232,31 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:12px;z-index:26;" id="NoneInSessionBox">
+<span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:26;" id="EAcommentsBox">
+    <table border=0 bgcolor="#FFFFCC" width=<?=$HCwidth ?> height=70>
+	<TR bgcolor="#FFFF66">
+	<TD align=left><font class="sh_text"> Extended Alt Phone Information: </font></td>
+	<TD align=right><font class="sk_text"> <a href="#" onclick="EAcommentsBoxhide('YES');return false;">minimize</a> </font></td>
+	</tr><tr>
+	<TD VALIGN=top><font class="sk_text">
+	<span id="EAcommentsBoxC"></span><BR>
+	<span id="EAcommentsBoxB"></span><BR>
+	</font></TD>
+	<TD width=320 VALIGN=top><font class="sk_text">
+	<span id="EAcommentsBoxA"></span><BR>
+	<span id="EAcommentsBoxD"></span>
+	</font></TD>
+	</TR></TABLE>
+</span>
+
+<span style="position:absolute;left:695px;top:<?=$HTheight ?>px;z-index:27;" id="EAcommentsMinBox">
+    <table border=0 bgcolor="#FFFFCC" width=40 height=20>
+	<TR bgcolor="#FFFF66">
+	<TD align=left><font class="sk_text"><a href="#" onclick="EAcommentsBoxshow();return false;">maximize</a> <BR>Alt Phone Info</font></td>
+	</tr></TABLE>
+</span>
+
+<span style="position:absolute;left:0px;top:12px;z-index:28;" id="NoneInSessionBox">
     <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Noone is in your session: <span id="NoneInSessionID"></span><BR>
 	<a href="#" onclick="NoneInSessionOK();return false;">Go Back</a>
 	<BR><BR>
@@ -7063,7 +7264,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:27;" id="CustomerGoneBox">
+<span style="position:absolute;left:0px;top:0px;z-index:29;" id="CustomerGoneBox">
     <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Customer has hung up: <span id="CustomerGoneChanneL"></span><BR>
 	<a href="#" onclick="CustomerGoneOK();return false;">Go Back</a>
 	<BR><BR>
@@ -7072,7 +7273,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:28;" id="WrapupBox">
+<span style="position:absolute;left:0px;top:0px;z-index:30;" id="WrapupBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=550><TR><TD align=center> Call Wrapup: <span id="WrapupTimer"></span> seconds remaining in wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
@@ -7081,28 +7282,28 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:29;" id="AgenTDisablEBoX">
+<span style="position:absolute;left:0px;top:0px;z-index:31;" id="AgenTDisablEBoX">
     <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
 </TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:30;" id="LogouTBox">
+<span style="position:absolute;left:0px;top:0px;z-index:32;" id="LogouTBox">
     <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:70px;z-index:31;" id="DispoButtonHideA">
+<span style="position:absolute;left:0px;top:70px;z-index:33;" id="DispoButtonHideA">
     <table border=0 bgcolor="#CCFFCC" width=165 height=22><TR><TD align=center VALIGN=top></TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:138px;z-index:32;" id="DispoButtonHideB">
+<span style="position:absolute;left:0px;top:138px;z-index:34;" id="DispoButtonHideB">
     <table border=0 bgcolor="#CCFFCC" width=165 height=250><TR><TD align=center VALIGN=top>&nbsp;</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:33;" id="DispoButtonHideC">
+<span style="position:absolute;left:0px;top:0px;z-index:35;" id="DispoButtonHideC">
     <table border=0 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=47><TR><TD align=center VALIGN=top>Any changes made to the customer information below at this time will not be comitted, You must change customer information before you Hangup the call. </TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:34;" id="DispoSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:36;" id="DispoSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
 	<span id="DispoSelectContent"> End-of-call Disposition Selection </span>
 	<input type=hidden name=DispoSelection><BR>
@@ -7115,7 +7316,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:40;" id="PauseCodeSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:42;" id="PauseCodeSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> SELECT A PAUSE CODE :<BR>
 	<span id="PauseCodeSelectContent"> Pause Code Selection </span>
 	<input type=hidden name=PauseCodeSelection>
@@ -7123,7 +7324,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:35;" id="CallBackSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:37;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN ID="CallBackDatESelectioN">
 	<input type=hidden name=CallBackTimESelectioN ID="CallBackTimESelectioN">
@@ -7176,7 +7377,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:36;" id="CloserSelectBox">
+<span style="position:absolute;left:0px;top:0px;z-index:40;" id="CloserSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
 	<span id="CloserSelectContent"> Closer Inbound Group Selection </span>
 	<input type=hidden name=CloserSelectList><BR>
@@ -7187,7 +7388,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:37;" id="NothingBox">
+<span style="position:absolute;left:0px;top:0px;z-index:41;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="./images/blank.gif"></BUTTON>
 	<span id="DiaLLeaDPrevieWHide">Channel</span>
 	<span id="DiaLDiaLAltPhonEHide">Channel</span>
@@ -7293,7 +7494,7 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; State: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PostCode: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Province: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
 <td align=left><font class="body_text">
@@ -7320,7 +7521,7 @@ else
 <font class="body_text">
 <?
 if ( ($multi_line_comments) )
-	{echo "<TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form\" value=\"\"></TEXTAREA>\n";}
+	{echo "<TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form_text\" value=\"\"></TEXTAREA>\n";}
 else
 	{echo "<input type=text size=65 name=comments maxlength=255 class=\"cust_form\" value=\"\">\n";}
 ?>

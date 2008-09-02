@@ -13,7 +13,7 @@
 #  - $pass
 # optional variables:
 #  - $format - ('text','debug')
-#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit','LogiNCamPaigns')
+#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit','LogiNCamPaigns','alt_phone_change')
 #  - $stage - ('start','finish','lookup','new')
 #  - $closer_choice - ('CL_TESTCAMP_L CL_OUT123_L -')
 #  - $conf_exten - ('8600011',...)
@@ -72,6 +72,7 @@
 #  - $LogouTKicKAlL - ('0','1');
 #  - $closer_blended = ('0','1');
 #  - $inOUT = ('IN','OUT');
+#  - $manual_dial_filter = ('NONE','CAMPLISTS','DNC','CAMPLISTS_DNC');
 
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -156,10 +157,12 @@
 # 80713-0624 - Added vicidial_list.last_local_call_time field
 # 80717-1604 - Modified logging function to use inOUT to determine call direction and place to log
 # 80719-1147 - Changed recording conf prefix
+# 80815-1019 - Added manual dial list restriction option
+# 80831-0545 - Added extended alt dial number info display support
 #
 
-$version = '2.0.5-79';
-$build = '80719-1147';
+$version = '2.0.5-81';
+$build = '80831-0545';
 
 require("dbconnect.php");
 
@@ -298,6 +301,10 @@ if (isset($_GET["closer_blended"]))				{$closer_blended=$_GET["closer_blended"];
 	elseif (isset($_POST["closer_blended"]))	{$closer_blended=$_POST["closer_blended"];}
 if (isset($_GET["inOUT"]))						{$inOUT=$_GET["inOUT"];}
 	elseif (isset($_POST["inOUT"]))				{$inOUT=$_POST["inOUT"];}
+if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_dial_filter"];}
+	elseif (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
+if (isset($_GET["alt_dial"]))					{$alt_dial=$_GET["alt_dial"];}
+	elseif (isset($_POST["alt_dial"]))			{$alt_dial=$_POST["alt_dial"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -585,7 +592,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		{
 		if (strlen($phone_number)>3)
 			{
-			if ($use_internal_dnc=='Y')
+			if (ereg("DNC",$manual_dial_filter))
 				{
 				$stmt="SELECT count(*) FROM vicidial_dnc where phone_number='$phone_number';";
 				$rslt=mysql_query($stmt, $link);
@@ -595,6 +602,33 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if ($row[0] > 0)
 					{
 					echo "DNC NUMBER\n";
+					exit;
+					}
+				}
+			if (ereg("CAMPLISTS",$manual_dial_filter))
+				{
+				$stmt="SELECT list_id,active from vicidial_lists where campaign_id='$campaign'";
+				$rslt=mysql_query($stmt, $link);
+				$lists_to_parse = mysql_num_rows($rslt);
+				$camp_lists='';
+				$o=0;
+				while ($lists_to_parse > $o) 
+					{
+					$rowx=mysql_fetch_row($rslt);
+					if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
+					if (ereg("N", $rowx[1])) {$inactive_lists++;}
+					$o++;
+					}
+				$camp_lists = eregi_replace(".$","",$camp_lists);
+
+				$stmt="SELECT count(*) FROM vicidial_list where phone_number='$phone_number' and list_id IN($camp_lists);";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysql_fetch_row($rslt);
+				
+				if ($row[0] < 1)
+					{
+					echo "NUMBER NOT IN CAMPLISTS\n";
 					exit;
 					}
 				}
@@ -933,6 +967,33 @@ if ($ACTION == 'manDiaLnextCaLL')
 
 
 ################################################################################
+### alt_phone_change - change alt phone numbers to active and inactive
+### 
+################################################################################
+if ($ACTION == 'alt_phone_change')
+{
+	$MT[0]='';
+	$row='';   $rowx='';
+	$channel_live=1;
+	if ( (strlen($stage)<1) || (strlen($called_count)<1) || (strlen($lead_id)<1)  || (strlen($phone_number)<1) )
+		{
+		$channel_live=0;
+		echo "ALT PHONE NUMBER STATUS NOT CHANGED\n";
+		echo "$phone_number $stage $lead_id or $called_count is not valid\n";
+		exit;
+		}
+	else
+		{
+		$stmt = "UPDATE vicidial_list_alt_phones set active='$stage' where lead_id='$lead_id' and phone_number='$phone_number' and alt_phone_count='$called_count';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "ALT PHONE NUMBER STATUS CHANGED\n";
+		}
+}
+
+
+################################################################################
 ### manDiaLskip - for manual VICIDiaL dialing this skips the lead that was
 ###               previewed in the step above and puts it back in orig status
 ################################################################################
@@ -1174,7 +1235,7 @@ if ($stage == "start")
 				$user_group =		trim("$row[0]");
 				}
 		##### insert log into vicidial_log for manual VICIDiaL call
-		$stmt="INSERT INTO vicidial_log (uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,comments,processed,user_group) values('$uniqueid','$lead_id','$list_id','$campaign','$NOW_TIME','$StarTtime','INCALL','$phone_code','$phone_number','$user','MANUAL','N','$user_group');";
+		$stmt="INSERT INTO vicidial_log (uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,comments,processed,user_group,alt_dial) values('$uniqueid','$lead_id','$list_id','$campaign','$NOW_TIME','$StarTtime','INCALL','$phone_code','$phone_number','$user','MANUAL','N','$user_group','$alt_dial');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
@@ -1357,22 +1418,14 @@ if ($stage == "end")
 				$auto_alt_dial =$row[0];
 				}
 			else {$auto_alt_dial = 'NONE';}
-			if (eregi("(ALT_ONLY|ADDR3_ONLY|ALT_AND_ADDR3)",$auto_alt_dial))
+			if (eregi("(ALT_ONLY|ADDR3_ONLY|ALT_AND_ADDR3|ALT_AND_EXTENDED|ALT_AND_ADDR3_AND_EXTENDED|EXTENDED_ONLY)",$auto_alt_dial))
 				{
 				### check to see if lead should be alt_dialed
-				$stmt="SELECT alt_dial FROM vicidial_auto_calls where lead_id='$lead_id';";
-				$rslt=mysql_query($stmt, $link);
-				if ($DB) {echo "$stmt\n";}
-				$VAC_mancall_ct = mysql_num_rows($rslt);
-				if ($VAC_mancall_ct > 0)
-					{
-					$row=mysql_fetch_row($rslt);
-					$alt_dial =$row[0];
-					}
-				else {$alt_dial = 'NONE';}
+				if (strlen($alt_dial)<2) {$alt_dial = 'NONE';}
 
-				if ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("(ALT_ONLY|ALT_AND_ADDR3)",$auto_alt_dial)) )
+				if ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("(ALT_ONLY|ALT_AND_ADDR3|ALT_AND_EXTENDED)",$auto_alt_dial)) )
 					{
+					$alt_dial_skip=0;
 					$stmt="SELECT alt_phone,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
 					$rslt=mysql_query($stmt, $link);
 					if ($DB) {echo "$stmt\n";}
@@ -1388,14 +1441,38 @@ if ($stage == "end")
 					else {$alt_phone = '';}
 					if (strlen($alt_phone)>5)
 						{
-						### insert record into vicidial_hopper for alt_phone call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ALT',user='',priority='25';";
-						if ($DB) {echo "$stmt\n";}
-						$rslt=mysql_query($stmt, $link);
+						if (ereg("Y",$VD_use_internal_dnc))
+							{
+							$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$alt_phone';";
+							$rslt=mysql_query($stmt, $link);
+							if ($DB) {echo "$stmt\n";}
+							$VLAP_dnc_ct = mysql_num_rows($rslt);
+							if ($VLAP_dnc_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$VD_alt_dnc_count =		$row[0];
+								}
+							}
+						else {$VD_alt_dnc_count=0;}
+						if ($VD_alt_dnc_count < 1)
+							{
+							### insert record into vicidial_hopper for alt_phone call attempt
+							$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ALT',user='',priority='25';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $link);
+							}
+						else
+							{$alt_dial_skip=1;}
 						}
+					else
+						{$alt_dial_skip=1;}
+					if ($alt_dial_skip > 0)
+						{$alt_dial='ALT';}
 					}
+
 				if ( ( (eregi("(ALT)",$alt_dial)) and (eregi("ALT_AND_ADDR3",$auto_alt_dial)) ) or ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("ADDR3_ONLY",$auto_alt_dial)) ) )
 					{
+					$addr3_dial_skip=0;
 					$stmt="SELECT address3,gmt_offset_now,state FROM vicidial_list where lead_id='$lead_id';";
 					$rslt=mysql_query($stmt, $link);
 					if ($DB) {echo "$stmt\n";}
@@ -1411,10 +1488,111 @@ if ($stage == "end")
 					else {$address3 = '';}
 					if (strlen($address3)>5)
 						{
-						### insert record into vicidial_hopper for address3 call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ADDR3',user='',priority='20';";
-						if ($DB) {echo "$stmt\n";}
+						if (ereg("Y",$VD_use_internal_dnc))
+							{
+							$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$address3';";
+							$rslt=mysql_query($stmt, $link);
+							if ($DB) {echo "$stmt\n";}
+							$VLAP_dnc_ct = mysql_num_rows($rslt);
+							if ($VLAP_dnc_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$VD_alt_dnc_count =		$row[0];
+								}
+							}
+						else {$VD_alt_dnc_count=0;}
+						if ($VD_alt_dnc_count < 1)
+							{
+							### insert record into vicidial_hopper for address3 call attempt
+							$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$list_id',gmt_offset_now='$gmt_offset_now',state='$state',alt_dial='ADDR3',user='',priority='20';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $link);
+							}
+						else
+							{$addr3_dial_skip=1;}
+						}
+					else
+						{$addr3_dial_skip=1;}
+					if ($addr3_dial_skip > 0)
+						{$alt_dial='ADDR3';}
+					}
+
+	#		$fp = fopen ("./alt_multi_log.txt", "a");
+	#		fwrite ($fp, "$NOW_TIME|PRE-X|$campaign|$lead_id|$phone_number|$user|$Ctype|$callerid|$uniqueid|$stmt|$auto_alt_dial|$alt_dial\n");
+	#		fclose($fp);
+
+				if ( ( ( (eregi("(NONE|MAIN)",$alt_dial)) and (eregi("EXTENDED_ONLY",$auto_alt_dial)) ) or ( (eregi("(ALT)",$alt_dial)) and (eregi("(ALT_AND_EXTENDED)",$auto_alt_dial)) ) or ( (eregi("(ADDR3)",$alt_dial)) and (eregi("(ADDR3_AND_EXTENDED|ALT_AND_ADDR3_AND_EXTENDED)",$auto_alt_dial)) ) or ( (eregi("(X)",$alt_dial)) and (eregi("EXTENDED",$auto_alt_dial)) ) )  and (!eregi("LAST",$alt_dial)) )
+					{
+					if (eregi("(ADDR3)",$alt_dial)) {$Xlast=0;}
+					else
+						{$Xlast = ereg_replace("[^0-9]","",$alt_dial);}
+					if (strlen($Xlast)<1)
+						{$Xlast=0;}
+					$VD_altdialx='';
+
+					$stmt="SELECT gmt_offset_now,state,list_id FROM vicidial_list where lead_id='$lead_id';";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VL_deailts_ct = mysql_num_rows($rslt);
+					if ($VL_deailts_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$EA_gmt_offset_now =	$row[0];
+						$EA_state =				$row[1];
+						$EA_list_id =			$row[2];
+						}
+					$alt_dial_phones_count=0;
+					$stmt="SELECT count(*) FROM vicidial_list_alt_phones where lead_id='$lead_id';";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VLAP_ct = mysql_num_rows($rslt);
+					if ($VLAP_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$alt_dial_phones_count =	$row[0];
+						}
+					while ( ($alt_dial_phones_count > 0) and ($alt_dial_phones_count > $Xlast) )
+						{
+						$Xlast++;
+						$stmt="SELECT alt_phone_id,phone_number,active FROM vicidial_list_alt_phones where lead_id='$lead_id' and alt_phone_count='$Xlast';";
 						$rslt=mysql_query($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$VLAP_detail_ct = mysql_num_rows($rslt);
+						if ($VLAP_detail_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$VD_altdial_id =		$row[0];
+							$VD_altdial_phone =		$row[1];
+							$VD_altdial_active =	$row[2];
+							}
+						else
+							{$Xlast=9999999999;}
+
+						if (ereg("Y",$VD_altdial_active))
+							{
+							if (ereg("Y",$VD_use_internal_dnc))
+								{
+								$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_altdial_phone';";
+								$rslt=mysql_query($stmt, $link);
+								if ($DB) {echo "$stmt\n";}
+								$VLAP_dnc_ct = mysql_num_rows($rslt);
+								if ($VLAP_dnc_ct > 0)
+									{
+									$row=mysql_fetch_row($rslt);
+									$VD_alt_dnc_count =		$row[0];
+									}
+								}
+							else {$VD_alt_dnc_count=0;}
+							if ($VD_alt_dnc_count < 1)
+								{
+								if ($alt_dial_phones_count == $Xlast) 
+									{$Xlast = 'LAST';}
+								$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign',status='HOLD',list_id='$EA_list_id',gmt_offset_now='$EA_gmt_offset_now',state='$EA_state',alt_dial='X$Xlast',user='',priority='15';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_query($stmt, $link);
+								$Xlast=9999999999;
+								}
+							}
 						}
 					}
 				}
@@ -1800,6 +1978,12 @@ if ($ACTION == 'VDADcheckINCOMING')
 	$MT[0]='';
 	$row='';   $rowx='';
 	$channel_live=1;
+	$alt_phone_code='';
+	$alt_phone_number='';
+	$alt_phone_note='';
+	$alt_phone_active='';
+	$alt_phone_count='';
+
 	if ( (strlen($campaign)<1) || (strlen($server_ip)<1) )
 	{
 	$channel_live=0;
@@ -1982,6 +2166,31 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$dialed_number		=$row[0];
 				$dialed_label		=$row[1];
 				}
+			if (ereg('X',$dialed_label))
+				{
+				if (ereg('LAST',$dialed_label))
+					{
+					$stmt = "SELECT phone_code,phone_number,alt_phone_note,active,alt_phone_count FROM vicidial_list_alt_phones where lead_id='$lead_id' order by alt_phone_count desc limit 1;";
+					}
+				else
+					{
+					$Talt_dial = ereg_replace("[^0-9]","",$dialed_label);
+					$stmt = "SELECT phone_code,phone_number,alt_phone_note,active,alt_phone_count FROM vicidial_list_alt_phones where lead_id='$lead_id' and alt_phone_count='$Talt_dial';";										
+					}
+
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$VLAP_ct = mysql_num_rows($rslt);
+				if ($VLAP_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$alt_phone_code	=	$row[0];
+					$alt_phone_number = $row[1];
+					$alt_phone_note =	$row[2];
+					$alt_phone_active = $row[3];
+					$alt_phone_count =	$row[4];
+					}
+				}
 			}
 		else
 			{
@@ -2101,6 +2310,11 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$LeaD_InfO .=	$dialed_number . "\n";
 		$LeaD_InfO .=	$dialed_label . "\n";
 		$LeaD_InfO .=	$source_id . "\n";
+		$LeaD_InfO .=	$alt_phone_code . "\n";
+		$LeaD_InfO .=	$alt_phone_number . "\n";
+		$LeaD_InfO .=	$alt_phone_note . "\n";
+		$LeaD_InfO .=	$alt_phone_active . "\n";
+		$LeaD_InfO .=	$alt_phone_count . "\n";
 
 		echo $LeaD_InfO;
 

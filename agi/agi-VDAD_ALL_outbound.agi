@@ -53,6 +53,7 @@
 # 80430-1144 - added term_reason to vicidial_log, QUEUETIMEOUT
 # 80520-0059 - added SURVEY ability and digit maps
 # 80527-2329 - added SURVEYCAMP ability to pull settings from database
+# 80831-0353 - added logging of alt_dial field
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -342,7 +343,7 @@ if ($affected_rows > 0)
 	$affected_rows = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VDAD vicidial_list PU update: |$affected_rows|$uniqueid|";   &agi_output;}
 
-	$stmtA = "SELECT campaign_id,phone_number,phone_code,lead_id,call_time FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+	$stmtA = "SELECT campaign_id,phone_number,phone_code,lead_id,call_time,alt_dial FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -355,6 +356,7 @@ if ($affected_rows > 0)
 		$VDADphone_code	=	"$aryA[2]";
 		$VDADlead_id =		"$aryA[3]";
 		$VDADcall_time =	"$aryA[4]";
+		$VDADalt_dial =		"$aryA[5]";
 		 $rec_count++;
 		}
 	$sthA->finish();
@@ -383,7 +385,7 @@ if ($affected_rows > 0)
 		}
 	$sthA->finish();
 
-	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed) values('$uniqueid','$CIDlead_id','$VDADcampaign','$SQLdate','$now_date_epoch','$vdlog_status','$VDADphone_code','$VDADphone','VDAD','N')";
+	$stmtA = "INSERT INTO vicidial_log (uniqueid,lead_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,processed,alt_dial) values('$uniqueid','$CIDlead_id','$VDADcampaign','$SQLdate','$now_date_epoch','$vdlog_status','$VDADphone_code','$VDADphone','VDAD','N','$VDADalt_dial')";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rows = $dbhA->do($stmtA);
 

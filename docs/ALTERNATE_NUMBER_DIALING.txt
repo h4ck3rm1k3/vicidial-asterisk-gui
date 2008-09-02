@@ -1,3 +1,68 @@
+ALTERNATE NUMBER DIALING Redesign				2008-08-20
+
+*** THIS SECTION OUTLINES PROPOSED CHANGES TO ALT-NUMBER-DIALING  in the 2.0.5 version ***
+*** FOR INFORMATION ON THE 2.0.3 AND 2.0.4 VERSION OF ALT NUMBER DIALING LOOK BELOW THIS SECTION ***
+
+
+In order to allow for more alt-numbers per lead to dial we built a new method of storing and dialing alt-numbers for leads.
+
+CLI lead loader will be changed to allow for the importation of upto 65,000 phone numbers per lead. The new file format is shown below.
+
+vicidial.php agent screen and vdc_db_query.php scripts have been changed to allow for alt-number display and setting alt numbers to inactive if needed.
+
+AST_VDauto_dial.pl, AST_VDauto_dial_FILL.pl and the VDhangup process in FastAGI_log.pl have all been modified to work with the new alt number data structure.
+
+non_agent_api.php needs to be changed to accept new multiple-al-numbers per inserted lead.
+
+
+File structure for CLI lead loader goes here:
+
+standard
+
+vendor_lead_code|source_code|list_id|phone_code|phone_number|title|first_name|middle|last_name|address1|address2|address3|city|state|province|postal_code|country|gender|date_of_birth|alt_phone|email|security_phrase|COMMENTS|called_count|status|entry_date|multi-alt-entries
+
+3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS|2|B|2007-08-09 00:00:00|7275551212_1_work!7275551213_61_sister house!7275551214_44_neighbor
+
+The multi-alt-entries field is formatted as a field of phone-number/phone-code/phone-note set of data(phone code and alt_note are both optional and the phone code can be overridden by the force phone code flag). The record delimiter is an exclamation point with the optional phone code and note delimited within the record by an underscore character _.
+
+
+
+Changes to database:
+*** DO NOT MAKE THESE CHANGES, for documentation only ***
+
+CREATE TABLE vicidial_list_alt_phones (
+alt_phone_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+lead_id INT(9) UNSIGNED NOT NULL,
+phone_code VARCHAR(10),
+phone_number VARCHAR(18),
+alt_phone_note VARCHAR(30),
+alt_phone_count SMALLINT(5) UNSIGNED,
+active ENUM('Y','N') default 'Y',
+index (lead_id),
+index (phone_number)
+);
+
+ALTER TABLE vicidial_hopper MODIFY alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_auto_calls MODIFY alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_campaigns MODIFY auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3','ALT_AND_EXTENDED','ALT_AND_ADDR3_AND_EXTENDED','EXTENDED_ONLY') default 'NONE';
+
+ALTER TABLE vicidial_log ADD alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_campaigns ADD agent_extended_alt_dial ENUM('Y','N') default 'N';
+
+UPDATE system_settings SET db_schema_version='1104';
+
+
+
+
+
+
+
+
+
+
 ALTERNATE NUMBER DIALING Summary and Overview                         2007-01-15
 
 *** ALTERNATE NUMBER DIALING IN AUTODIAL MODE HAS BEEN ADDED IN THE 2.0.3 RELEASE ***

@@ -340,3 +340,32 @@ ALTER TABLE vicidial_status_categories ADD sale_category ENUM('Y','N') default '
 ALTER TABLE vicidial_status_categories ADD dead_lead_category ENUM('Y','N') default 'N';
 
 UPDATE system_settings SET db_schema_version='1102';
+
+ALTER TABLE vicidial_campaigns ADD manual_dial_filter VARCHAR(50) default 'NONE';
+ALTER TABLE vicidial_campaigns ADD agent_clipboard_copy VARCHAR(50) default 'NONE';
+
+UPDATE system_settings SET db_schema_version='1103';
+
+CREATE TABLE vicidial_list_alt_phones (
+alt_phone_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+lead_id INT(9) UNSIGNED NOT NULL,
+phone_code VARCHAR(10),
+phone_number VARCHAR(18),
+alt_phone_note VARCHAR(30),
+alt_phone_count SMALLINT(5) UNSIGNED,
+active ENUM('Y','N') default 'Y',
+index (lead_id),
+index (phone_number)
+);
+
+ALTER TABLE vicidial_hopper MODIFY alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_auto_calls MODIFY alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_campaigns MODIFY auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3','ALT_AND_EXTENDED','ALT_AND_ADDR3_AND_EXTENDED','EXTENDED_ONLY') default 'NONE';
+
+ALTER TABLE vicidial_log ADD alt_dial VARCHAR(6) default 'NONE';
+
+ALTER TABLE vicidial_campaigns ADD agent_extended_alt_dial ENUM('Y','N') default 'N';
+
+UPDATE system_settings SET db_schema_version='1104';

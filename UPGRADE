@@ -144,7 +144,13 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
      ; quiet monitor-only entry and leaving conferences for VICIDIAL (recording)
      exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
 
+33. Added option (for Internet Explorer users only) to copy a field to the
+   clipboard of the agent computer upon a call being sent to the agent.
 
+34. Added new alternate number dialing method which allows for over 65,000 alt
+   phone numbers per lead. Currently these extra numbers are only available for 
+   auto dialing. These extra alternate number leads must be imported with the
+   CLI lead loader(VICIDIAL_IN_new_leads_file.pl)
 
 
 

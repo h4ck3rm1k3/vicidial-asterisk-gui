@@ -19,6 +19,11 @@ The back-end process will work like this:
 
 
 
+Agent-side scripts:
+ - qc.php - the screen that agents log in to 
+ - qc_query.php - the data processing script that handles most of the AJAX queries and IFRAME displays from qc.php
+
+
 The QC agent will login to the new qc.php screen within the agc web directory. They will then have a screen very similar to the vicidial.php login screen(but in a different color) that will have a user/pass to fill in. Then when they login the QC agents with level of 1-3 will see a green screen similar to the vicidial.php inbound(CLOSER-type) screen that will show them their allowable qc inbound-groups and campaigns. The agent will then choose which in-groups and campaigns that they want to QC the records for and then they will submit and they will be logged-in to the QC system. QC agents with a qc_level of 4-5 can select to review first level reccords, review all 2nd level records, review only 2nd level changed-status or review 2nd level same-status records. QC agents with 6-7 qc_level can also have the option of entering a management screen showing more information on the QC system including committing QC records and links to QC reports.
 
 Upon login, they will be able to see the count of QC-able records and they can click on a link to bring up the next record to be QCd. 

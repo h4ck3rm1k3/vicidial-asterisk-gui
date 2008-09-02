@@ -235,6 +235,13 @@ QC Shift -<\/B> This is the shift timeframe used to pull QC records for an inbou
 The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.||
 Sale Category: ||
 Dead Lead Category: ||
+Manual Dial Filter -<\/B> This allows you to filter the calls that agents make in manual dial mode for this campaign by any combination of the following: DNC - to kick out, CAMPAIGNLISTS - the number must be within the lists for the campaign, NONE - no filter on manual dial or fast dial lists||
+Manual Dial Filter: ||
+Agent Screen Clipboard Copy -<\/B> THIS FEATURE IS CURRENTLY ONLY ENABLED FOR INTERNET EXPLORER. This feature allows you to select a field that will be copied to the computer clipboard of the agent computer upon a call being sent to an agent. Common uses for this are to allow for easy pasting of account numbers or phone numbers into legacy client applications on the agent computer||
+Agent Screen Clipboard Copy||
+EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.||
+Agent Screen Extended Alt Dial -<\/B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information||
+Agent Screen Extended Alt Dial:||
 
 
 ############################################################ CLIENT
@@ -261,6 +268,16 @@ Amount of time you have been logged-in: ||
 You logged-in at:||
 Click LOGOUT below to log-out||
 Undefined||
+This phone number is not in the campaign lists||
+Unspecified error||
+Extended Alt Phone Information: ||
+ALT DIAL NUMBER:||
+Phone Code and Number:||
+Notes: ||
+Active: ||
+Alt Count: ||
+Change this phone number to INACTIVE||
+Change this phone number to ACTIVE||
 
 
 ############################################################  MANAGER Manual

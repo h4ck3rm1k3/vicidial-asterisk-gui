@@ -290,7 +290,7 @@ user VARCHAR(20),
 list_id BIGINT(14) UNSIGNED NOT NULL,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 state VARCHAR(2) default '',
-alt_dial ENUM('NONE','ALT','ADDR3') default 'NONE',
+alt_dial VARCHAR(6) default 'NONE',
 priority TINYINT(2) default '0',
 index (lead_id)
 );
@@ -340,7 +340,7 @@ call_time DATETIME,
 call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT',
 stage VARCHAR(20) default 'START',
 last_update_time TIMESTAMP,
-alt_dial ENUM('NONE','MAIN','ALT','ADDR3') default 'NONE',
+alt_dial VARCHAR(6) default 'NONE',
 queue_priority TINYINT(2) default '0',
 index (uniqueid),
 index (callerid),
@@ -365,6 +365,7 @@ comments VARCHAR(255),
 processed ENUM('Y','N'),
 user_group VARCHAR(20),
 term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE',
+alt_dial VARCHAR(6) default 'NONE',
 index (lead_id),
 index (call_date)
 );
@@ -543,7 +544,7 @@ adaptive_latest_server_time VARCHAR(4) default '2100',
 adaptive_intensity VARCHAR(6) default '0',
 adaptive_dl_diff_target SMALLINT(3) default '0',
 concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
-auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3') default 'NONE',
+auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3','ALT_AND_EXTENDED','ALT_AND_ADDR3_AND_EXTENDED','EXTENDED_ONLY') default 'NONE',
 auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -',
 agent_pause_codes_active ENUM('Y','N') default 'N',
 campaign_description VARCHAR(255),
@@ -580,7 +581,10 @@ survey_response_digit_map VARCHAR(255) default '1-DEMOCRAT|2-REPUBLICAN|3-INDEPE
 survey_xfer_exten VARCHAR(20) default '8300',
 survey_camp_record_dir VARCHAR(255) default '/home/survey',
 disable_alter_custphone ENUM('Y','N') default 'Y',
-display_queue_count ENUM('Y','N') default 'Y'
+display_queue_count ENUM('Y','N') default 'Y',
+manual_dial_filter VARCHAR(50) default 'NONE',
+agent_clipboard_copy VARCHAR(50) default 'NONE',
+agent_extended_alt_dial ENUM('Y','N') default 'N'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1184,6 +1188,18 @@ index (event_section),
 index (record_id)
 );
 
+CREATE TABLE vicidial_list_alt_phones (
+alt_phone_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+lead_id INT(9) UNSIGNED NOT NULL,
+phone_code VARCHAR(10),
+phone_number VARCHAR(18),
+alt_phone_note VARCHAR(30),
+alt_phone_count SMALLINT(5) UNSIGNED,
+active ENUM('Y','N') default 'Y',
+index (lead_id),
+index (phone_number)
+);
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1238,5 +1254,5 @@ INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 d
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1101';
+UPDATE system_settings SET db_schema_version='1104';
 
