@@ -271,8 +271,8 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 			}
 		$sthA->finish();
 
-		$dump_non_log_command = "$mysqldumpbin --lock-tables --flush-logs $VARDB_database $archive_tables | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz";
-		$dump_log_command = "$mysqldumpbin --lock-tables --flush-logs --no-data --no-create-db $VARDB_database $log_tables | $gzipbin > $ARCHIVEpath/temp/LOGS_$VARserver_ip$VARDB_database$wday.gz";
+		$dump_non_log_command = "$mysqldumpbin --user=$VARDB_user --password=$VARDB_pass --lock-tables --flush-logs $VARDB_database $archive_tables | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz";
+		$dump_log_command = "$mysqldumpbin --user=$VARDB_user --password=$VARDB_pass --lock-tables --flush-logs --no-data --no-create-db $VARDB_database $log_tables | $gzipbin > $ARCHIVEpath/temp/LOGS_$VARserver_ip$VARDB_database$wday.gz";
 
 		if ($DBX) {print "$dump_non_log_command\n$dump_log_command";}
 		`$dump_non_log_command`;
@@ -280,7 +280,7 @@ if ( ($without_db < 1) && ($conf_only < 1) )
 		}
 	else
 		{
-		`$mysqldumpbin --lock-tables --flush-logs $VARDB_database | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz`;
+		`$mysqldumpbin --user=$VARDB_user --password=$VARDB_pass --lock-tables --flush-logs $VARDB_database | $gzipbin > $ARCHIVEpath/temp/$VARserver_ip$VARDB_database$wday.gz`;
 		}
 	}
 
@@ -308,12 +308,23 @@ if ( ($without_conf < 1) && ($db_only < 1) )
 	if ($without_db < 1)
 		{
 		### BACKUP OTHER CONF FILES ON THE SERVER ###
-		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/my.cnf /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
+		$files = "";
+		if ( -e ('/etc/my.cnf')) {$files .= "/etc/my.cnf ";}
+		if ( -e ('/etc/hosts')) {$files .= "/etc/hosts ";}
+		if ( -e ('/etc/rc.d/rc.local')) {$files .= "/etc/rc.d/rc.local ";}
+		if ( -e ('/etc/resolv.conf')) {$files .= "/etc/resolv.conf ";}
+
+		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar $files`;
 		}
 	else
 		{
 		### BACKUP OTHER CONF FILES ON THE SERVER ###
-		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar /etc/hosts /etc/rc.d/rc.local /etc/resolv.conf`;
+		$files = "";
+		if ( -e ('/etc/hosts')) {$files += "/etc/hosts ";}
+		if ( -e ('/etc/rc.d/rc.local')) {$files += "/etc/rc.d/rc.local ";}
+		if ( -e ('/etc/resolv.conf')) {$files += "/etc/resolv.conf ";}
+
+		`$tarbin cf $ARCHIVEpath/temp/$VARserver_ip$linux$wday$tar $files`;
 		}
 	}
 
