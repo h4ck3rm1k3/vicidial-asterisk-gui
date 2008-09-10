@@ -142,6 +142,20 @@ exten => _91NXXNXXXXXX,3,Hangup
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ; exten => _91NXXNXXXXXX,2,Dial(sip/${EXTEN:1}@SIPtrunk,55,o)
 ; exten => _91NXXNXXXXXX,3,Hangup
+; special extensions for North America to catch invalid phone numbers
+; exten => _91XXX[0-1]XXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+; exten => _91XXX[0-1]XXXXXX,2,Dial(${TRUNKloop}/9990011112,,to)
+; exten => _91XXX[0-1]XXXXXX,3,Hangup
+; exten => _91[0-1]XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+; exten => _91[0-1]XXXXXXXXX,2,Dial(${TRUNKloop}/9990011112,,to)
+; exten => _91[0-1]XXXXXXXXX,3,Hangup
+; exten => _91XXXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+; exten => _91XXXXXXXXX,2,Dial(${TRUNKloop}/9990011112,,to)
+; exten => _91XXXXXXXXX,3,Hangup
+; exten => _91XXXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
+; exten => _91XXXXXXXX,2,Dial(${TRUNKloop}/9990011112,,to)
+; exten => _91XXXXXXXX,3,Hangup
+
 
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
 ; 1. the extension of the phone to ring as defined in the asterisk.phones table
@@ -497,7 +511,13 @@ exten => _999XXXXXX1,2,Wait(2)
 exten => _999XXXXXX1,3,Playback(beep)
 exten => _999XXXXXX1,4,Hangup
 
-exten => _999XXXX112,1,Wait(8)
+exten => _999XX11112,1,Wait(2)
+exten => _999XX11112,2,Answer
+exten => _999XX11112,3,Playback(ss-noservice)
+exten => _999XX11112,4,Playback(vm-goodbye)
+exten => _999XX11112,5,Hangup
+
+exten => _999XXXX112,1,Wait(5)
 exten => _999XXXX112,2,Answer
 exten => _999XXXX112,3,Playback(demo-instruct)
 exten => _999XXXX112,4,Playback(demo-instruct)

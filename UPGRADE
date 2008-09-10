@@ -155,6 +155,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 35. Added campaign-specific DNC to the system
 
+36. Added optional dialplan entries to sample extensions.conf to play a not-in-
+    service message for invalid phone numbers that cannot be dialing in North
+    America
+
 
 
 
