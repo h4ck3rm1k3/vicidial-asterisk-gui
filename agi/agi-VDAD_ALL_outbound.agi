@@ -49,11 +49,12 @@
 #
 # changes:
 # 80218-2027 - First Build
-# 80302-0232 - added drop_action and transfer to in-group
-# 80430-1144 - added term_reason to vicidial_log, QUEUETIMEOUT
-# 80520-0059 - added SURVEY ability and digit maps
-# 80527-2329 - added SURVEYCAMP ability to pull settings from database
-# 80831-0353 - added logging of alt_dial field
+# 80302-0232 - Added drop_action and transfer to in-group
+# 80430-1144 - Added term_reason to vicidial_log, QUEUETIMEOUT
+# 80520-0059 - Added SURVEY ability and digit maps
+# 80527-2329 - Added SURVEYCAMP ability to pull settings from database
+# 80831-0353 - Added logging of alt_dial field
+# 80909-0603 - Added campaign-specific dnc option for outbound survey
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -362,7 +363,7 @@ if ($affected_rows > 0)
 	$sthA->finish();
 
 	### Grab campaign values from the database
-	$stmtA = "SELECT drop_call_seconds,drop_action,safe_harbor_exten,concurrent_transfers,next_agent_call,voicemail_ext,drop_inbound_group,use_internal_dnc FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
+	$stmtA = "SELECT drop_call_seconds,drop_action,safe_harbor_exten,concurrent_transfers,next_agent_call,voicemail_ext,drop_inbound_group,use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -381,6 +382,7 @@ if ($affected_rows > 0)
 		$VDADvoicemail_ext =	"$aryA[5]";
 		$drop_inbound_group =	"$aryA[6]";
 		$use_internal_dnc =		"$aryA[7]";
+		$use_campaign_dnc =		"$aryA[8]";
 		 $rec_count++;
 		}
 	$sthA->finish();
@@ -584,6 +586,17 @@ if ($call_handle_method =~ /SURVEY/)
 			if ($AGILOG) 
 				{
 				$agi_string = "--    VDAD vicidial_dnc insert: $affected_rows|$VDADphone";
+				&agi_output;
+				}
+			}
+		if (($use_campaign_dnc =~ /Y/) && ($survey_ni_status eq "DNC"))
+			{
+			$stmtA = "INSERT INTO vicidial_campaign_dnc set phone_number='$VDADphone', campaign_id='$VDADcampaign';";
+			if ($AGILOG) { $agi_string = "|$stmtA|"; &agi_output; }
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) 
+				{
+				$agi_string = "--    VDAD vicidial_campaign_dnc insert: $affected_rows|$VDADphone|$VDADcampaign";
 				&agi_output;
 				}
 			}

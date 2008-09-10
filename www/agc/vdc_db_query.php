@@ -67,6 +67,7 @@
 #  - $recipient - ('ANYONE,'USERONLY')
 #  - $callback_id - ('12345','12346',...)
 #  - $use_internal_dnc - ('Y','N')
+#  - $use_campaign_dnc - ('Y','N')
 #  - $omit_phone_code - ('Y','N')
 #  - $no_delete_sessions - ('0','1')
 #  - $LogouTKicKAlL - ('0','1');
@@ -159,10 +160,11 @@
 # 80719-1147 - Changed recording conf prefix
 # 80815-1019 - Added manual dial list restriction option
 # 80831-0545 - Added extended alt dial number info display support
+# 80909-1710 - Added support for campaign-specific DNC lists
 #
 
-$version = '2.0.5-81';
-$build = '80831-0545';
+$version = '2.0.5-82';
+$build = '80909-1710';
 
 require("dbconnect.php");
 
@@ -287,6 +289,8 @@ if (isset($_GET["callback_id"]))				{$callback_id=$_GET["callback_id"];}
 	elseif (isset($_POST["callback_id"]))		{$callback_id=$_POST["callback_id"];}
 if (isset($_GET["use_internal_dnc"]))			{$use_internal_dnc=$_GET["use_internal_dnc"];}
 	elseif (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
+if (isset($_GET["use_campaign_dnc"]))			{$use_campaign_dnc=$_GET["use_campaign_dnc"];}
+	elseif (isset($_POST["use_campaign_dnc"]))	{$use_campaign_dnc=$_POST["use_campaign_dnc"];}
 if (isset($_GET["omit_phone_code"]))			{$omit_phone_code=$_GET["omit_phone_code"];}
 	elseif (isset($_POST["omit_phone_code"]))	{$omit_phone_code=$_POST["omit_phone_code"];}
 if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
@@ -595,6 +599,16 @@ if ($ACTION == 'manDiaLnextCaLL')
 			if (ereg("DNC",$manual_dial_filter))
 				{
 				$stmt="SELECT count(*) FROM vicidial_dnc where phone_number='$phone_number';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$row=mysql_fetch_row($rslt);
+				
+				if ($row[0] > 0)
+					{
+					echo "DNC NUMBER\n";
+					exit;
+					}
+				$stmt="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign';";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$row=mysql_fetch_row($rslt);
@@ -1441,7 +1455,7 @@ if ($stage == "end")
 					else {$alt_phone = '';}
 					if (strlen($alt_phone)>5)
 						{
-						if (ereg("Y",$VD_use_internal_dnc))
+						if (ereg("Y",$use_internal_dnc))
 							{
 							$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$alt_phone';";
 							$rslt=mysql_query($stmt, $link);
@@ -1454,6 +1468,18 @@ if ($stage == "end")
 								}
 							}
 						else {$VD_alt_dnc_count=0;}
+						if (ereg("Y",$use_campaign_dnc))
+							{
+							$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$alt_phone' and campaign_id='$campaign';";
+							$rslt=mysql_query($stmt, $link);
+							if ($DB) {echo "$stmt\n";}
+							$VLAP_cdnc_ct = mysql_num_rows($rslt);
+							if ($VLAP_cdnc_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$VD_alt_dnc_count =		($VD_alt_dnc_count + $row[0]);
+								}
+							}
 						if ($VD_alt_dnc_count < 1)
 							{
 							### insert record into vicidial_hopper for alt_phone call attempt
@@ -1488,7 +1514,7 @@ if ($stage == "end")
 					else {$address3 = '';}
 					if (strlen($address3)>5)
 						{
-						if (ereg("Y",$VD_use_internal_dnc))
+						if (ereg("Y",$use_internal_dnc))
 							{
 							$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$address3';";
 							$rslt=mysql_query($stmt, $link);
@@ -1501,6 +1527,18 @@ if ($stage == "end")
 								}
 							}
 						else {$VD_alt_dnc_count=0;}
+						if (ereg("Y",$use_campaign_dnc))
+							{
+							$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$address3' and campaign_id='$campaign';";
+							$rslt=mysql_query($stmt, $link);
+							if ($DB) {echo "$stmt\n";}
+							$VLAP_cdnc_ct = mysql_num_rows($rslt);
+							if ($VLAP_cdnc_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$VD_alt_dnc_count =		($VD_alt_dnc_count + $row[0]);
+								}
+							}
 						if ($VD_alt_dnc_count < 1)
 							{
 							### insert record into vicidial_hopper for address3 call attempt
@@ -1570,7 +1608,7 @@ if ($stage == "end")
 
 						if (ereg("Y",$VD_altdial_active))
 							{
-							if (ereg("Y",$VD_use_internal_dnc))
+							if (ereg("Y",$use_internal_dnc))
 								{
 								$stmtA="SELECT count(*) FROM vicidial_dnc where phone_number='$VD_altdial_phone';";
 								$rslt=mysql_query($stmt, $link);
@@ -1583,6 +1621,18 @@ if ($stage == "end")
 									}
 								}
 							else {$VD_alt_dnc_count=0;}
+							if (ereg("Y",$use_campaign_dnc))
+								{
+								$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_altdial_phone' and campaign_id='$campaign';";
+								$rslt=mysql_query($stmt, $link);
+								if ($DB) {echo "$stmt\n";}
+								$VLAP_cdnc_ct = mysql_num_rows($rslt);
+								if ($VLAP_cdnc_ct > 0)
+									{
+									$row=mysql_fetch_row($rslt);
+									$VD_alt_dnc_count =		($VD_alt_dnc_count + $row[0]);
+									}
+								}
 							if ($VD_alt_dnc_count < 1)
 								{
 								if ($alt_dial_phones_count == $Xlast) 
@@ -1650,7 +1700,7 @@ if ($stage == "end")
 
 
 			### delete call record from  vicidial_auto_calls
-			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and uniqueid='$uniqueid';";
+			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -1702,7 +1752,7 @@ if ($stage == "end")
 				$affected_rows = mysql_affected_rows($linkB);
 				}
 
-			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and uniqueid='$uniqueid';";
+			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -2590,6 +2640,16 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 		$stmt="INSERT INTO vicidial_dnc (phone_number) values('$row[0]');";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		}
+	if ( ($use_campaign_dnc=='Y') and ($dispo_choice=='DNC') )
+		{
+		$stmt = "select phone_number from vicidial_list where lead_id='$lead_id';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+		$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$row[0]','$campaign');";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		}

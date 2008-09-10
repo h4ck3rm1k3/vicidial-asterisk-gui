@@ -242,6 +242,11 @@ Agent Screen Clipboard Copy||
 EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.||
 Agent Screen Extended Alt Dial -<\/B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information||
 Agent Screen Extended Alt Dial:||
+Use Campaign DNC List -<\/B> This defines whether this campaign is to filter leads against a DNC list that is specific to that campaign only. If it is set to Y, the hopper will look for each phone number in the campaign-specific DNC list before placing it in the hopper. If it is in the campaign-specific DNC list then it will change that lead status to DNCC so it cannot be dialed. Default is N.||
+Use Campaign DNC List||
+and possibly the campaign-specific DNC list||
+There is also the option to add leads to the campaign-specific DNC lists for those campaigns that have them||
+NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign||
 
 
 ############################################################ CLIENT

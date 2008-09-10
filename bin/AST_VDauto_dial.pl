@@ -69,6 +69,7 @@
 # 80525-1040 - Added IVR vac status compatibility for inbound calls
 # 80713-0624 - Added vicidial_list_last_local_call_time field
 # 80829-2359 - Added extended alt dial and dnc checkon all alt dial hopper insertions
+# 80909-0845 - Added support for campaign-specific DNC lists
 #
 
 
@@ -1076,7 +1077,7 @@ while($one_day_interval > 0)
 						### check to see if campaign has alt_dial enabled
 						$VD_auto_alt_dial = 'NONE';
 						$VD_auto_alt_dial_statuses='';
-						$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses,use_internal_dnc FROM vicidial_campaigns where campaign_id='$CLcampaign_id';";
+						$stmtA="SELECT auto_alt_dial,auto_alt_dial_statuses,use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id='$CLcampaign_id';";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1088,6 +1089,7 @@ while($one_day_interval > 0)
 							$VD_auto_alt_dial	=			"$aryA[0]";
 							$VD_auto_alt_dial_statuses	=	"$aryA[1]";
 							$VD_use_internal_dnc =			"$aryA[2]";
+							$VD_use_campaign_dnc =			"$aryA[3]";
 							 $epc_countCAMPDATA++;
 							}
 						$sthA->finish();
@@ -1131,6 +1133,20 @@ while($one_day_interval > 0)
 										$sthA->finish();
 										}
 									else {$VD_alt_dnc_count=0;}
+									if ($VD_use_campaign_dnc =~ /Y/)
+										{
+										$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_alt_phone' and campaign_id='$VD_campaign_id';";
+											if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArows=$sthA->rows;
+										if ($sthArows > 0)
+											{
+											@aryA = $sthA->fetchrow_array;
+											$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+											}
+										$sthA->finish();
+										}
 									if ($VD_alt_dnc_count < 1)
 										{
 										$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ALT',user='',priority='25';";
@@ -1183,6 +1199,20 @@ while($one_day_interval > 0)
 										$sthA->finish();
 										}
 									else {$VD_alt_dnc_count=0;}
+									if ($VD_use_campaign_dnc =~ /Y/)
+										{
+										$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_address3' and campaign_id='$VD_campaign_id';";
+											if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+										$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+										$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+										$sthArows=$sthA->rows;
+										if ($sthArows > 0)
+											{
+											@aryA = $sthA->fetchrow_array;
+											$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+											}
+										$sthA->finish();
+										}
 									if ($VD_alt_dnc_count < 1)
 										{
 										$stmtA = "INSERT INTO vicidial_hopper SET lead_id='$CLlead_id',campaign_id='$CLcampaign_id',status='READY',list_id='$VD_list_id',gmt_offset_now='$VD_gmt_offset_now',state='$VD_state',alt_dial='ADDR3',user='',priority='20';";
@@ -1270,6 +1300,20 @@ while($one_day_interval > 0)
 											$sthA->finish();
 											}
 										else {$VD_alt_dnc_count=0;}
+										if ($VD_use_campaign_dnc =~ /Y/)
+											{
+											$stmtA="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$VD_altdial_phone' and campaign_id='$VD_campaign_id';";
+												if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+											$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+											$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+											$sthArows=$sthA->rows;
+											if ($sthArows > 0)
+												{
+												@aryA = $sthA->fetchrow_array;
+												$VD_alt_dnc_count =	($VD_alt_dnc_count + $aryA[0]);
+												}
+											$sthA->finish();
+											}
 										if ($VD_alt_dnc_count < 1)
 											{
 											if ($alt_dial_phones_count == $Xlast) 

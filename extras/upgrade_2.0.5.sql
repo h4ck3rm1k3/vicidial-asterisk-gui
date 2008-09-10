@@ -369,3 +369,35 @@ ALTER TABLE vicidial_log ADD alt_dial VARCHAR(6) default 'NONE';
 ALTER TABLE vicidial_campaigns ADD agent_extended_alt_dial ENUM('Y','N') default 'N';
 
 UPDATE system_settings SET db_schema_version='1104';
+
+GRANT RELOAD ON *.* TO cron@'%';
+GRANT RELOAD ON *.* TO cron@localhost;
+
+flush privileges;
+
+ALTER TABLE vicidial_dnc MODIFY phone_number VARCHAR(18) NOT NULL;
+
+ALTER TABLE vicidial_list MODIFY phone_number VARCHAR(18) NOT NULL;
+
+ALTER TABLE vicidial_auto_calls MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_log MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_closer_log MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_xfer_log MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_list_pins MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_ivr MODIFY phone_number VARCHAR(18);
+
+ALTER TABLE vicidial_campaigns ADD use_campaign_dnc ENUM('Y','N') default 'N';
+
+CREATE TABLE vicidial_campaign_dnc (
+phone_number VARCHAR(18) NOT NULL,
+campaign_id VARCHAR(8) NOT NULL,
+index (phone_number),
+UNIQUE INDEX phonecamp (phone_number, campaign_id)
+);
+
+UPDATE system_settings SET db_schema_version='1105';

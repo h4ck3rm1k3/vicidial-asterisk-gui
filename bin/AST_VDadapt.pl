@@ -1014,7 +1014,7 @@ if ($DBX) {print "$campaign_id[$i]|$VCSdrops_five_pct[$i]|$VCSdrops_today_pct[$i
 # DETERMINE WHETHER TO GATHER STATUS CATEGORY STATISTICS
 $VSC_categories=0;
 $VSCupdateSQL='';
-$stmtA = "SELECT vsc_id from vicidial_status_categories where tovdad_display='Y';";
+$stmtA = "SELECT vsc_id from vicidial_status_categories where tovdad_display='Y' limit 4;";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;

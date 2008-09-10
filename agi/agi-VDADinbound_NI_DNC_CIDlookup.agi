@@ -6,17 +6,22 @@
 # play a message and take input to automatically change customer lead to NI or DNC.
 #  *** This version detects inbound callerID over PRI ***
 #
+# Flag Options:
+# 1- default to insert into the vicidial_dnc table for DNC selections (Default=YES)
+# 2- campaign to take dnc settings from(overrides option 1)
+#
 # ;inbound call from outbound CID callbacks from VICIDIAL calls:
 #exten => 1234,1,Ringing                 ; call ringing
 #exten => 1234,2,Wait(1)                 ; Wait 1 second for CID delivery from PRI
 #exten => 1234,3,Answer                  ; Answer the line
-#exten => 1234,4,AGI(agi-VDADinbound_NI_DNC_CIDlookup.agi)
+#exten => 1234,4,AGI(agi-VDADinbound_NI_DNC_CIDlookup.agi,YES-----TESTCAMP)
 #exten => 1234,5,Hangup
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60914-1051 - First draft
+# 80909-0614 - Added optional field for campaign so that vicidial_campaign_dnc could be used
 #
 
 $script = 'agi-VDADinbound_NI_DNC_CIDlookup.agi';
@@ -117,7 +122,7 @@ $sthA->finish();
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
-{
+	{
 	if ($AGILOG) {$agi_string = "Perl Environment Dump:";   &agi_output;}
 	$i=0;
 	while ($#ARGV >= $i)
@@ -130,36 +135,12 @@ if (length($ARGV[0])>1)
 	### list of command-line array arguments:
 	@ARGV_vars = split(/-----/, $ARGV[0]);
 
-	if ($args =~ /--help/i)
-	{
-	print "allowed run time options:\n  [-q] = quiet\n  [-t] = test\n  [-debug] = verbose debug messages\n\n";
+	$dnc_default = 	$ARGV_vars[0];
+	$campaign_id = 	$ARGV_vars[1];
 	}
-	else
-	{
-		if ($args =~ /-V/i)
-		{
-		$V=1;
-		}
-		if ($args =~ /-debug/i)
-		{
-		$DG=1;
-		}
-		if ($args =~ /-dbAVS/i)
-		{
-		$DGA=1;
-		}
-		if ($args =~ /-q/i)
-		{
-		$q=1;
-		$Q=1;
-		}
-		if ($args =~ /-t/i)
-		{
-		$TEST=1;
-		$T=1;
-		}
-	}
-}
+
+if (length($dnc_default) < 2)
+	{$dnc_default = 'YES';}
 
 $|=1;
 while(<STDIN>) {
@@ -288,10 +269,43 @@ if ($pin =~ /3/)	# set the phone_number to DNC
 			if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 		}
 
-	### add the number to the vicidial_dnc table
-	$stmtA = "INSERT INTO vicidial_dnc SET phone_number='$phone_number';";
-	$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+	if (length($campaign_id)>1) 
+		{
+		### Grab DNC settings from campaign
+		$stmtA = "SELECT use_internal_dnc,use_campaign_dnc FROM vicidial_campaigns where campaign_id = '$campaign_id';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		@aryA = $sthA->fetchrow_array;
+		$use_internal_dnc =	"$aryA[0]";
+		$use_campaign_dnc =	"$aryA[1]";
+		$sthA->finish();
+
+		if ($use_internal_dnc =~ /Y/)
+			{
+			### add the number to the vicidial_dnc table
+			$stmtA = "INSERT INTO vicidial_dnc SET phone_number='$phone_number';";
+			$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+			}
+		if ($use_campaign_dnc =~ /Y/)
+			{
+			### add the number to the vicidial_campaign_dnc table
+			$stmtA = "INSERT INTO vicidial_campaign_dnc SET phone_number='$phone_number',campaign_id='$campaign_id';";
+			$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+			}
+		}
+	else
+		{
+		if ($dnc_default =~ /YES/) 
+			{
+			### add the number to the vicidial_dnc table
+			$stmtA = "INSERT INTO vicidial_dnc SET phone_number='$phone_number';";
+			$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+			}
+		}
 
 	$AGI->stream_file("$processed_file");
 	}

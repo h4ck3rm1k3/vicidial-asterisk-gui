@@ -251,7 +251,7 @@ list_id BIGINT(14) UNSIGNED,
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
 called_since_last_reset ENUM('Y','N','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10') default 'N',
 phone_code VARCHAR(10),	
-phone_number VARCHAR(12),
+phone_number VARCHAR(18) NOT NULL,
 title VARCHAR(4),
 first_name VARCHAR(30),
 middle_initial VARCHAR(1),
@@ -335,7 +335,7 @@ uniqueid VARCHAR(20),
 callerid VARCHAR(20),
 channel VARCHAR(100),
 phone_code VARCHAR(10),
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 call_time DATETIME,
 call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT',
 stage VARCHAR(20) default 'START',
@@ -359,7 +359,7 @@ end_epoch INT(10) UNSIGNED,
 length_in_sec INT(10),
 status VARCHAR(6),
 phone_code VARCHAR(10),
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
@@ -381,7 +381,7 @@ end_epoch INT(10) UNSIGNED,
 length_in_sec INT(10),
 status VARCHAR(6),
 phone_code VARCHAR(10),
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 user VARCHAR(20),
 comments VARCHAR(255),
 processed ENUM('Y','N'),
@@ -400,7 +400,7 @@ list_id BIGINT(14) UNSIGNED,
 campaign_id VARCHAR(20),
 call_date DATETIME,
 phone_code VARCHAR(10),
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 user VARCHAR(20),
 closer VARCHAR(20),
 index (lead_id),
@@ -584,7 +584,8 @@ disable_alter_custphone ENUM('Y','N') default 'Y',
 display_queue_count ENUM('Y','N') default 'Y',
 manual_dial_filter VARCHAR(50) default 'NONE',
 agent_clipboard_copy VARCHAR(50) default 'NONE',
-agent_extended_alt_dial ENUM('Y','N') default 'N'
+agent_extended_alt_dial ENUM('Y','N') default 'N',
+use_campaign_dnc ENUM('Y','N') default 'N'
 );
 
 CREATE TABLE vicidial_lists (
@@ -813,7 +814,7 @@ index (callback_time)
 CREATE TABLE vicidial_list_pins (
 pins_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
 entry_time DATETIME,
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 lead_id INT(9) UNSIGNED,
 campaign_id VARCHAR(20),			
 product_code VARCHAR(20),
@@ -916,7 +917,7 @@ status_category_count_4 INT(9) UNSIGNED default '0'
 );
 
 CREATE TABLE vicidial_dnc (
-phone_number VARCHAR(12) PRIMARY KEY NOT NULL
+phone_number VARCHAR(18) PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE vicidial_lead_recycle (
@@ -1020,7 +1021,7 @@ inbound_number VARCHAR(12),
 recording_id INT(9) UNSIGNED,
 recording_filename VARCHAR(50),
 company_id VARCHAR(12),
-phone_number VARCHAR(12),
+phone_number VARCHAR(18),
 lead_id INT(9) UNSIGNED,
 campaign_id VARCHAR(20),			
 product_code VARCHAR(20),
@@ -1200,6 +1201,13 @@ index (lead_id),
 index (phone_number)
 );
 
+CREATE TABLE vicidial_campaign_dnc (
+phone_number VARCHAR(18) NOT NULL,
+campaign_id VARCHAR(8) NOT NULL,
+index (phone_number),
+UNIQUE INDEX phonecamp (phone_number, campaign_id)
+);
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1254,5 +1262,9 @@ INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 d
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1104';
+UPDATE system_settings SET db_schema_version='1105';
 
+GRANT RELOAD ON *.* TO cron@'%';
+GRANT RELOAD ON *.* TO cron@localhost;
+
+flush privileges;

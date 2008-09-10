@@ -15,6 +15,7 @@
 # 71030-2020 - Added deletions of stats and inbound live agents
 # 71109-1725 - fixed vicidial_campaign_stats bug
 # 71215-0410 - fixed UPDATE/DELETE results
+# 80909-0555 - added vicidial_campaign_dnc table
 #
 
 # default path to astguiclient configuration file:
@@ -195,6 +196,17 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 				 }
 
 	$stmtA = "optimize table vicidial_dnc;";
+		if($DB){print STDERR "\n|$stmtA|\n";}
+		if (!$T) {
+					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+   					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+   					$sthArows=$sthA->rows;
+					 @aryA = $sthA->fetchrow_array;
+   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+					$sthA->finish();
+				 }
+
+	$stmtA = "optimize table vicidial_campaign_dnc;";
 		if($DB){print STDERR "\n|$stmtA|\n";}
 		if (!$T) {
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;

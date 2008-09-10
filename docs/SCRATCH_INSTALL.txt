@@ -875,8 +875,8 @@ PHASE 4: INSTALLING ASTERISK
 
 OK, all the prep work is done, now it's time to start having fun with Asterisk. 
 There are two basic ways to install Asterisk, an official release(at the time of 
-this writing the official release is 1.2.27) and the SVN_DEV version(development
-branch). We recommend using Asterisk 1.2.27. These instructions are how we get 
+this writing the official release is 1.2.30.2) and the SVN_DEV version(development
+branch). We recommend using Asterisk 1.2.30.2. These instructions are how we get 
 our Asterisk system with it's T1 line installed with our 2 SIP VOIP devices and 
 one IAX2 softphone. 
 
@@ -896,13 +896,13 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.27.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.25.tar.gz
+	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
+	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
 	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
-	- gunzip asterisk-1.2.27.tar.gz
-	- tar xvf asterisk-1.2.27.tar
-	- gunzip zaptel-1.2.25.tar.gz
-	- tar xvf zaptel-1.2.25.tar
+	- gunzip asterisk-1.2.30.2.tar.gz
+	- tar xvf asterisk-1.2.30.2.tar
+	- gunzip zaptel-1.2.27.tar.gz
+	- tar xvf zaptel-1.2.27.tar
 	- gunzip libpri-1.2.5.tar.gz
 	- tar xvf libpri-1.2.5.tar
    B. if you want latest SVN_1.2 version (release tree with new patches)
@@ -927,7 +927,7 @@ with the following patch:
 		edit this line at the top and just add a hash # in front of it as shown:
 		#PBX_LIBS+=$(shell $(CROSS_COMPILE_BIN)gtk-config --cflags >/dev/null 2>/dev/null && echo "pbx_gtkconsole.so")
 
-	- cd ./zaptel-1.2.25
+	- cd ./zaptel-1.2.27
 	- make clean
 	- make
 	- make install
@@ -935,7 +935,7 @@ with the following patch:
 	- make clean
 	- make
 	- make install
-	- cd ../asterisk-1.2.27
+	- cd ../asterisk-1.2.30.2
 		- (1.2 tree) If you want to include Answering Machine Detection ability
 		  you will need to download app_amd.c and amd.conf and alter the 
 		  apps/Makefile to compile it properly
@@ -950,11 +950,11 @@ with the following patch:
 		- wget http://www.eflo.net/files/amd2.conf
 		- mkdir /etc/asterisk
 		- mv amd2.conf /etc/asterisk/amd.conf
-		*OPTIONAL*(1.2.23 thru 1.2.27) apply the meetme DTMF passthru patch
+		*OPTIONAL*(1.2.23 thru 1.2.30.2) apply the meetme DTMF passthru patch
 		- wget http://www.eflo.net/files/meetme_DTMF_passthru-1.2.23.patch
 		- patch -p1 < ./meetme_DTMF_passthru-1.2.23.patch
 		- File to patch: app_meetme.c
-		*OPTIONAL*(1.2.12.1 thru 1.2.27) apply the meetme volume control patch
+		*OPTIONAL*(1.2.12.1 thru 1.2.30.2) apply the meetme volume control patch
 			*Different patches available for 1.2.7.1 through 1.2.14
 		- wget http://www.eflo.net/files/meetme_volume_control_1.2.16.patch
 		- patch -p1 < ./meetme_volume_control_1.2.16.patch
@@ -966,7 +966,7 @@ with the following patch:
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
 
-		*OPTIONAL*(1.2.14 thru 1.2.27) rewrite of waitforsilence
+		*OPTIONAL*(1.2.14 thru 1.2.30.2) rewrite of waitforsilence
 		- wget http://www.eflo.net/files/app_waitforsilence.c
 		- mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
@@ -1744,6 +1744,11 @@ can use the following query to create the database:
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
 GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
 
+GRANT RELOAD ON *.* TO cron@'%';
+GRANT RELOAD ON *.* TO cron@localhost;
+
+flush privileges;
+
 # NOTE: if using MySQL 4.1.12 or higher you may need to run this query too:
 UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
 
@@ -1765,7 +1770,7 @@ use asterisk;
 	\. /usr/src/astguiclient/astguiclient/sip-iax_phones.sql
 
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.27');
+insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.30.2');
 
 insert into server_updater values('10.10.10.15','');
 
@@ -2847,7 +2852,7 @@ SUBPHASE 6.5: setting up astguiclient scripts for continuous running
 #42 0 * * * /usr/share/astguiclient/AST_sourceID_summary_export.pl
 
 ### remove old recordings more than 7 days old
-24 0 * * * /usr/bin/find /var/spool/asterisk/monitor -maxdepth 2 -type f -mtime +7 -print | xargs rm -f
+#24 0 * * * /usr/bin/find /var/spool/asterisk/monitor -maxdepth 2 -type f -mtime +7 -print | xargs rm -f
 
 ### remove old vicidial logs and asterisk logs more than 2 days old
 28 0 * * * /usr/bin/find /var/log/astguiclient -maxdepth 1 -type f -mtime +2 -print | xargs rm -f

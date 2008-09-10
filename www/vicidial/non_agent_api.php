@@ -9,16 +9,18 @@
 # required variables:
 #  - $user
 #  - $pass
-#  - $function - ('add_lead')
+#  - $function - ('add_lead','version')
 #  - $format - ('text','debug')
 
 # CHANGELOG:
 # 80724-0021 - First build of script
 # 80801-0047 - Added gmt lookup and hopper insert time validation
+# 80909-2012 - Added support for campaign-specific DNC lists
+# 80910-0020 - Added support for multi-alt-phones, added version function
 #
 
-$version = '2.0.5-2';
-$build = '80801-0047';
+$version = '2.0.5-4';
+$build = '80910-0020';
 
 require("dbconnect.php");
 
@@ -81,12 +83,18 @@ if (isset($_GET["comments"]))					{$comments=$_GET["comments"];}
 	elseif (isset($_POST["comments"]))			{$comments=$_POST["comments"];}
 if (isset($_GET["dnc_check"]))					{$dnc_check=$_GET["dnc_check"];}
 	elseif (isset($_POST["dnc_check"]))			{$dnc_check=$_POST["dnc_check"];}
+if (isset($_GET["campaign_dnc_check"]))				{$campaign_dnc_check=$_GET["campaign_dnc_check"];}
+	elseif (isset($_POST["campaign_dnc_check"]))	{$campaign_dnc_check=$_POST["campaign_dnc_check"];}
 if (isset($_GET["add_to_hopper"]))				{$add_to_hopper=$_GET["add_to_hopper"];}
 	elseif (isset($_POST["add_to_hopper"]))		{$add_to_hopper=$_POST["add_to_hopper"];}
 if (isset($_GET["hopper_priority"]))			{$hopper_priority=$_GET["hopper_priority"];}
 	elseif (isset($_POST["hopper_priority"]))	{$hopper_priority=$_POST["hopper_priority"];}
 if (isset($_GET["hopper_local_call_time_check"]))			{$hopper_local_call_time_check=$_GET["hopper_local_call_time_check"];}
 	elseif (isset($_POST["hopper_local_call_time_check"]))	{$hopper_local_call_time_check=$_POST["hopper_local_call_time_check"];}
+if (isset($_GET["campaign_id"]))				{$campaign_id=$_GET["campaign_id"];}
+	elseif (isset($_POST["campaign_id"]))		{$campaign_id=$_POST["campaign_id"];}
+if (isset($_GET["multi_alt_phones"]))			{$multi_alt_phones=$_GET["multi_alt_phones"];}
+	elseif (isset($_POST["multi_alt_phones"]))	{$multi_alt_phones=$_POST["multi_alt_phones"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -119,30 +127,48 @@ if ($non_latin < 1)
 	$phone_code = ereg_replace("[^0-9]","",$phone_code);
 	$phone_number = ereg_replace("[^0-9]","",$phone_number);
 	$vendor_lead_code = ereg_replace(";","",$vendor_lead_code);
+		$vendor_lead_code = ereg_replace("\+"," ",$vendor_lead_code);
 	$source_id = ereg_replace(";","",$source_id);
+		$source_id = ereg_replace("\+"," ",$source_id);
 	$gmt_offset_now = ereg_replace("-\_\.0-9","",$gmt_offset_now);
 	$title = ereg_replace("[^- \_\.0-9a-zA-Z]","",$title);
-	$first_name = ereg_replace("[^- \_\.0-9a-zA-Z]","",$first_name);
+	$first_name = ereg_replace("[^- \+\_\.0-9a-zA-Z]","",$first_name);
+		$first_name = ereg_replace("\+"," ",$first_name);
 	$middle_initial = ereg_replace("[^0-9a-zA-Z]","",$middle_initial);
-	$last_name = ereg_replace("[^- \_\.0-9a-zA-Z]","",$last_name);
-	$address1 = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$address1);
-	$address2 = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$address2);
-	$address3 = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$address3);
-	$city = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$city);
+	$last_name = ereg_replace("[^- \+\_\.0-9a-zA-Z]","",$last_name);
+		$last_name = ereg_replace("\+"," ",$last_name);
+	$address1 = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$address1);
+	$address2 = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$address2);
+	$address3 = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$address3);
+		$address1 = ereg_replace("\+"," ",$address1);
+		$address2 = ereg_replace("\+"," ",$address2);
+		$address3 = ereg_replace("\+"," ",$address3);
+	$city = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$city);
+		$city = ereg_replace("\+"," ",$city);
 	$state = ereg_replace("[^- 0-9a-zA-Z]","",$state);
-	$province = ereg_replace("[^- \.\_0-9a-zA-Z]","",$province);
-	$postal_code = ereg_replace("[^- 0-9a-zA-Z]","",$postal_code);
+	$province = ereg_replace("[^- \+\.\_0-9a-zA-Z]","",$province);
+		$province = ereg_replace("\+"," ",$province);
+	$postal_code = ereg_replace("[^- \+0-9a-zA-Z]","",$postal_code);
+		$postal_code = ereg_replace("\+"," ",$postal_code);
 	$country_code = ereg_replace("[^A-Z]","",$country_code);
 	$gender = ereg_replace("[^A-Z]","",$gender);
 	$date_of_birth = ereg_replace("[^-0-9]","",$date_of_birth);
-	$alt_phone = ereg_replace("[^- \_\.0-9a-zA-Z]","",$alt_phone);
-	$email = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$email);
-	$security_phrase = ereg_replace("[^- \.\:\/\@\_0-9a-zA-Z]","",$security_phrase);
+	$alt_phone = ereg_replace("[^- \+\_\.0-9a-zA-Z]","",$alt_phone);
+		$alt_phone = ereg_replace("\+"," ",$alt_phone);
+	$email = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$email);
+		$email = ereg_replace("\+"," ",$email);
+	$security_phrase = ereg_replace("[^- \+\.\:\/\@\_0-9a-zA-Z]","",$security_phrase);
+		$security_phrase = ereg_replace("\+"," ",$security_phrase);
 	$comments = ereg_replace(";","",$comments);
+		$comments = ereg_replace("\+"," ",$comments);
 	$dnc_check = ereg_replace("[^A-Z]","",$dnc_check);
+	$campaign_dnc_check = ereg_replace("[^A-Z]","",$campaign_dnc_check);
 	$add_to_hopper = ereg_replace("[^A-Z]","",$add_to_hopper);
 	$hopper_priority = ereg_replace("-0-9","",$hopper_priority);
 	$hopper_local_call_time_check = ereg_replace("[^A-Z]","",$hopper_local_call_time_check);
+	$campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$campaign_id);
+	$multi_alt_phones = ereg_replace("[^- \+\!\:\_0-9a-zA-Z]","",$multi_alt_phones);
+		$multi_alt_phones = ereg_replace("\+"," ",$multi_alt_phones);
 	}
 
 if (strlen($list_id)<1) {$list_id='999';}
@@ -205,6 +231,18 @@ $LOCAL_GMT_OFF_STD = $SERVER_GMT;
 
 
 ################################################################################
+### version - show version and date information for the API
+################################################################################
+if ($function == 'version')
+	{
+	echo "VERSION: $version|BUILD: $build|DATE: $NOW_TIME|EPOCH: $StarTtime\n";
+	exit;
+	}
+
+
+
+
+################################################################################
 ### add_lead - inserts a lead into the vicidial_list table
 ################################################################################
 if ($function == 'add_lead')
@@ -243,9 +281,24 @@ if ($function == 'add_lead')
 					exit;
 					}
 				}
+			if ($campaign_dnc_check == 'Y')
+				{
+				$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign_id';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$dnc_found=$row[0];
+
+				if ($dnc_found > 0) 
+					{
+					echo "ERROR: add_lead PHONE NUMBER IN CAMPAIGN DNC - $phone_number|$campaign_id|$user\n";
+					exit;
+					}
+				}
 			
 			### get current gmt_offset of the phone_number
 			$gmt_offset = lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$Ssec,$Smon,$Smday,$Syear,$postalgmt,$postal_code);
+
 
 			### insert a new lead in the system with this phone number
 			$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='NEW',user='$user',vendor_lead_code='$vendor_lead_code',source_id='$source_id',gmt_offset_now='$gmt_offset',title='$title',first_name='$first_name',middle_initial='$middle_initial',last_name='$last_name',address1='$address1',address2='$address2',address3='$address3',city='$city',state='$state',province='$province',postal_code='$postal_code',country_code='$country_code',gender='$gender',date_of_birth='$date_of_birth',alt_phone='$alt_phone',email='$email',security_phrase='$security_phrase',comments='$comments',called_since_last_reset='N',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
@@ -258,6 +311,39 @@ if ($function == 'add_lead')
 
 				echo "SUCCESS: add_lead LEAD HAS BEEN ADDED - $phone_number|$user|$list_id|$lead_id|$gmt_offset\n";
 
+				if (strlen($multi_alt_phones) > 5)
+					{
+					$map=$MT;  $ALTm_phone_code=$MT;  $ALTm_phone_number=$MT;  $ALTm_phone_note=$MT;
+					$map = explode('!', $multi_alt_phones);
+					$map_count = count($map);
+					if ($DB) {echo "multi-al-entry: $a|$map_count|$multi_alt_phones\n";}
+					$g++;
+					$r=0;   $s=0;   $inserted_alt_phones=0;
+					while ($r < $map_count)
+						{
+						$s++;
+						$ncn=$MT;
+						$ncn = explode('_', $map[$r]);
+						print "$ncn[0]|$ncn[1]|$ncn[2]";
+
+						if (strlen($forcephonecode) > 0)
+							{$ALTm_phone_code[$r] =	$forcephonecode;}
+						else
+							{$ALTm_phone_code[$r] =		$ncn[1];}
+						if (strlen($ALTm_phone_code[$r]) < 1)
+							{$ALTm_phone_code[$r]='1';}
+						$ALTm_phone_number[$r] =	$ncn[0];
+						$ALTm_phone_note[$r] =		$ncn[2];
+						$stmt = "INSERT INTO vicidial_list_alt_phones (lead_id,phone_code,phone_number,alt_phone_note,alt_phone_count) values('$lead_id','$ALTm_phone_code[$r]','$ALTm_phone_number[$r]','$ALTm_phone_note[$r]','$s');";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $link);
+						$Zaffected_rows = mysql_affected_rows($link);
+						$inserted_alt_phones = ($inserted_alt_phones + $Zaffected_rows);
+						$r++;
+						}
+					echo "NOTICE: add_lead MULTI-ALT-PHONE NUMBERS LOADED - $inserted_alt_phones|$user|$lead_id\n";
+					}
+
 				if ($add_to_hopper == 'Y')
 					{
 					$dialable=1;
@@ -267,7 +353,7 @@ if ($function == 'add_lead')
 					$rslt=mysql_query($stmt, $link);
 					$row=mysql_fetch_row($rslt);
 					$local_call_time=$row[0];
-					$campaign_id=$row[1];
+					$VD_campaign_id=$row[1];
 
 					if ($hopper_local_call_time_check == 'Y')
 						{
@@ -283,7 +369,7 @@ if ($function == 'add_lead')
 						### code to insert into hopper goes here
 
 						### insert record into vicidial_hopper for alt_phone call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$campaign_id',status='READY',list_id='$list_id',gmt_offset_now='$gmt_offset',state='$state',user='',priority='$hopper_priority';";
+						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$list_id',gmt_offset_now='$gmt_offset',state='$state',user='',priority='$hopper_priority';";
 						if ($DB) {echo "$stmt\n";}
 						$rslt=mysql_query($stmt, $link);
 						$Haffected_rows = mysql_affected_rows($link);
@@ -306,9 +392,13 @@ if ($function == 'add_lead')
 				}
 			}
 		}
+	exit;
 	}
 
 
+
+
+echo "ERROR: NO FUNCTION SPECIFIED\n";
 
 
 

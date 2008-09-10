@@ -30,15 +30,15 @@ extensions.conf additions:
 ;    TEST_IN_DE - German - option 4
 
 [default]
-exten => 7275551111,1,Goto(TEST_IN,1,1)
+exten => 7275551111,1,Goto(TEST_IN,s,1)
 
 
 [TEST_IN]
 exten => s,1,AGI(agi-VDAD_inbound_calltime_check.agi,TEST_IN-----YES)
 exten => s,2,Background(test_in_menu)
-exten => s.n.WaitExten(10)
+exten => s,n,WaitExten(10)
 exten => s,n,Background(test_in_menu)
-exten => s.n.WaitExten(10)
+exten => s,n,WaitExten(10)
 exten => s,n,Playback(vm-goodbye)
 exten => s,n,hangup
 

@@ -51,6 +51,7 @@
 # 80112-0221 - Added 2nd, 3rd,... NEW for LAST NAME/PHONE Sort
 # 80125-0821 - Added detail logging of each lead inserted
 # 80713-0028 - Changed Recycling methodology
+# 80909-1901 - Added support for campaign-specific DNC lists
 #
 
 # constants
@@ -416,6 +417,7 @@ while ($sthArows > $rec_count)
 	$adaptive_maximum_level[$rec_count] =		$aryA[49];
 	$dial_statuses[$rec_count] =				$aryA[61];
 	$list_order_mix[$rec_count] =				$aryA[64];
+	$use_campaign_dnc[$rec_count] =				$aryA[95];
 
 	$rec_count++;
 	}
@@ -1566,6 +1568,28 @@ foreach(@campaign_id)
 							$stmtA = "UPDATE vicidial_list SET status='DNCL' where lead_id='$leads_to_hopper[$h]';";
 							$affected_rows = $dbhA->do($stmtA);
 							if ($DBX) {print "Flagging DNC lead:     $affected_rows  $phone_to_hopper[$h]\n";}
+							}
+						}
+					if ( ($use_campaign_dnc[$i] =~ /Y/) && ($DNClead == '0') )
+						{
+						if ($DB) {print "Doing CAMP DNC Check: $phone_to_hopper[$h] - $use_campaign_dnc[$i]\n";}
+						$stmtA = "SELECT count(*) from vicidial_campaign_dnc where phone_number='$phone_to_hopper[$h]' and campaign_id='$campaign_id[$i]';";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							@aryA = $sthA->fetchrow_array;
+							$DNClead =		 "$aryA[0]";
+							$rec_count++;
+							}
+						$sthA->finish();
+						if ($DNClead != '0')
+							{
+							$stmtA = "UPDATE vicidial_list SET status='DNCC' where lead_id='$leads_to_hopper[$h]';";
+							$affected_rows = $dbhA->do($stmtA);
+							if ($DBX) {print "Flagging DNC lead:     $affected_rows  $phone_to_hopper[$h] $campaign_id[$i]\n";}
 							}
 						}
 					if ($DNClead == '0')

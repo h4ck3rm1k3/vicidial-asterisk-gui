@@ -1,4 +1,4 @@
-NON-AGENT API DOCUMENT			2008-07-24
+NON-AGENT API DOCUMENT					Started: 2008-07-24
 
 This document describes the functions of an API(Application Programming Interface)
 for all functions NOT relating to the VICIDIAL Agent screen. This functionality 
@@ -17,13 +17,25 @@ New scripts:
 
 
 
-API Functions:
+API Functions: ('function' variable)
 
 NOTE: Just as with the Agent API, the non-agent API requires the user and pass of a
 valid api-enabled vicidial_users account to execute actions.
 
 
 
+--------------------------------------------------------------------------------
+version - shows version and build of the API, along with the date/time
+
+Example URL strings for API calls:
+http://server/vicidial/non_agent_api.php?function=version
+
+Example responses:
+VERSION: 2.0.5-4|BUILD: 80910-0020|DATE: 2008-09-10 00:26:43|EPOCH: 1221020803 
+
+
+
+--------------------------------------------------------------------------------
 add_lead - adds a new lead to the vicidial_list table with several fields and options
 
 NOTE: api user for this function must have modify_leads set to 1
@@ -35,11 +47,14 @@ list_id -		must be all numbers, 3-12 digits, defaults to 999 if not set
 
 SETTINGS FIELDS-
 dnc_check -		Y or N, default is N
+campaign_dnc_check -	Y or N, default is N
+campaign_id -		2-8 Character campaign ID, required if using campaign_dnc_check
 add_to_hopper -		Y or N, default is N
 hopper_priority -	99 to -99, the higher number the higher priority, default is 0
 hopper_local_call_time_check - Y or N, default is N. Validate the local call time before inserting lead in the hopper
 
-OPTIONAL FIELDS-
+(for fields with spaces in the values, you can replace the space with a plus + sign[address, city, first_name, etc...])
+OPTIONAL FIELDS- 
 vendor_lead_code -	1-20 characters
 source_id  -		1-50 characters
 gmt_offset_now -	overridden by auto-lookup of phone_code and area_code portion of phone number if applicable
@@ -61,6 +76,14 @@ alt_phone -		1-12 characters
 email -			1-70 characters
 security_phrase -	1-100 characters
 comments -		1-255 characters
+multi_alt_phones -	5-1024 characters (see examples for more info)
+
+
+Multi-ALT-Phones format:
+
+7275551212_1_work!7275551213_1_sister+house!1234567890_1_neighbor
+
+The multi-alt-phones field is formatted as a field of phone-number/phone-code/phone-note set of data(phone code and alt_note are both optional and the phone code can be overridden by the force phone code flag). The record delimiter is an exclamation point with the optional phone code and note delimited within the record by an underscore character _.
 
 
 Example URL strings for API calls:
@@ -70,6 +93,7 @@ http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&p
 
 http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&phone_number=7275551111&phone_code=1&list_id=999&dnc_check=N&first_name=Bob&last_name=Wilson&add_to_hopper=Y&hopper_local_call_time_check=Y
 
+http://server/vicidial/non_agent_api.php?user=6666&pass=1234&function=add_lead&phone_number=7275551111&phone_code=1&list_id=999&dnc_check=N&campaign_dnc_check=Y&campaign_id=TESTCAMP&first_name=Bob&last_name=Wilson&address1=1234+Main+St.&city=Chicago+Heights&state=IL&add_to_hopper=Y&hopper_local_call_time_check=Y&multi_alt_phones=7275551212_1_work!7275551213_1_sister+house!1234567890_1_neighbor
 
 
 Example responses:
@@ -77,8 +101,11 @@ SUCCESS: add_lead LEAD HAS BEEN ADDED - 7275551111|6666|999|193715|-4
 NOTICE: add_lead ADDED TO HOPPER - 7275551111|6666|193715|1677922
 
 SUCCESS: add_lead LEAD HAS BEEN ADDED - 7275551111|6666|999|193716|-4
+NOTICE: add_lead MULTI-ALT-PHONE NUMBERS LOADED - 3|6666|193716
 NOTICE: add_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME - 7275551111|6666|193716|-4|0
 
 ERROR: add_lead INVALID PHONE NUMBER - 72755|6666 
 
 ERROR: add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM - 6666|0 
+
+ERROR: NO FUNCTION SPECIFIED

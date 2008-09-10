@@ -149,8 +149,13 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 34. Added new alternate number dialing method which allows for over 65,000 alt
    phone numbers per lead. Currently these extra numbers are only available for 
-   auto dialing. These extra alternate number leads must be imported with the
-   CLI lead loader(VICIDIAL_IN_new_leads_file.pl)
+   auto dialing, not manual dial. These extra alternate number leads must be 
+   imported either with the CLI lead loader(VICIDIAL_IN_new_leads_file.pl) or
+   the non-agent API script.
+
+35. Added campaign-specific DNC to the system
+
+
 
 
 
