@@ -189,10 +189,11 @@
 # 80823-2123 - Fixed form scroll for IE, added copy to clipboard(IE-only feature)
 # 80831-0548 - Added Extended alt-dial-phone display information for non-manual calls
 # 80909-1717 - Added support for campaign-specific DNC lists
+# 80915-1754 - Rewrote leave-3way functions for external calling
 #
 
-$version = '2.0.5-167';
-$build = '80909-1717';
+$version = '2.0.5-168';
+$build = '80915-1754';
 
 require("dbconnect.php");
 
@@ -1307,21 +1308,23 @@ else
 		else
 			{
 			##### grab the next available vicidial_conference room and reserve it
-			$stmt="SELECT conf_exten FROM vicidial_conferences where server_ip = '$server_ip' and ((extension='') or (extension is null)) LIMIT 1;";
-			$rslt=mysql_query($stmt, $link);
+			$stmt="SELECT count(*) FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null));";
 			if ($DB) {echo "$stmt\n";}
-			$free_conf_ct = mysql_num_rows($rslt);
-			$i=0;
-			while ($i < $free_conf_ct)
-				{
-				$row=mysql_fetch_row($rslt);
-				$session_id =$row[0];
-				$i++;
-				}
-			$stmt="UPDATE vicidial_conferences set extension='$SIP_user' where server_ip='$server_ip' and conf_exten='$session_id';";
 			$rslt=mysql_query($stmt, $link);
-			print "<!-- USING NEW MEETME ROOM - $session_id - $NOW_TIME - $SIP_user -->\n";
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				$stmt="UPDATE vicidial_conferences set extension='$SIP_user', leave_3way='0' where server_ip='$server_ip' and ((extension='') or (extension is null)) limit 1;";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
 
+				$stmt="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and extension='$user';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$session_id = $row[0];
+				}
+			print "<!-- USING NEW MEETME ROOM - $session_id - $NOW_TIME - $SIP_user -->\n";
 			}
 
 		### mark leads that were not dispositioned during previous calls as ERI
@@ -1997,6 +2000,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var inOUT = 'OUT';
 	var useIE = '<? echo $useIE ?>';
 	var random = '<? echo $random ?>';
+	var threeway_end = 0;
+	var agentphonelive = 0;
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2172,15 +2177,21 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // place 3way and customer into other conference and fake-hangup the lines
 	function leave_3way_call(tempvarattempt)
 		{
+		threeway_end=0;
+
 		mainxfer_send_redirect('3WAY','','',tempvarattempt);
 
-		document.vicidial_form.callchannel.value = '';
-		document.vicidial_form.callserverip.value = '';
-		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
-		dialedcall_send_hangup();
+		if (threeway_end == '0')
+			{
+			document.vicidial_form.callchannel.value = '';
+			document.vicidial_form.callserverip.value = '';
+			dialedcall_send_hangup();
 
-		document.vicidial_form.xferchannel.value = '';
-		xfercall_send_hangup();
+			document.vicidial_form.xferchannel.value = '';
+			xfercall_send_hangup();
+			}
+
+		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 		}
 
 // ################################################################################
@@ -2296,10 +2307,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			  else 
 				{
 				var dialnum = tasknum;
-				if (protocol == 'EXTERNAL')
+				if ( (protocol == 'EXTERNAL') || (protocol == 'Local') )
 					{
 					var protodial = 'Local';
-					var extendial = extension + "@" + ext_context;
+					var extendial = extension;
+			//		var extendial = extension + "@" + ext_context;
 					}
 				else
 					{
@@ -2321,7 +2333,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{ 
 				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 					{
-					alert(xmlhttp.responseText);
+				//	alert(xmlhttp.responseText);
 
 					if ((taskdialvalue.length > 0) && (tasknowait != 'YES'))
 						{
@@ -2523,6 +2535,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var LMAalter=0;
 								var LMAcontent_change=0;
 								var LMAcontent_match=0;
+								agentphonelive=0;
 								var conv_start=-1;
 								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>LIVE CALLS IN YOUR SESSION:</B></font><BR><TABLE WIDTH=<?=$SDwidth ?>><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">REMOTE CHANNEL</TD><TD><font class=\"log_title\">HANGUP</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
 								if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
@@ -2580,7 +2593,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 									if (volumecontrol_active > 0)
 										{
-										if (protocol != 'EXTERNAL') 
+										if ( (protocol != 'EXTERNAL') && (protocol != 'Local') )
 											{
 											var regAGNTchan = new RegExp(protocol + '/' + extension,"g");
 											if  ( (channelfieldA.match(regAGNTchan)) && (agentchannel != channelfieldA) )
@@ -2590,7 +2603,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 												document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
 												}
 											}
-										else
+										else							
 											{
 											if (agentchannel.length < 3)
 												{
@@ -2599,6 +2612,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 												document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
 												}
 											}
+							//			document.getElementById("agentchannelSPAN").innerHTML = agentchannel;
 										}
 
 				//		document.getElementById("debugbottomspan").innerHTML = debugspan + '<BR>' + channelfieldA + '|' + lastcustchannel + '|' + custchannellive + '|' + LMAcontent_change + '|' + LMAalter;
@@ -2617,10 +2631,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										}
 									if (LMAalter > 0) {LMAcount++;}
 									
+									if (agentchannel == channelfieldA) {agentphonelive++;}
+
 									ARY_ct++;
 									}
 		//	var debug_LMA = LMAcontent_match+"|"+LMAcontent_change+"|"+LMAcount+"|"+live_conf_calls+"|"+LMAe[0]+LMAe[1]+LMAe[2]+LMAe[3]+LMAe[4]+LMAe[5];
 		//							document.getElementById("confdebug").innerHTML = debug_LMA + "<BR>";
+
+								if (agentphonelive < 1) {agentchannel='';}
 
 								live_conf_HTML = live_conf_HTML + "</table>";
 
@@ -2774,26 +2792,26 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
 		if (auto_dial_level == 0) {RedirecTxFEr = 1;}
-		var xmlhttp=false;
+		var xmlhttpXF=false;
 		/*@cc_on @*/
 		/*@if (@_jscript_version >= 5)
 		// JScript gives us Conditional compilation, we can cope with old IE versions.
 		// and security blocked creation of the objects.
 		 try {
-		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		  xmlhttpXF = new ActiveXObject("Msxml2.XMLHTTP");
 		 } catch (e) {
 		  try {
-		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		   xmlhttpXF = new ActiveXObject("Microsoft.XMLHTTP");
 		  } catch (E) {
-		   xmlhttp = false;
+		   xmlhttpXF = false;
 		  }
 		 }
 		@end @*/
-		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+		if (!xmlhttpXF && typeof XMLHttpRequest!='undefined')
 			{
-			xmlhttp = new XMLHttpRequest();
+			xmlhttpXF = new XMLHttpRequest();
 			}
-		if (xmlhttp) 
+		if (xmlhttpXF) 
 			{ 
 			var redirectvalue = MDchannel;
 			var redirectserverip = lastcustserverip;
@@ -2898,15 +2916,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
 					{var redirecttype = 'RedirectXtraCX';}
 				else
-					{var redirecttype = 'RedirectXtra';}
-			//		{var redirecttype = 'RedirectXtraNeW';}
+			//		{var redirecttype = 'RedirectXtra';}
+					{var redirecttype = 'RedirectXtraNeW';}
 				DispO3waychannel = redirectvalue;
 				DispO3wayXtrAchannel = redirectXTRAvalue;
 				DispO3wayCalLserverip = redirectserverip;
 				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
 				DispO3wayCalLcamptail = '';
 
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id;
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id + "&agentchannel=" + agentchannel + "&protocol=" + protocol + "&extension=" + extension;
 
 				if (taskdebugnote == 'FIRST') 
 					{
@@ -2946,60 +2964,78 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				customerparked=0;
 				}
 
-
-			xmlhttp.open('POST', 'manager_send.php'); 
-			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-			xmlhttp.send(xferredirect_query); 
-			xmlhttp.onreadystatechange = function() 
+			var XFRDop = '';
+			xmlhttpXF.open('POST', 'manager_send.php'); 
+			xmlhttpXF.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttpXF.send(xferredirect_query); 
+			xmlhttpXF.onreadystatechange = function() 
 				{ 
-				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+				if (xmlhttpXF.readyState == 4 && xmlhttpXF.status == 200) 
 					{
-					Nactiveext = null;
-					Nactiveext = xmlhttp.responseText;
-			//		alert(xmlhttp.responseText);
+					var XfeRRedirecToutput = null;
+					XfeRRedirecToutput = xmlhttpXF.responseText;
+					var XfeRRedirecToutput_array=XfeRRedirecToutput.split("|");
+					var XFRDop = XfeRRedirecToutput_array[0];
+					if (XFRDop == "NeWSessioN")
+						{
+						threeway_end=1;
+						document.vicidial_form.callchannel.value = '';
+						document.vicidial_form.callserverip.value = '';
+						dialedcall_send_hangup();
+
+						document.vicidial_form.xferchannel.value = '';
+						xfercall_send_hangup();
+
+						session_id = XfeRRedirecToutput_array[1];
+						document.getElementById("sessionIDspan").innerHTML = session_id;
+
+				//		alert("session_id changed to: " + session_id);
+						}
+				//	alert(xferredirect_query + "\n" + xmlhttpXF.responseText);
+				//	document.getElementById("debugbottomspan").innerHTML = xferredirect_query + "\n" + xmlhttpXF.responseText;
 					}
 				}
-			delete xmlhttp;
+			delete xmlhttpXF;
 			}
 
 			// used to send second Redirect  for manual dial calls
 			if (auto_dial_level == 0)
 			{
 				RedirecTxFEr = 1;
-				var xmlhttp=false;
+				var xmlhttpXF2=false;
 				/*@cc_on @*/
 				/*@if (@_jscript_version >= 5)
 				// JScript gives us Conditional compilation, we can cope with old IE versions.
 				// and security blocked creation of the objects.
 				 try {
-				  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+				  xmlhttpXF2 = new ActiveXObject("Msxml2.XMLHTTP");
 				 } catch (e) {
 				  try {
-				   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+				   xmlhttpXF2 = new ActiveXObject("Microsoft.XMLHTTP");
 				  } catch (E) {
-				   xmlhttp = false;
+				   xmlhttpXF2 = false;
 				  }
 				 }
 				@end @*/
-				if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+				if (!xmlhttpXF2 && typeof XMLHttpRequest!='undefined')
 				{
-					xmlhttp = new XMLHttpRequest();
+					xmlhttpXF2 = new XMLHttpRequest();
 				}
-				if (xmlhttp) 
+				if (xmlhttpXF2) 
 				{ 
-					xmlhttp.open('POST', 'manager_send.php'); 
-					xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-					xmlhttp.send(xferredirect_query + "&stage=2NDXfeR"); 
-					xmlhttp.onreadystatechange = function() 
+					xmlhttpXF2.open('POST', 'manager_send.php'); 
+					xmlhttpXF2.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+					xmlhttpXF2.send(xferredirect_query + "&stage=2NDXfeR"); 
+					xmlhttpXF2.onreadystatechange = function() 
 						{ 
-						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+						if (xmlhttpXF2.readyState == 4 && xmlhttpXF2.status == 200) 
 							{
 							Nactiveext = null;
-							Nactiveext = xmlhttp.responseText;
-					//		alert(RedirecTxFEr + "|" + xmlhttp.responseText);
+							Nactiveext = xmlhttpXF2.responseText;
+					//		alert(RedirecTxFEr + "|" + xmlhttpXF2.responseText);
 						}
 				}
-				delete xmlhttp;
+				delete xmlhttpXF2;
 				}
 			}
 
@@ -5330,7 +5366,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					manual_dial_finished();
 					}
-				document.getElementById("GENDERhideFORie").innerHTML = '<span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span>';
+				document.getElementById("GENDERhideFORieALT").innerHTML = '';
+				document.getElementById("GENDERhideFORie").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select>';
 				hideDiv('DispoSelectBox');
 				hideDiv('DispoButtonHideA');
 				hideDiv('DispoButtonHideB');
@@ -5503,10 +5540,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		WaitingForNextStep=0;
 		nochannelinsession=0;
 
-		if (protocol == 'EXTERNAL')
+		if ( (protocol == 'EXTERNAL') || (protocol == 'Local') )
 			{
 			var protodial = 'Local';
-			var extendial = extension + "@" + ext_context;
+			var extendial = extension;
+	//		var extendial = extension + "@" + ext_context;
 			}
 		else
 			{
@@ -6456,6 +6494,7 @@ else
 					}
 				CustomerData_update();
 				document.getElementById("GENDERhideFORie").innerHTML = '';
+				document.getElementById("GENDERhideFORieALT").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select>';
 				showDiv('DispoSelectBox');
 				DispoSelectContent_create('','ReSET');
 				WaitingForNextStep=1;
@@ -7046,6 +7085,7 @@ echo "</head>\n";
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="queue_text">
 <?	echo "Logged in as User: $VD_login on Phone: $SIP_user to campaign: $VD_campaign&nbsp; \n"; ?>
+ &nbsp; &nbsp; <span id="agentchannelSPAN"></span>
 </TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text">
 <? if ($INgrpCT > 0) {echo "<a href=\"#\" onclick=\"OpeNGrouPSelectioN();return false;\">GROUPS</a> &nbsp; &nbsp; \n";} ?>
 <?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
@@ -7327,6 +7367,9 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	</TD></TR></TABLE>
 </span>
 
+<span style="position:absolute;left:0px;top:1000px;z-index:43;" id="GENDERhideFORieALT"></span>
+
+
 <span style="position:absolute;left:0px;top:0px;z-index:37;" id="CallBackSelectBox">
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Select a CallBack Date :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN ID="CallBackDatESelectioN">
@@ -7420,7 +7463,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 <tr><td colspan=3>
 <font class="body_small">
-<span id="debugbottomspan"></span>
+<span style="position:absolute;left:0px;top:700px;z-index:66;" id="debugbottomspan"></span>
 </font>
 </td></tr>
 </TABLE>

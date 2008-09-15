@@ -628,7 +628,9 @@ index (campaign_id)
 CREATE TABLE vicidial_conferences (
 conf_exten INT(7) UNSIGNED NOT NULL,
 server_ip VARCHAR(15) NOT NULL,
-extension VARCHAR(100)
+extension VARCHAR(100),
+leave_3way ENUM('0','1') default '0',
+leave_3way_datetime DATETIME
 );
 
 CREATE TABLE vicidial_phone_codes (
@@ -1262,7 +1264,7 @@ INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 d
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1105';
+UPDATE system_settings SET db_schema_version='1106';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

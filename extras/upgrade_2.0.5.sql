@@ -401,3 +401,8 @@ UNIQUE INDEX phonecamp (phone_number, campaign_id)
 );
 
 UPDATE system_settings SET db_schema_version='1105';
+
+ALTER TABLE vicidial_conferences ADD leave_3way ENUM('0','1') default '0';
+ALTER TABLE vicidial_conferences ADD leave_3way_datetime DATETIME;
+
+UPDATE system_settings SET db_schema_version='1106';

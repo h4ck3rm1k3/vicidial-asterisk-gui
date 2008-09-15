@@ -35,6 +35,7 @@
 #  - $stage - ('UP','DOWN','2NDXfeR')
 #  - $session_id - ('8600051')
 #  - $FROMvdc - ('YES','NO')
+#  - $agentchannel - ('SIP/cc101-g7yr','Zap/1-1',...)
 
 # CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
@@ -73,6 +74,7 @@
 # 80402-0121 - Fixes for manual dial transfers on some systems
 # 80424-0442 - Added non_latin lookup from system_settings
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
+# 80915-1755 - Rewrote leave-3way functions for external calling
 #
 
 require("dbconnect.php");
@@ -132,10 +134,10 @@ if (isset($_GET["phone_number"]))			{$phone_number=$_GET["phone_number"];}
 	elseif (isset($_POST["phone_number"]))	{$phone_number=$_POST["phone_number"];}
 if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
 	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
-if (isset($_GET["extension"]))					{$extension=$_GET["extension"];}
-	elseif (isset($_POST["extension"]))			{$extension=$_POST["extension"];}
-if (isset($_GET["protocol"]))					{$protocol=$_GET["protocol"];}
-	elseif (isset($_POST["protocol"]))			{$protocol=$_POST["protocol"];}
+if (isset($_GET["extension"]))				{$extension=$_GET["extension"];}
+	elseif (isset($_POST["extension"]))		{$extension=$_POST["extension"];}
+if (isset($_GET["protocol"]))				{$protocol=$_GET["protocol"];}
+	elseif (isset($_POST["protocol"]))		{$protocol=$_POST["protocol"];}
 if (isset($_GET["phone_ip"]))				{$phone_ip=$_GET["phone_ip"];}
 	elseif (isset($_POST["phone_ip"]))		{$phone_ip=$_POST["phone_ip"];}
 if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["enable_sipsak_messages"];}
@@ -143,9 +145,11 @@ if (isset($_GET["enable_sipsak_messages"]))				{$enable_sipsak_messages=$_GET["e
 if (isset($_GET["allow_sipsak_messages"]))				{$allow_sipsak_messages=$_GET["allow_sipsak_messages"];}
 	elseif (isset($_POST["allow_sipsak_messages"]))		{$allow_sipsak_messages=$_POST["allow_sipsak_messages"];}
 if (isset($_GET["session_id"]))				{$session_id=$_GET["session_id"];}
-	elseif (isset($_POST["session_id"]))		{$session_id=$_POST["session_id"];}
+	elseif (isset($_POST["session_id"]))	{$session_id=$_POST["session_id"];}
 if (isset($_GET["FROMvdc"]))				{$FROMvdc=$_GET["FROMvdc"];}
 	elseif (isset($_POST["FROMvdc"]))		{$FROMvdc=$_POST["FROMvdc"];}
+if (isset($_GET["agentchannel"]))			{$agentchannel=$_GET["agentchannel"];}
+	elseif (isset($_POST["agentchannel"]))	{$agentchannel=$_POST["agentchannel"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -179,11 +183,12 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.5-30';
-$build = '80402-0121';
+$version = '2.0.5-32';
+$build = '80915-1755';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
+$NOWnum = date("YmdHis");
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 $stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and user_level > 0;";
@@ -779,7 +784,7 @@ if ($ACTION=="RedirectXtraNeW")
 		$row='';   $rowx='';
 		$channel_liveX=1;
 		$channel_liveY=1;
-		if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($extrachannel)<3) or (strlen($session_id)<3) )
+		if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($session_id)<3) or ( ( (strlen($extrachannel)<3) or (strlen($exten)<1) ) and ($exten != "NEXTAVAILABLE") ) )
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
@@ -802,30 +807,52 @@ if ($ACTION=="RedirectXtraNeW")
 					}
 				}
 		}
-		else
+	else
 		{
-			if ($exten == "NEXTAVAILABLE")
+		if ($exten == "NEXTAVAILABLE")
 			{
-			$stmt="SELECT conf_exten FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) limit 1;";
+			$stmt="SELECT count(*) FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-				if (strlen($row[0]) > 3)
+			if ($row[0] > 1)
 				{
-				$stmt="UPDATE vicidial_conferences set extension='$user' where server_ip='$server_ip' and conf_exten='$row[0]';";
+				$stmt="UPDATE vicidial_conferences set extension='$protocol/$extension$NOWnum', leave_3way='0' where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id' limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
+
+				$stmt="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and extension='$protocol/$extension$NOWnum' and conf_exten != '$session_id';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
 				$exten = $row[0];
 
-				$stmt="UPDATE vicidial_conferences set extension='3WAY_$user' where server_ip='$server_ip' and conf_exten='$session_id';";
+				$stmt="UPDATE vicidial_conferences set extension='$protocol/$extension' where server_ip='$server_ip' and conf_exten='$exten' limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
-				$exten = $row[0];
+
+				$stmt="UPDATE vicidial_conferences set leave_3way='1', leave_3way_datetime='$NOW_TIME', extension='3WAY_$user' where server_ip='$server_ip' and conf_exten='$session_id';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+
+				$queryCID = "CXAR23$NOWnum";
+				$stmtB="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Redirect','$queryCID','Channel: $agentchannel','Context: $ext_context','Exten: $exten','Priority: 1','CallerID: $queryCID','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmtB, $link);
+
+				$stmt="UPDATE vicidial_live_agents set conf_exten='$exten' where server_ip='$server_ip' and user='$user';";
+					if ($format=='debug') {echo "\n<!-- $stmt -->";}
+				$rslt=mysql_query($stmt, $link);
+
+				echo "NeWSessioN|$exten|\n";
+				echo "|$stmtB|\n";
+				
+				exit;
 				}
-				else
+			else
 				{
 				$channel_liveX=0;
-				echo "Cannot find empty conference on $server_ip, Redirect command not inserted\n";
+				echo "Cannot find empty vicidial_conference on $server_ip, Redirect command not inserted\n|$stmt|";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Cannot find empty conference on $server_ip";}
 				}
 			}
