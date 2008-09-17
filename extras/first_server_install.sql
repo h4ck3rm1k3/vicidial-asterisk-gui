@@ -306,13 +306,13 @@ INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600297','10.10.1
 INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600298','10.10.10.15');
 INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600299','10.10.10.15');
 
-INSERT INTO vicidial_list values('','2004-01-06','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead01','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-06','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead02','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead03','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead04','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead05','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead06','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
-INSERT INTO vicidial_list values('','2004-01-07','','NEW','','','TEST01','101','TESTCAMP','N','1','7275551212','Mr','Matt','X','lead07','1234 Fake St.','','','Clearwater','FL','','33760','USA','M','1970-01-01','','test@test.com','suprise','comments go here','0');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead01','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead02','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead03','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead04','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead05','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead06','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
+INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead07','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
 
 INSERT INTO vicidial_statuses values('NEW','New Lead','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('QUEUE','Lead To Be Called','N','N','UNDEFINED');
