@@ -190,10 +190,11 @@
 # 80831-0548 - Added Extended alt-dial-phone display information for non-manual calls
 # 80909-1717 - Added support for campaign-specific DNC lists
 # 80915-1754 - Rewrote leave-3way functions for external calling
+# 81002-1908 - Fixed double-login bug in some conditions
 #
 
-$version = '2.0.5-168';
-$build = '80915-1754';
+$version = '2.0.5-169';
+$build = '81002-1908';
 
 require("dbconnect.php");
 
@@ -1318,7 +1319,7 @@ else
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				$stmt="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and extension='$user';";
+				$stmt="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and ( (extension='$SIP_user') or (extension='$user') );";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$row=mysql_fetch_row($rslt);

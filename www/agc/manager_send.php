@@ -784,7 +784,7 @@ if ($ACTION=="RedirectXtraNeW")
 		$row='';   $rowx='';
 		$channel_liveX=1;
 		$channel_liveY=1;
-		if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($session_id)<3) or ( ( (strlen($extrachannel)<3) or (strlen($exten)<1) ) and ($exten != "NEXTAVAILABLE") ) )
+		if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($session_id)<3) or ( ( (strlen($extrachannel)<3) or (strlen($exten)<1) ) and (!ereg("NEXTAVAILABLE",$exten)) ) )
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
@@ -809,7 +809,7 @@ if ($ACTION=="RedirectXtraNeW")
 		}
 	else
 		{
-		if ($exten == "NEXTAVAILABLE")
+		if (ereg("NEXTAVAILABLE",$exten))
 			{
 			$stmt="SELECT count(*) FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -996,7 +996,7 @@ if ($ACTION=="RedirectXtra")
 		}
 		else
 		{
-			if ($exten == "NEXTAVAILABLE")
+		if (ereg("NEXTAVAILABLE",$exten))
 			{
 			$stmt="SELECT conf_exten FROM conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) limit 1;";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
