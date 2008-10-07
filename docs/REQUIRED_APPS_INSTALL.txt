@@ -13,10 +13,10 @@ make
 make install
 
 cd /usr/local/
-wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.45.tar.gz
-gunzip mysql-5.0.45.tar.gz
-tar xvf mysql-5.0.45.tar
-cd mysql-5.0.45
+wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.67.tar.gz
+gunzip mysql-5.0.67.tar.gz
+tar xvf mysql-5.0.67.tar
+cd mysql-5.0.67
 groupadd mysql
 useradd -g mysql mysql
 ./configure --prefix=/usr/local/mysql --enable-shared=yes --with-readline --enable-thread-safe-client --enable-large-files --enable-assembler --with-client-ldflags=-all-static --with-mysqld-ldflags=-all-static --with-big-tables
@@ -24,9 +24,9 @@ make
 make install
 PATH=$PATH:$HOME/bin:/usr/local/mysql/bin/
 export PATH
-cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so /usr/lib/
-cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
-cd /usr/local/mysql-5.0.45
+cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so /usr/lib/
+cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
+cd /usr/local/mysql-5.0.67
 scripts/mysql_install_db
 chown -R root  /usr/local/mysql
 chown -R mysql /usr/local/mysql/var
@@ -104,12 +104,12 @@ make install
 
 
 cd /usr/local
-wget http://www.daveltd.com/src/util/ttyload/ttyload-0.4.4.tar.gz
-gunzip ttyload-0.4.4.tar.gz
-tar xvf ttyload-0.4.4.tar
-cd ttyload-0.4.4
+wget http://www.daveltd.com/src/util/ttyload/ttyload-0.5.tar.gz
+gunzip ttyload-0.5.tar.gz
+tar xvf ttyload-0.5.tar
+cd ttyload-0.5
 make
-ln -s /usr/local/ttyload-0.4.4/ttyload /usr/bin/ttyload
+ln -s /usr/local/ttyload-0.5/ttyload /usr/bin/ttyload
 
 
 cd /usr/local
@@ -150,30 +150,30 @@ cd zlib-1.2.3
 make
 make install
 cd /usr/local
-wget http://ftp.openssh.zone-h.org/pub/OpenBSD/OpenSSH/portable/openssh-5.0p1.tar.gz
-gunzip openssh-5.0p1.tar.gz
-tar xvf openssh-5.0p1.tar
-cd openssh-5.0p1
+wget http://ftp.openssh.zone-h.org/pub/OpenBSD/OpenSSH/portable/openssh-5.1p1.tar.gz
+gunzip openssh-5.1p1.tar.gz
+tar xvf openssh-5.1p1.tar
+cd openssh-5.1p1
 ./configure
 make
 make install
 
 
 cd /usr/local
-wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz
-gunzip openssl-0.9.8g.tar.gz
-tar xvf openssl-0.9.8g.tar
-cd openssl-0.9.8g
+wget http://www.openssl.org/source/openssl-0.9.8i.tar.gz
+gunzip openssl-0.9.8i.tar.gz
+tar xvf openssl-0.9.8i.tar
+cd openssl-0.9.8i
 ./config
 make
 make install
 
 
 cd /usr/local
-wget http://subversion.tigris.org/downloads/subversion-1.3.2.tar.gz
-gunzip subversion-1.3.2.tar.gz
-tar xvf subversion-1.3.2.tar
-cd subversion-1.3.2
+wget http://subversion.tigris.org/downloads/subversion-1.5.2.tar.gz
+gunzip subversion-1.5.2.tar.gz
+tar xvf subversion-1.5.2.tar
+cd subversion-1.5.2
 ./configure
 make
 make install
@@ -190,13 +190,13 @@ make install
 
 
 cd /usr/local
-wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.8.tar.gz
-gunzip httpd-2.2.8.tar.gz
-tar xvf httpd-2.2.8.tar
+wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.9.tar.gz
+gunzip httpd-2.2.9.tar.gz
+tar xvf httpd-2.2.9.tar
 wget http://us2.php.net/distributions/php-5.2.6.tar.gz
 gunzip php-5.2.6.tar.gz
 tar xvf php-5.2.6.tar
-cd httpd-2.2.8
+cd httpd-2.2.9
 make clean
 ./configure --prefix=/usr/local/apache2 --enable-ssl --enable-setenvif --enable-so --with-apxs2 --enable-dav --enable-maintainer-mode
 make
@@ -232,14 +232,14 @@ vi /usr/local/apache2/conf/httpd.conf
 		"CustomLog /dev/null common"
 
 	to enable web browsing of Recordings on Asterisk server, add this:
-		Alias /RECORDINGS/ "/var/spool/asterisk/monitorDONE/"
+	Alias /RECORDINGS/ "/var/spool/asterisk/monitorDONE/"
 
-		<Directory "/var/spool/asterisk/monitorDONE">
-		    Options Indexes MultiViews
-		    AllowOverride None
-		    Order allow,deny
-		    Allow from all
-		</Directory>
+	<Directory "/var/spool/asterisk/monitorDONE">
+	    Options Indexes MultiViews
+	    AllowOverride None
+	    Order allow,deny
+	    Allow from all
+	</Directory>
 
 	OPTIONAL: USE ONLY FOR STANDALONE apache/php SERVER ONLY:
 		<IfModule prefork.c>
@@ -339,13 +339,13 @@ mkdir /usr/src/asterisk
 cd /usr/src/asterisk
 wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.7.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.8.tar.gz
 gunzip asterisk-1.2.30.2.tar.gz
 tar xvf asterisk-1.2.30.2.tar
 gunzip zaptel-1.2.27.tar.gz
 tar xvf zaptel-1.2.27.tar
-gunzip libpri-1.2.7.tar.gz
-tar xvf libpri-1.2.7.tar
+gunzip libpri-1.2.8.tar.gz
+tar xvf libpri-1.2.8.tar
 cd ./zaptel-1.2.27
 wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
@@ -360,7 +360,7 @@ make clean
 make zttool
 make
 make install
-cd ../libpri-1.2.7
+cd ../libpri-1.2.8
 make clean
 make
 make install
@@ -432,13 +432,13 @@ mkdir ../orig-mp3
 mv -f *.mp3 ../orig-mp3/
 mkdir ../quiet-mp3
 cd ../quiet-mp3
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 -v 0.25 fpm-sunshine.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-sunshine.raw -r 8000 -c 1 fpm-sunshine.wav vol 0.25
 sox fpm-sunshine.wav -t gsm -r 8000 -b -c 1 fpm-sunshine.gsm
 sox fpm-sunshine.wav -t ul -r 8000 -b -c 1 fpm-sunshine.pcm
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 -v 0.25 fpm-calm-river.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-calm-river.raw -r 8000 -c 1 fpm-calm-river.wav vol 0.25
 sox fpm-calm-river.wav -t gsm -r 8000 -b -c 1 fpm-calm-river.gsm
 sox fpm-calm-river.wav -t ul -r 8000 -b -c 1 fpm-calm-river.pcm
-sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 -v 0.25 fpm-world-mix.wav
+sox -r 44100 -w -s -c 1 ../mohmp3/fpm-world-mix.raw -r 8000 -c 1 fpm-world-mix.wav vol 0.25
 sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
 sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
 rm -f ../mohmp3/*.raw
@@ -506,24 +506,24 @@ rm -f /usr/lib/asterisk/modules/res_speech.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.21.1.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.11.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.4.tar.gz
-gunzip asterisk-1.4.21.1.tar.gz
-tar xvf asterisk-1.4.21.1.tar
-gunzip zaptel-1.4.11.tar.gz
-tar xvf zaptel-1.4.11.tar
-gunzip libpri-1.4.4.tar.gz
-tar xvf libpri-1.4.4.tar
-cd ./zaptel-1.4.11
+wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.22.tar.gz
+wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.12.1.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.7.tar.gz
+gunzip asterisk-1.4.22.tar.gz
+tar xvf asterisk-1.4.22.tar
+gunzip zaptel-1.4.12.1.tar.gz
+tar xvf zaptel-1.4.12.1.tar
+gunzip libpri-1.4.7.tar.gz
+tar xvf libpri-1.4.7.tar
+cd ./zaptel-1.4.12.1
 ./configure
 make
 make install
-cd ../libpri-1.4.4
+cd ../libpri-1.4.7
 make clean
 make
 make install
-cd ../asterisk-1.4.21.1
+cd ../asterisk-1.4.22
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h

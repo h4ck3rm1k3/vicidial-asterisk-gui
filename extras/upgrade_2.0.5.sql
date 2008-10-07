@@ -406,3 +406,55 @@ ALTER TABLE vicidial_conferences ADD leave_3way ENUM('0','1') default '0';
 ALTER TABLE vicidial_conferences ADD leave_3way_datetime DATETIME;
 
 UPDATE system_settings SET db_schema_version='1106';
+
+CREATE UNIQUE INDEX serverconf on vicidial_conferences (server_ip, conf_exten);
+
+CREATE INDEX campaign_id on vicidial_closer_log (campaign_id);
+
+ALTER TABLE vicidial_inbound_groups ADD play_place_in_line ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD play_estimate_hold_time ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option ENUM('NONE','EXTENSION','VOICEMAIL','IN_GROUP','CALLERID_CALLBACK','DROP_ACTION') default 'NONE';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_seconds SMALLINT(5) default '360';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_exten VARCHAR(20) default '8300';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_voicemail VARCHAR(20) default '';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_xfer_group VARCHAR(20) default '---NONE---';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_callback_filename VARCHAR(50) default 'vm-hangup';
+ALTER TABLE vicidial_inbound_groups ADD hold_time_option_callback_list_id BIGINT(14) UNSIGNED default '999';
+ALTER TABLE vicidial_inbound_groups ADD hold_recall_xfer_group VARCHAR(20) default '---NONE---';
+ALTER TABLE vicidial_inbound_groups ADD no_delay_call_route ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_inbound_groups ADD play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') default 'ALWAYS';
+
+INSERT INTO vicidial_inbound_groups(group_id,group_name,group_color,active) values('AGENTDIRECT','Single Agent Direct Queue','white','Y');
+
+CREATE TABLE vicidial_inbound_dids (
+did_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+did_pattern VARCHAR(50) NOT NULL,
+did_description VARCHAR(50),
+did_active ENUM('Y','N') default 'Y',
+did_route ENUM('EXTEN','VOICEMAIL','AGENT','PHONE','IN_GROUP') default 'EXTEN',
+extension VARCHAR(50) default '9998811112',
+exten_context VARCHAR(50) default 'default',
+voicemail_ext VARCHAR(10),
+phone VARCHAR(100),
+server_ip VARCHAR(15),
+user VARCHAR(20),
+user_unavailable_action ENUM('IN_GROUP','EXTEN','VOICEMAIL','PHONE') default 'VOICEMAIL',
+user_route_settings_ingroup VARCHAR(20) default 'AGENTDIRECT',
+group_id VARCHAR(20),
+call_handle_method VARCHAR(20) default 'CID',
+agent_search_method ENUM('LO','LB','SO') default 'LB',
+list_id BIGINT(14) UNSIGNED default '999',
+campaign_id VARCHAR(8),
+phone_code VARCHAR(10) default '1',
+unique index (did_pattern),
+index (group_id)
+);
+
+ALTER TABLE vicidial_auto_calls ADD agent_only VARCHAR(20) default '';
+
+ALTER TABLE phones ADD email VARCHAR(100);
+
+ALTER TABLE vicidial_users ADD modify_inbound_dids ENUM('1','0') default '0';
+ALTER TABLE vicidial_users ADD delete_inbound_dids ENUM('1','0') default '0';
+
+UPDATE system_settings SET db_schema_version='1107';

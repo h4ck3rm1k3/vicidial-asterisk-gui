@@ -27,3 +27,5 @@ SVYEXT - Survey sent to Extension - Survey outbound campaign status only
 SVYVM - Survey sent to Voicemail - Survey outbound campaign status only
 SVYHU - Survey Hungup - Survey outbound campaign status only
 SVYREC - Survey sent to Record - Survey outbound campaign status only
+HXFER - Hold Recall Transfer to another in-group
+HOLDTO - Hold time option call termination on inbound call

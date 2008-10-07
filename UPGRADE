@@ -162,6 +162,23 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 37. Rewrote Leave-3way function for external calling to work more reliably on
     high load systems.
 
+38. Added several new features to inbound call handling including:
+	- announce place in line
+	- announce estimated hold time
+	- welcome message options
+	- options for call routing when estimated hold time is too high
+
+39. Added DID call routing to allow for basic routing of calls to phones, 
+   extensions, voicemail and VICIDIAL inbound groups without editing the 
+   extensions.conf dialplan. 
+   *requires initial adding one line to dialplan of inbound context:
+      exten => _X.,1,AGI(agi-DID_route.agi)
+   *as well as a few more lines in your VICIDIAL default context:
+      ; DID forwarded calls
+      exten => _99909*.,1,Answer
+      exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
+      exten => _99909*.,3,Hangup
+
 
 
 

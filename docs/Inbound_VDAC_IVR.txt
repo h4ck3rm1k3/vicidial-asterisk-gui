@@ -13,7 +13,7 @@ The example below shows how to do a very simple IVR before sending to a queue as
 The "test_in_menu" audio file would have something like the following script:
 
 "Hello, thank you for calling ACME Service Inc. For English press one, para el 
-español, prensa dos, pour le Français, presse trois, für Deutschen Presse vier."
+español, prensa dos, pour le Français, presse trois, für Deutsche Presse vier."
 
 
 

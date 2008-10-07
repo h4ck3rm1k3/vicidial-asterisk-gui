@@ -13,6 +13,8 @@ SIPtrunk=SIP/1234:PASSWORD@sip.provider.net	; SIP trunk
 TRUNKloop = IAX2/ASTloop:test@127.0.0.1:40569	; used for blind monitoring
 TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569	; used for testing
 
+[testtrunkinbound]
+exten => _X.,1,AGI(agi-DID_route.agi)
 
 [default]
 ; VICI-GROUP DIRECT SUPPORT LINE (VICIHELP[84244357])
@@ -227,6 +229,10 @@ exten => _90009.,3,Hangup
 exten => _990009.,1,Answer                  ; Answer the line
 exten => _990009.,2,AGI(agi-VDAD_ALL_inbound.agi,CLOSER-----LB-----CL_TESTCAMP-----7275551212-----Closer-----park----------999-----1)
 exten => _990009.,3,Hangup
+; DID forwarded calls
+exten => _99909*.,1,Answer
+exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
+exten => _99909*.,3,Hangup
 
 
 ; barge monitoring extension
@@ -258,9 +264,9 @@ exten => _86000[0-4]X,1,Meetme,${EXTEN}|q
 ; VICIDIAL conferences
 exten => _86000[5-9]X,1,Meetme,${EXTEN}|F
 exten => _8600[1-2]XX,1,Meetme,${EXTEN}|F
-; quiet entry and leaving conferences for VICIDIAL
+; quiet entry and leaving conferences for VICIDIAL (inbound announce and SendDTMF)
 exten => _78600XXX,1,Meetme,${EXTEN:1}|Fq
-; quiet monitor extensions for meetme rooms (for room managers)
+; quiet monitor-only extensions for meetme rooms (for room managers)
 exten => _68600XXX,1,Meetme,${EXTEN:1}|Fmq
 ; quiet monitor-only entry and leaving conferences for VICIDIAL (recording)
 exten => _58600XXX,1,Meetme,${EXTEN:1}|Fmq
@@ -462,7 +468,7 @@ exten => _999XX11112,3,Playback(ss-noservice)
 exten => _999XX11112,4,Playback(vm-goodbye)
 exten => _999XX11112,5,Hangup
 
-exten => _999XXXX112,1,Wait(8)
+exten => _999XXXX112,1,Wait(5)
 exten => _999XXXX112,2,Answer
 exten => _999XXXX112,3,Playback(demo-instruct)
 exten => _999XXXX112,4,Playback(demo-instruct)

@@ -33,13 +33,13 @@ mkdir /usr/src/asterisk
 cd /usr/src/asterisk
 wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
 wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.7.tar.gz
+wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.8.tar.gz
 gunzip asterisk-1.2.30.2.tar.gz
 tar xvf asterisk-1.2.30.2.tar
 gunzip zaptel-1.2.27.tar.gz
 tar xvf zaptel-1.2.27.tar
-gunzip libpri-1.2.7.tar.gz
-tar xvf libpri-1.2.7.tar
+gunzip libpri-1.2.8.tar.gz
+tar xvf libpri-1.2.8.tar
 cd ./zaptel-1.2.27
 wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
@@ -54,7 +54,7 @@ make clean
 make zttool
 make
 make install
-cd ../libpri-1.2.7
+cd ../libpri-1.2.8
 make clean
 make
 make install

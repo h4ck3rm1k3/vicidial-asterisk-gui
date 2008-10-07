@@ -13,6 +13,8 @@ SIPtrunk=SIP/1234:PASSWORD@sip.provider.net	; SIP trunk
 TRUNKloop = IAX2/ASTloop:test@127.0.0.1:40569	; used for blind monitoring
 TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569	; used for testing
 
+[testtrunkinbound]
+exten => _X.,1,AGI(agi-DID_route.agi)
 
 [default]
 ; VICI-GROUP DIRECT SUPPORT LINE (VICIHELP[84244357])
@@ -165,7 +167,6 @@ exten => _91NXXNXXXXXX,3,Hangup
 ; exten => _91XXXXXXXXXXXXX,2,Dial(${TRUNKloop}/9990011112,,to)
 ; exten => _91XXXXXXXXXXXXX,3,Hangup
 
-
 ; parameters for call_inbound.agi (7 fields separated by five dashes "-----"):
 ; 1. the extension of the phone to ring as defined in the asterisk.phones table
 ; 2. the phone number that was called, for the live_inbound/_log entry
@@ -228,6 +229,10 @@ exten => _90009.,3,Hangup
 exten => _990009.,1,Answer                  ; Answer the line
 exten => _990009.,2,AGI(agi-VDAD_ALL_inbound.agi,CLOSER-----LB-----CL_TESTCAMP-----7275551212-----Closer-----park----------999-----1)
 exten => _990009.,3,Hangup
+; DID forwarded calls
+exten => _99909*.,1,Answer
+exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
+exten => _99909*.,3,Hangup
 
 
 ; barge monitoring extension

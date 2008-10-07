@@ -96,20 +96,20 @@ NOTE: at the bottom of this document are conf examples for a 3 server load balan
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
-5. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed:
+5. For BOTH servers the VDAD extens need to be setup there as well for the Load-Balance and Load-Balance-Overflow AGI scripts, as well as setting up the closer and inbound extens if needed(these should already be part of the default extensions.conf):
 
 	; VICIDIAL_auto_dialer transfer script Load Balance Overflow:
-	exten => 8367,1,AGI(call_log.agi,${EXTEN})
-	exten => 8367,2,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-	exten => 8367,3,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
-	exten => 8367,4,AGI(agi-VDAD_LO_transfer.agi,${EXTEN})
+	exten => 8367,1,Playback(sip-silence)
+	exten => 8367,2,AGI(agi://127.0.0.1:4577/call_log)
+	exten => 8367,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
+	exten => 8367,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LO)
 	exten => 8367,5,Hangup
 
 	; VICIDIAL_auto_dialer transfer script Load Balanced:
-	exten => 8368,1,AGI(call_log.agi,${EXTEN})
-	exten => 8368,2,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-	exten => 8368,3,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
-	exten => 8368,4,AGI(agi-VDAD_LB_transfer.agi,${EXTEN})
+	exten => 8368,1,Playback(sip-silence)
+	exten => 8368,2,AGI(agi://127.0.0.1:4577/call_log)
+	exten => 8368,3,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
+	exten => 8368,4,AGI(agi-VDAD_ALL_outbound.agi,NORMAL-----LB)
 	exten => 8368,5,Hangup
 
 

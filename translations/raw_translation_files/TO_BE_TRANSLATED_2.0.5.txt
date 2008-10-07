@@ -247,6 +247,89 @@ Use Campaign DNC List||
 and possibly the campaign-specific DNC list||
 There is also the option to add leads to the campaign-specific DNC lists for those campaigns that have them||
 NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign||
+Add New ||
+Copy ||
+New DID Addition||
+New Copied DID Addition||
+Modify ||
+Delete ||
+Play Place in Line -<\/B> This defines whether the caller will hear their place in line when they enter the queue as well as when they hear the announcemend. Default is N||
+Play Estimated Hold Time -<\/B> This defines whether the caller will hear the estimated hold time before they are transferred to an agent. Default is N||
+Hold Time Option -<\/B> This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE||
+Hold Time Option Seconds -<\/B> If Hold Time Option is set to anything but NONE, this is the number of seconds of estimated hold time that will trigger the hold time option. Default is 360 seconds||
+Hold Time Option Extension -<\/B> If Hold Time Option is set to EXTENSION, this is the dialplan extension that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds||
+Hold Time Option Voicemail -<\/B> If Hold Time Option is set to VOICEMAIL, this is the voicemail box that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds||
+Hold Time Option Transfer In-Group -<\/B> If Hold Time Option is set to IN_GROUP, this is the inbound group that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds||
+Hold Time Option Callback Filename -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the filename prompt that is played before the call is logged as a new lead to the list ID specified below if the estimated hold time exceeds the Hold Time Option Seconds||
+Hold Time Option Callback List ID -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the estimated hold time exceeds the Hold Time Option Seconds||
+Hold Recall Transfer In-Group -<\/B> If a customer calls back to this in-group more than once and this is not set to NONE, then the call will automatically be sent on to the In-Group selected in this field. Default is NONE||
+No Delay Call Route -<\/B> Setting this to Y will remove all wait times and audio prompts and attempt to send the call right to an agent. Does not override welcome message or on hold prompt settings. Default is N||
+Play Welcome Message -<\/B> These settings select when to play the defined welcome message, ALWAYS will play it every time, NEVER will never play it, IF_WAIT_ONLY will only play the welcome message if the call does not immediately go to an agent, and YES_UNLESS_NODELAY will always play the welcome message unless the NO_DELAY setting is enabled. Default is ALWAYS||
+Play Place in Line: ||
+Play Estimated Hold Time: ||
+Hold Time Option: ||
+Hold Time Option Seconds: ||
+Hold Time Option Extension: ||
+Hold Time Option Voicemail: ||
+Hold Time Option Transfer In-Group: ||
+Hold Time Option Callback Filename: ||
+Hold Time Option Callback List ID: ||
+Hold Recall Transfer In-Group: ||
+No Delay Call Route: ||
+Play Welcome Message: ||
+DID Extension -<\/B> This is the number, extension or DID that will trigger this entry and that you will route within the system using this function||
+DID Description -<\/B> This is the description of the DID routing entry||
+DID Active -<\/B> This the field where you set the DID entry to active or not. Default is Y||
+DID Route -<\/B> This the type of route that you set the DID to use. EXTEN will send calls to the extension entered below, VOICEMAIL will send calls directly to the voicemail box entered below, AGENT will send calls to a VICIDIAL agent if they are logged in, PHONE will send the call to a phones entry selected below, IN_GROUP will send calls directly to the specified inbound group. Default is EXTEN||
+Extension -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan extension that calls will be sent to. Default is 9998811112, no-service||
+Extension Context -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan context that calls will be sent to. Default is default||
+Voicemail Box -<\/B> If VOICEMAIL is selected as the DID Route, then this is the voicemail box that calls will be sent to. Default is empty||
+Phone Extension -<\/B> If PHONE is selected as the DID Route, then this is the phone extension that calls will be sent to.||
+Phone Server IP -<\/B> If PHONE is selected as the DID Route, then this is the server IP for the phone extension that calls will be sent to||
+User Agent -<\/B> If AGENT is selected as the DID Route, then this is the VICIDIAL Agent that calls will be sent to||
+User Unavailable Action -<\/B> If AGENT is selected as the DID Route, and the user is not logged in or available, then this is the route that the calls will take||
+User Route Settings In-Group -</B> If AGENT is selected as the DID Route, then this is the In-Group that will be used for the queue settings as the caller is waiting to be sent to the agent. Default is AGENTDIRECT||
+In-Group ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the In-Group that calls will be sent to||
+In-Group Call Handle Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the call handling method used for these calls. CID will add a new lead record with every call using the CallerID as the phone number, CIDLOOKUP will attempt to lookup the phone number by the CallerID in the entire system, CIDLOOKUPRL will attampt to lookup the phone number by the CallerID in only one specified list, CIDLOOKUPRC will attampt to lookup the phone number by the CallerID in all of the lists that belong to the specified campaign, CLOSER is specified for VICIDIAL Closer calls, ANI will add a new lead record with every call using the ANI as the phone number, ANILOOKUP will attempt to lookup the phone number by the ANI in the entire system, ANILOOKUPRL will attampt to lookup the phone number by the ANI in only one specified list, XDIGITID will prompt the caller for an X digit code before the call will be put into the queue. Default is CID||
+In-Group Agent Search Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the agent search method to be used by the inbound group, LO is Load-Balanced-Overflow and will try to send the call to an agent on the local server before trying to send it to an agent on another server, LB is Load-Balanced and will try to send the call to the next agent no matter what server they are on, SO is Server-Only and will only try to send the calls to agents on the server that the call came in on. Default is LB||
+In-Group List ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the List ID that leads may be searched through and that leads will be inserted into if necessary||
+In-Group Campaign ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the Campaign ID that leads may be searched for in if the call handle method is CIDLOOKUPRC||
+In-Group Phone Code -<\/B> If IN_GROUP is selected as the DID Route, then this is the Phone Code used if a new lead is created||
+Phones Email -<\/B> The email address associated with this phone entry. This is used for voicemail settings||
+ADD A NEW DID||
+DID Extension: ||
+DID Description: ||
+COPY DID||
+Source DID: ||
+DID NOT ADDED||
+there is already a DID in the system with this ID||
+there is already a DID in the system with this extension||
+DID NOT MODIFIED||
+DID MODIFIED||
+MODIFY A DID RECORD: ||
+DID Route: ||
+Extension: ||
+Extension Context: ||
+Voicemail Box: ||
+Phone Extension: ||
+User Agent: ||
+User Unavailable Action: ||
+User Route Settings In-Group: ||
+In-Group ID: ||
+In-Group Call Handle Method: ||
+In-Group Agent Search Method: ||
+In-Group List ID: ||
+In-Group Campaign ID: ||
+In-Group Phone Code: ||
+DELETE THIS DID||
+Email: ||
+DID NOT DELETED||
+DID DELETION CONFIRMATION||
+Click here to delete ||
+DID DELETION COMPLETED||
+Delete DIDs: ||
+Modify DIDs: ||
+To disable the On Hold Prompt, set the interval to 0||
 
 
 ############################################################ CLIENT
