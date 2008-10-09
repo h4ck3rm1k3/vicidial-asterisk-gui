@@ -12,6 +12,7 @@
 # 60717-1536 - changed to use /etc/astguiclient.conf for configs
 # 80506-1055 - Added check for vicidial_conferences in 3WAY
 # 80914-1533 - Added kickall for leave-3way calls after one hour
+# 81008-0937 - Added kickall from vicidial_conferences if only one participant
 #
 
 # constants
@@ -256,15 +257,11 @@ foreach(@PTextensions)
 	foreach(@list_channels)
 		{
 		if($DB){print "|$list_channels[$j]|\n";}
+		### mark all empty conferences and conferences with only one channel as empty
 		if ($list_channels[$j] =~ /No active conferences|No such conference/i)
 			{$conf_empty[$i]++;}
-#		if ($list_channels[$j] =~ /^User /i)
-#			{
-#			$userx = '';
-#			$userx = $list_channels[$j];
-#			$userx =~ s/User \#: //gi;
-#			$conf_users[$i] .= "$userx|";
-#			}
+		if ($list_channels[$j] =~ /1 users in that conference/i)
+			{$conf_empty[$i]++;}
 		$j++;
 		}
 
@@ -289,6 +286,17 @@ foreach(@PTextensions)
 		if ($PTextensions[$i] =~ /Xtimeout1$/i) {$NEWexten[$i] = ''; $leave_3waySQL='0';}
 		if ( ($PTextensions[$i] !~ /Xtimeout\d$/i) and (length($PTextensions[$i])> 0) ) {$NEWexten[$i] .= 'Xtimeout3';}
 
+		if (length($NEWexten[$i]) < 1)
+			{
+			### Kick all participants if there are any left in the conference so it can be reused
+			$local_DEF = 'Local/5555';
+			$local_AMP = '@';
+			$kick_local_channel = "$local_DEF$PT_conf_extens[$i]$local_AMP$ext_context";
+			$queryCID = "ULGC36$TDnum";
+
+			$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','','');";
+				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+			}
 
 		$stmtA = "UPDATE vicidial_conferences set extension='$NEWexten[$i]',leave_3way='$leave_3waySQL' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";
 			if($DB){print STDERR "\n|$stmtA|\n";}

@@ -35,6 +35,7 @@
 # 70222-1606 - Changed queue_log PAUSE/UNPAUSE to PAUSEALL/UNPAUSEALL
 # 70417-1346 - Fixed bug that would add unneeded simulated agent lines
 # 80128-0105 - Fixed calls_today bug
+# 81007-1746 - Added debugX output for count statements and changed to if from while
 #
 
 ### begin parsing run-time options ###
@@ -394,18 +395,16 @@ while($one_day_interval > 0)
 			{
 			if (length($DBremote_user[$h])>1) 
 				{
-				
 				### check to see if the record exists and only needs random number update
 				$stmtA = "SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip' and campaign_id='$DBremote_campaign[$h]' and conf_exten='$DBremote_conf_exten[$h]' and closer_campaigns='$DBremote_closer[$h]';";
+					if ($DBX) {print STDERR "|$stmtA|\n";}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
-				$rec_count=0;
-				while ($sthArows > $rec_count)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$loginexistsRANDOM[$h] =	"$aryA[0]";
-					$rec_count++;
 					}
 				$sthA->finish();
 				
@@ -419,15 +418,14 @@ while($one_day_interval > 0)
 				else
 					{
 					$stmtA = "SELECT count(*) FROM vicidial_live_agents where user='$DBremote_user[$h]' and server_ip='$server_ip'";
+						if ($DBX) {print STDERR "|$stmtA|\n";}
 					$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 					$sthArows=$sthA->rows;
-					$rec_count=0;
-					while ($sthArows > $rec_count)
+					if ($sthArows > 0)
 						{
 						@aryA = $sthA->fetchrow_array;
 						$loginexistsALL[$h] =	"$aryA[0]";
-						$rec_count++;
 						}
 					$sthA->finish();
 
@@ -480,12 +478,10 @@ while($one_day_interval > 0)
 							$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 							$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 							$sthArows=$sthA->rows;
-							$rec_countLSC=0;
-							while ($sthArows > $rec_countLSC)
+							if ($sthArows > 0)
 								{
 								@aryA = $sthA->fetchrow_array;
 								$LSC_count =	"$aryA[0]";
-								$rec_countLSC++;
 								}
 							$sthA->finish();
 
@@ -567,12 +563,10 @@ while($one_day_interval > 0)
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
-			$rec_count=0;
-			while ($sthArows > $rec_count)
+			if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
 				$autocallexists[$z] =	"$aryA[0]";
-				$rec_count++;
 				}
 			$sthA->finish();
 			
