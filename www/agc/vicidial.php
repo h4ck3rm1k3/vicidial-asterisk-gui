@@ -191,10 +191,12 @@
 # 80909-1717 - Added support for campaign-specific DNC lists
 # 80915-1754 - Rewrote leave-3way functions for external calling
 # 81002-1908 - Fixed double-login bug in some conditions
+# 81007-0945 - Added three_way_call_cid option for outbound 3way calls
+# 81010-1047 - Fixed conf calling prefix to use settings, other 3way improvements
 #
 
-$version = '2.0.5-169';
-$build = '81002-1908';
+$version = '2.0.5-171';
+$build = '81010-1047';
 
 require("dbconnect.php");
 
@@ -794,7 +796,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -836,7 +838,7 @@ $VDloginDISPLAY=0;
 				$manual_dial_filter =		$row[35];
 				$CopY_tO_ClipboarD =		$row[36];
 				$use_campaign_dnc =			$row[37];
-
+				$three_way_call_cid =		$row[38];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -1194,6 +1196,7 @@ else
 	$DBX_user=$row[57];
 	$DBX_pass=$row[58];
 	$DBX_port=$row[59];
+	$outbound_cid=$row[65];
 	$enable_sipsak_messages=$row[66];
 
 	if ($PhoneSComPIP == '1')
@@ -1962,6 +1965,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var wrapup_waiting = 0;
 	var use_internal_dnc = '<? echo $use_internal_dnc ?>';
 	var use_campaign_dnc = '<? echo $use_campaign_dnc ?>';
+	var three_way_call_cid = '<? echo $three_way_call_cid ?>';
+	var outbound_cid = '<? echo $outbound_cid ?>';
+	var threeway_cid = '';
 	var allcalls_delay = '<? echo $allcalls_delay ?>';
 	var omit_phone_code = '<? echo $omit_phone_code ?>';
 	var no_delete_sessions = '<? echo $no_delete_sessions ?>';
@@ -2003,6 +2009,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var random = '<? echo $random ?>';
 	var threeway_end = 0;
 	var agentphonelive = 0;
+	var conf_dialed = 0;
+	var leaving_threeway = 0;
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2169,6 +2177,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // park customer and place 3way call
 	function xfer_park_dial()
 		{
+		conf_dialed=1;
+
 		mainxfer_send_redirect('ParK',lastcustchannel,lastcustserverip);
 
 		SendManualDial('YES');
@@ -2179,6 +2189,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function leave_3way_call(tempvarattempt)
 		{
 		threeway_end=0;
+		leaving_threeway=1;
 
 		mainxfer_send_redirect('3WAY','','',tempvarattempt);
 
@@ -2199,11 +2210,19 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // filter manual dialstring and pass on to originate call
 	function SendManualDial(taskFromConf)
 		{
+		conf_dialed=1;
 		if (taskFromConf == 'YES')
 			{
 			var manual_number = document.vicidial_form.xfernumber.value;
 			var manual_string = manual_number.toString();
 			var dial_conf_exten = session_id;
+			threeway_cid = '';
+			if (three_way_call_cid == 'CAMPAIGN')
+				{threeway_cid = campaign_cid;}
+			if (three_way_call_cid == 'AGENT_PHONE')
+				{threeway_cid = outbound_cid;}
+			if (three_way_call_cid == 'CUSTOMER')
+				{threeway_cid = document.vicidial_form.phone_number.value;}
 			}
 		else
 			{
@@ -2219,22 +2238,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			if (document.vicidial_form.xferoverride.checked==false)
 				{
-				if (manual_string.length=='11')
-					{manual_string = "9" + manual_string;}
-				 else
-					{
-					if (manual_string.length=='10')
-						{manual_string = "91" + manual_string;}
-					 else
-						{
-						if (manual_string.length=='7')
-							{manual_string = "9" + manual_string;}
-						}
-					}
+				if (dial_prefix == 'X') {var temp_dial_prefix = '';}
+				else {var temp_dial_prefix = dial_prefix;}
+				if (omit_phone_code == 'Y') {var temp_phone_code = '';}
+				else {var temp_phone_code = document.vicidial_form.phone_code.value;}
+
+				if (manual_string.length > 9)
+					{manual_string = temp_dial_prefix + "" + temp_phone_code + "" + manual_string;}
 				}
 			}
 		if (taskFromConf == 'YES')
-			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten,'NO',taskFromConf);}
+			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten,'NO',taskFromConf,threeway_cid);}
 		else
 			{basic_originate_call(manual_string,'NO','NO');}
 
@@ -2243,7 +2257,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Originate command to manager to place a phone call
-	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait,taskconfxfer) 
+	function basic_originate_call(tasknum,taskprefix,taskreverse,taskdialvalue,tasknowait,taskconfxfer,taskcid) 
 		{
 		var regCXFvars = new RegExp("CXFER","g");
 		var tasknum_string = tasknum.toString();
@@ -2325,8 +2339,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{var queryCID = "DCagcW" + epoch_sec + user_abb;}
 			else
 				{var queryCID = "DVagcW" + epoch_sec + user_abb;}
+			if (taskcid.length > 3) 
+				{var call_cid = taskcid;}
+			else 
+				{var call_cid = campaign_cid;}
 
-			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + orig_prefix + "" + dialnum + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + campaign_cid;
+			VMCoriginate_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=Originate&format=text&channel=" + originatevalue + "&queryCID=" + queryCID + "&exten=" + orig_prefix + "" + dialnum + "&ext_context=" + ext_context + "&ext_priority=1&outbound_cid=" + call_cid;
 			xmlhttp.open('POST', 'manager_send.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(VMCoriginate_query); 
@@ -2792,6 +2810,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Covers the following types: XFER, VMAIL, ENTRY, CONF, PARK, FROMPARK, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
+		conf_dialed=1;
 		if (auto_dial_level == 0) {RedirecTxFEr = 1;}
 		var xmlhttpXF=false;
 		/*@cc_on @*/
@@ -2841,18 +2860,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					if (document.vicidial_form.xferoverride.checked==false)
 						{
-						if (blindxferdialstring.length=='11')
-							{blindxferdialstring = dial_prefix + "" + blindxferdialstring;}
-						 else
-							{
-							if (blindxferdialstring.length=='10')
-								{blindxferdialstring = dial_prefix + "1" + blindxferdialstring;}
-							 else
-								{
-								if (blindxferdialstring.length=='7')
-									{blindxferdialstring = dial_prefix + ""  + blindxferdialstring;}
-								}
-							}
+						if (dial_prefix == 'X') {var temp_dial_prefix = '';}
+						else {var temp_dial_prefix = dial_prefix;}
+						if (omit_phone_code == 'Y') {var temp_phone_code = '';}
+						else {var temp_phone_code = document.vicidial_form.phone_code.value;}
+
+						if (blindxferdialstring.length > 9)
+							{blindxferdialstring = temp_dial_prefix + "" + temp_phone_code + "" + blindxferdialstring;}
 						}
 					}
 				if (taskvar == 'XfeRVMAIL')
@@ -2915,7 +2929,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var XfeRSelecT = document.getElementById("XfeRGrouP");
 				var regRXFvars = new RegExp("CXFER","g");
 				if ( (redirecttype_test.match(regRXFvars)) && (local_consult_xfers > 0) )
-					{var redirecttype = 'RedirectXtraCX';}
+			//		{var redirecttype = 'RedirectXtraCX';}
+					{var redirecttype = 'RedirectXtraCXNeW';}
 				else
 			//		{var redirecttype = 'RedirectXtra';}
 					{var redirecttype = 'RedirectXtraNeW';}
@@ -3117,7 +3132,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			"&list_id=" + document.vicidial_form.list_id.value + 
 			"&length_in_sec=0&phone_code=" + document.vicidial_form.phone_code.value + 
 			"&phone_number=" + lead_dial_number + 
-			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&alt_dial=" + dialed_label + "&DB=0";
+			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&alt_dial=" + dialed_label + "&DB=0" + "&agentchannel=" + agentchannel + "&conf_dialed=" + conf_dialed + "&leaving_threeway=" + leaving_threeway;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		//		document.getElementById("busycallsdebug").innerHTML = "vdc_db_query.php?" + manDiaLlog_query;
@@ -3169,6 +3184,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			delete xmlhttp;
 			}
 		RedirecTxFEr=0;
+		conf_dialed=0;
+		leaving_threeway=0;
 		}
 
 
@@ -4849,6 +4866,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		//	UPDATE VICIDIAL_LOG ENTRY FOR THIS CALL PROCESS
 			DialLog("end");
+			conf_dialed=0;
 			if (dispowindow == 'NO')
 				{
 				open_dispo_screen=0;

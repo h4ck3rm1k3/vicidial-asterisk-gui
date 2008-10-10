@@ -590,7 +590,8 @@ display_queue_count ENUM('Y','N') default 'Y',
 manual_dial_filter VARCHAR(50) default 'NONE',
 agent_clipboard_copy VARCHAR(50) default 'NONE',
 agent_extended_alt_dial ENUM('Y','N') default 'N',
-use_campaign_dnc ENUM('Y','N') default 'N'
+use_campaign_dnc ENUM('Y','N') default 'N',
+three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1307,9 +1308,23 @@ INSERT INTO vicidial_state_call_times SET state_call_time_id='wyoming',state_cal
 
 INSERT INTO vicidial_shifts SET shift_id='24HRMIDNIGHT',shift_name='24 hours 7 days a week',shift_start_time='0000',shift_length='24:00',shift_weekdays='0123456';
 
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','227','MD','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','343','ON','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','364','KY','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','447','IL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','575','NM','-7','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','581','QC','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','587','AB','-7','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','659','AL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','667','MD','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','681','WV','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','730','IL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','DOM','829','','-4','N','','Dominican Republic');
+
+
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1107';
+UPDATE system_settings SET db_schema_version='1108';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

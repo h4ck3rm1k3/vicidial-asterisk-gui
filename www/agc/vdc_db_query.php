@@ -73,7 +73,10 @@
 #  - $LogouTKicKAlL - ('0','1');
 #  - $closer_blended = ('0','1');
 #  - $inOUT = ('IN','OUT');
-#  - $manual_dial_filter = ('NONE','CAMPLISTS','DNC','CAMPLISTS_DNC');
+#  - $manual_dial_filter = ('NONE','CAMPLISTS','DNC','CAMPLISTS_DNC')
+#  - $agentchannel = ('Zap/1-1','SIP/testing-6ry4i3',...)
+#  - $conf_dialed = ('0','1')
+#  - $leaving_threeway = ('0','1')
 
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -161,10 +164,11 @@
 # 80815-1019 - Added manual dial list restriction option
 # 80831-0545 - Added extended alt dial number info display support
 # 80909-1710 - Added support for campaign-specific DNC lists
+# 81010-1048 - Added support for hangup of all channels except for agent channel after attempting a 3way call
 #
 
-$version = '2.0.5-82';
-$build = '80909-1710';
+$version = '2.0.5-83';
+$build = '81010-1048';
 
 require("dbconnect.php");
 
@@ -309,6 +313,12 @@ if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_di
 	elseif (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
 if (isset($_GET["alt_dial"]))					{$alt_dial=$_GET["alt_dial"];}
 	elseif (isset($_POST["alt_dial"]))			{$alt_dial=$_POST["alt_dial"];}
+if (isset($_GET["agentchannel"]))				{$agentchannel=$_GET["agentchannel"];}
+	elseif (isset($_POST["agentchannel"]))		{$agentchannel=$_POST["agentchannel"];}
+if (isset($_GET["conf_dialed"]))				{$conf_dialed=$_GET["conf_dialed"];}
+	elseif (isset($_POST["conf_dialed"]))		{$conf_dialed=$_POST["conf_dialed"];}
+if (isset($_GET["leaving_threeway"]))			{$leaving_threeway=$_GET["leaving_threeway"];}
+	elseif (isset($_POST["leaving_threeway"]))	{$leaving_threeway=$_POST["leaving_threeway"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -1328,7 +1338,7 @@ if ($stage == "end")
 			else
 				{
 				##### look for the start epoch in the vicidial_log table
-				$stmt="SELECT start_epoch,term_reason,uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$stmt="SELECT start_epoch,term_reason,uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 				$VDIDselect =		"VDL_UIDLID $uniqueid $lead_id";
 				}
 			$rslt=mysql_query($stmt, $link);
@@ -1354,7 +1364,7 @@ if ($stage == "end")
 				fclose($fp);
 
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
-				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VM_mancall_ct = mysql_num_rows($rslt);
@@ -1650,7 +1660,7 @@ if ($stage == "end")
 			if ($enable_queuemetrics_logging > 0)
 				{
 				### grab call lead information needed for QM logging
-				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id';";
+				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id' order by call_time desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VAC_qm_ct = mysql_num_rows($rslt);
@@ -1703,6 +1713,9 @@ if ($stage == "end")
 			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
+				$fp = fopen ("./vicidial_debug_drop.txt", "a");
+				fwrite ($fp, "$NOW_TIME|LOG_3|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$stmt|\n");
+				fclose($fp);
 
 			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
@@ -1724,7 +1737,7 @@ if ($stage == "end")
 			if ($enable_queuemetrics_logging > 0)
 				{
 				### check to see if lead should be alt_dialed
-				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id';";
+				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id' order by call_time desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VAC_qm_ct = mysql_num_rows($rslt);
@@ -1859,6 +1872,7 @@ if ($stage == "end")
 		$local_DEF = 'Local/';
 		$local_AMP = '@';
 		$total_rec=0;
+		$total_hangup=0;
 		$loop_count=0;
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and extension = '$conf_exten' order by channel desc;";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -1872,8 +1886,37 @@ if ($stage == "end")
 				$rec_channels[$total_rec] = "$row[0]";
 				$total_rec++;
 				}
+			else
+				{
+		#		if (preg_match("/$agentchannel/i",$row[0]))
+				if ($agentchannel == "$row[0]")
+					{
+					$donothing=1;
+					}
+				else
+					{
+					$hangup_channels[$total_hangup] = "$row[0]";
+					$total_hangup++;
+					}
+				}
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			$loop_count++; 
+			}
+
+		### if a conference call or 3way call was attempted, then hangup all channels except for the agentchannel
+		if ( ($conf_dialed > 0) and ($leaving_threeway < 1) )
+			{
+			$loop_count=0;
+			while($loop_count < $total_hangup)
+				{
+				if (strlen($hangup_channels[$loop_count])>5)
+					{
+					$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Hangup','CH12346$StarTtime$loop_count','Channel: $hangup_channels[$loop_count]','','','','','','','','','');";
+						if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_query($stmt, $link);
+					}
+				$loop_count++;
+				}
 			}
 
 		$total_recFN=0;

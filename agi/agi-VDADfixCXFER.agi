@@ -169,8 +169,8 @@ $extension =~ s/^\d\d\d\*\d\d\d\*\d\d\d\*\d\d\d\*//gi;
 
 @EXTEN = split(/\*/, $extension);
 	$conf_exten =		$EXTEN[0];
-	$lead_id =		$EXTEN[1];
-	$user =			$EXTEN[2];
+	$lead_id =			$EXTEN[1];
+	$user =				$EXTEN[2];
 	$phone_code =		$EXTEN[3];
 	$phone_number =		$EXTEN[4];
 	$campaign_id =		$EXTEN[5];

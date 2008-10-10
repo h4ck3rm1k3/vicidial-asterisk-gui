@@ -159,7 +159,7 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
     service message for invalid phone numbers that cannot be dialing in North
     America
 
-37. Rewrote Leave-3way function for external calling to work more reliably on
+37. Rewrote Leave-3way function for conference calling to work more reliably on
     high load systems.
 
 38. Added several new features to inbound call handling including:
@@ -178,6 +178,9 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
       exten => _99909*.,1,Answer
       exten => _99909*.,2,AGI(agi-VDAD_ALL_inbound.agi)
       exten => _99909*.,3,Hangup
+
+40. Added ability to set callerID number on outgoing conference calls to
+   CAMPAIGN, CUSTOMER or AGENT_PHONE callerID settings.
 
 
 

@@ -891,8 +891,17 @@ $calls_to_list = mysql_num_rows($rslt);
 
 		$stmt="select login from phones where server_ip='$Aserver_ip[$i]' and $exten and protocol='$protocol';";
 		$rslt=mysql_query($stmt, $link);
-		$row=mysql_fetch_row($rslt);
-		$Alogin[$i] = "$row[0]-----$i";
+		if ($DB) {echo "$stmt\n";}
+		$phones_to_print = mysql_num_rows($rslt);
+		if ($phones_to_print > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$Alogin[$i] = "$row[0]-----$i";
+			}
+		else
+			{
+			$Alogin[$i] = "$Aextension[$i]-----$i";
+			}
 		$i++;
 		}
 

@@ -458,3 +458,21 @@ ALTER TABLE vicidial_users ADD modify_inbound_dids ENUM('1','0') default '0';
 ALTER TABLE vicidial_users ADD delete_inbound_dids ENUM('1','0') default '0';
 
 UPDATE system_settings SET db_schema_version='1107';
+
+ALTER TABLE vicidial_campaigns ADD three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN';
+
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','227','MD','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','343','ON','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','364','KY','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','447','IL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','575','NM','-7','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','581','QC','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','CAN','587','AB','-7','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','659','AL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','667','MD','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','681','WV','-5','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','USA','730','IL','-6','Y','SSM-FSN','');
+INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_offset, DST, DST_range, geographic_description) VALUES ('1','DOM','829','','-4','N','','Dominican Republic');
+
+UPDATE system_settings SET db_schema_version='1108';
+

@@ -103,9 +103,6 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads.$year-$mon-$mday";}
 
-print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_IN_new_leads_file.pl --\n\n";
-print "This program is designed to take a tab delimited file and import it into the VICIDIAL system. \n\n";
-
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
@@ -273,6 +270,12 @@ else
 	$format='standard';
 	}
 ### end parsing run-time options ###
+
+if ($q < 1)
+	{
+	print "\n\n\n\n\n\n\n\n\n\n\n\n-- VICIDIAL_IN_new_leads_file.pl --\n\n";
+	print "This program is designed to take a tab delimited file and import it into the VICIDIAL system. \n\n";
+	}
 
 $i=0;
 $US = '_';
@@ -974,8 +977,10 @@ $secY = time();
 $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
-print "script execution time in seconds: $secZ     minutes: $secZm\n";
-
+if ($q < 1)
+	{
+	print "script execution time in seconds: $secZ     minutes: $secZm\n";
+	}
 
 ###### EMAIL SECTION
 
