@@ -1708,14 +1708,10 @@ if ($stage == "end")
 
 				}
 
-
 			### delete call record from  vicidial_auto_calls
 			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
-				$fp = fopen ("./vicidial_debug_drop.txt", "a");
-				fwrite ($fp, "$NOW_TIME|LOG_3|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$stmt|\n");
-				fclose($fp);
 
 			$stmt = "UPDATE vicidial_live_agents set status='PAUSED',uniqueid=0,callerid='',channel='',call_server_ip='',last_call_finish='$NOW_TIME',comments='' where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "$stmt\n";}
