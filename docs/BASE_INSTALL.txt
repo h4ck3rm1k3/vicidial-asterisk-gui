@@ -267,12 +267,18 @@ PHASE 4: CREATING MYSQL DATABASE AND POPULATING IT
 we will create the database and add a few initial records so that we can 
 use the administrative web interface. Since this is a new install it is easier 
 to use our new mysql script file to add the tables to the database:
+Make sure to use reasonable settings for mysql huge.cnf does not look as huge anymore 
+in light of current systems. 
+Plus you should increase the connect_timeout so connections do not fail on 
+a more loaded system.  
 
 1.  at the command prompt type go to the mysql client: 
 /usr/local/mysql/bin/mysql
 2.  type the following into the mysql client prompt:
    (make sure you put your IP address in place of "10.10.10.15" in the queries below)
 ######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
+
+SET GLOBAL connect_timeout=60;
 
 CREATE DATABASE `asterisk` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 

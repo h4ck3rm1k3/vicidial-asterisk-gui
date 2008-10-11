@@ -361,6 +361,8 @@ so we will need to install mysql on this machine.
 *REQUIRED and OPTIONAL* (only install MySQL server locally if you don't want to use an installation 
 on another machine, Mysql client is required on all VICIDIAL servers)
 NOTE: a minimum of MySQL server 4.0.X is required
+You should increase the connect_timeout so connections do not fail on 
+a more loaded system.  
 
   Go to http://www.mysql.com/ and download the mysql package
    - to install this directly on the command line type:
@@ -1755,6 +1757,11 @@ flush privileges;
 
 # NOTE: if using MySQL 4.1.12 or higher you may need to run this query too:
 UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
+
+# To make sure that new processes can connect to the Database under load we should 
+# increase the global connect_timeout
+
+SET GLOBAL connect_timeout=60;
 
 # NOTE: make sure you do NOT put any spaces or other punctuation in the
 # server_id, phone, extension, or user fields in the queries below if you edit them.
