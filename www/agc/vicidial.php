@@ -193,10 +193,11 @@
 # 81002-1908 - Fixed double-login bug in some conditions
 # 81007-0945 - Added three_way_call_cid option for outbound 3way calls
 # 81010-1047 - Fixed conf calling prefix to use settings, other 3way improvements
+# 81011-1403 - Fixed bugs in leave3way when transferring a manual dial call
 #
 
-$version = '2.0.5-171';
-$build = '81010-1047';
+$version = '2.0.5-172';
+$build = '81011-1403';
 
 require("dbconnect.php");
 
@@ -2195,12 +2196,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if (threeway_end == '0')
 			{
+			document.vicidial_form.xferchannel.value = '';
+			xfercall_send_hangup();
+
 			document.vicidial_form.callchannel.value = '';
 			document.vicidial_form.callserverip.value = '';
 			dialedcall_send_hangup();
-
-			document.vicidial_form.xferchannel.value = '';
-			xfercall_send_hangup();
 			}
 
 		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
@@ -2940,7 +2941,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				DispO3wayCalLxfernumber = document.vicidial_form.xfernumber.value;
 				DispO3wayCalLcamptail = '';
 
-				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id + "&agentchannel=" + agentchannel + "&protocol=" + protocol + "&extension=" + extension;
+				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + redirecttype + "&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&extrachannel=" + redirectXTRAvalue + "&lead_id=" + document.vicidial_form.lead_id.value + "&phone_code=" + document.vicidial_form.phone_code.value + "&phone_number=" + document.vicidial_form.phone_number.value + "&filename=" + taskdebugnote + "&campaign=" + XfeRSelecT.value + "&session_id=" + session_id + "&agentchannel=" + agentchannel + "&protocol=" + protocol + "&extension=" + extension + "&auto_dial_level=" + auto_dial_level;
 
 				if (taskdebugnote == 'FIRST') 
 					{
@@ -3185,7 +3186,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		RedirecTxFEr=0;
 		conf_dialed=0;
-		leaving_threeway=0;
 		}
 
 
@@ -4803,7 +4803,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if ( (RedirecTxFEr < 1) && ( (MD_channel_look==1) || (auto_dial_level == 0) ) )
 			{
 			MD_channel_look=0;
-			DialTimeHangup();
+			DialTimeHangup('MAIN');
 			}
 		if (form_cust_channel.length > 3)
 			{
@@ -5010,10 +5010,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var xferchannel = document.vicidial_form.xferchannel.value;
 		var xfer_channel = lastxferchannel;
 		var process_post_hangup=0;
-		if (MD_channel_look==1)
+		if ( (MD_channel_look==1) && (leaving_threeway < 1) )
 			{
 			MD_channel_look=0;
-			DialTimeHangup();
+			DialTimeHangup('XFER');
 			}
 		if (xferchannel.length > 3)
 			{
@@ -5086,9 +5086,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Hangup command for any Local call that is not in the quiet(7) entry - used to stop manual dials even if no connect
-	function DialTimeHangup() 
+	function DialTimeHangup(tasktypecall) 
 		{
-		if (RedirecTxFEr < 1)
+		if ( (RedirecTxFEr < 1) && (leaving_threeway < 1) )
 			{
 	//	alert("RedirecTxFEr|" + RedirecTxFEr);
 		MD_channel_look=0;
@@ -5124,8 +5124,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					Nactiveext = null;
 					Nactiveext = xmlhttp.responseText;
-				//	alert(xmlhttp.responseText);
-					}
+				//	alert(xmlhttp.responseText + "\n" + tasktypecall + "\n" + leaving_threeway);
+ 					}
 				}
 			delete xmlhttp;
 			}
@@ -5271,6 +5271,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // open web form, then submit disposition
 	function WeBForMDispoSelect_submit()
 		{
+		leaving_threeway=0;
+
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
 		if (DispoChoice.length < 1) {alert("You Must Select a Disposition");}
@@ -5294,6 +5296,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Update vicidial_list lead record with disposition selection
 	function DispoSelect_submit()
 		{
+		leaving_threeway=0;
+
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
 		if (DispoChoice.length < 1) {alert("You Must Select a Disposition");}

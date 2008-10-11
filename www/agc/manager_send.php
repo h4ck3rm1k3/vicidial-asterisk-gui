@@ -75,6 +75,7 @@
 # 80424-0442 - Added non_latin lookup from system_settings
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 # 80915-1755 - Rewrote leave-3way functions for external calling
+# 81011-1404 - Fixed bugs in leave3way when transferring a manual dial call
 #
 
 require("dbconnect.php");
@@ -183,8 +184,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.5-32';
-$build = '80915-1755';
+$version = '2.0.5-33';
+$build = '81011-1404';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -397,7 +398,7 @@ if ($ACTION=="HangupConfDial")
 			$rowx=mysql_fetch_row($rslt);
 			$channel=$rowx[0];
 			$ACTION="Hangup";
-			$queryCID = eregi_replace("^.","G",$queryCID);
+			$queryCID = eregi_replace("^.","G",$queryCID);  # GTvdcW...
 		}
 	}
 }
@@ -702,6 +703,13 @@ if ($ACTION=="RedirectXtraCXNeW")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
+				if ($auto_dial_level < 1)
+					{
+					$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and callerid LIKE \"M%\";";
+						if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_query($stmt, $link);
+					}
+
 				echo "NeWSessioN|$exten|\n";
 				echo "|$stmtB|\n";
 				
@@ -896,6 +904,13 @@ if ($ACTION=="RedirectXtraNeW")
 				$stmt="UPDATE vicidial_live_agents set conf_exten='$exten' where server_ip='$server_ip' and user='$user';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
+
+				if ($auto_dial_level < 1)
+					{
+					$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and callerid LIKE \"M%\";";
+						if ($format=='debug') {echo "\n<!-- $stmt -->";}
+					$rslt=mysql_query($stmt, $link);
+					}
 
 				echo "NeWSessioN|$exten|\n";
 				echo "|$stmtB|\n";

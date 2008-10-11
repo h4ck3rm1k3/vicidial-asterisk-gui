@@ -165,10 +165,11 @@
 # 80831-0545 - Added extended alt dial number info display support
 # 80909-1710 - Added support for campaign-specific DNC lists
 # 81010-1048 - Added support for hangup of all channels except for agent channel after attempting a 3way call
+# 81011-1404 - Fixed bugs in leave3way when transferring a manual dial call
 #
 
-$version = '2.0.5-83';
-$build = '81010-1048';
+$version = '2.0.5-84';
+$build = '81011-1404';
 
 require("dbconnect.php");
 
@@ -1761,7 +1762,8 @@ if ($stage == "end")
 				$affected_rows = mysql_affected_rows($linkB);
 				}
 
-			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
+		#	$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
+			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and callerid LIKE \"M%\";";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
