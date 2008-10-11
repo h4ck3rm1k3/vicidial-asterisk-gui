@@ -476,8 +476,8 @@ INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_of
 
 UPDATE system_settings SET db_schema_version='1108';
 
-
-
-
-
 INSERT INTO vicidial_statuses values('QVMAIL','Queue Abandon Voicemail Left','N','N','UNDEFINED');
+
+ALTER TABLE vicidial_inbound_groups MODIFY hold_time_option ENUM('NONE','EXTENSION','VOICEMAIL','IN_GROUP','CALLERID_CALLBACK','DROP_ACTION','PRESS_VMAIL') default 'NONE';
+
+UPDATE system_settings SET db_schema_version='1109';

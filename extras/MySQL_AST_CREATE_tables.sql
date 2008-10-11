@@ -696,7 +696,7 @@ qc_web_form_address VARCHAR(255),
 qc_script VARCHAR(10),
 play_place_in_line ENUM('Y','N') default 'N',
 play_estimate_hold_time ENUM('Y','N') default 'N',
-hold_time_option ENUM('NONE','EXTENSION','VOICEMAIL','IN_GROUP','CALLERID_CALLBACK','DROP_ACTION') default 'NONE',
+hold_time_option ENUM('NONE','EXTENSION','VOICEMAIL','IN_GROUP','CALLERID_CALLBACK','DROP_ACTION','PRESS_VMAIL') default 'NONE',
 hold_time_option_seconds SMALLINT(5) default '360',
 hold_time_option_exten VARCHAR(20) default '8300',
 hold_time_option_voicemail VARCHAR(20) default '',
@@ -1324,7 +1324,7 @@ INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_of
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1108';
+UPDATE system_settings SET db_schema_version='1109';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

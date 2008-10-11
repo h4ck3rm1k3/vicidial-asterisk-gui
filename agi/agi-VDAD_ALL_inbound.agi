@@ -83,12 +83,13 @@
 # 80821-0133 - fixed non-play issue with hold message
 # 80918-0505 - Added place in line and estimated time on hold
 # 81002-1120 - Added processing for DID forwarded calls
+# 81011-1019 - Added option for press 1 to leave voicemail if wait time > hold-time-option-seconds
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
 $dtmf_silent_prefix = '7';
 
-$DROP_TIME = 360;	### default number of seconds to wait until you drop a waiting call
+$DROP_TIME = 720;	### default number of seconds to wait until you drop a waiting call
 $start_moh=1;
 $at='@';
 
@@ -895,8 +896,8 @@ if ($channel_status < 1)
 	if ($channel_status_DC < 1)
 		{
 		if ($AGILOG) {$agi_string = "CHANNEL $channel DOWN $channel_status   $DROP_TIME|$drop_timer";   &agi_output;}
-		if ($drop_timer < 360) {$drop_seconds = $drop_timer;}
-		$drop_timer = ($drop_timer + 360);
+		if ($drop_timer < 720) {$drop_seconds = $drop_timer;}
+		$drop_timer = ($drop_timer + 720);
 		}
 	}
 
@@ -1546,6 +1547,8 @@ if ($hold_recall_xfer_group !~ /NONE/)
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
 
+		if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
+
 		$stmtA = "UPDATE vicidial_closer_log set status='HXFER',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDRECALLXFER' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
@@ -1613,7 +1616,7 @@ if ( ($hold_message_counter > $prompt_interval) && ($prompt_interval > 0) )
 	if ($play_place_in_line =~ /Y/i) {$start_place_in_line=1; $moh_delay=2;}
 	if ($play_estimate_hold_time =~ /Y/i) {$start_hold_estimate=1; $moh_delay=2;}
 	if ($hold_time_option !~ /NONE/) {$start_hold_estimate=1; $moh_delay=2;};
-	if ($drop_timer > 3) {$drop_timer = ($drop_timer + 5);} # add prompt play time to total queue time
+	if ($drop_timer >= 3) {$drop_timer = ($drop_timer + 5);} # add prompt play time to total queue time
 	}
   else {$hold_message_counter++;}
 if ($hold_tone_counter > 3)
@@ -1653,12 +1656,12 @@ if ( ($start_place_in_line > 0) && ($moh_delay == '1') )
 		{
 		$AGI->stream_file('queue-thereare'); # you are currently caller number
 		$AGI->say_number("$place");
-		if ($drop_timer > 3) {$drop_timer = ($drop_timer + 2);} # add prompt play time to total queue time
+		if ($drop_timer >= 3) {$drop_timer = ($drop_timer + 2);} # add prompt play time to total queue time
 		}
 	else
 		{
 		$AGI->stream_file('queue-youarenext'); # your call is now first in line
-		if ($drop_timer > 3) {$drop_timer = ($drop_timer + 5);} # add prompt play time to total queue time
+		if ($drop_timer >= 3) {$drop_timer = ($drop_timer + 5);} # add prompt play time to total queue time
 		}
 
 	$start_place_in_line=0;
@@ -1762,9 +1765,10 @@ if ( ($start_hold_estimate > 0) && ($moh_delay == '1') )
 				}
 			} 
 		}
-	if ($drop_timer > 3) {$drop_timer = ($drop_timer + 3);} # add prompt play time to total queue time
+	if ($drop_timer >= 3) {$drop_timer = ($drop_timer + 3);} # add prompt play time to total queue time
 
 	$start_hold_estimate=0;
+	$wait_in_queue = 1; # trigger hold-time-option is applicable
 	}
 
 ##### check if hold_time_option is set to leave Queue	
@@ -1776,6 +1780,42 @@ if ($hold_time_option =~ /EXTENSION/)
 	{
 	if (length($hold_time_option_exten)>0)
 		{$DROPexten = "$hold_time_option_exten";}
+	}
+if ($hold_time_option =~ /PRESS_VMAIL/)
+	{
+	$now_date_epoch = time();
+	$FDtarget = ($now_date_epoch + 8);
+	($Fsec,$Fmin,$Fhour,$Fmday,$Fmon,$Fyear,$Fwday,$Fyday,$Fisdst) = localtime($FDtarget);
+	$Fyear = ($Fyear + 1900);
+	$Fmon++;
+	if ($Fmon < 10) {$Fmon = "0$Fmon";}
+	if ($Fmday < 10) {$Fmday = "0$Fmday";}
+	if ($Fhour < 10) {$Fhour = "0$Fhour";}
+	if ($Fmin < 10) {$Fmin = "0$Fmin";}
+	if ($Fsec < 10) {$Fsec = "0$Fsec";}
+		$FDtsSQLdate = "$Fyear$Fmon$Fmday$Fhour$Fmin$Fsec";
+
+	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' where callerid='$callerid' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+
+	if ($drop_timer >= 3) {$drop_timer = ($drop_timer + 8);} # add prompt play time to total queue time
+
+	$AGI->stream_file('sip-silence'); # stop music-on-hold process
+	$AGI->stream_file('sip-silence'); # stop music-on-hold process
+
+	&press_one_to_leave_voicemail;
+
+	if ($pin =~ /1/)
+		{
+		$DROPexten = "$voicemail_dump_exten$hold_time_option_voicemail";
+		$HT_status='QVMAIL';
+		}
+	else
+		{
+		$DROPexten='';
+		$wait_in_queue = 2; #continue waiting on hold
+		}
 	}
 if ($hold_time_option =~ /VOICEMAIL/)
 	{
@@ -1829,11 +1869,11 @@ if ($AGILOG) {$agi_string = "--    VDCL HOLD TIME OPT: |$hold_time_option|$DROPe
 
 if ($wait_in_queue < 1)
 	{
-	### use STDOUT to send call to proper DROP location
-	$VHqueryCID = "VH$CIDdate$VDADconf_exten";
-
 	if (length($DROPexten)>0)
 		{	### if DROP extension is defined then send the dropped call there instead of hangup
+
+		### use STDOUT to send call to proper DROP location
+		$VHqueryCID = "VH$CIDdate$VDADconf_exten";
 
 		if ($no_delay_call_route =~ /N/)
 			{
@@ -1848,24 +1888,28 @@ if ($wait_in_queue < 1)
 			checkresult($result);
 		print "SET PRIORITY 1\n";
 			checkresult($result);
+
+		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
+
+		if ($drop_seconds < 1) {$drop_seconds = $drop_timer;}
+
+		if (length($HT_status)<1) {$HT_status='HOLDTO';}
+		$stmtA = "UPDATE vicidial_closer_log set status='$HT_status',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		$stmtA = "UPDATE vicidial_list set status='HOLDTO' where lead_id = '$insert_lead_id';";
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		$dbhA->disconnect();
+
+		exit;
 		}
 
-		
-	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
 
-	$stmtA = "UPDATE vicidial_closer_log set status='HOLDTO',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='HOLDTIME' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
-
-	$stmtA = "UPDATE vicidial_list set status='HOLDTO' where lead_id = '$insert_lead_id';";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
-
-	$dbhA->disconnect();
-
-	exit;
 	}
 }
 
@@ -2015,6 +2059,11 @@ $dbhA->disconnect();
 
 exit;
 
+
+
+
+
+
 sub enter_pin_number
 {
 
@@ -2075,6 +2124,69 @@ $pin = $totalDTMF;
 if ($totalDTMF) {if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}}
 }
 
+
+
+sub press_one_to_leave_voicemail
+{
+
+$digits_to_collect = 1;
+
+# To be called back when a representative is available, press 1
+
+$digit='';
+undef $digit;
+$interrupt_digit='';
+undef $interrupt_digit;
+$digit_loop_counter=0;
+
+$interrupt_digit = $AGI->stream_file('to-be-called-back','1');   
+if ($interrupt_digit < 2)
+	{$interrupt_digit = $AGI->stream_file('digits/1','1');}  
+
+	if ($AGILOG) {$agi_string = "interrupt_digit |$interrupt_digit|";   &agi_output;}
+
+$digits_being_entered=1;
+$totalDTMF='';
+if ($interrupt_digit > 1)
+	{
+	if ($interrupt_digit == 48) {$interrupt_digit=0;}
+	if ($interrupt_digit == 49) {$interrupt_digit=1;}
+	if ($interrupt_digit == 50) {$interrupt_digit=2;}
+	if ($interrupt_digit == 51) {$interrupt_digit=3;}
+	if ($interrupt_digit == 52) {$interrupt_digit=4;}
+	if ($interrupt_digit == 53) {$interrupt_digit=5;}
+	if ($interrupt_digit == 54) {$interrupt_digit=6;}
+	if ($interrupt_digit == 55) {$interrupt_digit=7;}
+	if ($interrupt_digit == 56) {$interrupt_digit=8;}
+	if ($interrupt_digit == 57) {$interrupt_digit=9;}
+	
+	$totalDTMF=$interrupt_digit;
+	$digit_loop_counter++;
+	}
+
+
+while ( ($digit_loop_counter < $digits_to_collect) )
+	{
+	$digit = chr($AGI->wait_for_digit('4000'));  # wait 4 seconds for input or until the key is pressed
+	if ($digit =~ /\d/)
+		{
+		$totalDTMF = "$totalDTMF$digit";
+		if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}
+#		$AGI->say_digits("$digit");
+		undef $digit;
+		}
+	else
+		{
+		$digit_loop_counter=$digits_to_collect;
+		}
+	
+	$digit_loop_counter++;
+	}
+
+$totalDTMF =~ s/\D//gi;
+$pin = $totalDTMF;
+if ($totalDTMF) {if ($AGILOG) {$agi_string = "digit |$digit|     TotalDTMF |$totalDTMF|";   &agi_output;}}
+}
 
 
 

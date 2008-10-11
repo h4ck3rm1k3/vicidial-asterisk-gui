@@ -13552,7 +13552,7 @@ if ($ADD==3111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Play Estimated Hold Time: </td><td align=left><select size=1 name=play_estimate_hold_time><option>Y</option><option>N</option><option SELECTED>$play_estimate_hold_time</option></select>$NWB#vicidial_inbound_groups-play_estimate_hold_time$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#CCFFFF><td align=right>Hold Time Option: </td><td align=left><select size=1 name=hold_time_option><option>NONE</option><option>EXTENSION</option><option>VOICEMAIL</option><option>IN_GROUP</option><option>CALLERID_CALLBACK</option><option>DROP_ACTION</option><option SELECTED>$hold_time_option</option></select>$NWB#vicidial_inbound_groups-hold_time_option$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Hold Time Option: </td><td align=left><select size=1 name=hold_time_option><option>NONE</option><option>EXTENSION</option><option>VOICEMAIL</option><option>IN_GROUP</option><option>CALLERID_CALLBACK</option><option>DROP_ACTION</option><option>PRESS_VMAIL</option><option SELECTED>$hold_time_option</option></select>$NWB#vicidial_inbound_groups-hold_time_option$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#CCFFFF><td align=right>Hold Time Option Seconds: </td><td align=left><input type=text name=hold_time_option_seconds size=5 maxlength=5 value=\"$hold_time_option_seconds\">$NWB#vicidial_inbound_groups-hold_time_option_seconds$NWE</td></tr>\n";
 
