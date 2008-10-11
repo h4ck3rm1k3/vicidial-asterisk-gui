@@ -37,6 +37,7 @@
 # 80619-2047 - Added DISPO status for post-call-work while paused
 # 80704-0543 - Added DEAD status for agents INCALL with no live call
 # 80822-1222 - Added option for display of customer phone number
+# 81011-0335 - Fixed remote agent display bug
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -861,6 +862,13 @@ $calls_to_list = mysql_num_rows($rslt);
 	$i=0;
 	while ($i < $talking_to_print)
 		{
+		if (eregi("R/",$Aextension[$i])) 
+			{
+			$protocol = 'EXTERNAL';
+			$dialplan = eregi_replace('R/',"",$Aextension[$i]);
+			$dialplan = eregi_replace("\@.*",'',$dialplan);
+			$exten = "dialplan_number='$dialplan'";
+			}
 		if (eregi("Local/",$Aextension[$i])) 
 			{
 			$protocol = 'EXTERNAL';

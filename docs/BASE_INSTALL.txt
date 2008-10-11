@@ -93,6 +93,10 @@ cd ../asterisk-1.2.30.2
 	wget http://www.eflo.net/files/app_waitforsilence.c
 	mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
+	* REQUIRED for gcc 4.2 systems*
+	wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
+	patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
+
 	*OPTIONAL* shorter enter and leave sounds for meetme
 	wget http://www.eflo.net/files/enter.h
 	wget http://www.eflo.net/files/leave.h

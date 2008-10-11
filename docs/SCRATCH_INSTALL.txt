@@ -965,6 +965,10 @@ with the following patch:
 		- wget http://www.eflo.net/files/cli_chan_concise_delimiter.patch
 		- patch -p1 < ./cli_chan_concise_delimiter.patch
 			- File to patch: cli.c
+		
+		-(gcc version 4.2) apply the gsm audio codec patch to fix gsm
+		- wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
+		- patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
 		*OPTIONAL*(1.2.14 thru 1.2.30.2) rewrite of waitforsilence
 		- wget http://www.eflo.net/files/app_waitforsilence.c

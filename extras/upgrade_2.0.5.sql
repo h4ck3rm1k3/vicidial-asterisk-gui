@@ -476,3 +476,8 @@ INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_of
 
 UPDATE system_settings SET db_schema_version='1108';
 
+
+
+
+
+INSERT INTO vicidial_statuses values('QVMAIL','Queue Abandon Voicemail Left','N','N','UNDEFINED');

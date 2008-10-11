@@ -401,6 +401,8 @@ patch -p1 < ./cli_chan_concise_delimiter.patch
 	
 	- File to patch: cli.c
 
+wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
+patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
 wget http://www.eflo.net/files/app_waitforsilence.c
 mv -f app_waitforsilence.c apps/app_waitforsilence.c
@@ -524,6 +526,8 @@ make clean
 make
 make install
 cd ../asterisk-1.4.22
+wget http://downloads.vicidial.com/asterisk-patches/1.4-gsm-gcc4.2.patch
+patch -p1 ./codecs/gsm/Makefile 1.4-gsm-gcc4.2.patch
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
 mv -f enter.h apps/enter.h
