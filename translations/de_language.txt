@@ -243,7 +243,7 @@ RECORD ID|Aufzeichnungs ID|
 RECORDING FILE|Aufzeichnungsdatei|
 HOT KEYS ACTIVE|TASTATURKÜRZEL AKTIV|
 HOT KEYS INACTIVE|TASTATURKÜRZEL DEAKTIVIERT|
-DIAL OVERRIDE|WÄHLVORGANG OVERRIDE|
+DIAL OVERRIDE|WÄHL OVERRIDE|
 SKIP LEAD|ADRESSE ÜBERSPRINGEN|
 DIAL LEAD|ADRESSE WÄHLEN|
 LEAD PREVIEW|ADRESSEN VORSCHAU|
@@ -251,20 +251,20 @@ PAUSE AGENT DIALING|WÄHLPAUSE|
 DISPOSITION CALL|ANRUF ABSCHLIESSEN|
  session ID| Session ID|
  to campaign| zur Kampagne|
-Select a CallBack Date|Wählen Sie ein Rückrufadatum|
+Select a CallBack Date|Wählen Sie ein Rückrufdatum|
 maximize|maximieren|
 minimize|minimieren|
 You must choose a date|Sie müssen ein Datum wählen|
 Select a Date Below|Wählen Sie unten ein Datum|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Klicken Sie jetzt unten auf eine Wiedervorlage, um den Kunden zurückzurufen. Danach wird die Wiedervorlage aus der Liste gelöscht.|
-If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Dial Override field below. To hangup this call you will have to open the CALLS IN THIS SESSION link at the bottom of the screen and hang it up by clicking on its channel link there|Wenn Sie eine Nummer wählen möchten, die nicht in der Adressliste aufgenommen werden soll, müssen die genaue Nummer in das WÄHLVORGANG OVERRIDE Feld eintragen. Um diesen Anruf aufzulegen, müssen Sie auf den CALLS IN THIS SESSION Link klicken, und dann mit dem Leitung Link den Anruf zu beenden.|
+If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Dial Override field below. To hangup this call you will have to open the CALLS IN THIS SESSION link at the bottom of the screen and hang it up by clicking on its channel link there|Wenn Sie eine Nummer wählen möchten, die nicht in der Adressliste aufgenommen werden soll, müssen die genaue Nummer in das WÄHL OVERRIDE Feld eintragen. Um diesen Anruf dann aufzulegen, müssen Sie auf den VERBINDUNGEN IN DIESER SITZUNG Link klicken, und dann über die Auswahl der Leitung den entsprechenden Anruf zu beenden.|
 YOU CANNOT SKIP A CALLBACK OR MANUAL DIAL, YOU MUST DIAL THE LEAD|SIE KÖNNEN EINEN RÜCKRUF ODER EINEN MANUELLEN ANRUF NICHT ÜBERSPRINGEN, SIE MÜSSEN DIESE ADRESSE ANRUFEN|
-YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE|SIE MÜSSEN IM PAUSE MODUS SEIN, UM EINE NEUE ADRESSE IM AUTOMATISCHEM WÄHLMODUS MANUELL ZU WÄHLEN|
+YOU MUST BE PAUSED TO MANUAL DIAL A NEW LEAD IN AUTO-DIAL MODE|SIE MÜSSEN PAUSIERT SEIN, UM EINE NEUE ADRESSE IM AUTOMATISCHEM WÄHLMODUS MANUELL ZU WÄHLEN|
 Enter information below for the new lead you wish to call|Tragen Sie unten die Informationen zu der neuen Adresse ein, die SIE wählen möchten|
-YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|SIE MÜSSEN IM PAUSE MODUS SEIN, UM DIE WIEDERVORLAGEN IM AUTOMATISCHEM WÄHLMODUS EINZUSEHEN|
-Note: all new manual dial leads will go into list 999|Anmerkung: alle neuen manuellen Adressen werden zu Liste 999 hinzugefügt|
+YOU MUST BE PAUSED TO CHECK CALLBACKS IN AUTO-DIAL MODE|SIE MÜSSEN PAUSIERT SEIN, UM DIE WIEDERVORLAGEN IM AUTOMATISCHEM WÄHLMODUS EINZUSEHEN|
+Note: all new manual dial leads will go into list 999|Anmerkung: alle neuen manuellen Adressen werden einer Liste hinzugefügt|
 YOU DO NOT HAVE PERMISSIONS TO TRANSFER CALLS|SIE HABEN KEINE BERECHTIGUNG, UM ANRUFE WEITERZULEITEN|
-will be added to the beginning of this number|wird dem Anfang dieser NUMMER hinzugefügt|
+will be added to the beginning of this number|wird dem Anfang dieser Telefonnummer hinzugefügt|
 This is usually a 1 in the USA-Canada|Dieses ist normalerweise 49 in Deutschland|
 NEW MANUAL DIAL LEAD FOR|NEUE MANUELLE ADRESSE FÜR|
 Finish and Disposition Call|Ende und Gesprächsergebniss|
@@ -293,7 +293,7 @@ Calling|Telefonierend|
 Called|Angerufen|
 Campaign|Kampagne|
 Status|Status|
-Inserted|Eingesetzt|
+Inserted|Eingefügt|
 seconds|Sekunden|
 HELP|HILFE|
 Login|Login|
@@ -315,7 +315,7 @@ CallerID|AnruferID|
 PICKUP|ABNEHMEN|
 CONFERENCE|KONFERENZ|
 Refresh|Aktualisieren|
-Send DTMF|Senden Sie DTMF|
+Send DTMF|DTMF Senden|
 ORDER|BESTELLEN|
  on | an |
 LOGOUT|LOGOUT|
@@ -329,7 +329,7 @@ Welcome|Willkommen|
 VOICEMAIL|VOICEMAIL|
  NEW| NEU|
  OLD| ALT|
-STOP|ANSCHLAG|
+STOP|STOP|
 START|START|
 Pause|Pause|
 Resume|WiederAufnehmen|
@@ -349,13 +349,13 @@ State|Bundesland|
 PostCode|Postleitzahl|
 Province|Region|
 Vendor ID|Anbieter ID|
-DialCode|Vorwahl|
+DialCode|LandesCode|
 Alt. Phone|Alternative Telefonnummer|
 Show|Zeigen|
 Email|Email|
 Comments|Anmerkungen|
 REFRESH|AKTUALISIEREN|
-ALT PHONE DIAL|ALT TELEFONNUMMER WÄHLEN|
+ALT PHONE DIAL|ALT. NUMMER WÄHLEN|
 MAIN PHONE|TELEFONNUMMER|
 ALT PHONE|ALTERNATIVE TELEFONNUMMER|
 ADDRESS3|ADRESSE3|
@@ -365,7 +365,7 @@ Phone|Telefon|
  DIAL| WÄHLEN|
 SUBMIT FAVORITES CHANGES - requires logout|FAVORITEN ÄNDERUNGEN ÜBERNEHMEN - erfordert Logout|
 BACK TO MAIN WINDOW - ignore changes made|ZURÜCK ZUM HAUPTFENSTER - Änderungen verwerfen|
-AVAILABLE EXTENSIONS|VORHANDENE EXTENSION|
+AVAILABLE EXTENSIONS|VORHANDENE NEBENSTELLEN|
  edit| bearbeiten|
  FAVORITES| FAVORITEN|
 ### END translation phrases through 1.1.11 release ###
@@ -373,7 +373,7 @@ Search Existing Leads|Suche existierende Adresse|
 This option if checked will attempt to find the phone number in the system before inserting it as a new lead|Wenn diese Option ausgewählt ist, wird versucht, die Telefonnummer im System zu finden, bevor eine neue Adresse eingefügt wird|
 Finish Wrapup and Move On|Beende Nachbereitung und mache weiter|
 seconds remaining in wrapup|Verbleibende Sekunden der Nachbereitung|
-Call Wrapup:|Anruf Nachbereitung|
+Call Wrapup:|Anruf Nachbereitung:|
 ### months of the year for CallBack date select screen ###
 January|Januar|
 Frebruary|Februar|
@@ -396,12 +396,12 @@ Comments: |Anmerkungen:|
 ### BEGIN translation phrases for 2.0.2 release ###
 VOLUME|LAUTSTÄRKE|
 ### BEGIN translation phrases for 2.0.3 release ###
-FAST DIAL|SCHNELLER VORWAHLKNOPF|
-YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|SIE MÜSSEN Eine TELEFONNUMMER UND Einen VORWAHLKNOPF-CODE EINGEBEN,UM SCHNELLEN VORWAHLKNOPF ZU BENUTZEN|
- SELECT A PAUSE CODE :| WÄHLEN Sie Einen PAUSE CODE Vor :|
+FAST DIAL|SCHNELL WAHL|
+YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|SIE MÜSSEN Eine TELEFONNUMMER UND Einen LÄNDER-CODE EINGEBEN,UM DIE SCHNELL WAHL ZU BENUTZEN|
+ SELECT A PAUSE CODE :| WÄHLEN Sie Einen PAUSE CODE :|
 ENTER A PAUSE CODE|GEBEN Sie Einen PAUSE CODE Ein|
-YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|SIE MÜSSEN PAUSIERT WERDEN, UM Einen PAUSE CODE Im AUTO-DIAL MODUSEINZUGEBEN|
-Your session has been disabled|Ihr Lernabschnitt ist gesperrt worden|
+YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|SIE MÜSSEN PAUSIERT WERDEN, UM Einen PAUSE CODE Im AUTO-DIAL MODUS EINZUGEBEN|
+Your session has been disabled|Ihre Sitzung ist gesperrt worden|
 ### BEGIN translation phrases for 2.0.4 release ###
 PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME|BITTE NICHT VERGESSEN DEN LOGOUT KNOPF ZU BENÜTZEN|
 ### BEGIN translation phrases for 2.0.5 release ###
