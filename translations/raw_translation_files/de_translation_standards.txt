@@ -10,7 +10,8 @@ Lead -> Adresse
 Trunk -> Amtsbündel / Amtsleitung
 Line -> Leitung
 ZAP -> ISDN (wenn als Synonym für Zap-Channels verwendet, da diese der Europäischen Realität entspricht)  
-
+Agent -> Agent
+Session -> Sitzung
 
 Deutsche Umlaute falls keine Tastatur zur Hand
 ä ö ü ß Ä Ö Ü
