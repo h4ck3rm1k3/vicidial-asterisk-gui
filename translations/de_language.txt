@@ -36,7 +36,7 @@ agc|htglobalize.php|1
 "NOV"|"NOV"|
 "DEC"|"DEZ"|
 \./images/|../agc/images/|
-BORDER|RAND|
+BORDER|BORDER|
 VALUE=SUBMIT|VALUE=SUBMIT|
 TYPE=SUBMIT|TYPE=Submit|
 MAXLENGTH|maxlength|
@@ -46,7 +46,7 @@ Spanish|Spanisch|
 French|Französisch|
 German|Deutsch|
 Italian|Italienisch|
-agc_live_call_OFF.gif|agc_live_call_OFF_de.gif|
+agc_live_call_OFF.gif|agc_live_call_OFF_de.jpg|
 agc_live_call_ON.gif|agc_live_call_ON_de.gif|
 vdc_XB_hotkeysactive.gif|vdc_XB_hotkeysactive_de.gif|
 vdc_XB_hotkeysactive_OFF.gif|vdc_XB_hotkeysactive_OFF_de.gif|
