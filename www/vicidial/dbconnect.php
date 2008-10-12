@@ -40,6 +40,9 @@ $WeBServeRRooT = '/usr/local/apache2/htdocs';
 }
 
 $link=mysql_connect("$VARDB_server", "$VARDB_user", "$VARDB_pass");
+if (!$link) {
+    die('MySQL connect ERROR: ' . mysql_error());
+}
 mysql_select_db("$VARDB_database");
 
 $local_DEF = 'Local/';
