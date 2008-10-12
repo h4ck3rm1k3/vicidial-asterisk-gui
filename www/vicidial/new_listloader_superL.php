@@ -22,12 +22,12 @@
 # 80428-0417 - UTF8 changes
 # 80514-1030 - removed filesize limit and raised number of errors to be displayed
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
-#
+# 81011-2009 - a few bug fixes
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.5-26';
-$build = '80713-0023';
+$version = '2.0.5-27';
+$build = '81011-2009';
 
 
 require("dbconnect.php");
@@ -51,6 +51,7 @@ if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
 	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
 if (isset($_GET["leadfile_name"]))				{$leadfile_name=$_GET["leadfile_name"];}
 	elseif (isset($_POST["leadfile_name"]))		{$leadfile_name=$_POST["leadfile_name"];}
+if (isset($_FILES["leadfile"]))				{$leadfile_name=$_FILES["leadfile"]['name'];}
 if (isset($_GET["file_layout"]))				{$file_layout=$_GET["file_layout"];}
 	elseif (isset($_POST["file_layout"]))		{$file_layout=$_POST["file_layout"];}
 if (isset($_GET["OK_to_process"]))				{$OK_to_process=$_GET["OK_to_process"];}
@@ -1293,54 +1294,23 @@ if ($leadfile) {
 				
 				for ($i=0; $i<mysql_num_fields($rslt); $i++) {
 
-					print "  <tr bgcolor=#D9E6FE>\r\n";
-					print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
-					print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
-					print "     <option value='-1'>(none)</option>\r\n";
-
-					for ($j=0; $j<count($row); $j++) {
-						eregi_replace("\"", "", $row[$j]);
-						print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+					if ( (mysql_field_name($rslt, $i)=="list_id" and $list_id_override!="") or (mysql_field_name($rslt, $i)=="phone_code" and $phone_code_override!="") ) {
+						print "<!-- skipping " . mysql_field_name($rslt, $i) . " -->\n";
+					} else {
+						print "  <tr bgcolor=#D9E6FE>\r\n";
+						print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
+						print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
+						print "     <option value='-1'>(none)</option>\r\n";
+	
+						for ($j=0; $j<count($row); $j++) {
+							eregi_replace("\"", "", $row[$j]);
+							print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						}
+	
+						print "    </select></td>\r\n";
+						print "  </tr>\r\n";
 					}
 
-					print "    </select></td>\r\n";
-					print "  </tr>\r\n";
-
-					#print "  <tr bgcolor=#D9E6FE>\r\n";
-					#print "    <td align=center><font class=standard>$row[$i]</font></td>\r\n";
-					#print "    <td align=center><select name=datafield$i>\r\n";
-					#print "     <option value=''>---------------------</option>\r\n";
-					#print "     <option value='entry_date'>Entry date</option>\r\n";
-					#print "     <option value='modify_date'>Modify date</option>\r\n";
-					#print "     <option value='status'>Status</option>\r\n";
-					#print "     <option value='user'>User</option>\r\n";
-					#print "     <option value='vendor_lead_code'>Vendor lead code</option>\r\n";
-					#print "     <option value='source_id'>Source ID</option>\r\n";
-					#print "     <option value='list_id'>List ID</option>\r\n";
-					#print "     <option value='gmt_offset'>Campaign ID</option>\r\n";
-					#print "     <option value='called_since_last_reset'>Called since last reset</option>\r\n";
-					#print "     <option value='phone_code'>Phone code</option>\r\n";
-					#print "     <option value='phone_number'>Phone number</option>\r\n";
-					#print "     <option value='title'>Title</option>\r\n";
-					#print "     <option value='first_name'>First name</option>\r\n";
-					#print "     <option value='middle_initial'>Middle initial</option>\r\n";
-					#print "     <option value='last_name'>Last name</option>\r\n";
-					#print "     <option value='address1'>Address 1</option>\r\n";
-					#print "     <option value='address2'>Address 2</option>\r\n";
-					#print "     <option value='address3'>Address 3</option>\r\n";
-					#print "     <option value='city'>City</option>\r\n";
-					#print "     <option value='state'>State</option>\r\n";
-					#print "     <option value='province'>Province</option>\r\n";
-					#print "     <option value='postal_code'>Postal code</option>\r\n";
-					#print "     <option value='country_code'>Country code</option>\r\n";
-					#print "     <option value='gender'>Gender</option>\r\n";
-					#print "     <option value='date_of_birth'>Date of birth</option>\r\n";
-					#print "     <option value='alt_phone'>Alt. phone</option>\r\n";
-					#print "     <option value='email'>E-mail</option>\r\n";
-					#print "     <option value='security_phrase'>Security phrase</option>\r\n";
-					#print "     <option value='comments'>Comments</option>\r\n";
-					#print "    </td>\r\n";
-					#print "  </tr>\r\n";
 				}
 			} 
 			else if (!eregi(".csv", $leadfile_name)) 
@@ -1395,54 +1365,22 @@ if ($leadfile) {
 				$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 				$row=fgetcsv($file, 1000, ",");
 				for ($i=0; $i<mysql_num_fields($rslt); $i++) {
-					print "  <tr bgcolor=#D9E6FE>\r\n";
-					print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
-					print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
-					print "     <option value='-1'>(none)</option>\r\n";
+					if ( (mysql_field_name($rslt, $i)=="list_id" and $list_id_override!="") or (mysql_field_name($rslt, $i)=="phone_code" and $phone_code_override!="") ) {
+						print "<!-- skipping " . mysql_field_name($rslt, $i) . " -->\n";
+					} else {
+						print "  <tr bgcolor=#D9E6FE>\r\n";
+						print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
+						print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
+						print "     <option value='-1'>(none)</option>\r\n";
 
-					for ($j=0; $j<count($row); $j++) {
-						eregi_replace("\"", "", $row[$j]);
-						print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						for ($j=0; $j<count($row); $j++) {
+							eregi_replace("\"", "", $row[$j]);
+							print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						}
+
+						print "    </select></td>\r\n";
+						print "  </tr>\r\n";
 					}
-
-					print "    </select></td>\r\n";
-					print "  </tr>\r\n";
-
-					#print "  <tr bgcolor=#D9E6FE>\r\n";
-					#print "    <td align=center><font class=standard>$row[$i]</font></td>\r\n";
-					#print "    <td align=center><select name=datafield$i>\r\n";
-					#print "     <option value=''>---------------------</option>\r\n";
-					#print "     <option value='entry_date'>Entry date</option>\r\n";
-					#print "     <option value='modify_date'>Modify date</option>\r\n";
-					#print "     <option value='status'>Status</option>\r\n";
-					#print "     <option value='user'>User</option>\r\n";
-					#print "     <option value='vendor_lead_code'>Vendor lead code</option>\r\n";
-					#print "     <option value='source_id'>Source ID</option>\r\n";
-					#print "     <option value='list_id'>List ID</option>\r\n";
-					#print "     <option value='gmt_offset'>Campaign ID</option>\r\n";
-					#print "     <option value='called_since_last_reset'>Called since last reset</option>\r\n";
-					#print "     <option value='phone_code'>Phone code</option>\r\n";
-					#print "     <option value='phone_number'>Phone number</option>\r\n";
-					#print "     <option value='title'>Title</option>\r\n";
-					#print "     <option value='first_name'>First name</option>\r\n";
-					#print "     <option value='middle_initial'>Middle initial</option>\r\n";
-					#print "     <option value='last_name'>Last name</option>\r\n";
-					#print "     <option value='address1'>Address 1</option>\r\n";
-					#print "     <option value='address2'>Address 2</option>\r\n";
-					#print "     <option value='address3'>Address 3</option>\r\n";
-					#print "     <option value='city'>City</option>\r\n";
-					#print "     <option value='state'>State</option>\r\n";
-					#print "     <option value='province'>Province</option>\r\n";
-					#print "     <option value='postal_code'>Postal code</option>\r\n";
-					#print "     <option value='country_code'>Country code</option>\r\n";
-					#print "     <option value='gender'>Gender</option>\r\n";
-					#print "     <option value='date_of_birth'>Date of birth</option>\r\n";
-					#print "     <option value='alt_phone'>Alt. phone</option>\r\n";
-					#print "     <option value='email'>E-mail</option>\r\n";
-					#print "     <option value='security_phrase'>Security phrase</option>\r\n";
-					#print "     <option value='comments'>Comments</option>\r\n";
-					#print "    </td>\r\n";
-					#print "  </tr>\r\n";
 				}
 			}
 			print "  <tr bgcolor='#330099'>\r\n";
@@ -2093,3 +2031,5 @@ if (!$AC_processed)
 
 return $gmt_offset;
 }
+
+?>
