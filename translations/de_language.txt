@@ -36,7 +36,7 @@ agc|htglobalize.php|1
 "NOV"|"NOV"|
 "DEC"|"DEZ"|
 \./images/|../agc/images/|
-BORDER|BORDER|
+BORDER|Border|
 VALUE=SUBMIT|VALUE=SUBMIT|
 TYPE=SUBMIT|TYPE=Submit|
 MAXLENGTH|maxlength|

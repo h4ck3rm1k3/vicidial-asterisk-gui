@@ -186,6 +186,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 40. Added ability to set callerID number on outgoing conference calls to
    CAMPAIGN, CUSTOMER or AGENT_PHONE callerID settings.
 
+41. New Slovak translation for the agent screen, as well as new German agent
+   screen translation and new German buttons for the agent screen
+
+42. New Welcome demo screen with links to all translations of agent and admin
+   screens
+
 
 
 
