@@ -194,10 +194,11 @@
 # 81007-0945 - Added three_way_call_cid option for outbound 3way calls
 # 81010-1047 - Fixed conf calling prefix to use settings, other 3way improvements
 # 81011-1403 - Fixed bugs in leave3way when transferring a manual dial call
+# 81012-1729 - Added INBOUND_MAN dial method to allow manual list dialing and inbound calls
 #
 
-$version = '2.0.5-172';
-$build = '81011-1403';
+$version = '2.0.5-173';
+$build = '81012-1729';
 
 require("dbconnect.php");
 
@@ -797,7 +798,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
@@ -840,6 +841,7 @@ $VDloginDISPLAY=0;
 				$CopY_tO_ClipboarD =		$row[36];
 				$use_campaign_dnc =			$row[37];
 				$three_way_call_cid =		$row[38];
+				$dial_method =				$row[39];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -861,6 +863,8 @@ $VDloginDISPLAY=0;
 				}
 			if ($display_queue_count=='N')
 				{$callholdstatus='0';}
+			if ($dial_method == 'INBOUND_MAN')
+				{$VU_closer_default_blended=0;}
 
 			$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
 			$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
@@ -2012,6 +2016,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var agentphonelive = 0;
 	var conf_dialed = 0;
 	var leaving_threeway = 0;
+	var dial_method = '<? echo $dial_method ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -3601,7 +3606,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		inOUT = 'OUT';
 		all_record = 'NO';
 		all_record_count=0;
-		document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+		if (dial_method == "INBOUND_MAN")
+			{
+			auto_dial_level=0;
+
+			AutoDial_ReSume_PauSe('VDADpause');
+
+			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"><BR><IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+			}
+		else
+			{
+			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+			}
 		if (document.vicidial_form.LeadPreview.checked==true)
 			{
 			reselect_preview_dial = 1;
@@ -3678,8 +3694,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							}
 						else
 							{
+							if (dial_method == "INBOUND_MAN")
+								{
+								auto_dial_level=starting_dial_level;
+
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+								}
+							else
+								{
+								document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+								}
 							document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
-							document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
 							reselect_alt_dial = 0;
 							}
 						}
@@ -3883,7 +3908,16 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		else
 			{
-			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+			if (dial_method == "INBOUND_MAN")
+				{
+				auto_dial_level=starting_dial_level;
+
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"><BR><IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+				}
+			else
+				{
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+				}
 
 			var xmlhttp=false;
 			/*@cc_on @*/
@@ -3965,7 +3999,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							document.getElementById("MainStatuSSpan").innerHTML = " Lead skipped, go on to next lead";
 
-							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+							if (dial_method == "INBOUND_MAN")
+								{
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+								}
+							else
+								{
+								document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+								}
 							}
 						}
 					}
@@ -4138,14 +4179,32 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			AutoDialReady = 1;
 			AutoDialWaiting = 1;
-			document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
+			if (dial_method == "INBOUND_MAN")
+				{
+				auto_dial_level=starting_dial_level;
+
+				document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\"Pause\"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+				}
+			else
+				{
+				document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
+				}
 			}
 		else
 			{
 			var VDRP_stage = 'PAUSED';
 			AutoDialReady = 0;
 			AutoDialWaiting = 0;
-			document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+			if (dial_method == "INBOUND_MAN")
+				{
+				auto_dial_level=starting_dial_level;
+
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+				}
+			else
+				{
+				document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+				}
 			}
 
 		var xmlhttp=false;
@@ -4524,7 +4583,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + lastcustchannel + "','');return false;\"><IMG SRC=\"./images/vdc_volume_down.gif\" BORDER=0></a>";
 							}
 
-							document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+							if (dial_method == "INBOUND_MAN")
+								{
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"><BR><IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+								}
+							else
+								{
+								document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+								}
 
 							if (VDCL_group_id.length > 1)
 								{var group = VDCL_group_id;}
@@ -4982,7 +5048,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								{
 								document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
 								document.getElementById("MainStatuSSpan").innerHTML = '';
-								document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+								if (dial_method == "INBOUND_MAN")
+									{
+									document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"><BR><IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+									}
+								else
+									{
+									document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+									}
 								reselect_alt_dial = 0;
 								}
 							}
@@ -4991,7 +5064,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				else
 					{
 					document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
-					document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+					if (dial_method == "INBOUND_MAN")
+						{
+						document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\"><BR><IMG SRC=\"./images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Dial Next Number\">";
+						}
+					else
+						{
+						document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_OFF;
+						}
 					reselect_alt_dial = 0;
 					}
 				}
@@ -5701,6 +5781,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Update vicidial_live_agents record with closer in group choices
 	function CloserSelect_submit()
 		{
+		if (dial_method == "INBOUND_MAN")
+			{document.vicidial_form.CloserSelectBlended.checked=false;}
 		if (document.vicidial_form.CloserSelectBlended.checked==true)
 			{VICIDiaL_closer_blended = 1;}
 		else
@@ -6461,7 +6543,7 @@ else
 				{hideDiv('AgentStatusCalls');}
 			if (agentcallsstatus != '1')
 				{hideDiv('AgentStatusSpan');}
-			if ( (auto_dial_level != 0) || (manual_dial_preview != 1) )
+			if ( ( (auto_dial_level > 0) && (dial_method != "INBOUND_MAN") ) || (manual_dial_preview < 1) )
 				{clearDiv('DiaLLeaDPrevieW');}
 			if (alt_phone_dialing != 1)
 				{clearDiv('DiaLDiaLAltPhonE');}
@@ -6498,6 +6580,13 @@ else
 				hideDiv('CloserSelectBox');
 				MainPanelToFront();
 				var CloserSelecting = 0;
+				if (dial_method == "INBOUND_MAN")
+					{
+					dial_method = "MANUAL";
+					auto_dial_level=0;
+					starting_dial_level=0;
+					document.getElementById("DiaLControl").innerHTML = DiaLControl_manual_HTML;
+					}
 				}
 			VICIDiaL_closer_login_checked = 1;
 			}
@@ -7047,8 +7136,17 @@ else
 				}
 			else
 				{
-				document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
-				clearDiv('DiaLLeaDPrevieW');
+				if (dial_method == "INBOUND_MAN")
+					{
+					document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pause\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"./images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Dial Next Number\"></a>";
+					if (manual_dial_preview == 1)
+						{buildDiv('DiaLLeaDPrevieW');}
+					}
+				else
+					{
+					document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+					clearDiv('DiaLLeaDPrevieW');
+					}
 				}
 			}
 		panel_bgcolor='#E0C2D6';

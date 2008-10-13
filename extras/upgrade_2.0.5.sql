@@ -481,3 +481,7 @@ INSERT INTO vicidial_statuses values('QVMAIL','Queue Abandon Voicemail Left','N'
 ALTER TABLE vicidial_inbound_groups MODIFY hold_time_option ENUM('NONE','EXTENSION','VOICEMAIL','IN_GROUP','CALLERID_CALLBACK','DROP_ACTION','PRESS_VMAIL') default 'NONE';
 
 UPDATE system_settings SET db_schema_version='1109';
+
+ALTER TABLE vicidial_campaigns MODIFY dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE','INBOUND_MAN') default 'MANUAL';
+
+UPDATE system_settings SET db_schema_version='1110';

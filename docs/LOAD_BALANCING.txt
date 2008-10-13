@@ -172,6 +172,14 @@ If you have any questions or problems please post to the astguiclient-users list
 	exten => 8168,3,Hangup
 This should help to prevent overwriting of prompts that are copied over from the one server that is used to do prompt creation.
 
+9. On all servers but one you should consider redirecting voicemail direct calls to a single server:
+    Change this:
+	exten => _85026666666666.,1,Wait(1)
+	exten => _85026666666666.,2,Voicemail(${EXTEN:14}|u)
+	exten => _85026666666666.,3,Hangup
+    To something like this:
+	exten => _85026666666666.,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
+
 
 
 

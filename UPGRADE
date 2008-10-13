@@ -189,8 +189,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 41. New Slovak translation for the agent screen, as well as new German agent
    screen translation and new German buttons for the agent screen
 
-42. New Welcome demo screen with links to all translations of agent and admin
-   screens
+42. New Welcome demo and languages screens with links to all translations of 
+   agent and admin screens
+
+43. Added INBOUND_MAN dial method to allow for inbound call handling by agents
+   that are also placing manual dial list calls through their campaign lists
 
 
 
