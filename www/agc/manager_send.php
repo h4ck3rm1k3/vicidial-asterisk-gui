@@ -670,48 +670,52 @@ if ($ACTION=="RedirectXtraCXNeW")
 	{
 		if (ereg("NEXTAVAILABLE",$exten))
 			{
-			$stmt="SELECT count(*) FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id';";
-				if ($format=='debug') {echo "\n<!-- $stmt -->";}
-			$rslt=mysql_query($stmt, $link);
+			$stmtA="SELECT count(*) FROM vicidial_conferences where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id';";
+				if ($format=='debug') {echo "\n<!-- $stmtA -->";}
+			$rslt=mysql_query($stmtA, $link);
 			$row=mysql_fetch_row($rslt);
 			if ($row[0] > 1)
 				{
-				$stmt="UPDATE vicidial_conferences set extension='$protocol/$extension$NOWnum', leave_3way='0' where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id' limit 1;";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
+				$stmtB="UPDATE vicidial_conferences set extension='$protocol/$extension$NOWnum', leave_3way='0' where server_ip='$server_ip' and ((extension='') or (extension is null)) and conf_exten != '$session_id' limit 1;";
+					if ($format=='debug') {echo "\n<!-- $stmtB -->";}
+				$rslt=mysql_query($stmtB, $link);
 
-				$stmt="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and extension='$protocol/$extension$NOWnum' and conf_exten != '$session_id';";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
+				$stmtC="SELECT conf_exten from vicidial_conferences where server_ip='$server_ip' and extension='$protocol/$extension$NOWnum' and conf_exten != '$session_id';";
+					if ($format=='debug') {echo "\n<!-- $stmtC -->";}
+				$rslt=mysql_query($stmtC, $link);
 				$row=mysql_fetch_row($rslt);
 				$exten = $row[0];
 
-				$stmt="UPDATE vicidial_conferences set extension='$protocol/$extension' where server_ip='$server_ip' and conf_exten='$exten' limit 1;";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
+				$stmtD="UPDATE vicidial_conferences set extension='$protocol/$extension' where server_ip='$server_ip' and conf_exten='$exten' limit 1;";
+					if ($format=='debug') {echo "\n<!-- $stmtD -->";}
+				$rslt=mysql_query($stmtD, $link);
 
-				$stmt="UPDATE vicidial_conferences set leave_3way='1', leave_3way_datetime='$NOW_TIME', extension='3WAY_$user' where server_ip='$server_ip' and conf_exten='$session_id';";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
+				$stmtE="UPDATE vicidial_conferences set leave_3way='1', leave_3way_datetime='$NOW_TIME', extension='3WAY_$user' where server_ip='$server_ip' and conf_exten='$session_id';";
+					if ($format=='debug') {echo "\n<!-- $stmtE -->";}
+				$rslt=mysql_query($stmtE, $link);
 
 				$queryCID = "CXAR24$NOWnum";
-				$stmtB="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Redirect','$queryCID','Channel: $agentchannel','Context: $ext_context','Exten: $exten','Priority: 1','CallerID: $queryCID','','','','','');";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmtB, $link);
+				$stmtF="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Redirect','$queryCID','Channel: $agentchannel','Context: $ext_context','Exten: $exten','Priority: 1','CallerID: $queryCID','','','','','');";
+					if ($format=='debug') {echo "\n<!-- $stmtF -->";}
+				$rslt=mysql_query($stmtF, $link);
 
-				$stmt="UPDATE vicidial_live_agents set conf_exten='$exten' where server_ip='$server_ip' and user='$user';";
-					if ($format=='debug') {echo "\n<!-- $stmt -->";}
-				$rslt=mysql_query($stmt, $link);
+				$stmtG="UPDATE vicidial_live_agents set conf_exten='$exten' where server_ip='$server_ip' and user='$user';";
+					if ($format=='debug') {echo "\n<!-- $stmtG -->";}
+				$rslt=mysql_query($stmtG, $link);
 
 				if ($auto_dial_level < 1)
 					{
-					$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and callerid LIKE \"M%\";";
-						if ($format=='debug') {echo "\n<!-- $stmt -->";}
-					$rslt=mysql_query($stmt, $link);
+					$stmtH = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and callerid LIKE \"M%\";";
+						if ($format=='debug') {echo "\n<!-- $stmtH -->";}
+					$rslt=mysql_query($stmtH, $link);
 					}
 
+			//	$fp = fopen ("./vicidial_debug_3way.txt", "a");
+			//	fwrite ($fp, "$NOW_TIME|$filename|\n|$stmtA|\n|$stmtB|\n|$stmtC|\n|$stmtD|\n|$stmtE|\n|$stmtF|\n|$stmtG|\n|$stmtH|\n\n");
+			//	fclose($fp);
+
 				echo "NeWSessioN|$exten|\n";
-				echo "|$stmtB|\n";
+				echo "|$stmtG|\n";
 				
 				exit;
 				}
@@ -1027,7 +1031,7 @@ if ($ACTION=="RedirectXtraNeW")
 
 
 
-
+/*
 if ($ACTION=="RedirectXtraCX")
 {
 	$DBout='';
@@ -1315,7 +1319,7 @@ if ($ACTION=="RedirectXtra")
 	}
 }
 ###### END OLD LEAVE-3-WAY FOR EXTERNAL CALLS - DEPRICATED AND WILL BE DELETED SOON #####
-
+*/
 
 if ($ACTION=="Redirect")
 {

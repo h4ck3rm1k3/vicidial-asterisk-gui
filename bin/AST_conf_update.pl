@@ -286,7 +286,7 @@ foreach(@PTextensions)
 		if ($PTextensions[$i] =~ /Xtimeout1$/i) {$NEWexten[$i] = ''; $leave_3waySQL='0';}
 		if ( ($PTextensions[$i] !~ /Xtimeout\d$/i) and (length($PTextensions[$i])> 0) ) {$NEWexten[$i] .= 'Xtimeout3';}
 
-		if (length($NEWexten[$i]) < 1)
+		if ($NEWexten[$i] =~ /Xtimeout1$/i)
 			{
 			### Kick all participants if there are any left in the conference so it can be reused
 			$local_DEF = 'Local/5555';
@@ -296,6 +296,7 @@ foreach(@PTextensions)
 
 			$stmtA="INSERT INTO vicidial_manager values('','','$now_date','NEW','N','$server_ip','','Originate','$queryCID','Channel: $kick_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','','');";
 				$affected_rows = $dbhA->do($stmtA); #  or die  "Couldn't execute query:|$stmtA|\n";
+			if($DB){print STDERR "\n|$affected_rows|$stmtA|\n";}
 			}
 
 		$stmtA = "UPDATE vicidial_conferences set extension='$NEWexten[$i]',leave_3way='$leave_3waySQL' where server_ip='$server_ip' and conf_exten='$PT_conf_extens[$i]';";

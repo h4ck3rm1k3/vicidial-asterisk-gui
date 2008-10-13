@@ -195,10 +195,11 @@
 # 81010-1047 - Fixed conf calling prefix to use settings, other 3way improvements
 # 81011-1403 - Fixed bugs in leave3way when transferring a manual dial call
 # 81012-1729 - Added INBOUND_MAN dial method to allow manual list dialing and inbound calls
+# 81013-1644 - Fixed bug in leave 3way for manual dial fronters
 #
 
-$version = '2.0.5-173';
-$build = '81012-1729';
+$version = '2.0.5-174';
+$build = '81013-1644';
 
 require("dbconnect.php");
 
@@ -2219,6 +2220,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		conf_dialed=1;
 		if (taskFromConf == 'YES')
 			{
+			document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"./images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Dial With Customer\"></a>";
+
+			document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"./images/vdc_XB_parkcustomerdial_OFF.gif\" border=0 alt=\"Park Customer Dial\"></a>";
+
 			var manual_number = document.vicidial_form.xfernumber.value;
 			var manual_string = manual_number.toString();
 			var dial_conf_exten = session_id;
@@ -3020,8 +3025,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			delete xmlhttpXF;
 			}
 
-			// used to send second Redirect  for manual dial calls
-			if (auto_dial_level == 0)
+			// used to send second Redirect for manual dial calls
+			if ( (auto_dial_level == 0) && (taskvar != '3WAY') )
 			{
 				RedirecTxFEr = 1;
 				var xmlhttpXF2=false;
