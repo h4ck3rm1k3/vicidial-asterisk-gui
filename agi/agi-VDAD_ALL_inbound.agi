@@ -1714,7 +1714,7 @@ if ( ($start_hold_estimate > 0) && ($moh_delay == '1') )
 		{
 		@aryA = $sthA->fetchrow_array;
 		$stage_wait_sec = $aryA[0];
-		$stage_wait_sec =~ s/LIVE-|CLOSE-//gi;
+		$stage_wait_sec =~ s/LIVE-|CLOSE-|CLOSER-//gi;
 		if ($stage_wait_sec >= $holdtime_estimate_sec)
 			{
 			$livetime_estimate_sec = ($livetime_estimate_sec + $stage_wait_sec);
@@ -1947,7 +1947,7 @@ $stmtA = "UPDATE vicidial_auto_calls set stage='LIVE-$drop_timer' where callerid
 $affected_rows = $dbhA->do($stmtA);
 if ($affected_rows < 1)
 	{
-	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','CLOSER','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','CLOSER-$drop_timer','$queue_priority')";
+	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,status,lead_id,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority)  values('$VARserver_ip','$channel_group','LIVE','$insert_lead_id','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','LIVE-$drop_timer','$queue_priority')";
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 	}

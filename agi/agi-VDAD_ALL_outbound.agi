@@ -292,7 +292,6 @@ exit;
 }
 
 $stmtA = "SELECT count(*) FROM vicidial_live_agents where callerid='$callerid';";
-	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -304,6 +303,7 @@ while ($sthArows > $rec_count)
 	$rec_count++;
 	}
 $sthA->finish();
+if ($AGILOG) {$agi_string = "$Pseudo_duplicate_count|$stmtA|";   &agi_output;}
 
 if ($Pseudo_duplicate_count > 0)
 {
@@ -312,7 +312,6 @@ exit;
 }
 
 $stmtA = "SELECT count(*) FROM vicidial_auto_calls where callerid='$callerid' and status IN('LIVE','XFER');";
-	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -324,6 +323,7 @@ while ($sthArows > $rec_count)
 	$rec_count++;
 	}
 $sthA->finish();
+if ($AGILOG) {$agi_string = "$dialplan_duplicate_count|$stmtA|";   &agi_output;}
 
 if ($dialplan_duplicate_count > 0)
 {

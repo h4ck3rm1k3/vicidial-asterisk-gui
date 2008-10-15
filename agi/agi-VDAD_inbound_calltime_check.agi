@@ -23,6 +23,7 @@
 #
 # changes:
 # 80525-0144 - First Build
+# 81015-0305 - Added drop logging
 #
 
 $script = 'agi-VDAD_inbound_calltime_check.agi';
@@ -346,7 +347,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $uniqueid|$callerid|";   &agi_output;}
 
-		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate')";
+		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','$channel_group','$phone_number','AFTERHOURSDROP')";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rowsL = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    LIL : |$affected_rowsL|$uniqueid|$callerid|$extension|";   &agi_output;}
@@ -360,6 +361,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		}
 	if ($after_hours_action =~ /MESSAGE/)
 		{
+		$AGI->stream_file('sip-silence');
 		$AGI->stream_file('sip-silence');
 		$AGI->stream_file("$after_hours_message_filename");
 		sleep(1);
