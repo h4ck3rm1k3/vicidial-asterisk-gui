@@ -196,10 +196,11 @@
 # 81011-1403 - Fixed bugs in leave3way when transferring a manual dial call
 # 81012-1729 - Added INBOUND_MAN dial method to allow manual list dialing and inbound calls
 # 81013-1644 - Fixed bug in leave 3way for manual dial fronters
+# 81015-0405 - Fixed bug related to hangups on 3way calls
 #
 
-$version = '2.0.5-174';
-$build = '81013-1644';
+$version = '2.0.5-175';
+$build = '81015-0405';
 
 require("dbconnect.php");
 
@@ -2821,7 +2822,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Covers the following types: XFER, VMAIL, ENTRY, CONF, PARK, FROMPARK, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
-		conf_dialed=1;
+	//	conf_dialed=1;
 		if (auto_dial_level == 0) {RedirecTxFEr = 1;}
 		var xmlhttpXF=false;
 		/*@cc_on @*/
@@ -5142,8 +5143,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				delete xmlhttp;
 				}
 			}
-			else {process_post_hangup=1;}
-			if (process_post_hangup==1)
+		else {process_post_hangup=1;}
+		if (process_post_hangup==1)
 			{
 			XD_live_customer_call = 0;
 			XD_live_call_secondS = 0;
@@ -5357,6 +5358,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function WeBForMDispoSelect_submit()
 		{
 		leaving_threeway=0;
+		document.vicidial_form.callchannel.value = '';
+		document.vicidial_form.callserverip.value = '';
+		document.vicidial_form.xferchannel.value = '';
+		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"./images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Dial With Customer\"></a>";
+		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"./images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Park Customer Dial\"></a>";
+		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"./images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Hangup Both Lines\"></a>";
 
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
@@ -5382,7 +5389,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function DispoSelect_submit()
 		{
 		leaving_threeway=0;
-
+		document.vicidial_form.callchannel.value = '';
+		document.vicidial_form.callserverip.value = '';
+		document.vicidial_form.xferchannel.value = '';
+		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"./images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Dial With Customer\"></a>";
+		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"./images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Park Customer Dial\"></a>";
+		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"./images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Hangup Both Lines\"></a>";
+ 
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
 		if (DispoChoice.length < 1) {alert("You Must Select a Disposition");}
