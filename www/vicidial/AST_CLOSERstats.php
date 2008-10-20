@@ -14,6 +14,7 @@
 # 80430-1920 - Added Customer hangup cause stats
 # 80709-0331 - Added time stats to call statuses
 # 80722-2149 - Added Status Category stats
+# 81015-0705 - Added IVR calls count
 #
 
 require("dbconnect.php");
@@ -188,7 +189,13 @@ $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
+$stmt="select count(*) from live_inbound_log where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a='" . mysql_real_escape_string($group) . "' and comment_b='START';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$rowx=mysql_fetch_row($rslt);
+
 $TOTALcalls =	sprintf("%10s", $row[0]);
+$IVRcalls =	sprintf("%10s", $rowx[0]);
 $TOTALsec =		$row[1];
 if ( ($row[0] < 1) or ($TOTALsec < 1) )
 	{$average_call_seconds = '         0';}
@@ -201,6 +208,7 @@ else
 
 echo "Total calls taken in to this In-Group:        $TOTALcalls\n";
 echo "Average Call Length for all Calls:            $average_call_seconds seconds\n";
+echo "Calls taken into the IVR for this In-Group:   $IVRcalls\n";
 
 echo "\n";
 echo "---------- DROPS\n";

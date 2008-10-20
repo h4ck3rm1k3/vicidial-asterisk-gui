@@ -266,9 +266,9 @@ vi /usr/local/lib/php.ini
 
 
 cd /usr/local
-wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.zip
-unzip eaccelerator-0.9.5.zip
-cd eaccelerator-0.9.5
+wget http://bart.eaccelerator.net/source/0.9.5.3/eaccelerator-0.9.5.3.zip
+unzip eaccelerator-0.9.5.3.zip
+cd eaccelerator-0.9.5.3
 export PHP_PREFIX="/usr/local"
 $PHP_PREFIX/bin/phpize
 ./configure --enable-eaccelerator=shared --with-php-config=$PHP_PREFIX/bin/php-config
@@ -279,7 +279,7 @@ vi /usr/local/lib/php.ini
 
     Add the following lines to the dynamic extensions section of php.ini:
      (you may need to change the extension location depending on your install of php)
-zend_extension="../../../usr/local/eaccelerator-0.9.5/modules/eaccelerator.so"
+zend_extension="../../../usr/local/eaccelerator-0.9.5.3/modules/eaccelerator.so"
 eaccelerator.shm_size="48"
 eaccelerator.cache_dir="/tmp/eaccelerator"
 eaccelerator.enable="1"

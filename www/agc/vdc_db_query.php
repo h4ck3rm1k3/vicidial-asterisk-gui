@@ -1333,13 +1333,13 @@ if ($stage == "end")
 				$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
 				##### look for the start epoch in the vicidial_closer_log table
-				$stmt="SELECT start_epoch,term_reason,closecallid FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason,closecallid,campaign_id FROM vicidial_closer_log where phone_number='$phone_number' and lead_id='$lead_id' and user='$user' and call_date > \"$four_hours_ago\" order by closecallid desc limit 1;";
 				$VDIDselect =		"VDCL_LID $lead_id $phone_number $user $four_hours_ago";
 				}
 			else
 				{
 				##### look for the start epoch in the vicidial_log table
-				$stmt="SELECT start_epoch,term_reason,uniqueid FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason,uniqueid,campaign_id FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 				$VDIDselect =		"VDL_UIDLID $uniqueid $lead_id";
 				}
 			$rslt=mysql_query($stmt, $link);
@@ -1351,6 +1351,7 @@ if ($stage == "end")
 				$start_epoch =		$row[0];
 				$VDterm_reason =	$row[1];
 				$VDvicidial_id =	$row[2];
+				$VDcampaign_id =	$row[3];
 				$length_in_sec = ($StarTtime - $start_epoch);
 				}
 			else
@@ -1365,7 +1366,7 @@ if ($stage == "end")
 				fclose($fp);
 
 				##### start epoch in the vicidial_log table, couldn't find one in vicidial_closer_log
-				$stmt="SELECT start_epoch,term_reason FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
+				$stmt="SELECT start_epoch,term_reason,campaign_id FROM vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id' order by call_date desc limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VM_mancall_ct = mysql_num_rows($rslt);
@@ -1374,6 +1375,7 @@ if ($stage == "end")
 					$row=mysql_fetch_row($rslt);
 					$start_epoch =		$row[0];
 					$VDterm_reason =	$row[1];
+					$VDcampaign_id =	$row[2];
 					$length_in_sec = ($StarTtime - $start_epoch);
 					}
 				else
@@ -1384,6 +1386,8 @@ if ($stage == "end")
 			}
 		else {$length_in_sec = ($StarTtime - $start_epoch);}
 		
+		if (strlen($VDcampaign_id)<1) {$VDcampaign_id = $campaign;}
+
 		$four_hours_ago = date("Y-m-d H:i:s", mktime(date("H")-4,date("i"),date("s"),date("m"),date("d"),date("Y")));
 
 		if ($VLA_inOUT == 'INBOUND')
@@ -1695,7 +1699,7 @@ if ($stage == "end")
 
 				if ($caller_complete < 1)
 					{
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 					$affected_rows = mysql_affected_rows($linkB);
@@ -1710,7 +1714,7 @@ if ($stage == "end")
 				}
 
 			### delete call record from  vicidial_auto_calls
-			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
+			$stmt = "DELETE from vicidial_auto_calls where lead_id='$lead_id' and campaign_id='$VDcampaign_id' and uniqueid='$uniqueid';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -1756,14 +1760,14 @@ if ($stage == "end")
 				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
 				if ($CLstage < 0.25) {$CLstage=0;}
 
-				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $linkB);
 				$affected_rows = mysql_affected_rows($linkB);
 				}
 
 		#	$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and uniqueid='$uniqueid';";
-			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$campaign' and callerid LIKE \"M%\";";
+			$stmt = "DELETE from vicidial_auto_calls lead_id='$lead_id' and campaign_id='$VDcampaign_id' and callerid LIKE \"M%\";";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 

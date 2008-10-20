@@ -820,11 +820,11 @@ sub process_request {
 								{$VDCLSQL_update = "term_reason='CALLER',";}
 							else
 								{
-								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
+								if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT|AFTERHOURS|HOLDRECALLXFER|HOLDTIME/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
 									{$VDCLSQL_term_reason = "term_reason='ABANDON',";}
 								else
 									{
-									if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/)
+									if ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT|AFTERHOURS|HOLDRECALLXFER|HOLDTIME/)
 										{$VDCLSQL_term_reason = "term_reason='CALLER',";}
 									else
 										{$VDCLSQL_term_reason = '';}

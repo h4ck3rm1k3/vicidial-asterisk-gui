@@ -23,8 +23,10 @@
 #
 # changes:
 # 80930-0226 - first build
+# 81015-1702 - added filter stats
 #
 
+$filter_stats = 1;
 $script = 'VDL_CID_lookup.agi';
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -38,6 +40,7 @@ if ($sec < 10) {$sec = "0$sec";}
 
 $now_date_epoch = time();
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
+$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -199,24 +202,160 @@ $callerid =~ s/\"//gi;
 
 
 
-### find out if phone number exists in the vicidial_list table
-$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid' and list_id NOT IN('99999');";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-if ($sthArows > 0)
-	{
-	@aryA = $sthA->fetchrow_array;
-	$VDL_count =	"$aryA[0]";
-	}
-$sthA->finish();
 
-if ($VDL_count < 1) 
+
+
+
+
+
+
+
+
+
+if ($filter_stats > 0)
 	{
-	$priority = ($priority + 3);
-	if ($AGILOG) {$agi_string = "--    cid_lookup finish: |$priority|$callerid";   &agi_output;}
-	print "SET PRIORITY $priority\n";
-		checkresult($result);
+	### find out if phone number exists in the vicidial_list table
+	$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VDL_count =	"$aryA[0]";
+		}
+	$sthA->finish();
+
+	if ($VDL_count < 1) 
+		{
+		$priority = ($priority + 3);
+		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','INBOUND_IVR_FILTER','NOT_FOUND')";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    cid_lookup finish: : |$affected_rows|$callerid|$priority|NOT_FOUND|";   &agi_output;}
+
+		print "SET PRIORITY $priority\n";
+			checkresult($result);
+
+		$dbhA->disconnect();
+
+		exit;
+		}
+	else    #################  LEAD IN SYSTEM, FILTER FURTHER #########################
+		{
+		$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid' and status IN('A1','A2','A3','A4','SALE');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$sales_count =	"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($sales_count > 0)
+			{
+			$priority = ($priority + 3);
+			$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','INBOUND_IVR_FILTER','EXISTING','SALE')";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    cid_lookup finish: : |$affected_rows|$callerid|$priority|EXISTING|SALE|";   &agi_output;}
+
+			print "SET PRIORITY $priority\n";
+				checkresult($result);
+
+			$dbhA->disconnect();
+
+			exit;
+			}
+
+		$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid' and status IN('DNC');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$dnc_count =	"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($dnc_count > 0)
+			{
+			$priority = ($priority + 3);
+			$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','INBOUND_IVR_FILTER','EXISTING','DNC')";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    cid_lookup finish: : |$affected_rows|$callerid|$priority|EXISTING|DNC|";   &agi_output;}
+
+			print "SET PRIORITY $priority\n";
+				checkresult($result);
+
+			$dbhA->disconnect();
+
+			exit;
+			}
+
+		$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid' and list_id NOT IN('999999');";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$archive_count =	"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($archive_count < 1)
+			{
+			$priority = ($priority + 3);
+			$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','INBOUND_IVR_FILTER','EXISTING','ARCHIVE')";
+				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$affected_rows = $dbhA->do($stmtA);
+			if ($AGILOG) {$agi_string = "--    cid_lookup finish: : |$affected_rows|$callerid|$priority|EXISTING|ARCHIVE|";   &agi_output;}
+
+			print "SET PRIORITY $priority\n";
+				checkresult($result);
+
+			$dbhA->disconnect();
+
+			exit;
+			}
+
+		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','INBOUND_IVR_FILTER','CLEAN','TO_AGENT')";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$affected_rows = $dbhA->do($stmtA);
+		if ($AGILOG) {$agi_string = "--    cid_lookup finish: : |$affected_rows|$callerid|$priority|EXISTING|CLEAN|";   &agi_output;}
+
+		exit;
+		}
+
+	}
+
+else
+	{
+	### find out if phone number exists in the vicidial_list table
+	$stmtA = "SELECT count(*) FROM vicidial_list where phone_number = '$callerid' and list_id NOT IN('999999');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VDL_count =	"$aryA[0]";
+		}
+	$sthA->finish();
+
+	if ($VDL_count < 1) 
+		{
+		$priority = ($priority + 3);
+		if ($AGILOG) {$agi_string = "--    cid_lookup finish: |$priority|$callerid";   &agi_output;}
+		print "SET PRIORITY $priority\n";
+			checkresult($result);
+		}
+
 	}
 
 $dbhA->disconnect();

@@ -973,7 +973,7 @@ with the following patch:
 		- patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
 		*OPTIONAL*(1.2.14 thru 1.2.30.2) rewrite of waitforsilence
-		- wget http://www.eflo.net/files/app_waitforsilence.c
+		- wget http://downloads.vicidial.com/asterisk-patches/app_waitforsilence.c
 		- mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
 		*OPTIONAL* shorter enter and leave sounds for meetme

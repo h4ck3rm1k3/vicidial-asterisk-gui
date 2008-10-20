@@ -84,6 +84,7 @@
 # 80918-0505 - Added place in line and estimated time on hold
 # 81002-1120 - Added processing for DID forwarded calls
 # 81011-1019 - Added option for press 1 to leave voicemail if wait time > hold-time-option-seconds
+# 81020-0237 - Added term_reason logging for all possible exits of the script
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -536,7 +537,7 @@ if ($call_handle_method =~ /LOOKUP/)
 		}
 
 	$cbc=0;
-	$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL order by last_local_call_time limit 1;";
+	$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL order by last_local_call_time desc limit 1;";
 		if ($AGILOG) {$agi_string = "VDAD vicidial_list search |$phone_number|$stmtA|";   &agi_output;}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -691,6 +692,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		}
 	if ($after_hours_action =~ /MESSAGE/)
 		{
+		$AGI->stream_file('sip-silence');
 		$AGI->stream_file('sip-silence');
 		$AGI->stream_file("$after_hours_message_filename");
 		sleep(1);
@@ -1149,13 +1151,6 @@ if ($agent_search_method =~ /^SO|^LO/)
 			if ($no_delay_call_route !~ /Y/i)
 				{usleep(1*500*1000);}
 
-			print "SET CONTEXT $ext_context\n";
-				checkresult($result);
-			print "SET EXTENSION $VDADconf_exten\n";
-				checkresult($result);
-			print "SET PRIORITY 1\n";
-				checkresult($result);
-
 				($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 				$year = ($year + 1900);
 				$mon++;
@@ -1168,6 +1163,13 @@ if ($agent_search_method =~ /^SO|^LO/)
 			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$insert_lead_id' and call_date='$SQLdate';";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|$insert_close_id|\n|$stmtA|";   &agi_output;}
+
+			print "SET CONTEXT $ext_context\n";
+				checkresult($result);
+			print "SET EXTENSION $VDADconf_exten\n";
+				checkresult($result);
+			print "SET PRIORITY 1\n";
+				checkresult($result);
 
 			$dbhA->disconnect();
 
@@ -1439,13 +1441,6 @@ if ($agent_search_method =~ /^LO|^LB/)
 			if ($no_delay_call_route !~ /Y/i)
 				{usleep(1*500*1000);}
 
-			print "SET CONTEXT $ext_context\n";
-				checkresult($result);
-			print "SET EXTENSION $VDADremDIALstr\n";
-				checkresult($result);
-			print "SET PRIORITY 1\n";
-				checkresult($result);
-
 				($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 				$year = ($year + 1900);
 				$mon++;
@@ -1458,6 +1453,13 @@ if ($agent_search_method =~ /^LO|^LB/)
 			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$insert_lead_id' and call_date='$SQLdate';";
 			$affected_rows = $dbhA->do($stmtA);
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+			print "SET CONTEXT $ext_context\n";
+				checkresult($result);
+			print "SET EXTENSION $VDADremDIALstr\n";
+				checkresult($result);
+			print "SET PRIORITY 1\n";
+				checkresult($result);
 
 			$dbhA->disconnect();
 
@@ -1535,14 +1537,6 @@ if ($hold_recall_xfer_group !~ /NONE/)
 			sleep(1);
 			}
 
-		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
-		print "SET CONTEXT $ext_context\n";
-			checkresult($result);
-		print "SET EXTENSION $DROPexten\n";
-			checkresult($result);
-		print "SET PRIORITY 1\n";
-			checkresult($result);
-			
 		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
@@ -1557,6 +1551,27 @@ if ($hold_recall_xfer_group !~ /NONE/)
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 
+		if ($enable_queuemetrics_logging > 0)
+			{
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			 or die "Couldn't connect to database: " . DBI->errstr;
+
+			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='TRANSFER',data1='$DROPexten',data2='$ext_context',data3='1',data4='1',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
+			$dbhB->disconnect();
+			}
+
+		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
+		print "SET CONTEXT $ext_context\n";
+			checkresult($result);
+		print "SET EXTENSION $DROPexten\n";
+			checkresult($result);
+		print "SET PRIORITY 1\n";
+			checkresult($result);
+			
 		$dbhA->disconnect();
 
 		exit;
@@ -1776,6 +1791,7 @@ if ( ($hold_time_option !~ /NONE/ ) && ( $holdtime_estimate_sec_diff > $hold_tim
 {
 $wait_in_queue=0; # exits wait loop
 $DROPexten = ''; 
+$exitwithkey=0;
 if ($hold_time_option =~ /EXTENSION/)
 	{
 	if (length($hold_time_option_exten)>0)
@@ -1810,6 +1826,26 @@ if ($hold_time_option =~ /PRESS_VMAIL/)
 		{
 		$DROPexten = "$voicemail_dump_exten$hold_time_option_voicemail";
 		$HT_status='QVMAIL';
+
+		if ($enable_queuemetrics_logging > 0)
+			{
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			 or die "Couldn't connect to database: " . DBI->errstr;
+
+			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			$place=0;
+			if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+			if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+			$place++;
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='1',data2='$place',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
+			$exitwithkey++;
+
+			$dbhB->disconnect();
+			}
 		}
 	else
 		{
@@ -1881,14 +1917,6 @@ if ($wait_in_queue < 1)
 			sleep(1);
 			}
 
-		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
-		print "SET CONTEXT $ext_context\n";
-			checkresult($result);
-		print "SET EXTENSION $DROPexten\n";
-			checkresult($result);
-		print "SET PRIORITY 1\n";
-			checkresult($result);
-
 		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
@@ -1903,6 +1931,27 @@ if ($wait_in_queue < 1)
 		$stmtA = "UPDATE vicidial_list set status='HOLDTO' where lead_id = '$insert_lead_id';";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+		if ( ($enable_queuemetrics_logging > 0) && ($exitwithkey < 1) )
+			{
+			$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+			 or die "Couldn't connect to database: " . DBI->errstr;
+
+			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='TRANSFER',data1='$DROPexten',data2='$ext_context',data3='$drop_seconds',data4='$drop_seconds',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
+			$dbhB->disconnect();
+			}
+
+		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
+		print "SET CONTEXT $ext_context\n";
+			checkresult($result);
+		print "SET EXTENSION $DROPexten\n";
+			checkresult($result);
+		print "SET PRIORITY 1\n";
+			checkresult($result);
 
 		$dbhA->disconnect();
 
@@ -1984,7 +2033,12 @@ if ($enable_queuemetrics_logging > 0)
 
 	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHTIMEOUT',data1='1',serverid='$queuemetrics_log_id';";
+	$place=0;
+	if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+	if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+	$place++;
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHTIMEOUT',data1='$place',serverid='$queuemetrics_log_id';";
 	$Baffected_rows = $dbhB->do($stmtB);
 
 	$dbhB->disconnect();

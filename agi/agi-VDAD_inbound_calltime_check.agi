@@ -13,10 +13,13 @@
 # ; 2. whether to log the call into the vicidial_auto_calls table:
 # ;		- YES - insert the call as status IVR
 # ;		- NO  - do not insert call into vac table
-#
+# ; 3. note to put in the comment_b field when record inserted into the
+# ;    live_inbound_log table, no spaces in this field, use underscore '_'
+# ;    default if not populated is NONE
+# ;
 # ;inbound calls check calltime:
 #exten => 1234,1,Answer                  ; Answer the line
-#exten => 1234,2,AGI(agi-VDAD_inbound_calltime_check.agi,INBOUND-----YES)
+#exten => 1234,2,AGI(agi-VDAD_inbound_calltime_check.agi,INBOUND-----YES-----START)
 #exten => 1234,3,Hangup
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -24,6 +27,8 @@
 # changes:
 # 80525-0144 - First Build
 # 81015-0305 - Added drop logging
+# 81015-2009 - Added more logging and NOTE option
+# 81017-0238 - Fixed duplication bug for vac in multi-entry dialplans
 #
 
 $script = 'agi-VDAD_inbound_calltime_check.agi';
@@ -147,6 +152,8 @@ if (length($ARGV[0])>1)
 
 	$channel_group = 	$ARGV_vars[0];
 	$log_to_vac =		$ARGV_vars[1];
+	$note =				$ARGV_vars[2];
+	  if (length($note)<1) {$note = 'NONE';}
 }
 
 $|=1;
@@ -162,6 +169,8 @@ while(<STDIN>)
 		}
 	}
 
+	if (/^agi_context\:\s+(.*)$/)		{$context = $1;}
+	if (/^agi_priority\:\s+(.*)$/)		{$priority = $1;}
 	if (/^agi_uniqueid\:\s+(.*)$/)		{$unique_id = $1; $uniqueid = $unique_id;}
 	if (/^agi_channel\:\s+(.*)$/)		{$channel = $1;}
 	if (/^agi_extension\:\s+(.*)$/)		{$extension = $1;}
@@ -302,7 +311,8 @@ if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )
 	$ct_default_stop	=	$ct_day_stop;
 	}
 
-$AGI->stream_file('beep');
+$AGI->stream_file('sip-silence');
+$AGI->stream_file('sip-silence');
 
 
 
@@ -330,7 +340,8 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		if (length($DROPexten)>0)
 			{	### if DROP extension is defined then send the dropped call there instead of hangup
 
-			$AGI->stream_file('ding'); # stop music-on-hold process
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
+			$AGI->stream_file('sip-silence'); # stop music-on-hold process
 
 			sleep(1);
 
@@ -347,7 +358,7 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $uniqueid|$callerid|";   &agi_output;}
 
-		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b,comment_c) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','$channel_group','$phone_number','AFTERHOURSDROP')";
+		$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,comment_a,comment_b,comment_c,comment_d,comment_e) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$phone_number','$SQLdate','$channel_group','$note','AFTERHOURSDROP','$context','$priority')";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$affected_rowsL = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    LIL : |$affected_rowsL|$uniqueid|$callerid|$extension|";   &agi_output;}
@@ -384,13 +395,17 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 ### insert an IVR record to the vicidial_auto_calls table
 if ($log_to_vac == 'YES')
 	{
+	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and uniqueid='$uniqueid' and server_ip='$VARserver_ip';";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $uniqueid|$callerid|";   &agi_output;}
+
 	$stmtA = "INSERT INTO vicidial_auto_calls (server_ip,campaign_id,lead_id,status,uniqueid,callerid,channel,phone_code,phone_number,call_time,call_type,stage,queue_priority,last_update_time) values('$VARserver_ip','$channel_group','0','IVR','$uniqueid','$callerid','$channel','$phone_code','$phone_number','$SQLdate','IN','IVR-0','$queue_priority','$last_update_time')";
 		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 	$affected_rowsV = $dbhA->do($stmtA);
 	if ($AGILOG) {$agi_string = "--    VAC : |$affected_rowsV|$uniqueid|$callerid|$extension|";   &agi_output;}
 	}
 
-$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,start_time,comment_a,comment_b) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$SQLdate','$channel_group','$phone_number')";
+$stmtA = "INSERT INTO live_inbound_log (uniqueid,channel,server_ip,caller_id,extension,phone_ext,start_time,comment_a,comment_b,comment_d,comment_e) values('$uniqueid','$channel','$VARserver_ip','$callerid','$extension','$phone_number','$SQLdate','$channel_group','$note','$context','$priority')";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rowsL = $dbhA->do($stmtA);
 if ($AGILOG) {$agi_string = "--    LIL : |$affected_rowsL|$uniqueid|$callerid|$extension|";   &agi_output;}

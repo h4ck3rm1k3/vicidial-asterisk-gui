@@ -6,6 +6,7 @@ The agi-VDAD_inbound_calltime_check.agi script does a check for the calltime sch
 
 A log of the calls going into this agi-VDAD_inbound_calltime_check.agi script is also inserted into the live_inbound_log table.
 
+The agi-VDAD_inbound_calltime_check.agi script can also be used to log the progression of a call through an IVR if you place it at major points in your IVR dialplan. The third field that you can define allows you to set a note or comment that is placed into the database when the call goes through that step.
 
 
 The example below shows how to do a very simple IVR before sending to a queue asking if the caller wants English, Spanish, French or German language service.
@@ -34,7 +35,7 @@ exten => 7275551111,1,Goto(TEST_IN,s,1)
 
 
 [TEST_IN]
-exten => s,1,AGI(agi-VDAD_inbound_calltime_check.agi,TEST_IN-----YES)
+exten => s,1,AGI(agi-VDAD_inbound_calltime_check.agi,TEST_IN-----YES-----START)
 exten => s,2,Background(test_in_menu)
 exten => s,n,WaitExten(10)
 exten => s,n,Background(test_in_menu)

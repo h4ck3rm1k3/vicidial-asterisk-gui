@@ -197,10 +197,11 @@
 # 81012-1729 - Added INBOUND_MAN dial method to allow manual list dialing and inbound calls
 # 81013-1644 - Fixed bug in leave 3way for manual dial fronters
 # 81015-0405 - Fixed bug related to hangups on 3way calls
+# 81016-0703 - Changed leave 3way to allow function at any time transfer-conf is available
 #
 
-$version = '2.0.5-175';
-$build = '81015-0405';
+$version = '2.0.5-176';
+$build = '81016-0703';
 
 require("dbconnect.php");
 
@@ -5158,7 +5159,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.xferchannel.value = "";
 			lastxferchannel='';
 
-			document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"./images/vdc_XB_leave3waycall_OFF.gif\" border=0 alt=\"LEAVE 3-WAY CALL\">";
+		//	document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"./images/vdc_XB_leave3waycall_OFF.gif\" border=0 alt=\"LEAVE 3-WAY CALL\">";
 
 			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"./images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Dial With Customer\"></a>";
 
@@ -7354,7 +7355,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	<IMG SRC="./images/vdc_XB_number.gif" border=0 alt="Number to call"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
 	<input type=hidden name=xferuniqueid>
 	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny"> DIAL OVERRIDE</font> &nbsp;
-	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><IMG SRC="./images/vdc_XB_leave3waycall_OFF.gif" border=0 alt="LEAVE 3-WAY CALL"></span> 
+	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><a href="#" onclick="leave_3way_call('FIRST');return false;"><IMG SRC="./images/vdc_XB_leave3waycall.gif" border=0 alt="LEAVE 3-WAY CALL"></a></span> 
 	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="./images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Dial Blind Transfer"></span>
 	<a href="#" onclick="DtMf_PreSet_a();return false;"><font class="body_tiny">D1</font></a> 
 	<a href="#" onclick="DtMf_PreSet_b();return false;"><font class="body_tiny">D2</font></a>

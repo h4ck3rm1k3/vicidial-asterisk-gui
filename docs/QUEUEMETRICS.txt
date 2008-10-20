@@ -156,6 +156,8 @@ call actions before going to agent - used by agi-VDAD_ALL_inbound/outbound scrip
 	ENTERQUEUE(url|callerid)
 	CONNECT(holdtime)
 	EXITWITHTIMEOUT(position) 
+	EXITWITHKEY(key|position)
+	TRANSFER(extension|context|holdtime|calltime)
 
 call actions before going to agent - used by AST_VDauto_dial.pl
 	ABANDON(position|origposition|waittime) 
@@ -167,7 +169,8 @@ call actions after going to agent - used by vicidial.php, vdc_db_query.php and F
 
 
 not used in vicidial - 
-	TRANSFER(extension,context) 
+	EXITEMPTY(position|origposition|waittime)
+	AGENTDUMP
 
 
 

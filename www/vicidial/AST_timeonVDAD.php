@@ -11,6 +11,7 @@
 #            - Added required user/pass to gain access to this page
 # 61114-2004 - Changed to display CLOSER and DEFAULT, added trunk shortage
 # 80422-0305 - Added phone login to display, lower font size to 2
+# 81013-2227 - Fixed Remote Agent display bug
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -176,6 +177,13 @@ $talking_to_print = mysql_num_rows($rslt);
 	while ($i < $talking_to_print)
 		{
 		$phone[$i]='          ';
+		if (eregi("R/",$Sextension[$i])) 
+			{
+			$protocol = 'EXTERNAL';
+			$dialplan = eregi_replace('R/',"",$Sextension[$i]);
+			$dialplan = eregi_replace("\@.*",'',$dialplan);
+			$exten = "dialplan_number='$dialplan'";
+			}
 		if (eregi("Local/",$Sextension[$i])) 
 			{
 			$protocol = 'EXTERNAL';

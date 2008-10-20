@@ -55,6 +55,7 @@
 # 80527-2329 - Added SURVEYCAMP ability to pull settings from database
 # 80831-0353 - Added logging of alt_dial field
 # 80909-0603 - Added campaign-specific dnc option for outbound survey
+# 81020-0235 - Fixed Drop hangup bug and other small bugs
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -466,9 +467,9 @@ if ($affected_rows > 0)
 ##### PLAY REMINDER MESSAGE #####
 if ($call_handle_method =~ /REMIND/)
 	{
-	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' where callerid='$callerid' order by call_time desc limit 1;";
+	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate',stage='REMIND-0' where callerid='$callerid' order by call_time desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|REMIND|";   &agi_output;}
 
 	$AGI->stream_file("$survey_first_audio_file");
 	}
@@ -483,9 +484,9 @@ if ($call_handle_method =~ /SURVEY/)
 	{
 	$AGI->stream_file('sip-silence');
 
-	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate' where callerid='$callerid' order by call_time desc limit 1;";
+	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate',stage='SURVEY-0' where callerid='$callerid' order by call_time desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+	if ($AGILOG) {$agi_string = "--    VDAC posttime record: |$affected_rows|$FDtsSQLdate|$callerid|SURVEY|";   &agi_output;}
 
 	### check to see if the SURVEY settings should be pulled from the campaign settings in the database
 	if ($call_handle_method =~ /SURVEYCAMP/)
@@ -675,6 +676,10 @@ if ($call_handle_method =~ /SURVEY/)
 
 				if (length($DROPexten) > 0)
 					{
+					$stmtA = "UPDATE vicidial_auto_calls set status='XFER',stage='XFER-0' where callerid='$callerid' order by call_time desc limit 1;";
+					$affected_rows = $dbhA->do($stmtA);
+					if ($AGILOG) {$agi_string = "--    VDAC XFER status: |$affected_rows|$FDtsSQLdate|$callerid|";   &agi_output;}
+
 					if ($AGILOG) {$agi_string = "exiting the VDAD SURVEY app, transferring call to $DROPexten";   &agi_output;}
 					print "SET CONTEXT $ext_context\n";
 						checkresult($result);
@@ -753,6 +758,14 @@ if ($call_handle_method =~ /SURVEY/)
 				if ($AGILOG) 
 					{
 					$agi_string = "--    VDAD vicidial_log update: $survey_status|$affected_rows|$uniqueid|$drop_seconds|";
+					&agi_output;
+					}
+
+				$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+				$affected_rows = $dbhA->do($stmtA);
+				if ($AGILOG) 
+					{
+					$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";
 					&agi_output;
 					}
 
@@ -1241,6 +1254,23 @@ if ($drop_action =~ /IN_GROUP/)
 	}
 
 
+		$Euniqueid=$uniqueid;
+		$Euniqueid =~ s/\.\d+//gi;
+	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}
+
+	$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$CIDlead_id';";
+		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id";   &agi_output;}
+
+	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
+
+
 	### use STDOUT to send call to proper DROP location
 	$VHqueryCID = "VH$CIDdate$VDADconf_exten";
 
@@ -1264,24 +1294,11 @@ if ($drop_action =~ /IN_GROUP/)
 		### insert a NEW record to the vicidial_manager table to be processed
 		$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
 		$affected_rows = $dbhA->do($stmtA);  
-		if ($AGILOG) {$agi_string = "--    VDCL call_hungup timout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDCL call_hungup timout: |$CIDlead_id|$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+
+		$AGI->hangup();
 		}
 
-	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
-
-		$Euniqueid=$uniqueid;
-		$Euniqueid =~ s/\.\d+//gi;
-	$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
-		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}
-
-	$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$CIDlead_id';";
-		if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDAD vicidial_list update: |$affected_rows|$CIDlead_id";   &agi_output;}
 }
 
 
