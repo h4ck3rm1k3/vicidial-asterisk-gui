@@ -417,7 +417,7 @@ while ($i < $statuses_to_print)
 			}
 		$r++;
 		}
-
+	if ($AGENTsec < 1) {$AGENTsec=1;}
 	$TOTALcalls =	($TOTALcalls + $row[0]);
 	$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );
 		$STATUSrate =	sprintf("%.2f", $STATUSrate);

@@ -166,10 +166,11 @@
 # 80909-1710 - Added support for campaign-specific DNC lists
 # 81010-1048 - Added support for hangup of all channels except for agent channel after attempting a 3way call
 # 81011-1404 - Fixed bugs in leave3way when transferring a manual dial call
+# 81020-1459 - Fixed bugs in queue_log logging
 #
 
-$version = '2.0.5-84';
-$build = '81011-1404';
+$version = '2.0.5-85';
+$build = '81020-1459';
 
 require("dbconnect.php");
 
@@ -1665,7 +1666,7 @@ if ($stage == "end")
 			if ($enable_queuemetrics_logging > 0)
 				{
 				### grab call lead information needed for QM logging
-				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id' order by call_time desc limit 1;";
+				$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where lead_id='$lead_id' order by call_time limit 1;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
 				$VAC_qm_ct = mysql_num_rows($rslt);
@@ -1687,7 +1688,7 @@ if ($stage == "end")
 				$CLstage = preg_replace("/.*-/",'',$CLstage);
 				if (strlen($CLstage) < 1) {$CLstage=0;}
 
-				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETECALLER';";
+				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETECALLER' and queue='$VDcampaign_id';";
 				$rslt=mysql_query($stmt, $linkB);
 				if ($DB) {echo "$stmt\n";}
 				$VAC_cc_ct = mysql_num_rows($rslt);
@@ -1699,11 +1700,6 @@ if ($stage == "end")
 
 				if ($caller_complete < 1)
 					{
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
-					if ($DB) {echo "$stmt\n";}
-					$rslt=mysql_query($stmt, $linkB);
-					$affected_rows = mysql_affected_rows($linkB);
-
 					$term_reason='AGENT';
 					}
 				else
@@ -2663,11 +2659,7 @@ if ($ACTION == 'updateDISPO')
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 
-	$stmt="UPDATE vicidial_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by uniqueid desc limit 1;";
-		if ($format=='debug') {echo "\n<!-- $stmt -->";}
-	$rslt=mysql_query($stmt, $link);
-
-	$stmt = "select count(*) from vicidial_campaigns where campaign_id='$campaign' and campaign_allow_inbound='Y';";
+	$stmt = "select count(*) from vicidial_inbound_groups where group_id='$stage';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
@@ -2675,6 +2667,12 @@ if ($ACTION == 'updateDISPO')
 		{
 		$stmt = "UPDATE vicidial_closer_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by closecallid desc limit 1;";
 		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	else
+		{
+		$stmt="UPDATE vicidial_log set status='$dispo_choice' where lead_id='$lead_id' and user='$user' order by uniqueid desc limit 1;";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
 
@@ -2790,7 +2788,10 @@ if ($ACTION == 'updateDISPO')
 		$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 		mysql_select_db("$queuemetrics_dbname", $linkB);
 
-		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$campaign',agent='Agent/$user',verb='CALLSTATUS',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
+		if (strlen($stage) < 2) 
+			{$stage = $campaign;}
+
+		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$stage',agent='Agent/$user',verb='CALLSTATUS',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $linkB);
 		$affected_rows = mysql_affected_rows($linkB);

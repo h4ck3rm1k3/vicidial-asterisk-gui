@@ -76,6 +76,7 @@
 # 80707-2325 - Added vicidial_id to recording_log for tracking of vicidial or closer log to recording
 # 80915-1755 - Rewrote leave-3way functions for external calling
 # 81011-1404 - Fixed bugs in leave3way when transferring a manual dial call
+# 81020-1459 - Fixed bugs in queue_log logging
 #
 
 require("dbconnect.php");
@@ -184,8 +185,8 @@ if (!isset($ACTION))   {$ACTION="Originate";}
 if (!isset($format))   {$format="alert";}
 if (!isset($ext_priority))   {$ext_priority="1";}
 
-$version = '2.0.5-33';
-$build = '81011-1404';
+$version = '2.0.5-34';
+$build = '81020-1459';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -417,12 +418,12 @@ $rslt=mysql_query($stmt, $link);
 	$row='';   $rowx='';
 	$channel_live=1;
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
-	{
+		{
 		$channel_live=0;
 		echo "Channel $channel is not valid or queryCID $queryCID is not valid, Hangup command not inserted\n";
-	}
+		}
 	else
-	{
+		{
 		if (strlen($call_server_ip)<7) {$call_server_ip = $server_ip;}
 
 #		$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel';";
@@ -441,39 +442,143 @@ $rslt=mysql_query($stmt, $link);
 #				echo "Channel $channel is not live on $call_server_ip, Hangup command not inserted\n";
 #			}	
 #		}
-		if ( ($auto_dial_level > 0) and (strlen($CalLCID)>2) and (strlen($exten)>2) and ($secondS > 4))
-		{
+		if ( ($auto_dial_level > 0) and (strlen($CalLCID)>2) and (strlen($exten)>2) and ($secondS > 0))
+			{
 			$stmt="SELECT count(*) FROM vicidial_auto_calls where channel='$channel' and callerid='$CalLCID';";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			$rowx=mysql_fetch_row($rslt);
 			if ($rowx[0]==0)
-			{
-			echo "Call $CalLCID $channel is not live on $call_server_ip, Checking Live Channel...\n";
+				{
+				echo "Call $CalLCID $channel is not live on $call_server_ip, Checking Live Channel...\n";
 
 				$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension LIKE \"%$exten\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$row=mysql_fetch_row($rslt);
 				if ($row[0]==0)
-				{
-				$channel_live=0;
-				echo "Channel $channel is not live on $call_server_ip, Hangup command not inserted $rowx[0]\n$stmt\n";
-				}
+					{
+					$channel_live=0;
+					echo "Channel $channel is not live on $call_server_ip, Hangup command not inserted $rowx[0]\n$stmt\n";
+					}
 				else
-				{
-				echo "$stmt\n";
+					{
+					echo "$stmt\n";
+					}
 				}
-			}	
-		}
+			}
+
 		if ($channel_live==1)
-		{
-		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-		echo "Hangup command sent for Channel $channel on $call_server_ip\n";
+			{
+			if ( (strlen($CalLCID)>15) and ($secondS > 0))
+				{
+				$stmt="SELECT count(*) FROM vicidial_auto_calls where callerid='$CalLCID';";
+				$rslt=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rslt);
+				if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
+				if ($rowx[0] > 0)
+					{
+					#############################################
+					##### START QUEUEMETRICS LOGGING LOOKUP #####
+					$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+					$rslt=mysql_query($stmt, $link);
+					if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
+					$qm_conf_ct = mysql_num_rows($rslt);
+					$i=0;
+					while ($i < $qm_conf_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$enable_queuemetrics_logging =	$row[0];
+						$queuemetrics_server_ip	=		$row[1];
+						$queuemetrics_dbname =			$row[2];
+						$queuemetrics_login	=			$row[3];
+						$queuemetrics_pass =			$row[4];
+						$queuemetrics_log_id =			$row[5];
+						$i++;
+						}
+					##### END QUEUEMETRICS LOGGING LOOKUP #####
+					###########################################
+					if ($enable_queuemetrics_logging > 0)
+						{
+						$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
+						mysql_select_db("$queuemetrics_dbname", $linkB);
+
+						$stmt="SELECT count(*) from queue_log where call_id='$CalLCID' and verb='CONNECT';";
+						$rslt=mysql_query($stmt, $linkB);
+						$VAC_cn_ct = mysql_num_rows($rslt);
+						if ($VAC_cn_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$caller_connect	= $row[0];
+							}
+						if ($format=='debug') {echo "\n<!-- $caller_connect|$stmt -->";}
+						if ($caller_connect > 0)
+							{
+							### grab call lead information needed for QM logging
+							$stmt="SELECT auto_call_id,lead_id,phone_number,status,campaign_id,phone_code,alt_dial,stage,callerid,uniqueid from vicidial_auto_calls where callerid='$CalLCID' order by call_time limit 1;";
+							$rslt=mysql_query($stmt, $link);
+							$VAC_qm_ct = mysql_num_rows($rslt);
+							if ($VAC_qm_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$auto_call_id	= $row[0];
+								$CLlead_id		= $row[1];
+								$CLphone_number	= $row[2];
+								$CLstatus		= $row[3];
+								$CLcampaign_id	= $row[4];
+								$CLphone_code	= $row[5];
+								$CLalt_dial		= $row[6];
+								$CLstage		= $row[7];
+								$CLcallerid		= $row[8];
+								$CLuniqueid		= $row[9];
+								}
+							if ($format=='debug') {echo "\n<!-- $CLcampaign_id|$stmt -->";}
+
+							$CLstage = preg_replace("/.*-/",'',$CLstage);
+							if (strlen($CLstage) < 1) {$CLstage=0;}
+
+							$stmt="SELECT count(*) from queue_log where call_id='$CalLCID' and verb='COMPLETECALLER' and queue='$CLcampaign_id';";
+							$rslt=mysql_query($stmt, $linkB);
+							$VAC_cc_ct = mysql_num_rows($rslt);
+							if ($VAC_cc_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$caller_complete	= $row[0];
+								}
+							if ($format=='debug') {echo "\n<!-- $caller_complete|$stmt -->";}
+
+							if ($caller_complete < 1)
+								{
+								$time_id=0;
+								$stmt="SELECT time_id from queue_log where call_id='$CalLCID' and verb='ENTERQUEUE' and queue='$CLcampaign_id';";
+								$rslt=mysql_query($stmt, $linkB);
+								$VAC_eq_ct = mysql_num_rows($rslt);
+								if ($VAC_eq_ct > 0)
+									{
+									$row=mysql_fetch_row($rslt);
+									$time_id	= $row[0];
+									}
+								$StarTtime = date("U");
+								if ($time_id > 100000) 
+									{$secondS = ($StarTtime - $time_id);}
+
+								if ($format=='debug') {echo "\n<!-- $caller_complete|$stmt -->";}
+								$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$CalLCID',queue='$CLcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$secondS',data3='1',serverid='$queuemetrics_log_id';";
+								$rslt=mysql_query($stmt, $linkB);
+								$affected_rows = mysql_affected_rows($linkB);
+								if ($format=='debug') {echo "\n<!-- $affected_rows|$stmt -->";}
+								}
+							}
+						}
+					}
+				}
+
+			$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			echo "Hangup command sent for Channel $channel on $call_server_ip\n";
+			}
 		}
-	}
 }
 
 
