@@ -247,7 +247,7 @@ if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
 	$phone_pass=ereg_replace("[^0-9a-zA-Z]","",$phone_pass);
 	$VD_login=ereg_replace("[^0-9a-zA-Z]","",$VD_login);
 	$VD_pass=ereg_replace("[^0-9a-zA-Z]","",$VD_pass);
-	$VD_campaign=ereg_replace("[^0-9a-zA-Z_]","",$VD_campaign);
+	$VD_campaign = ereg_replace("[^-\_0-9a-zA-Z]","",$VD_campaign);
 
 
 $forever_stop=0;
@@ -5506,7 +5506,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
 				document.getElementById("DispoSelectBox").style.top = 1;
-				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimize</a>";
+				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\"> minimize </a>";
 				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Hangup Again</a>";
 
 				CBcommentsBoxhide();
@@ -6355,7 +6355,7 @@ function phone_number_format(formatphone) {
 			showDiv('DispoButtonHideB');
 			showDiv('DispoButtonHideC');
 		document.getElementById("DispoSelectBox").style.top = 340;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\">maximize</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\"> maximize </a>";
 		}
 
 
@@ -6364,7 +6364,7 @@ function phone_number_format(formatphone) {
 	function DispoMaximize()
 		{
 		document.getElementById("DispoSelectBox").style.top = 1;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimize</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\"> minimize </a>";
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
@@ -7430,7 +7430,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
     <table border=0 bgcolor="#FFFFCC" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFFF66">
 	<TD align=left><font class="sh_text"> Extended Alt Phone Information: </font></td>
-	<TD align=right><font class="sk_text"> <a href="#" onclick="EAcommentsBoxhide('YES');return false;">minimize</a> </font></td>
+	<TD align=right><font class="sk_text"> <a href="#" onclick="EAcommentsBoxhide('YES');return false;"> minimize </a> </font></td>
 	</tr><tr>
 	<TD VALIGN=top><font class="sk_text">
 	<span id="EAcommentsBoxC"></span><BR>
@@ -7446,7 +7446,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 <span style="position:absolute;left:695px;top:<?=$HTheight ?>px;z-index:27;" id="EAcommentsMinBox">
     <table border=0 bgcolor="#FFFFCC" width=40 height=20>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sk_text"><a href="#" onclick="EAcommentsBoxshow();return false;">maximize</a> <BR>Alt Phone Info</font></td>
+	<TD align=left><font class="sk_text"><a href="#" onclick="EAcommentsBoxshow();return false;"> maximize </a> <BR>Alt Phone Info</font></td>
 	</tr></TABLE>
 </span>
 
@@ -7498,7 +7498,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="DispoSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimize</a></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> DISPOSITION CALL :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Hangup Again</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()"> minimize </a></span><BR>
 	<span id="DispoSelectContent"> End-of-call Disposition Selection </span>
 	<input type=hidden name=DispoSelection><BR>
 	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUSE AGENT DIALING <BR>

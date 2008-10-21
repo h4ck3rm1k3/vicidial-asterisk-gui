@@ -279,8 +279,8 @@ DISPOSITION CALL|Τερματισμός Κλήσης|
  session ID| ID εργασίας|
  to campaign| στην εκστρατεία|
 Select a CallBack Date|Επιλέξτε μια ημερομηνία CallBack|
-maximize|μεγιστοποιήστε|
-minimize|ελαχιστοποιήστε|
+ maximize | μεγιστοποιήστε |
+ minimize | ελαχιστοποιήστε |
 You must choose a date|Πρέπει να επιλέξετε μια ημερομηνία|
 Select a Date Below|Επιλέξτε μια ημερομηνία κατωτέρω|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Επιλέξτε μία επανάκληση παρακάτω για να καλέσετε τον πελάτη τώρα. Εάν επιλέξετε μία εγγραφή παρακάτω, θα διαγραφεί από την λίστα|

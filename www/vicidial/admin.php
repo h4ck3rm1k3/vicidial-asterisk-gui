@@ -6708,7 +6708,7 @@ if ($ADD==2311)
 			{echo "<br>DID NOT ADDED - there is already a DID in the system with this extension\n";}
 		else
 			{
-			 if ( (strlen($did_pattern) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$did_pattern)) or (eregi(' ',$did_pattern)) or (eregi("\+",$did_pattern)) )
+			 if ( (strlen($source_did) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$source_did)) or (eregi(' ',$did_pattern)) or (eregi("\+",$source_did)) )
 				{
 				 echo "<br>DID NOT ADDED - Please go back and look at the data you entered\n";
 				 echo "<br>DID Extension must be between 2 and 20 characters in length and contain no ' -+'.\n";
@@ -6723,7 +6723,7 @@ if ($ADD==2311)
 				$row=mysql_fetch_row($rslt);
 				$did_id = $row[0];
 
-				echo "<br><B>DID ADDED: $did_pattern     - $did_id</B>\n";
+				echo "<br><B>DID ADDED: $did_pattern $did_description    - $did_id</B>\n";
 
 				### LOG CHANGES TO LOG FILE ###
 				if ($WeBRooTWritablE > 0)
@@ -13858,7 +13858,7 @@ if ($ADD==3311)
 	echo "<tr bgcolor=#B6D3FC><td align=right>User Route Settings In-Group: </td><td align=left><select size=1 name=user_route_settings_ingroup>";
 	echo "$Xgroups_menu";
 	echo "</select>$NWB#vicidial_inbound_dids-user_route_settings_ingroup$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>In-Group ID: </td><td align=left><select size=1 name=group_id>";
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111&group_id=$group_id\">In-Group ID</a>: </td><td align=left><select size=1 name=group_id>";
 	echo "$Dgroups_menu";
 	echo "</select>$NWB#vicidial_inbound_dids-group_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>In-Group Call Handle Method: </td><td align=left><select size=1 name=call_handle_method><option>CID</option><option>CIDLOOKUP</option><option>CIDLOOKUPRL</option><option>CIDLOOKUPRC</option><option>ANI</option><option>ANILOOKUP</option><option>ANILOOKUPRL</option><option>CLOSER</option><option>3DIGITID</option><option>4DIGITID</option><option>5DIGITID</option><option>10DIGITID</option><option SELECTED>$call_handle_method</option></select>$NWB#vicidial_inbound_dids-call_handle_method$NWE</td></tr>\n";

@@ -41,6 +41,7 @@
 # 80525-1040 - Added IVR vac status compatibility for inbound calls
 # 80830-0035 - Added auto alt dialing for EXTERNAL leads for each lead
 # 80909-0843 - Added support for campaign-speccific DNC lists
+# 81021-0306 - Added Local channel logging support and while-to-if changes
 #
 
 
@@ -368,6 +369,8 @@ sub process_request {
 		### call start stage
 		if ($stage =~ /START/)
 			{
+			$channel_group='';
+
 			if ($AGILOG) {$agi_string = "+++++ CALL LOG START : $now_date";   &agi_output;}
 
 			if ($channel =~ /^SIP/) {$channel =~ s/-.*//gi;}
@@ -383,17 +386,45 @@ sub process_request {
 				$sthArows=$sthA->rows;
 				@aryA = $sthA->fetchrow_array;
 				$is_client_phone	 = "$aryA[0]";
-				if ($AGILOG) {$agi_string = "Local Zap phone: $aryA[0]|$channel_line|";   &agi_output;}
 				$sthA->finish();
 
 				if ($is_client_phone < 1)
 					{
 					$channel_group = 'Zap Trunk Line';
-					$number_dialed = $callerid;
+					$number_dialed = $extension;
 					}
+				else
+					{
+					$channel_group = 'Zap Client Phone';
+					}
+				if ($AGILOG) {$agi_string = $channel_group . ": $aryA[0]|$channel_line|";   &agi_output;}
+				}
+			if ($channel =~ /^Local\//)
+				{
+				$channel_line = $channel;
+				$channel_line =~ s/^Local\/|\@.*//gi;
+
+				$stmtA = "SELECT count(*) FROM phones where server_ip='$VARserver_ip' and dialplan_number='$channel_line' and protocol='EXTERNAL';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				@aryA = $sthA->fetchrow_array;
+				$is_client_phone	 = "$aryA[0]";
+				$sthA->finish();
+
+				if ($is_client_phone < 1)
+					{
+					$channel_group = 'Local Channel Line';
+					$number_dialed = $extension;
+					}
+				else
+					{
+					$channel_group = 'EXTERNAL Client Phone';
+					}
+				if ($AGILOG) {$agi_string = $channel_group . ": $aryA[0]|$channel_line|";   &agi_output;}
 				}
 			### This section breaks the outbound dialed number down(or builds it up) to a 10 digit number and gives it a description
-			if ( ($channel =~ /^SIP|^IAX2/) or ($is_client_phone > 0) )
+			if ( ($channel =~ /^SIP|^IAX2/) || ( ($is_client_phone > 0) && (length($channel_group) < 1) ) )
 				{
 				if ( ($extension =~ /^901144/) && (length($extension)==16) )  #test 207 608 6400 
 					{$extension =~ s/^9//gi;	$channel_group = 'Outbound Intl UK';}
@@ -408,9 +439,9 @@ sub process_request {
 				if ( ($extension =~ /^91/) && (length($extension)==12) )
 					{$extension =~ s/^91//gi;	$channel_group = 'Outbound Long Distance';}
 				if ($is_client_phone > 0)
-					{$channel_group = 'Zap Client Phone';}
+					{$channel_group = 'Client Phone';}
 				
-				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\///gi;
+				$SIP_ext = $channel;	$SIP_ext =~ s/SIP\/|IAX2\/|Zap\/|Local\///gi;
 
 				$number_dialed = $extension;
 				$extension = $SIP_ext;
@@ -423,7 +454,7 @@ sub process_request {
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 				$rec_count=0;
-				while ($sthArows > $rec_count)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$cmd_line_b	=	"$aryA[0]";
@@ -505,7 +536,7 @@ sub process_request {
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
 			$rec_count=0;
-			while ($sthArows > $rec_count)
+			if ($sthArows > 0)
 				{
 				@aryA = $sthA->fetchrow_array;
 				$parked_time	=			"$aryA[0]";
@@ -615,7 +646,7 @@ sub process_request {
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 				 $rec_countCUSTDATA=0;
-				while ($sthArows > $rec_countCUSTDATA)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$VD_lead_id	=		"$aryA[0]";
@@ -716,7 +747,7 @@ sub process_request {
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 						$sthArows=$sthA->rows;
-						while ($sthArows > $epc_countCUSTDATA)
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$VD_start_epoch	=	"$aryA[0]";
@@ -751,7 +782,7 @@ sub process_request {
 						$sthArows=$sthA->rows;
 						 $epc_countCUSTDATA=0;
 						 $VD_closecallid='';
-						while ($sthArows > $epc_countCUSTDATA)
+						if ($sthArows > 0)
 							{
 							@aryA = $sthA->fetchrow_array;
 							$VD_start_epoch	=	"$aryA[0]";

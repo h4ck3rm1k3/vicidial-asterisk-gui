@@ -279,8 +279,8 @@ DISPOSITION CALL|CHAMADA DA DISPOSIÇÃO|
  session ID| sessão ID|
  to campaign| à campanha|
 Select a CallBack Date|Selecione uma data da rechamada|
-maximize|maximize|
-minimize|minimize|
+ maximize | maximize |
+ minimize | minimize |
 You must choose a date|Você deve escolher uma data|
 Select a Date Below|Selecione uma data abaixo|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Estale sobre uma rechamada abaixo para chamar agora a parte traseira do cliente. Se você estalar sobre um registro abaixo para o chamar, estará removido da lista|

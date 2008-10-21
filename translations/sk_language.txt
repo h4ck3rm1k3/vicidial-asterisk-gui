@@ -279,8 +279,8 @@ DISPOSITION CALL|VYKONANIE HOVORU|
  session ID| ID relácie|
  to campaign| do kampane|
 Select a CallBack Date|Vyberte dátum preplánovania hovoru|
-maximize|maximalizovať|
-minimize|minimalizovať|
+ maximize | maximalizovať |
+ minimize | minimalizovať |
 You must choose a date|Musíte zmeniť dátum|
 Select a Date Below|Vyberte dátum nižšie|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Kliknite na preplánovanie hovoru na volanie zákaznikovi znova. Ak kliknete na záznam nižšie budete ho volať a bude odstránený zo zoznamu|

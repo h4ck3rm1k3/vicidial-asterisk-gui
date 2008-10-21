@@ -278,8 +278,8 @@ DISPOSITION CALL|SELEÇÃO DE STATUS|
  session ID|ID da sessão|
  to campaign|para a campanha|
 Select a CallBack Date|Selecione uma data para o retorno|
-maximize|maximizar|
-minimize|minimizar|
+ maximize | maximizar |
+ minimize | minimizar |
 You must choose a date|Você deve selecionar uma data|
 Select a Date Below|Selecione uma data abaixo|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Clique em um dos contatos abaixo para ligar. Se você clicar em um contatos abaixo o mesmo será removido da lista de Agendamentos|

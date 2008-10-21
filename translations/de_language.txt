@@ -252,8 +252,8 @@ DISPOSITION CALL|ANRUF ABSCHLIESSEN|
  session ID| Session ID|
  to campaign| zur Kampagne|
 Select a CallBack Date|Wählen Sie ein Rückrufdatum|
-maximize|maximieren|
-minimize|minimieren|
+ maximize | maximieren |
+ minimize | minimieren |
 You must choose a date|Sie müssen ein Datum wählen|
 Select a Date Below|Wählen Sie unten ein Datum|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Klicken Sie jetzt unten auf eine Wiedervorlage, um den Kunden zurückzurufen. Danach wird die Wiedervorlage aus der Liste gelöscht.|

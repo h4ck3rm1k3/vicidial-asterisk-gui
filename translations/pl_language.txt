@@ -279,8 +279,8 @@ DISPOSITION CALL|REZULTAT ROZMOWY|
  session ID| ID sesji|
  to campaign| do kampani|
 Select a CallBack Date|Wybierz datę oddzwonienia|
-maximize|maksymalizuj|
-minimize|minimalizuj|
+ maximize | maksymalizuj |
+ minimize | minimalizuj |
 You must choose a date|Musisz wybrać datę|
 Select a Date Below|Wybierz datę poniżej|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Kliknij poniżej na Inne terminy żeby teraz zadzwonić do klienta. Jeżeli klikniesz na rekordzie by zadzwonić, rekord zostanie usunięty z listy|

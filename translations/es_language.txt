@@ -279,8 +279,8 @@ DISPOSITION CALL|DISPOSITION CALL|
  session ID| sesión ID|
  to campaign| a la campaña|
 Select a CallBack Date|Seleccione una fecha del servicio repetido|
-maximize|maximice|
-minimize|reduzca al mínimo|
+ maximize | maximice |
+ minimize | reduzca al mínimo |
 You must choose a date|Usted debe elegir una fecha|
 Select a Date Below|Seleccione una fecha abajo|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Chasque encendido un servicio repetido abajo ahora para llamar la parte posteriora del cliente. Si usted chasca encendido un expediente abajo para llamarlo, será quitado de la lista|

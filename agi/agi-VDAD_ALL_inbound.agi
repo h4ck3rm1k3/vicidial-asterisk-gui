@@ -921,7 +921,7 @@ if ($channel_status < 1)
 
 
 $vci=0;
-$INBOUNDcampsSQL='';
+$INBOUNDcampsSQL="''";
 $stmtA = "SELECT campaign_id FROM vicidial_campaigns where active='Y' and campaign_allow_inbound='Y';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -929,7 +929,7 @@ $sthArows=$sthA->rows;
 	while ($sthArows > $vci)
 	{
 	@aryA = $sthA->fetchrow_array;
-	if ($vci==0) {$INBOUNDcampsSQL	.= "'$aryA[0]'";}
+	if ($vci < 1) {$INBOUNDcampsSQL	= "'$aryA[0]'";}
 	else {$INBOUNDcampsSQL	.= ",'$aryA[0]'";}
 	$vci++;
 	}
@@ -1324,6 +1324,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip',comments='INBOUND' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 			my $affected_rows = $dbhA->do($stmtA);
 			$found_agents=$affected_rows;
+				if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
 			}
 		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|$found_agents|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
 		if ($found_agents > 0)

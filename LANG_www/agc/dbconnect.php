@@ -1,6 +1,10 @@
 <?
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# dbconnect.php    version 2.0.5
+#
+# database connection settings and some global web settings
+#
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 if ( file_exists("/etc/astguiclient.conf") )
 {
@@ -36,6 +40,9 @@ $WeBServeRRooT = '/usr/local/apache2/htdocs';
 }
 
 $link=mysql_connect("$VARDB_server", "$VARDB_user", "$VARDB_pass");
+if (!$link) {
+    die('MySQL connect ERROR: ' . mysql_error());
+}
 mysql_select_db("$VARDB_database",$link);
 
 $local_DEF = 'Local/';
@@ -44,6 +51,8 @@ $local_AMP = '@';
 $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
-$non_latin = '0';	# set to 1 for UTF rules
+$non_latin = '0';	# set to 1 for UTF rules, overridden by system_settings
+$flag_channels=0;
+$flag_string = 'VICIast20';
 
 ?>

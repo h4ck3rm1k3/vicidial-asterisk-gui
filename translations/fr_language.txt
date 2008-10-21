@@ -279,8 +279,8 @@ DISPOSITION CALL|STATUER L'APPEL|
  session ID| Id de session|
  to campaign| Campagne:|
 Select a CallBack Date|Choisissez une date de Rappel|
-maximize|agrandir|
-minimize|réduire|
+ maximize | agrandir |
+ minimize | réduire |
 You must choose a date|Vous devez choisir une date|
 Select a Date Below|Choisissez une date ci-dessous|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list|Selectionnez un rappel a éffectuer immédiatement. Une fois éffectué, ce rappel diparaitra de la liste|

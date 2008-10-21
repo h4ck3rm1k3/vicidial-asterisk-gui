@@ -279,8 +279,8 @@ DISPOSITION CALL|ESITO CHIAMATA|
  session ID| ID sessione|
  to campaign| nella campagna|
 Select a CallBack Date|Selezionare una data di richiamo!|
-maximize|ingrandisci|
-minimize|minimizza|
+ maximize | ingrandisci |
+ minimize | minimizza |
 You must choose a date|Devi scegliere una data|
 Select a Date Below|Seleziona una data qui sotto|
 Click on a callback below to call the customer back now. If you click on a record below to call it, it will be removed from the list.|Selezionare una callback per chiamare il cliente ora. Una volta fatto click, il record sara` rimosso dalla lista.|
