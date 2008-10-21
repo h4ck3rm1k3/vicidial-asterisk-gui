@@ -85,7 +85,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Utentename/Password non validi: |$user|$pass|\n";
+    echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
     exit;
 	}
   else
@@ -93,7 +93,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -105,7 +105,7 @@ if ( (eregi("^Zap",$channel)) and (!eregi("-",$channel)) ) {$channel = "$channel
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -124,7 +124,7 @@ while ( (strlen($user_abb) > 4) and ($forever_stop < 200) )
 
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    UNIQUEID: $uniqueid   server_ip: $server_ip-->\n";
 ?>
 	<script language="Javascript">	
 		var server_ip = '<? echo $server_ip ?>';
@@ -233,7 +233,7 @@ echo "<!-- VERSIONE: $version     BUILD: $build    UNIQUEID: $uniqueid   server_
 
 
 // ################################################################################
-// timeout to deactivate the call action links after 30 secondi
+// timeout to deactivate the call action links after 30 sekúnd
 	function link_timeout() 
 		{
 		window.focus();
@@ -250,11 +250,11 @@ echo "<!-- VERSIONE: $version     BUILD: $build    UNIQUEID: $uniqueid   server_
 	</script>
 
 <?
-echo "<title>CHIAMATA INBOUND IN CORSO";
+echo "<title>ŽIVÝ PRÍCHODZÍ HOVOR";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=\"#CCC2E0\" marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onload=\"link_timeout();\">\n";
-echo "<CENTER><H2>CHIAMATA INBOUND IN CORSO</H2>\n";
+echo "<CENTER><H2>ŽIVÝ PRÍCHODZÍ HOVOR</H2>\n";
 echo "<B>$NOW_TIME</B><BR><BR>\n";
 }
 
@@ -265,7 +265,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 	if (strlen($uniqueid)<9)
 	{
 	$channel_live=0;
-	echo "Uniqueid $uniqueid non e` valido\n";
+	echo "Uniqueid $uniqueid Nie je správny\n";
 	exit;
 	}
 	else
@@ -281,8 +281,8 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 #		Zap/73|"V.I.C.I. MARKET" <7275338730>|2005-04-28 14:01:21|7274514936|Inbound direct to Matt|||||
 		if ($format=='debug') {echo "\n<!-- $row[0]|$row[1]|$row[2]|$row[3]|$row[4]|$row[5]|$row[6]|$row[7]|$row[8]|$row[9]|$row[10]|$row[11]|$row[12]|$row[13]| -->";}
 		echo "<table width=95% cellpadding=1 cellspacing=3>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Canale: </td><td align=left>$row[1]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>CallerID: </td><td align=left>$row[3]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Kanál: </td><td align=left>$row[1]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>IDvolajúceho: </td><td align=left>$row[3]</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n";
 
 		$phone = eregi_replace(".*\<","",$row[3]);
@@ -295,16 +295,16 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 		echo "<a href=\"http://www.anywho.com/qry/wp_rl?npa=$NPA&telephone=$NXX$XXXX\" target=\"_blank\">ANYWHO</a> - \n";
 		echo "<a href=\"http://www.switchboard.com/bin/cgirlookup.dll?SR=&MEM=1&LNK=32%3A36&type=BOTH&at=$NPA&e=$NXX&n=$XXXX&search.x=55&search.y=20\" target=\"_blank\">SWITCHBOARD</a> - \n";
 		echo "<a href=\"http://yellowpages.superpages.com/listings.jsp?SRC=&STYPE=&PG=L&CB=&C=&N=&E=&T=&S=&Z=&A=727&X=533&P=8730&AXP=$NPA$NXX$XXXX&R=N&PS=15&search=Find+It\" target=\"_blank\">VERIZON</a> - \n";
-		echo "<a href=\"http://www.whitepages.com/1014/log_click/search/Reverse_Telefono?npa=$NPA&phone=$NXX$XXXX\" target=\"_blank\">WHITEPAGES</a> - \n";
-		echo "<a href=\"http://www.411.com/10742/search/Reverse_Telefono?phone=%28$NPA%29+$NXX$D$XXXX\" target=\"_blank\">411.COM</a> - \n";
-		echo "<a href=\"http://www.phonenumber.com/10006/search/Reverse_Telefono?npa=$NPA&phone=$NXX$XXXX\" target=\"_blank\">411.COM</a> - \n";
+		echo "<a href=\"http://www.whitepages.com/1014/log_click/search/Reverse_Telefón?npa=$NPA&phone=$NXX$XXXX\" target=\"_blank\">WHITEPAGES</a> - \n";
+		echo "<a href=\"http://www.411.com/10742/search/Reverse_Telefón?phone=%28$NPA%29+$NXX$D$XXXX\" target=\"_blank\">411.COM</a> - \n";
+		echo "<a href=\"http://www.phonenumber.com/10006/search/Reverse_Telefón?npa=$NPA&phone=$NXX$XXXX\" target=\"_blank\">411.COM</a> - \n";
 
 			$local_web_callerID_QUERY_STRING ='';
 			$local_web_callerID_QUERY_STRING.="?callerID_areacode=$NPA";
 			$local_web_callerID_QUERY_STRING.="&callerID_prefix=$NXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_last4=$XXXX";
 			$local_web_callerID_QUERY_STRING.="&callerID_Time=$row[6]";
-			$local_web_callerID_QUERY_STRING.="&callerID_Canale=$row[1]";
+			$local_web_callerID_QUERY_STRING.="&callerID_Kanál=$row[1]";
 			$local_web_callerID_QUERY_STRING.="&callerID_uniqueID=$row[0]";
 			$local_web_callerID_QUERY_STRING.="&callerID_phone_ext=$row[5]";
 			$local_web_callerID_QUERY_STRING.="&callerID_server_ip=$row[2]";
@@ -315,14 +315,14 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_c=$row[11]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_d=$row[12]";
 			$local_web_callerID_QUERY_STRING.="&callerID_comment_e=$row[13]";
-		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">CLIENTE</a> - \n";
+		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">UPRAVENÉ</a> - \n";
 
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Numero chiamato: </td><td align=left>$row[8]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Note: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Volané číslo: </td><td align=left>$row[8]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Poznámka: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
-		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">RIAGGANCIA</a> - \n";
-		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">INVIA ALLA MIA VOICEMAIL</a>\n";
+		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">POLOŹIŤ</a> - \n";
+		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">POSLAŤ DO MOJEJ HLASOVEJ SCHRÁNKY</a>\n";
 		echo "</span></td></tr>\n";
 		echo "</table>\n";
 
@@ -342,7 +342,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- script runtime: $RUNtime secondi -->";
+	echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

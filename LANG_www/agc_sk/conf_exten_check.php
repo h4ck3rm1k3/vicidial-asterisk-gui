@@ -121,7 +121,7 @@ $auth=$row[0];
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Utentename/Password non validi: |$user|$pass|\n";
+    echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
     exit;
 	}
   else
@@ -129,7 +129,7 @@ $auth=$row[0];
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -141,7 +141,7 @@ $auth=$row[0];
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -155,8 +155,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
-echo "<title>Conf Extension Check";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    MEETME: $conf_exten   server_ip: $server_ip-->\n";
+echo "<title>Overiť konferenčnú pobočku";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -170,7 +170,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if (strlen($conf_exten)<1)
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten non e` valido\n";
+		echo "Conf Exten $conf_exten Nie je správny\n";
 		exit;
 		}
 		else
@@ -272,7 +272,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($Acount < 1) {$Alogin='DEAD_VLA';}
 			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Stato: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Stav: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
 
 			}
 		$total_conf=0;
@@ -286,7 +286,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$CanaleA[$total_conf] = "$row[0]";
+			$KanálA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
@@ -299,7 +299,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			{
 			$loop_count++; $total_conf++;
 			$row=mysql_fetch_row($rslt);
-			$CanaleA[$total_conf] = "$row[0]";
+			$KanálA[$total_conf] = "$row[0]";
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			}
 		}
@@ -311,8 +311,8 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		while($total_conf > $counter)
 		{
 			$counter++;
-			$countecho = "$countecho$CanaleA[$counter] ~";
-		#	echo "$CanaleA[$counter] ~";
+			$countecho = "$countecho$KanálA[$counter] ~";
+		#	echo "$KanálA[$counter] ~";
 		}
 
 	echo "$countecho\n";
@@ -326,7 +326,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		if ( (strlen($conf_exten)<1) || (strlen($exten)<1) )
 		{
 		$channel_live=0;
-		echo "Conf Exten $conf_exten non e` valido or Exten $exten non e` valido\n";
+		echo "Conf Exten $conf_exten Nie je správny or Exten $exten Nie je správny\n";
 		exit;
 		}
 		else
@@ -335,7 +335,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 		}
-		echo "Conferenza $conf_exten e` stato registrato su $exten\n";
+		echo "Konferencia $conf_exten bol zaregistrovaný $exten\n";
 	}
 
 
@@ -344,7 +344,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- script runtime: $RUNtime secondi -->";
+	echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

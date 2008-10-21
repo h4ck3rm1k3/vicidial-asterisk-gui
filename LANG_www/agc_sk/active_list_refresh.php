@@ -125,7 +125,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Utentename/Password non validi: |$user|$pass|\n";
+    echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
     exit;
 	}
   else
@@ -133,7 +133,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -145,7 +145,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -159,14 +159,14 @@ if ($format=='table')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    ADD: $ADD   server_ip: $server_ip-->\n";
-echo "<title>Visualizza Lista: ";
-if ($ADD==1)		{echo "Estensioni Attive";}
-if ($ADD==2)		{echo "Estensioni Occupate";}
-if ($ADD==3)		{echo "Linee Esterne";}
-if ($ADD==4)		{echo "Interni Locali";}
-if ($ADD==5)		{echo "Conferenze";}
-if ($ADD==99999)	{echo "AIUTO";}
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    ADD: $ADD   server_ip: $server_ip-->\n";
+echo "<title>Zobraziť zoznamy: ";
+if ($ADD==1)		{echo "Aktívne pobočky";}
+if ($ADD==2)		{echo "Obsadené pobočky";}
+if ($ADD==3)		{echo "Vonkajšie linky";}
+if ($ADD==4)		{echo "Lokálne pobočky";}
+if ($ADD==5)		{echo "Konferencie";}
+if ($ADD==99999)	{echo "POMOC";}
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -214,7 +214,7 @@ if ($ADD==1)
 		if ( ($format=='menu') or ($format=='selectlist') )
 			{
 			echo "<OPTION ";
-			if ($row[0]=="$selectedext") {echo "SELEZIONATO ";}
+			if ($row[0]=="$selectedext") {echo "SELECTED ";}
 			echo "VALUE=\"$row[0]\">";
 			echo "$row[0] - $row[1]";
 			echo "</OPTION>\n";
@@ -271,7 +271,7 @@ if ($ADD==2)
 		if ( ($format=='menu') or ($format=='selectlist') )
 			{
 			echo "<OPTION ";
-			if ($row[0]=="$selectedext") {echo "SELEZIONATO ";}
+			if ($row[0]=="$selectedext") {echo "SELECTED ";}
 			echo "VALUE=\"$row[0]\">";
 			echo "$row[0]";
 			echo "</OPTION>\n";
@@ -327,7 +327,7 @@ if ($ADD==3)
 		if ( ($format=='menu') or ($format=='selectlist') )
 			{
 			echo "<OPTION ";
-			if ($row[0]=="$selectedtrunk") {echo "SELEZIONATO ";}
+			if ($row[0]=="$selectedtrunk") {echo "SELECTED ";}
 			echo "VALUE=\"$row[0]\">";
 			echo "$row[0] - $row[1]";
 			echo "</OPTION>\n";
@@ -383,7 +383,7 @@ if ($ADD==4)
 		if ( ($format=='menu') or ($format=='selectlist') )
 			{
 			echo "<OPTION ";
-			if ($row[0]=="$selectedlocal") {echo "SELEZIONATO ";}
+			if ($row[0]=="$selectedlocal") {echo "SELECTED ";}
 			echo "VALUE=\"$row[0]\">";
 			echo "$row[0] - $row[1]";
 			echo "</OPTION>\n";
@@ -440,7 +440,7 @@ if ($ADD==5)
 		if ( ($format=='menu') or ($format=='selectlist') )
 			{
 			echo "<OPTION ";
-			if ($row[0]=="$selectedext") {echo "SELEZIONATO ";}
+			if ($row[0]=="$selectedext") {echo "SELECTED ";}
 			echo "VALUE=\"$row[0]\">";
 			echo "$row[0] - $row[1]";
 			echo "</OPTION>\n";
@@ -469,7 +469,7 @@ if ($ADD==5)
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='table') {echo "\n<!-- script runtime: $RUNtime secondi -->";}
+if ($format=='table') {echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";}
 if ($format=='table') {echo "\n</body>\n</html>\n";}
 	
 exit; 

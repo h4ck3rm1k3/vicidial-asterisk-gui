@@ -202,7 +202,7 @@ $auth=$row[0];
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Utentename/Password non validi: |$user|$pass|\n";
+    echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
     exit;
 	}
   else
@@ -210,7 +210,7 @@ $auth=$row[0];
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -222,7 +222,7 @@ $auth=$row[0];
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -236,14 +236,14 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
-echo "<title>Invio Manager: ";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
+echo "<title>Poslať manažér: ";
 if ($ACTION=="Originate")		{echo "Originate";}
 if ($ACTION=="Redirect")		{echo "Redirect";}
 if ($ACTION=="RedirectName")	{echo "RedirectName";}
 if ($ACTION=="Hangup")			{echo "Hangup";}
 if ($ACTION=="Command")			{echo "Command";}
-if ($ACTION==99999)	{echo "AIUTO";}
+if ($ACTION==99999)	{echo "POMOC";}
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -260,14 +260,14 @@ if ($ACTION=="SysCIDOriginate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Exten $exten non e` valido or queryCID $queryCID non e` valido, Originate comando non inserito\n";
+		echo "Exten $exten Nie je správny or queryCID $queryCID Nie je správny, Originate príkaz nebol vložený\n";
 	}
 	else
 	{
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $queryCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate comando inviato per Exten $exten Canale $channel su $server_ip\n";
+	echo "Originate príkaz poslaný pre Exten $exten Kanál $channel na $server_ip\n";
 	}
 }
 
@@ -281,13 +281,13 @@ if ($ACTION=="OriginateName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "extenName $extenName deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nOriginateName Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "extenName $extenName musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nOriginateName Action neodoslané\n";
 	}
 	else
 	{
@@ -309,14 +309,14 @@ if ($ACTION=="OriginateNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "extenName $extenName deve essere impostato\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nOriginateNameVmail Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "extenName $extenName musí byť nastavené\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nOriginateNameVmail Action neodoslané\n";
 	}
 	else
 	{
@@ -352,7 +352,7 @@ if ($ACTION=="Originate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<10) )
 	{
-		echo "Exten $exten non e` valido or queryCID $queryCID non e` valido, Originate comando non inserito\n";
+		echo "Exten $exten Nie je správny or queryCID $queryCID Nie je správny, Originate príkaz nebol vložený\n";
 	}
 	else
 	{
@@ -363,7 +363,7 @@ if ($ACTION=="Originate")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','','','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Originate comando inviato per Exten $exten Canale $channel su $server_ip\n";
+	echo "Originate príkaz poslaný pre Exten $exten Kanál $channel na $server_ip\n";
 	}
 }
 
@@ -379,7 +379,7 @@ if ($ACTION=="HangupConfDial")
 	if ( (strlen($exten)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) )
 	{
 		$channel_live=0;
-		echo "conference $exten non e` valido or ext_context $ext_context or queryCID $queryCID non e` valido, Hangup comando non inserito\n";
+		echo "conference $exten Nie je správny or ext_context $ext_context or queryCID $queryCID Nie je správny, Hangup príkaz nebol vložený\n";
 	}
 	else
 	{
@@ -420,7 +420,7 @@ $rslt=mysql_query($stmt, $link);
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
 		{
 		$channel_live=0;
-		echo "Canale $channel non e` valido or queryCID $queryCID non e` valido, Hangup comando non inserito\n";
+		echo "Kanál $channel Nie je správny or queryCID $queryCID Nie je správny, Hangup príkaz nebol vložený\n";
 		}
 	else
 		{
@@ -450,7 +450,7 @@ $rslt=mysql_query($stmt, $link);
 			$rowx=mysql_fetch_row($rslt);
 			if ($rowx[0]==0)
 				{
-				echo "Call $CalLCID $channel non e` attivo su $call_server_ip, Checking Live Canale...\n";
+				echo "Call $CalLCID $channel nie je živá na $call_server_ip, Checking Live Kanál...\n";
 
 				$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension LIKE \"%$exten\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -459,7 +459,7 @@ $rslt=mysql_query($stmt, $link);
 				if ($row[0]==0)
 					{
 					$channel_live=0;
-					echo "Canale $channel non e` attivo su $call_server_ip, Hangup comando non inserito $rowx[0]\n$stmt\n";
+					echo "Kanál $channel nie je živá na $call_server_ip, Hangup príkaz nebol vložený $rowx[0]\n$stmt\n";
 					}
 				else
 					{
@@ -479,7 +479,7 @@ $rslt=mysql_query($stmt, $link);
 				if ($rowx[0] > 0)
 					{
 					#############################################
-					##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+					##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 					$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 					$rslt=mysql_query($stmt, $link);
 					if ($format=='debug') {echo "\n<!-- $rowx[0]|$stmt -->";}
@@ -576,7 +576,7 @@ $rslt=mysql_query($stmt, $link);
 			$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$call_server_ip','','Hangup','$queryCID','Channel: $channel','','','','','','','','','');";
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
-			echo "Hangup comando inviato per Canale $channel su $call_server_ip\n";
+			echo "Hangup príkaz poslaný pre Kanál $channel na $call_server_ip\n";
 			}
 		}
 }
@@ -592,17 +592,17 @@ if ($ACTION=="RedirectVD")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "auto_dial_level $auto_dial_level deve essere impostato\n";
-		echo "campaign $campaign deve essere impostato\n";
-		echo "uniqueid $uniqueid deve essere impostato\n";
-		echo "lead_id $lead_id deve essere impostato\n";
-		echo "\nRedirectVD Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "auto_dial_level $auto_dial_level musí byť nastavené\n";
+		echo "campaign $campaign musí byť nastavené\n";
+		echo "uniqueid $uniqueid musí byť nastavené\n";
+		echo "lead_id $lead_id musí byť nastavené\n";
+		echo "\nRedirectVD Action neodoslané\n";
 	}
 	else
 	{
@@ -638,15 +638,15 @@ if ($ACTION=="RedirectToPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($extenName)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($parkedby)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "extenName $extenName deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "parkedby $parkedby deve essere impostato\n";
-		echo "\nRedirectToPark Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "extenName $extenName musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "parkedby $parkedby musí byť nastavené\n";
+		echo "\nRedirectToPark Action neodoslané\n";
 	}
 	else
 	{
@@ -663,13 +663,13 @@ if ($ACTION=="RedirectFromPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirectFromPark Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirectFromPark Action neodoslané\n";
 	}
 	else
 	{
@@ -686,13 +686,13 @@ if ($ACTION=="RedirectName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "extenName $extenName deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirectName Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "extenName $extenName musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirectName Action neodoslané\n";
 	}
 	else
 	{
@@ -714,14 +714,14 @@ if ($ACTION=="RedirectNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "extenName $extenName deve essere impostato\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirectNameVmail Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "extenName $extenName musí byť nastavené\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirectNameVmail Action neodoslané\n";
 	}
 	else
 	{
@@ -753,14 +753,14 @@ if ($ACTION=="RedirectXtraCXNeW")
 	{
 		$channel_liveX=0;
 		$channel_liveY=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "ExtraCanale $extrachannel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirect Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "ExtraKanál $extrachannel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirect Action neodoslané\n";
 		if (ereg("SECOND|FIRST|DEBUG",$filename))
 			{
 			if ($WeBRooTWritablE > 0)
@@ -827,8 +827,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			else
 				{
 				$channel_liveX=0;
-				echo "Cannot find empty vicidial_conference su $server_ip, Redirect comando non inserito\n|$stmt|";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Impossibile trovare conferenze vuote su $server_ip";}
+				echo "Cannot find empty vicidial_conference na $server_ip, Redirect príkaz nebol vložený\n|$stmt|";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie je možné nájsť prázdnu konferenciu na $server_ip";}
 				}
 			}
 
@@ -847,8 +847,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Canale $channel non e` attivo su $call_server_ip, Redirect comando non inserito\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $call_server_ip";}
+				echo "Kanál $channel nie je živá na $call_server_ip, Redirect príkaz nebol vložený\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -864,8 +864,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Canale $channel non e` attivo su $server_ip, Redirect comando non inserito\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $server_ip";}
+				echo "Kanál $channel nie je živá na $server_ip, Redirect príkaz nebol vložený\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -877,7 +877,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0] < 1)
 			{
 				$channel_liveY=0;
-				echo "No Local agent to send call to, Redirect comando non inserito\n";
+				echo "No Local agent to send call to, Redirect príkaz nebol vložený\n";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
@@ -910,8 +910,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "RedirectXtraCX comando inviato per Canale $channel su $call_server_ip and \nHungup $extrachannel su $server_ip\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel su $call_server_ip, Hungup $extrachannel su $server_ip";}
+				echo "RedirectXtraCX príkaz poslaný pre Kanál $channel na $call_server_ip and \nHungup $extrachannel na $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel na $call_server_ip, Hungup $extrachannel na $server_ip";}
 			}
 		}
 		else
@@ -920,7 +920,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel su $server_ip";}
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel na $server_ip";}
 		}
 
 	if (ereg("SECOND|FIRST|DEBUG",$filename))
@@ -958,15 +958,15 @@ if ($ACTION=="RedirectXtraNeW")
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
-			echo "Una di queste variabili non e` valido:\n";
-			echo "Canale $channel deve avere piu' di 2 caratteri\n";
-			echo "ExtraCanale $extrachannel deve avere piu' di 2 caratteri\n";
-			echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-			echo "exten $exten deve essere impostato\n";
-			echo "ext_context $ext_context deve essere impostato\n";
-			echo "ext_priority $ext_priority deve essere impostato\n";
-			echo "session_id $session_id deve essere impostato\n";
-			echo "\nRedirect Action non inviato\n";
+			echo "Jeden z týchto premených Nie je správny:\n";
+			echo "Kanál $channel musí byť viac ako 2 znaky\n";
+			echo "ExtraKanál $extrachannel musí byť viac ako 2 znaky\n";
+			echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+			echo "exten $exten musí byť nastavené\n";
+			echo "ext_context $ext_context musí byť nastavené\n";
+			echo "ext_priority $ext_priority musí byť nastavené\n";
+			echo "session_id $session_id musí byť nastavené\n";
+			echo "\nRedirect Action neodoslané\n";
 			if (ereg("SECOND|FIRST|DEBUG",$filename))
 				{
 				if ($WeBRooTWritablE > 0)
@@ -1029,8 +1029,8 @@ if ($ACTION=="RedirectXtraNeW")
 			else
 				{
 				$channel_liveX=0;
-				echo "Cannot find empty vicidial_conference su $server_ip, Redirect comando non inserito\n|$stmt|";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Impossibile trovare conferenze vuote su $server_ip";}
+				echo "Cannot find empty vicidial_conference na $server_ip, Redirect príkaz nebol vložený\n|$stmt|";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie je možné nájsť prázdnu konferenciu na $server_ip";}
 				}
 			}
 
@@ -1049,8 +1049,8 @@ if ($ACTION=="RedirectXtraNeW")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Canale $channel non e` attivo su $call_server_ip, Redirect comando non inserito\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $call_server_ip";}
+					echo "Kanál $channel nie je živá na $call_server_ip, Redirect príkaz nebol vložený\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1066,8 +1066,8 @@ if ($ACTION=="RedirectXtraNeW")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Canale $channel non e` attivo su $server_ip, Redirect comando non inserito\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $server_ip";}
+					echo "Kanál $channel nie je živá na $server_ip, Redirect príkaz nebol vložený\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1078,8 +1078,8 @@ if ($ACTION=="RedirectXtraNeW")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra comando inviato per Canale $channel and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten su $server_ip";}
+					echo "RedirectXtra príkaz poslaný pre Kanál $channel and \nExtraKanál $extrachannel\n to $exten na $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten na $server_ip";}
 				}
 				else
 				{
@@ -1103,7 +1103,7 @@ if ($ACTION=="RedirectXtraNeW")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra comando inviato per Canale $channel su $call_server_ip and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
+					echo "RedirectXtra príkaz poslaný pre Kanál $channel na $call_server_ip and \nExtraKanál $extrachannel\n to $exten na $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
@@ -1147,14 +1147,14 @@ if ($ACTION=="RedirectXtraCX")
 	{
 		$channel_liveX=0;
 		$channel_liveY=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "ExtraCanale $extrachannel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirect Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "ExtraKanál $extrachannel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirect Action neodoslané\n";
 		if (ereg("SECOND|FIRST|DEBUG",$filename))
 			{
 			if ($WeBRooTWritablE > 0)
@@ -1182,8 +1182,8 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Canale $channel non e` attivo su $call_server_ip, Redirect comando non inserito\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $call_server_ip";}
+				echo "Kanál $channel nie je živá na $call_server_ip, Redirect príkaz nebol vložený\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1199,8 +1199,8 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Canale $channel non e` attivo su $server_ip, Redirect comando non inserito\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $server_ip";}
+				echo "Kanál $channel nie je živá na $server_ip, Redirect príkaz nebol vložený\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1212,7 +1212,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0] < 1)
 			{
 				$channel_liveY=0;
-				echo "No Local agent to send call to, Redirect comando non inserito\n";
+				echo "No Local agent to send call to, Redirect príkaz nebol vložený\n";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
@@ -1245,8 +1245,8 @@ if ($ACTION=="RedirectXtraCX")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "RedirectXtraCX comando inviato per Canale $channel su $call_server_ip and \nHungup $extrachannel su $server_ip\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel su $call_server_ip, Hungup $extrachannel su $server_ip";}
+				echo "RedirectXtraCX príkaz poslaný pre Kanál $channel na $call_server_ip and \nHungup $extrachannel na $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel na $call_server_ip, Hungup $extrachannel na $server_ip";}
 			}
 		}
 		else
@@ -1255,7 +1255,7 @@ if ($ACTION=="RedirectXtraCX")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel su $server_ip";}
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel na $server_ip";}
 		}
 
 	if (ereg("SECOND|FIRST|DEBUG",$filename))
@@ -1287,14 +1287,14 @@ if ($ACTION=="RedirectXtra")
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
-			echo "Una di queste variabili non e` valido:\n";
-			echo "Canale $channel deve avere piu' di 2 caratteri\n";
-			echo "ExtraCanale $extrachannel deve avere piu' di 2 caratteri\n";
-			echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-			echo "exten $exten deve essere impostato\n";
-			echo "ext_context $ext_context deve essere impostato\n";
-			echo "ext_priority $ext_priority deve essere impostato\n";
-			echo "\nRedirect Action non inviato\n";
+			echo "Jeden z týchto premených Nie je správny:\n";
+			echo "Kanál $channel musí byť viac ako 2 znaky\n";
+			echo "ExtraKanál $extrachannel musí byť viac ako 2 znaky\n";
+			echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+			echo "exten $exten musí byť nastavené\n";
+			echo "ext_context $ext_context musí byť nastavené\n";
+			echo "ext_priority $ext_priority musí byť nastavené\n";
+			echo "\nRedirect Action neodoslané\n";
 			if (ereg("SECOND|FIRST|DEBUG",$filename))
 				{
 				if ($WeBRooTWritablE > 0)
@@ -1323,8 +1323,8 @@ if ($ACTION=="RedirectXtra")
 				else
 				{
 				$channel_liveX=0;
-				echo "Impossibile trovare conferenze vuote su $server_ip, Redirect comando non inserito\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Impossibile trovare conferenze vuote su $server_ip";}
+				echo "Nie je možné nájsť prázdnu konferenciu na $server_ip, Redirect príkaz nebol vložený\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie je možné nájsť prázdnu konferenciu na $server_ip";}
 				}
 			}
 
@@ -1343,8 +1343,8 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Canale $channel non e` attivo su $call_server_ip, Redirect comando non inserito\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $call_server_ip";}
+					echo "Kanál $channel nie je živá na $call_server_ip, Redirect príkaz nebol vložený\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1360,8 +1360,8 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Canale $channel non e` attivo su $server_ip, Redirect comando non inserito\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel non e` attivo su $server_ip";}
+					echo "Kanál $channel nie je živá na $server_ip, Redirect príkaz nebol vložený\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie je živá na $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1372,8 +1372,8 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra comando inviato per Canale $channel and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten su $server_ip";}
+					echo "RedirectXtra príkaz poslaný pre Kanál $channel and \nExtraKanál $extrachannel\n to $exten na $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten na $server_ip";}
 				}
 				else
 				{
@@ -1397,7 +1397,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra comando inviato per Canale $channel su $call_server_ip and \nExtraCanale $extrachannel\n to $exten su $server_ip\n";
+					echo "RedirectXtra príkaz poslaný pre Kanál $channel na $call_server_ip and \nExtraKanál $extrachannel\n to $exten na $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
@@ -1456,13 +1456,13 @@ if ($ACTION=="Redirect")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Una di queste variabili non e` valido:\n";
-		echo "Canale $channel deve avere piu' di 2 caratteri\n";
-		echo "queryCID $queryCID deve avere piu' di 14 caratteri\n";
-		echo "exten $exten deve essere impostato\n";
-		echo "ext_context $ext_context deve essere impostato\n";
-		echo "ext_priority $ext_priority deve essere impostato\n";
-		echo "\nRedirect Action non inviato\n";
+		echo "Jeden z týchto premených Nie je správny:\n";
+		echo "Kanál $channel musí byť viac ako 2 znaky\n";
+		echo "queryCID $queryCID musí byť viac ako 14 znakov\n";
+		echo "exten $exten musí byť nastavené\n";
+		echo "ext_context $ext_context musí byť nastavené\n";
+		echo "ext_priority $ext_priority musí byť nastavené\n";
+		echo "\nRedirect Action neodoslané\n";
 	}
 	else
 	{
@@ -1480,7 +1480,7 @@ if ($ACTION=="Redirect")
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Canale $channel non e` attivo su $server_ip, Redirect comando non inserito\n";
+				echo "Kanál $channel nie je živá na $server_ip, Redirect príkaz nebol vložený\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -1489,7 +1489,7 @@ if ($ACTION=="Redirect")
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		echo "Redirect comando inviato per Canale $channel su $server_ip\n";
+		echo "Redirect príkaz poslaný pre Kanál $channel na $server_ip\n";
 		}
 	}
 }
@@ -1511,7 +1511,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Canale $channel non e` valido or queryCID $queryCID non e` valido or filename: $filename non e` valido, $ACTION comando non inserito\n";
+		echo "Kanál $channel Nie je správny or queryCID $queryCID Nie je správny or filename: $filename Nie je správny, $ACTION príkaz nebol vložený\n";
 	}
 	else
 	{
@@ -1528,7 +1528,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Canale $channel non e` attivo su $server_ip, $ACTION comando non inserito\n";
+				echo "Kanál $channel nie je živá na $server_ip, $ACTION príkaz nebol vložený\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -1570,7 +1570,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				}
 
 			}
-		echo "$ACTION comando inviato per Canale $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
+		echo "$ACTION príkaz poslaný pre Kanál $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
 		}
 	}
 }
@@ -1592,7 +1592,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
 	{
 		$channel_live=0;
-		echo "Canale $channel non e` valido or exten $exten non e` valido or filename: $filename non e` valido, $ACTION comando non inserito\n";
+		echo "Kanál $channel Nie je správny or exten $exten Nie je správny or filename: $filename Nie je správny, $ACTION príkaz nebol vložený\n";
 	}
 	else
 	{
@@ -1695,7 +1695,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			$rslt=mysql_query($stmt, $link);
 			}
 
-		# find and hang up all recordings going su in this conference # and extension = '$exten' 
+		# find and hang up all recordings going na in this conference # and extension = '$exten' 
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and channel LIKE \"%,1\";";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
@@ -1718,7 +1718,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION comando inviato per Canale $channel su $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n LA REGISTRAZIONE DURERA` FINO A 60 MINUTI\n";
+		echo "$ACTION príkaz poslaný pre Kanál $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n NAHRÁVAŤ SA BUDE 60 MINÚT\n";
 	}
 }
 
@@ -1733,7 +1733,7 @@ if ($ACTION=="VolumeControl")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($stage)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Conferenza $exten, Stage $stage non e` valido or queryCID $queryCID non e` valido, Originate comando non inserito\n";
+		echo "Konferencia $exten, Stage $stage Nie je správny or queryCID $queryCID Nie je správny, Originate príkaz nebol vložený\n";
 	}
 	else
 	{
@@ -1749,7 +1749,7 @@ if ($ACTION=="VolumeControl")
 	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $volume_local_channel','Context: $ext_context','Exten: 8300','Priority: 1','Callerid: $queryCID','','','','$channel','$exten');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
-	echo "Volume comando inviato per Conferenza $exten, Stage $stage Canale $channel su $server_ip\n";
+	echo "Volume príkaz poslaný pre Konferencia $exten, Stage $stage Kanál $channel na $server_ip\n";
 	}
 }
 
@@ -1766,7 +1766,7 @@ if ($ACTION=="VolumeControl")
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='debug') {echo "\n<!-- script runtime: $RUNtime secondi -->";}
+if ($format=='debug') {echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";}
 if ($format=='debug') {echo "\n</body>\n</html>\n";}
 	
 exit; 

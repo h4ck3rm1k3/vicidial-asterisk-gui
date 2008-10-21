@@ -43,7 +43,7 @@ $link=mysql_connect("$VARDB_server", "$VARDB_user", "$VARDB_pass");
 if (!$link) {
     die('MySQL connect ERROR: ' . mysql_error());
 }
-mysql_select_db("$VARDB_database",$link);
+mysql_select_db("$VARDB_database");
 
 $local_DEF = 'Local/';
 $conf_silent_prefix = '7';
@@ -51,8 +51,10 @@ $local_AMP = '@';
 $ext_context = 'demo';
 $recording_exten = '8309';
 $WeBRooTWritablE = '1';
-$non_latin = '0';	# set to 1 for UTF rules, overridden by system_settings
-$flag_channels=0;
-$flag_string = 'VICIast20';
-
+$non_latin = '0';	# set to 1 for UTF rules
+$AM_shift_BEGIN = '03:45:00';
+$AM_shift_END = '17:45:00';
+$PM_shift_BEGIN = '17:45:01';
+$PM_shift_END = '23:59:59';
+$admin_qc_enabled = '0';
 ?>

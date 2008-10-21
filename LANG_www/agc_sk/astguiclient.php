@@ -105,7 +105,7 @@ if ($force_logout)
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
 	}
-    echo "Ora non sei collegato. Grazie\n";
+    echo "Práve ste sa odhlásili, Ďakujeme\n";
     exit;
 }
 
@@ -143,29 +143,29 @@ $agcDIR = eregi_replace('astguiclient.php','',$agcDIR);
 	{
 	header ("Content-type: text/html; charset=utf-8");
 
-	echo "<title>web client astGUIclient: Login</title>\n";
+	echo "<title>web klient astGUIclient: Prihlásiť</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
 	echo "<!-- ILPA -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
 	echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásiť </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Meno užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=user SIZE=10 maxlength=20 VALUE=\"$user\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=pass SIZE=10 maxlength=20 VALUE=\"$pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
-	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ></TD></TR>\n";
+	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
 	echo "</body>\n\n";
@@ -204,31 +204,31 @@ header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build      ADD: $ADD-->\n";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build      ADD: $ADD-->\n";
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>web client astGUIclient: Login Telefono</title>\n";
+echo "<title>web klient astGUIclient: Prihlásenie telefónu</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<TABLE><TR><TD></TD>\n";
 echo "<!-- ILPA -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
 echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=user VALUE=\"$user\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=pass VALUE=\"$pass\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Telefono </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásenie telefónu </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
-echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ></TD></TR>\n";
+echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
 echo "</body>\n\n";
@@ -245,27 +245,27 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>web client astGUIclient: Login Telefono</title>\n";
+	echo "<title>web klient astGUIclient: Prihlásenie telefónu</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<TABLE><TR><TD></TD>\n";
 	echo "<!-- ILPA -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/astguiclient.php?relogin=YES&user=$user&pass=$pass&phone_login=$phone_login&phone_pass=$phone_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
 	echo "<FORM ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=user VALUE=\"$user\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=pass VALUE=\"$pass\">\n";
 	echo "<BR><BR><BR><CENTER><TABLE WIDTH=360 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#CCC2E0\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/agc_tab_astguiclient.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Telefono </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásenie telefónu </TD>";
 	echo "</TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Spiacente, il telefono inserito non e` attivo in questo sistema, riprova di nuovo: <BR> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Prepáčte, Vaše prihlasovacie meno a heslo nie sú aktívne v tomto systéme, prosím skúste znova: <BR> &nbsp; </TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
-	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ></TD></TR>\n";
+	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
 	echo "</body>\n\n";
@@ -274,7 +274,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 	}
 else
 	{
-	echo "<title>web client astGUIclient</title>\n";
+	echo "<title>web klient astGUIclient</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -390,7 +390,7 @@ else
 		}
 	else
 		{
-		echo "<!-- Nessun interno preferito presente -->\n";
+		echo "<!-- No Extension Favorites Present -->\n";
 		}
 
 ### gather phone extensions and fullnames for favorites editor ###
@@ -531,7 +531,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	?>
 
 // ################################################################################
-// ACTIVE EXTENSIONS LIST AGGIORNA FUNCTIONS
+// ACTIVE EXTENSIONS LIST OSVIEŽIŤ FUNCTIONS
 	function refresh_activeext()
 		{
 		document.getElementById("activeext").innerHTML = Nactiveext;
@@ -622,7 +622,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// BUSY TRUNK LIST AGGIORNA FUNCTIONS
+// BUSY TRUNK LIST OSVIEŽIŤ FUNCTIONS
 	function refresh_busytrunk()
 		{
 		document.getElementById("busytrunk").innerHTML = Nbusytrunk;
@@ -669,7 +669,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// BUSY EXTENSIONS LIST AGGIORNA FUNCTIONS
+// BUSY EXTENSIONS LIST OSVIEŽIŤ FUNCTIONS
 	function refresh_busyext()
 		{
 		document.getElementById("busyext").innerHTML = Nbusyext;
@@ -716,7 +716,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// LIVE TRUNK LIST FOR RIAGGANCIA/HIJACK MENU FUNCTIONS
+// LIVE TRUNK LIST FOR POLOŹIŤ/HIJACK MENU FUNCTIONS
 	function refresh_busytrunkhangup()
 		{
 		document.getElementById("TrunkHangupContent").innerHTML = Nactiveext;
@@ -763,7 +763,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// LIVE LOCAL LIST FOR RIAGGANCIA/HIJACK MENU FUNCTIONS
+// LIVE LOCAL LIST FOR POLOŹIŤ/HIJACK MENU FUNCTIONS
 	function refresh_busylocalhangup()
 		{
 		document.getElementById("LocalHangupContent").innerHTML = Nactiveext;
@@ -885,7 +885,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			else
 				{
 				bsr_continue=0;
-				alert("Puoi soltanto monitorare i canali Zap:\n" + listenvalue);
+				alert("Možete monitorovať len ZAP kanály:\n" + listenvalue);
 				}
 			}
 		if (bsr_continue == '1')
@@ -1195,7 +1195,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				{
 				recLIST = recLIST + "|" + monitorchannelvalue;
 				filename = filedate + "_" + user_abb;
-				var rec_start_html = "<a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + monitorchannelvalue + "','" + taskspan + "','" + filename + "');return false;\">Ferma la registrazione";
+				var rec_start_html = "<a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + monitorchannelvalue + "','" + taskspan + "','" + filename + "');return false;\">Zastavenie nahrávania";
 				document.getElementById(taskspan).innerHTML = rec_start_html;
 
 			}
@@ -1205,7 +1205,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				recLIST = recLIST.replace(regy, '');
 				
 				filename = taskfile;
-				var rec_stop_html = "<a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + monitorchannelvalue + "','" + taskspan + "','');return false;\">Record";
+				var rec_stop_html = "<a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + monitorchannelvalue + "','" + taskspan + "','');return false;\">NAHRAŤ";
 				document.getElementById(taskspan).innerHTML = rec_stop_html;
 				}
 			livemonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + monitorvalue + "&format=text&channel=" + monitorchannelvalue + "&queryCID=" + queryCID + "&filename=" + filename + "&exten=" + protocol + "/" + extension;
@@ -1257,7 +1257,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				recLIST = recLIST + "|" + taskconfrec;
 				filename = filedate + "_" + user_abb;
 				var channelrec = "Local/" + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfspan + "','" + taskconfrec + "','" + filename + "');return false;\">Ferma la registrazione</a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfspan + "','" + taskconfrec + "','" + filename + "');return false;\">Zastavenie nahrávania</a>";
 				document.getElementById(taskconfspan).innerHTML = conf_rec_start_html;
 
 			}
@@ -1268,7 +1268,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 				
 				filename = taskconffile;
 				var channelrec = "Local/" + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfspan + "','" + taskconfrec + "','');return false;\">Record</a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfspan + "','" + taskconfrec + "','');return false;\">NAHRAŤ</a>";
 				document.getElementById(taskconfspan).innerHTML = conf_rec_start_html;
 				}
 			confmonitor_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=" + taskconfrectype + "&format=text&channel=" + channelrec + "&filename=" + filename + "&exten=" + recording_exten + "&ext_context=" + ext_context + "&ext_priority=1";
@@ -1291,7 +1291,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 
 // ################################################################################
-// Check to see if user's extension is su a call right now, if it is, format and print it
+// Check to see if user's extension is na a call right now, if it is, format and print it
 // Also grab the current server time and the status of the favorite extens
 	function check_for_live_calls()
 		{
@@ -1384,7 +1384,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=3;
 					if (live_calls > 0)
 						{
-						var live_calls_HTML = "<font face=\"Arial,Helvetica\"><B>CHIAMATE IN CORSO SU QUESTO TELEFONO:</B></font><BR><table width=100%><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CANALE CLIENT</td><td><font class=\"log_title\">CANALE REMOTO</td><td><font class=\"log_title\">Registrazione</td><td><font class=\"log_title\">RIAGGANCIA</td><td><font class=\"log_title\">TRASF</td><td><font class=\"log_title\">ATTESA</td></tr>";
+						var live_calls_HTML = "<font face=\"Arial,Helvetica\"><B>ŽIVÉ HOVORY NA TOMTO TELEFÓNE:</B></font><BR><table width=100%><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">KLIENTSKÝ KANÁL</td><td><font class=\"log_title\">VZDIALENÝ KANÁL</td><td><font class=\"log_title\">ZÁZNAM</td><td><font class=\"log_title\">POLOŹIŤ</td><td><font class=\"log_title\">PREPOJIŤ</td><td><font class=\"log_title\">ZAPARKOVAŤ</td></tr>";
 						if ( (LCAcount > live_calls)  || (LCAcount < live_calls) )
 							{
 							LCAe[0]=''; LCAe[1]=''; LCAe[2]=''; LCAe[3]=''; LCAe[4]=''; LCAe[5]=''; 
@@ -1400,7 +1400,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 								{var row_color = '#DDDDFF';}
 							else
 								{var row_color = '#CCCCFF';}
-							var Recordbutton = 'Monitor';
+							var NAHRAŤbutton = 'Monitor';
 							var conv_ct = (loop_ct + conv_start);
 							var conversation_array = check_live_array[conv_ct].split(" ~");
 							var channelfieldA_array = conversation_array[1].split(": ");
@@ -1410,11 +1410,11 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 
 							var regx = new RegExp("\\|"+channelfieldBtrunk_array[1],"ig");
 							if (recLIST.match(regx)) 
-								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Ferma la registrazione</span>";}
+								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('StopMonitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Zastavenie nahrávania</span>";}
 							else 
-								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">Record</span>";}
+								{live_calls_HTML = live_calls_HTML + "<span id=\"recordlive" + loop_ct + "\"><a href=\"#\" onclick=\"liverecording_send_recording('Monitor','" + channelfieldBtrunk_array[1] + "','recordlive" + loop_ct + "');return false;\">NAHRAŤ</span>";}
 
-							live_calls_HTML = live_calls_HTML + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldBtrunk_array[1] + "');return false;\">RIAGGANCIA</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldBtrunk_array[1] + "','" + channelfieldA_array[1] + "');return false;\">TRASF</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + channelfieldBtrunk_array[1] + "');return false;\">ATTESA</td></tr>";
+							live_calls_HTML = live_calls_HTML + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldBtrunk_array[1] + "');return false;\">POLOŹIŤ</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldBtrunk_array[1] + "','" + channelfieldA_array[1] + "');return false;\">PREPOJIŤ</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + channelfieldBtrunk_array[1] + "');return false;\">ZAPARKOVAŤ</td></tr>";
 
 							if (LCAe[ARY_ct].length < 1) 
 								{LCAe[ARY_ct] = channelfieldA_array[1];   LCAcontent_change++;  LCAalter++;}
@@ -1531,7 +1531,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (out_calls > 0)
 						{
-						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> DATA/ORA CHIAMATA</td><td><font class=\"log_title\">NUMERO</td><td align=right><font class=\"log_title\">LUNGHEZZA (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
+						var out_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> DÁTUM HOVORU/ČAS</td><td><font class=\"log_title\">ČÍSLO</td><td align=right><font class=\"log_title\">DĹŽKA (M:SS)</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < out_calls)
 							{
 							loop_ct++;
@@ -1559,7 +1559,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=0;
 					if (in_calls > 0)
 						{
-						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> DATA/ORA CHIAMATA</td><td><font class=\"log_title\">IN-NUMERO</td><td COLSPAN=2><font class=\"log_title\">CALLERID</td><td align=right><font class=\"log_title\">LUNGHEZZA</td><td><font class=\"log_title\"> </td></tr>"
+						var in_log_HTML = "<table width=580><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> DÁTUM HOVORU/ČAS</td><td><font class=\"log_title\">V-ČÍSLE</td><td COLSPAN=2><font class=\"log_title\">IDVOLAJÚCEHO</td><td align=right><font class=\"log_title\">DĹŽKA</td><td><font class=\"log_title\"> </td></tr>"
 						while (loop_ct < in_calls)
 							{
 							loop_ct++;
@@ -1634,7 +1634,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 					var conv_start=-1;
 					if (parked_count > 0)
 						{
-						var park_HTML = "<table width=600><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHANNEL<BR>&nbsp; CHIAMATA ID</td><td><font class=\"log_title\">MESSO IN ATTESA DA<BR>&nbsp; TEMPO IN ATTESA</td><td><font class=\"log_title\">RIAGGANCIA</td><td><font class=\"log_title\">TRASF</td><td><font class=\"log_title\">RIPRENDI</td></tr>"
+						var park_HTML = "<table width=600><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\">CHANNEL<BR>&nbsp; HOVOR ID</td><td><font class=\"log_title\">ZAZAPARKOVAŤOVANIE PRE<BR>&nbsp; ČAS ZAZAPARKOVAŤOVANIA</td><td><font class=\"log_title\">POLOŹIŤ</td><td><font class=\"log_title\">PREPOJIŤ</td><td><font class=\"log_title\">PREVZIAŤ</td></tr>"
 						while (loop_ct < parked_count)
 							{
 							loop_ct++;
@@ -1650,7 +1650,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var park_call_id = park_array[1];
 							var parked_by = park_array[3];
 							var parked_time = park_array[4];
-							park_HTML = park_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + park_channel + "<BR>&nbsp; " + park_call_id + "</td><td><font class=\"log_text\">" + parked_by + "<BR>&nbsp; " + parked_time + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + park_channel + "');return false;\">RIAGGANCIA</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + park_channel + "');return false;\">TRASF</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + park_channel + "');return false;\">RIPRENDI</a></td></tr>";
+							park_HTML = park_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + park_channel + "<BR>&nbsp; " + park_call_id + "</td><td><font class=\"log_text\">" + parked_by + "<BR>&nbsp; " + parked_time + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + park_channel + "');return false;\">POLOŹIŤ</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + park_channel + "');return false;\">PREPOJIŤ</a></td><td><font class=\"log_text\"><a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + park_channel + "');return false;\">PREVZIAŤ</a></td></tr>";
 					
 							}
 						park_HTML = park_HTML + "</table>";
@@ -1762,7 +1762,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			show_reglink=1;
 			reglink = "<a href=\"#\" onclick=\"conf_register_room('" + head_conf + "');return false;\">Register</a>";
 			}
-		var conf_head_HTML = "<font class=\"sh_text\">CONFERENZA " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Registrato su: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Entra in Conferenza </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">Aggiorna </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">Record</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Trasmetti Tono Tastiera</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Chiama dalla Conferenza</A><BR></font>";
+		var conf_head_HTML = "<font class=\"sh_text\">KONFERENCIA " + head_conf + "</b></font><font class=\"sb_text\">&nbsp; &nbsp; Pprihlásenie do: " + head_reg + " &nbsp; " + reglink + " &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"basic_originate_call('" + head_conf + "','NO','NO');return false;\">Vložiť konferenciu </a><BR><a href=\"#\" onclick=\"check_for_conf_calls('" + head_conf + "','1');return false;\">Osviežiť </a> &nbsp; &nbsp; <span id=\"conf_rec_link\"><a href=\"#\" onclick=\"conf_send_recording('MonitorConf','conf_rec_link','" + head_conf + "');return false;\">NAHRAŤ</a></span> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dtmf STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendConfDTMF(" + head_conf + ");\">Poslať DTMF</A> &nbsp; &nbsp; &nbsp; &nbsp; <input TYPE=TEXT SIZE=15 NAME=conf_dial STYLE=\"font-family : sans-serif; font-size : 10px\"> <A HREF=\"#\" onclick=\"SendManualDial('YES'," + head_conf + ");\">Volanie z konferencie</A><BR></font>";
 	
 		document.getElementById("ConfereNceHeaderContent").innerHTML = conf_head_HTML;
 		check_for_conf_calls(head_conf,taskrefresh);
@@ -1823,7 +1823,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 						var LMAcontent_change=0;
 						var LMAcontent_match=0;
 						var conv_start=-1;
-						var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>CHIAMATE IN CORSO SU QUESTA CONFERENZA:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">CANALE REMOTO</TD><TD><font class=\"log_title\">RIAGGANCIA</TD><TD><font class=\"log_title\">TRASF</TD></TR>";
+						var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>ŽIVÉ HOVORY V TEJTO KONFERENCII:</B></font><BR><TABLE WIDTH=500><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">VZDIALENÝ KANÁL</TD><TD><font class=\"log_title\">POLOŹIŤ</TD><TD><font class=\"log_title\">PREPOJIŤ</TD></TR>";
 						if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 							{
 							LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -1839,7 +1839,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 								{var row_color = '#CCCCFF';}
 							var conv_ct = (loop_ct + conv_start);
 							var channelfieldA = conf_chan_array[conv_ct];
-							live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">RIAGGANCIA</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">TRASF</td></tr>";
+							live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">POLOŹIŤ</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"showMainXfeR('MainXfeRBox','" + channelfieldA + "');return false;\">PREPOJIŤ</td></tr>";
 
 							if (!LMAe[ARY_ct]) 
 								{LMAe[ARY_ct] = channelfieldA;   LMAcontent_change++;  LMAalter++;}
@@ -1925,7 +1925,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter manual dialstring and pass su to originate call
+// filter manual dialstring and pass na to originate call
 	function SendManualDial(taskFromConf,taskconfexten)
 		{
 		if (taskFromConf == 'YES')
@@ -1958,7 +1958,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter conf_dtmf send string and pass su to originate call
+// filter conf_dtmf send string and pass na to originate call
 	function SendConfDTMF(taskconfdtmf)
 		{
 		var dtmf_number = document.extensions_list.conf_dtmf.value;
@@ -2061,7 +2061,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Send Originate command to manager to direct user to Casella Voicemail
+// Send Originate command to manager to direct user to hlasová schránka
 	function SendCheckVoiceMail() 
 		{
 		var xmlhttp=false;
@@ -2288,7 +2288,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		var VD_favlist_ct_half = parseInt(favlistCT / 2);
 		if (VD_favlist_ct_half < 30) {VD_favlist_ct_half = 30;}
 		var favlist_sec_col = 0;
-		var favedit_HTML = "<center><table cellpadding=5 cellspacing=5 width=750><tr><td colspan=2 align=center bgcolor=\"#DDDD99\"><B>INTERNI DISPONIBILI</B></td><td align=center bgcolor=\"#CCCC99\"><B> PREFERITI</B></td></tr><tr><td bgcolor=\"#DDDD99\" height=380 width=200 valign=top><font class=\"ss_text\"><span id=FavSelectA>";
+		var favedit_HTML = "<center><table cellpadding=5 cellspacing=5 width=750><tr><td colspan=2 align=center bgcolor=\"#DDDD99\"><B>DOSTUPNÉ POBOČKY</B></td><td align=center bgcolor=\"#CCCC99\"><B> FAVORIZOVANÉ</B></td></tr><tr><td bgcolor=\"#DDDD99\" height=380 width=200 valign=top><font class=\"ss_text\"><span id=FavSelectA>";
 		loop_ct = 0;
 		while (loop_ct < favlistCT)
 			{
@@ -2296,7 +2296,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			var regFAVlist = new RegExp("'" + favlistEXTEN[0] + "'","ig");
 			if (favorites_listEDIT.match(regFAVlist))
 				{
-				// do not print extension, it's su the favorites list
+				// do not print extension, it's na the favorites list
 				}
 			else
 				{
@@ -2385,7 +2385,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 			hideDiv('MainPanel');
 			showDiv('LogouTBox');
 
-		document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&user=" + user + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "\">FAI CLICK QUI PER AUTENTICARTI DI NUOVO</a>\n";
+		document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&user=" + user + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "\">KLIKNITE TU NA ZNOVU PRIHLÁSENIE</a>\n";
 
 		logout_stop_timeouts = 1;
 
@@ -2466,7 +2466,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 		start_all_refresh();
 		}
 	function pause()	// Pauses the refreshing of the lists
-		{active_display=2;  display_message="  - DISPLAY ATTIVO IN PAUSA -";}
+		{active_display=2;  display_message="  - ZOBRAZIT AKTÍVNU PAUZU -";}
 	function start()	// resumes the refreshing of the lists
 		{active_display=1;  display_message='';}
 	function faster()	// lowers by 1000 milliseconds the time until the next refresh
@@ -2487,13 +2487,13 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	function activeext_order_asc()	// changes order of activeext list to ascending
 		{
 		activeext_order="asc";   getactiveext();
-		desc_order_HTML ='<a href="#" onclick="activeext_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="activeext_order_desc();return false;">PORADIE</a>';
 		document.getElementById("activeext_order").innerHTML = desc_order_HTML;
 		}
 	function activeext_order_desc()	// changes order of activeext list to descending
 		{
 		activeext_order="desc";   getactiveext();
-		asc_order_HTML ='<a href="#" onclick="activeext_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="activeext_order_asc();return false;">PORADIE</a>';
 		document.getElementById("activeext_order").innerHTML = asc_order_HTML;
 		}
 
@@ -2503,13 +2503,13 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	function busytrunk_order_asc()	// changes order of busytrunk list to ascending
 		{
 		busytrunk_order="asc";   getbusytrunk();
-		desc_order_HTML ='<a href="#" onclick="busytrunk_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="busytrunk_order_desc();return false;">PORADIE</a>';
 		document.getElementById("busytrunk_order").innerHTML = desc_order_HTML;
 		}
 	function busytrunk_order_desc()	// changes order of busytrunk list to descending
 		{
 		busytrunk_order="desc";   getbusytrunk();
-		asc_order_HTML ='<a href="#" onclick="busytrunk_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="busytrunk_order_asc();return false;">PORADIE</a>';
 		document.getElementById("busytrunk_order").innerHTML = asc_order_HTML;
 		}
 	function busytrunkhangup_force_refresh()	// forces immediate refresh of list content
@@ -2521,13 +2521,13 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	function busyext_order_asc()	// changes order of busyext list to ascending
 		{
 		busyext_order="asc";   getbusyext();
-		desc_order_HTML ='<a href="#" onclick="busyext_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="busyext_order_desc();return false;">PORADIE</a>';
 		document.getElementById("busyext_order").innerHTML = desc_order_HTML;
 		}
 	function busyext_order_desc()	// changes order of busyext list to descending
 		{
 		busyext_order="desc";   getbusyext();
-		asc_order_HTML ='<a href="#" onclick="busyext_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="busyext_order_asc();return false;">PORADIE</a>';
 		document.getElementById("busyext_order").innerHTML = asc_order_HTML;
 		}
 	function busylocalhangup_force_refresh()	// forces immediate refresh of list content
@@ -2716,14 +2716,14 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=5 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="body_text">
-<?	echo "Benvenuto $LOGfullname, Sei loggato su questo telefono: $fullname - $protocol/$extension su $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a><BR>\n"; ?>
+<?	echo "Vítame Vás $LOGfullname, Ste prihlásený k telefónu: $fullname - $protocol/$extension na $server_ip &nbsp; <a href=\"#\" onclick=\"LogouT();return false;\">ODHLÁSIŤ</a><BR>\n"; ?>
 </TD></TR>
 <TR VALIGN=TOP ALIGN=LEFT>
-<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main.gif" ALT="Pannello Principale" WIDTH=83 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Pannello Linee Attive" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Pannello Conferenze" WIDTH=139 HEIGHT=30 Border=0></A></TD>
-<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Controlla Voicemail" WIDTH=170 HEIGHT=30 Border=0></A></TD>
-<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Chiamata in corso" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD><A HREF="#" onclick="MainPanelToFront();"><IMG SRC="../agc/images/agc_tab_main.gif" ALT="Základný panel" WIDTH=83 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines.gif" ALT="Panel aktívnych liniek" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences.gif" ALT="Panel konferencií" WIDTH=139 HEIGHT=30 Border=0></A></TD>
+<TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON.gif" NAME=voicemail ALT="Overiť hlasovú schránku" WIDTH=170 HEIGHT=30 Border=0></A></TD>
+<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Živý hovor" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </SPAN>
 
@@ -2732,59 +2732,59 @@ echo "</head>\n";
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:29;" id="TrunkHangupBox">
-    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> TRUNK RIAGGANCIA <BR><BR>
+    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> TRUNK POLOŹIŤ <BR><BR>
 	<span id="TrunkHangupContent"> Active Trunks Menu </span><BR>
-	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Disconnetti il Trunk</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Dirotta il Trunk</a> &nbsp; | &nbsp; </span>
-	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Ascolta il Trunk</a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busytrunkhangup_force_refresh();return false;">Aggiorna</a> &nbsp; | &nbsp; 
-	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');">Torna alla schermata principale</a>
+	<span id="TrunkHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Trunk');return false;">Zložiť trunk</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','HIJACK');return false;">Capturar Trunk</a> &nbsp; | &nbsp; </span>
+	<span id="TrunkHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Trunk','LISTEN');return false;">Počúvať trunk</a> &nbsp; | &nbsp; </span>
+	<a href="#" onclick="busytrunkhangup_force_refresh();return false;">Osviežiť</a> &nbsp; | &nbsp; 
+	<a href="#" onclick="hideTrunkHangup('TrunkHangupBox');">Säť do zakladného okna</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:28;" id="LocalHangupBox">
-    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> DISCONNETTI LOCALE <BR><BR>
-	<span id="LocalHangupContent"> Menu Locale Attivo </span><BR>
-	<span id="LocalHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Local');return false;">Disconnetti locale</a> &nbsp; | &nbsp; </span>
-	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;">Dirotta Locale</a> &nbsp; | &nbsp; </span>
-	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;">Ascolta Locale</a> &nbsp; | &nbsp; </span>
-	<a href="#" onclick="busylocalhangup_force_refresh();return false;">Aggiorna</a> &nbsp; | &nbsp; 
-	<a href="#" onclick="hideLocalHangup('LocalHangupBox');">Torna alla schermata principale</a>
+    <table border=1 bgcolor="#CDE0C2" width=600 height=500><TR><TD> Zloženie lokálne <BR><BR>
+	<span id="LocalHangupContent"> Aktívne lokálne menu </span><BR>
+	<span id="LocalHangup_HUlink"><a href="#" onclick="busyhangup_send_hangup('Local');return false;">Zložiť lokálne</a> &nbsp; | &nbsp; </span>
+	<span id="LocalHangup_HJlink"><a href="#" onclick="busyhangup_send_redirect('Local');return false;">Capturar Local</a> &nbsp; | &nbsp; </span>
+	<span id="LocalHangup_ZMlink"><a href="#" onclick="busyhangup_send_redirect('Local','LISTEN');return false;">Počúvať lokálne</a> &nbsp; | &nbsp; </span>
+	<a href="#" onclick="busylocalhangup_force_refresh();return false;">Osviežiť</a> &nbsp; | &nbsp; 
+	<a href="#" onclick="hideLocalHangup('LocalHangupBox');">Säť do zakladného okna</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:80px;top:12px;z-index:42;" id="MainXfeRBox">
 	<input type=hidden name=H_XfeR_channel>
 	<input type=hidden name=M_XfeR_channel>
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> TRASFERIMENTO DELLA CHIAMATA IN CORSO</b> <BR>Canale trasferito: <span id="MainXfeRChanneL">Canale</span><BR></tr>
-	<tr><td>Interni:<BR><span id="MainXfeRContent"> Menu Interni </span></td>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> PRESMEROVANIE ŽIVÉHO HOVORU</b> <BR>Kanál má byť presmerovaný: <span id="MainXfeRChanneL">Kanál</span><BR></tr>
+	<tr><td>Pobočky:<BR><span id="MainXfeRContent"> Menu pobočiek </span></td>
 	<td>
 	<BR>
-	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Invia all`interno selezionato</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Invia alla VoiceMail selezionata</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Invia a questo numero</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
-	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">Aggiorna</a> <BR><BR><BR>
-	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Torna alla schermata principale</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('XfeR');return false;">Poslať do vybranej pobočky</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('VMAIL');return false;">Poslať do vybranej odkazovej schránky</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_redirect('ENTRY');return false;">Poslať na toto číslo</a>:<BR><input type=text name=extension_xfer_entry size=20 maxlength=50> <BR><BR>
+	<a href="#" onclick="getactiveext('MainXfeRBox');return false;">Osviežiť</a> <BR><BR><BR>
+	<a href="#" onclick="hideMainXfeR('MainXfeRBox');">Säť do zakladného okna</a> <BR><BR>
 	</TD>
-	<TD>Conferenze:<BR><font size=1>(Seleziona uno dei numeri sotto per inviarlo ad una conferenza)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Invia anche il mio canale<div class="scroll_list" id="MainXfeRconfContent"> Menu Conferenze </div></td></TR></TABLE>
+	<TD>Konferencie:<BR><font size=1>(Kliknite na číslo dole pre poslanie do konferencie)<BR><input type=checkbox name=MainXfeRconfXTRA size=1 value="1"> Poslať môj kanál tiež<div class="scroll_list" id="MainXfeRconfContent"> Menu konferencií </div></td></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:80px;top:12px;z-index:43;" id="LocalDialBox">
-    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> LOCAL Interni Dial</b> <BR>Chiamata proveniente da: <span id="LocalDialChanneL">Canale</span><BR></tr>
-	<tr><td>Interni:<BR><span id="LocalDialContent"> Menu Interni </span></td>
+    <table border=0 bgcolor="#FFFFCC" width=600 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> Volanie LOKÁLNYCH pobočiek</b> <BR>Volanie telefónu z: <span id="LocalDialChanneL">Kanál</span><BR></tr>
+	<tr><td>Pobočky:<BR><span id="LocalDialContent"> Menu pobočiek </span></td>
 	<td>
 	<BR>
-	<a href="#" onclick="mainxfer_send_originate('DiaL','','');return false;">Chiama l`interno selezionato</a> <BR><BR>
-	<a href="#" onclick="mainxfer_send_originate('VMAIL');return false;">Chiama la VoiceMail selezionata</a> <BR><BR>
-	<a href="#" onclick="getactiveext('LocalDialBox');return false;">Aggiorna</a> <BR><BR><BR>
-	<a href="#" onclick="hideLocalDial('LocalDialBox');">Torna alla schermata principale</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_originate('DiaL','','');return false;">Volať vybrané pobočky</a> <BR><BR>
+	<a href="#" onclick="mainxfer_send_originate('VMAIL');return false;">Volať vybrané hlasové schránky</a> <BR><BR>
+	<a href="#" onclick="getactiveext('LocalDialBox');return false;">Osviežiť</a> <BR><BR><BR>
+	<a href="#" onclick="hideLocalDial('LocalDialBox');">Säť do zakladného okna</a> <BR><BR>
 	</TD>
 	<TD></td></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:40px;top:12px;z-index:41;" id="ParkDisplayBox">
-    <table border=0 bgcolor="#FFFFCC" width=640 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> CHIAMATE IN ATTESA:</b> <div class="scroll_park" id="ParkDisplayContents"></div>
-	<a href="#" onclick="hideParkDisplay('ParkDisplayBox');">Torna alla schermata principale</a> <BR><BR>
+    <table border=0 bgcolor="#FFFFCC" width=640 height=500 cellpadding=3><TR><TD COLSPAN=3 ALIGN=CENTER><b> ZAZAPARKOVAŤOVANIE HOVOROV:</b> <div class="scroll_park" id="ParkDisplayContents"></div>
+	<a href="#" onclick="hideParkDisplay('ParkDisplayBox');">Säť do zakladného okna</a> <BR><BR>
 	</td></TR></TABLE>
 </span>
 
@@ -2794,19 +2794,19 @@ echo "</head>\n";
 </TD></TR>
 <tr><td><span id="busycallsspan"></span></td></tr>
 <tr><td><span id="busycallsdebug"></span></td></tr>
-<tr><td align=center><font face="Arial,Helvetica"><B>VOICEMAIL &nbsp; &nbsp; </B></font> NUOVO: <span id="new_vmail_span"></span> &nbsp; &nbsp; VECCHIO: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>CHIAMATA MANUALE &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">DIAL</A></td></tr>
+<tr><td align=center><font face="Arial,Helvetica"><B>HLASOVÁ SCHRÁNKA &nbsp; &nbsp; </B></font> NOVÁ: <span id="new_vmail_span"></span> &nbsp; &nbsp; STARÁ: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>RUČNÉ VOLANIE &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">DIAL</A></td></tr>
 
-<tr><td align=center><a href="#" onclick="showParkDisplay('ParkDisplayBox');return false;"><font face="Arial,Helvetica"><B>CHIAMATE IN ATTESA</B></a>:  <span id="parked_calls_count">0</span> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="#" onclick="showLocalDial('LocalDialBox');return false;"><font face="Arial,Helvetica"><B>LOCAL CHIAMA EXTENSIONS</a></td></tr>
+<tr><td align=center><a href="#" onclick="showParkDisplay('ParkDisplayBox');return false;"><font face="Arial,Helvetica"><B>ZAZAPARKOVAŤOVANIE HOVOROV</B></a>:  <span id="parked_calls_count">0</span> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="#" onclick="showLocalDial('LocalDialBox');return false;"><font face="Arial,Helvetica"><B>VOLANIE LOKÁLNYCH POBOČIEK</a></td></tr>
 
-<tr><td align=center><font face="Arial,Helvetica"><B>CHIAMATE OUTBOUND:</B></font></td></tr>
+<tr><td align=center><font face="Arial,Helvetica"><B>ODCHODZIE HOVORY:</B></font></td></tr>
 <tr><td align=center><div class="scroll_log" id="outboundcallsspan"></div></td></tr>
-<tr><td align=center><font face="Arial,Helvetica"><B>CHIAMATE INBOUND:</B></font></td></tr>
+<tr><td align=center><font face="Arial,Helvetica"><B>PRÍCHODZIE HOVORY:</B></font></td></tr>
 <tr><td align=center><div class="scroll_log" id="inboundcallsspan"></div></td></tr>
-<tr><td align=left><font face="Arial,Helvetica" size=1>Versione di astGUIclient web-client:<? echo $version ?> BUILD:<? echo $build ?></font></td></tr>
+<tr><td align=left><font face="Arial,Helvetica" size=1>astGUIclient verzia web-klient:<? echo $version ?> POSTAVENÉ:<? echo $build ?></font></td></tr>
 </TABLE>
 
 <span style="position:absolute;left:640px;top:0px;z-index:33;" id="FavoriteSBox">
-    <table border=0 bgcolor="#DDDDFF" width=200 height=400 cellpadding=2 ALIGN=TOP><TR><TD align=center><span id="FavoriteSContent"><font class="sh_text"> PREFERITI</font><font class="sb_text"> &nbsp; &nbsp; &nbsp; <a href="#" onclick="favorites_editor('BuilD');return false;"> modifica</a></span></TD></TR>
+    <table border=0 bgcolor="#DDDDFF" width=200 height=400 cellpadding=2 ALIGN=TOP><TR><TD align=center><span id="FavoriteSContent"><font class="sh_text"> FAVORIZOVANÉ</font><font class="sb_text"> &nbsp; &nbsp; &nbsp; <a href="#" onclick="favorites_editor('BuilD');return false;"> upraviť</a></span></TD></TR>
 <?
 	$h=0;
 	while ($favorites_count > $h)
@@ -2824,10 +2824,10 @@ echo "</head>\n";
 
 
 <span style="position:absolute;left:5px;top:5px;z-index:34;" id="FavoriteSEdiT">
-    <table border=0 bgcolor="#DDDDFF" width=800 height=450 cellpadding=2 ALIGN=TOP><TR HEIGHT=95%><TD align=center HEIGHT=95%><span id="FavoriteSEditContent"> PREFERITI</span></TD></TR>
+    <table border=0 bgcolor="#DDDDFF" width=800 height=450 cellpadding=2 ALIGN=TOP><TR HEIGHT=95%><TD align=center HEIGHT=95%><span id="FavoriteSEditContent"> FAVORIZOVANÉ</span></TD></TR>
 	<TR><TD ALIGN=CENTER><BR> &nbsp; </TD></TR>
-	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="SubmiT_FavoritE_ChangEs();return false;">SALVA I CAMBIAMENTI AI PREFERITI - richiede Logout</a></TD></TR>
-	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="hideDiv('FavoriteSEdiT');return false;">TORNA ALLA SCHERMATA PRECEDENTE- ignora i cambiamenti fatti</a></TD></TR>
+	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="SubmiT_FavoritE_ChangEs();return false;">POTVRDIT FAVORIZOVANÉ ZMENY – vyžaduje sa odhlásenie</a></TD></TR>
+	<TR VALIGN=BOTTOM><TD VALIGN=BOTTOM ALIGN=CENTER BGCOLOR="#FFFFCC"><a href="#" onclick="hideDiv('FavoriteSEdiT');return false;">BACK TO MAIN WINDOW - ignore changes made</a></TD></TR>
 	</TABLE>
 </span>
 
@@ -2837,30 +2837,30 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:46px;z-index:20;" id="ActiveLinesPanel">
 <table border=0 BGCOLOR="#CDE0C2" width=640>
 <tr><td colspan=3>
-<a href="#" onclick="pause();return false;">ARRESTO</a> | <a href="#" onclick="start();return false;">INIZIO</a> &nbsp; &nbsp; Frequenza di refresh: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Piu` veloce</a> | <a href="#" onclick="slower();return false;">Piu` lento</a></p>
-	<div id="status"><em>Inizializzazione..</em></div>
+<a href="#" onclick="pause();return false;">ZASTAVIŤ</a> | <a href="#" onclick="start();return false;">SPUSTIŤ</a> &nbsp; &nbsp; Doba obnovenia: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Rýchlejšie</a> | <a href="#" onclick="slower();return false;">Pomalšie</a></p>
+	<div id="status"><em>Inicializovať..</em></div>
 </td></tr>
-<tr><td>Interni Attivi <BR> 
-<a href="#" onclick="activeext_force_refresh();return false;">AGGIORNA</a> | 
-<span id="activeext_order"><a href="#" onclick="activeext_order_desc();return false;">ORDINE</a> | </span>
+<tr><td>Aktívne pobočky <BR> 
+<a href="#" onclick="activeext_force_refresh();return false;">OSVIEŽIŤ</a> | 
+<span id="activeext_order"><a href="#" onclick="activeext_order_desc();return false;">PORADIE</a> | </span>
 </td>
 
-<td>Linee Esterne <BR>
-<a href="#" onclick="busytrunk_force_refresh();return false;">AGGIORNA</a> | 
-<span id="busytrunk_order"><a href="#" onclick="busytrunk_order_desc();return false;">ORDINE</a> | </span>
+<td>Vonkajšie linky <BR>
+<a href="#" onclick="busytrunk_force_refresh();return false;">OSVIEŽIŤ</a> | 
+<span id="busytrunk_order"><a href="#" onclick="busytrunk_order_desc();return false;">PORADIE</a> | </span>
 </td>
 
-<td>Interni Locali <BR>
-<a href="#" onclick="busyext_force_refresh();return false;">AGGIORNA</a> | 
-<span id="busyext_order"><a href="#" onclick="busyext_order_desc();return false;">ORDINE</a> | </span>
+<td>Lokálne pobočky <BR>
+<a href="#" onclick="busyext_force_refresh();return false;">OSVIEŽIŤ</a> | 
+<span id="busyext_order"><a href="#" onclick="busyext_order_desc();return false;">PORADIE</a> | </span>
 </td></tr>
 
 <tr><td VALIGN=TOP>
-	<span id="activeext"><em>I Dati vanno qui</em></span><BR><BR>
+	<span id="activeext"><em>Tu sú dáta</em></span><BR><BR>
 </td><td VALIGN=TOP>
-	<span id="busytrunk"><em>I Dati vanno qui</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Azione Trunk</a></span>
+	<span id="busytrunk"><em>Tu sú dáta</em></span><BR><BR><span id="TrunkHangupLink"><a href="#" onclick="showTrunkHangup('TrunkHangupBox');return false;">Trunk akcia</a></span>
 </td><td VALIGN=TOP>
-	<span id="busyext"><em>I Dati vanno qui</em></span><BR><BR><span id="LocalHangupLink"><a href="#" onclick="showLocalHangup('LocalHangupBox');return false;">Azione Locale</a></span>
+	<span id="busyext"><em>Tu sú dáta</em></span><BR><BR><span id="LocalHangupLink"><a href="#" onclick="showLocalHangup('LocalHangupBox');return false;">Lokálna akcia</a></span>
 </td></tr>
 
 </table>
@@ -2872,12 +2872,12 @@ echo "</head>\n";
 <TR><TD></TD></TR></TABLE>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;color:black;" id="ConfereNcesListSpan">
-<span id="ConfereNcesListContent">Lista delle conferenze </span>
+<span id="ConfereNcesListContent">Zoznam konferencií </span>
 </span>
 
 <span style="position:absolute;left:140px;top:0px;z-index:32;color:black;width:500;" id="ConfereNceHeaderSpan">
 <span id="ConfereNceHeaderContent"> </span><BR>
-<span style="width:540;height:400;" id="ConfereNceDetailContent">Fai click su una delle conferenze room sulla sinistra per avere informazioni a riguardo </span>
+<span style="width:540;height:400;" id="ConfereNceDetailContent">Kliknite ľavým tlačidlom na konferenciu pre získanie informácie </span>
 </span>
 
 

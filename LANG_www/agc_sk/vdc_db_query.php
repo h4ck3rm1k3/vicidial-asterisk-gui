@@ -381,14 +381,14 @@ else
 
 	if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-	echo "Utentename/Password non validi: |$user|$pass|\n";
+	echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
 	exit;
 	}
 	else
 	{
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -400,7 +400,7 @@ else
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -415,8 +415,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Script per query su Database";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    USER: $user   server_ip: $server_ip-->\n";
+echo "<title>VICIDiaL Databázový dotaz-script";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -440,7 +440,7 @@ if ($ACTION == 'LogiNCamPaigns')
 	else
 	{
 	echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
-	echo "<option value=\"\">-- SELEZIONARE UNA CAMPAGNA --</option>\n";
+	echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
 
 	$stmt="SELECT user_group from vicidial_users where user='$user' and pass='$pass'";
 	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
@@ -489,7 +489,7 @@ if ($ACTION == 'regCLOSER')
 	if ( (strlen($closer_choice)<1) || (strlen($user)<1) )
 	{
 	$channel_live=0;
-	echo "Scelta del Gruppo $closer_choice non e` valido\n";
+	echo "Zmena skupiny $closer_choice Nie je správny\n";
 	exit;
 	}
 	else
@@ -556,7 +556,7 @@ if ($ACTION == 'regCLOSER')
 		}
 
 	}
-	echo "Closer In Scelta del Gruppo $closer_choice e` stato registrato dall`utente $user\n";
+	echo "Closer In Zmena skupiny $closer_choice bol zaregistrovaný pre užívateľa $user\n";
 }
 
 
@@ -573,8 +573,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1)  || (strlen($ext_context)<1) )
 	{
 	$channel_live=0;
-	echo "LISTA DI CHIAMATA VUOTA\n";
-	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non e` valido\n";
+	echo "ZASOBNIK JE PRAZDNY\n";
+	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context Nie je správny\n";
 	exit;
 	}
 	else
@@ -617,7 +617,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC NUMERO\n";
+					echo "DNC ČÍSLO\n";
 					exit;
 					}
 				$stmt="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign';";
@@ -627,7 +627,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC NUMERO\n";
+					echo "DNC ČÍSLO\n";
 					exit;
 					}
 				}
@@ -654,7 +654,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] < 1)
 					{
-					echo "NUMERO NOT IN CAMPLISTS\n";
+					echo "ČÍSLO NOT IN CAMPLISTS\n";
 					exit;
 					}
 				}
@@ -895,7 +895,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$rslt=mysql_query($stmt, $link);
 
 				#############################################
-				##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+				##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 				$rslt=mysql_query($stmt, $link);
 				if ($DB) {echo "$stmt\n";}
@@ -986,7 +986,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		}
 		else
 		{
-		echo "LISTA DI CHIAMATA VUOTA\n";
+		echo "ZASOBNIK JE PRAZDNY\n";
 		}
 	}
 }
@@ -1004,8 +1004,8 @@ if ($ACTION == 'alt_phone_change')
 	if ( (strlen($stage)<1) || (strlen($called_count)<1) || (strlen($lead_id)<1)  || (strlen($phone_number)<1) )
 		{
 		$channel_live=0;
-		echo "NUMERO ALTERNATIVO NUMERO STATO NOT CHANGED\n";
-		echo "$phone_number $stage $lead_id or $called_count non e` valido\n";
+		echo "ALTERN. TELEFÓN ČÍSLO STAV NOT CHANGED\n";
+		echo "$phone_number $stage $lead_id or $called_count Nie je správny\n";
 		exit;
 		}
 	else
@@ -1014,7 +1014,7 @@ if ($ACTION == 'alt_phone_change')
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 
-		echo "NUMERO ALTERNATIVO NUMERO STATO CHANGED\n";
+		echo "ALTERN. TELEFÓN ČÍSLO STAV CHANGED\n";
 		}
 }
 
@@ -1032,7 +1032,7 @@ if ($ACTION == 'manDiaLskip')
 	{
 		$channel_live=0;
 		echo "LEAD NOT REVERTED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non e` valido\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context Nie je správny\n";
 		exit;
 	}
 	else
@@ -1061,8 +1061,8 @@ if ($ACTION == 'manDiaLonly')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1) || (strlen($ext_context)<1) || (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo " CHIAMATA NOT PLACED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context non e` valido\n";
+		echo " HOVOR NOT PLACED\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context Nie je správny\n";
 		exit;
 	}
 	else
@@ -1129,7 +1129,7 @@ if ($ACTION == 'manDiaLonly')
 		echo "$MqueryCID\n";
 
 		#############################################
-		##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+		##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1189,7 +1189,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 if (strlen($MDnextCID)<18)
 	{
 	echo "NO\n";
-	echo "MDnextCID $MDnextCID non e` valido\n";
+	echo "MDnextCID $MDnextCID Nie je správny\n";
 	exit;
 	}
 else
@@ -1244,8 +1244,8 @@ if ($stage == "start")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
-		echo "LOG NON INSERITO\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign non e` valido\n";
+		echo "LOG NEBOL ZADANÝ\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign Nie je správny\n";
 		exit;
 		}
 	else
@@ -1268,12 +1268,12 @@ if ($stage == "start")
 
 		if ($affected_rows > 0)
 			{
-			echo "VICIDiaL_LOG Inserito: $uniqueid|$channel|$NOW_TIME\n";
+			echo "VICIDiaL_LOG Vložiť: $uniqueid|$channel|$NOW_TIME\n";
 			echo "$StarTtime\n";
 			}
 		else
 			{
-			echo "LOG NON INSERITO\n";
+			echo "LOG NEBOL ZADANÝ\n";
 			}
 
 		$stmt = "UPDATE vicidial_auto_calls SET uniqueid='$uniqueid' where lead_id='$lead_id';";
@@ -1288,11 +1288,11 @@ if ($stage == "start")
 
 	#	if ($affected_rows > 0)
 	#		{
-	#		echo "CALL_LOG Inserito: $uniqueid|$channel|$NOW_TIME";
+	#		echo "CALL_LOG Vložiť: $uniqueid|$channel|$NOW_TIME";
 	#		}
 	#	else
 	#		{
-	#		echo "LOG NON INSERITO\n";
+	#		echo "LOG NEBOL ZADANÝ\n";
 	#		}
 		}
 	}
@@ -1320,8 +1320,8 @@ if ($stage == "end")
 		}
 	if ( (strlen($uniqueid)<1) or (strlen($lead_id)<1) )
 		{
-		echo "LOG NON INSERITO\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id non e` valido\n";
+		echo "LOG NEBOL ZADANÝ\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id Nie je správny\n";
 		exit;
 		}
 	else
@@ -1410,7 +1410,7 @@ if ($stage == "end")
 			}
 
 		#############################################
-		##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+		##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1822,7 +1822,7 @@ if ($stage == "end")
 				}
 			else
 				{
-				echo "LOG NON INSERITO\n\n";
+				echo "LOG NEBOL ZADANÝ\n\n";
 				}
 			}
 		else
@@ -1942,7 +1942,7 @@ if ($stage == "end")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "REC_ARRESTO|$rec_channels[$loop_count]|$filename[$loop_count]|";
+				echo "REC_ZASTAVIŤ|$rec_channels[$loop_count]|$filename[$loop_count]|";
 				if (strlen($filename)>2)
 					{
 					$stmt="SELECT recording_id,start_epoch,vicidial_id,lead_id FROM recording_log where filename='$filename[$loop_count]'";
@@ -1984,7 +1984,7 @@ if ($stage == "end")
 						echo "$recording_id|$length_in_min|";
 
 			#			$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
-			#			fwrite ($fp, "$NOW_TIME|Registrazione_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
+			#			fwrite ($fp, "$NOW_TIME|ZÁZNAM_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
 			#			fclose($fp);
 						}
 					else {echo "||";}
@@ -2029,8 +2029,8 @@ if ($ACTION == 'VDADREcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagna $campaign non e` valido\n";
-	echo "lead_id $lead_id non e` valido\n";
+	echo "Kampaň $campaign Nie je správny\n";
+	echo "lead_id $lead_id Nie je správny\n";
 	exit;
 	}
 	else
@@ -2079,7 +2079,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagna $campaign non e` valido\n";
+	echo "Kampaň $campaign Nie je správny\n";
 	exit;
 	}
 	else
@@ -2346,7 +2346,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					}
 				}
 
-			### if web form is set then send su to vicidial.php for override of WEB_FORM address
+			### if web form is set then send na to vicidial.php for override of WEB_FORM address
 			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
 			else {echo "|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
 
@@ -2426,7 +2426,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
 
-		### If CHIAMATABK, change vicidial_callback record to INACTIVE
+		### If HOVORBK, change vicidial_callback record to INACTIVE
 		if (eregi("CALLBK|CBHOLD", $dispo))
 			{
 			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
@@ -2458,7 +2458,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		else
 		{
 		echo "0\n";
-	#	echo "No calls in QUEUE for $user su $server_ip\n";
+	#	echo "No calls in QUEUE for $user na $server_ip\n";
 		exit;
 		}
 	}
@@ -2476,7 +2476,7 @@ if ($ACTION == 'userLOGout')
 if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	{
 	echo "NO\n";
-	echo "campaign $campaign or conf_exten $conf_exten non e` valido\n";
+	echo "campaign $campaign or conf_exten $conf_exten Nie je správny\n";
 	exit;
 	}
 else
@@ -2491,15 +2491,15 @@ else
 			$row=mysql_fetch_row($rslt);
 			$user_group =		trim("$row[0]");
 			}
-	##### Insert a LOGOUT record into the user log
-	$stmt="INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$user','LOGOUT','$campaign','$NOW_TIME','$StarTtime','$user_group');";
+	##### Insert a ODHLÁSIŤ record into the user log
+	$stmt="INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$user','ODHLÁSIŤ','$campaign','$NOW_TIME','$StarTtime','$user_group');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 	$vul_insert = mysql_affected_rows($link);
 
 	if ($no_delete_sessions < 1)
 		{
-		##### Remove the reservation su the vicidial_conferences meetme room
+		##### Remove the reservation na the vicidial_conferences meetme room
 		$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -2568,7 +2568,7 @@ else
 		if ($vla_delete > 0) 
 			{
 			#############################################
-			##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+			##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -2645,7 +2645,7 @@ if ($ACTION == 'updateDISPO')
 	$row='';   $rowx='';
 	if ( (strlen($dispo_choice)<1) || (strlen($lead_id)<1) )
 	{
-	echo "Dispo Choice $dispo or lead_id $lead_id non e` valido\n";
+	echo "Dispo Choice $dispo or lead_id $lead_id Nie je správny\n";
 	exit;
 	}
 	else
@@ -2730,7 +2730,7 @@ if ($ACTION == 'updateDISPO')
 	$affected_rows = mysql_affected_rows($link);
 	$agent_log_id = mysql_insert_id($link);
 
-	### CHIAMATABACK ENTRY
+	### HOVORBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group');";
@@ -2764,7 +2764,7 @@ if ($ACTION == 'updateDISPO')
 		}
 
 	#############################################
-	##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+	##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 	$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
@@ -2799,7 +2799,7 @@ if ($ACTION == 'updateDISPO')
 		mysql_close($linkB);
 		}
 
-	echo 'Lead ' . $lead_id . ' e` cambiato ' . $dispo_choice . " Stato\nNext agent_log_id:\n" . $agent_log_id . "\n";
+	echo 'Lead ' . $lead_id . ' bol zmenený pre ' . $dispo_choice . " Stav\nNext agent_log_id:\n" . $agent_log_id . "\n";
 }
 
 ################################################################################
@@ -2814,7 +2814,7 @@ if ($ACTION == 'updateLEAD')
 	$DO_NOT_UPDATE_text='';
 	if ( (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
-	echo "phone_number $phone_number or lead_id $lead_id non e` valido\n";
+	echo "phone_number $phone_number or lead_id $lead_id Nie je správny\n";
 	exit;
 	}
 	else
@@ -2903,7 +2903,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	$row='';   $rowx='';
 	if ( (strlen($stage)<2) || (strlen($server_ip)<1) )
 	{
-	echo "stage $stage non e` valido\n";
+	echo "stage $stage Nie je správny\n";
 	exit;
 	}
 	else
@@ -2920,7 +2920,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	if ($affected_rows > 0) 
 		{
 		#############################################
-		##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+		##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -2992,7 +2992,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		}
 	}
-	echo 'Agent ' . $user . ' e` ora nello stato ' . $stage . "\n";
+	echo 'Agent ' . $user . ' je teraz v stave ' . $stage . "\n";
 }
 
 
@@ -3005,7 +3005,7 @@ if ($ACTION == 'UpdatEFavoritEs')
 	$channel_live=1;
 	if ( (strlen($favorites_list)<1) || (strlen($user)<1) || (strlen($exten)<1) )
 	{
-	echo "favorites list $favorites_list non e` valido\n";
+	echo "favorites list $favorites_list Nie je správny\n";
 	exit;
 	}
 	else
@@ -3035,12 +3035,12 @@ if ($ACTION == 'UpdatEFavoritEs')
 ################################################################################
 ### PauseCodeSubmit - Update vicidial_agent_log with pause code
 ################################################################################
-if ($ACTION == 'PausaCodeSubmit')
+if ($ACTION == 'PauzaCodeSubmit')
 {
 	$row='';   $rowx='';
 	if ( (strlen($status)<1) || (strlen($agent_log_id)<1) )
 	{
-	echo "agent_log_id $agent_log_id or pause_code $status non e` valido\n";
+	echo "agent_log_id $agent_log_id or pause_code $status Nie je správny\n";
 	exit;
 	}
 	else
@@ -3052,7 +3052,7 @@ if ($ACTION == 'PausaCodeSubmit')
 	if ($affected_rows > 0) 
 		{
 		#############################################
-		##### INIZIO QUEUEMETRICS LOGGING LOOKUP #####
+		##### SPUSTIŤ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -3091,7 +3091,7 @@ if ($ACTION == 'PausaCodeSubmit')
 			}
 		}
 	}
-echo "Pausa Code has been updated to $status for $agent_log_id\n";
+echo "Pauza Code has been updated to $status for $agent_log_id\n";
 }
 
 
@@ -3154,7 +3154,7 @@ if ($format=='debug')
 {
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-echo "\n<!-- script runtime: $RUNtime secondi -->";
+echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";
 echo "\n</body>\n</html>\n";
 }
 	

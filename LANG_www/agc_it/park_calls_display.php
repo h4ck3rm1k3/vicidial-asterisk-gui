@@ -1,22 +1,22 @@
 <?
-### park_calls_display.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to send the details on the parked calls on the server
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
-###  - $protocol - ('SIP','Zap','IAX2',...)
-### 
-
+# park_calls_display.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to send the details on the parked calls on the server
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
+#  - $protocol - ('SIP','Zap','IAX2',...)
+# 
+#
 # changes
 # 50524-1515 - First build of script
 # 50711-1208 - removed HTTP authentication in favor of user/pass vars
@@ -64,14 +64,14 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0) )
 	{
-    echo "Non valido Utentename/Parola d`accesso: |$user|$pass|\n";
+    echo "Utentename/Password non validi: |$user|$pass|\n";
     exit;
 	}
   else
 	{
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) ) 		{
-		echo "Non valido server_ip: |$server_ip|  or  Non valido session_name: |$session_name|\n";
+		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
 		exit;
 		}
 	else
@@ -83,7 +83,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Non valido session_name: |$session_name|$server_ip|\n";
+			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -97,8 +97,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     CONFIGURAZIONE: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
-echo "<title>Display Chiamate Parcheggiate";
+echo "<!-- VERSIONE: $version     BUILD: $build    EXTEN: $exten   server_ip: $server_ip-->\n";
+echo "<title>Display Chiamate in Attesa";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -110,7 +110,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if ( (strlen($exten)<1) or (strlen($protocol)<3) )
 	{
 	$channel_live=0;
-	echo "Exten $exten non è valido o protocollo $protocol non è valido\n";
+	echo "Exten $exten non e` valido o protocollo $protocol non e` valido\n";
 	exit;
 	}
 	else
@@ -137,7 +137,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- tempo di esecuzione dello script: $RUNtime secondi -->";
+	echo "\n<!-- script runtime: $RUNtime secondi -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

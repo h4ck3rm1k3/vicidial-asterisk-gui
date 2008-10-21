@@ -61,7 +61,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Utentename/Password non validi: |$user|$pass|\n";
+    echo "Nesprávny Užívateľské meno/Heslo: |$user|$pass|\n";
     exit;
 	}
   else
@@ -69,7 +69,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "ip del server non valido: |$server_ip|  or  Nome sessione non valido: |$session_name|\n";
+		echo "Nesprávny server_ip: |$server_ip|  or  Nesprávny session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -81,7 +81,7 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nome sessione non valido: |$session_name|$server_ip|\n";
+			echo "Nesprávny session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -95,8 +95,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
-echo "<title>Controllo Voicemail";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build    VMBOX: $vmail_box   server_ip: $server_ip-->\n";
+echo "<title>Overiť hlasovú schránku";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -107,7 +107,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 	if (strlen($vmail_box)<1)
 	{
 	$channel_live=0;
-	echo "Casella Voicemail $vmail_box non e` valido\n";
+	echo "hlasová schránka $vmail_box Nie je správny\n";
 	exit;
 	}
 	else
@@ -131,7 +131,7 @@ if ($format=='debug')
 	{
 	$ENDtime = date("U");
 	$RUNtime = ($ENDtime - $StarTtime);
-	echo "\n<!-- script runtime: $RUNtime secondi -->";
+	echo "\n<!-- bežiaci script: $RUNtime sekúnd -->";
 	echo "\n</body>\n</html>\n";
 	}
 	

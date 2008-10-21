@@ -254,7 +254,7 @@ $forever_stop=0;
 
 if ($force_logout)
 {
-    echo "Ora non sei collegato. Grazie\n";
+    echo "Práve ste sa odhlásili, Ďakujeme\n";
     exit;
 }
 
@@ -305,21 +305,21 @@ $multi_line_comments	= '1';	# set to 1 to allow multi-line comment box
 $user_login_first		= '0';	# set to 1 to have the vicidial_user login before the phone login
 $view_scripts			= '1';	# set to 1 to show the SCRIPTS tab
 $dispo_check_all_pause	= '0';	# set to 1 to allow for persistent pause after dispo
-$callholdstatus			= '1';	# set to 1 to show calls su hold count
+$callholdstatus			= '1';	# set to 1 to show calls na hold count
 $agentcallsstatus		= '0';	# set to 1 to show agent status and call dialed count
-   $campagentstatctmax	= '3';	# Number of secondi for campaign call and agent stats
-$show_campname_pulldown	= '1';	# set to 1 to show campaign name su login pulldown
+   $campagentstatctmax	= '3';	# Number of sekúnd for campaign call and agent stats
+$show_campname_pulldown	= '1';	# set to 1 to show campaign name na login pulldown
 $webform_sessionname	= '1';	# set to 1 to include the session_name in webform URL
 $local_consult_xfers	= '1';	# set to 1 to send consultative transfers from original server
-$clientDST				= '1';	# set to 1 to check for DST su server for agent time
+$clientDST				= '1';	# set to 1 to check for DST na server for agent time
 $no_delete_sessions		= '0';	# set to 1 to not delete sessions at logout
 $volumecontrol_active	= '1';	# set to 1 to allow agents to alter volume of channels
-$PreseT_DiaL_LinKs		= '0';	# set to 1 to show a CHIAMA link for Dial Presets
-$LogiNAJAX				= '1';	# set to 1 to do lookups su campaigns for login
+$PreseT_DiaL_LinKs		= '0';	# set to 1 to show a VOLAŤ link for Dial Presets
+$LogiNAJAX				= '1';	# set to 1 to do lookups na campaigns for login
 $HidEMonitoRSessionS	= '1';	# set to 1 to hide remote monitoring channels from "session calls"
 $LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent logout
-$TelefonoSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
-$DefaulTAlTDiaL			= '0';	# set to 1 to enable ALT CHIAMA by default if enabled for the campaign
+$TelefónSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
+$DefaulTAlTDiaL			= '0';	# set to 1 to enable ALT VOLAŤ by default if enabled for the campaign
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -345,7 +345,7 @@ $MNwidth =  ($MASTERwidth + 330);	# 760 - main frame
 $XFwidth =  ($MASTERwidth + 320);	# 750 - transfer/conference
 $HCwidth =  ($MASTERwidth + 310);	# 740 - hotkeys and callbacks
 $AMwidth =  ($MASTERwidth + 270);	# 700 - agent mute and preset-dial links
-$SCwidth =  ($MASTERwidth + 230);	# 670 - live call secondi counter
+$SCwidth =  ($MASTERwidth + 230);	# 670 - live call sekúnd counter
 $SSwidth =  ($MASTERwidth + 176);	# 606 - scroll script
 $SDwidth =  ($MASTERwidth + 170);	# 600 - scroll script, customer data and calls-in-session
 $HKwidth =  ($MASTERwidth + 70);	# 500 - Hotkeys button
@@ -382,7 +382,7 @@ header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
 header ("Pragma: no-cache");                          // HTTP/1.0
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSIONE: $version     BUILD: $build -->\n";
+echo "<!-- VERZIA: $version     POSTAVENÉ: $build -->\n";
 
 if ($campaign_login_list > 0)
 {
@@ -425,7 +425,7 @@ while ($camps_to_print > $o)
 	if ($VD_campaign)
 		{
 		if ( (eregi("$VD_campaign",$rowx[0])) and (strlen($VD_campaign) == strlen($rowx[0])) )
-			{$camp_form_code .= "<option value=\"$rowx[0]\" SELEZIONATO>$rowx[0]$campname</option>\n";}
+			{$camp_form_code .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0]$campname</option>\n";}
 		else
 			{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
 		}
@@ -485,7 +485,7 @@ if ($LogiNAJAX > 0)
 				//	alert(logincampaign_query);
 				//	alert(xmlhttp.responseText);
 					document.getElementById("LogiNCamPaigns").innerHTML = Nactiveext;
-					document.getElementById("LogiNReseT").innerHTML = "<INPUT TYPE=BUTTON VALUE=\"Aggiorna Campagna List\" OnClick=\"login_allowable_campaigns()\">";
+					document.getElementById("LogiNReseT").innerHTML = "<INPUT TYPE=BUTTON VALUE=\"Osviežiť Kampaň List\" OnClick=\"login_allowable_campaigns()\">";
 					document.getElementById("VD_campaign").focus();
 					}
 				}
@@ -500,32 +500,32 @@ if ($LogiNAJAX > 0)
 
 if ($relogin == 'YES')
 {
-echo "<title>VICIDIAL web client: Re-Login</title>\n";
+echo "<title>web klient VICIDIAL: Znova prihlásiť</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
 echo "<FORM NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Re-Login </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Znova prihlásiť </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Login Utente:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Meno užívateľa:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Password Utente:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Heslo užívateľa:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Kampaň:  </TD>";
 echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
-echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ></TD></TR>\n";
+echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
 echo "</body>\n\n";
@@ -537,32 +537,32 @@ if ($user_login_first == 1)
 {
 	if ( (strlen($VD_login)<1) or (strlen($VD_pass)<1) or (strlen($VD_campaign)<1) )
 	{
-	echo "<title>VICIDIAL web client: Login Campagna</title>\n";
+	echo "<title>web klient VICIDIAL: Prihlásenie kampane</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
 	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
-	echo "<CENTER><BR><B>Login Utente</B><BR><BR>";
+	echo "<CENTER><BR><B>Meno užívateľa</B><BR><BR>";
 	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Campagna </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásenie kampane </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Meno užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Kampaň:  </TD>";
 	echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 	echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
-	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
 	echo "</body>\n\n";
@@ -580,33 +580,33 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		$phone_login=$row[0];
 		$phone_pass=$row[1];
 
-		echo "<title>VICIDIAL web client: Login</title>\n";
+		echo "<title>web klient VICIDIAL: Prihlásiť</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 		echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
 		echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 		echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-		echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login </TD>";
+		echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásiť </TD>";
 		echo "</TR>\n";
 		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Login Utente:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Meno užívateľa:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Password Utente:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Heslo užívateľa:  </TD>";
 		echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
-		echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
+		echo "<TR><TD ALIGN=RIGHT>Kampaň:  </TD>";
 		echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
-		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+		echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 		echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
-		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+		echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 		echo "</TABLE>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
@@ -619,27 +619,27 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 
 if ( (strlen($phone_login)<2) or (strlen($phone_pass)<2) )
 {
-echo "<title>VICIDIAL web client:  Login Telefono</title>\n";
+echo "<title>web klient VICIDIAL:  Prihlásenie telefónu</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "</TR></TABLE>\n";
 echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Telefono </TD>";
+echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásenie telefónu </TD>";
 echo "</TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"\"></TD></TR>\n";
-echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"\"></TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
-echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";
 echo "</body>\n\n";
@@ -702,22 +702,22 @@ $VDloginDISPLAY=0;
 
 		if ( (!eregi(" $VD_campaign ",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) )
 			{
-			echo "<title>VICIDIAL web client: VICIDIAL Login Campagna</title>\n";
+			echo "<title>web klient VICIDIAL: VICIDIAL Prihlásenie kampane</title>\n";
 			echo "</head>\n";
 			echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 			echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 			echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 			echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";			echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";			echo "</TR></TABLE>\n";
 			echo "<B>Sorry, you are not allowed to login to this campaign: $VD_campaign</B>\n";
 			echo "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
 			echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 			echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 			echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
-			echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
-			echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
-			echo "Campagna: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
-			echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+			echo "Prihlásiť: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
+			echo "Heslo: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
+			echo "Kampaň: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+			echo "<INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 			echo "<span id=\"LogiNReseT\"></span>\n";
 			echo "</FORM>\n\n";
 			echo "</body>\n\n";
@@ -829,7 +829,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 				$xferconf_b_number =		$row[18];
 				$alt_number_dialing =		$row[19];
 				$VC_scheduled_callbacks =	$row[20];
-				$wrapup_secondi =			$row[21];
+				$wrapup_sekúnd =			$row[21];
 				$wrapup_message =			$row[22];
 				$closer_campaigns =			$row[23];
 				$use_internal_dnc =			$row[24];
@@ -852,7 +852,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
 				$campaign_recording = $VU_vicidial_recording_override;
-				print "<!-- USER RegistrazioneING OVERRIDE: |$VU_vicidial_recording_override|$campaign_recording| -->\n";
+				print "<!-- USER ZÁZNAMING OVERRIDE: |$VU_vicidial_recording_override|$campaign_recording| -->\n";
 				}
 			if ( ($VC_scheduled_callbacks=='Y') and ($VU_scheduled_callbacks=='1') )
 				{$scheduled_callbacks='1';}
@@ -950,13 +950,13 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 			if ($DB) {echo "$stmt\n";}
 			$row=mysql_fetch_row($rslt);
 			   $campaign_leads_to_call = $row[0];
-			   print "<!-- $campaign_leads_to_call - Contatti rimanenti nella lista da chiamare -->\n";
+			   print "<!-- $campaign_leads_to_call - Kontakty na volanie už nie sú v zásobníku -->\n";
 
 			}
 		else
 			{
 			$VDloginDISPLAY=1;
-			$VDdisplayMESSAGE = "Campagna non attiva, prova di nuovo<BR>";
+			$VDdisplayMESSAGE = "Kampaň nie je aktívna, prosím skúste znova<BR>";
 			}
 		}
 	else
@@ -967,18 +967,18 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 			fclose($fp);
 			}
 		$VDloginDISPLAY=1;
-		$VDdisplayMESSAGE = "Login errato, prova di nuovo<BR>";
+		$VDdisplayMESSAGE = "Prihlasovacie meno je nesprávne, prosím skúste znova<BR>";
 		}
 	}
 	if ($VDloginDISPLAY)
 	{
-	echo "<title>VICIDIAL web client: Login Campagna</title>\n";
+	echo "<title>web klient VICIDIAL: Prihlásenie kampane</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
 	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
@@ -986,18 +986,18 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
 	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Campagna </TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásenie kampane </TD>";
 	echo "</TR>\n";
 	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1> &nbsp; </TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Meno užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Utente:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo užívateľa:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Campagna:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Kampaň:  </TD>";
 	echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 	echo "<span id=\"LogiNReseT\"></span></TD></TR>\n";
-	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
 	echo "</body>\n\n";
@@ -1057,13 +1057,13 @@ $row=mysql_fetch_row($rslt);
 $authphone=$row[0];
 if (!$authphone)
 	{
-	echo "<title>VICIDIAL web client: Login Telefono Error</title>\n";
+	echo "<title>web klient VICIDIAL: Prihlásenie telefónu Error</title>\n";
 	echo "</head>\n";
 	echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 	echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 	echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 	echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";	echo "</TR></TABLE>\n";
 	echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 	echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
@@ -1071,15 +1071,15 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 	echo "<INPUT TYPE=HIDDEN NAME=VD_campaign VALUE=\"$VD_campaign\">\n";
 	echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"../agc/images/vdc_tab_vicidial.gif\" Border=0></TD>";
-	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Error</TD>";
+	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Prihlásiť Error</TD>";
 	echo "</TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Spiacente, il telefono inserito non e` attivo in questo sistema, riprova di nuovo: <BR> &nbsp;</TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Login Telefono: </TD>";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><font size=1> &nbsp; <BR><FONT SIZE=3>Prepáčte, Vaše prihlasovacie meno a heslo nie sú aktívne v tomto systéme, prosím skúste znova: <BR> &nbsp;</TD></TR>\n";
+	echo "<TR><TD ALIGN=RIGHT>Prihlásenie telefónu: </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=phone_login SIZE=10 maxlength=20 VALUE=\"$phone_login\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=RIGHT>Password Telefono:  </TD>";
+	echo "<TR><TD ALIGN=RIGHT>Heslo telefónu:  </TD>";
 	echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=phone_pass SIZE=10 maxlength=20 VALUE=\"$phone_pass\"></TD></TR>\n";
-	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=INVIA VALUE=INVIA></TD></TR>\n";
-	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSIONE: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
+	echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ></TD></TR>\n";
+	echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERZIA: $version &nbsp; &nbsp; &nbsp; POSTAVENÉ: $build</TD></TR>\n";
 	echo "</TABLE>\n";
 	echo "</FORM>\n\n";
 	echo "</body>\n\n";
@@ -1140,9 +1140,9 @@ else
 				}
 			$pb++;
 			}
-		echo "<!-- Telefonos balance selection: $phone_login|$pb_server_ip|$past_minutes_date|     |$pb_log -->\n";
+		echo "<!-- Telefóns balance selection: $phone_login|$pb_server_ip|$past_minutes_date|     |$pb_log -->\n";
 		}
-	echo "<title>VICIDIAL web client</title>\n";
+	echo "<title>web klient VICIDIAL</title>\n";
 	$stmt="SELECT * from phones where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 	if ($DB) {echo "|$stmt|\n";}
 	$rslt=mysql_query($stmt, $link);
@@ -1195,7 +1195,7 @@ else
 	$updater_check_enabled=$row[45];
 	$AFLogging_enabled=$row[46];
 	$QUEUE_ACTION_enabled=$row[47];
-	$CallerID_popup_enabled=$row[48];
+	$IDvolajúceho_popup_enabled=$row[48];
 	$voicemail_button_enabled=$row[49];
 	$enable_fast_refresh=$row[50];
 	$fast_refresh_rate=$row[51];
@@ -1210,7 +1210,7 @@ else
 	$outbound_cid=$row[65];
 	$enable_sipsak_messages=$row[66];
 
-	if ($TelefonoSComPIP == '1')
+	if ($TelefónSComPIP == '1')
 		{
 		if (strlen($computer_ip) < 4)
 			{
@@ -1220,7 +1220,7 @@ else
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
-	if ($TelefonoSComPIP == '2')
+	if ($TelefónSComPIP == '2')
 		{
 		$stmt="UPDATE phones SET computer_ip='$ip' where login='$phone_login' and pass='$phone_pass' and active = 'Y';";
 		if ($DB) {echo "|$stmt|\n";}
@@ -1249,35 +1249,35 @@ else
 		{
 		$VICIDiaL_park_on_extension = "$park_ext";
 		$VICIDiaL_park_on_filename = "$park_file_name";
-		print "<!-- CAMPAIGN CLIENTE ATTESAING:  |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
+		print "<!-- ZAPARKOVAŤOVANIE UPRAVENEJ KAMPANE:  |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
 		}
-		print "<!-- CAMPAIGN DEFAULT ATTESAING: |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
+		print "<!-- ZAPARKOVAŤOVANIE ZÁKLADNEJ KAMPANE: |$VICIDiaL_park_on_extension|$VICIDiaL_park_on_filename| -->\n";
 
 	# If a web form address is not set, use the default one
 	if (strlen($web_form_address)>0)
 		{
 		$VICIDiaL_web_form_address = "$web_form_address";
-		print "<!-- CAMPAIGN CLIENTE WEB FORM:   |$VICIDiaL_web_form_address| -->\n";
+		print "<!-- WEB FORMULÁR UPRAVENEJ KAMPANE:   |$VICIDiaL_web_form_address| -->\n";
 		}
 	else
 		{
 		$VICIDiaL_web_form_address = "$VICIDiaL_web_URL";
-		print "<!-- CAMPAIGN DEFAULT WEB FORM:  |$VICIDiaL_web_form_address| -->\n";
+		print "<!-- WEB FORMULÁR ZÁKLADNEJ KAMPANE:  |$VICIDiaL_web_form_address| -->\n";
 		$VICIDiaL_web_form_address_enc = rawurlencode($VICIDiaL_web_form_address);
 
 		}
 	$VICIDiaL_web_form_address_enc = rawurlencode($VICIDiaL_web_form_address);
 
-	# If closers are allowed su this campaign
+	# If closers are allowed na this campaign
 	if ($allow_closers=="Y")
 		{
 		$VICIDiaL_allow_closers = 1;
-		print "<!-- LA CAMPAGNA PERMETTE FUORI LISTA:    |$VICIDiaL_allow_closers| -->\n";
+		print "<!-- LA CAMPAÑA PERMITE CLOSERS:    |$VICIDiaL_allow_closers| -->\n";
 		}
 	else
 		{
 		$VICIDiaL_allow_closers = 0;
-		print "<!-- LA CAMPAGNA NON PERMETTE FUORI LISTA: |$VICIDiaL_allow_closers| -->\n";
+		print "<!-- LA CAMPAÑA NO PERMITE CLOSERS: |$VICIDiaL_allow_closers| -->\n";
 		}
 
 
@@ -1319,7 +1319,7 @@ else
 			$i++;
 			}
 		if ($prev_login_ct > 0)
-			{print "<!-- USA LA MEETME ROOM PRECEDENTE - $session_id - $NOW_TIME - $SIP_user -->\n";}
+			{print "<!-- POUŽIŤ PREDCHÁDZAJÚCU MIESTNOSŤ MEETME - $session_id - $NOW_TIME - $SIP_user -->\n";}
 		else
 			{
 			##### grab the next available vicidial_conference room and reserve it
@@ -1339,7 +1339,7 @@ else
 				$row=mysql_fetch_row($rslt);
 				$session_id = $row[0];
 				}
-			print "<!-- USA UNA NUOVA MEETME ROOM - $session_id - $NOW_TIME - $SIP_user -->\n";
+			print "<!-- POUŽIŤ NOVÚ MEETME MIESTNOSŤ - $session_id - $NOW_TIME - $SIP_user -->\n";
 			}
 
 		### mark leads that were not dispositioned during previous calls as ERI
@@ -1347,19 +1347,19 @@ else
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- lista invertita INCALL ed old QUEUE:   |$affected_rows| -->\n";
+		print "<!-- stará fronta a obnovený zoznam kontaktov na volanie:   |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_hopper where status IN('QUEUE','INCALL','DONE') and user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- INCALL hopper invertito ed old QUEUE: |$affected_rows| -->\n";
+		print "<!-- stará fronta a obnovený zásobník volania kontaktov: |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_live_agents where user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- vecchi record di vicidial_live_agents eliminati: |$affected_rows| -->\n";
+		print "<!-- záznami starých vicidial_živých_agentov vymazaní: |$affected_rows| -->\n";
 
 		$stmt="DELETE from vicidial_live_inbound_agents where user ='$VD_login';";
 		if ($DB) {echo "$stmt\n";}
@@ -1367,14 +1367,14 @@ else
 		$affected_rows = mysql_affected_rows($link);
 		print "<!-- old vicidial_live_inbound_agents records cleared: |$affected_rows| -->\n";
 
-	#	print "<B>You have logged in as user: $VD_login su phone: $SIP_user nella campagna: $VD_campaign</B><BR>\n";
+	#	print "<B>You have logged in as user: $VD_login na phone: $SIP_user do kampane: $VD_campaign</B><BR>\n";
 		$VICIDiaL_is_logged_in=1;
 
 		### set the callerID for manager middleware-app to connect the phone to the user
 		$SIqueryCID = "S$CIDdate$session_id";
 
 		#############################################
-		##### INIZIO SYSTEM_SETTINGS LOOKUP #####
+		##### SPUSTIŤ SYSTEM_SETTINGS LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,vicidial_agent_disable,allow_sipsak_messages FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
@@ -1404,7 +1404,7 @@ else
 			$SIqueryCID = "$SIPSAK_prefix$VD_campaign$DS$CIDdate";
 			}
 
-		### insert a NUOVO record to the vicidial_manager table to be processed
+		### insert a NOVÁ record to the vicidial_manager table to be processed
 		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: $SIqueryCID','','','','','');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -1413,9 +1413,9 @@ else
 
 		if ($auto_dial_level > 0)
 			{
-			print "<!-- la campagna e` settata in auto-dial: $auto_dial_level -->\n";
+			print "<!-- kampaň je nastavená pre auto_dial_level: $auto_dial_level -->\n";
 
-			##### grab the campaign_weight and number of calls today su that campaign for the agent
+			##### grab the campaign_weight and number of calls today na that campaign for the agent
 			$stmt="SELECT campaign_weight,calls_today FROM vicidial_campaign_agents where user='$VD_login' and campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB) {echo "$stmt\n";}
@@ -1442,7 +1442,7 @@ else
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
-			print "<!-- nuovo record vicidial_live_agents inserito: |$affected_rows| -->\n";
+			print "<!-- Nový záznam o vicidial_živých_agentoch: |$affected_rows| -->\n";
 
 			if ($enable_queuemetrics_logging > 0)
 				{
@@ -1473,13 +1473,13 @@ else
 			}
 		else
 			{
-			print "<!-- la campagna e` settata in manual_dial: $auto_dial_level -->\n";
+			print "<!-- kampaň je nastavená na ručné vytáčanie: $auto_dial_level -->\n";
 
 			$stmt="INSERT INTO vicidial_live_agents (user,server_ip,conf_exten,extension,status,lead_id,campaign_id,uniqueid,callerid,channel,random_id,last_call_time,last_update_time,last_call_finish,user_level) values('$VD_login','$server_ip','$session_id','$SIP_user','PAUSED','','$VD_campaign','','','','$random','$NOW_TIME','$tsNOW_TIME','$NOW_TIME','$user_level');";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
-			print "<!-- nuovo record vicidial_live_agents inserito: |$affected_rows| -->\n";
+			print "<!-- Nový záznam o vicidial_živých_agentoch: |$affected_rows| -->\n";
 
 			if ($enable_queuemetrics_logging > 0)
 				{
@@ -1505,22 +1505,22 @@ else
 		}
 	else
 		{
-		echo "<title>VICIDIAL web client: VICIDIAL Login Campagna</title>\n";
+		echo "<title>web klient VICIDIAL: VICIDIAL Prihlásenie kampane</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 		echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
-		echo "<B>Spiacenti, non ci sono contatti da chiamare per questa campagna</B>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
+		echo "<B>Prepáčte, ale nie sú záznamy v zásobníku pre túto kamaň</B>\n";
 		echo "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
-		echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
-		echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
-		echo "Campagna: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
-		echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+		echo "Prihlásiť: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
+		echo "Heslo: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
+		echo "Kampaň: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+		echo "<INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 		echo "<span id=\"LogiNReseT\"></span>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
@@ -1529,22 +1529,22 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.
 		}
 	if (strlen($session_id) < 1)
 		{
-		echo "<title>VICIDIAL web client: VICIDIAL Login Campagna</title>\n";
+		echo "<title>web klient VICIDIAL: VICIDIAL Prihlásenie kampane</title>\n";
 		echo "</head>\n";
 		echo "<BODY BGCOLOR=WHITE MARGINHEIGHT=0 MARGINWIDTH=0>\n";
 		echo "<A HREF=\"./timeclock.php?referrer=agent&pl=$phone_login&pp=$phone_pass&VD_login=$VD_login&VD_pass=$VD_pass\"> Timeclock</A><BR>\n";
 		echo "<TABLE WIDTH=100%><TR><TD></TD>\n";
 		echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_it/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Italiano <img src=\"../agc/images/it.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
+echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Slovensky <img src=\"../agc/images/sk.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";		echo "</TR></TABLE>\n";
 		echo "<B>Sorry, there are no available sessions</B>\n";
 		echo "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 		echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
-		echo "Login: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
-		echo "Password: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
-		echo "Campagna: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
-		echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA> &nbsp; \n";
+		echo "Prihlásiť: <INPUT TYPE=TEXT NAME=VD_login SIZE=10 maxlength=20 VALUE=\"$VD_login\">\n<br>";
+		echo "Heslo: <INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 maxlength=20 VALUE=\"$VD_pass\"><br>\n";
+		echo "Kampaň: <span id=\"LogiNCamPaigns\">$camp_form_code</span><br>\n";
+		echo "<INPUT TYPE=Submit NAME=POTVRDIŤ VALUE=POTVRDIŤ> &nbsp; \n";
 		echo "<span id=\"LogiNReseT\"></span>\n";
 		echo "</FORM>\n\n";
 		echo "</body>\n\n";
@@ -1620,8 +1620,8 @@ $CTODAY = date("Y-m");
 $CTODAYmday = date("j");
 $CINC=0;
 
-$Cmonths = Array('Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
-				'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre');
+$Cmonths = Array('Január','February','Marec','Apríl','Máj','Jún',
+				'Júl','August','September','Október','November','Decemeber');
 $Cdays = Array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 
 $CCAL_OUT = '';
@@ -1970,7 +1970,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var starting_alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
 	var alt_phone_dialing = '<? echo $alt_phone_dialing ?>';
 	var DefaulTAlTDiaL = '<? echo $DefaulTAlTDiaL ?>';
-	var wrapup_secondi = '<? echo $wrapup_secondi ?>';
+	var wrapup_sekúnd = '<? echo $wrapup_sekúnd ?>';
 	var wrapup_message = '<? echo $wrapup_message ?>';
 	var wrapup_counter = 0;
 	var wrapup_waiting = 0;
@@ -1990,7 +1990,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var CBuser = '';
 	var CBcomments = '';
 	var volumecontrol_active = '<? echo $volumecontrol_active ?>';
-	var PausaCode_HTML = '';
+	var PauzaCode_HTML = '';
 	var manual_auto_hotkey = 0;
 	var dialed_number = '';
 	var dialed_label = '';
@@ -2023,10 +2023,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var conf_dialed = 0;
 	var leaving_threeway = 0;
 	var dial_method = '<? echo $dial_method ?>';
-	var DiaLControl_auto_HTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Riprendi\"></a>";
-	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause.gif\" border=0 alt=\"Pausa\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\">";
-	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\">";
-	var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+	var DiaLControl_auto_HTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Pokračovať\"></a>";
+	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause.gif\" border=0 alt=\"Pauza\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\">";
+	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\">";
+	var DiaLControl_manual_HTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 	var image_blank = new Image();
 		image_blank.src="../agc/images/blank.gif";
 	var image_livecall_OFF = new Image();
@@ -2219,15 +2219,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter manual dialstring and pass su to originate call
+// filter manual dialstring and pass na to originate call
 	function SendManualDial(taskFromConf)
 		{
 		conf_dialed=1;
 		if (taskFromConf == 'YES')
 			{
-			document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Chiama il Cliente\"></a>";
+			document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Volanie so zákazníkom\"></a>";
 
-			document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF.gif\" border=0 alt=\"Metti in attesa il cliente\"></a>";
+			document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF.gif\" border=0 alt=\"Zaparkovať hovor so zákazníkom\"></a>";
 
 			var manual_number = document.vicidial_form.xfernumber.value;
 			var manual_string = manual_number.toString();
@@ -2237,7 +2237,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{threeway_cid = campaign_cid;}
 			if (three_way_call_cid == 'AGENT_PHONE')
 				{threeway_cid = outbound_cid;}
-			if (three_way_call_cid == 'CLIENTEER')
+			if (three_way_call_cid == 'UPRAVENÉER')
 				{threeway_cid = document.vicidial_form.phone_number.value;}
 			}
 		else
@@ -2376,7 +2376,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						MD_channel_look=1;
 						XDcheck = 'YES';
 
-				//		document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline.gif\" border=0 alt=\"Riaggancia la linea trasferita\"></a>";
+				//		document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline.gif\" border=0 alt=\"Zložiť Xfer linku\"></a>";
 						}
 					}
 				}
@@ -2385,7 +2385,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// filter conf_dtmf send string and pass su to originate call
+// filter conf_dtmf send string and pass na to originate call
 	function SendConfDTMF(taskconfdtmf)
 		{
 		var dtmf_number = document.vicidial_form.conf_dtmf.value;
@@ -2507,15 +2507,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var DiaLCalLs = DiaLCalLs_array[1];
 							if (AGLogiN != 'N')
 								{
-								document.getElementById("AgentStatoStato").innerHTML = AGLogiN;
+								document.getElementById("AgentStavStav").innerHTML = AGLogiN;
 								}
 							if (CamPCalLs != 'N')
 								{
-								document.getElementById("AgentStatoCalls").innerHTML = CamPCalLs;
+								document.getElementById("AgentStavCalls").innerHTML = CamPCalLs;
 								}
 							if (DiaLCalLs != 'N')
 								{
-								document.getElementById("AgentStatoDiaLs").innerHTML = DiaLCalLs;
+								document.getElementById("AgentStavDiaLs").innerHTML = DiaLCalLs;
 								}
 							if ( (AGLogiN == 'DEAD_VLA') && ( (vicidial_agent_disable == 'LIVE_AGENT') || (vicidial_agent_disable == 'ALL') ) )
 								{
@@ -2526,7 +2526,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								showDiv('AgenTDisablEBoX');
 								}
 							}
-						var VLAStatuS_array = check_time_array[4].split("Stato: ");
+						var VLAStatuS_array = check_time_array[4].split("Stav: ");
 						var VLAStatuS = VLAStatuS_array[1];
 						if ( (VLAStatuS == 'PAUSED') && (AutoDialWaiting == 1) )
 							{
@@ -2572,7 +2572,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var LMAcontent_match=0;
 								agentphonelive=0;
 								var conv_start=-1;
-								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>CHIAMATE ATTIVE NELLA VOSTRA SESSIONE:</B></font><BR><TABLE WIDTH=<?=$SDwidth ?>><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">CANALE REMOTO</TD><TD><font class=\"log_title\">RIAGGANCIA</TD><TD><font class=\"log_title\">VOLUME</TD></TR>";
+								var live_conf_HTML = "<font face=\"Arial,Helvetica\"><B>ŽIVÉ HOVORY VO VAŠEJ:</B></font><BR><TABLE WIDTH=<?=$SDwidth ?>><TR BGCOLOR=#E6E6E6><TD><font class=\"log_title\">#</TD><TD><font class=\"log_title\">VZDIALENÝ KANÁL</TD><TD><font class=\"log_title\">POLOŹIŤ</TD><TD><font class=\"log_title\">HLASITOSŤ</TD></TR>";
 								if ( (LMAcount > live_conf_calls)  || (LMAcount < live_conf_calls) || (LMAforce > 0))
 									{
 									LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
@@ -2605,11 +2605,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{
 										if (volumecontrol_active!=1)
 											{
-											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">RIAGGANCIA</a></td><td></td></tr>";
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">POLOŹIŤ</a></td><td></td></tr>";
 											}
 										else
 											{
-											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">RIAGGANCIA</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_up.gif\" Border=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_down.gif\" Border=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_MUTE.gif\" Border=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_UNMUTE.gif\" Border=0></a></td></tr>";
+											live_conf_HTML = live_conf_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"" + chan_name_color + "\">" + channelfieldA + "</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"livehangup_send_hangup('" + channelfieldA + "');return false;\">POLOŹIŤ</a></td><td><a href=\"#\" onclick=\"volume_control('UP','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_up.gif\" Border=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('DOWN','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_down.gif\" Border=0></a> &nbsp; &nbsp; &nbsp; <a href=\"#\" onclick=\"volume_control('MUTING','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_MUTE.gif\" Border=0></a> &nbsp; <a href=\"#\" onclick=\"volume_control('UNMUTE','" + channelfieldA + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_UNMUTE.gif\" Border=0></a></td></tr>";
 											}
 										}
 				//		var debugspan = document.getElementById("debugbottomspan").innerHTML;
@@ -2761,11 +2761,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			//	filename = filedate + "_" + user_abb;
 				var query_recording_exten = recording_exten;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_stoprecording.gif\" border=0 alt=\"Ferma la registrazioneing\"></a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('StopMonitorConf','" + taskconfrec + "','" + filename + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_stoprecording.gif\" border=0 alt=\"Zastaviť nahrávanie\"></a>";
 
 				if (LIVE_campaign_recording == 'ALLFORCE')
 					{
-					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Registrazione\">";
+					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Spustiť nahrávanie\">";
 					}
 				else
 					{
@@ -2777,10 +2777,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				filename = taskconffile;
 				var query_recording_exten = session_id;
 				var channelrec = "Local/" + conf_silent_prefix + '' + taskconfrec + "@" + ext_context;
-				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Registrazione\"></a>";
+				var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + taskconfrec + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording.gif\" border=0 alt=\"Spustiť nahrávanie\"></a>";
 				if (LIVE_campaign_recording == 'ALLFORCE')
 					{
-					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Registrazione\">";
+					document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Spustiť nahrávanie\">";
 					}
 				else
 					{
@@ -2823,7 +2823,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send Redirect command for live call to Manager sends phone name where call is going to
-// Covers the following types: XFER, VMAIL, ENTRY, CONF, ATTESA, FROMATTESA, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
+// Covers the following types: XFER, VMAIL, ENTRY, CONF, ZAPARKOVAŤ, FROMZAPARKOVAŤ, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
 	//	conf_dialed=1;
@@ -2891,7 +2891,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					{
 					xferredirect_query='';
 					taskvar = 'NOTHING';
-					alert("Il numero per il trasferimento deve avere piu` di 1 digit:" + blindxferdialstring);
+					alert("Presmerovanie čísla musí mať viac ako 1 číslo:" + blindxferdialstring);
 					}
 				else
 					{
@@ -2971,7 +2971,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				var parkedby = protocol + "/" + extension;
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectToPark&format=text&channel=" + redirectdestination + "&call_server_ip=" + redirectdestserverip + "&queryCID=" + queryCID + "&exten=" + park_on_extension + "&ext_context=" + ext_context + "&ext_priority=1&extenName=park&parkedby=" + parkedby + "&session_id=" + session_id;
 
-				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_grabparkedcall.gif\" border=0 alt=\"Riprendi la chiamata in attesa\"></a>";
+				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('FROMParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_grabparkedcall.gif\" border=0 alt=\"Prevziať zaparkovaný hovor\"></a>";
 				customerparked=1;
 				}
 			if (taskvar == 'FROMParK')
@@ -2992,7 +2992,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectFromPark&format=text&channel=" + redirectdestination + "&call_server_ip=" + redirectdestserverip + "&queryCID=" + queryCID + "&exten=" + dest_dialstring + "&ext_context=" + ext_context + "&ext_priority=1" + "&session_id=" + session_id;
 
-				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Metti in attesa la chiamata\"></a>";
+				document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + redirectdestination + "','" + redirectdestserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Zaparkovaný hovor\"></a>";
 				customerparked=0;
 				}
 
@@ -3084,14 +3084,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Finish the alternate dialing and move su to disposition the call
+// Finish the alternate dialing and move na to disposition the call
 	function ManualDialAltDonE()
 		{
 		alt_phone_dialing=starting_alt_phone_dialing;
 		alt_dial_active = 0;
 		alt_dial_status_display = 0;
 		open_dispo_screen=1;
-		document.getElementById("MainStatuSSpan").innerHTML = "Chiama il prossimo numero";
+		document.getElementById("MainStatuSSpan").innerHTML = "Volať ďalšie číslo";
 		}
 // ################################################################################
 // Insert or update the vicidial_log entry for a customer call
@@ -3116,7 +3116,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					reselect_alt_dial = 1;
 					alt_dial_active = 1;
 					alt_dial_status_display = 1;
-					var man_status = "Chiama Numero Altern.: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">NUMERO PRINCIPALE</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTTelefonoE')\"><font class=\"preview_text\">NUMERO ALTERNATIVO</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">INDIRIZZO3</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">Termina Contatto</font></a>"; 
+					var man_status = "Volať alternatívne telefónne číslo: <a href=\"#\" onclick=\"ManualDialOnly('MaiNPhonE')\"><font class=\"preview_text\">ZÁKLADNÉ TEL. ČÍSLO</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('ALTTelefónE')\"><font class=\"preview_text\">ALTERN. TELEFÓN</font></a> or <a href=\"#\" onclick=\"ManualDialOnly('AddresS3')\"><font class=\"preview_text\">Adresa 3</font></a> or <a href=\"#\" onclick=\"ManualDialAltDonE()\"><font class=\"preview_text_red\">UKONCIT ZOZNAM KONTAKTOV</font></a>"; 
 					document.getElementById("MainStatuSSpan").innerHTML = man_status;
 					}
 				}
@@ -3162,7 +3162,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					MDlogResponse = xmlhttp.responseText;
 					var MDlogResponse_array=MDlogResponse.split("\n");
 					MDlogLINE = MDlogResponse_array[0];
-					if ( (MDlogLINE == "LOG NON INSERITO") && (VDstop_rec_after_each_call != 1) )
+					if ( (MDlogLINE == "LOG NEBOL ZADANÝ") && (VDstop_rec_after_each_call != 1) )
 						{
 				//		alert("error: log not entered\n");
 						}
@@ -3172,10 +3172,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				//		alert("VICIDIAL Call log entered:\n" + document.vicidial_form.uniqueid.value);
 						if ( (taskMDstage != "start") && (VDstop_rec_after_each_call == 1) )
 							{
-							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording.gif\" border=0 alt=\"Start Registrazione\"></a>";
+							var conf_rec_start_html = "<a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + session_id + "','');return false;\"><IMG SRC=\"../agc/images/vdc_LB_startrecording.gif\" border=0 alt=\"Spustiť nahrávanie\"></a>";
 							if ( (LIVE_campaign_recording == 'NEVER') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{
-								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Registrazione\">";
+								document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Spustiť nahrávanie\">";
 								}
 							else
 								{document.getElementById("RecorDControl").innerHTML = conf_rec_start_html;}
@@ -3241,7 +3241,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					var CBcounT = xmlhttp.responseText;
 					if (CBcounT == 0) {var CBprint = "NO";}
 					else {var CBprint = CBcounT;}
-						document.getElementById("CBstatusSpan").innerHTML ="<a href=\"#\" onclick=\"CalLBacKsLisTCheck();return false;\">" + CBprint + " CHIAMATABACK ATTIVE</a>";
+						document.getElementById("CBstatusSpan").innerHTML ="<a href=\"#\" onclick=\"CalLBacKsLisTCheck();return false;\">" + CBprint + " AKTÍVNE PREPLÁNOVANÉ HOVORY</a>";
 						
 					}
 				}
@@ -3256,7 +3256,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DEVI ESSERE IN PAUSA PER CONTROLLARE LA CHIAMATABACK IN MODALITA AUTODIAL");
+			alert("Musíte byť pozastavený na kontrolu preplánovaných hovorov v móde AUTOMATICKÉHO volania");
 			}
 		else
 			{
@@ -3298,7 +3298,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var CB_calls = all_CBs_array[0];
 						var loop_ct=0;
 						var conv_start=0;
-						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> DATA/ORA RICHIAMO</td><td><font class=\"log_title\">NUMERO</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">  STATO</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">DATA/ORA ULTIMA CHIAMATA</td><td align=left><font class=\"log_title\"> NOTE</td></tr>"
+						var CB_HTML = "<table width=610><tr bgcolor=#E6E6E6><td><font class=\"log_title\">#</td><td><font class=\"log_title\"> HOVORBACK DATE/TIME</td><td><font class=\"log_title\">ČÍSLO</td><td><font class=\"log_title\">NAME</td><td><font class=\"log_title\">  STAV</td><td align=right><font class=\"log_title\">CAMPAIGN</td><td><font class=\"log_title\">LAST DÁTUM HOVORU/ČAS</td><td align=left><font class=\"log_title\"> COMMENTS</td></tr>"
 						while (loop_ct < CB_calls)
 							{
 							loop_ct++;
@@ -3366,7 +3366,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DEVI ESSERE IN PAUSA PER EFFETTUARE UNA CHIAMATA MANUALE QUANDO SEI IN MODALITA` AUTODIAL");
+			alert("Musíte byť pozastavený do manuálneho vytáčania v novom zozname kontaktov v móde AUTOMATICKÉHO vytáčania");
 			}
 		else
 			{
@@ -3424,7 +3424,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if ( (MDDiaLCodEform.length < 1) || (MDPhonENumbeRform.length < 5) )
 			{
-			alert("DEVI INSERIRE UN NUMERO DI TELEFONO E UN CODICE PER USARE LA CHIAMATA VELOCE");
+			alert("MUSÍTE VLOŽIŤ ČÍSLO TELEFÓNU A VOLACÍ KÓD NA POUŽITIE RÝCHLEHO VOLANIA");
 			}
 		else
 			{
@@ -3500,7 +3500,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (alt_dial_status_display=='0')
 							{
 					//		alert(document.getElementById("MainStatuSSpan").innerHTML);
-							document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + status_display_number + " UID: " + CIDcheck + " &nbsp; In attesa del Ring... " + MD_ring_secondS + " secondi";
+							document.getElementById("MainStatuSSpan").innerHTML = " Volané: " + status_display_number + " UID: " + CIDcheck + " &nbsp; Čakanie na zvonenie... " + MD_ring_secondS + " sekúnd";
 					//		alert("channel not found yet:\n" + campaign);
 							}
 						}
@@ -3527,17 +3527,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								XD_live_call_secondS = 0;
 								MD_channel_look=0;
 
-								document.getElementById("MainStatuSSpan").innerHTML = " Chiamata la terza parte: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
+								document.getElementById("MainStatuSSpan").innerHTML = " Voalať externú aplikáciu: " + document.vicidial_form.xfernumber.value + " UID: " + CIDcheck;
 
-								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call('FIRST');return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall.gif\" border=0 alt=\"LASCIA LA CONFERENZA A 3\"></a>";
+								document.getElementById("Leave3WayCall").innerHTML ="<a href=\"#\" onclick=\"leave_3way_call('FIRST');return false;\"><IMG SRC=\"../agc/images/vdc_XB_leave3waycall.gif\" border=0 alt=\"PONECHAT 3 CESTNE VOLANIE\"></a>";
 
-								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Chiama il Cliente\">";
+								document.getElementById("DialWithCustomer").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer_OFF.gif\" border=0 alt=\"Volanie so zákazníkom\">";
 
-								document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF.gif\" border=0 alt=\"Metti in attesa il cliente\">";
+								document.getElementById("ParkCustomerDial").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial_OFF.gif\" border=0 alt=\"Zaparkovať hovor so zákazníkom\">";
 
-								document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline.gif\" border=0 alt=\"Riaggancia la linea trasferita\"></a>";
+								document.getElementById("HangupXferLine").innerHTML ="<a href=\"#\" onclick=\"xfercall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupxferline.gif\" border=0 alt=\"Zložiť Xfer linku\"></a>";
 
-								document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Riaggancia entrambe le linee\"></a>";
+								document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Zložiť obe linky\"></a>";
 
 								xferchannellive=1;
 								XDcheck = '';
@@ -3570,17 +3570,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var dispnum = lead_dial_number;
 								var status_display_number = phone_number_format(dispnum);
 
-								document.getElementById("MainStatuSSpan").innerHTML = " Chiamato: " + status_display_number + " UID: " + CIDcheck + " &nbsp;"; 
+								document.getElementById("MainStatuSSpan").innerHTML = " Volaný: " + status_display_number + " UID: " + CIDcheck + " &nbsp;"; 
 
-								document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Metti in attesa la chiamata\"></a>";
+								document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Zaparkovaný hovor\"></a>";
 
-								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Riaggancia il cliente\"></a>";
+								document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Zložiť zákazníka\"></a>";
 
-								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
+								document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Presmerovanie - Konferencia\"></a>";
 
-								document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
+								document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser.gif\" border=0 alt=\"LOKALNE ROZSIRENIE\"></a>";
 
-								document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Effettua il Blind Transfer\"></a>";
+								document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Volať slepé presmerovanie\"></a>";
 
 								document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 
@@ -3588,7 +3588,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								document.getElementById("VolumeDownSpan").innerHTML = "<a href=\"#\" onclick=\"volume_control('DOWN','" + MDchannel + "','');return false;\"><IMG SRC=\"../agc/images/vdc_volume_down.gif\" Border=0></a>";
 
 
-								// INSERT VICIDIAL_LOG ENTRY FOR THIS CHIAMATA PROCESS
+								// INSERT VICIDIAL_LOG ENTRY FOR THIS HOVOR PROCESS
 								DialLog("start");
 
 								custchannellive=1;
@@ -3604,13 +3604,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			{
 			MD_channel_look=0;
 			MD_ring_secondS=0;
-			alert("Tempo di chiamata scaduto, contatta l`amministratore del sistema\n");
+			alert("Vypršaný čas volania, kontaktujte Vášho systémového administrátora\n");
 			}
 
 		}
 
 // ################################################################################
-// Send the Manual Chiama il prossimo numero request
+// Send the Manual Volať ďalšie číslo request
 	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE)
 		{
 		inOUT = 'OUT';
@@ -3622,23 +3622,23 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 			AutoDial_ReSume_PauSe('VDADpause');
 
-			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 			}
 		else
 			{
-			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+			document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 			}
 		if (document.vicidial_form.LeadPreview.checked==true)
 			{
 			reselect_preview_dial = 1;
 			var man_preview = 'YES';
-			var man_status = "Anteprima del contatto, quindi <a href=\"#\" onclick=\"ManualDialOnly()\"><font class=\"preview_text\"> CHIAMA LEAD</font></a> or <a href=\"#\" onclick=\"ManualDialSkip()\"><font class=\"preview_text\">SKIP LEAD</font></a>"; 
+			var man_status = "Prehľad kontaktov pre <a href=\"#\" onclick=\"ManualDialOnly()\"><font class=\"preview_text\"> VOLAT ZOZNAM KONTAKTOV</font></a> or <a href=\"#\" onclick=\"ManualDialSkip()\"><font class=\"preview_text\">PRESKOCIT ZOZNAM KONTAKTOV</font></a>"; 
 			}
 		else
 			{
 			reselect_preview_dial = 0;
 			var man_preview = 'NO';
-			var man_status = "In attesa del Ring..."; 
+			var man_status = "Čakanie na zvonenie..."; 
 			}
 
 		var xmlhttp=false;
@@ -3690,7 +3690,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						CalLBacKsCounTCheck();
 
 						if (MDnextCID.match(regMNCvar))
-							{alert("Non ci sono contatti da chiamare nella campagna:\n" + campaign);   alert_displayed=1;}
+							{alert("Nemáte viac kontaktov v zásobníku pre túto kampaň:\n" + campaign);   alert_displayed=1;}
 						if (MDnextCID.match(regMDFvarDNC))
 							{alert("This phone number is in the DNC list:\n" + mdnPhonENumbeR);   alert_displayed=1;}
 						if (MDnextCID.match(regMDFvarCAMP))
@@ -3700,7 +3700,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						if (starting_dial_level == 0)
 							{
-							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+							document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 							}
 						else
 							{
@@ -3708,7 +3708,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								{
 								auto_dial_level=starting_dial_level;
 
-								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Riprendi\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Pokračovať\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 								}
 							else
 								{
@@ -3769,7 +3769,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var dispnum = document.vicidial_form.phone_number.value;
 						var status_display_number = phone_number_format(dispnum);
 
-						document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + status_display_number + " UID: " + MDnextCID + " &nbsp; " + man_status;
+						document.getElementById("MainStatuSSpan").innerHTML = " Volané: " + status_display_number + " UID: " + MDnextCID + " &nbsp; " + man_status;
 						if ( (dialed_label.length < 2) || (dialed_label=='NONE') ) {dialed_label='MAIN';}
 
 						var gIndex = 0;
@@ -3843,12 +3843,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						if (LeaDPreVDispO == 'CALLBK')
 							{
-							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS CHIAMATABACK </B>";
+							document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS HOVORBACK </B>";
 							document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Ultima Chiamata:</b>" + CBentry_time;
-							document.getElementById("CBcommentsBoxB").innerHTML = "<b>Richiamo:</b>" + CBcallback_time;
-							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Operatore:</b>" + CBuser;
-							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Note:</b><br>" + CBcomments;
+							document.getElementById("CBcommentsBoxA").innerHTML = "<b>Posledný hovor:</b>" + CBentry_time;
+							document.getElementById("CBcommentsBoxB").innerHTML = "<b>Preplánovanie hovoru:</b>" + CBcallback_time;
+							document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent:</b>" + CBuser;
+							document.getElementById("CBcommentsBoxD").innerHTML = "<b>Poznámky:</b><br>" + CBcomments;
 							showDiv('CBcommentsBox');
 							}
 
@@ -3858,7 +3858,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						else
 							{web_form_vars = '?' + web_form_vars}
 
-						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
+						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web formulár\"></a>\n";
 
 						if (document.vicidial_form.LeadPreview.checked==false)
 							{
@@ -3866,7 +3866,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							MD_channel_look=1;
 							custchannellive=1;
 
-							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Riaggancia il cliente\"></a>";
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Zložiť zákazníka\"></a>";
 
 							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
@@ -3914,7 +3914,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (manual_dial_in_progress==1)
 			{
-			alert('NON PUOI SALTARE UNA CHIAMATABACK O UNA CHIAMATA. DEVI CHIAMARE IL CONTATTO');
+			alert('Nemôžete preskočiť na preplánovanie hovoru alebo manuálne vytáčanie, musíte vytočiť kontakt');
 			}
 		else
 			{
@@ -3922,11 +3922,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				auto_dial_level=starting_dial_level;
 
-				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 				}
 			else
 				{
-				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 				}
 
 			var xmlhttp=false;
@@ -3967,7 +3967,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						MDSnextCID = MDSnextResponse_array[0];
 						if (MDSnextCID == "LEAD NOT REVERTED")
 							{
-							alert("Il contatto non e` ritornato, c`e` un errore:\n" + MDSnextResponse);
+							alert("Kontakty neboli obnovené, bola zistená chyba:\n" + MDSnextResponse);
 							}
 						else
 							{
@@ -4007,15 +4007,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							previous_dispo = '';
 							custchannellive=1;
 
-							document.getElementById("MainStatuSSpan").innerHTML = " Lead skipped, go su to next lead";
+							document.getElementById("MainStatuSSpan").innerHTML = " Lead skipped, go na to next lead";
 
 							if (dial_method == "INBOUND_MAN")
 								{
-								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Riprendi\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Pokračovať\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 								}
 							else
 								{
-								document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+								document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 								}
 							}
 						}
@@ -4034,7 +4034,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		alt_dial_status_display = 0;
 		all_record = 'NO';
 		all_record_count=0;
-		if (taskaltnum == 'ALTTelefonoE')
+		if (taskaltnum == 'ALTTelefónE')
 			{
 			var manDiaLonly_num = document.vicidial_form.alt_phone.value;
 			lead_dial_number = document.vicidial_form.alt_phone.value;
@@ -4062,14 +4062,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			}
 		if (dialed_label == 'ALT')
-			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: ALT </B>";}
+			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: ALT </B>";}
 		if (dialed_label == 'ADDR3')
-			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: INDIRIZZO3 </B>";}
+			{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: Adresa 3 </B>";}
 		var REGalt_dial = new RegExp("X","g");
 		if (dialed_label.match(REGalt_dial))
 			{
-			document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: " + dialed_label + "</B>";
-			document.getElementById("EAcommentsBoxA").innerHTML = "<b>Telefono Code and Number: </b>" + EAphone_code + " " + EAphone_number;
+			document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: " + dialed_label + "</B>";
+			document.getElementById("EAcommentsBoxA").innerHTML = "<b>Telefón Code and Number: </b>" + EAphone_code + " " + EAphone_number;
 
 			var EAactive_link = '';
 			if (EAalt_phone_active == 'Y') 
@@ -4079,7 +4079,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 			document.getElementById("EAcommentsBoxB").innerHTML = "<b>Active: </b>" + EAalt_phone_active + "<BR>" + EAactive_link;
 			document.getElementById("EAcommentsBoxC").innerHTML = "<b>Alt Count: </b>" + EAalt_phone_count;
-			document.getElementById("EAcommentsBoxD").innerHTML = "<b>Note: </b><br>" + EAalt_phone_notes;
+			document.getElementById("EAcommentsBoxD").innerHTML = "<b>Poznámka: </b><br>" + EAalt_phone_notes;
 			showDiv('EAcommentsBox');
 			}
 
@@ -4118,9 +4118,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 					var MDOnextResponse_array=MDOnextResponse.split("\n");
 					MDnextCID =	MDOnextResponse_array[0];
-					if (MDnextCID == " CHIAMATA NOT PLACED")
+					if (MDnextCID == " HOVOR NOT PLACED")
 						{
-						alert("chiamata non effettuata, c`e` un errore:\n" + MDOnextResponse);
+						alert("Hovor nebol uskutočnený, bola zistená chyba:\n" + MDOnextResponse);
 						}
 					else
 						{
@@ -4133,9 +4133,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						if (alt_dial_status_display=='0')
 							{
-							document.getElementById("MainStatuSSpan").innerHTML = " In Chiamata: " + status_display_number + " UID: " + MDnextCID + " &nbsp; In attesa del Ring...";
+							document.getElementById("MainStatuSSpan").innerHTML = " Volané: " + status_display_number + " UID: " + MDnextCID + " &nbsp; Čakanie na zvonenie...";
 							
-							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Riaggancia il cliente\"></a>";
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Zložiť zákazníka\"></a>";
 							}
 						if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 							{all_record = 'YES';}
@@ -4193,7 +4193,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				auto_dial_level=starting_dial_level;
 
-				document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause.gif\" border=0 alt=\"Pausa\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+				document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"../agc/images/vdc_LB_pause.gif\" border=0 alt=\"Pauza\"></a><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 				}
 			else
 				{
@@ -4209,7 +4209,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				auto_dial_level=starting_dial_level;
 
-				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Riprendi\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+				document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Pokračovať\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 				}
 			else
 				{
@@ -4301,7 +4301,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							}
 						else
 							{
-				//	alert("Canale has changed from:\n" + lastcustchannel + '|' + lastcustserverip + "\nto:\n" + reVDIC_data_VDAC[3] + '|' + reVDIC_data_VDAC[4]);
+				//	alert("Kanál has changed from:\n" + lastcustchannel + '|' + lastcustserverip + "\nto:\n" + reVDIC_data_VDAC[3] + '|' + reVDIC_data_VDAC[4]);
 							document.vicidial_form.callchannel.value	= reVDIC_data_VDAC[3];
 							lastcustchannel = reVDIC_data_VDAC[3];
 							document.vicidial_form.callserverip.value	= reVDIC_data_VDAC[4];
@@ -4465,7 +4465,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							VD_live_customer_call = 1;
 							VD_live_call_secondS = 0;
 
-							// INSERT VICIDIAL_LOG ENTRY FOR THIS CHIAMATA PROCESS
+							// INSERT VICIDIAL_LOG ENTRY FOR THIS HOVOR PROCESS
 						//	DialLog("start");
 
 							custchannellive=1;
@@ -4528,27 +4528,27 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							var callnum = dialed_number;
 							var dial_display_number = phone_number_format(callnum);
 
-							document.getElementById("MainStatuSSpan").innerHTML = " In entrata: " + dial_display_number + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
+							document.getElementById("MainStatuSSpan").innerHTML = " Príchodzie: " + dial_display_number + " UID: " + CIDcheck + " &nbsp; " + VDIC_fronter; 
 
 							if (LeaDPreVDispO == 'CALLBK')
 								{
-								document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS CHIAMATABACK </B>";
+								document.getElementById("CusTInfOSpaN").innerHTML = " <B> PREVIOUS HOVORBACK </B>";
 								document.getElementById("CusTInfOSpaN").style.background = CusTCB_bgcolor;
-								document.getElementById("CBcommentsBoxA").innerHTML = "<b>Ultima Chiamata:</b>" + CBentry_time;
-								document.getElementById("CBcommentsBoxB").innerHTML = "<b>Richiamo:</b>" + CBcallback_time;
-								document.getElementById("CBcommentsBoxC").innerHTML = "<b>Operatore:</b>" + CBuser;
-								document.getElementById("CBcommentsBoxD").innerHTML = "<b>Note:</b><br>" + CBcomments;
+								document.getElementById("CBcommentsBoxA").innerHTML = "<b>Posledný hovor:</b>" + CBentry_time;
+								document.getElementById("CBcommentsBoxB").innerHTML = "<b>Preplánovanie hovoru:</b>" + CBcallback_time;
+								document.getElementById("CBcommentsBoxC").innerHTML = "<b>Agent:</b>" + CBuser;
+								document.getElementById("CBcommentsBoxD").innerHTML = "<b>Poznámky:</b><br>" + CBcomments;
 								showDiv('CBcommentsBox');
 								}
 							if (dialed_label == 'ALT')
-								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: ALT </B>";}
+								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: ALT </B>";}
 							if (dialed_label == 'ADDR3')
-								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: INDIRIZZO3 </B>";}
+								{document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: Adresa 3 </B>";}
 							var REGalt_dial = new RegExp("X","g");
 							if (dialed_label.match(REGalt_dial))
 								{
-								document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT CHIAMA NUMERO: " + dialed_label + "</B>";
-								document.getElementById("EAcommentsBoxA").innerHTML = "<b>Telefono Code and Number: </b>" + EAphone_code + " " + EAphone_number;
+								document.getElementById("CusTInfOSpaN").innerHTML = " <B> ALT VOLAŤ ČÍSLO: " + dialed_label + "</B>";
+								document.getElementById("EAcommentsBoxA").innerHTML = "<b>Telefón Code and Number: </b>" + EAphone_code + " " + EAphone_number;
 
 								var EAactive_link = '';
 								if (EAalt_phone_active == 'Y') 
@@ -4558,7 +4558,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 								document.getElementById("EAcommentsBoxB").innerHTML = "<b>Active: </b>" + EAalt_phone_active + "<BR>" + EAactive_link;
 								document.getElementById("EAcommentsBoxC").innerHTML = "<b>Alt Count: </b>" + EAalt_phone_count;
-								document.getElementById("EAcommentsBoxD").innerHTML = "<b>Note: </b>" + EAalt_phone_notes;
+								document.getElementById("EAcommentsBoxD").innerHTML = "<b>Poznámka: </b>" + EAalt_phone_notes;
 								showDiv('EAcommentsBox');
 								}
 
@@ -4572,18 +4572,18 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								var dispnum = document.vicidial_form.phone_number.value;
 								var status_display_number = phone_number_format(dispnum);
 
-								document.getElementById("MainStatuSSpan").innerHTML = " In entrata: " + status_display_number + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
+								document.getElementById("MainStatuSSpan").innerHTML = " Príchodzie: " + status_display_number + " Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter; 
 								}
 
-							document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Metti in attesa la chiamata\"></a>";
+							document.getElementById("ParkControl").innerHTML ="<a href=\"#\" onclick=\"mainxfer_send_redirect('ParK','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_LB_parkcall.gif\" border=0 alt=\"Zaparkovaný hovor\"></a>";
 
-							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Riaggancia il cliente\"></a>";
+							document.getElementById("HangupControl").innerHTML = "<a href=\"#\" onclick=\"dialedcall_send_hangup();\"><IMG SRC=\"../agc/images/vdc_LB_hangupcustomer.gif\" border=0 alt=\"Zložiť zákazníka\"></a>";
 
-							document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
+							document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Presmerovanie - Konferencia\"></a>";
 
-							document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser.gif\" border=0 alt=\"LOCAL CLOSER\"></a>";
+							document.getElementById("LocalCloser").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRLOCAL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_localcloser.gif\" border=0 alt=\"LOKALNE ROZSIRENIE\"></a>";
 
-							document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Effettua il Blind Transfer\"></a>";
+							document.getElementById("DialBlindTransfer").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRBLIND','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_blindtransfer.gif\" border=0 alt=\"Volať slepé presmerovanie\"></a>";
 
 							document.getElementById("DialBlindVMail").innerHTML = "<a href=\"#\" onclick=\"mainxfer_send_redirect('XfeRVMAIL','" + lastcustchannel + "','" + lastcustserverip + "');return false;\"><IMG SRC=\"../agc/images/vdc_XB_ammessage.gif\" border=0 alt=\"Blind Transfer VMail Message\"></a>";
 		
@@ -4595,7 +4595,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							if (dial_method == "INBOUND_MAN")
 								{
-								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+								document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 								}
 							else
 								{
@@ -4675,7 +4675,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							else
 								{web_form_vars = '?' + web_form_vars}
 
-							document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
+							document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web formulár\"></a>\n";
 
 							if ( (LIVE_campaign_recording == 'ALLCALLS') || (LIVE_campaign_recording == 'ALLFORCE') )
 								{all_record = 'YES';}
@@ -4805,11 +4805,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if (taskrefresh == 'OUT')
 			{
-			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH('IN');\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
+			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOver=\"WebFormRefresH('IN');\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web formulár\"></a>\n";
 			}
 		else 
 			{
-			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOut=\"WebFormRefresH('OUT');\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
+			document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + VDIC_web_form_address + web_form_vars + "\" target=\"vdcwebform\" onMouseOut=\"WebFormRefresH('OUT');\"><IMG SRC=\"../agc/images/vdc_LB_webform.gif\" border=0 alt=\"Web formulár\"></a>\n";
 			}
 		}
 
@@ -4944,7 +4944,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			MD_ring_secondS = 0;
 			CalLCID = '';
 
-		//	UPDATE VICIDIAL_LOG ENTRY FOR THIS CHIAMATA PROCESS
+		//	UPDATE VICIDIAL_LOG ENTRY FOR THIS HOVOR PROCESS
 			DialLog("end");
 			conf_dialed=0;
 			if (dispowindow == 'NO')
@@ -4991,12 +4991,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			lastcustserverip='';
 
 			if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
-			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_webform_OFF.gif\" border=0 alt=\"Web Form\">";
-			document.getElementById("ParkControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_parkcall_OFF.gif\" border=0 alt=\"Metti in attesa la chiamata\">";
-			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF.gif\" border=0 alt=\"Riaggancia il cliente\">";
-			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_transferconf_OFF.gif\" border=0 alt=\"Trasferimento - Conferenza\">";
-			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_localcloser_OFF.gif\" border=0 alt=\"LOCAL CLOSER\">";
-			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_blindtransfer_OFF.gif\" border=0 alt=\"Effettua il Blind Transfer\">";
+			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_webform_OFF.gif\" border=0 alt=\"Web formulár\">";
+			document.getElementById("ParkControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_parkcall_OFF.gif\" border=0 alt=\"Zaparkovaný hovor\">";
+			document.getElementById("HangupControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_hangupcustomer_OFF.gif\" border=0 alt=\"Zložiť zákazníka\">";
+			document.getElementById("XferControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_transferconf_OFF.gif\" border=0 alt=\"Presmerovanie - Konferencia\">";
+			document.getElementById("LocalCloser").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_localcloser_OFF.gif\" border=0 alt=\"LOKALNE ROZSIRENIE\">";
+			document.getElementById("DialBlindTransfer").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_blindtransfer_OFF.gif\" border=0 alt=\"Volať slepé presmerovanie\">";
 			document.getElementById("DialBlindVMail").innerHTML = "<IMG SRC=\"../agc/images/vdc_XB_ammessage_OFF.gif\" border=0 alt=\"Blind Transfer VMail Message\">";
 			document.getElementById("VolumeUpSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_volume_up_off.gif\" Border=0>";
 			document.getElementById("VolumeDownSpan").innerHTML = "<IMG SRC=\"../agc/images/vdc_volume_down_off.gif\" Border=0>";
@@ -5010,7 +5010,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					reselect_alt_dial = 1;
 					if (altdispo == 'ALTPH2')
 						{
-						ManualDialOnly('ALTTelefonoE');
+						ManualDialOnly('ALTTelefónE');
 						}
 					else
 						{
@@ -5036,7 +5036,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						}
 					else
 						{
-						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 						}
 					reselect_alt_dial = 0;
 					}
@@ -5048,7 +5048,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					reselect_alt_dial = 1;
 					if (altdispo == 'ALTPH2')
 						{
-						ManualDialOnly('ALTTelefonoE');
+						ManualDialOnly('ALTTelefónE');
 						}
 					else
 						{
@@ -5064,7 +5064,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								document.getElementById("MainStatuSSpan").innerHTML = '';
 								if (dial_method == "INBOUND_MAN")
 									{
-									document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+									document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 									}
 								else
 									{
@@ -5080,7 +5080,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
 					if (dial_method == "INBOUND_MAN")
 						{
-						document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Riprendi\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Chiama il prossimo numero\">";
+						document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><IMG SRC=\"../agc/images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Pokračovať\"><BR><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber_OFF.gif\" border=0 alt=\"Volať ďalšie číslo\">";
 						}
 					else
 						{
@@ -5166,15 +5166,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			document.vicidial_form.xferchannel.value = "";
 			lastxferchannel='';
 
-		//	document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF.gif\" border=0 alt=\"LASCIA LA CONFERENZA A 3\">";
+		//	document.getElementById("Leave3WayCall").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_leave3waycall_OFF.gif\" border=0 alt=\"PONECHAT 3 CESTNE VOLANIE\">";
 
-			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Chiama il Cliente\"></a>";
+			document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Volanie so zákazníkom\"></a>";
 
-			document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Metti in attesa il cliente\"></a>";
+			document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Zaparkovať hovor so zákazníkom\"></a>";
 
-			document.getElementById("HangupXferLine").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_hangupxferline_OFF.gif\" border=0 alt=\"Riaggancia la linea trasferita\">";
+			document.getElementById("HangupXferLine").innerHTML ="<IMG SRC=\"../agc/images/vdc_XB_hangupxferline_OFF.gif\" border=0 alt=\"Zložiť Xfer linku\">";
 
-			document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Riaggancia entrambe le linee\"></a>";
+			document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Zložiť obe linky\"></a>";
 			}
 		}
 
@@ -5308,7 +5308,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		AgentDispoing = 1;
 		var VD_statuses_ct_half = parseInt(VD_statuses_ct / 2);
-		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> ESITO CHIAMATA</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
+		var dispo_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> HOVOR DISPOSITION</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=DispoSelectA>";
 		var loop_ct = 0;
 		while (loop_ct < VD_statuses_ct)
 			{
@@ -5333,31 +5333,31 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Generate the Pausa Code Chooser panel
+// Generate the Pauza Code Chooser panel
 	function PauseCodeSelectContent_create()
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DEVI ESSERE IN PAUSA PER INSERIRE UN CODICE PAUSA IN MODALITA` AUTODIAL");
+			alert("MUSÍTE BYŤ V PAUZE NA VLOŽENIE KÓDU PAUZY V MÓDE AUTO-DIAL");
 			}
 		else
 			{
-			showDiv('PausaCodeSelectBox');
+			showDiv('PauzaCodeSelectBox');
 			WaitingForNextStep=1;
-			PausaCode_HTML = '';
-			document.vicidial_form.PausaCodeSelection.value = '';		
+			PauzaCode_HTML = '';
+			document.vicidial_form.PauzaCodeSelection.value = '';		
 			var VD_pause_codes_ct_half = parseInt(VD_pause_codes_ct / 2);
-			PausaCode_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> PAUSE CODE</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PausaCodeSelectA>";
+			PauzaCode_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td colspan=2><B> PAUSE CODE</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauzaCodeSelectA>";
 			var loop_ct = 0;
 			while (loop_ct < VD_pause_codes_ct)
 				{
-				PausaCode_HTML = PausaCode_HTML + "<font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PausaCodeSelect_submit('" + VARpause_codes[loop_ct] + "');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><BR><BR>";
+				PauzaCode_HTML = PauzaCode_HTML + "<font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauzaCodeSelect_submit('" + VARpause_codes[loop_ct] + "');return false;\">" + VARpause_codes[loop_ct] + " - " + VARpause_code_names[loop_ct] + "</a></b></font><BR><BR>";
 				loop_ct++;
 				if (loop_ct == VD_pause_codes_ct_half) 
-					{PausaCode_HTML = PausaCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PausaCodeSelectB>";}
+					{PauzaCode_HTML = PauzaCode_HTML + "</span></font></td><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=PauzaCodeSelectB>";}
 				}
-			PausaCode_HTML = PausaCode_HTML + "</span></font></td></tr></table><BR><BR><font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PausaCodeSelect_submit('');return false;\">Torna Indietro</a>";
-			document.getElementById("PausaCodeSelectContent").innerHTML = PausaCode_HTML;
+			PauzaCode_HTML = PauzaCode_HTML + "</span></font></td></tr></table><BR><BR><font size=3 style=\"BACKGROUND-COLOR: #FFFFCC\"><b><a href=\"#\" onclick=\"PauzaCodeSelect_submit('');return false;\">Vrátiť späť</a>";
+			document.getElementById("PauzaCodeSelectContent").innerHTML = PauzaCode_HTML;
 			}
 		}
 
@@ -5369,13 +5369,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.vicidial_form.callchannel.value = '';
 		document.vicidial_form.callserverip.value = '';
 		document.vicidial_form.xferchannel.value = '';
-		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Chiama il Cliente\"></a>";
-		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Metti in attesa il cliente\"></a>";
-		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Riaggancia entrambe le linee\"></a>";
+		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Volanie so zákazníkom\"></a>";
+		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Zaparkovať hovor so zákazníkom\"></a>";
+		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Zložiť obe linky\"></a>";
 
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
-		if (DispoChoice.length < 1) {alert("Devi selezionare un esito");}
+		if (DispoChoice.length < 1) {alert("Musíte vybrať dipsozíciu");}
 		else
 			{
 			document.getElementById("CusTInfOSpaN").innerHTML = "";
@@ -5404,13 +5404,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		document.vicidial_form.callchannel.value = '';
 		document.vicidial_form.callserverip.value = '';
 		document.vicidial_form.xferchannel.value = '';
-		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Chiama il Cliente\"></a>";
-		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Metti in attesa il cliente\"></a>";
-		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Riaggancia entrambe le linee\"></a>";
+		document.getElementById("DialWithCustomer").innerHTML ="<a href=\"#\" onclick=\"SendManualDial('YES');return false;\"><IMG SRC=\"../agc/images/vdc_XB_dialwithcustomer.gif\" border=0 alt=\"Volanie so zákazníkom\"></a>";
+		document.getElementById("ParkCustomerDial").innerHTML ="<a href=\"#\" onclick=\"xfer_park_dial();return false;\"><IMG SRC=\"../agc/images/vdc_XB_parkcustomerdial.gif\" border=0 alt=\"Zaparkovať hovor so zákazníkom\"></a>";
+		document.getElementById("HangupBothLines").innerHTML ="<a href=\"#\" onclick=\"bothcall_send_hangup();return false;\"><IMG SRC=\"../agc/images/vdc_XB_hangupbothlines.gif\" border=0 alt=\"Zložiť obe linky\"></a>";
  
 		var DispoChoice = document.vicidial_form.DispoSelection.value;
 
-		if (DispoChoice.length < 1) {alert("Devi selezionare un esito");}
+		if (DispoChoice.length < 1) {alert("Musíte vybrať dipsozíciu");}
 		else
 			{
 			document.getElementById("CusTInfOSpaN").innerHTML = "";
@@ -5500,14 +5500,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					manual_dial_finished();
 					}
 				document.getElementById("GENDERhideFORieALT").innerHTML = '';
-				document.getElementById("GENDERhideFORie").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Maschio</option><option value="F">F - Femmina</option></select>';
+				document.getElementById("GENDERhideFORie").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select>';
 				hideDiv('DispoSelectBox');
 				hideDiv('DispoButtonHideA');
 				hideDiv('DispoButtonHideB');
 				hideDiv('DispoButtonHideC');
 				document.getElementById("DispoSelectBox").style.top = 1;
-				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizza</a>";
-				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Aggancia di nuovo</a>";
+				document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimalizovať</a>";
+				document.getElementById("DispoSelectHAspan").innerHTML = "<a href=\"#\" onclick=\"DispoHanguPAgaiN()\">Položte znova</a>";
 
 				CBcommentsBoxhide();
 				EAcommentsBoxhide();
@@ -5556,10 +5556,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 
 // ################################################################################
-// Submit the Pausa Code 
+// Submit the Pauza Code 
 	function PauseCodeSelect_submit(newpausecode)
 		{
-		hideDiv('PausaCodeSelectBox');
+		hideDiv('PauzaCodeSelectBox');
 		WaitingForNextStep=0;
 
 		var xmlhttp=false;
@@ -5583,7 +5583,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PausaCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id + "&campaign=" + campaign + "&extension=" + extension + "&protocol=" + protocol + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages;
+			VMCpausecode_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass  + "&ACTION=PauzaCodeSubmit&format=text&status=" + newpausecode + "&agent_log_id=" + agent_log_id + "&campaign=" + campaign + "&extension=" + extension + "&protocol=" + protocol + "&phone_ip=" + phone_ip + "&enable_sipsak_messages=" + enable_sipsak_messages;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(VMCpausecode_query); 
@@ -5627,7 +5627,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		}
 
 // ################################################################################
-// Mostra message that customer has hungup the call before agent has
+// Prezrieť message that customer has hungup the call before agent has
 	function CustomerChanneLGone()
 		{
 		showDiv('CustomerGoneBox');
@@ -5653,7 +5653,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		dialedcall_send_hangup();
 		}
 // ################################################################################
-// Mostra message that there are no voice channels in the VICIDIAL session
+// Prezrieť message that there are no voice channels in the VICIDIAL session
 	function NoneInSession()
 		{
 		showDiv('NoneInSessionBox');
@@ -5734,7 +5734,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (VU_agent_choose_ingroups == '1')
 			{
-			var live_CSC_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td><B>GRUPPI NON SELEZIONATI</B></td><td><B>GRUPPI SELEZIONATI</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=CloserSelectAdd>";
+			var live_CSC_HTML = "<table cellpadding=5 cellspacing=5 width=500><tr><td><B>SKUPINY NIE SÚ VYBRANÉ</B></td><td><B>VYBRANÉ SKUPINY</B></td></tr><tr><td bgcolor=\"#99FF99\" height=300 width=240 valign=top><font class=\"log_text\"><span id=CloserSelectAdd>";
 			var loop_ct = 0;
 			while (loop_ct < INgroupCOUNT)
 				{
@@ -5871,7 +5871,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (logout_stop_timeouts < 1)
 			{
 			LogouT();
-			alert("PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME.\n");
+			alert("PLEASE CLICK THE ODHLÁSIŤ LINK TO LOG OUT NEXT TIME.\n");
 			}
 		}
 
@@ -5881,12 +5881,12 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function LogouT()
 		{
 		if (MD_channel_look==1)
-			{alert("Non puoi disconnetterti durante un tentativo di chiamata. \nAttende 50 secondi prima di fallire se non c`e` risposta");}
+			{alert("Nemôžete sa odhlásiť počas prebiehajúceho hovoru. \nČakať 50 sekúnd na volanie po neúspešnom prepojení ak nebola odpoveď");}
 		else
 			{
 			if (VD_live_customer_call==1)
 				{
-				alert("LA CHIAMATA IN CORSO E' ANCORA ATTIVA! Riaggancia e quindi puoi disconnetterti.\n" + VD_live_customer_call);
+				alert("UŽ PREBIEHA ŽIVÝ HOVOR! Položte telefón a potom sa odhláste.\n" + VD_live_customer_call);
 				}
 			else
 				{
@@ -5928,7 +5928,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				hideDiv('MainPanel');
 				showDiv('LogouTBox');
 
-				document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">FAI CLICK QUI PER AUTENTICARTI DI NUOVO</a>\n";
+				document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">KLIKNITE TU NA ZNOVU PRIHLÁSENIE</a>\n";
 
 				logout_stop_timeouts = 1;
 					
@@ -6039,7 +6039,7 @@ else
 ### end of onkeypress functions
 ?>
 // ################################################################################
-// disable enter/return keys to not clear out vars su customer info
+// disable enter/return keys to not clear out vars na customer info
 	function enter_disable(evt)
 		{
 		var e = evt? evt : window.event;
@@ -6348,23 +6348,23 @@ function phone_number_format(formatphone) {
 
 
 // ################################################################################
-// Move the Dispo frame out of the way and change the link to ingrandisci
+// Move the Dispo frame out of the way and change the link to maximalizovať
 	function DispoMinimize()
 		{
 			showDiv('DispoButtonHideA');
 			showDiv('DispoButtonHideB');
 			showDiv('DispoButtonHideC');
 		document.getElementById("DispoSelectBox").style.top = 340;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\">ingrandisci</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMaximize()\">maximalizovať</a>";
 		}
 
 
 // ################################################################################
-// Move the Dispo frame to the top and change the link to minimizza
+// Move the Dispo frame to the top and change the link to minimalizovať
 	function DispoMaximize()
 		{
 		document.getElementById("DispoSelectBox").style.top = 1;
-		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimizza</a>";
+		document.getElementById("DispoSelectMaxMin").innerHTML = "<a href=\"#\" onclick=\"DispoMinimize()\">minimalizovať</a>";
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
@@ -6372,12 +6372,12 @@ function phone_number_format(formatphone) {
 
 
 // ################################################################################
-// Mostra the groups selection span
+// Prezrieť the groups selection span
 	function OpeNGrouPSelectioN()
 		{
 		if ( (AutoDialWaiting == 1) || (VD_live_customer_call==1) || (alt_dial_active==1) )
 			{
-			alert("DEVI ESSERE IN PAUSA PER CAMBIARE GRUPPO");
+			alert("YOU MUST BE PAUSED TO CHANGE GROUPS");
 			}
 		else
 			{
@@ -6407,7 +6407,7 @@ function phone_number_format(formatphone) {
 	function EAcommentsBoxhide(minimizetask)
 		{
 		hideDiv('EAcommentsBox');
-		if (minimizzatask=='YES')
+		if (minimalizovaťtask=='YES')
 			{showDiv('EAcommentsMinBox');}
 		else
 			{hideDiv('EAcommentsMinBox');}
@@ -6415,7 +6415,7 @@ function phone_number_format(formatphone) {
 
 
 // ################################################################################
-// Mostra the EAcommentsBox span upon click
+// Prezrieť the EAcommentsBox span upon click
 	function EAcommentsBoxshow()
 		{
 		showDiv('EAcommentsBox');
@@ -6439,7 +6439,7 @@ function phone_number_format(formatphone) {
 		CallBackDatEForM = document.vicidial_form.CallBackDatESelectioN.value;
 		CallBackCommenTs = document.vicidial_form.CallBackCommenTsField.value;
 		if (CallBackDatEForM.length < 2)
-			{alert("Devi scegliere una data");}
+			{alert("Musíte zmeniť dátum");}
 		else
 			{
 
@@ -6508,7 +6508,7 @@ else
 				{
 				CallBackrecipient = 'ANYONE';
 				}
-			document.getElementById("CallBackDatEPrinT").innerHTML = "Seleziona una data qui sotto";
+			document.getElementById("CallBackDatEPrinT").innerHTML = "Vyberte dátum nižšie";
 			document.vicidial_form.CallBackOnlyMe.checked=false;
 			document.vicidial_form.CallBackDatESelectioN.value = '';
 			document.vicidial_form.CallBackCommenTsField.value = '';
@@ -6556,23 +6556,23 @@ else
 			hideDiv('NoneInSessionBox');
 			hideDiv('WrapupBox');
 			hideDiv('TransferMain');
-			hideDiv('BenvenutoBoxA');
+			hideDiv('Vítame VásBoxA');
 			hideDiv('CallBackSelectBox');
 			hideDiv('DispoButtonHideA');
 			hideDiv('DispoButtonHideB');
 			hideDiv('DispoButtonHideC');
 			hideDiv('CallBacKsLisTBox');
 			hideDiv('NeWManuaLDiaLBox');
-			hideDiv('PausaCodeSelectBox');
+			hideDiv('PauzaCodeSelectBox');
 			if (agentonly_callbacks != '1')
 				{hideDiv('CallbacksButtons');}
 		//	if ( (agentcall_manual != '1') && (starting_dial_level > 0) )
 			if (agentcall_manual != '1')
 				{hideDiv('ManuaLDiaLButtons');}
 			if (callholdstatus != '1')
-				{hideDiv('AgentStatoCalls');}
+				{hideDiv('AgentStavCalls');}
 			if (agentcallsstatus != '1')
-				{hideDiv('AgentStatoSpan');}
+				{hideDiv('AgentStavSpan');}
 			if ( ( (auto_dial_level > 0) && (dial_method != "INBOUND_MAN") ) || (manual_dial_preview < 1) )
 				{clearDiv('DiaLLeaDPrevieW');}
 			if (alt_phone_dialing != 1)
@@ -6586,7 +6586,7 @@ else
 
 			if (agent_pause_codes_active=='Y')
 				{
-				document.getElementById("PausaCodeLinkSpan").innerHTML = "<a href=\"#\" onclick=\"PausaCodeSelectContent_create();return false;\">INSERIRE UN CODICE PAUSA</a>";
+				document.getElementById("PauzaCodeLinkSpan").innerHTML = "<a href=\"#\" onclick=\"PauzaCodeSelectContent_create();return false;\">VLOŽIŤ KÓD PAUZY</a>";
 				}
 			if (VICIDiaL_allow_closers < 1)
 				{
@@ -6595,7 +6595,7 @@ else
 			document.getElementById("sessionIDspan").innerHTML = session_id;
 			if ( (LIVE_campaign_recording == 'NEVER') || (LIVE_campaign_recording == 'ALLFORCE') )
 				{
-				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Start Registrazione\">";
+				document.getElementById("RecorDControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_startrecording_OFF.gif\" border=0 alt=\"Spustiť nahrávanie\">";
 				}
 			if (INgroupCOUNT > 0)
 				{
@@ -6628,15 +6628,15 @@ else
 			if (open_dispo_screen==1)
 				{
 				wrapup_counter=0;
-				if (wrapup_secondi > 0)	
+				if (wrapup_sekúnd > 0)	
 					{
 					showDiv('WrapupBox');
-					document.getElementById("WrapupTimer").innerHTML = wrapup_secondi;
+					document.getElementById("WrapupTimer").innerHTML = wrapup_sekúnd;
 					wrapup_waiting=1;
 					}
 				CustomerData_update();
 				document.getElementById("GENDERhideFORie").innerHTML = '';
-				document.getElementById("GENDERhideFORieALT").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Maschio</option><option value="F">F - Femmina</option></select>';
+				document.getElementById("GENDERhideFORieALT").innerHTML = '<select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select>';
 				showDiv('DispoSelectBox');
 				DispoSelectContent_create('','ReSET');
 				WaitingForNextStep=1;
@@ -6650,7 +6650,7 @@ else
 					if (document.vicidial_form.DiaLAltPhonE.checked==true)
 						{
 						reselect_alt_dial = 1;
-						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+						document.getElementById("DiaLControl").innerHTML = "<a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 
 						document.getElementById("MainStatuSSpan").innerHTML = "Dial Next Call";
 						}
@@ -6751,11 +6751,11 @@ else
 					//	parked_calls_display_refresh();
 					}
 					}
-				if (wrapup_secondi > 0)	
+				if (wrapup_sekúnd > 0)	
 					{
-					document.getElementById("WrapupTimer").innerHTML = (wrapup_secondi - wrapup_counter);
+					document.getElementById("WrapupTimer").innerHTML = (wrapup_sekúnd - wrapup_counter);
 					wrapup_counter++;
-					if ( (wrapup_counter > wrapup_secondi) && (document.getElementById("WrapupBox").style.visibility == 'visible') )
+					if ( (wrapup_counter > wrapup_sekúnd) && (document.getElementById("WrapupBox").style.visibility == 'visible') )
 						{
 						wrapup_waiting=0;
 						hideDiv('WrapupBox');
@@ -6832,18 +6832,18 @@ else
 		if (vdc_header_date_format.match(regALdate))
 			{
 			var statusmon='';
-			if (mon == 1) {statusmon = "GEN";}
+			if (mon == 1) {statusmon = "JAN";}
 			if (mon == 2) {statusmon = "FEB";}
 			if (mon == 3) {statusmon = "MAR";}
 			if (mon == 4) {statusmon = "APR";}
-			if (mon == 5) {statusmon = "MAG";}
-			if (mon == 6) {statusmon = "GIU";}
-			if (mon == 7) {statusmon = "LUG";}
-			if (mon == 8) {statusmon = "AGO";}
-			if (mon == 9) {statusmon = "SET";}
-			if (mon == 10) {statusmon = "OTT";}
+			if (mon == 5) {statusmon = "MAJ";}
+			if (mon == 6) {statusmon = "JUN";}
+			if (mon == 7) {statusmon = "JUL";}
+			if (mon == 8) {statusmon = "AUG";}
+			if (mon == 9) {statusmon = "SEP";}
+			if (mon == 10) {statusmon = "OCT";}
 			if (mon == 11) {statusmon = "NOV";}
-			if (mon == 12) {statusmon = "DIC";}
+			if (mon == 12) {statusmon = "DEC";}
 
 			status_date = statusmon + " " + daym;
 			}
@@ -6898,18 +6898,18 @@ else
 		if (vdc_customer_date_format.match(regALdate))
 			{
 			var customermon='';
-			if (Cmon == 1) {customermon = "GEN";}
+			if (Cmon == 1) {customermon = "JAN";}
 			if (Cmon == 2) {customermon = "FEB";}
 			if (Cmon == 3) {customermon = "MAR";}
 			if (Cmon == 4) {customermon = "APR";}
-			if (Cmon == 5) {customermon = "MAG";}
-			if (Cmon == 6) {customermon = "GIU";}
-			if (Cmon == 7) {customermon = "LUG";}
-			if (Cmon == 8) {customermon = "AGO";}
-			if (Cmon == 9) {customermon = "SET";}
-			if (Cmon == 10) {customermon = "OTT";}
+			if (Cmon == 5) {customermon = "MAJ";}
+			if (Cmon == 6) {customermon = "JUN";}
+			if (Cmon == 7) {customermon = "JUL";}
+			if (Cmon == 8) {customermon = "AUG";}
+			if (Cmon == 9) {customermon = "SEP";}
+			if (Cmon == 10) {customermon = "OCT";}
 			if (Cmon == 11) {customermon = "NOV";}
-			if (Cmon == 12) {customermon = "DIC";}
+			if (Cmon == 12) {customermon = "DEC";}
 
 			customer_date = customermon + " " + Cdaym + " ";
 			}
@@ -6929,7 +6929,7 @@ else
 		start_all_refresh();
 		}
 	function pause()	// Pauses the refreshing of the lists
-		{active_display=2;  display_message="  - DISPLAY ATTIVO IN PAUSA - ";}
+		{active_display=2;  display_message="  - ZOBRAZIT AKTÍVNU PAUZU - ";}
 	function start()	// resumes the refreshing of the lists
 		{active_display=1;  display_message='';}
 	function faster()	// lowers by 1000 milliseconds the time until the next refresh
@@ -6948,13 +6948,13 @@ else
 	function activeext_order_asc()	// changes order of activeext list to ascending
 		{
 		activeext_order="asc";   getactiveext();
-		desc_order_HTML ='<a href="#" onclick="activeext_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="activeext_order_desc();return false;">PORADIE</a>';
 		document.getElementById("activeext_order").innerHTML = desc_order_HTML;
 		}
 	function activeext_order_desc()	// changes order of activeext list to descending
 		{
 		activeext_order="desc";   getactiveext();
-		asc_order_HTML ='<a href="#" onclick="activeext_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="activeext_order_asc();return false;">PORADIE</a>';
 		document.getElementById("activeext_order").innerHTML = asc_order_HTML;
 		}
 
@@ -6964,13 +6964,13 @@ else
 	function busytrunk_order_asc()	// changes order of busytrunk list to ascending
 		{
 		busytrunk_order="asc";   getbusytrunk();
-		desc_order_HTML ='<a href="#" onclick="busytrunk_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="busytrunk_order_desc();return false;">PORADIE</a>';
 		document.getElementById("busytrunk_order").innerHTML = desc_order_HTML;
 		}
 	function busytrunk_order_desc()	// changes order of busytrunk list to descending
 		{
 		busytrunk_order="desc";   getbusytrunk();
-		asc_order_HTML ='<a href="#" onclick="busytrunk_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="busytrunk_order_asc();return false;">PORADIE</a>';
 		document.getElementById("busytrunk_order").innerHTML = asc_order_HTML;
 		}
 	function busytrunkhangup_force_refresh()	// forces immediate refresh of list content
@@ -6982,13 +6982,13 @@ else
 	function busyext_order_asc()	// changes order of busyext list to ascending
 		{
 		busyext_order="asc";   getbusyext();
-		desc_order_HTML ='<a href="#" onclick="busyext_order_desc();return false;">ORDINE</a>';
+		desc_order_HTML ='<a href="#" onclick="busyext_order_desc();return false;">PORADIE</a>';
 		document.getElementById("busyext_order").innerHTML = desc_order_HTML;
 		}
 	function busyext_order_desc()	// changes order of busyext list to descending
 		{
 		busyext_order="desc";   getbusyext();
-		asc_order_HTML ='<a href="#" onclick="busyext_order_asc();return false;">ORDINE</a>';
+		asc_order_HTML ='<a href="#" onclick="busyext_order_asc();return false;">PORADIE</a>';
 		document.getElementById("busyext_order").innerHTML = asc_order_HTML;
 		}
 	function busylocalhangup_force_refresh()	// forces immediate refresh of list content
@@ -7019,12 +7019,12 @@ else
 			document.getElementById(divvar).innerHTML = '';
 			if (divvar == 'DiaLLeaDPrevieW')
 				{
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> LEAD PREVIEW<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREZRIET ZOZNAM KONTAKTOV<BR></font>";
 				document.getElementById("DiaLLeaDPrevieWHide").innerHTML = buildDivHTML;
 				}
 			if (divvar == 'DiaLDiaLAltPhonE')
 				{
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> CHIAMA ALT NUM<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALTER. ČÍSLO TELEFÓNU<BR></font>";
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = buildDivHTML;
 				}
 			if (DefaulTAlTDiaL == '1')
@@ -7039,7 +7039,7 @@ else
 			if (divvar == 'DiaLLeaDPrevieW')
 				{
 				document.getElementById("DiaLLeaDPrevieWHide").innerHTML = '';
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> LEAD PREVIEW<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREZRIET ZOZNAM KONTAKTOV<BR></font>";
 				document.getElementById(divvar).innerHTML = buildDivHTML;
 				if (reselect_preview_dial==1)
 					{document.vicidial_form.LeadPreview.checked=true}
@@ -7047,7 +7047,7 @@ else
 			if (divvar == 'DiaLDiaLAltPhonE')
 				{
 				document.getElementById("DiaLDiaLAltPhonEHide").innerHTML = '';
-				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> CHIAMA ALT NUM<BR></font>";
+				var buildDivHTML = "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALTER. ČÍSLO TELEFÓNU<BR></font>";
 				document.getElementById(divvar).innerHTML = buildDivHTML;
 				if (reselect_alt_dial==1)
 					{document.vicidial_form.DiaLAltPhonE.checked=true}
@@ -7062,14 +7062,14 @@ else
 		if (divvar == 'SHOW')
 			{
 			conf_channels_xtra_display = 1;
-			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('HIDE');\">Nascondi le informazioni relative al canale della conferenza</a>";
+			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('HIDE');\">Skryť informáciu o konferenčný kanále</a>";
 			LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 			LMAcount=0;
 			}
 		else
 			{
 			conf_channels_xtra_display = 0;
-			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Mostra le informazioni relative al canale della conferenza</a><BR><BR>&nbsp;";
+			document.getElementById("busycallsdisplay").innerHTML = "<a href=\"#\"  onclick=\"conf_channels_detail('SHOW');\">Ukázať informáciu o konferenčnom kanále</a><BR><BR>&nbsp;";
 			document.getElementById("outboundcallsspan").innerHTML = '';
 			LMAe[0]=''; LMAe[1]=''; LMAe[2]=''; LMAe[3]=''; LMAe[4]=''; LMAe[5]=''; 
 			LMAcount=0;
@@ -7082,13 +7082,13 @@ else
 			{
 			showDiv('HotKeyEntriesBox');
 			hot_keys_active = 1;
-			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOut=\"HotKeys('OFF')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive.gif\" border=0 alt=\"TASTI FUNZIONE ATTIVI\"></a>";
+			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOut=\"HotKeys('OFF')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive.gif\" border=0 alt=\"AKTÍVNE RÝCHLE TLAČIDLÁ\"></a>";
 			}
 		else
 			{
 			hideDiv('HotKeyEntriesBox');
 			hot_keys_active = 0;
-			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOver=\"HotKeys('ON')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_OFF.gif\" border=0 alt=\"TASTI FUNZIONE DISATTIVATI\"></a>";
+			document.getElementById("hotkeysdisplay").innerHTML = "<a href=\"#\" onMouseOver=\"HotKeys('ON')\"><IMG SRC=\"../agc/images/vdc_XB_hotkeysactive_OFF.gif\" border=0 alt=\"NEAKTÍVNE RÝCHLE TLAČIDLÁ\"></a>";
 			}
 		}
 
@@ -7104,14 +7104,14 @@ else
 				document.getElementById("TransferMain").style.top = xfer_height;
 				HKbutton_allowed = 0;
 				showDiv('TransferMain');
-				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
+				document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('OFF','YES');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Presmerovanie - Konferencia\"></a>";
 				var loop_ct = 0;
 				var live_XfeR_HTML = '';
 				var XfeR_SelecT = '';
 				while (loop_ct < XFgroupCOUNT)
 					{
 					if (VARxfergroups[loop_ct] == LIVE_default_xfer_group)
-						{XfeR_SelecT = 'SELEZIONATO ';}
+						{XfeR_SelecT = 'SELECTED ';}
 					else {XfeR_SelecT = '';}
 					live_XfeR_HTML = live_XfeR_HTML + "<option " + XfeR_SelecT + "value=\"" + VARxfergroups[loop_ct] + "\">" + VARxfergroups[loop_ct] + " - " + VARxfergroupsnames[loop_ct] + "</option>\n";
 					loop_ct++;
@@ -7125,7 +7125,7 @@ else
 				hideDiv('TransferMain');
 				if (showoffvar == 'YES')
 					{
-					document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Trasferimento - Conferenza\"></a>";
+					document.getElementById("XferControl").innerHTML = "<a href=\"#\" onclick=\"ShoWTransferMain('ON');\"><IMG SRC=\"../agc/images/vdc_LB_transferconf.gif\" border=0 alt=\"Presmerovanie - Konferencia\"></a>";
 					}
 				}
 			}
@@ -7133,7 +7133,7 @@ else
 			{
 			if (showxfervar != 'OFF')
 				{
-				alert('NON HAI L`AUTORIZZAZIONE PER TRASFERIRE CHIAMATE');
+				alert('Nemáte oprávnenie k prepojeniu hovorov');
 				}
 			}
 		}
@@ -7168,7 +7168,7 @@ else
 				{
 				if (dial_method == "INBOUND_MAN")
 					{
-					document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pausa\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Riprendi\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Chiama il prossimo numero\"></a>";
+					document.getElementById("DiaLControl").innerHTML = "<IMG SRC=\"../agc/images/vdc_LB_pause_OFF.gif\" border=0 alt=\"Pauza\"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"../agc/images/vdc_LB_resume.gif\" border=0 alt=\"Pokračovať\"></a><BR><a href=\"#\" onclick=\"ManualDialNext('','','','','');\"><IMG SRC=\"../agc/images/vdc_LB_dialnextnumber.gif\" border=0 alt=\"Volať ďalšie číslo\"></a>";
 					if (manual_dial_preview == 1)
 						{buildDiv('DiaLLeaDPrevieW');}
 					}
@@ -7235,11 +7235,11 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT><TD COLSPAN=3 VALIGN=TOP ALIGN=LEFT>
 <INPUT TYPE=HIDDEN NAME=extension>
 <font class="queue_text">
-<?	echo "Loggato come Utente: $VD_login su Telefono: $SIP_user nella campagna: $VD_campaign&nbsp; \n"; ?>
+<?	echo "Ste prihlásený ako užívateľ: $VD_login na Telefón: $SIP_user do kampane: $VD_campaign&nbsp; \n"; ?>
  &nbsp; &nbsp; <span id="agentchannelSPAN"></span>
 </TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text">
 <? if ($INgrpCT > 0) {echo "<a href=\"#\" onclick=\"OpeNGrouPSelectioN();return false;\">GROUPS</a> &nbsp; &nbsp; \n";} ?>
-<?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
+<?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">ODHLÁSIŤ</a>\n"; ?>
 </TD></TR></TABLE>
 </SPAN>
 
@@ -7248,30 +7248,30 @@ echo "</head>\n";
 <TR VALIGN=TOP ALIGN=LEFT>
 <TD ALIGN=LEFT WIDTH=115><A HREF="#" onclick="MainPanelToFront('NO');"><IMG SRC="../agc/images/vdc_tab_vicidial.gif" ALT="VICIDIAL" WIDTH=115 HEIGHT=30 Border=0></A></TD>
 <TD ALIGN=LEFT WIDTH=105><A HREF="#" onclick="ScriptPanelToFront();"><IMG SRC="../agc/images/vdc_tab_script.gif" ALT="SCRIPT" WIDTH=105 HEIGHT=30 Border=0></A></TD>
-<TD WIDTH=<?=$HSwidth ?> VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; ID sessione: <span id=sessionIDspan></span> &nbsp; &nbsp; <span id=AgentStatoCalls></span></TD>
-<TD WIDTH=109><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Chiamata in corso" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD WIDTH=<?=$HSwidth ?> VALIGN=MIDDLE ALIGN=CENTER><font class="body_text"> &nbsp; <span id=status>LIVE</span> &nbsp; &nbsp; ID relácie: <span id=sessionIDspan></span> &nbsp; &nbsp; <span id=AgentStavCalls></span></TD>
+<TD WIDTH=109><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Živý hovor" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </span>
 
 
 
-<span style="position:absolute;left:0px;top:0px;z-index:3;" id="BenvenutoBoxA">
-    <table border=0 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=<?=$HKwidth ?>><TR><TD align=center><BR><span id="BenvenutoBoxAt">VICIDIAL</span></TD></TR></TABLE>
+<span style="position:absolute;left:0px;top:0px;z-index:3;" id="Vítame VásBoxA">
+    <table border=0 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=<?=$HKwidth ?>><TR><TD align=center><BR><span id="Vítame VásBoxAt">VICIDIAL</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:300px;top:<?=$MBheight ?>px;z-index:12;" id="ManuaLDiaLButtons"><font class="body_text">
-<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO');return false;">CHIAMATA MANUALE</a></span> &nbsp; &nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST');return false;">CHIAMATA VELOCE</a><BR>
+<span id="MDstatusSpan"><a href="#" onclick="NeWManuaLDiaLCalL('NO');return false;">RUČNÉ VOLANIE</a></span> &nbsp; &nbsp; &nbsp; <a href="#" onclick="NeWManuaLDiaLCalL('FAST');return false;">RÝCHLE VOLANIE</a><BR>
 </font></span>
 
 <span style="position:absolute;left:300px;top:<?=$CBheight ?>px;z-index:13;" id="CallbacksButtons"><font class="body_text">
-<span id="CBstatusSpan">X CHIAMATABACK ATTIVE</span> <BR>
+<span id="CBstatusSpan">X AKTÍVNE PREPLÁNOVANÉ HOVORY</span> <BR>
 </font></span>
 
-<span style="position:absolute;left:500px;top:<?=$CBheight ?>px;z-index:14;" id="PausaCodeButtons"><font class="body_text">
-<span id="PausaCodeLinkSpan"></span> <BR>
+<span style="position:absolute;left:500px;top:<?=$CBheight ?>px;z-index:14;" id="PauzaCodeButtons"><font class="body_text">
+<span id="PauzaCodeLinkSpan"></span> <BR>
 </font></span>
 
-<span style="position:absolute;left:<?=$SCwidth ?>px;top:49px;z-index:18;" id="SecondSspan"><font class="body_text"> secondi: 
+<span style="position:absolute;left:<?=$SCwidth ?>px;top:49px;z-index:18;" id="SecondSspan"><font class="body_text"> sekúnd: 
 <span id="SecondSDISP"> &nbsp; &nbsp; </span>
 </font></span>
 
@@ -7279,9 +7279,9 @@ echo "</head>\n";
 	<?
 	if ($PreseT_DiaL_LinKs)
 		{
-		echo "<a href=\"#\" onclick=\"DtMf_PreSet_a_DiaL();return false;\"><font class=\"body_tiny\">D1 - CHIAMA</font></a>\n";
+		echo "<a href=\"#\" onclick=\"DtMf_PreSet_a_DiaL();return false;\"><font class=\"body_tiny\">D1 - VOLAŤ</font></a>\n";
 		echo "<BR>\n";
-		echo "<a href=\"#\" onclick=\"DtMf_PreSet_b_DiaL();return false;\"><font class=\"body_tiny\">D2 - CHIAMA</font></a>\n";
+		echo "<a href=\"#\" onclick=\"DtMf_PreSet_b_DiaL();return false;\"><font class=\"body_tiny\">D2 - VOLAŤ</font></a>\n";
 		}
 	else {echo "<BR>\n";}
 	?>
@@ -7290,49 +7290,49 @@ echo "</head>\n";
 </font></span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:38;" id="CallBacKsLisTBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> RICHIAMI PER L`OPERATORE <? echo $VD_login ?>:<BR>Selezionare una callback per chiamare il cliente ora. Una volta fatto click, il record sara` rimosso dalla lista.
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> PREPLÁNOVANÉ HOVORY PRE AGENTA <? echo $VD_login ?>:<BR>Kliknite na preplánovanie hovoru na volanie zákaznikovi znova. Ak kliknete na záznam nižšie budete ho volať a bude odstránený zo zoznamu.
 	<BR>
 	<div class="scroll_callback" id="CallBacKsLisT"></div>
 	<BR> &nbsp; 
-	<a href="#" onclick="CalLBacKsLisTCheck();return false;">Aggiorna</a>
+	<a href="#" onclick="CalLBacKsLisTCheck();return false;">Osviežiť</a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<a href="#" onclick="hideDiv('CallBacKsLisTBox');return false;">Torna Indietro</a>
+	<a href="#" onclick="hideDiv('CallBacKsLisTBox');return false;">Vrátiť späť</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:39;" id="NeWManuaLDiaLBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> NUOVA CHIAMATA MANUALE PER IL CONTATTO <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Inserisci le informazioni per il nuovo contatto da chiamare.
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> NOVÉ manuálne vytáčanie pre zoznam kontaktov <? echo "$VD_login in campaign $VD_campaign" ?>:<BR><BR>Zadajte nižšie uvedené informácie pre nový zoznam kontaktov, ktorý chcete volať.
 	<BR>
 	<? 
 	if (eregi("X",dial_prefix))
 		{
-		echo "Nota: prefisso di chiamata $dial_prefix sara` aggiunto all`inizio di questo numero<BR>\n";
+		echo "Poznámka: volajte prefix z $dial_prefix budú pridané na začiatok tohto čísla<BR>\n";
 		}
 	?>
-	Nota: tutti i nuovi contatti chiamati manualmente andranno nella lista <? echo $manual_dial_list_id ?><BR><BR>
+	Note: all new manual dial leads will go into list <? echo $manual_dial_list_id ?><BR><BR>
 	<table><tr>
-	<td align=right><font class="body_text"> Codice di Chiamata: </td>
-	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (Vale 1 negli USA ed in Canada)</td>
+	<td align=right><font class="body_text"> Volať kód: </td>
+	<td align=left><font class="body_text"><input type=text size=7 maxlength=10 name=MDDiaLCodE class="cust_form" value="1">&nbsp; (To je obvykle 1 v USA-Kanada)</td>
 	</tr><tr>
-	<td align=right><font class="body_text"> Telefono Number: </td>
+	<td align=right><font class="body_text"> Telefón Number: </td>
 	<td align=left><font class="body_text">
 	<input type=text size=14 maxlength=12 name=MDPhonENumbeR class="cust_form" value="">&nbsp; (12 digits max - digits only)
 	</td>
 	</tr><tr>
-	<td align=right><font class="body_text"> Cerca Contatti esistenti: </td>
-	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (Questa opzione tentera` di trovare il numero di telefono nel sistema prima di inserire un nuovo contatto)</td>
+	<td align=right><font class="body_text"> Vyhľadať existujúce zoznamy kontaktov: </td>
+	<td align=left><font class="body_text"><input type=checkbox name=LeadLookuP size=1 value="0">&nbsp; (Táto  voľba skontroluje, ak sa bude snažiť nájsť telefónne číslo do systému pred jeho vloženie ako nového zoznamu kontaktov)</td>
 	</tr><tr>
 
-	<td align=right colspan=2><BR><BR>If you want to dial a number and have it NOT be added as a new lead, enter in the exact dialstring that you want to call in the Chiamata automatica field below. To hangup this call you will have to open the CHIAMATAS IN THIS SESSION link at the bottom of the screen and hang it up by clicking su its channel link there.<BR> &nbsp; </td>
+	<td align=right colspan=2><BR><BR> Ak chcete vytočiť číslo, a nemáte ho v novom zozname kontaktov, vložte volané číslo , ktoré chcete volať do poľa Prepísať volanie. Pre ukončenie hovoru, budete musieť otvoriť odkaz HOVORY V TEJTO RELÁCII v spodnej časti obrazovky, a ukončiť požadovaný kanál.<BR> &nbsp; </td>
 	</tr><tr>
-	<td align=right><font class="body_text"> Chiamata automatica: </td>
-	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (solo digit per favore)
+	<td align=right><font class="body_text"> Prepísanie volania: </td>
+	<td align=left><font class="body_text"><input type=text size=24 maxlength=20 name=MDDiaLOverridE class="cust_form" value="">&nbsp; (prosím len čísla)
 	</td>
 	</tr></table>
 	<BR>
-	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Chiama Ora</a>
+	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Volať znova</a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Torna Indietro</a>
+	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Vrátiť späť</a>
 	</TD></TR></TABLE>
 </span>
 
@@ -7343,8 +7343,8 @@ echo "</head>\n";
 
 
 
-<span style="position:absolute;left:35px;top:<?=$CBheight ?>px;z-index:20;" id="AgentStatoSpan"><font class="body_text">
-Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="AgentStatoDiaLs"></span> 
+<span style="position:absolute;left:35px;top:<?=$CBheight ?>px;z-index:20;" id="AgentStavSpan"><font class="body_text">
+Váš stav: <span id="AgentStavStav"></span> <BR>Calls Dialing: <span id="AgentStavDiaLs"></span> 
 </font></span>
 
 
@@ -7354,29 +7354,29 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 	<td align=left>
 	<div class="text_input" id="TransferMaindiv">
 	<font class="body_text">
-	 <IMG SRC="../agc/images/vdc_XB_header.gif" border=0 alt="Trasferimento - Conferenza"><BR>
-	<span id="XfeRGrouPLisT"><select size=1 name=XfeRGrouP class="cust_form"><option>-- SELECT A GROUP TO SEND YOUR CHIAMATA TO --</option></select></span>
+	 <IMG SRC="../agc/images/vdc_XB_header.gif" border=0 alt="Presmerovanie - Konferencia"><BR>
+	<span id="XfeRGrouPLisT"><select size=1 name=XfeRGrouP class="cust_form"><option>-- SELECT A GROUP TO SEND YOUR HOVOR TO --</option></select></span>
 
-	<span STYLE="background-color: #CCCCCC" id="LocalCloser"><IMG SRC="../agc/images/vdc_XB_localcloser_OFF.gif" border=0 alt="LOCAL CLOSER"></span> 
-	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="../agc/images/vdc_XB_hangupxferline_OFF.gif" border=0 alt="Riaggancia la linea trasferita"></span>
-	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="../agc/images/vdc_XB_hangupbothlines.gif" border=0 alt="Riaggancia entrambe le linee"></a></span>
+	<span STYLE="background-color: #CCCCCC" id="LocalCloser"><IMG SRC="../agc/images/vdc_XB_localcloser_OFF.gif" border=0 alt="LOKALNE ROZSIRENIE"></span> 
+	<span STYLE="background-color: #CCCCCC" id="HangupXferLine"><IMG SRC="../agc/images/vdc_XB_hangupxferline_OFF.gif" border=0 alt="Zložiť Xfer linku"></span>
+	<span STYLE="background-color: #CCCCCC" id="HangupBothLines"><a href="#" onclick="bothcall_send_hangup();return false;"><IMG SRC="../agc/images/vdc_XB_hangupbothlines.gif" border=0 alt="Zložiť obe linky"></a></span>
 
 	<BR>
 
-	<IMG SRC="../agc/images/vdc_XB_number.gif" border=0 alt="Numero da chiamare"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
+	<IMG SRC="../agc/images/vdc_XB_number.gif" border=0 alt="Číslo na volanie"> <input type=text size=15 name=xfernumber maxlength=25 class="cust_form"> &nbsp; 
 	<input type=hidden name=xferuniqueid>
-	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny"> CHIAMA OVERRIDE</font> &nbsp;
-	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><a href="#" onclick="leave_3way_call('FIRST');return false;"><IMG SRC="../agc/images/vdc_XB_leave3waycall.gif" border=0 alt="LASCIA LA CONFERENZA A 3"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="../agc/images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Effettua il Blind Transfer"></span>
+	<input type=checkbox name=xferoverride size=1 value="0"><font class="body_tiny"> PREPISAT VOLANIE</font> &nbsp;
+	<span STYLE="background-color: #CCCCCC" id="Leave3WayCall"><a href="#" onclick="leave_3way_call('FIRST');return false;"><IMG SRC="../agc/images/vdc_XB_leave3waycall.gif" border=0 alt="PONECHAT 3 CESTNE VOLANIE"></a></span> 
+	<span STYLE="background-color: #CCCCCC" id="DialBlindTransfer"><IMG SRC="../agc/images/vdc_XB_blindtransfer_OFF.gif" border=0 alt="Volať slepé presmerovanie"></span>
 	<a href="#" onclick="DtMf_PreSet_a();return false;"><font class="body_tiny">D1</font></a> 
 	<a href="#" onclick="DtMf_PreSet_b();return false;"><font class="body_tiny">D2</font></a>
 
 	<BR>
 
-	<IMG SRC="../agc/images/vdc_XB_secondi.gif" border=0 alt="secondi"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
+	<IMG SRC="../agc/images/vdc_XB_sekúnd.gif" border=0 alt="sekúnd"> <input type=text size=2 name=xferlength maxlength=4 class="cust_form"> &nbsp; 
 	<IMG SRC="../agc/images/vdc_XB_channel.gif" border=0 alt="channel"> <input type=text size=12 name=xferchannel maxlength=100 class="cust_form"> 
-	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="../agc/images/vdc_XB_dialwithcustomer.gif" border=0 alt="Chiama il Cliente"></a></span> 
-	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="../agc/images/vdc_XB_parkcustomerdial.gif" border=0 alt="Metti in attesa il cliente"></a></span> 
+	<span STYLE="background-color: #CCCCCC" id="DialWithCustomer"><a href="#" onclick="SendManualDial('YES');return false;"><IMG SRC="../agc/images/vdc_XB_dialwithcustomer.gif" border=0 alt="Volanie so zákazníkom"></a></span> 
+	<span STYLE="background-color: #CCCCCC" id="ParkCustomerDial"><a href="#" onclick="xfer_park_dial();return false;"><IMG SRC="../agc/images/vdc_XB_parkcustomerdial.gif" border=0 alt="Zaparkovať hovor so zákazníkom"></a></span> 
 	<span STYLE="background-color: #CCCCCC" id="DialBlindVMail"><IMG SRC="../agc/images/vdc_XB_ammessage_OFF.gif" border=0 alt="Blind Transfer VMail Message"></span>
 	</font>
 	</div>
@@ -7387,7 +7387,7 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 
 <span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:23;" id="HotKeyActionBox">
     <table border=0 bgcolor="#FFDD99" width=<?=$HCwidth ?> height=70>
-	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Esito Contatto: </font><BR><BR><CENTER>
+	<TR bgcolor="#FFEEBB"><TD height=70><font class="sh_text"> Kontakty pripravené ako: </font><BR><BR><CENTER>
 	<font class="sd_text"><span id="HotKeyDispo"> - </span></font></CENTER>
 	</TD>
 	</TR></TABLE>
@@ -7395,8 +7395,8 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 
 <span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:24;" id="HotKeyEntriesBox">
     <table border=0 bgcolor="#FFDD99" width=<?=$HCwidth ?> height=70>
-	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Tasti Funzione per Esiti: </font></td><td colspan=2>
-	<font class="body_small">Se attivo, premi il tasto corrispondente all`esito desiderato e la chiamata sara` riagganciata automaticamente:</font></td></tr><tr>
+	<TR bgcolor="#FFEEBB"><TD width=200><font class="sh_text"> Rozloženie horúcich kláves: </font></td><td colspan=2>
+	<font class="body_small">Keď je aktívne, jednoducho stlačte na klávesnici tlačidlo pre požadovanú dispozíciu pre tento hovor. Hovor bude potom ukončený automaticky:</font></td></tr><tr>
 	<TD width=200><font class="sk_text">
 	<span id="HotKeyBoxA"><? echo $HKboxA ?></span>
 	</font></TD>
@@ -7412,7 +7412,7 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 <span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:25;" id="CBcommentsBox">
     <table border=0 bgcolor="#FFFFCC" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sh_text"> Informazioni richiamo precedente: </font></td>
+	<TD align=left><font class="sh_text"> Predchádzajúca informácia o preplánovaní hovoru: </font></td>
 	<TD align=right><font class="sk_text"> <a href="#" onclick="CBcommentsBoxhide();return false;">close</a> </font></td>
 	</tr><tr>
 	<TD><font class="sk_text">
@@ -7429,8 +7429,8 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 <span style="position:absolute;left:5px;top:<?=$HTheight ?>px;z-index:26;" id="EAcommentsBox">
     <table border=0 bgcolor="#FFFFCC" width=<?=$HCwidth ?> height=70>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sh_text"> Extended Alt Telefono Information: </font></td>
-	<TD align=right><font class="sk_text"> <a href="#" onclick="EAcommentsBoxhide('YES');return false;">minimizza</a> </font></td>
+	<TD align=left><font class="sh_text"> Extended Alt Telefón Information: </font></td>
+	<TD align=right><font class="sk_text"> <a href="#" onclick="EAcommentsBoxhide('YES');return false;">minimalizovať</a> </font></td>
 	</tr><tr>
 	<TD VALIGN=top><font class="sk_text">
 	<span id="EAcommentsBoxC"></span><BR>
@@ -7446,43 +7446,43 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 <span style="position:absolute;left:695px;top:<?=$HTheight ?>px;z-index:27;" id="EAcommentsMinBox">
     <table border=0 bgcolor="#FFFFCC" width=40 height=20>
 	<TR bgcolor="#FFFF66">
-	<TD align=left><font class="sk_text"><a href="#" onclick="EAcommentsBoxshow();return false;">ingrandisci</a> <BR>Alt Telefono Info</font></td>
+	<TD align=left><font class="sk_text"><a href="#" onclick="EAcommentsBoxshow();return false;">maximalizovať</a> <BR>Alt Telefón Info</font></td>
 	</tr></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:12px;z-index:28;" id="NoneInSessionBox">
-    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Non c'è nessuno nella tua sessione: <span id="NoneInSessionID"></span><BR>
-	<a href="#" onclick="NoneInSessionOK();return false;">Torna Indietro</a>
+    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Nikto nie je vo Vašej relácii: <span id="NoneInSessionID"></span><BR>
+	<a href="#" onclick="NoneInSessionOK();return false;">Vrátiť späť</a>
 	<BR><BR>
-	<a href="#" onclick="NoneInSessionCalL();return false;">Chiama l`operatore di nuovo</a>
+	<a href="#" onclick="NoneInSessionCalL();return false;">Volať agenta znova</a>
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:29;" id="CustomerGoneBox">
-    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Il cliente ha riagganciato: <span id="CustomerGoneChanneL"></span><BR>
-	<a href="#" onclick="CustomerGoneOK();return false;">Torna Indietro</a>
+    <table border=1 bgcolor="#CCFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center> Zákazník položil: <span id="CustomerGoneChanneL"></span><BR>
+	<a href="#" onclick="CustomerGoneOK();return false;">Vrátiť späť</a>
 	<BR><BR>
-	<a href="#" onclick="CustomerGoneHangup();return false;">Termina e definisci un Esito per la chiamata</a>
+	<a href="#" onclick="CustomerGoneHangup();return false;">Ukončenie a umiestnenie hovoru</a>
 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:30;" id="WrapupBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=550><TR><TD align=center> Call Wrapup: <span id="WrapupTimer"></span> secondi di riposo restanti<BR><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=550><TR><TD align=center> Volanie Wrapup: <span id="WrapupTimer"></span> sekúnd zostávajúcich na wrapup<BR><BR>
 	<span id="WrapupMessage"><?=$wrapup_message ?></span>
 	<BR><BR>
-	<a href="#" onclick="WrapupFinish();return false;">Termina riposo e continua</a>
+	<a href="#" onclick="WrapupFinish();return false;">Dokončiť Wrapup a presunúť na</a>
 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;" id="AgenTDisablEBoX">
-    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>La tua sessione e` stata disabilitata<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Torna Indietro</a>
+    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>Vaša relácia bola ukončená<BR><a href="#" onclick="LogouT();return false;">ODHLÁSIŤ</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Vrátiť späť</a>
 </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:32;" id="LogouTBox">
-    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center><BR><span id="LogouTBoxLink">LOGOUT</span></TD></TR></TABLE>
+    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center><BR><span id="LogouTBoxLink">ODHLÁSIŤ</span></TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:70px;z-index:33;" id="DispoButtonHideA">
@@ -7494,26 +7494,26 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:35;" id="DispoButtonHideC">
-    <table border=0 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=47><TR><TD align=center VALIGN=top>Tutti i cambiamenti eseguiti sui dati del cliente non saranno salvati, bisogna effettuare le modifiche prima di riagganciare. </TD></TR></TABLE>
+    <table border=0 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=47><TR><TD align=center VALIGN=top>Všetky zmeny vykonané v informáciách o zákazníkovi teraz , budú vykonané, musíte zmeniť informácie o zákazníkovi pred ukončením hovoru. </TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:36;" id="DispoSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> ESITO CHIAMATA :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Aggancia di nuovo</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimizza</a></span><BR>
-	<span id="DispoSelectContent"> Selezione Esito di fine chiamata </span>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> VYKONANIE HOVORU :<span id="DispoSelectPhonE"></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectHAspan"><a href="#" onclick="DispoHanguPAgaiN()">Položte znova</a></span> &nbsp; &nbsp; &nbsp; <span id="DispoSelectMaxMin"><a href="#" onclick="DispoMinimize()">minimalizovať</a></span><BR>
+	<span id="DispoSelectContent"> Ukončenie hovoru vybranej dispozície </span>
 	<input type=hidden name=DispoSelection><BR>
-	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUSA OPERATORE <BR>
-	<a href="#" onclick="DispoSelectContent_create('','ReSET');return false;">PULISCI IL FORM</a> | 
-	<a href="#" onclick="DispoSelect_submit();return false;">INVIA</a>
+	<input type=checkbox name=DispoSelectStop size=1 value="0"> PAUZA VOLAJUCEHO AGENTA <BR>
+	<a href="#" onclick="DispoSelectContent_create('','ReSET');return false;">VYMAZAŤ FORMULÁR</a> | 
+	<a href="#" onclick="DispoSelect_submit();return false;">POTVRDIŤ</a>
 	<BR><BR>
-	<a href="#" onclick="WeBForMDispoSelect_submit();return false;">WEB FORM INVIA</a>
+	<a href="#" onclick="WeBForMDispoSelect_submit();return false;">WEB FORM POTVRDIŤ</a>
 	<BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
-<span style="position:absolute;left:0px;top:0px;z-index:42;" id="PausaCodeSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> SELEZIONARE UN CODICE PAUSA:<BR>
-	<span id="PausaCodeSelectContent"> Pausa Code Selection </span>
-	<input type=hidden name=PausaCodeSelection>
+<span style="position:absolute;left:0px;top:0px;z-index:42;" id="PauzaCodeSelectBox">
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> VYBRAŤ KÓD PAUZY :<BR>
+	<span id="PauzaCodeSelectContent"> Pauza Code Selection </span>
+	<input type=hidden name=PauzaCodeSelection>
 	<BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
@@ -7522,12 +7522,12 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 
 
 <span style="position:absolute;left:0px;top:0px;z-index:37;" id="CallBackSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Selezionare una data di richiamo! :<span id="CallBackDatE"></span><BR>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Vyberte dátum preplánovania hovoru :<span id="CallBackDatE"></span><BR>
 	<input type=hidden name=CallBackDatESelectioN ID="CallBackDatESelectioN">
 	<input type=hidden name=CallBackTimESelectioN ID="CallBackTimESelectioN">
-	<span id="CallBackDatEPrinT">Seleziona una data qui sotto</span> &nbsp;
+	<span id="CallBackDatEPrinT">Vyberte dátum nižšie</span> &nbsp;
 	<span id="CallBackTimEPrinT"></span> &nbsp; &nbsp;
-	Ora: 
+	Hour: 
 	<SELECT SIZE=1 NAME="CBT_hour" ID="CBT_hour">
 	<option>01</option>
 	<option>02</option>
@@ -7542,7 +7542,7 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 	<option>11</option>
 	<option>12</option>
 	</select> &nbsp;
-	Minuti: 
+	Minutes: 
 	<SELECT SIZE=1 NAME="CBT_minute" ID="CBT_minute">
 	<option>00</option>
 	<option>05</option>
@@ -7564,34 +7564,34 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 	</select> &nbsp;<BR>
 	<?
 	if ($agentonly_callbacks)
-		{echo "<input type=checkbox name=CallBackOnlyMe id=CallBackOnlyMe size=1 value=\"0\"> CHIAMATABACK PERSONALE (nessun altro potra` richiamarlo) <BR>";}
+		{echo "<input type=checkbox name=CallBackOnlyMe id=CallBackOnlyMe size=1 value=\"0\"> LEN MOJE PREPLÁNOVANÉ HOVORY <BR>";}
 	?>
-	Note Richiamo: <input type=text name="CallBackCommenTsField" id="CallBackCommenTsField" size=50><BR><BR>
+	Poznámky CB: <input type=text name="CallBackCommenTsField" id="CallBackCommenTsField" size=50><BR><BR>
 
-	<a href="#" onclick="CallBackDatE_submit();return false;">INVIA</a><BR><BR>
+	<a href="#" onclick="CallBackDatE_submit();return false;">POTVRDIŤ</a><BR><BR>
 	<span id="CallBackDateContent"><?echo"$CCAL_OUT"?></span>
 	<BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:40;" id="CloserSelectBox">
-    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> SELEZIONE del CLOSER INBOUND GROUP <BR>
-	<span id="CloserSelectContent"> Selezione del Closer Inbound Group </span>
+    <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> Užší výber prichádzajúce skupiny <BR>
+	<span id="CloserSelectContent"> Užší výber prichádzajúce skupiny </span>
 	<input type=hidden name=CloserSelectList><BR>
-	<input type=checkbox name=CloserSelectBlended size=1 value="0"> CHIAMATA MISTA(outbound attivato) <BR>
-	<a href="#" onclick="CloserSelectContent_create();return false;">RESET</a> | 
-	<a href="#" onclick="CloserSelect_submit();return false;">INVIA</a>
+	<input type=checkbox name=CloserSelectBlended size=1 value="0"> ZMIESANE VOLANIE(Odchádzaúce volanie aktivované) <BR>
+	<a href="#" onclick="CloserSelectContent_create();return false;">ZNOVU INCIALIZOVAŤ</a> | 
+	<a href="#" onclick="CloserSelect_submit();return false;">POTVRDIŤ</a>
 	<BR><BR><BR><BR> &nbsp; 
 	</TD></TR></TABLE>
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:41;" id="NothingBox">
     <BUTTON Type=button name="inert_button"><img src="../agc/images/blank.gif"></BUTTON>
-	<span id="DiaLLeaDPrevieWHide">Canale</span>
-	<span id="DiaLDiaLAltPhonEHide">Canale</span>
+	<span id="DiaLLeaDPrevieWHide">Kanál</span>
+	<span id="DiaLDiaLAltPhonEHide">Kanál</span>
 	<?
 	if (!$agentonly_callbacks)
-		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> CHIAMATABACK PERSONALE (nessun altro potra` richiamarlo) <BR>";}
+		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> LEN MOJE PREPLÁNOVANÉ HOVORY <BR>";}
 	?>
 </span>
 
@@ -7602,13 +7602,13 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 
 
 <? if ( ($HK_statuses_camp > 0) && ( ($user_level>=$HKuser_level) or ($VU_hotkeys_active > 0) ) ) { ?>
-<span style="position:absolute;left:<?=$HKwidth ?>px;top:<?=$HKheight ?>px;z-index:16;" id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="../agc/images/vdc_XB_hotkeysactive_OFF.gif" border=0 alt="TASTI FUNZIONE DISATTIVATI"></a></span>
+<span style="position:absolute;left:<?=$HKwidth ?>px;top:<?=$HKheight ?>px;z-index:16;" id="hotkeysdisplay"><a href="#" onMouseOver="HotKeys('ON')"><IMG SRC="../agc/images/vdc_XB_hotkeysactive_OFF.gif" border=0 alt="NEAKTÍVNE RÝCHLE TLAČIDLÁ"></a></span>
 <? } ?>
 
 
 <span style="position:absolute;left:0px;top:<?=$HKheight ?>px;z-index:15;" id="MaiNfooterspan">
-<table BGCOLOR="#E0C2D6" id="MaiNfooter" width=<?=$MNwidth ?>><tr height=32><td height=32><font face="Arial,Helvetica" size=1>Versione di VICIDIAL web-client: <? echo $version ?> &nbsp; &nbsp; BUILD: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
-<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Mostra le informazioni relative al canale della conferenza</a><BR><BR>&nbsp;</span></font></td><td align=right height=32>
+<table BGCOLOR="#E0C2D6" id="MaiNfooter" width=<?=$MNwidth ?>><tr height=32><td height=32><font face="Arial,Helvetica" size=1>verzia web klient VICIDIAL: <? echo $version ?> &nbsp; &nbsp; POSTAVENÉ: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
+<font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Ukázať informáciu o konferenčnom kanále</a><BR><BR>&nbsp;</span></font></td><td align=right height=32>
 </td></tr>
 <tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
 
@@ -7624,39 +7624,39 @@ Il tuo stato: <span id="AgentStatoStato"></span> <BR>Calls Dialing: <span id="Ag
 <!-- BEGIN *********   Here is the main VICIDIAL display panel -->
 <span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
 <TABLE border=0 BGCOLOR="#E0C2D6" width=<?=$MNwidth ?> id="MainTable">
-<TR><TD colspan=3><font class="body_text"> STATO: <span id="MainStatuSSpan"></span></font></TD></TR>
+<TR><TD colspan=3><font class="body_text"> STAV: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
 <tr><td width=150 align=left valign=top>
 <font class="body_text"><center>
-<span STYLE="background-color: #CCFFCC" id="DiaLControl"><a href="#" onclick="ManualDialNext('','','','','');"><IMG SRC="../agc/images/vdc_LB_dialnextnumber_OFF.gif" border=0 alt="Chiama il prossimo numero"></a></span><BR>
-<span id="DiaLLeaDPrevieW"><font class="preview_text"> <input type=checkbox name=LeadPreview size=1 value="0"> LEAD PREVIEW<BR></font></span>
-<span id="DiaLDiaLAltPhonE"><font class="preview_text"> <input type=checkbox name=DiaLAltPhonE size=1 value="0"> CHIAMA ALT NUM<BR></font></span>
+<span STYLE="background-color: #CCFFCC" id="DiaLControl"><a href="#" onclick="ManualDialNext('','','','','');"><IMG SRC="../agc/images/vdc_LB_dialnextnumber_OFF.gif" border=0 alt="Volať ďalšie číslo"></a></span><BR>
+<span id="DiaLLeaDPrevieW"><font class="preview_text"> <input type=checkbox name=LeadPreview size=1 value="0"> PREZRIET ZOZNAM KONTAKTOV<BR></font></span>
+<span id="DiaLDiaLAltPhonE"><font class="preview_text"> <input type=checkbox name=DiaLAltPhonE size=1 value="0"> ALTER. ČÍSLO TELEFÓNU<BR></font></span>
 
 <!--
 <?
 if ( ($manual_dial_preview) and ($auto_dial_level==0) )
-	{echo "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> LEAD PREVIEW<BR></font>";}
+	{echo "<font class=\"preview_text\"> <input type=checkbox name=LeadPreview size=1 value=\"0\"> PREZRIET ZOZNAM KONTAKTOV<BR></font>";}
 if ( ($alt_phone_dialing) and ($auto_dial_level==0) )
-	{echo "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> CHIAMA ALT NUM<BR></font>";}
+	{echo "<font class=\"preview_text\"> <input type=checkbox name=DiaLAltPhonE size=1 value=\"0\"> ALTER. ČÍSLO TELEFÓNU<BR></font>";}
 
 
 ?> -->
-FILE REGISTRAZIONE:<BR>
+SÚBOR NAHRÁVKY:<BR>
 </center>
 <font class="body_tiny"><span id="RecorDingFilename"></span></font><BR>
-ID Registrazione: <font class="body_small"><span id="RecorDID"></span></font><BR>
+ID NAHRÁVKY: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <center>
-<!-- <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + head_conf + "','');return false;\">Record</a> -->
-<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf',session_id,'');return false;"><IMG SRC="../agc/images/vdc_LB_startrecording.gif" border=0 alt="Start Registrazione"></a></span><BR>
+<!-- <a href=\"#\" onclick=\"conf_send_recording('MonitorConf','" + head_conf + "','');return false;\">NAHRAŤ</a> -->
+<span STYLE="background-color: #CCCCCC" id="RecorDControl"><a href="#" onclick="conf_send_recording('MonitorConf',session_id,'');return false;"><IMG SRC="../agc/images/vdc_LB_startrecording.gif" border=0 alt="Spustiť nahrávanie"></a></span><BR>
 <span id="SpacerSpanA"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #FFFFFF" id="WebFormSpan"><IMG SRC="../agc/images/vdc_LB_webform_OFF.gif" border=0 alt="Web Form"></span><BR>
+<span STYLE="background-color: #FFFFFF" id="WebFormSpan"><IMG SRC="../agc/images/vdc_LB_webform_OFF.gif" border=0 alt="Web formulár"></span><BR>
 <span id="SpacerSpanB"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #CCCCCC" id="ParkControl"><IMG SRC="../agc/images/vdc_LB_parkcall_OFF.gif" border=0 alt="Metti in attesa la chiamata"></span><BR>
-<span STYLE="background-color: #CCCCCC" id="XferControl"><IMG SRC="../agc/images/vdc_LB_transferconf_OFF.gif" border=0 alt="Trasferimento - Conferenza"></span><BR>
+<span STYLE="background-color: #CCCCCC" id="ParkControl"><IMG SRC="../agc/images/vdc_LB_parkcall_OFF.gif" border=0 alt="Zaparkovaný hovor"></span><BR>
+<span STYLE="background-color: #CCCCCC" id="XferControl"><IMG SRC="../agc/images/vdc_LB_transferconf_OFF.gif" border=0 alt="Presmerovanie - Konferencia"></span><BR>
 <span id="SpacerSpanC"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF.gif" border=0 alt="Riaggancia il cliente"></span><BR>
+<span STYLE="background-color: #FFCCFF" id="HangupControl"><IMG SRC="../agc/images/vdc_LB_hangupcustomer_OFF.gif" border=0 alt="Zložiť zákazníka"></span><BR>
 <span id="SpacerSpanD"><IMG SRC="../agc/images/blank.gif" width=145 height=16 border=0></span><BR>
-<div class="text_input" id="SendDTMFdiv"><span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF(session_id);return false;"><IMG SRC="../agc/images/vdc_LB_senddtmf.gif" border=0 alt="Trasmetti Tono Tastiera" align=bottom></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></div></span><BR>
+<div class="text_input" id="SendDTMFdiv"><span STYLE="background-color: #CCCCCC" id="SendDTMF"><a href="#" onclick="SendConfDTMF(session_id);return false;"><IMG SRC="../agc/images/vdc_LB_senddtmf.gif" border=0 alt="Poslať DTMF" align=bottom></a>  <input type=text size=5 name=conf_dtmf class="cust_form" value="" maxlength=50></div></span><BR>
 </center>
 </font>
 </td>
@@ -7674,26 +7674,26 @@ ID Registrazione: <font class="body_small"><span id="RecorDID"></span></font><BR
 <div class="text_input" id="MainPanelCustInfo">
 <table><tr>
 <td align=right></td>
-<td align=left><font class="body_text">&nbsp; Cust Time: <input type=text size=27 name=custdatetime class="cust_form" value=""> &nbsp; Canale: <input type=text size=20 name=callchannel class="cust_form" value=""></td>
+<td align=left><font class="body_text">&nbsp; Čas: <input type=text size=27 name=custdatetime class="cust_form" value=""> &nbsp; Kanál: <input type=text size=20 name=callchannel class="cust_form" value=""></td>
 </tr><tr>
-<td colspan=2 align=center> Dati Cliente: <span id="CusTInfOSpaN"></span></td>
+<td colspan=2 align=center> Informácia o zákazníkovi: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
-<td align=right><font class="body_text"> Titolo: </td>
-<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; Nome: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Cognome: <input type=text size=23 name=last_name maxlength=30 class="cust_form" value=""></td>
+<td align=right><font class="body_text"> Titul: </td>
+<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; Prvý: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Posledný: <input type=text size=23 name=last_name maxlength=30 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Indirizzo1: </td>
+<td align=right><font class="body_text"> Adresa1: </td>
 <td align=left><font class="body_text"><input type=text size=50 name=address1 maxlength=100 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Indirizzo2: </td>
-<td align=left><font class="body_text"><input type=text size=17 name=address2 maxlength=100 class="cust_form" value="">&nbsp; Indirizzo3: <input type=text size=25 name=address3 maxlength=100 class="cust_form" value=""></td>
+<td align=right><font class="body_text"> Adresa2: </td>
+<td align=left><font class="body_text"><input type=text size=17 name=address2 maxlength=100 class="cust_form" value="">&nbsp; Adresa3: <input type=text size=25 name=address3 maxlength=100 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Citta`: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; Stato: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; CAP: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
+<td align=right><font class="body_text"> Mesto: </td>
+<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; Štát: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PSČ: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Provincia: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Sesso: <span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Maschio</option><option value="F">F - Femmina</option></select></span></td>
+<td align=right><font class="body_text"> Kraj: </td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; zákaznícke ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span></td>
 </tr><tr>
-<td align=right><font class="body_text"> Telefono: </td>
+<td align=right><font class="body_text"> Telefón: </td>
 <td align=left><font class="body_text">
 <? 
 if ($disable_alter_custphone=='Y') 
@@ -7708,12 +7708,12 @@ else
 ?>
 
 
-&nbsp; Prefisso: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Num. Alternativo: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
+&nbsp; Volací kód: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alternatívne číslo: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right><font class="body_text"> Mostra: </td>
+<td align=right><font class="body_text"> Prezrieť: </td>
 <td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
-<td align=right valign=top><font class="body_text"> Note:</td>
+<td align=right valign=top><font class="body_text"> Poznámky:</td>
 <td align=left>
 <font class="body_text">
 <?
