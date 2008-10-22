@@ -85,6 +85,7 @@
 # 81002-1120 - Added processing for DID forwarded calls
 # 81011-1019 - Added option for press 1 to leave voicemail if wait time > hold-time-option-seconds
 # 81020-0237 - Added term_reason logging for all possible exits of the script
+# 81021-2315 - Changed and add queue_log logging
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -1559,7 +1560,15 @@ if ($hold_recall_xfer_group !~ /NONE/)
 
 			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='TRANSFER',data1='$DROPexten',data2='$ext_context',data3='1',data4='1',serverid='$queuemetrics_log_id';";
+			$place=0;
+			if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+			if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+			$place++;
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='3',data2='$place',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='HXFER',serverid='$queuemetrics_log_id';";
 			$Baffected_rows = $dbhB->do($stmtB);
 
 			$dbhB->disconnect();
@@ -1843,6 +1852,9 @@ if ($hold_time_option =~ /PRESS_VMAIL/)
 			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='1',data2='$place',serverid='$queuemetrics_log_id';";
 			$Baffected_rows = $dbhB->do($stmtB);
 
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='QVMAIL',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
 			$exitwithkey++;
 
 			$dbhB->disconnect();
@@ -1940,8 +1952,17 @@ if ($wait_in_queue < 1)
 
 			if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
 
-			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='TRANSFER',data1='$DROPexten',data2='$ext_context',data3='$drop_seconds',data4='$drop_seconds',serverid='$queuemetrics_log_id';";
+			$place=0;
+			if ($rec_countWAIT > 0) {$place = $rec_countWAIT;}
+			if ($rec_countWAITrem > 0) {$place = $rec_countWAITrem;}
+			$place++;
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHKEY',data1='2',data2='$place',serverid='$queuemetrics_log_id';";
 			$Baffected_rows = $dbhB->do($stmtB);
+
+			$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='HOLDTO',serverid='$queuemetrics_log_id';";
+			$Baffected_rows = $dbhB->do($stmtB);
+
 
 			$dbhB->disconnect();
 			}
@@ -2040,6 +2061,9 @@ if ($enable_queuemetrics_logging > 0)
 	$place++;
 
 	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='EXITWITHTIMEOUT',data1='$place',serverid='$queuemetrics_log_id';";
+	$Baffected_rows = $dbhB->do($stmtB);
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$YqueryCID',queue='$channel_group',agent='NONE',verb='CALLSTATUS',data1='DROP',serverid='$queuemetrics_log_id';";
 	$Baffected_rows = $dbhB->do($stmtB);
 
 	$dbhB->disconnect();

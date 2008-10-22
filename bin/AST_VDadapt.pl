@@ -24,14 +24,20 @@
 # 70521-1038 - Fixed bug when no live campaigns are running, define $vicidial_log
 # 70619-1339 - Added Status Category tally calculations
 # 71029-1906 - Changed CLOSER-type campaign_id restriction
+# 81021-2201 - Deactivated queue_log QUEUESTART event
+# 81022-0713 - Added gathering of vicidial_inbound_groups stats(day only)
 #
 
 # constants
 $DB=0;  # Debug flag, set to 0 for no debug messages, On an active system this will generate lots of lines of output per minute
 $US='__';
 $MT[0]='';
+
+##### table definitions:
 	$vicidial_log = 'vicidial_log FORCE INDEX (call_date) ';
 #	$vicidial_log = 'vicidial_log';
+	$vicidial_closer_log = 'vicidial_closer_log FORCE INDEX (call_date) ';
+#	$vicidial_closer_log = 'vicidial_closer_log';
 
 
 $i=0;
@@ -244,36 +250,37 @@ if ($DBX) {print "CONNECTED TO DATABASE:  $VARDB_server|$VARDB_database\n";}
 
 #############################################
 ##### START QUEUEMETRICS LOGGING LOOKUP #####
-$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-$rec_count=0;
-while ($sthArows > $rec_count)
-	{
-	 @aryA = $sthA->fetchrow_array;
-		$enable_queuemetrics_logging =	"$aryA[0]";
-		$queuemetrics_server_ip	=		"$aryA[1]";
-		$queuemetrics_dbname	=		"$aryA[2]";
-		$queuemetrics_login	=			"$aryA[3]";
-		$queuemetrics_pass	=			"$aryA[4]";
-		$queuemetrics_log_id =			"$aryA[5]";
-	 $rec_count++;
-	}
-$sthA->finish();
-
-if ($enable_queuemetrics_logging > 0)
-	{
-	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
-	 or die "Couldn't connect to database: " . DBI->errstr;
-
-	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
-
-	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secT',call_id='NONE',queue='NONE',agent='NONE',verb='QUEUESTART',serverid='$queuemetrics_log_id';";
-	$Baffected_rows = $dbhB->do($stmtB);
-
-	$dbhB->disconnect();
-	}
+# Disabled per Lorenzo at QueueMetrics because this event is apparently useless
+#$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+#$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+#$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+#$sthArows=$sthA->rows;
+#$rec_count=0;
+#while ($sthArows > $rec_count)
+#	{
+#	 @aryA = $sthA->fetchrow_array;
+#		$enable_queuemetrics_logging =	"$aryA[0]";
+#		$queuemetrics_server_ip	=		"$aryA[1]";
+#		$queuemetrics_dbname	=		"$aryA[2]";
+#		$queuemetrics_login	=			"$aryA[3]";
+#		$queuemetrics_pass	=			"$aryA[4]";
+#		$queuemetrics_log_id =			"$aryA[5]";
+#	 $rec_count++;
+#	}
+#$sthA->finish();
+#
+#if ($enable_queuemetrics_logging > 0)
+#	{
+#	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+#	 or die "Couldn't connect to database: " . DBI->errstr;
+#
+#	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+#
+#	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$secT',call_id='NONE',queue='NONE',agent='NONE',verb='QUEUESTART',serverid='$queuemetrics_log_id';";
+#	$Baffected_rows = $dbhB->do($stmtB);
+#
+#	$dbhB->disconnect();
+#	}
 ##### END QUEUEMETRICS LOGGING LOOKUP #####
 ###########################################
 
@@ -507,6 +514,52 @@ if ($RESETdiff_ratio_updater>0) {$RESETdiff_ratio_updater=0;   $diff_ratio_updat
 if ($RESETdrop_count_updater>0) {$RESETdrop_count_updater=0;   $drop_count_updater=0;}
 $diff_ratio_updater = ($diff_ratio_updater + $CLIdelay);
 $drop_count_updater = ($drop_count_updater + $CLIdelay);
+
+
+
+
+
+
+
+
+
+################################################################################
+#### BEGIN gather stats for inbound groups for the real-time display
+################################################################################
+$stmtA = "SELECT group_id from vicidial_inbound_groups where active='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$ibg_count=0;
+while ($sthArows > $ibg_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$group_id[$ibg_count] =		$aryA[0];
+	$ibg_count++;
+	}
+$sthA->finish();
+if ($DB) {print "$now_date INBOUND GROUPS TO GET STATS FOR:  $ibg_count|$#group_id       IT: $master_loop\n";}
+
+
+##### LOOP THROUGH EACH INBOUND GROUP AND GATHER STATS #####
+$p=0;
+foreach(@group_id)
+	{
+	&calculate_drops_inbound;
+
+	$p++;
+	}
+
+################################################################################
+#### END gather stats for inbound groups for the real-time display
+################################################################################
+
+
+
+
+
+
+
 
 sleep($CLIdelay);
 
@@ -1089,6 +1142,203 @@ $stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',a
 $affected_rows = $dbhA->do($stmtA);
 if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
 }
+
+
+
+sub calculate_drops_inbound
+{
+$camp_ANS_STAT_SQL='';
+# GET LIST OF HUMAN-ANSWERED STATUSES
+$stmtA = "SELECT status from vicidial_statuses where human_answered='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$camp_ANS_STAT_SQL .=	 "'$aryA[0]',";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$stmtA = "SELECT distinct(status) from vicidial_campaign_statuses where human_answered='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$camp_ANS_STAT_SQL .=	 "'$aryA[0]',";
+	$rec_count++;
+	}
+$sthA->finish();
+chop($camp_ANS_STAT_SQL);
+
+if ($DBX) {print "     ANSWERED STATUSES: $group_id[$p]|$camp_ANS_STAT_SQL|\n";}
+
+#$RESETdrop_count_updater++;
+$VCScalls_today[$p]=0;
+$VCSanswers_today[$p]=0;
+$VCSdrops_today[$p]=0;
+$VCSdrops_today_pct[$p]=0;
+$VCSdrops_answers_today_pct[$p]=0;
+
+
+# TODAY CALL AND DROP STATS
+$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VCScalls_today[$p] =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+if ($VCScalls_today[$p] > 0)
+	{
+	# TODAY ANSWERS
+	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN($camp_ANS_STAT_SQL);";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSanswers_today[$p] =		 "$aryA[0]";
+		$rec_count++;
+		}
+	$sthA->finish();
+	# TODAY DROPS
+	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VCSdrops_today[$p] =		 "$aryA[0]";
+		if ($VCSdrops_today[$p] > 0)
+			{
+			$VCSdrops_today_pct[$p] = ( ($VCSdrops_today[$p] / $VCScalls_today[$p]) * 100 );
+			$VCSdrops_today_pct[$p] = sprintf("%.2f", $VCSdrops_today_pct[$p]);
+			if ($VCSanswers_today[$p] < 1) {$VCSanswers_today[$p] = 1;}
+			$VCSdrops_answers_today_pct[$p] = ( ($VCSdrops_today[$p] / $VCSanswers_today[$p]) * 100 );
+			$VCSdrops_answers_today_pct[$p] = sprintf("%.2f", $VCSdrops_answers_today_pct[$p]);
+			}
+		$rec_count++;
+		}
+	$sthA->finish();
+	}
+
+
+
+
+# DETERMINE WHETHER TO GATHER STATUS CATEGORY STATISTICS
+$VSC_categories=0;
+$VSCupdateSQL='';
+$stmtA = "SELECT vsc_id from vicidial_status_categories where tovdad_display='Y' limit 4;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$rec_count=0;
+while ($sthArows > $rec_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$VSC_categories[$rec_count] =		 "$aryA[0]";
+	$rec_count++;
+	}
+$sthA->finish();
+
+$g=0;
+foreach (@VSC_categories)
+	{
+		$VSCcategory=$VSC_categories[$g];
+		$VSCtally='';
+		$CATstatusesSQL='';
+	# FIND STATUSES IN STATUS CATEGORY
+	$stmtA = "SELECT status from vicidial_statuses where category='$VSCcategory';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$CATstatusesSQL .=		 "'$aryA[0]',";
+		$rec_count++;
+		}
+	# FIND CAMPAIGN_STATUSES IN STATUS CATEGORY
+	$stmtA = "SELECT status from vicidial_campaign_statuses where category='$VSCcategory';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$rec_count=0;
+	while ($sthArows > $rec_count)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$CATstatusesSQL .=		 "'$aryA[0]',";
+		$rec_count++;
+		}
+	chop($CATstatusesSQL);
+	if (length($CATstatusesSQL)>2)
+		{
+		# FIND STATUSES IN STATUS CATEGORY
+		$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN($CATstatusesSQL);";
+		#	if ($DBX) {print "|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		$rec_count=0;
+		while ($sthArows > $rec_count)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VSCtally =		 "$aryA[0]";
+			$rec_count++;
+			}
+		}
+	$g++;
+	if ($DBX) {print "     $group_id[$p]|$VSCcategory|$VSCtally|$CATstatusesSQL|\n";}
+	$VSCupdateSQL .= "status_category_$g='$VSCcategory',status_category_count_$g='$VSCtally',";
+	}
+while ($g < 4)
+	{
+	$g++;
+	$VSCupdateSQL .= "status_category_$g='',status_category_count_$g='0',";
+	}
+chop($VSCupdateSQL);
+
+$vcs_exists=1;
+$stmtA = "SELECT count(*) from vicidial_campaign_stats where campaign_id='$group_id[$p]';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$vcs_exists =		 "$aryA[0]";
+	}
+$sthA->finish();
+
+if ($vcs_exists < 1)
+	{
+	$stmtA = "INSERT INTO vicidial_campaign_stats (campaign_id) values('$group_id[$p]');";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($DBX) {print "$group_id[$p]|$stmtA|\n";}
+	}
+
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$p]',answers_today='$VCSanswers_today[$p]',drops_today='$VCSdrops_today[$p]',drops_today_pct='$VCSdrops_today_pct[$p]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$p]',$VSCupdateSQL where campaign_id='$group_id[$p]';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DBX) {print "$group_id[$p]|$stmtA|\n";}
+}
+##### END calculate_drops_inbound
+
 
 
 

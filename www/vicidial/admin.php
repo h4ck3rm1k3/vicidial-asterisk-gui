@@ -6631,6 +6631,9 @@ if ($ADD==2111)
 				$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
 				$rslt=mysql_query($stmt, $link);
 
+				$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$group_id');";
+				$rslt=mysql_query($stmt, $link);
+
 				echo "<br><B>GROUP ADDED: $group_id</B>\n";
 
 				### LOG CHANGES TO LOG FILE ###
@@ -10198,6 +10201,9 @@ if ($ADD==6111)
 		$rslt=mysql_query($stmt, $link);
 
 		$stmt="DELETE from vicidial_live_inbound_agents where group_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_campaign_stats where campaign_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
