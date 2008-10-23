@@ -14,6 +14,12 @@ TRUNKloop = IAX2/ASTloop:test@127.0.0.1:40569	; used for blind monitoring
 TRUNKblind = IAX2/ASTblind:test@127.0.0.1:41569	; used for testing
 
 [testtrunkinbound]
+; agent dial-in:
+exten => 2345,1,Answer		; Answer the line
+exten => 2345,2,AGI(agi-AGENT_dial_in.agi)
+exten => 2345,3,Hangup
+
+; DID call routing process
 exten => _X.,1,AGI(agi-DID_route.agi)
 
 [default]

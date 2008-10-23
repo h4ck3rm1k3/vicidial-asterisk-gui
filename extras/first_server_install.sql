@@ -3,6 +3,7 @@ INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_vers
 INSERT INTO server_updater values('10.10.10.15','');
 
 INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
+INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, protocol) values('callin','8300','8300','10.10.10.15','10.10.10.15','10.10.10.15','callin','test', 'ACTIVE','Y','Dial-in agent phone','Dial-in Agent Phone','TEST','EXTERNAL');
 
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users) values('6666','1234','Admin','9','ADMIN','1','1','1','1');
 

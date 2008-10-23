@@ -460,8 +460,11 @@ while ($i < $statuses_to_print)
 		}
 
 	$TOTALcalls =	($TOTALcalls + $row[0]);
-	$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );
-		$STATUSrate =	sprintf("%.2f", $STATUSrate);
+	if ( ($STATUScount < 1) or ($TOTALsec < 1) )
+		{$STATUSrate = 0;}
+	else
+		{$STATUSrate =	($STATUScount / ($TOTALsec / 3600) );}
+	$STATUSrate =	sprintf("%.2f", $STATUSrate);
 
 	$STATUShours_H =	($row[2] / 3600);
 	$STATUShours_H_int = round($STATUShours_H, 2);
@@ -526,8 +529,11 @@ if ($TOTALcalls < 1)
 	}
 else
 	{
-	$TOTALrate =	($TOTALcalls / ($TOTALsec / 3600) );
-		$TOTALrate =	sprintf("%.2f", $TOTALrate);
+	if ( ($TOTALcalls < 1) or ($TOTALsec < 1) )
+		{$TOTALrate = 0;}
+	else
+		{$TOTALrate =	($TOTALcalls / ($TOTALsec / 3600) );}
+	$TOTALrate =	sprintf("%.2f", $TOTALrate);
 
 	$TOTALhours_H =	($TOTALsec / 3600);
 	$TOTALhours_H_int = round($TOTALhours_H, 2);
