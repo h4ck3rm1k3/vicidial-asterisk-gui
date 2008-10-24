@@ -15,6 +15,7 @@
 # 80709-0331 - Added time stats to call statuses
 # 80722-2149 - Added Status Category stats
 # 81015-0705 - Added IVR calls count
+# 81024-0037 - Added multi-select inbound-groups
 #
 
 require("dbconnect.php");
@@ -26,14 +27,16 @@ if (isset($_GET["group"]))				{$group=$_GET["group"];}
 	elseif (isset($_POST["group"]))		{$group=$_POST["group"];}
 if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
 	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
-if (isset($_GET["end_date"]))				{$end_date=$_GET["end_date"];}
-	elseif (isset($_POST["end_date"]))		{$end_date=$_POST["end_date"];}
+if (isset($_GET["end_date"]))			{$end_date=$_GET["end_date"];}
+	elseif (isset($_POST["end_date"]))	{$end_date=$_POST["end_date"];}
 if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
-	elseif (isset($_POST["submit"]))		{$submit=$_POST["submit"];}
+	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
 if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))		{$SUBMIT=$_POST["SUBMIT"];}
+	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
+	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
@@ -84,12 +87,36 @@ $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $groups_to_print = mysql_num_rows($rslt);
 $i=0;
+	$LISTgroups[$i]='---NONE---';
+	$i++;
+	$groups_to_print++;
 while ($i < $groups_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
-	$groups[$i] =$row[0];
+	$LISTgroups[$i] =$row[0];
 	$i++;
 	}
+
+$i=0;
+$group_string='|';
+$group_ct = count($group);
+while($i < $group_ct)
+	{
+	$group_string .= "$group[$i]|";
+	$group_SQL .= "'$group[$i]',";
+	$i++;
+	}
+if ( (ereg("--NONE--",$group_string) ) or ($group_ct < 1) )
+	{
+	$group_SQL = "''";
+#	$group_SQL = "group_id IN('')";
+	}
+else
+	{
+	$group_SQL = eregi_replace(",$",'',$group_SQL);
+#	$group_SQL = "group_id IN($group_SQL)";
+	}
+
 
 $stmt="select vsc_id,vsc_name from vicidial_status_categories;";
 $rslt=mysql_query($stmt, $link);
@@ -120,33 +147,65 @@ while ($i < $statcats_to_print)
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo "<TITLE>VICIDIAL: VDAD Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+if ($DB > 0)
+	{
+	echo "<BR>\n";
+	echo "$group_ct|$group_string|$group_SQL\n";
+	echo "<BR>\n";
+	echo "$shift|$query_date|$end_date\n";
+	echo "<BR>\n";
+	}
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
+echo "<TABLE BORDER=0><TR><TD VALIGN=TOP>\n";
+echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
+echo "Date Range:<BR>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
 echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
-echo "<SELECT SIZE=1 NAME=group>\n";
+echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
+echo "Inbound Groups: \n";
+echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
+echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 	$o=0;
 	while ($groups_to_print > $o)
 	{
-		if ($groups[$o] == $group) {echo "<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
-		  else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
+		if (ereg("\|$LISTgroups[$o]\|",$group_string)) 
+			{echo "<option selected value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
+		else
+			{echo "<option value=\"$LISTgroups[$o]\">$LISTgroups[$o]</option>\n";}
 		$o++;
 	}
 echo "</SELECT>\n";
-echo "<SELECT SIZE=1 NAME=shift>\n";
+echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
+
+echo "</TD></TR>\n";
+echo "<TR><TD>\n";
+
+#echo "<SELECT SIZE=1 NAME=group>\n";
+#	$o=0;
+#	while ($groups_to_print > $o)
+#	{
+#		if ($groups[$o] == $group) {echo "<option selected value=\"$groups[$o]\">$groups[$o]</option>\n";}
+#		  else {echo "<option value=\"$groups[$o]\">$groups[$o]</option>\n";}
+#		$o++;
+#	}
+#echo "</SELECT>\n";
+echo "Shift: <SELECT SIZE=1 NAME=shift>\n";
 echo "<option selected value=\"$shift\">$shift</option>\n";
 echo "<option value=\"\">--</option>\n";
 echo "<option value=\"AM\">AM</option>\n";
 echo "<option value=\"PM\">PM</option>\n";
 echo "<option value=\"ALL\">ALL</option>\n";
 echo "</SELECT>\n";
-echo "<INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
+echo " &nbsp; <INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
+echo "</TD></TR></TABLE>\n";
 echo "</FORM>\n\n";
 
 echo "<PRE><FONT SIZE=2>\n\n";
 
 
-if (!$group)
+if ($groups_to_print < 1)
 {
 echo "\n\n";
 echo "PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT\n";
@@ -178,18 +237,71 @@ $query_date_END = "$end_date $time_END";
 
 
 
-echo "VICIDIAL: Auto-dial Closer Stats                      $NOW_TIME\n";
+echo "VICIDIAL: Auto-dial Closer Stats: $group_string          $NOW_TIME\n";
+
+
+
+
+
+
+if ($group_ct > 1)
+	{
+	echo "\n";
+	echo "---------- MULTI-GROUP BREAKDOWN:\n";
+	echo "+----------------------+---------+---------+---------+---------+\n";
+	echo "| IN-GROUP             | CALLS   | DROPS   | DROP %  | IVR     |\n";
+	echo "+----------------------+---------+---------+---------+---------+\n";
+
+	$i=0;
+	while($i < $group_ct)
+		{
+		$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='$group[$i]';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$row=mysql_fetch_row($rslt);
+
+		$stmt="select count(*) from live_inbound_log where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a='$group[$i]' and comment_b='START';";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$rowx=mysql_fetch_row($rslt);
+
+		$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='$group[$i]' and status IN('DROP','XDROP') and (length_in_sec <= 9999 or length_in_sec is null);";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$rowy=mysql_fetch_row($rslt);
+
+		$groupDISPLAY =	sprintf("%20s", $group[$i]);
+		$gTOTALcalls =	sprintf("%7s", $row[0]);
+		$gIVRcalls =	sprintf("%7s", $rowx[0]);
+		$gDROPcalls =	sprintf("%7s", $rowy[0]);
+		if ( ($gDROPcalls < 1) or ($gTOTALcalls < 1) )
+			{$gDROPpercent = '0';}
+		else
+			{
+			$gDROPpercent = (($gDROPcalls / $gTOTALcalls) * 100);
+			$gDROPpercent = round($gDROPpercent, 2);
+			}
+		$gDROPpercent =	sprintf("%6s", $gDROPpercent);
+
+		echo "| $groupDISPLAY | $gTOTALcalls | $gDROPcalls | $gDROPpercent% | $gIVRcalls |\n";
+		$i++;
+		}
+
+	echo "+----------------------+---------+---------+---------+---------+\n";
+
+	}
+
 
 echo "\n";
 echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- TOTALS\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "';";
+$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
-$stmt="select count(*) from live_inbound_log where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a='" . mysql_real_escape_string($group) . "' and comment_b='START';";
+$stmt="select count(*) from live_inbound_log where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a IN($group_SQL) and comment_b='START';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rowx=mysql_fetch_row($rslt);
@@ -213,7 +325,7 @@ echo "Calls taken into the IVR for this In-Group:   $IVRcalls\n";
 echo "\n";
 echo "---------- DROPS\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP' and (length_in_sec <= 999 or length_in_sec is null);";
+$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status IN('DROP','XDROP') and (length_in_sec <= 9999 or length_in_sec is null);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -284,7 +396,7 @@ while ($p < $statuses_to_print)
 echo "\n";
 echo "---------- QUEUE STATS\n";
 
-$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='" . mysql_real_escape_string($group) . "' and (queue_seconds > 0);";
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and (queue_seconds > 0);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -333,7 +445,7 @@ echo "+-------------------------------------------------------------------------
 echo "|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
 
-$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by queue_seconds;";
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) group by queue_seconds;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $reasons_to_print = mysql_num_rows($rslt);
@@ -396,7 +508,7 @@ echo "+----------------------+------------+\n";
 echo "| HANGUP REASON        | CALLS      |\n";
 echo "+----------------------+------------+\n";
 
-$stmt="select count(*),term_reason from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by term_reason;";
+$stmt="select count(*),term_reason from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) group by term_reason;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $reasons_to_print = mysql_num_rows($rslt);
@@ -438,7 +550,7 @@ echo "+--------+----------------------+----------------------+------------+-----
 
 
 ## get counts and time totals for all statuses in this campaign
-$stmt="select count(*),status,sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' group by status;";
+$stmt="select count(*),status,sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) group by status;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $statuses_to_print = mysql_num_rows($rslt);
@@ -620,7 +732,7 @@ echo "+--------------------------+------------+----------+--------+\n";
 echo "| AGENT                    | CALLS      | TIME M   | AVRG M |\n";
 echo "+--------------------------+------------+----------+--------+\n";
 
-$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 0 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
+$stmt="select vicidial_closer_log.user,full_name,count(*),sum(length_in_sec),avg(length_in_sec) from vicidial_closer_log,vicidial_users where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and vicidial_closer_log.user is not null and length_in_sec is not null and length_in_sec > 0 and vicidial_closer_log.user=vicidial_users.user group by vicidial_closer_log.user;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $users_to_print = mysql_num_rows($rslt);
@@ -710,14 +822,14 @@ $i=0;
 $h=0;
 while ($i <= 96)
 	{
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' and campaign_id='" . mysql_real_escape_string($group) . "';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' and campaign_id IN($group_SQL);";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$hour_count[$i] = $row[0];
 	if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
 	if ($hour_count[$i] > 0) {$last_full_record = $i;}
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:00:00' and call_date <= '$query_date $h:14:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP');";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
@@ -725,42 +837,42 @@ while ($i <= 96)
 	$i++;
 
 
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' and campaign_id='$group';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' and campaign_id IN($group_SQL);";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$hour_count[$i] = $row[0];
 	if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
 	if ($hour_count[$i] > 0) {$last_full_record = $i;}
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:15:00' and call_date <= '$query_date $h:29:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP');";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$drop_count[$i] = $row[0];
 	$i++;
 
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' and campaign_id='" . mysql_real_escape_string($group) . "';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' and campaign_id IN($group_SQL);";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$hour_count[$i] = $row[0];
 	if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
 	if ($hour_count[$i] > 0) {$last_full_record = $i;}
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:30:00' and call_date <= '$query_date $h:44:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP');";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$drop_count[$i] = $row[0];
 	$i++;
 
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id='" . mysql_real_escape_string($group) . "';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id IN($group_SQL);";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$hour_count[$i] = $row[0];
 	if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
 	if ($hour_count[$i] > 0) {$last_full_record = $i;}
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id='" . mysql_real_escape_string($group) . "' and status='DROP';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP')';";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);

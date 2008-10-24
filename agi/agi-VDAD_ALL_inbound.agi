@@ -86,6 +86,7 @@
 # 81011-1019 - Added option for press 1 to leave voicemail if wait time > hold-time-option-seconds
 # 81020-0237 - Added term_reason logging for all possible exits of the script
 # 81021-2315 - Changed and add queue_log logging
+# 81024-0006 - Changed LOOKUP to insert new lead if phone_number < 3 digits, changed queue_sec calculation
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -109,6 +110,7 @@ $hm = "$hour$min";
 $hm = ($hm + 0);
 
 $now_date_epoch = time();
+$start_epoch = $now_date_epoch;
 $now_date = "$year-$mon-$mday $hour:$min:$sec";
 $CLInow_date = "$year-$mon-$mday\\ $hour:$min:$sec";
 $start_time=$now_date;
@@ -509,55 +511,8 @@ if ($call_handle_method =~ /DIGITID$/)
 
 if ($call_handle_method =~ /LOOKUP/)
 {
-	$listSQL = '';
-	if ($call_handle_method =~ /LOOKUPRL$/)
-		{$listSQL = "and list_id='$list_id'";}
-	else
+	if (length($phone_number) < 3)
 		{
-		if ($call_handle_method =~ /LOOKUPRC$/)
-			{
-			### Grab all lists associated with Scampaign_id
-			$cbc=0;
-			$SlistsSQL='';
-			$stmtA = "SELECT list_id FROM vicidial_lists where campaign_id='$Scampaign_id' limit 100;";
-			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-			$sthArows=$sthA->rows;
-			while ($sthArows > $cbc)
-				{
-				@aryA = $sthA->fetchrow_array;	
-				$SlistsSQL	.= "'$aryA[0]',";
-				$cbc++;
-				}
-			$sthA->finish();
-			chop($SlistsSQL);
-
-			if (length($SlistsSQL)>3)
-				{$listSQL = "and list_id IN($SlistsSQL)";}
-			}
-		}
-
-	$cbc=0;
-	$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL order by last_local_call_time desc limit 1;";
-		if ($AGILOG) {$agi_string = "VDAD vicidial_list search |$phone_number|$stmtA|";   &agi_output;}
-	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-	$sthArows=$sthA->rows;
-	if ($sthArows > 0)
-	{
-		$rec_countCUSTDATA=0;	
-		while ($sthArows > $cbc)
-		{
-		@aryA = $sthA->fetchrow_array;
-			$insert_lead_id = "$aryA[0]";
-		$cbc++;	
-		} 
-		$sthA->finish();
-
-		if ($AGILOG) {$agi_string = "VDAD vicidial_list found |$insert_lead_id|$stmtA|";   &agi_output;}
-	} 
-	else 
-	{
 		### insert a record into the vicidial_list table 
 		$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments) values('$SQLdate','$tsSQLdate','INBND','$fronter','$inbound_number','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','$local_gmt','$VLcomments');";
 		$affected_rows = $dbhA->do($stmtA);
@@ -575,7 +530,77 @@ if ($call_handle_method =~ /LOOKUP/)
 		$sthA->finish();
 
 		if ($AGILOG) {$agi_string = "VDAD vicidial_list insert |$insert_lead_id|$stmtA|";   &agi_output;}
-	}
+		}
+	else
+		{
+		$listSQL = '';
+		if ($call_handle_method =~ /LOOKUPRL$/)
+			{$listSQL = "and list_id='$list_id'";}
+		else
+			{
+			if ($call_handle_method =~ /LOOKUPRC$/)
+				{
+				### Grab all lists associated with Scampaign_id
+				$cbc=0;
+				$SlistsSQL='';
+				$stmtA = "SELECT list_id FROM vicidial_lists where campaign_id='$Scampaign_id' limit 100;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				while ($sthArows > $cbc)
+					{
+					@aryA = $sthA->fetchrow_array;	
+					$SlistsSQL	.= "'$aryA[0]',";
+					$cbc++;
+					}
+				$sthA->finish();
+				chop($SlistsSQL);
+
+				if (length($SlistsSQL)>3)
+					{$listSQL = "and list_id IN($SlistsSQL)";}
+				}
+			}
+
+		$cbc=0;
+		$stmtA= "SELECT lead_id from vicidial_list where phone_number='$phone_number' $listSQL order by last_local_call_time desc limit 1;";
+			if ($AGILOG) {$agi_string = "VDAD vicidial_list search |$phone_number|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			$rec_countCUSTDATA=0;	
+			while ($sthArows > $cbc)
+				{
+				@aryA = $sthA->fetchrow_array;
+					$insert_lead_id = "$aryA[0]";
+				$cbc++;	
+				} 
+			$sthA->finish();
+
+			if ($AGILOG) {$agi_string = "VDAD vicidial_list found |$insert_lead_id|$stmtA|";   &agi_output;}
+			} 
+		else 
+			{
+			### insert a record into the vicidial_list table 
+			$stmtA = "INSERT INTO vicidial_list (entry_date,modify_date,status,user,vendor_lead_code,source_id,list_id,called_since_last_reset,phone_code,phone_number,security_phrase,called_count,gmt_offset_now,comments) values('$SQLdate','$tsSQLdate','INBND','$fronter','$inbound_number','VDCL','$list_id','Y','$phone_code','$phone_number','$channel_group','1','$local_gmt','$VLcomments');";
+			$affected_rows = $dbhA->do($stmtA);
+			$cbc=0;
+			$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
+			$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			while ($sthArows > $cbc)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$insert_lead_id = "$aryA[0]";
+				$cbc++; 
+				}
+			$sthA->finish();
+
+			if ($AGILOG) {$agi_string = "VDAD vicidial_list insert |$insert_lead_id|$stmtA|";   &agi_output;}
+			}
+		}
 }
 
 else
@@ -628,6 +653,29 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 	{
 	$VHqueryCID = "VA$CIDdate$hour$min$sec$sec";
 
+	$stmtA = "INSERT INTO vicidial_closer_log set status='DROP',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='AFTER HOURS DROP',term_reason='AFTERHOURS';";
+	$affected_rows = $dbhA->do($stmtA);
+	$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
+	$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtB ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$insert_close_id = "$aryA[0]";
+		$cbc++; 
+		}
+	$sthA->finish();
+	if ($AGILOG) {$agi_string = "--    VDCL vcl insert: |$affected_rows|$insert_lead_id|$insert_close_id|\n|$stmtA|";   &agi_output;}
+
+	$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$insert_lead_id';";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
+
 	if ($after_hours_action =~ /EXTENSION|VOICEMAIL|IN_GROUP/)
 		{
 		if ($after_hours_action =~ /EXTENSION/)
@@ -661,28 +709,6 @@ if ( ($hm < $ct_default_start) || ($hm > $ct_default_stop) )
 				checkresult($result);
 			}
 		}
-		$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
-
-		$stmtA = "INSERT INTO vicidial_closer_log set status='DROP',start_epoch='$now_date_epoch',end_epoch='$now_date_epoch',length_in_sec='1',queue_seconds='0',lead_id = '$insert_lead_id',campaign_id='$channel_group',user='VDCL',list_id='$list_id',call_date='$now_date',phone_code='$phone_code',phone_number='$phone_number',comments='AFTER HOURS DROP',term_reason='AFTERHOURS';";
-		$affected_rows = $dbhA->do($stmtA);
-		$stmtB = "select LAST_INSERT_ID() LIMIT 1;";
-		$sthA = $dbhA->prepare($stmtB) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtB ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$insert_close_id = "$aryA[0]";
-			$cbc++; 
-			}
-		$sthA->finish();
-		if ($AGILOG) {$agi_string = "--    VDCL vcl insert: |$affected_rows|$insert_lead_id|$insert_close_id|\n|$stmtA|";   &agi_output;}
-
-		$stmtA = "UPDATE vicidial_list set status='DROP' where lead_id = '$insert_lead_id';";
-		$affected_rows = $dbhA->do($stmtA);
-		if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 
 	if ($after_hours_action =~ /HANGUP/)
 		{
@@ -2010,7 +2036,9 @@ if ($wait_in_queue > 0)
 		### sleep for 99 hundredths of a second
 		usleep(1*990*1000);
 
-		$drop_timer++;
+	#	$drop_timer++;
+		$NOWsec = time();
+		$drop_timer = ($NOWsec - $start_epoch);
 		}
 	}
 
@@ -2022,8 +2050,10 @@ if ($affected_rows < 1)
 	$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "$affected_rows|VDAC-reinsert|$stmtA|";   &agi_output;}
 	}
-#if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
-
+else
+	{
+#	if ($AGILOG) {$agi_string = "--    VDAD : |$affected_rows|update vac table: $callerid\n|$stmtA|$drop_timer ($NOWsec - $start_epoch)|";   &agi_output;}
+	}
 }
 
 ############################################
@@ -2093,6 +2123,18 @@ if ($drop_action =~ /IN_GROUP/)
 
 if ($AGILOG) {$agi_string = "--    VDCL DROP: |$drop_action|$DROPexten|";   &agi_output;}
 
+	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
+
+	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
+	$stmtA = "UPDATE vicidial_list set status='XDROP' where lead_id = '$insert_lead_id';";
+	$affected_rows = $dbhA->do($stmtA);
+	if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
+
 	### use STDOUT to send call to proper DROP location
 	$VHqueryCID = "VH$CIDdate$VDADconf_exten";
 
@@ -2120,18 +2162,6 @@ if ($AGILOG) {$agi_string = "--    VDCL DROP: |$drop_action|$DROPexten|";   &agi
 		$affected_rows = $dbhA->do($stmtA);  
 		if ($AGILOG) {$agi_string = "--    VDCL call_hungup timeout: |$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
 		}
-
-	$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' and server_ip='$VARserver_ip' order by call_time desc limit 1;";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vac record deleted: |$affected_rows| $VDADcampaign|";   &agi_output;}
-
-	$stmtA = "UPDATE vicidial_closer_log set status='DROP',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',queue_seconds='$drop_seconds',term_reason='QUEUETIMEOUT' where lead_id = '$insert_lead_id' order by start_epoch desc limit 1;";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
-
-	$stmtA = "UPDATE vicidial_list set status='XDROP' where lead_id = '$insert_lead_id';";
-	$affected_rows = $dbhA->do($stmtA);
-	if ($AGILOG) {$agi_string = "--    VDCL vl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 }
 
 $dbhA->disconnect();
