@@ -199,10 +199,11 @@
 # 81015-0405 - Fixed bug related to hangups on 3way calls
 # 81016-0703 - Changed leave 3way to allow function at any time transfer-conf is available
 # 81020-1501 - Fixed bugs in queue_log logging
+# 81023-0411 - Added compatibility for dial-in agents using AGI, bug fixes
 #
 
-$version = '2.0.5-178';
-$build = '81020-1501';
+$version = '2.0.5-179';
+$build = '81023-0411';
 
 require("dbconnect.php");
 
@@ -1237,6 +1238,11 @@ else
 		$extension = "$dialplan_number$AT$ext_context";
 		}
 	$SIP_user = "$protocol/$extension";
+	$SIP_user_DiaL = "$protocol/$extension";
+	if ( (ereg('8300',$dialplan_number)) and (strlen($dialplan_number)<5) and ($protocol == 'Local') )
+		{
+		$SIP_user = "$protocol/$extension$VD_login";
+		}
 
 	$stmt="SELECT asterisk_version from servers where server_ip='$server_ip';";
 	if ($DB) {echo "|$stmt|\n";}
@@ -1405,11 +1411,11 @@ else
 			}
 
 		### insert a NUOVO record to the vicidial_manager table to be processed
-		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: $SIqueryCID','','','','','');";
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user_DiaL','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: $SIqueryCID','','','','','');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
-		print "<!-- call placed to session_id: $session_id from phone: $SIP_user -->\n";
+		print "<!-- call placed to session_id: $session_id from phone: $SIP_user $SIP_user_DiaL -->\n";
 
 		if ($auto_dial_level > 0)
 			{
@@ -2205,15 +2211,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		mainxfer_send_redirect('3WAY','','',tempvarattempt);
 
-		if (threeway_end == '0')
-			{
-			document.vicidial_form.xferchannel.value = '';
-			xfercall_send_hangup();
-
-			document.vicidial_form.callchannel.value = '';
-			document.vicidial_form.callserverip.value = '';
-			dialedcall_send_hangup();
-			}
+//		if (threeway_end == '0')
+//			{
+//			document.vicidial_form.xferchannel.value = '';
+//			xfercall_send_hangup();
+//
+//			document.vicidial_form.callchannel.value = '';
+//			document.vicidial_form.callserverip.value = '';
+//			dialedcall_send_hangup();
+//			}
 
 		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 		}
@@ -2266,7 +2272,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (taskFromConf == 'YES')
 			{basic_originate_call(manual_string,'NO','YES',dial_conf_exten,'NO',taskFromConf,threeway_cid);}
 		else
-			{basic_originate_call(manual_string,'NO','NO');}
+			{basic_originate_call(manual_string,'NO','NO','','','','1');}
 
 		MD_ring_secondS=0;
 		}
@@ -3396,7 +3402,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		if (MDDiaLOverridEform.length > 0)
 			{
-			basic_originate_call(session_id,'NO','YES',MDDiaLOverridEform,'YES');
+			basic_originate_call(session_id,'NO','YES',MDDiaLOverridEform,'YES','','1');
 			}
 		else
 			{
@@ -5617,13 +5623,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		document.vicidial_form.conf_dtmf.value = CalL_XC_a_Dtmf;
 		document.vicidial_form.xfernumber.value = CalL_XC_a_NuMber;
-		basic_originate_call(CalL_XC_a_NuMber,'NO','YES',session_id,'YES');
+		basic_originate_call(CalL_XC_a_NuMber,'NO','YES',session_id,'YES','','1');
 		}
 	function DtMf_PreSet_b_DiaL()
 		{
 		document.vicidial_form.conf_dtmf.value = CalL_XC_b_Dtmf;
 		document.vicidial_form.xfernumber.value = CalL_XC_b_NuMber;
-		basic_originate_call(CalL_XC_b_NuMber,'NO','YES',session_id,'YES');
+		basic_originate_call(CalL_XC_b_NuMber,'NO','YES',session_id,'YES','','1');
 		}
 
 // ################################################################################

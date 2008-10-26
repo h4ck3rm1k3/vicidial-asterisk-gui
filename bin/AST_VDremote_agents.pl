@@ -36,6 +36,7 @@
 # 70417-1346 - Fixed bug that would add unneeded simulated agent lines
 # 80128-0105 - Fixed calls_today bug
 # 81007-1746 - Added debugX output for count statements and changed to if from while
+# 81026-1246 - Added better logging of calls and fixed the DROP bug
 #
 
 ### begin parsing run-time options ###
@@ -257,11 +258,54 @@ while($one_day_interval > 0)
 		$calls_today++;
 		$sthA->finish();
 
-		$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE',calls_today='$calls_today' where server_ip='$server_ip' and status IN('QUEUE') and extension LIKE \"R/%\";";
-		$affected_rows = $dbhA->do($stmtA);
+		@QHlive_agent_id=@MT;
+		@QHlead_id=@MT;
+		@QHuniqueid=@MT;
+		@QHuser=@MT;
+		@QHcall_type=@MT;
+		##### grab number of calls today in this campaign and increment
+		$stmtA = "SELECT vla.live_agent_id,vla.lead_id,vla.uniqueid,vla.user,vac.call_type FROM vicidial_live_agents vla,vicidial_auto_calls vac where vla.server_ip='$server_ip' and vla.status IN('QUEUE') and vla.extension LIKE \"R/%\" and vla.uniqueid=vac.uniqueid and vla.channel=vac.channel;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$vla_qh_ct=$sthA->rows;
+		$w=0;
+		while ($vla_qh_ct > $w)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$QHlive_agent_id[$w] =	"$aryA[0]";
+			$QHlead_id[$w] =		"$aryA[1]";
+			$QHuniqueid[$w] =		"$aryA[2]";
+			$QHuser[$w] =			"$aryA[3]";
+			$QHcall_type[$w] =		"$aryA[4]";
+			$w++;
+			}
+		$sthA->finish();
 
-		$event_string = "|     QUEUEd call listing vla UPDATEd $affected_rows";
-		 &event_logger;
+		$w=0;
+		while ($vla_qh_ct > $w)
+			{
+			$stmtA = "UPDATE vicidial_live_agents set status='INCALL', last_call_time='$SQLdate',comments='REMOTE',calls_today='$calls_today' where live_agent_id='$QHlive_agent_id[$w]';";
+			$Aaffected_rows = $dbhA->do($stmtA);
+
+			$stmtB = "UPDATE vicidial_list set status='XFER',user='$QHuser[$w]' where lead_id='$QHlead_id[$w]';";
+			$Baffected_rows = $dbhA->do($stmtB);
+
+			if ($QHcall_type[$w] =~ /IN/)
+				{
+				$stmtC = "UPDATE vicidial_closer_log set status='XFER',user='$QHuser[$w]',comments='REMOTE' where lead_id='$QHlead_id[$w]' order by call_date desc limit 1;";
+				$Caffected_rows = $dbhA->do($stmtC);
+				}
+			else
+				{
+				$stmtC = "UPDATE vicidial_log set status='XFER',user='$QHuser[$w]',comments='REMOTE' where uniqueid='$QHuniqueid[$w]';";
+				$Caffected_rows = $dbhA->do($stmtC);
+				}
+
+			$event_string = "|     QUEUEd listing UPDATEd |$Aaffected_rows|$Baffected_rows|$Caffected_rows|     |$QHlive_agent_id[$w]|$QHlead_id[$w]|$QHuniqueid[$w]|$QHuser[$w]|$QHcall_type[$w]|";
+			 &event_logger;
+
+			$w++;
+			}
 
 		#@psoutput = `/bin/ps -f --no-headers -A`;
 		@psoutput = `/bin/ps -o "%p %a" --no-headers -A`;

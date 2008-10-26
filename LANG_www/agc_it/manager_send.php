@@ -791,6 +791,11 @@ if ($ACTION=="RedirectXtraCXNeW")
 				$row=mysql_fetch_row($rslt);
 				$exten = $row[0];
 
+				if ( (ereg("^8300",$extension)) and ($protocol == 'Local') )
+					{
+					$extension = "$extension$user";
+					}
+
 				$stmtD="UPDATE vicidial_conferences set extension='$protocol/$extension' where server_ip='$server_ip' and conf_exten='$exten' limit 1;";
 					if ($format=='debug') {echo "\n<!-- $stmtD -->";}
 				$rslt=mysql_query($stmtD, $link);

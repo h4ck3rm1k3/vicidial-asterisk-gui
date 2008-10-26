@@ -42,6 +42,7 @@
 # 80830-0035 - Added auto alt dialing for EXTERNAL leads for each lead
 # 80909-0843 - Added support for campaign-speccific DNC lists
 # 81021-0306 - Added Local channel logging support and while-to-if changes
+# 81026-1247 - Changed to allow for better remote agent calling
 #
 
 
@@ -742,7 +743,7 @@ sub process_request {
 					if ($calleridname !~ /^Y\d\d\d\d/)
 						{
 						########## FIND AND UPDATE vicidial_log ##########
-						$stmtA = "SELECT start_epoch,status,user,term_reason FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
+						$stmtA = "SELECT start_epoch,status,user,term_reason,comments FROM vicidial_log FORCE INDEX(lead_id) where lead_id = '$VD_lead_id' and uniqueid LIKE \"$Euniqueid%\" limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -754,6 +755,7 @@ sub process_request {
 							$VD_status =		"$aryA[1]";
 							$VD_user =			"$aryA[2]";
 							$VD_term_reason =	"$aryA[3]";
+							$VD_comments =		"$aryA[4]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -775,7 +777,7 @@ sub process_request {
 						if ($Rsec < 10) {$Rsec = "0$Rsec";}
 							$RSQLdate = "$Ryear-$Rmon-$Rmday $Rhour:$Rmin:$Rsec";
 
-						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
+						$stmtA = "SELECT start_epoch,status,closecallid,user,term_reason,length_in_sec,queue_seconds,comments FROM vicidial_closer_log where lead_id = '$VD_lead_id' and call_date > \"$RSQLdate\" order by call_date desc limit 1;";
 							if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -792,6 +794,7 @@ sub process_request {
 							$VD_term_reason =	"$aryA[4]";
 							$VD_length_in_sec =	"$aryA[5]";
 							$VD_queue_seconds =	"$aryA[6]";
+							$VD_comments =		"$aryA[7]";
 							 $epc_countCUSTDATA++;
 							}
 						$sthA->finish();
@@ -805,7 +808,7 @@ sub process_request {
 						$VD_seconds = ($now_date_epoch - $VD_start_epoch);
 
 						$SQL_status='';
-						if ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) 
+						if ( ($VD_status =~ /^NA$|^NEW$|^QUEUE$|^XFER$/) && ($VD_comments !~ /REMOTE/) )
 							{
 							if ( ($VD_term_reason !~ /AGENT|CALLER|QUEUETIMEOUT/) && ( ($VD_user =~ /VDAD|VDCL/) || (length($VD_user) < 1) ) )
 								{$VDLSQL_term_reason = "term_reason='ABANDON',";}
@@ -847,7 +850,7 @@ sub process_request {
 							}
 						else
 							{
-							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/) 
+							if ($VD_status =~ /^DONE$|^INCALL$|^XFER$/)
 								{$VDCLSQL_update = "term_reason='CALLER',";}
 							else
 								{
