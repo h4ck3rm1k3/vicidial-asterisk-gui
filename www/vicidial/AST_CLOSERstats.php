@@ -872,7 +872,7 @@ while ($i <= 96)
 	$hour_count[$i] = $row[0];
 	if ($hour_count[$i] > $hi_hour_count) {$hi_hour_count = $hour_count[$i];}
 	if ($hour_count[$i] > 0) {$last_full_record = $i;}
-	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP')';";
+	$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date $h:45:00' and call_date <= '$query_date $h:59:59' and campaign_id IN($group_SQL) and status IN('DROP','XDROP');";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);

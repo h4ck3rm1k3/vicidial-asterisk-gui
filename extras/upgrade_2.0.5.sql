@@ -485,3 +485,7 @@ UPDATE system_settings SET db_schema_version='1109';
 ALTER TABLE vicidial_campaigns MODIFY dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE','INBOUND_MAN') default 'MANUAL';
 
 UPDATE system_settings SET db_schema_version='1110';
+
+CREATE UNIQUE INDEX server_id on servers (server_id);
+
+UPDATE system_settings SET db_schema_version='1111';

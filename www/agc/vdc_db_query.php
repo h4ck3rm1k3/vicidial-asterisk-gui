@@ -1753,7 +1753,7 @@ if ($stage == "end")
 					$CLuniqueid		= $row[9];
 					}
 
-				$CLstage = preg_replace("/XFER|-/",'',$CLstage);
+				$CLstage = preg_replace("/XFER|CLOSER|-/",'',$CLstage);
 				if ($CLstage < 0.25) {$CLstage=0;}
 
 				$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
@@ -1828,6 +1828,7 @@ if ($stage == "end")
 		else
 			{
 			$SQLterm = "term_reason='$term_reason'";
+			$QL_term='';
 
 			if ( (ereg("NONE",$term_reason)) or (ereg("NONE",$VDterm_reason)) or (strlen($VDterm_reason) < 1) )
 				{
@@ -1849,6 +1850,7 @@ if ($stage == "end")
 				else
 					{
 					$SQLterm = "term_reason='AGENT'";
+					$QL_term = 'COMPLETEAGENT';
 					}
 				}
 
@@ -1857,6 +1859,26 @@ if ($stage == "end")
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			$affected_rows = mysql_affected_rows($link);
+
+			if ( (strlen($QL_term) > 0) and ($leaving_threeway > 0) )
+				{
+				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETEAGENT' and queue='$VDcampaign_id';";
+				$rslt=mysql_query($stmt, $linkB);
+				if ($DB) {echo "$stmt\n";}
+				$VAC_cc_ct = mysql_num_rows($rslt);
+				if ($VAC_cc_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$agent_complete	= $row[0];
+					}
+				if ($agent_complete < 1)
+					{
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkB);
+					$affected_rows = mysql_affected_rows($linkB);
+					}
+				}
 			}
 		}
 

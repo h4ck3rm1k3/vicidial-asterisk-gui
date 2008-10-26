@@ -95,6 +95,7 @@ vicidial_balance_active ENUM('Y','N') default 'N',
 balance_trunks_offlimits SMALLINT(5) UNSIGNED default '0'
 );
 
+CREATE UNIQUE INDEX server_id on servers (server_id);
 
 CREATE TABLE live_channels (
 channel VARCHAR(100) NOT NULL,
@@ -1324,7 +1325,7 @@ INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_of
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1110';
+UPDATE system_settings SET db_schema_version='1111';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

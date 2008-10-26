@@ -2211,15 +2211,15 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 		mainxfer_send_redirect('3WAY','','',tempvarattempt);
 
-		if (threeway_end == '0')
-			{
-			document.vicidial_form.xferchannel.value = '';
-			xfercall_send_hangup();
-
-			document.vicidial_form.callchannel.value = '';
-			document.vicidial_form.callserverip.value = '';
-			dialedcall_send_hangup();
-			}
+//		if (threeway_end == '0')
+//			{
+//			document.vicidial_form.xferchannel.value = '';
+//			xfercall_send_hangup();
+//
+//			document.vicidial_form.callchannel.value = '';
+//			document.vicidial_form.callserverip.value = '';
+//			dialedcall_send_hangup();
+//			}
 
 		if( document.images ) { document.images['livecall'].src = image_livecall_OFF.src;}
 		}
