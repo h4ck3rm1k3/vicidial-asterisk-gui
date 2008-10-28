@@ -489,3 +489,28 @@ UPDATE system_settings SET db_schema_version='1110';
 CREATE UNIQUE INDEX server_id on servers (server_id);
 
 UPDATE system_settings SET db_schema_version='1111';
+
+ALTER TABLE vicidial_closer_log ADD uniqueid VARCHAR(20) NOT NULL default '';
+
+CREATE INDEX uniqueid on vicidial_closer_log (uniqueid);
+
+UPDATE system_settings SET db_schema_version='1112';
+
+CREATE INDEX country_postal_code on vicidial_postal_codes (country_code,postal_code);
+CREATE INDEX country_area_code on vicidial_phone_codes (country_code,areacode);
+CREATE INDEX country_state on vicidial_phone_codes (country_code,state);
+CREATE INDEX country_code on vicidial_phone_codes (country_code);
+CREATE INDEX phone_list on vicidial_list (phone_number,list_id);
+CREATE INDEX list_phone on vicidial_list (list_id,phone_number);
+CREATE INDEX start_time on call_log (start_time);
+CREATE INDEX end_time on call_log (end_time);
+CREATE INDEX time on call_log (start_time,end_time);
+CREATE INDEX list_status on vicidial_list (list_id,status);
+CREATE INDEX time_user on vicidial_agent_log (event_time,user);
+CREATE INDEX date_user on vicidial_xfer_log (call_date,user);
+CREATE INDEX date_closer on vicidial_xfer_log (call_date,closer);
+CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
+CREATE INDEX phone_number on vicidial_closer_log (phone_number);
+CREATE INDEX date_user on vicidial_closer_log (call_date,user);
+
+UPDATE system_settings SET db_schema_version='1113';

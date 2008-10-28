@@ -392,9 +392,11 @@ queue_seconds DECIMAL(7,2) default '0',
 user_group VARCHAR(20),
 xfercallid INT(9) UNSIGNED,
 term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE',
+uniqueid VARCHAR(20) NOT NULL default '',
 index (lead_id),
 index (call_date),
-index (campaign_id)
+index (campaign_id),
+index (uniqueid)
 );
 
 CREATE TABLE vicidial_xfer_log (
@@ -1325,7 +1327,24 @@ INSERT INTO vicidial_phone_codes (country_code, country, areacode, state, GMT_of
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
-UPDATE system_settings SET db_schema_version='1111';
+CREATE INDEX country_postal_code on vicidial_postal_codes (country_code,postal_code);
+CREATE INDEX country_area_code on vicidial_phone_codes (country_code,areacode);
+CREATE INDEX country_state on vicidial_phone_codes (country_code,state);
+CREATE INDEX country_code on vicidial_phone_codes (country_code);
+CREATE INDEX phone_list on vicidial_list (phone_number,list_id);
+CREATE INDEX list_phone on vicidial_list (list_id,phone_number);
+CREATE INDEX start_time on call_log (start_time);
+CREATE INDEX end_time on call_log (end_time);
+CREATE INDEX time on call_log (start_time,end_time);
+CREATE INDEX list_status on vicidial_list (list_id,status);
+CREATE INDEX time_user on vicidial_agent_log (event_time,user);
+CREATE INDEX date_user on vicidial_xfer_log (call_date,user);
+CREATE INDEX date_closer on vicidial_xfer_log (call_date,closer);
+CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
+CREATE INDEX phone_number on vicidial_closer_log (phone_number);
+CREATE INDEX date_user on vicidial_closer_log (call_date,user);
+
+UPDATE system_settings SET db_schema_version='1113';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
