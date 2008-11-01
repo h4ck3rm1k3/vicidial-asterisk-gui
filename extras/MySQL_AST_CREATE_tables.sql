@@ -554,7 +554,7 @@ adaptive_dl_diff_target SMALLINT(3) default '0',
 concurrent_transfers ENUM('AUTO','1','2','3','4','5','6','7','8','9','10') default 'AUTO',
 auto_alt_dial ENUM('NONE','ALT_ONLY','ADDR3_ONLY','ALT_AND_ADDR3','ALT_AND_EXTENDED','ALT_AND_ADDR3_AND_EXTENDED','EXTENDED_ONLY') default 'NONE',
 auto_alt_dial_statuses VARCHAR(255) default ' B N NA DC -',
-agent_pause_codes_active ENUM('Y','N') default 'N',
+agent_pause_codes_active ENUM('Y','N','FORCE') default 'N',
 campaign_description VARCHAR(255),
 campaign_changedate DATETIME,
 campaign_stats_refresh ENUM('Y','N') default 'N',
@@ -801,7 +801,8 @@ user_group VARCHAR(20),
 comments VARCHAR(20),
 sub_status VARCHAR(6),
 index (lead_id),
-index (user)
+index (user),
+index (event_time)
 );
 
 CREATE TABLE vicidial_scripts (
@@ -1344,7 +1345,7 @@ CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
 CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 
-UPDATE system_settings SET db_schema_version='1113';
+UPDATE system_settings SET db_schema_version='1115';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

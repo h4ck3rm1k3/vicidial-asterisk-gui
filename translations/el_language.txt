@@ -356,7 +356,7 @@ VOICEMAIL|ΦΩΝ.ΤΑΧ.|
  OLD| ΠΑΛΑΙΟ|
 STOP|ΣΤΑΣΗ|
 START|ΕΝΑΡΞΗ|
-Pause|Παύση|
+ Pause | Παύση |
 Resume|Επανάληψη|
 Faster|Γρηγορότερα|
 Slower|Πιό αργά|

@@ -358,7 +358,7 @@ VOICEMAIL|POCZTAGŁOSOWA|
  OLD| STARY|
 STOP|BATENTE|
 START|START|
-Pause|Przerwa|
+ Pause | Przerwa |
 Resume|Ponów|
 Faster|Szybciej|
 Slower|Wolniej|

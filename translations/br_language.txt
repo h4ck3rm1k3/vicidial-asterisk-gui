@@ -356,7 +356,7 @@ VOICEMAIL|CAIXA POSTAL|
  OLD| VELHO|
 STOP|BATENTE|
 START|INICIAR|
-Pause|Pausa|
+ Pause | Pausa |
 Resume|Início|
 Faster|Mais rápido|
 Slower|Mais devagar|

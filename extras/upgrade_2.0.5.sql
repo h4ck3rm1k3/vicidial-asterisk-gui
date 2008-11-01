@@ -514,3 +514,11 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 
 UPDATE system_settings SET db_schema_version='1113';
+
+CREATE INDEX event_time on vicidial_agent_log (event_time);
+
+UPDATE system_settings SET db_schema_version='1114';
+
+ALTER TABLE vicidial_campaigns MODIFY agent_pause_codes_active ENUM('Y','N','FORCE') default 'N';
+
+UPDATE system_settings SET db_schema_version='1115';

@@ -333,6 +333,7 @@ To disable the On Hold Prompt, set the interval to 0||
 3-Way Call Outbound CallerID -<\/B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into||
 3-Way Call Outbound CallerID:||
 INBOUND_MAN allows the agent to place manual dial calls from a campaign list while being able to take inbound calls between manual dial calls||
+FORCE will force the agents to choose a PAUSE code if they click on the PAUSE button||
 
 
 ############################################################ CLIENT

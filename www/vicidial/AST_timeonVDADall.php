@@ -39,6 +39,8 @@
 # 80822-1222 - Added option for display of customer phone number
 # 81011-0335 - Fixed remote agent display bug
 # 81022-1500 - Added inbound call stats display option
+# 81029-1023 - Changed drop percent calculation for multi-stat reports
+# 81029-1706 - Added pause code display if enabled per campaign
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -103,8 +105,8 @@ while ($i < $qm_conf_ct)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-if (!isset($RR))			{$gRRroup=4;}
-if (!isset($group))			{$group='';}
+if (!isset($RR))			{$RR=40;}
+if (!isset($group))			{$group='';  $RR=40;}
 if (!isset($usergroup))		{$usergroup='';}
 if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
 if (!isset($UidORname))		{$UidORname=0;}	# 0=id, 1=name
@@ -114,6 +116,8 @@ if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
 if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($with_inbound))	{$with_inbound='N';}  # 0=no, 1=yes
+if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
+
 
 function get_server_load($windows = false) {
 $os = strtolower(PHP_OS);
@@ -334,9 +338,12 @@ echo "\n\n";
 if (!$group) {echo "<BR><BR>please select a campaign from the pulldown above</FORM>\n"; exit;}
 else
 {
+$multi_drop=0;
+
 if ($group=='XXXX-ALL-ACTIVE-XXXX') 
 	{
-	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses) from vicidial_campaigns;";
+	$multi_drop++;
+	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses),max(agent_pause_codes_active) from vicidial_campaigns;";
 
 	$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats;";
 	}
@@ -346,6 +353,7 @@ else
 
 	if ( (ereg('Y',$with_inbound)) and ($campaign_allow_inbound > 0) )
 		{
+		$multi_drop++;
 		$stmt = "select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 		$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
@@ -355,13 +363,13 @@ else
 			$closer_campaignsSQL = "'$closer_campaigns'";
 		if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
 
-		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
 
 		$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
 		}
 	else
 		{
-		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
 
 		$stmtB="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4 from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
 		}
@@ -391,6 +399,8 @@ $DIALtimeout =	$row[17];
 $DIALstatuses =	$row[18];
 	$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
 	$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
+$agent_pause_codes_active = $row[19];
+
 
 $stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
 if ($group=='XXXX-ALL-ACTIVE-XXXX') 
@@ -411,6 +421,17 @@ $diffONEMIN =	$row[4];
 $agentsONEMIN = $row[5];
 $balanceFILL =	$row[6];
 $answersTODAY = $row[7];
+if ($multi_drop > 0)
+	{
+	if ( ($dropsTODAY > 0) and ($answersTODAY > 0) )
+		{
+		$drpctTODAY = ( ($dropsTODAY / $answersTODAY) * 100);
+		$drpctTODAY = round($drpctTODAY, 2);
+		$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
+		}
+	else
+		{$drpctTODAY=0;}
+	}
 $VSCcat1 =		$row[8];
 $VSCcat1tally = $row[9];
 $VSCcat2 =		$row[10];
@@ -779,7 +800,16 @@ $HDcampaign =		"------------+";
 $HTcampaign =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$campaignord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\">CAMPAIGN</a>   |";
 $HDcalls =			"-------+";
 $HTcalls =			" CALLS |";
+$HDpause =	'';
+$HTpause =	'';
 
+if (!ereg("N",$agent_pause_codes_active))
+	{
+	$HDstatus =			"----------";
+	$HTstatus =			" STATUS   ";
+	$HDpause =			"-------+";
+	$HTpause =			" PAUSE |";
+	}
 if ($PHONEdisplay < 1)
 	{
 	$HDphone =	'';
@@ -815,8 +845,8 @@ if ($SERVdisplay < 1)
 
 
 
-$Aline  = "$HDbegin$HDstation$HDphone$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDcustphone$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
-$Bline  = "$HTbegin$HTstation$HTphone$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTcustphone$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
+$Aline  = "$HDbegin$HDstation$HDphone$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDpause$HDcustphone$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
+$Bline  = "$HTbegin$HTstation$HTphone$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTpause$HTcustphone$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
 $Aecho .= "$Aline";
 $Aecho .= "$Bline";
 $Aecho .= "$Aline";
@@ -876,6 +906,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		}
 
 $callerids='';
+$pausecode='';
 $stmt="select callerid,lead_id,phone_number from vicidial_auto_calls;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
@@ -1013,6 +1044,11 @@ $calls_to_list = mysql_num_rows($rslt);
 		$comments=		$Acomments[$i];
 		$calls_today =	sprintf("%-5s", $Acalls_today[$i]);
 
+		if (!ereg("N",$agent_pause_codes_active))
+			{$pausecode='       ';}
+		else
+			{$pausecode='';}
+
 		if (eregi("INCALL",$Lstatus)) 
 			{
 	### temporarily deactivate DEAD calls display until bug is fixed
@@ -1109,6 +1145,17 @@ $calls_to_list = mysql_num_rows($rslt);
 			}
 		if ($Lstatus=='PAUSED') 
 			{
+			if (!ereg("N",$agent_pause_codes_active))
+				{
+				$stmtC="select sub_status from vicidial_agent_log where user='$Luser' order by agent_log_id desc limit 1;";
+				$rsltC=mysql_query($stmtC,$link);
+				$rowC=mysql_fetch_row($rsltC);
+				$pausecode = sprintf("%-6s", $rowC[0]);
+				$pausecode = "$pausecode ";
+				}
+			else
+				{$pausecode='';}
+
 			if ($call_time_M_int >= 360) 
 				{$j++; continue;} 
 			else
@@ -1173,7 +1220,7 @@ $calls_to_list = mysql_num_rows($rslt);
 
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
+		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM $pausecode| $CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 
 		$j++;
 		}

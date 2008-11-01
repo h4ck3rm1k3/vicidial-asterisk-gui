@@ -358,7 +358,7 @@ VOICEMAIL|HLASOVÁ SCHRÁNKA|
  OLD| STARÁ|
 STOP|ZASTAVIŤ|
 START|SPUSTIŤ|
-Pause|Pauza|
+ Pause | Pauza |
 Resume|Pokračovať|
 Faster|Rýchlejšie|
 Slower|Pomalšie|

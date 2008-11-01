@@ -43,6 +43,7 @@
 # 80909-0843 - Added support for campaign-speccific DNC lists
 # 81021-0306 - Added Local channel logging support and while-to-if changes
 # 81026-1247 - Changed to allow for better remote agent calling
+# 81029-0522 - Changed to disallow queue_log logging of IVR calls
 #
 
 
@@ -693,7 +694,7 @@ sub process_request {
 					$sthA->finish();
 					##### END QUEUEMETRICS LOGGING LOOKUP #####
 					###########################################
-					if ($enable_queuemetrics_logging > 0)
+					if ( ($enable_queuemetrics_logging > 0) && ($VD_status !~ /IVR/) )
 						{
 						$VD_agent='NONE';
 						$secX = time();

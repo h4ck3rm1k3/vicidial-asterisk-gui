@@ -358,7 +358,7 @@ VOICEMAIL|Boite Vocale|
  OLD| ANCIEN|
 STOP|ARRÊT|
 START|DEBUT|
-Pause|Pause|
+ Pause | Pause |
 Resume|Résumé|
 Faster|Plus rapidement|
 Slower|Plus lentement|

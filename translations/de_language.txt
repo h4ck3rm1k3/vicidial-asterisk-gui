@@ -331,7 +331,7 @@ VOICEMAIL|VOICEMAIL|
  OLD| ALT|
 STOP|STOP|
 START|START|
-Pause|Pause|
+ Pause | Pause |
 Resume|WiederAufnehmen|
 Faster|Schneller|
 Slower|Langsamer|

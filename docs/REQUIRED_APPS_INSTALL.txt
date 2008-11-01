@@ -24,6 +24,8 @@ make
 make install
 PATH=$PATH:$HOME/bin:/usr/local/mysql/bin/
 export PATH
+PATH=$PATH:$HOME/bin:/usr/local/mysql/include/mysql/
+export PATH
 cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so /usr/lib/
 cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
 cd /usr/local/mysql-5.0.67
@@ -55,8 +57,8 @@ install Switch
 install Mail::Sendmail
 install Unicode::Map
 install Jcode
-install Spreadsheet::WriteExcel
 install OLE::Storage_Lite
+install Spreadsheet::WriteExcel
 install Proc::ProcessTable
 install IO::Scalar
 install Spreadsheet::ParseExcel

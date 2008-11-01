@@ -10,6 +10,7 @@ This feature was added to the package at the request of several users of VICIDIA
 
 This feature is functional on outbound manual dialing, auto dialing and inbound call handling as of 2008-06-30(SVN trunk 2.0.5).
 
+as of 2008-10-30, several validation and correction functions were added to the AST_cleanup_agent_log.pl script that is supposed to run every hour. These functions should clean up any queue_log errors that appear and cause QueueMetrics to display incorrect call totals.
 
 
 Here is a short summary of the needed steps to install QueueMetrics on your system:

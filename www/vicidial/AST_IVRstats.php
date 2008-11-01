@@ -94,6 +94,7 @@ while($i < $group_ct)
 	{
 	$group_string .= "$group[$i]|";
 	$group_SQL .= "'$group[$i]',";
+	$groupQS .= "&group[]=$group[$i]";
 	$i++;
 	}
 if ( (ereg("--NONE--",$group_string) ) or ($group_ct < 1) )
@@ -167,7 +168,11 @@ echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 	}
 echo "</SELECT>\n";
 echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ";
+echo "<a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | ";
+echo "<a href=\"./admin.php?ADD=999999\">REPORTS</a> | ";
+echo "<a href=\"./AST_CLOSERstats.php?query_date=$query_date&end_date=$end_date&shift=$shift$groupQS\">CLOSER REPORT</a> \n";
+echo "</FONT>\n";
 
 echo "</TD></TR>\n";
 echo "<TR><TD>\n";
@@ -336,19 +341,66 @@ while ($s < $p)
 
 ### put call flows and counts together for sorting again
 $s=0;
+
+echo "+--------+--------+--------+--------+\n";
+echo "| IVR    | QUEUE  | QDROP  | QDROP% | CALL PATH\n";
+echo "+--------+--------+--------+--------+------------\n";
+
 while ($s < $p)
 	{
+	$vcl_statuses = $MT;
+	$FLOWdrop[$s]=0;
+	$FLOWtotal[$s]=0;
+	$FLOWdropPCT[$s]=0;
 	$FLOWsummary = explode('__________',$FLOWunique_calls[$s]);
 	$FLOWsummary[0] = ($FLOWsummary[0] + 0);
 
 	$FLOWunique_calls_list[$s] = preg_replace("/,$/","",$FLOWunique_calls_list[$s]);
 
-	echo "$FLOWsummary[0]|$FLOWsummary[1]|$FLOWunique_calls_list[$s]\n";
+
+	##### Grab all records for the IVR for the specified time period
+	$stmt="select status from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and uniqueid IN($FLOWunique_calls_list[$s]);";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$vcl_statuses_to_print = mysql_num_rows($rslt);
+	$w=0;
+	while ($w < $vcl_statuses_to_print)
+		{
+		$row=mysql_fetch_row($rslt);
+		$vcl_statuses[$w] =		$row[0];
+		if (ereg("DROP",$vcl_statuses[$w]))
+			{$FLOWdrop[$s]++;}
+		$FLOWtotal[$s]++;
+		$w++;
+		}
+	if ( ($FLOWtotal[$s] > 0) and ($FLOWdrop[$s] > 0) )
+		{
+		$FLOWdropPCT[$s] = ( ($FLOWdrop[$s] / $FLOWtotal[$s]) * 100);
+		$FLOWdropPCT[$s] = round($FLOWdropPCT[$s], 2);
+		}
+	$FLOWsummary[0] =	sprintf("%6s", $FLOWsummary[0]);
+	$FLOWtotal[$s] =	sprintf("%6s", $FLOWtotal[$s]);
+	$FLOWdrop[$s] =		sprintf("%6s", $FLOWdrop[$s]);
+	$FLOWdropPCT[$s] =	sprintf("%6s", $FLOWdropPCT[$s]);
+	$FLOWsummary[1] = ereg_replace('----------',' / ',$FLOWsummary[1]);
+
+	echo "| $FLOWsummary[0] | $FLOWtotal[$s] | $FLOWdrop[$s] | $FLOWdropPCT[$s]%| $FLOWsummary[1]\n";
 
 	$s++;
 	}
 
+echo "+--------+--------+--------+--------+\n";
+
 exit;
+
+
+
+
+
+
+
+
+
 
 
 

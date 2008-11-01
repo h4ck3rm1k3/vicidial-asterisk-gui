@@ -104,6 +104,7 @@ while($i < $group_ct)
 	{
 	$group_string .= "$group[$i]|";
 	$group_SQL .= "'$group[$i]',";
+	$groupQS .= "&group[]=$group[$i]";
 	$i++;
 	}
 if ( (ereg("--NONE--",$group_string) ) or ($group_ct < 1) )
@@ -177,7 +178,11 @@ echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 	}
 echo "</SELECT>\n";
 echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | <a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ";
+echo "<a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | ";
+echo "<a href=\"./admin.php?ADD=999999\">REPORTS</a> | ";
+echo "<a href=\"./AST_IVRstats.php?query_date=$query_date&end_date=$end_date&shift=$shift$groupQS\">IVR REPORT</a> \n";
+echo "</FONT>\n";
 
 echo "</TD></TR>\n";
 echo "<TR><TD>\n";
@@ -301,6 +306,11 @@ $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE');";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$rowy=mysql_fetch_row($rslt);
+
 $stmt="select count(*) from live_inbound_log where start_time >= '$query_date_BEGIN' and start_time <= '$query_date_END' and comment_a IN($group_SQL) and comment_b='START';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
@@ -317,9 +327,21 @@ else
 	$average_call_seconds = round($average_call_seconds, 0);
 	$average_call_seconds =	sprintf("%10s", $average_call_seconds);
 	}
+$ANSWEREDcalls  =	sprintf("%10s", $rowy[0]);
+if ( ($rowy[0] < 1) or ($ANSWEREDcalls < 1) )
+	{$average_answer_seconds = '         0';}
+else
+	{
+	$average_answer_seconds = ($rowy[1] / $rowy[0]);
+	$average_answer_seconds = round($average_answer_seconds, 2);
+	$average_answer_seconds =	sprintf("%10s", $average_answer_seconds);
+	}
+
 
 echo "Total calls taken in to this In-Group:        $TOTALcalls\n";
 echo "Average Call Length for all Calls:            $average_call_seconds seconds\n";
+echo "Answered Calls:                               $ANSWEREDcalls\n";
+echo "Average queue time for Answered Calls:        $average_answer_seconds seconds\n";
 echo "Calls taken into the IVR for this In-Group:   $IVRcalls\n";
 
 echo "\n";
@@ -435,7 +457,7 @@ echo "Average QUEUE Length across all calls:        $average_total_queue_seconds
 
 
 ##############################
-#########  CALL HOLD TIME BREAKDONW IN SECONDS
+#########  CALL HOLD TIME BREAKDOWN IN SECONDS
 
 $TOTALcalls = 0;
 
@@ -494,6 +516,132 @@ $TOTALcalls =		sprintf("%10s", $TOTALcalls);
 
 echo "| $hd_0 $hd_5 $hd10 $hd15 $hd20 $hd25 $hd30 $hd35 $hd40 $hd45 $hd50 $hd55 $hd60 $hd90 $hd99 | $TOTALcalls |\n";
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+
+
+##############################
+#########  CALL ANSWERED TIME BREAKDOWN IN SECONDS
+
+$BDansweredCALLS = 0;
+
+echo "\n";
+echo "---------- CALL ANSWERED TIME BREAKDOWN IN SECONDS\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+echo "|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$BDansweredCALLS = ($BDansweredCALLS + $row[0]);
+
+	if ($row[1] == 0) {$ad_0 = ($ad_0 + $row[0]);}
+	if ( ($row[1] > 0) and ($row{1} <= 5) ) {$ad_5 = ($ad_5 + $row[0]);}
+	if ( ($row[1] > 5) and ($row{1} <= 10) ) {$ad10 = ($ad10 + $row[0]);}
+	if ( ($row[1] > 10) and ($row{1} <= 15) ) {$ad15 = ($ad15 + $row[0]);}
+	if ( ($row[1] > 15) and ($row{1} <= 20) ) {$ad20 = ($ad20 + $row[0]);}
+	if ( ($row[1] > 20) and ($row{1} <= 25) ) {$ad25 = ($ad25 + $row[0]);}
+	if ( ($row[1] > 25) and ($row{1} <= 30) ) {$ad30 = ($ad30 + $row[0]);}
+	if ( ($row[1] > 30) and ($row{1} <= 35) ) {$ad35 = ($ad35 + $row[0]);}
+	if ( ($row[1] > 35) and ($row{1} <= 40) ) {$ad40 = ($ad40 + $row[0]);}
+	if ( ($row[1] > 40) and ($row{1} <= 45) ) {$ad45 = ($ad45 + $row[0]);}
+	if ( ($row[1] > 45) and ($row{1} <= 50) ) {$ad50 = ($ad50 + $row[0]);}
+	if ( ($row[1] > 50) and ($row{1} <= 55) ) {$ad55 = ($ad55 + $row[0]);}
+	if ( ($row[1] > 55) and ($row{1} <= 60) ) {$ad60 = ($ad60 + $row[0]);}
+	if ( ($row[1] > 60) and ($row{1} <= 90) ) {$ad90 = ($ad90 + $row[0]);}
+	if ($row[1] > 90) {$ad99 = ($ad99 + $row[0]);}
+	$i++;
+	}
+
+$ad_0 =	sprintf("%5s", $ad_0);
+$ad_5 =	sprintf("%5s", $ad_5);
+$ad10 =	sprintf("%5s", $ad10);
+$ad15 =	sprintf("%5s", $ad15);
+$ad20 =	sprintf("%5s", $ad20);
+$ad25 =	sprintf("%5s", $ad25);
+$ad30 =	sprintf("%5s", $ad30);
+$ad35 =	sprintf("%5s", $ad35);
+$ad40 =	sprintf("%5s", $ad40);
+$ad45 =	sprintf("%5s", $ad45);
+$ad50 =	sprintf("%5s", $ad50);
+$ad55 =	sprintf("%5s", $ad55);
+$ad60 =	sprintf("%5s", $ad60);
+$ad90 =	sprintf("%5s", $ad90);
+$ad99 =	sprintf("%5s", $ad99);
+
+$BDansweredCALLS =		sprintf("%10s", $BDansweredCALLS);
+
+echo "| $ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+
+##############################
+#########  CALL DROP TIME BREAKDOWN IN SECONDS
+
+$BDdropCALLS = 0;
+
+echo "\n";
+echo "---------- CALL DROP TIME BREAKDOWN IN SECONDS\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+echo "|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status IN('DROP','XDROP') group by queue_seconds;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$BDdropCALLS = ($BDdropCALLS + $row[0]);
+
+	if ($row[1] == 0) {$dd_0 = ($dd_0 + $row[0]);}
+	if ( ($row[1] > 0) and ($row{1} <= 5) ) {$dd_5 = ($dd_5 + $row[0]);}
+	if ( ($row[1] > 5) and ($row{1} <= 10) ) {$dd10 = ($dd10 + $row[0]);}
+	if ( ($row[1] > 10) and ($row{1} <= 15) ) {$dd15 = ($dd15 + $row[0]);}
+	if ( ($row[1] > 15) and ($row{1} <= 20) ) {$dd20 = ($dd20 + $row[0]);}
+	if ( ($row[1] > 20) and ($row{1} <= 25) ) {$dd25 = ($dd25 + $row[0]);}
+	if ( ($row[1] > 25) and ($row{1} <= 30) ) {$dd30 = ($dd30 + $row[0]);}
+	if ( ($row[1] > 30) and ($row{1} <= 35) ) {$dd35 = ($dd35 + $row[0]);}
+	if ( ($row[1] > 35) and ($row{1} <= 40) ) {$dd40 = ($dd40 + $row[0]);}
+	if ( ($row[1] > 40) and ($row{1} <= 45) ) {$dd45 = ($dd45 + $row[0]);}
+	if ( ($row[1] > 45) and ($row{1} <= 50) ) {$dd50 = ($dd50 + $row[0]);}
+	if ( ($row[1] > 50) and ($row{1} <= 55) ) {$dd55 = ($dd55 + $row[0]);}
+	if ( ($row[1] > 55) and ($row{1} <= 60) ) {$dd60 = ($dd60 + $row[0]);}
+	if ( ($row[1] > 60) and ($row{1} <= 90) ) {$dd90 = ($dd90 + $row[0]);}
+	if ($row[1] > 90) {$dd99 = ($dd99 + $row[0]);}
+	$i++;
+	}
+
+$dd_0 =	sprintf("%5s", $dd_0);
+$dd_5 =	sprintf("%5s", $dd_5);
+$dd10 =	sprintf("%5s", $dd10);
+$dd15 =	sprintf("%5s", $dd15);
+$dd20 =	sprintf("%5s", $dd20);
+$dd25 =	sprintf("%5s", $dd25);
+$dd30 =	sprintf("%5s", $dd30);
+$dd35 =	sprintf("%5s", $dd35);
+$dd40 =	sprintf("%5s", $dd40);
+$dd45 =	sprintf("%5s", $dd45);
+$dd50 =	sprintf("%5s", $dd50);
+$dd55 =	sprintf("%5s", $dd55);
+$dd60 =	sprintf("%5s", $dd60);
+$dd90 =	sprintf("%5s", $dd90);
+$dd99 =	sprintf("%5s", $dd99);
+
+$BDdropCALLS =		sprintf("%10s", $BDdropCALLS);
+
+echo "| $dd_0 $dd_5 $dd10 $dd15 $dd20 $dd25 $dd30 $dd35 $dd40 $dd45 $dd50 $dd55 $dd60 $dd90 $dd99 | $BDdropCALLS |\n";
+echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
 
 
 
@@ -758,6 +906,7 @@ while ($i < $users_to_print)
 	$USERtotTALK_S = round($USERtotTALK_S, 0);
 	if ($USERtotTALK_S < 10) {$USERtotTALK_S = "0$USERtotTALK_S";}
 	$USERtotTALK_MS = "$USERtotTALK_M_int:$USERtotTALK_S";
+	$USERtotTALK_MS = eregi_replace('-','',$USERtotTALK_MS);
 	$USERtotTALK_MS =		sprintf("%8s", $USERtotTALK_MS);
 
 	$USERavgTALK_M = ($USERavgTALK / 60);
@@ -768,6 +917,7 @@ while ($i < $users_to_print)
 	$USERavgTALK_S = round($USERavgTALK_S, 0);
 	if ($USERavgTALK_S < 10) {$USERavgTALK_S = "0$USERavgTALK_S";}
 	$USERavgTALK_MS = "$USERavgTALK_M_int:$USERavgTALK_S";
+	$USERavgTALK_MS = eregi_replace('-','',$USERavgTALK_MS);
 	$USERavgTALK_MS =		sprintf("%6s", $USERavgTALK_MS);
 
 	echo "| $user - $full_name | $USERcalls | $USERtotTALK_MS | $USERavgTALK_MS |\n";
@@ -775,18 +925,21 @@ while ($i < $users_to_print)
 	$i++;
 	}
 
-if (!$TOTcalls) {$TOTcalls = 1;}
-$TOTavg = ($TOTtime / $TOTcalls);
-$TOTavg = round($TOTavg, 0);
-$TOTavg_M = ($TOTavg / 60);
-$TOTavg_M_int = round($TOTavg_M, 2);
-$TOTavg_M_int = intval("$TOTavg_M_int");
-$TOTavg_S = ($TOTavg_M - $TOTavg_M_int);
-$TOTavg_S = ($TOTavg_S * 60);
-$TOTavg_S = round($TOTavg_S, 0);
-if ($TOTavg_S < 10) {$TOTavg_S = "0$TOTavg_S";}
-$TOTavg_MS = "$TOTavg_M_int:$TOTavg_S";
-$TOTavg =		sprintf("%6s", $TOTavg_MS);
+if ($TOTcalls < 1) {$TOTcalls = 0; $TOTavg=0;}
+else
+	{
+	$TOTavg = ($TOTtime / $TOTcalls);
+	$TOTavg = round($TOTavg, 0);
+	$TOTavg_M = ($TOTavg / 60);
+	$TOTavg_M_int = round($TOTavg_M, 2);
+	$TOTavg_M_int = intval("$TOTavg_M_int");
+	$TOTavg_S = ($TOTavg_M - $TOTavg_M_int);
+	$TOTavg_S = ($TOTavg_S * 60);
+	$TOTavg_S = round($TOTavg_S, 0);
+	if ($TOTavg_S < 10) {$TOTavg_S = "0$TOTavg_S";}
+	$TOTavg_MS = "$TOTavg_M_int:$TOTavg_S";
+	$TOTavg =		sprintf("%6s", $TOTavg_MS);
+	}
 
 $TOTtime_M = ($TOTtime / 60);
 $TOTtime_M_int = round($TOTtime_M, 2);

@@ -358,7 +358,7 @@ VOICEMAIL|BUZÓN DE VOZ|
  OLD| VIEJO|
 STOP|PARADA|
 START|COMIENZO|
-Pause|Pausa|
+ Pause | Pausa |
 Resume|Comienzo|
 Faster|Más rápido|
 Slower|Más lento|

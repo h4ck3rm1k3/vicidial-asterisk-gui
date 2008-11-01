@@ -1047,7 +1047,6 @@ $available_only_ratio_tally = ereg_replace("[^NY]","",$available_only_ratio_tall
 $sys_perf_log = ereg_replace("[^NY]","",$sys_perf_log);
 $vicidial_balance_active = ereg_replace("[^NY]","",$vicidial_balance_active);
 $vd_server_logs = ereg_replace("[^NY]","",$vd_server_logs);
-$agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
 $campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 $disable_alter_custdata = ereg_replace("[^NY]","",$disable_alter_custdata);
 $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
@@ -1093,6 +1092,7 @@ $code = ereg_replace("[^0-9a-zA-Z]","",$code);
 $survey_no_response_action = ereg_replace("[^0-9a-zA-Z]","",$survey_no_response_action);
 $survey_ni_status = ereg_replace("[^0-9a-zA-Z]","",$survey_ni_status);
 $qc_get_record_launch = ereg_replace("[^0-9a-zA-Z]","",$qc_get_record_launch);
+$agent_pause_codes_active = ereg_replace("[^0-9a-zA-Z]","",$agent_pause_codes_active);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1459,11 +1459,13 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 81002-1101 - Added more in-group options and new DID section and user options
 # 81007-0936 - Added three_way_call_cid option to campaigns
 # 81012-1725 - Added INBOUND_MAN dial method allowing for manual list dialing with inbound calls
+# 81030-0348 - Added campaign pause code force option
+# 81030-2228 - Fixed DIDs creation issue
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-145';
-$build = '81012-1725';
+$admin_version = '2.0.5-147';
+$build = '81030-2228';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2867,7 +2869,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-agent_pause_codes_active">
 <BR>
-<B>Agent Pause Codes Active -</B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N.
+<B>Agent Pause Codes Active -</B> Allows agents to select a pause code when they click on the PAUSE button in vicidial.php. Pause codes are definable per campaign at the bottom of the campaign view detail screen and they are stored in the vicidial_agent_log table. Default is N. FORCE will force the agents to choose a PAUSE code if they click on the PAUSE button.
 
 <BR>
 <A NAME="vicidial_campaigns-disable_alter_custdata">
@@ -6697,7 +6699,7 @@ $ADD=3111;
 if ($ADD==2311)
 {
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-	$stmt="SELECT count(*) from vicidial_inbound_dids where did_id='$did_id';";
+	$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	if ($row[0] > 0)
@@ -6711,7 +6713,7 @@ if ($ADD==2311)
 			{echo "<br>DID NOT ADDED - there is already a DID in the system with this extension\n";}
 		else
 			{
-			 if ( (strlen($source_did) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$source_did)) or (eregi(' ',$did_pattern)) or (eregi("\+",$source_did)) )
+			 if ( (strlen($did_pattern) < 2) or (eregi(' ',$did_pattern)) or (eregi('-',$did_pattern)) or (eregi("\+",$did_pattern)) )
 				{
 				 echo "<br>DID NOT ADDED - Please go back and look at the data you entered\n";
 				 echo "<br>DID Extension must be between 2 and 20 characters in length and contain no ' -+'.\n";
@@ -6756,7 +6758,7 @@ if ($ADD==2411)
 		{echo "<br>DID NOT ADDED - there is already a DID in the system with this extension\n";}
 	else
 		{
-		 if ( (strlen($did_id) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$did_id)) or (eregi(' ',$did_pattern)) or (eregi("\+",$did_id)) )
+		 if ( (strlen($source_did) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$source_did)) or (eregi(' ',$did_pattern)) or (eregi("\+",$source_did)) )
 			{
 			 echo "<br>DID NOT ADDED - Please go back and look at the data you entered\n";
 			 echo "<br>DID Extension must be between 2 and 20 characters in length and contain no ' -+'.\n";
@@ -11469,7 +11471,7 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Use Campaign DNC List: </td><td align=left><select size=1 name=use_campaign_dnc><option>Y</option><option>N</option><option SELECTED>$use_campaign_dnc</option></select>$NWB#vicidial_campaigns-use_campaign_dnc$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Pause Codes Active: </td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Pause Codes Active: </td><td align=left><select size=1 name=agent_pause_codes_active><option>FORCE</option><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Stats Refresh: </td><td align=left><select size=1 name=campaign_stats_refresh><option>Y</option><option>N</option><option SELECTED>$campaign_stats_refresh</option></select>$NWB#vicidial_campaigns-campaign_stats_refresh$NWE</td></tr>\n";
 
