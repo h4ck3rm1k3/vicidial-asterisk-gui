@@ -22,6 +22,11 @@ exten => 2345,3,Hangup
 ; DID call routing process
 exten => _X.,1,AGI(agi-DID_route.agi)
 
+; FastAGI for VICIDIAL/astGUIclient call logging
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+
+
 [default]
 ; VICI-GROUP DIRECT SUPPORT LINE (VICIHELP[84244357])
 exten => _84244XXX,1,Dial(IAX2/vicihelp/${EXTEN:5})
