@@ -87,6 +87,7 @@
 # 81020-0237 - Added term_reason logging for all possible exits of the script
 # 81021-2315 - Changed and add queue_log logging
 # 81024-0006 - Changed LOOKUP to insert new lead if phone_number < 3 digits, changed queue_sec calculation
+# 81104-0301 - Changed code to alter callerIDnumber for remote agents to the number of the caller
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -1045,9 +1046,9 @@ if ($agent_search_method =~ /^SO|^LO/)
 				{
 				@aryA = $sthA->fetchrow_array;
 
-				$VDADconf_exten	= "$aryA[0]";
-				$VDADuser	= "$aryA[1]";
-				$VDADextension	= "$aryA[2]";
+				$VDADconf_exten	=	"$aryA[0]";
+				$VDADuser	=		"$aryA[1]";
+				$VDADextension	=	"$aryA[2]";
 				}
 			$sthA->finish();
 
@@ -1087,9 +1088,9 @@ if ($agent_search_method =~ /^SO|^LO/)
 					{
 					@aryA = $sthA->fetchrow_array;
 
-					$VDADconf_exten	= "$aryA[0]";
-					$VDADuser	= "$aryA[1]";
-					$VDADextension	= "$aryA[2]";
+					$VDADconf_exten	=	"$aryA[0]";
+					$VDADuser	=		"$aryA[1]";
+					$VDADextension	=	"$aryA[2]";
 				
 					$cbc++;
 					}
@@ -1187,6 +1188,21 @@ if ($agent_search_method =~ /^SO|^LO/)
 				if ($hour < 10) {$Fhour = "0$hour";}
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
+
+			if ($VDADextension =~ /^R\//)
+				{
+				### set the callerid to the ACQS value(calleridname)
+				## use these two lines for Asterisk 1.2 tree
+				$newcallerid = "\"$callerid <$phone_number>\"";
+				$AGI->set_callerid($newcallerid);
+				## use these two lines for Asterisk 1.0 tree
+			#	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+			#	print "SET CALLERIDNAME \"$calleridname\"\n";
+
+				print STDERR "Setting CID \"$newcallerid\"\n";
+				checkresult($result);
+				if ($AGILOG) {$agi_string = "callerID changed: \"$callerid\" \<$phone_number\>";   &agi_output;}
+				}
 
 			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$insert_lead_id' and call_date='$SQLdate';";
 			$affected_rows = $dbhA->do($stmtA);
@@ -1326,10 +1342,10 @@ if ($agent_search_method =~ /^LO|^LB/)
 				{
 				@aryA = $sthA->fetchrow_array;
 
-				$VDADconf_exten	= "$aryA[0]";
-				$VDADuser	= "$aryA[1]";
-				$VDADextension	= "$aryA[2]";
-				$VDADserver_ip	= "$aryA[3]";
+				$VDADconf_exten	=	"$aryA[0]";
+				$VDADuser	=		"$aryA[1]";
+				$VDADextension	=	"$aryA[2]";
+				$VDADserver_ip	=	"$aryA[3]";
 				}
 			$sthA->finish();
 
@@ -1369,10 +1385,10 @@ if ($agent_search_method =~ /^LO|^LB/)
 				while ($sthArows > $cbc)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$VDADconf_exten	= "$aryA[0]";
-					$VDADuser	= "$aryA[1]";
-					$VDADextension	= "$aryA[2]";
-					$VDADserver_ip	= "$aryA[3]";
+					$VDADconf_exten	=	"$aryA[0]";
+					$VDADuser	=		"$aryA[1]";
+					$VDADextension	=	"$aryA[2]";
+					$VDADserver_ip	=	"$aryA[3]";
 					$cbc++;
 					}
 				$sthA->finish();
@@ -1479,6 +1495,21 @@ if ($agent_search_method =~ /^LO|^LB/)
 				if ($hour < 10) {$Fhour = "0$hour";}
 				if ($min < 10) {$min = "0$min";}
 				if ($sec < 10) {$sec = "0$sec";}
+
+			if ($VDADextension =~ /^R\//)
+				{
+				### set the callerid to the ACQS value(calleridname)
+				## use these two lines for Asterisk 1.2 tree
+				$newcallerid = "\"$callerid <$phone_number>\"";
+				$AGI->set_callerid($newcallerid);
+				## use these two lines for Asterisk 1.0 tree
+			#	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+			#	print "SET CALLERIDNAME \"$calleridname\"\n";
+
+				print STDERR "Setting CID \"$newcallerid\"\n";
+				checkresult($result);
+				if ($AGILOG) {$agi_string = "callerID changed: \"$callerid\" \<$phone_number\>";   &agi_output;}
+				}
 
 			$stmtA = "UPDATE vicidial_closer_log set queue_seconds='$drop_timer' where lead_id = '$insert_lead_id' and call_date='$SQLdate';";
 			$affected_rows = $dbhA->do($stmtA);

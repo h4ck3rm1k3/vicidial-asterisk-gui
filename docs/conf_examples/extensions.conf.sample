@@ -147,6 +147,12 @@ exten => _9727NXXXXXX,3,Hangup
 exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 exten => _91NXXNXXXXXX,2,Dial(${TRUNKX}/${EXTEN:1},,To)
 exten => _91NXXNXXXXXX,3,Hangup
+
+; This is a loopback dialaround to allow for hearing of ringing for 3way calls
+exten => _881NXXNXXXXXX,1,Answer
+exten => _881NXXNXXXXXX,2,Dial(${TRUNKloop}/9${EXTEN:2},,To)
+exten => _881NXXNXXXXXX,3,Hangup
+
 ; dial a long distance outbound number through BINFONE
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ; exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN:1},55,To)

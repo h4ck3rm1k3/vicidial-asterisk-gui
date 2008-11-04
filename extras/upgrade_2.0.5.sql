@@ -522,3 +522,7 @@ UPDATE system_settings SET db_schema_version='1114';
 ALTER TABLE vicidial_campaigns MODIFY agent_pause_codes_active ENUM('Y','N','FORCE') default 'N';
 
 UPDATE system_settings SET db_schema_version='1115';
+
+ALTER TABLE vicidial_campaigns ADD three_way_dial_prefix VARCHAR(20) default '';
+
+UPDATE system_settings SET db_schema_version='1116';

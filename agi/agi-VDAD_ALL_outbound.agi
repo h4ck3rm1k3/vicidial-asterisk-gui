@@ -56,6 +56,7 @@
 # 80831-0353 - Added logging of alt_dial field
 # 80909-0603 - Added campaign-specific dnc option for outbound survey
 # 81020-0235 - Fixed Drop hangup bug and other small bugs
+# 81104-0255 - Changed code to alter callerIDnumber for remote agents to the number of the caller
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
@@ -907,9 +908,9 @@ if ($agent_search_method =~ /^SO|^LO/)
 				while ($sthArows > $rec_count)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$VDADconf_exten	= "$aryA[0]";
-					$VDADuser	= "$aryA[1]";
-					$VDADextension	= "$aryA[2]";
+					$VDADconf_exten	=	"$aryA[0]";
+					$VDADuser	=		"$aryA[1]";
+					$VDADextension	=	"$aryA[2]";
 					 $rec_count++;
 					}
 				$sthA->finish();
@@ -933,15 +934,30 @@ if ($agent_search_method =~ /^SO|^LO/)
 					while ($sthArows > $rec_count)
 						{
 						@aryA = $sthA->fetchrow_array;
-						$VDADconf_exten	= "$aryA[0]";
-						$VDADuser	= "$aryA[1]";
-						$VDADextension	= "$aryA[2]";
+						$VDADconf_exten	=	"$aryA[0]";
+						$VDADuser	=		"$aryA[1]";
+						$VDADextension	=	"$aryA[2]";
 						 $rec_count++;
 						}
 					$sthA->finish();
 
 					if ($AGILOG) {$agi_string = "FFFFFFFFFF vla OR SELECT |$callerid|$VDADuser|";   &agi_output;}
 					}
+				}
+
+			if ($VDADextension =~ /^R\//)
+				{
+				### set the callerid to the ACQS value(calleridname)
+				## use these two lines for Asterisk 1.2 tree
+				$newcallerid = "\"$calleridname <$VDADphone>\"";
+				$AGI->set_callerid($newcallerid);
+				## use these two lines for Asterisk 1.0 tree
+			#	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+			#	print "SET CALLERIDNAME \"$calleridname\"\n";
+
+				print STDERR "Setting CID \"$newcallerid\"\n";
+				checkresult($result);
+				if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" \<$VDADphone\>";   &agi_output;}
 				}
 
 			$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
@@ -1059,10 +1075,10 @@ if ($rec_countWAITrem < $concurrent_transfers)
 			while ($sthArows > $rec_count)
 				{
 				@aryA = $sthA->fetchrow_array;
-				$VDADconf_exten	= "$aryA[0]";
-				$VDADuser	= "$aryA[1]";
-				$VDADextension	= "$aryA[2]";
-				$VDADserver_ip	= "$aryA[3]";
+				$VDADconf_exten	=	"$aryA[0]";
+				$VDADuser	=		"$aryA[1]";
+				$VDADextension	=	"$aryA[2]";
+				$VDADserver_ip	=	"$aryA[3]";
 				 $rec_count++;
 				}
 			$sthA->finish();
@@ -1086,10 +1102,10 @@ if ($rec_countWAITrem < $concurrent_transfers)
 				while ($sthArows > $rec_count)
 					{
 					@aryA = $sthA->fetchrow_array;
-					$VDADconf_exten	= "$aryA[0]";
-					$VDADuser	= "$aryA[1]";
-					$VDADextension	= "$aryA[2]";
-					$VDADserver_ip	= "$aryA[3]";
+					$VDADconf_exten	=	"$aryA[0]";
+					$VDADuser	=		"$aryA[1]";
+					$VDADextension	=	"$aryA[2]";
+					$VDADserver_ip	=	"$aryA[3]";
 					 $rec_count++;
 					}
 				$sthA->finish();
@@ -1101,6 +1117,21 @@ if ($rec_countWAITrem < $concurrent_transfers)
 		$stmtA = "UPDATE vicidial_auto_calls set status='XFER', stage='XFER-$drop_timer' where callerid='$callerid';";
 		$affected_rows = $dbhA->do($stmtA);
 		if ($AGILOG) {$agi_string = "--    VDAD XFER REMOTE: |$affected_rows|update of vac table: $callerid\n|$stmtA|";   &agi_output;}
+
+		if ($VDADextension =~ /^R\//)
+			{
+			### set the callerid to the ACQS value(calleridname)
+			## use these two lines for Asterisk 1.2 tree
+			$newcallerid = "\"$calleridname <$VDADphone>\"";
+			$AGI->set_callerid($newcallerid);
+			## use these two lines for Asterisk 1.0 tree
+		#	print "SET CALLERID \"$calleridname\" <0000000000>\n";
+		#	print "SET CALLERIDNAME \"$calleridname\"\n";
+
+			print STDERR "Setting CID \"$newcallerid\"\n";
+			checkresult($result);
+			if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" \<$VDADphone\>";   &agi_output;}
+			}
 
 		$dbhA->disconnect();
 

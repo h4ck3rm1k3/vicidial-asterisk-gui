@@ -210,6 +210,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
    statistics to the agent performance detail report. Also added an option to
    force agents to enter a pause code(this is a campaign option)
 
+47. Added full MySQL error logging to vicidial agent web interface. Logs are 
+   written to the webserver.
 
 
 

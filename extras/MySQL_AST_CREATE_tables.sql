@@ -594,7 +594,8 @@ manual_dial_filter VARCHAR(50) default 'NONE',
 agent_clipboard_copy VARCHAR(50) default 'NONE',
 agent_extended_alt_dial ENUM('Y','N') default 'N',
 use_campaign_dnc ENUM('Y','N') default 'N',
-three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN'
+three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN',
+three_way_dial_prefix VARCHAR(20) default ''
 );
 
 CREATE TABLE vicidial_lists (
@@ -1345,7 +1346,7 @@ CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
 CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 
-UPDATE system_settings SET db_schema_version='1115';
+UPDATE system_settings SET db_schema_version='1116';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
