@@ -6,7 +6,7 @@
 [channels]
 group=1
 language=en
-signalling=pri_net
+signalling=pri_cpe
 usecallerid=yes
 callerid=asreceived
 callprogress=no
