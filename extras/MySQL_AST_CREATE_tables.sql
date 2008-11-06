@@ -494,7 +494,8 @@ group_name VARCHAR(40) NOT NULL,
 allowed_campaigns TEXT,
 qc_allowed_campaigns TEXT,
 qc_allowed_inbound_groups TEXT,
-group_shifts TEXT
+group_shifts TEXT,
+forced_timeclock_login ENUM('Y','N','ADMIN_EXEMPT') default 'N'
 );
 
 CREATE TABLE vicidial_campaigns (
@@ -1346,7 +1347,7 @@ CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
 CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 
-UPDATE system_settings SET db_schema_version='1116';
+UPDATE system_settings SET db_schema_version='1117';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

@@ -336,6 +336,8 @@ INBOUND_MAN allows the agent to place manual dial calls from a campaign list whi
 FORCE will force the agents to choose a PAUSE code if they click on the PAUSE button||
 3-Way Call Dial Prefix -<\/B> This defines what is used as the dial prefix for 3-way calls, default is empty so the campaign dial prefix is used, passthru so you can hear ringing is 88||
 3-Way Call Dial Prefix||
+Force Timeclock Login -<\/B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9||
+Force Timeclock Login||
 
 
 ############################################################ CLIENT
@@ -372,6 +374,7 @@ Active: ||
 Alt Count: ||
 Change this phone number to INACTIVE||
 Change this phone number to ACTIVE||
+YOU MUST LOG IN TO THE TIMECLOCK FIRST||
 
 
 ############################################################  MANAGER Manual

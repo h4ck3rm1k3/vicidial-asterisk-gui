@@ -526,3 +526,7 @@ UPDATE system_settings SET db_schema_version='1115';
 ALTER TABLE vicidial_campaigns ADD three_way_dial_prefix VARCHAR(20) default '';
 
 UPDATE system_settings SET db_schema_version='1116';
+
+ALTER TABLE vicidial_user_groups ADD forced_timeclock_login ENUM('Y','N','ADMIN_EXEMPT') default 'N';
+
+UPDATE system_settings SET db_schema_version='1117';

@@ -204,10 +204,11 @@
 # 81103-1427 - Added 3way call dial prefix
 # 81104-0140 - Added mysql error logging capability
 # 81104-1618 - Changed MySQL queries logging
+# 81106-0411 - Changedthe campaign login list behaviour
 #
 
-$version = '2.0.5-183';
-$build = '81104-1618';
+$version = '2.0.5-184';
+$build = '81106-0411';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=51;
 $one_mysql_log=0;
@@ -439,10 +440,16 @@ while ($camps_to_print > $o)
 		if ( (eregi("$VD_campaign",$rowx[0])) and (strlen($VD_campaign) == strlen($rowx[0])) )
 			{$camp_form_code .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0]$campname</option>\n";}
 		else
-			{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
+			{
+			if (!ereg('login_allowable_campaigns',$camp_form_code))
+				{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
+			}
 		}
 	else
-		{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
+		{
+		if (!ereg('login_allowable_campaigns',$camp_form_code))
+				{$camp_form_code .= "<option value=\"$rowx[0]\">$rowx[0]$campname</option>\n";}
+		}
 	$o++;
 	}
 $camp_form_code .= "</select>\n";
@@ -535,8 +542,9 @@ echo "<TD ALIGN=LEFT><INPUT TYPE=TEXT NAME=VD_login SIZE=10 MAXLENGTH=20 VALUE=\
 echo "<TR><TD ALIGN=RIGHT>User Password:  </TD>";
 echo "<TD ALIGN=LEFT><INPUT TYPE=PASSWORD NAME=VD_pass SIZE=10 MAXLENGTH=20 VALUE=\"$VD_pass\"></TD></TR>\n";
 echo "<TR><TD ALIGN=RIGHT>Campaign:  </TD>";
-echo "<TD ALIGN=LEFT>$camp_form_code</TD></TR>\n";
-echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></TD></TR>\n";
+echo "<TD ALIGN=LEFT><span id=\"LogiNCamPaigns\">$camp_form_code</span></TD></TR>\n";
+echo "<TR><TD ALIGN=CENTER COLSPAN=2><INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT> &nbsp; \n";
+echo "<span id=\"LogiNReseT\"><INPUT TYPE=BUTTON VALUE=\"Refresh Campaign List\" OnClick=\"login_allowable_campaigns()\"></span></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2><font size=1><BR>VERSION: $version &nbsp; &nbsp; &nbsp; BUILD: $build</TD></TR>\n";
 echo "</TABLE>\n";
 echo "</FORM>\n\n";

@@ -169,10 +169,11 @@
 # 81020-1459 - Fixed bugs in queue_log logging
 # 81104-0134 - Added mysql error logging capability
 # 81104-1617 - Added multi-retry for some vicidial_live_agents table MySQL queries
+# 81106-0410 - Added force_timeclock_login option to LoginCampaigns function
 #
 
-$version = '2.0.5-87';
-$build = '81104-1617';
+$version = '2.0.5-88';
+$build = '81106-0410';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=180;
 $one_mysql_log=0;
@@ -342,7 +343,7 @@ $agents='@agents';
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin FROM system_settings;";
+$stmt = "SELECT use_non_latin,timeclock_end_of_day FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00001',$user,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -351,7 +352,8 @@ $i=0;
 while ($i < $qm_conf_ct)
 	{
 	$row=mysql_fetch_row($rslt);
-	$non_latin =					$row[0];
+	$non_latin =				$row[0];
+	$timeclock_end_of_day =		$row[1];
 	$i++;
 	}
 ##### END SETTINGS LOOKUP #####
@@ -439,52 +441,93 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 if ($ACTION == 'LogiNCamPaigns')
 {
 	if ( (strlen($user)<1) )
-	{
-	echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
-	echo "<option value=\"\">-- ERROR --</option>\n";
-	echo "</select>\n";
-	exit;
-	}
+		{
+		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+		echo "<option value=\"\">-- ERROR --</option>\n";
+		echo "</select>\n";
+		exit;
+		}
 	else
-	{
-	echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
-	echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
-
-	$stmt="SELECT user_group from vicidial_users where user='$user' and pass='$pass'";
-	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
-	$rslt=mysql_query($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00004',$user,$server_ip,$session_name,$one_mysql_log);}
-	$row=mysql_fetch_row($rslt);
-	$VU_user_group=$row[0];
-
-	$LOGallowed_campaignsSQL='';
-
-	$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$VU_user_group';";
-	$rslt=mysql_query($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00005',$user,$server_ip,$session_name,$one_mysql_log);}
-	$row=mysql_fetch_row($rslt);
-	if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
 		{
-		$LOGallowed_campaignsSQL = eregi_replace(' -','',$row[0]);
-		$LOGallowed_campaignsSQL = eregi_replace(' ',"','",$LOGallowed_campaignsSQL);
-		$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
-		}
+		$stmt="SELECT user_group,user_level from vicidial_users where user='$user' and pass='$pass'";
+		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00004',$user,$server_ip,$session_name,$one_mysql_log);}
+		$row=mysql_fetch_row($rslt);
+		$VU_user_group=$row[0];
+		$VU_user_level=$row[1];
 
-	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
-	$rslt=mysql_query($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00006',$user,$server_ip,$session_name,$one_mysql_log);}
-	$camps_to_print = mysql_num_rows($rslt);
+		$LOGallowed_campaignsSQL='';
 
-	$o=0;
-	while ($camps_to_print > $o) 
-		{
-		$rowx=mysql_fetch_row($rslt);
-		echo "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$o++;
+		$stmt="SELECT allowed_campaigns,forced_timeclock_login from vicidial_user_groups where user_group='$VU_user_group';";
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00005',$user,$server_ip,$session_name,$one_mysql_log);}
+		$row=mysql_fetch_row($rslt);
+		$forced_timeclock_login = $row[1];
+		if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
+			{
+			$LOGallowed_campaignsSQL = eregi_replace(' -','',$row[0]);
+			$LOGallowed_campaignsSQL = eregi_replace(' ',"','",$LOGallowed_campaignsSQL);
+			$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
+			}
+
+		$show_campaign_list=1;
+		### CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
+		if ( (ereg('Y',$forced_timeclock_login)) or ( (ereg('ADMIN_EXEMPT',$forced_timeclock_login)) and ($VU_user_level < 8) ) )
+			{
+			$last_agent_event='';
+			$HHMM = date("Hi");
+			$HHteod = substr($timeclock_end_of_day,0,2);
+			$MMteod = substr($timeclock_end_of_day,2,2);
+
+			if ($HHMM < $timeclock_end_of_day)
+				{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d")-1, date("Y"));}
+			else
+				{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d"), date("Y"));}
+
+			$EoDdate = date("Y-m-d H:i:s", $EoD);
+
+			##### grab timeclock logged-in time for each user #####
+			$stmt="SELECT event from vicidial_timeclock_log where user='$user' and event_epoch >= '$EoD' order by timeclock_id desc limit 1;";
+			if ($DB>0) {echo "|$stmt|";}
+			$rslt=mysql_query($stmt, $link);
+			$events_to_parse = mysql_num_rows($rslt);
+			if ($events_to_parse > 0)
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$last_agent_event = $rowx[0];
+				}
+			if ( (strlen($last_agent_event)<2) or (ereg('LOGOUT',$last_agent_event)) )
+				{$show_campaign_list=0;}
+			}
+
+		if ($show_campaign_list > 0)
+			{
+			$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00006',$user,$server_ip,$session_name,$one_mysql_log);}
+			$camps_to_print = mysql_num_rows($rslt);
+
+			echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
+			echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
+
+			$o=0;
+			while ($camps_to_print > $o) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				echo "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				$o++;
+				}
+			echo "</select>\n";
+			}
+		else
+			{
+			echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+			echo "<option value=\"\">-- YOU MUST LOG IN TO THE TIMECLOCK FIRST --</option>\n";
+			echo "</select>\n";
+			}
+		exit;
 		}
-	echo "</select>\n";
-	exit;
-	}
 }
 
 

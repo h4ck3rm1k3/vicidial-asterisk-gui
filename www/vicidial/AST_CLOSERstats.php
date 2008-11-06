@@ -16,6 +16,7 @@
 # 80722-2149 - Added Status Category stats
 # 81015-0705 - Added IVR calls count
 # 81024-0037 - Added multi-select inbound-groups
+# 81105-2118 - Added Answered calls 15-minute breakdown
 #
 
 require("dbconnect.php");
@@ -577,7 +578,8 @@ $ad99 =	sprintf("%5s", $ad99);
 
 $BDansweredCALLS =		sprintf("%10s", $BDansweredCALLS);
 
-echo "| $ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |\n";
+$answeredTOTALs = "$ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |";
+echo "| $answeredTOTALs\n";
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
 
 
@@ -1163,6 +1165,114 @@ echo "+------+------------------------------------------------------------------
 
 
 
+
+
+
+##############################
+#########  CALL ANSWERED TIME BREAKDOWN IN SECONDS
+
+$BDansweredCALLS = 0;
+
+echo "\n";
+echo "---------- CALL ANSWERED TIME BREAKDOWN IN SECONDS\n";
+echo "+------+-------------------------------------------------------------------------------------------+------------+\n";
+echo "| HOUR |     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+echo "+------+-------------------------------------------------------------------------------------------+------------+\n";
+
+
+
+
+$ZZ = '00';
+$i=0;
+$h=4;
+$hour= -1;
+$no_lines_yet=1;
+
+while ($i <= 96)
+	{
+	$char_counter=0;
+	$time = '      ';
+	if ($h >= 4) 
+		{
+		$hour++;
+		$h=0;
+		if ($hour < 10) {$hour = "0$hour";}
+		$time = "+$hour$ZZ+";
+		$SQLtime = "$hour:$ZZ:00";
+		$SQLtimeEND = "$hour:15:00";
+		}
+	if ($h == 1) {$time = "   15 ";   $SQLtime = "$hour:15:00";   $SQLtimeEND = "$hour:30:00";}
+	if ($h == 2) {$time = "   30 ";   $SQLtime = "$hour:30:00";   $SQLtimeEND = "$hour:45:00";}
+	if ($h == 3) 
+		{
+		$time = "   45 ";
+		$SQLtime = "$hour:45:00";
+		$hourEND = ($hour + 1);
+		if ($hourEND < 10) {$hourEND = "0$hourEND";}
+		if ($hourEND > 23) {$SQLtimeEND = "23:59:59";}
+		else {$SQLtimeEND = "$hourEND:00:00";}
+		}
+
+	$ad_0=0; $ad_5=0; $ad10=0; $ad15=0; $ad20=0; $ad25=0; $ad30=0; $ad35=0;
+	$ad40=0; $ad45=0; $ad50=0; $ad55=0; $ad60=0; $ad90=0; $ad99=0; $BDansweredCALLS=0; 
+
+	$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date $SQLtime' and call_date < '$query_date $SQLtimeEND' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$reasons_to_print = mysql_num_rows($rslt);
+	$j=0;
+	while ($j < $reasons_to_print)
+		{
+		$row=mysql_fetch_row($rslt);
+
+		$BDansweredCALLS = ($BDansweredCALLS + $row[0]);
+
+		if ($row[1] == 0) {$ad_0 = ($ad_0 + $row[0]);}
+		if ( ($row[1] > 0) and ($row{1} <= 5) ) {$ad_5 = ($ad_5 + $row[0]);}
+		if ( ($row[1] > 5) and ($row{1} <= 10) ) {$ad10 = ($ad10 + $row[0]);}
+		if ( ($row[1] > 10) and ($row{1} <= 15) ) {$ad15 = ($ad15 + $row[0]);}
+		if ( ($row[1] > 15) and ($row{1} <= 20) ) {$ad20 = ($ad20 + $row[0]);}
+		if ( ($row[1] > 20) and ($row{1} <= 25) ) {$ad25 = ($ad25 + $row[0]);}
+		if ( ($row[1] > 25) and ($row{1} <= 30) ) {$ad30 = ($ad30 + $row[0]);}
+		if ( ($row[1] > 30) and ($row{1} <= 35) ) {$ad35 = ($ad35 + $row[0]);}
+		if ( ($row[1] > 35) and ($row{1} <= 40) ) {$ad40 = ($ad40 + $row[0]);}
+		if ( ($row[1] > 40) and ($row{1} <= 45) ) {$ad45 = ($ad45 + $row[0]);}
+		if ( ($row[1] > 45) and ($row{1} <= 50) ) {$ad50 = ($ad50 + $row[0]);}
+		if ( ($row[1] > 50) and ($row{1} <= 55) ) {$ad55 = ($ad55 + $row[0]);}
+		if ( ($row[1] > 55) and ($row{1} <= 60) ) {$ad60 = ($ad60 + $row[0]);}
+		if ( ($row[1] > 60) and ($row{1} <= 90) ) {$ad90 = ($ad90 + $row[0]);}
+		if ($row[1] > 90) {$ad99 = ($ad99 + $row[0]);}
+		$j++;
+		}
+
+	$ad_0 =	sprintf("%5s", $ad_0);
+	$ad_5 =	sprintf("%5s", $ad_5);
+	$ad10 =	sprintf("%5s", $ad10);
+	$ad15 =	sprintf("%5s", $ad15);
+	$ad20 =	sprintf("%5s", $ad20);
+	$ad25 =	sprintf("%5s", $ad25);
+	$ad30 =	sprintf("%5s", $ad30);
+	$ad35 =	sprintf("%5s", $ad35);
+	$ad40 =	sprintf("%5s", $ad40);
+	$ad45 =	sprintf("%5s", $ad45);
+	$ad50 =	sprintf("%5s", $ad50);
+	$ad55 =	sprintf("%5s", $ad55);
+	$ad60 =	sprintf("%5s", $ad60);
+	$ad90 =	sprintf("%5s", $ad90);
+	$ad99 =	sprintf("%5s", $ad99);
+
+	$BDansweredCALLS =		sprintf("%10s", $BDansweredCALLS);
+
+	echo "|$time| $ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |\n";
+
+
+	$i++;
+	$h++;
+	}
+
+echo "+------+-------------------------------------------------------------------------------------------+------------+\n";
+echo "|TOTALS| $answeredTOTALs\n";
+echo "+------+-------------------------------------------------------------------------------------------+------------+\n";
 
 
 $ENDtime = date("U");

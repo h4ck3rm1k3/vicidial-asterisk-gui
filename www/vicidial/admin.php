@@ -847,6 +847,8 @@ if (isset($_GET["three_way_call_cid"]))				{$three_way_call_cid=$_GET["three_way
 	elseif (isset($_POST["three_way_call_cid"]))	{$three_way_call_cid=$_POST["three_way_call_cid"];}
 if (isset($_GET["three_way_dial_prefix"]))			{$three_way_dial_prefix=$_GET["three_way_dial_prefix"];}
 	elseif (isset($_POST["three_way_dial_prefix"]))	{$three_way_dial_prefix=$_POST["three_way_dial_prefix"];}
+if (isset($_GET["forced_timeclock_login"]))				{$forced_timeclock_login=$_GET["forced_timeclock_login"];}
+	elseif (isset($_POST["forced_timeclock_login"]))	{$forced_timeclock_login=$_POST["forced_timeclock_login"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -1211,6 +1213,7 @@ $three_way_call_cid = ereg_replace("[^-\_0-9a-zA-Z]","",$three_way_call_cid);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
+$forced_timeclock_login = ereg_replace("[^-\,\_0-9a-zA-Z]","",$forced_timeclock_login);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
@@ -3564,6 +3567,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_user_groups-group_name">
 <BR>
 <B>Group Name -</B> This is the description of the vicidial user group max of 40 characters.
+
+<BR>
+<A NAME="vicidial_user_groups-forced_timeclock_login">
+<BR>
+<B>Force Timeclock Login -</B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9.
 
 <BR>
 <A NAME="vicidial_user_groups-group_shifts">
@@ -8546,7 +8554,7 @@ if ($ADD==411111)
 			$GROUP_shifts .= "$group_shifts[$p] ";
 			$p++;
 			}
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts' where user_group='$OLDuser_group';";
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
@@ -13984,9 +13992,10 @@ if ($ADD==311111)
 	$stmt="SELECT * from vicidial_user_groups where user_group='$user_group';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$user_group =		$row[0];
-	$group_name =		$row[1];
-	$GROUP_shifts =		$row[5];
+	$user_group =				$row[0];
+	$group_name =				$row[1];
+	$GROUP_shifts =				$row[5];
+	$forced_timeclock_login =	$row[6];
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br>MODIFY A USERS GROUP ENTRY<form action=$PHP_SELF method=POST>\n";
@@ -13995,6 +14004,9 @@ if ($ADD==311111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20 value=\"$user_group\"> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Force Timeclock Login: </td><td align=left><select size=1 name=forced_timeclock_login><option SELECTED>N</option><option>Y</option><option>ADMIN_EXEMPT</option><option SELECTED>$forced_timeclock_login</option></select>$NWB#vicidial_user_groups-forced_timeclock_login$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: <BR>$NWB#vicidial_user_groups-allowed_campaigns$NWE</td><td align=left>\n";
 	echo "$campaigns_list <BR>&nbsp;";
 	echo "</td></tr>\n";
