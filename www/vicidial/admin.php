@@ -13750,7 +13750,7 @@ if ($ADD==3111)
 
 	echo "</table></center><br>\n";
 
-	echo "<a href=\"./AST_CLOSERstats.php?group=$group_id\">Click here to see a report for this inbound group</a><BR><BR>\n";
+	echo "<a href=\"./AST_CLOSERstats.php?group[]=$group_id\">Click here to see a report for this inbound group</a><BR><BR>\n";
 
 	echo "<center><b>\n";
 

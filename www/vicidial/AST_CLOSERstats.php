@@ -329,6 +329,13 @@ else
 	$average_call_seconds =	sprintf("%10s", $average_call_seconds);
 	}
 $ANSWEREDcalls  =	sprintf("%10s", $rowy[0]);
+if ( ($ANSWEREDcalls < 1) or ($TOTALcalls < 1) )
+	{$ANSWEREDpercent = '0';}
+else
+	{
+	$ANSWEREDpercent = (($ANSWEREDcalls / $TOTALcalls) * 100);
+	$ANSWEREDpercent = round($ANSWEREDpercent, 0);
+	}
 if ( ($rowy[0] < 1) or ($ANSWEREDcalls < 1) )
 	{$average_answer_seconds = '         0';}
 else
@@ -341,7 +348,7 @@ else
 
 echo "Total calls taken in to this In-Group:        $TOTALcalls\n";
 echo "Average Call Length for all Calls:            $average_call_seconds seconds\n";
-echo "Answered Calls:                               $ANSWEREDcalls\n";
+echo "Answered Calls:                               $ANSWEREDcalls  $ANSWEREDpercent%\n";
 echo "Average queue time for Answered Calls:        $average_answer_seconds seconds\n";
 echo "Calls taken into the IVR for this In-Group:   $IVRcalls\n";
 
@@ -372,8 +379,15 @@ else
 	$average_hold_seconds = round($average_hold_seconds, 0);
 	$average_hold_seconds =	sprintf("%10s", $average_hold_seconds);
 	}
+if ( ($ANSWEREDcalls < 1) or ($DROPcalls < 1) )
+	{$DROP_ANSWEREDpercent = '0';}
+else
+	{
+	$DROP_ANSWEREDpercent = (($DROPcalls / $ANSWEREDcalls) * 100);
+	$DROP_ANSWEREDpercent = round($DROP_ANSWEREDpercent, 0);
+	}
 
-echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
+echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%               drop/answered: $DROP_ANSWEREDpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
 
 
@@ -521,69 +535,6 @@ echo "+-------------------------------------------------------------------------
 
 
 ##############################
-#########  CALL ANSWERED TIME BREAKDOWN IN SECONDS
-
-$BDansweredCALLS = 0;
-
-echo "\n";
-echo "---------- CALL ANSWERED TIME BREAKDOWN IN SECONDS\n";
-echo "+-------------------------------------------------------------------------------------------+------------+\n";
-echo "|     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
-echo "+-------------------------------------------------------------------------------------------+------------+\n";
-
-$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$reasons_to_print = mysql_num_rows($rslt);
-$i=0;
-while ($i < $reasons_to_print)
-	{
-	$row=mysql_fetch_row($rslt);
-
-	$BDansweredCALLS = ($BDansweredCALLS + $row[0]);
-
-	if ($row[1] == 0) {$ad_0 = ($ad_0 + $row[0]);}
-	if ( ($row[1] > 0) and ($row{1} <= 5) ) {$ad_5 = ($ad_5 + $row[0]);}
-	if ( ($row[1] > 5) and ($row{1} <= 10) ) {$ad10 = ($ad10 + $row[0]);}
-	if ( ($row[1] > 10) and ($row{1} <= 15) ) {$ad15 = ($ad15 + $row[0]);}
-	if ( ($row[1] > 15) and ($row{1} <= 20) ) {$ad20 = ($ad20 + $row[0]);}
-	if ( ($row[1] > 20) and ($row{1} <= 25) ) {$ad25 = ($ad25 + $row[0]);}
-	if ( ($row[1] > 25) and ($row{1} <= 30) ) {$ad30 = ($ad30 + $row[0]);}
-	if ( ($row[1] > 30) and ($row{1} <= 35) ) {$ad35 = ($ad35 + $row[0]);}
-	if ( ($row[1] > 35) and ($row{1} <= 40) ) {$ad40 = ($ad40 + $row[0]);}
-	if ( ($row[1] > 40) and ($row{1} <= 45) ) {$ad45 = ($ad45 + $row[0]);}
-	if ( ($row[1] > 45) and ($row{1} <= 50) ) {$ad50 = ($ad50 + $row[0]);}
-	if ( ($row[1] > 50) and ($row{1} <= 55) ) {$ad55 = ($ad55 + $row[0]);}
-	if ( ($row[1] > 55) and ($row{1} <= 60) ) {$ad60 = ($ad60 + $row[0]);}
-	if ( ($row[1] > 60) and ($row{1} <= 90) ) {$ad90 = ($ad90 + $row[0]);}
-	if ($row[1] > 90) {$ad99 = ($ad99 + $row[0]);}
-	$i++;
-	}
-
-$ad_0 =	sprintf("%5s", $ad_0);
-$ad_5 =	sprintf("%5s", $ad_5);
-$ad10 =	sprintf("%5s", $ad10);
-$ad15 =	sprintf("%5s", $ad15);
-$ad20 =	sprintf("%5s", $ad20);
-$ad25 =	sprintf("%5s", $ad25);
-$ad30 =	sprintf("%5s", $ad30);
-$ad35 =	sprintf("%5s", $ad35);
-$ad40 =	sprintf("%5s", $ad40);
-$ad45 =	sprintf("%5s", $ad45);
-$ad50 =	sprintf("%5s", $ad50);
-$ad55 =	sprintf("%5s", $ad55);
-$ad60 =	sprintf("%5s", $ad60);
-$ad90 =	sprintf("%5s", $ad90);
-$ad99 =	sprintf("%5s", $ad99);
-
-$BDansweredCALLS =		sprintf("%10s", $BDansweredCALLS);
-
-$answeredTOTALs = "$ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |";
-echo "| $answeredTOTALs\n";
-echo "+-------------------------------------------------------------------------------------------+------------+\n";
-
-
-##############################
 #########  CALL DROP TIME BREAKDOWN IN SECONDS
 
 $BDdropCALLS = 0;
@@ -643,6 +594,214 @@ $BDdropCALLS =		sprintf("%10s", $BDdropCALLS);
 
 echo "| $dd_0 $dd_5 $dd10 $dd15 $dd20 $dd25 $dd30 $dd35 $dd40 $dd45 $dd50 $dd55 $dd60 $dd90 $dd99 | $BDdropCALLS |\n";
 echo "+-------------------------------------------------------------------------------------------+------------+\n";
+
+
+
+
+##############################
+#########  CALL ANSWERED TIME AND PERCENT BREAKDOWN IN SECONDS
+
+$BDansweredCALLS = 0;
+
+echo "\n";
+echo "           CALL ANSWERED TIME AND PERCENT BREAKDOWN IN SECONDS\n";
+echo "          +-------------------------------------------------------------------------------------------+------------+\n";
+echo "          |     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
+echo "----------+-------------------------------------------------------------------------------------------+------------+\n";
+
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$reasons_to_print = mysql_num_rows($rslt);
+$i=0;
+while ($i < $reasons_to_print)
+	{
+	$row=mysql_fetch_row($rslt);
+
+	$BDansweredCALLS = ($BDansweredCALLS + $row[0]);
+	
+	### Get interval totals
+	if ($row[1] == 0) {$ad_0 = ($ad_0 + $row[0]);}
+	if ( ($row[1] > 0) and ($row{1} <= 5) ) {$ad_5 = ($ad_5 + $row[0]);}
+	if ( ($row[1] > 5) and ($row{1} <= 10) ) {$ad10 = ($ad10 + $row[0]);}
+	if ( ($row[1] > 10) and ($row{1} <= 15) ) {$ad15 = ($ad15 + $row[0]);}
+	if ( ($row[1] > 15) and ($row{1} <= 20) ) {$ad20 = ($ad20 + $row[0]);}
+	if ( ($row[1] > 20) and ($row{1} <= 25) ) {$ad25 = ($ad25 + $row[0]);}
+	if ( ($row[1] > 25) and ($row{1} <= 30) ) {$ad30 = ($ad30 + $row[0]);}
+	if ( ($row[1] > 30) and ($row{1} <= 35) ) {$ad35 = ($ad35 + $row[0]);}
+	if ( ($row[1] > 35) and ($row{1} <= 40) ) {$ad40 = ($ad40 + $row[0]);}
+	if ( ($row[1] > 40) and ($row{1} <= 45) ) {$ad45 = ($ad45 + $row[0]);}
+	if ( ($row[1] > 45) and ($row{1} <= 50) ) {$ad50 = ($ad50 + $row[0]);}
+	if ( ($row[1] > 50) and ($row{1} <= 55) ) {$ad55 = ($ad55 + $row[0]);}
+	if ( ($row[1] > 55) and ($row{1} <= 60) ) {$ad60 = ($ad60 + $row[0]);}
+	if ( ($row[1] > 60) and ($row{1} <= 90) ) {$ad90 = ($ad90 + $row[0]);}
+	if ($row[1] > 90) {$ad99 = ($ad99 + $row[0]);}
+	$i++;
+	}
+
+### Calculate cumulative totals
+$Cad_0 =$ad_0;
+$Cad_5 =($Cad_0 + $ad_5);
+$Cad10 =($Cad_5 + $ad10);
+$Cad15 =($Cad10 + $ad15);
+$Cad20 =($Cad15 + $ad20);
+$Cad25 =($Cad20 + $ad25);
+$Cad30 =($Cad25 + $ad30);
+$Cad35 =($Cad30 + $ad35);
+$Cad40 =($Cad35 + $ad40);
+$Cad45 =($Cad40 + $ad45);
+$Cad50 =($Cad45 + $ad50);
+$Cad55 =($Cad50 + $ad55);
+$Cad60 =($Cad55 + $ad60);
+$Cad90 =($Cad60 + $ad90);
+$Cad99 =($Cad90 + $ad99);
+
+### Calculate interval percentages
+$pad_0=0; $pad_5=0; $pad10=0; $pad15=0; $pad20=0; $pad25=0; $pad30=0; $pad35=0; $pad40=0; $pad45=0; $pad50=0; $pad55=0; $pad60=0; $pad90=0; $pad99=0; 
+$pCad_0=0; $pCad_5=0; $pCad10=0; $pCad15=0; $pCad20=0; $pCad25=0; $pCad30=0; $pCad35=0; $pCad40=0; $pCad45=0; $pCad50=0; $pCad55=0; $pCad60=0; $pCad90=0; $pCad99=0; 
+if ( ($BDansweredCALLS > 0) and ($TOTALcalls > 0) )
+	{
+	if ($ad_0 > 0) {$pad_0 = (($ad_0 / $TOTALcalls) * 100);	$pad_0 = round($pad_0, 0);}
+	if ($ad_5 > 0) {$pad_5 = (($ad_5 / $TOTALcalls) * 100);	$pad_5 = round($pad_5, 0);}
+	if ($ad10 > 0) {$pad10 = (($ad10 / $TOTALcalls) * 100);	$pad10 = round($pad10, 0);}
+	if ($ad15 > 0) {$pad15 = (($ad15 / $TOTALcalls) * 100);	$pad15 = round($pad15, 0);}
+	if ($ad20 > 0) {$pad20 = (($ad20 / $TOTALcalls) * 100);	$pad20 = round($pad20, 0);}
+	if ($ad25 > 0) {$pad25 = (($ad25 / $TOTALcalls) * 100);	$pad25 = round($pad25, 0);}
+	if ($ad30 > 0) {$pad30 = (($ad30 / $TOTALcalls) * 100);	$pad30 = round($pad30, 0);}
+	if ($ad35 > 0) {$pad35 = (($ad35 / $TOTALcalls) * 100);	$pad35 = round($pad35, 0);}
+	if ($ad40 > 0) {$pad40 = (($ad40 / $TOTALcalls) * 100);	$pad40 = round($pad40, 0);}
+	if ($ad45 > 0) {$pad45 = (($ad45 / $TOTALcalls) * 100);	$pad45 = round($pad45, 0);}
+	if ($ad50 > 0) {$pad50 = (($ad50 / $TOTALcalls) * 100);	$pad50 = round($pad50, 0);}
+	if ($ad55 > 0) {$pad55 = (($ad55 / $TOTALcalls) * 100);	$pad55 = round($pad55, 0);}
+	if ($ad60 > 0) {$pad60 = (($ad60 / $TOTALcalls) * 100);	$pad60 = round($pad60, 0);}
+	if ($ad90 > 0) {$pad90 = (($ad90 / $TOTALcalls) * 100);	$pad90 = round($pad90, 0);}
+	if ($ad99 > 0) {$pad99 = (($ad99 / $TOTALcalls) * 100);	$pad99 = round($pad99, 0);}
+
+	if ($Cad_0 > 0) {$pCad_0 = (($Cad_0 / $TOTALcalls) * 100);	$pCad_0 = round($pCad_0, 0);}
+	if ($Cad_5 > 0) {$pCad_5 = (($Cad_5 / $TOTALcalls) * 100);	$pCad_5 = round($pCad_5, 0);}
+	if ($Cad10 > 0) {$pCad10 = (($Cad10 / $TOTALcalls) * 100);	$pCad10 = round($pCad10, 0);}
+	if ($Cad15 > 0) {$pCad15 = (($Cad15 / $TOTALcalls) * 100);	$pCad15 = round($pCad15, 0);}
+	if ($Cad20 > 0) {$pCad20 = (($Cad20 / $TOTALcalls) * 100);	$pCad20 = round($pCad20, 0);}
+	if ($Cad25 > 0) {$pCad25 = (($Cad25 / $TOTALcalls) * 100);	$pCad25 = round($pCad25, 0);}
+	if ($Cad30 > 0) {$pCad30 = (($Cad30 / $TOTALcalls) * 100);	$pCad30 = round($pCad30, 0);}
+	if ($Cad35 > 0) {$pCad35 = (($Cad35 / $TOTALcalls) * 100);	$pCad35 = round($pCad35, 0);}
+	if ($Cad40 > 0) {$pCad40 = (($Cad40 / $TOTALcalls) * 100);	$pCad40 = round($pCad40, 0);}
+	if ($Cad45 > 0) {$pCad45 = (($Cad45 / $TOTALcalls) * 100);	$pCad45 = round($pCad45, 0);}
+	if ($Cad50 > 0) {$pCad50 = (($Cad50 / $TOTALcalls) * 100);	$pCad50 = round($pCad50, 0);}
+	if ($Cad55 > 0) {$pCad55 = (($Cad55 / $TOTALcalls) * 100);	$pCad55 = round($pCad55, 0);}
+	if ($Cad60 > 0) {$pCad60 = (($Cad60 / $TOTALcalls) * 100);	$pCad60 = round($pCad60, 0);}
+	if ($Cad90 > 0) {$pCad90 = (($Cad90 / $TOTALcalls) * 100);	$pCad90 = round($pCad90, 0);}
+	if ($Cad99 > 0) {$pCad99 = (($Cad99 / $TOTALcalls) * 100);	$pCad99 = round($pCad99, 0);}
+
+	if ($Cad_0 > 0) {$ApCad_0 = (($Cad_0 / $BDansweredCALLS) * 100);	$ApCad_0 = round($ApCad_0, 0);}
+	if ($Cad_5 > 0) {$ApCad_5 = (($Cad_5 / $BDansweredCALLS) * 100);	$ApCad_5 = round($ApCad_5, 0);}
+	if ($Cad10 > 0) {$ApCad10 = (($Cad10 / $BDansweredCALLS) * 100);	$ApCad10 = round($ApCad10, 0);}
+	if ($Cad15 > 0) {$ApCad15 = (($Cad15 / $BDansweredCALLS) * 100);	$ApCad15 = round($ApCad15, 0);}
+	if ($Cad20 > 0) {$ApCad20 = (($Cad20 / $BDansweredCALLS) * 100);	$ApCad20 = round($ApCad20, 0);}
+	if ($Cad25 > 0) {$ApCad25 = (($Cad25 / $BDansweredCALLS) * 100);	$ApCad25 = round($ApCad25, 0);}
+	if ($Cad30 > 0) {$ApCad30 = (($Cad30 / $BDansweredCALLS) * 100);	$ApCad30 = round($ApCad30, 0);}
+	if ($Cad35 > 0) {$ApCad35 = (($Cad35 / $BDansweredCALLS) * 100);	$ApCad35 = round($ApCad35, 0);}
+	if ($Cad40 > 0) {$ApCad40 = (($Cad40 / $BDansweredCALLS) * 100);	$ApCad40 = round($ApCad40, 0);}
+	if ($Cad45 > 0) {$ApCad45 = (($Cad45 / $BDansweredCALLS) * 100);	$ApCad45 = round($ApCad45, 0);}
+	if ($Cad50 > 0) {$ApCad50 = (($Cad50 / $BDansweredCALLS) * 100);	$ApCad50 = round($ApCad50, 0);}
+	if ($Cad55 > 0) {$ApCad55 = (($Cad55 / $BDansweredCALLS) * 100);	$ApCad55 = round($ApCad55, 0);}
+	if ($Cad60 > 0) {$ApCad60 = (($Cad60 / $BDansweredCALLS) * 100);	$ApCad60 = round($ApCad60, 0);}
+	if ($Cad90 > 0) {$ApCad90 = (($Cad90 / $BDansweredCALLS) * 100);	$ApCad90 = round($ApCad90, 0);}
+	if ($Cad99 > 0) {$ApCad99 = (($Cad99 / $BDansweredCALLS) * 100);	$ApCad99 = round($ApCad99, 0);}
+	}
+
+### Format variables
+$ad_0 = sprintf("%5s", $ad_0);
+$ad_5 = sprintf("%5s", $ad_5);
+$ad10 = sprintf("%5s", $ad10);
+$ad15 = sprintf("%5s", $ad15);
+$ad20 = sprintf("%5s", $ad20);
+$ad25 = sprintf("%5s", $ad25);
+$ad30 = sprintf("%5s", $ad30);
+$ad35 = sprintf("%5s", $ad35);
+$ad40 = sprintf("%5s", $ad40);
+$ad45 = sprintf("%5s", $ad45);
+$ad50 = sprintf("%5s", $ad50);
+$ad55 = sprintf("%5s", $ad55);
+$ad60 = sprintf("%5s", $ad60);
+$ad90 = sprintf("%5s", $ad90);
+$ad99 = sprintf("%5s", $ad99);
+$Cad_0 = sprintf("%5s", $Cad_0);
+$Cad_5 = sprintf("%5s", $Cad_5);
+$Cad10 = sprintf("%5s", $Cad10);
+$Cad15 = sprintf("%5s", $Cad15);
+$Cad20 = sprintf("%5s", $Cad20);
+$Cad25 = sprintf("%5s", $Cad25);
+$Cad30 = sprintf("%5s", $Cad30);
+$Cad35 = sprintf("%5s", $Cad35);
+$Cad40 = sprintf("%5s", $Cad40);
+$Cad45 = sprintf("%5s", $Cad45);
+$Cad50 = sprintf("%5s", $Cad50);
+$Cad55 = sprintf("%5s", $Cad55);
+$Cad60 = sprintf("%5s", $Cad60);
+$Cad90 = sprintf("%5s", $Cad90);
+$Cad99 = sprintf("%5s", $Cad99);
+$pad_0 = sprintf("%4s", $pad_0) . '%';
+$pad_5 = sprintf("%4s", $pad_5) . '%';
+$pad10 = sprintf("%4s", $pad10) . '%';
+$pad15 = sprintf("%4s", $pad15) . '%';
+$pad20 = sprintf("%4s", $pad20) . '%';
+$pad25 = sprintf("%4s", $pad25) . '%';
+$pad30 = sprintf("%4s", $pad30) . '%';
+$pad35 = sprintf("%4s", $pad35) . '%';
+$pad40 = sprintf("%4s", $pad40) . '%';
+$pad45 = sprintf("%4s", $pad45) . '%';
+$pad50 = sprintf("%4s", $pad50) . '%';
+$pad55 = sprintf("%4s", $pad55) . '%';
+$pad60 = sprintf("%4s", $pad60) . '%';
+$pad90 = sprintf("%4s", $pad90) . '%';
+$pad99 = sprintf("%4s", $pad99) . '%';
+$pCad_0 = sprintf("%4s", $pCad_0) . '%';
+$pCad_5 = sprintf("%4s", $pCad_5) . '%';
+$pCad10 = sprintf("%4s", $pCad10) . '%';
+$pCad15 = sprintf("%4s", $pCad15) . '%';
+$pCad20 = sprintf("%4s", $pCad20) . '%';
+$pCad25 = sprintf("%4s", $pCad25) . '%';
+$pCad30 = sprintf("%4s", $pCad30) . '%';
+$pCad35 = sprintf("%4s", $pCad35) . '%';
+$pCad40 = sprintf("%4s", $pCad40) . '%';
+$pCad45 = sprintf("%4s", $pCad45) . '%';
+$pCad50 = sprintf("%4s", $pCad50) . '%';
+$pCad55 = sprintf("%4s", $pCad55) . '%';
+$pCad60 = sprintf("%4s", $pCad60) . '%';
+$pCad90 = sprintf("%4s", $pCad90) . '%';
+$pCad99 = sprintf("%4s", $pCad99) . '%';
+$ApCad_0 = sprintf("%4s", $ApCad_0) . '%';
+$ApCad_5 = sprintf("%4s", $ApCad_5) . '%';
+$ApCad10 = sprintf("%4s", $ApCad10) . '%';
+$ApCad15 = sprintf("%4s", $ApCad15) . '%';
+$ApCad20 = sprintf("%4s", $ApCad20) . '%';
+$ApCad25 = sprintf("%4s", $ApCad25) . '%';
+$ApCad30 = sprintf("%4s", $ApCad30) . '%';
+$ApCad35 = sprintf("%4s", $ApCad35) . '%';
+$ApCad40 = sprintf("%4s", $ApCad40) . '%';
+$ApCad45 = sprintf("%4s", $ApCad45) . '%';
+$ApCad50 = sprintf("%4s", $ApCad50) . '%';
+$ApCad55 = sprintf("%4s", $ApCad55) . '%';
+$ApCad60 = sprintf("%4s", $ApCad60) . '%';
+$ApCad90 = sprintf("%4s", $ApCad90) . '%';
+$ApCad99 = sprintf("%4s", $ApCad99) . '%';
+
+$BDansweredCALLS =		sprintf("%10s", $BDansweredCALLS);
+
+### Format and output
+$answeredTOTALs = "$ad_0 $ad_5 $ad10 $ad15 $ad20 $ad25 $ad30 $ad35 $ad40 $ad45 $ad50 $ad55 $ad60 $ad90 $ad99 | $BDansweredCALLS |";
+$answeredCUMULATIVE = "$Cad_0 $Cad_5 $Cad10 $Cad15 $Cad20 $Cad25 $Cad30 $Cad35 $Cad40 $Cad45 $Cad50 $Cad55 $Cad60 $Cad90 $Cad99 | $BDansweredCALLS |";
+$answeredINT_PERCENT = "$pad_0 $pad_5 $pad10 $pad15 $pad20 $pad25 $pad30 $pad35 $pad40 $pad45 $pad50 $pad55 $pad60 $pad90 $pad99 |            |";
+$answeredCUM_PERCENT = "$pCad_0 $pCad_5 $pCad10 $pCad15 $pCad20 $pCad25 $pCad30 $pCad35 $pCad40 $pCad45 $pCad50 $pCad55 $pCad60 $pCad90 $pCad99 |            |";
+$answeredCUM_ANS_PERCENT = "$ApCad_0 $ApCad_5 $ApCad10 $ApCad15 $ApCad20 $ApCad25 $ApCad30 $ApCad35 $ApCad40 $ApCad45 $ApCad50 $ApCad55 $ApCad60 $ApCad90 $ApCad99 |            |";
+echo "INTERVAL  | $answeredTOTALs\n";
+echo "INT %     | $answeredINT_PERCENT\n";
+echo "CUMULATIVE| $answeredCUMULATIVE\n";
+echo "CUM %     | $answeredCUM_PERCENT\n";
+echo "CUM ANS % | $answeredCUM_ANS_PERCENT\n";
+echo "----------+-------------------------------------------------------------------------------------------+------------+\n";
+
 
 
 

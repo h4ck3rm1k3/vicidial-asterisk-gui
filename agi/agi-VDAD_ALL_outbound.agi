@@ -929,7 +929,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 	$sthA->finish();
 	if ($rec_countWAIT < $concurrent_transfers)
 		{
-		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$CIDlead_id',uniqueid='$unique_id', channel='$channel', call_server_ip='$VARserver_ip', callerid='$callerid',comments='AUTO' where status = 'READY' and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+		$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$CIDlead_id',uniqueid='$unique_id', channel='$channel', call_server_ip='$VARserver_ip', callerid='$callerid',comments='AUTO' where status = 'READY' and lead_id<1 and server_ip='$VARserver_ip' and campaign_id='$VDADcampaign' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 		$affected_rows = $dbhA->do($stmtA);
 			$dbhP=$dbhA;   $mysql_count='01035';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 
@@ -1104,7 +1104,7 @@ else {$concurrent_transfers = $DBconcurrent_transfers;}
 $sthA->finish();
 if ($rec_countWAITrem < $concurrent_transfers)
 	{
-	$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$CIDlead_id',uniqueid='$unique_id', channel='$channel', call_server_ip='$VARserver_ip', callerid='$callerid',comments='AUTO' where status = 'READY' and campaign_id='$VDADcampaign' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
+	$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$CIDlead_id',uniqueid='$unique_id', channel='$channel', call_server_ip='$VARserver_ip', callerid='$callerid',comments='AUTO' where status = 'READY' and lead_id<1 and campaign_id='$VDADcampaign' and last_update_time > '$BDtsSQLdate' $agent_call_order limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='01042';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 

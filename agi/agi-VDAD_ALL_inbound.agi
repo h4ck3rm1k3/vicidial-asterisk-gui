@@ -1079,7 +1079,7 @@ if ($agent_search_method =~ /^SO|^LO/)
 			my $LOCKaffected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02037';   $MEL_aff_rows=$LOCKaffected_rows;   &mysql_error_logging;
 
-			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and server_ip='$VARserver_ip' and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and lead_id<1 and server_ip='$VARserver_ip' and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1098,33 +1098,33 @@ if ($agent_search_method =~ /^SO|^LO/)
 				if ($sthArows > 0)
 				{
 				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid',comments='INBOUND' where user='$VDADuser';";
-				my $affected_rows = $dbhA->do($stmtA);
-					$dbhP=$dbhA;   $mysql_count='02039';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-				$found_agents=$affected_rows;
+				$Faffected_rows = $dbhA->do($stmtA);
+					$dbhP=$dbhA;   $mysql_count='02039';   $MEL_aff_rows=$Faffected_rows;   &mysql_error_logging;
+				$found_agents=$Faffected_rows;
 				}
 				else
 				{
-				$affected_rows=0;
+				$Faffected_rows=0;
 				}
 
 			$stmtA = "UNLOCK TABLES;";
-			my $LOCKaffected_rows = $dbhA->do($stmtA);
+			$LOCKaffected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02040';   $MEL_aff_rows=$LOCKaffected_rows;   &mysql_error_logging;
 			}
 		else
 			{
-			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid',comments='INBOUND' where status IN('CLOSER','READY') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
-			my $affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='02041';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-			$found_agents=$affected_rows;
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid',comments='INBOUND' where status IN('CLOSER','READY') and lead_id<1 and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+			$Faffected_rows = $dbhA->do($stmtA);
+				$dbhP=$dbhA;   $mysql_count='02041';   $MEL_aff_rows=$Faffected_rows;   &mysql_error_logging;
+			$found_agents=$Faffected_rows;
 			}
-		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$affected_rows|$channel_group|$stmtA|";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$Faffected_rows|$channel_group|$stmtA|";   &agi_output;}
 		if ($found_agents > 0)
 			{
 			if ($aco_sub<1)
 				{
 				$cbc=0;	
-				$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status = 'QUEUE' and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
+				$stmtA = "SELECT conf_exten,user,extension FROM vicidial_live_agents where status IN('QUEUE','INCALL') and server_ip='$VARserver_ip' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1394,8 +1394,7 @@ if ($agent_search_method =~ /^LO|^LB/)
 			my $LOCKaffected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02057';   $MEL_aff_rows=$LOCKaffected_rows;   &mysql_error_logging;
 
-			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
-				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+			$stmtA = "SELECT vicidial_live_agents.conf_exten,vicidial_live_agents.user,vicidial_live_agents.extension,vicidial_live_agents.server_ip from vicidial_live_agents JOIN vicidial_live_inbound_agents ON vicidial_live_agents.user=vicidial_live_inbound_agents.user WHERE status IN('CLOSER','READY') and lead_id<1 and vicidial_live_inbound_agents.group_id='$channel_group' and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_aco_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -1412,17 +1411,18 @@ if ($agent_search_method =~ /^LO|^LB/)
 				$VDADserver_ip	=	"$aryA[3]";
 				}
 			$sthA->finish();
+				if ($AGILOG) {$agi_string = "$VDADuser|$stmtA|";   &agi_output;}
 
 				if ($sthArows > 0)
 				{
 				$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip',comments='INBOUND' where user='$VDADuser';";
-				my $affected_rows = $dbhA->do($stmtA);
-					$dbhP=$dbhA;   $mysql_count='02059';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-				$found_agents=$affected_rows;
+				$Faffected_rows = $dbhA->do($stmtA);
+					$dbhP=$dbhA;   $mysql_count='02059';   $MEL_aff_rows=$Faffected_rows;   &mysql_error_logging;
+				$found_agents=$Faffected_rows;
 				}
 				else
 				{
-				$affected_rows=0;
+				$Faffected_rows=0;
 				}
 
 			$stmtA = "UNLOCK TABLES;";
@@ -1431,35 +1431,36 @@ if ($agent_search_method =~ /^LO|^LB/)
 			}
 		else
 			{
-			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip',comments='INBOUND' where status IN('CLOSER','READY') and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
-			my $affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='02061';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-			$found_agents=$affected_rows;
-				if ($AGILOG) {$agi_string = "$affected_rows|$stmtA|";   &agi_output;}
+			$stmtA = "UPDATE vicidial_live_agents set status='QUEUE',lead_id='$insert_lead_id',uniqueid='$unique_id', channel='$channel', callerid='$callerid', call_server_ip='$VARserver_ip',comments='INBOUND' where status IN('CLOSER','READY') and lead_id<1 and campaign_id IN($INBOUNDcampsSQL) and closer_campaigns LIKE \"% $channel_group %\" and last_update_time > '$BDtsSQLdate' $qp_groupWAIT_SQL $qp_groupWAIT_camp_SQL $agent_call_order limit 1;";
+			$Faffected_rows = $dbhA->do($stmtA);
+				$dbhP=$dbhA;   $mysql_count='02061';   $MEL_aff_rows=$Faffected_rows;   &mysql_error_logging;
+			$found_agents=$Faffected_rows;
+				if ($AGILOG) {$agi_string = "$Faffected_rows|$stmtA|";   &agi_output;}
 			}
-		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$affected_rows|$found_agents|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
+		if ($AGILOG) {$agi_string = "--    VDAD get agent: |$DROP_TIME|$drop_timer|$Faffected_rows|$found_agents|update of vla table: $channel_group|\n|$stmtA|";   &agi_output;}
 		if ($found_agents > 0)
 			{
 			if ($aco_sub<1)
 				{
 				$cbc=0;	
-				$stmtA = "SELECT conf_exten,user,extension,server_ip FROM vicidial_live_agents where status = 'QUEUE' and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
-					if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+				$stmtA = "SELECT conf_exten,user,extension,server_ip,last_call_time FROM vicidial_live_agents where status IN('QUEUE','INCALL') and campaign_id IN($INBOUNDcampsSQL) and callerid='$callerid' and channel='$channel' order by last_call_time limit 1;";
 				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 				$sthArows=$sthA->rows;
 					$dbhP=$dbhA;   $mysql_count='02062';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
 				$rec_countCUSTDATA=0;
-				while ($sthArows > $cbc)
+				if ($sthArows > 0)
 					{
 					@aryA = $sthA->fetchrow_array;
 					$VDADconf_exten	=	"$aryA[0]";
 					$VDADuser	=		"$aryA[1]";
 					$VDADextension	=	"$aryA[2]";
 					$VDADserver_ip	=	"$aryA[3]";
+					$VDADlast_call_time="$aryA[4]";
 					$cbc++;
 					}
 				$sthA->finish();
+					if ($AGILOG) {$agi_string = "$VDADuser|$VDADlast_call_time|$stmtA|";   &agi_output;}
 				}
 			$stmtA = "UPDATE vicidial_auto_calls set status='CLOSER', stage='CLOSER-$drop_timer' where callerid='$callerid';";
 			$affected_rows = $dbhA->do($stmtA);

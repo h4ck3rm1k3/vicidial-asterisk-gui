@@ -170,10 +170,11 @@
 # 81104-0134 - Added mysql error logging capability
 # 81104-1617 - Added multi-retry for some vicidial_live_agents table MySQL queries
 # 81106-0410 - Added force_timeclock_login option to LoginCampaigns function
+# 81107-0424 - Added carryover of script and presets for in-group calls from campaign settings
 #
 
-$version = '2.0.5-88';
-$build = '81106-0410';
+$version = '2.0.5-89';
+$build = '81107-0424';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=180;
 $one_mysql_log=0;
@@ -2555,6 +2556,27 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_ingroup_recording_override =	$row[11];
 				$VDCL_ingroup_rec_filename =		$row[12];
 
+
+				$stmt = "select campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number from vicidial_campaigns where campaign_id='$campaign';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00181',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_cidOR_ct = mysql_num_rows($rslt);
+				if ($VDIG_cidOR_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					if ( ( (ereg('NONE',$VDCL_ingroup_script)) and (strlen($VDCL_ingroup_script) < 5) ) or (strlen($VDCL_ingroup_script) < 1) )
+						{$VDCL_ingroup_script =		$row[0];}
+					if (strlen($VDCL_xferconf_a_dtmf) < 1)
+						{$VDCL_xferconf_a_dtmf =	$row[1];}
+					if (strlen($VDCL_xferconf_a_number) < 1)
+						{$VDCL_xferconf_a_number =	$row[2];}
+					if (strlen($VDCL_xferconf_b_dtmf) < 1)
+						{$VDCL_xferconf_b_dtmf =	$row[3];}
+					if (strlen($VDCL_xferconf_b_number) < 1)
+						{$VDCL_xferconf_b_number =	$row[4];}
+					}
+
 				### update the comments in vicidial_live_agents record
 				$stmt = "UPDATE vicidial_live_agents set comments='INBOUND' where user='$user' and server_ip='$server_ip';";
 				if ($DB) {echo "$stmt\n";}
@@ -2915,7 +2937,7 @@ if ($ACTION == 'updateDISPO')
 	else
 	{
 	### update the comments in vicidial_live_agents record
-	$stmt = "UPDATE vicidial_live_agents set lead_id='',external_hangup=0,external_status='' where user='$user' and server_ip='$server_ip';";
+	$stmt = "UPDATE vicidial_live_agents set lead_id=0,external_hangup=0,external_status='' where user='$user' and server_ip='$server_ip';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00141',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3020,6 +3042,8 @@ if ($ACTION == 'updateDISPO')
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
 		$comments = eregi_replace("'",'',$comments);
+		$comments = eregi_replace("\\",' ',$comments);
+		$comments = eregi_replace(';','',$comments);
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
