@@ -530,3 +530,17 @@ UPDATE system_settings SET db_schema_version='1116';
 ALTER TABLE vicidial_user_groups ADD forced_timeclock_login ENUM('Y','N','ADMIN_EXEMPT') default 'N';
 
 UPDATE system_settings SET db_schema_version='1117';
+
+ALTER TABLE vicidial_inbound_groups ADD answer_sec_pct_rt_stat_one SMALLINT(5) UNSIGNED default '20';
+ALTER TABLE vicidial_inbound_groups ADD answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30';
+
+ALTER TABLE vicidial_campaign_stats ADD hold_sec_stat_one MEDIUMINT(8) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD hold_sec_stat_two MEDIUMINT(8) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD agent_non_pause_sec MEDIUMINT(8) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD hold_sec_answer_calls MEDIUMINT(8) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD hold_sec_drop_calls MEDIUMINT(8) UNSIGNED default '0';
+ALTER TABLE vicidial_campaign_stats ADD hold_sec_queue_calls MEDIUMINT(8) UNSIGNED default '0';
+
+CREATE INDEX comment_a on live_inbound_log (comment_a);
+
+UPDATE system_settings SET db_schema_version='1118';

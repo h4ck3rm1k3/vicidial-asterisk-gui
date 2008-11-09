@@ -710,7 +710,9 @@ hold_time_option_callback_filename VARCHAR(50) default 'vm-hangup',
 hold_time_option_callback_list_id BIGINT(14) UNSIGNED default '999',
 hold_recall_xfer_group VARCHAR(20) default '---NONE---',
 no_delay_call_route ENUM('Y','N') default 'N',
-play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') default 'ALWAYS'
+play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') default 'ALWAYS',
+answer_sec_pct_rt_stat_one SMALLINT(5) UNSIGNED default '20',
+answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30'
 );
 
 CREATE TABLE vicidial_stations (
@@ -941,7 +943,13 @@ status_category_count_2 INT(9) UNSIGNED default '0',
 status_category_3 VARCHAR(20),
 status_category_count_3 INT(9) UNSIGNED default '0',
 status_category_4 VARCHAR(20),
-status_category_count_4 INT(9) UNSIGNED default '0'
+status_category_count_4 INT(9) UNSIGNED default '0',
+hold_sec_stat_one MEDIUMINT(8) UNSIGNED default '0',
+hold_sec_stat_two MEDIUMINT(8) UNSIGNED default '0',
+agent_non_pause_sec MEDIUMINT(8) UNSIGNED default '0',
+hold_sec_answer_calls MEDIUMINT(8) UNSIGNED default '0',
+hold_sec_drop_calls MEDIUMINT(8) UNSIGNED default '0',
+hold_sec_queue_calls MEDIUMINT(8) UNSIGNED default '0'
 );
 
 CREATE TABLE vicidial_dnc (
@@ -1346,8 +1354,9 @@ CREATE INDEX date_closer on vicidial_xfer_log (call_date,closer);
 CREATE INDEX phone_number on vicidial_xfer_log (phone_number);
 CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
+CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1117';
+UPDATE system_settings SET db_schema_version='1118';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

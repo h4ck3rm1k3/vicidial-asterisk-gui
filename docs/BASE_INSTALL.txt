@@ -90,7 +90,7 @@ cd ../asterisk-1.2.30.2
 		- File to patch: cli.c
 
 	*OPTIONAL*(1.2.14 thru 1.2.30.2) rewrite of waitforsilence
-	wget http://www.eflo.net/files/app_waitforsilence.c
+	wget http://downloads.vicidial.com/asterisk-patches/app_waitforsilence.c
 	mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
 	* REQUIRED for gcc 4.2 systems*

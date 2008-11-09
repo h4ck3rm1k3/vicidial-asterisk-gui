@@ -213,6 +213,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 47. Added full MySQL error logging to vicidial agent web interface. Logs are 
    written to the webserver.
 
+48. Added new inbound-only reporting to Real-time report as well as many new
+   features to existing inbound report. Created IVR stats report to show stats
+   on Asterisk IVRs
+
 
 
 

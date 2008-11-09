@@ -338,6 +338,8 @@ FORCE will force the agents to choose a PAUSE code if they click on the PAUSE bu
 3-Way Call Dial Prefix||
 Force Timeclock Login -<\/B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9||
 Force Timeclock Login||
+Stats Percent of Calls Answered Within X seconds -</B> This field allows you to set the number of hold seconds that the realtime stats display will use to calculate the percentage of answered calls that were answered within X number of seconds on hold||
+Stats Percent of Calls Answered Within X seconds||
 
 
 ############################################################ CLIENT

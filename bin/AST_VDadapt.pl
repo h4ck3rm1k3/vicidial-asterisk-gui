@@ -26,6 +26,7 @@
 # 71029-1906 - Changed CLOSER-type campaign_id restriction
 # 81021-2201 - Deactivated queue_log QUEUESTART event
 # 81022-0713 - Added gathering of vicidial_inbound_groups stats(day only)
+# 81108-0808 - Added more inbound stats with some debug output and added campaign agent non-pause time
 #
 
 # constants
@@ -510,55 +511,15 @@ foreach(@campaign_id)
 	$i++;
 	}
 
+if ( ($stat_count =~ /00$|50$/) || ($stat_count==1) )
+	{
+	&launch_inbound_gather;
+	}
+
 if ($RESETdiff_ratio_updater>0) {$RESETdiff_ratio_updater=0;   $diff_ratio_updater=0;}
 if ($RESETdrop_count_updater>0) {$RESETdrop_count_updater=0;   $drop_count_updater=0;}
 $diff_ratio_updater = ($diff_ratio_updater + $CLIdelay);
 $drop_count_updater = ($drop_count_updater + $CLIdelay);
-
-
-
-
-
-
-
-
-
-################################################################################
-#### BEGIN gather stats for inbound groups for the real-time display
-################################################################################
-$stmtA = "SELECT group_id from vicidial_inbound_groups where active='Y';";
-$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-$sthArows=$sthA->rows;
-$ibg_count=0;
-while ($sthArows > $ibg_count)
-	{
-	@aryA = $sthA->fetchrow_array;
-	$group_id[$ibg_count] =		$aryA[0];
-	$ibg_count++;
-	}
-$sthA->finish();
-if ($DB) {print "$now_date INBOUND GROUPS TO GET STATS FOR:  $ibg_count|$#group_id       IT: $master_loop\n";}
-
-
-##### LOOP THROUGH EACH INBOUND GROUP AND GATHER STATS #####
-$p=0;
-foreach(@group_id)
-	{
-	&calculate_drops_inbound;
-
-	$p++;
-	}
-
-################################################################################
-#### END gather stats for inbound groups for the real-time display
-################################################################################
-
-
-
-
-
-
 
 
 sleep($CLIdelay);
@@ -764,6 +725,9 @@ if ($DB) {print "     $event_string\n";}
 }
 
 
+
+
+
 sub calculate_drops
 {
 $camp_ANS_STAT_SQL='';
@@ -819,6 +783,7 @@ $VCScalls_one[$i]=0;
 $VCSanswers_one[$i]=0;
 $VCSdrops_one[$i]=0;
 $VCSdrops_one_pct[$i]=0;
+$VCSagent_nonpause_time[$i]=0;
 
 # LAST ONE MINUTE CALL AND DROP STATS
 $stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]' and call_date > '$VDL_one';";
@@ -1020,14 +985,13 @@ $stmtA = "SELECT count(*) from $vicidial_log where campaign_id='$campaign_id[$i]
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
-$rec_count=0;
-while ($sthArows > $rec_count)
+if ($sthArows > 0)
 	{
 	@aryA = $sthA->fetchrow_array;
 	$VCScalls_five[$i] =		 "$aryA[0]";
-	$rec_count++;
 	}
 $sthA->finish();
+
 if ($VCScalls_five[$i] > 0)
 	{
 	# ANSWERS FIVEMINUTE
@@ -1138,15 +1102,78 @@ while ($g < 4)
 	}
 chop($VSCupdateSQL);
 
-$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]',$VSCupdateSQL where campaign_id='$campaign_id[$i]';";
+# AGENT NON-PAUSE TIME PULL
+$stmtA = "SELECT sum(wait_sec + talk_sec + dispo_sec) from vicidial_agent_log where campaign_id='$campaign_id[$i]' and event_time > '$VDL_date';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	if ($aryA[0] > 0)
+			{$VCSagent_nonpause_time[$i] = $aryA[0];}
+	}
+$sthA->finish();
+
+
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$i]',answers_today='$VCSanswers_today[$i]',drops_today='$VCSdrops_today[$i]',drops_today_pct='$VCSdrops_today_pct[$i]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$i]',calls_hour='$VCScalls_hour[$i]',answers_hour='$VCSanswers_hour[$i]',drops_hour='$VCSdrops_hour[$i]',drops_hour_pct='$VCSdrops_hour_pct[$i]',calls_halfhour='$VCScalls_halfhour[$i]',answers_halfhour='$VCSanswers_halfhour[$i]',drops_halfhour='$VCSdrops_halfhour[$i]',drops_halfhour_pct='$VCSdrops_halfhour_pct[$i]',calls_fivemin='$VCScalls_five[$i]',answers_fivemin='$VCSanswers_five[$i]',drops_fivemin='$VCSdrops_five[$i]',drops_fivemin_pct='$VCSdrops_five_pct[$i]',calls_onemin='$VCScalls_one[$i]',answers_onemin='$VCSanswers_one[$i]',drops_onemin='$VCSdrops_one[$i]',drops_onemin_pct='$VCSdrops_one_pct[$i]',agent_non_pause_sec='$VCSagent_nonpause_time[$i]',$VSCupdateSQL where campaign_id='$campaign_id[$i]';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DBX) {print "$campaign_id[$i]|$stmtA|\n";}
 }
 
 
 
+sub launch_inbound_gather
+{
+################################################################################
+#### BEGIN gather stats for inbound groups for the real-time display
+################################################################################
+$stmtA = "SELECT group_id from vicidial_inbound_groups where active='Y';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$ibg_count=0;
+while ($sthArows > $ibg_count)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$group_id[$ibg_count] =		$aryA[0];
+	$ibg_count++;
+	}
+$sthA->finish();
+if ($DB) {print "$now_date INBOUND GROUPS TO GET STATS FOR:  $ibg_count|$#group_id       IT: $master_loop\n";}
+
+
+##### LOOP THROUGH EACH INBOUND GROUP AND GATHER STATS #####
+$p=0;
+foreach(@group_id)
+	{
+	&calculate_drops_inbound;
+
+	$p++;
+	}
+
+################################################################################
+#### END gather stats for inbound groups for the real-time display
+################################################################################
+}
+
+
+
 sub calculate_drops_inbound
 {
+# GET inbound group hold stat seconds settings
+$stmtA = "SELECT answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two from vicidial_inbound_groups where group_id='$group_id[$p]';";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$answer_sec_pct_rt_stat_one = $aryA[0];
+	$answer_sec_pct_rt_stat_two = $aryA[1];
+	}
+$sthA->finish();
+
 $camp_ANS_STAT_SQL='';
 # GET LIST OF HUMAN-ANSWERED STATUSES
 $stmtA = "SELECT status from vicidial_statuses where human_answered='Y';";
@@ -1184,7 +1211,11 @@ $VCSanswers_today[$p]=0;
 $VCSdrops_today[$p]=0;
 $VCSdrops_today_pct[$p]=0;
 $VCSdrops_answers_today_pct[$p]=0;
-
+$answer_sec_pct_rt_stat_one_PCT[$p]=0;
+$answer_sec_pct_rt_stat_two_PCT[$p]=0;
+$hold_sec_answer_calls[$p]=0;
+$hold_sec_drop_calls[$p]=0;
+$hold_sec_queue_calls[$p]=0;
 
 # TODAY CALL AND DROP STATS
 $stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
@@ -1202,7 +1233,7 @@ $sthA->finish();
 if ($VCScalls_today[$p] > 0)
 	{
 	# TODAY ANSWERS
-	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN($camp_ANS_STAT_SQL);";
+	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE');";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -1235,6 +1266,61 @@ if ($VCScalls_today[$p] > 0)
 		$rec_count++;
 		}
 	$sthA->finish();
+
+	# TODAY ANSWER PERCENT OF HOLD SECONDS one and two
+	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_one;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$answer_sec_pct_rt_stat_one_PCT[$p] = $aryA[0];
+		}
+	$sthA->finish();
+	$stmtA = "SELECT count(*) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and queue_seconds <= $answer_sec_pct_rt_stat_two;";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$answer_sec_pct_rt_stat_two_PCT[$p] = $aryA[0];
+		}
+
+	# TODAY TOTAL HOLD TIME FOR ANSWERED CALLS
+	$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		if ($aryA[0] > 0)
+			{$hold_sec_answer_calls[$p] = $aryA[0];}
+		}
+	# TODAY TOTAL HOLD TIME FOR DROP CALLS
+	$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date' and status IN('DROP','XDROP');";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		if ($aryA[0] > 0)
+			{$hold_sec_drop_calls[$p] = $aryA[0];}
+		}
+	# TODAY TOTAL QUEUE TIME FOR QUEUE CALLS
+	$stmtA = "SELECT sum(queue_seconds) from $vicidial_closer_log where campaign_id='$group_id[$p]' and call_date > '$VDL_date';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		if ($aryA[0] > 0)
+			{$hold_sec_queue_calls[$p] = $aryA[0];}
+		}
 	}
 
 
@@ -1333,9 +1419,12 @@ if ($vcs_exists < 1)
 	if ($DBX) {print "$group_id[$p]|$stmtA|\n";}
 	}
 
-$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$p]',answers_today='$VCSanswers_today[$p]',drops_today='$VCSdrops_today[$p]',drops_today_pct='$VCSdrops_today_pct[$p]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$p]',$VSCupdateSQL where campaign_id='$group_id[$p]';";
+$stmtA = "UPDATE vicidial_campaign_stats SET calls_today='$VCScalls_today[$p]',answers_today='$VCSanswers_today[$p]',drops_today='$VCSdrops_today[$p]',drops_today_pct='$VCSdrops_today_pct[$p]',drops_answers_today_pct='$VCSdrops_answers_today_pct[$p]',hold_sec_stat_one='$answer_sec_pct_rt_stat_one_PCT[$p]',hold_sec_stat_two='$answer_sec_pct_rt_stat_two_PCT[$p]',hold_sec_answer_calls='$hold_sec_answer_calls[$p]',hold_sec_drop_calls='$hold_sec_drop_calls[$p]',hold_sec_queue_calls='$hold_sec_queue_calls[$p]',$VSCupdateSQL where campaign_id='$group_id[$p]';";
 $affected_rows = $dbhA->do($stmtA);
 if ($DBX) {print "$group_id[$p]|$stmtA|\n";}
+
+print "          IN-GROUP: $group_id[$p]   CALLS: $VCScalls_today[$p]   ANSWER: $VCSanswers_today[$p]   DROPS: $VCSdrops_today[$p]\n";
+print "               Stat1: $answer_sec_pct_rt_stat_one_PCT[$p]   Stat2: $answer_sec_pct_rt_stat_two_PCT[$p]   Hold: $hold_sec_queue_calls[$p]|$hold_sec_answer_calls[$p]|$hold_sec_drop_calls[$p]\n";
 }
 ##### END calculate_drops_inbound
 

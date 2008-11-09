@@ -13,6 +13,7 @@
 # 80712-1007 - tally bug fixes and time display change
 # 81030-0346 - Added pause code stats
 # 81030-1924 - Added total non-pause and total logged-in time to pause code section
+# 81108-0716 - fixed user same-name bug
 #
 
 require("dbconnect.php");
@@ -210,7 +211,7 @@ $usersARY[0]='';
 $user_namesARY[0]='';
 $k=0;
 
-$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 and wait_sec<36000 and talk_sec<36000 and dispo_sec<36000 $ugSQL group by full_name,status order by full_name,status desc limit 500000;";
+$stmt="select count(*) as calls,sum(talk_sec) as talk,full_name,vicidial_users.user,sum(pause_sec),sum(wait_sec),sum(dispo_sec),status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 and wait_sec<36000 and talk_sec<36000 and dispo_sec<36000 $ugSQL group by user,full_name,status order by full_name,user,status desc limit 500000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -600,7 +601,7 @@ $PCusers='-';
 $PCusersARY=$MT;
 $PCuser_namesARY=$MT;
 $k=0;
-$stmt="select full_name,vicidial_users.user,sum(pause_sec),sub_status,sum(wait_sec + talk_sec + dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 $ugSQL group by full_name,sub_status order by full_name,sub_status desc limit 100000;";
+$stmt="select full_name,vicidial_users.user,sum(pause_sec),sub_status,sum(wait_sec + talk_sec + dispo_sec) from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and campaign_id='" . mysql_real_escape_string($group) . "' and pause_sec<36000 $ugSQL group by user,full_name,sub_status order by user,full_name,sub_status desc limit 100000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $subs_to_print = mysql_num_rows($rslt);

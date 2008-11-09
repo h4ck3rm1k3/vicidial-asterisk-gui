@@ -406,7 +406,7 @@ patch -p1 < ./cli_chan_concise_delimiter.patch
 wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
 patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
-wget http://www.eflo.net/files/app_waitforsilence.c
+wget http://downloads.vicidial.com/asterisk-patches/app_waitforsilence.c
 mv -f app_waitforsilence.c apps/app_waitforsilence.c
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h

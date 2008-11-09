@@ -38,7 +38,15 @@
 # 80424-0442 - Added non_latin lookup from system_settings
 # 80519-1425 - Added calls-in-queue tally
 # 80703-1106 - Added API functionality for Hangup and Dispo
+# 81104-0229 - Added mysql error logging capability
+# 81104-1409 - Added multi-retry for some vicidial_live_agents table MySQL queries
 #
+
+$version = '2.0.4-15';
+$build = '81104-1409';
+$mel=1;					# Mysql Error Log enabled = 1
+$mysql_log_count=14;
+$one_mysql_log=0;
 
 require("dbconnect.php");
 
@@ -75,6 +83,7 @@ header ("Pragma: no-cache");                          // HTTP/1.0
 ##### START SYSTEM_SETTINGS LOOKUP #####
 $stmt = "SELECT use_non_latin FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03001',$user,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysql_num_rows($rslt);
 $i=0;
@@ -102,8 +111,6 @@ $Alogin='N';
 $RingCalls='N';
 $DiaLCalls='N';
 
-$version = '2.0.4-12';
-$build = '71122-0205';
 $StarTtime = date("U");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
@@ -116,6 +123,7 @@ $stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' a
 if ($DB) {echo "|$stmt|\n";}
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03002',$user,$server_ip,$session_name,$one_mysql_log);}
 $row=mysql_fetch_row($rslt);
 $auth=$row[0];
 
@@ -137,6 +145,7 @@ $auth=$row[0];
 		$stmt="SELECT count(*) from web_client_sessions where session_name='$session_name' and server_ip='$server_ip';";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03002',$user,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
 		$SNauth=$row[0];
 		  if($SNauth==0)
@@ -185,6 +194,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			$stmt="SELECT count(*) from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03003',$user,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysql_fetch_row($rslt);
 			$Acount=$row[0];
 
@@ -193,6 +203,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				$stmt="SELECT status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03004',$user,$server_ip,$session_name,$one_mysql_log);}
 				$row=mysql_fetch_row($rslt);
 				$Astatus=$row[0];
 				}
@@ -209,6 +220,16 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				$stmt="UPDATE vicidial_live_agents set random_id='$random' where user='$user' and server_ip='$server_ip';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03005',$user,$server_ip,$session_name,$one_mysql_log);}
+				$retry_count=0;
+				while ( ($errno > 0) and ($retry_count < 5) )
+					{
+					$rslt=mysql_query($stmt, $link);
+					$one_mysql_log=1;
+					$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,"9305$retry_count",$user,$server_ip,$session_name,$one_mysql_log);
+					$one_mysql_log=0;
+					$retry_count++;
+					}
 
 				if ($campagentstdisp == 'YES')
 					{
@@ -216,6 +237,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					$stmt="SELECT status,campaign_id,closer_campaigns from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03006',$user,$server_ip,$session_name,$one_mysql_log);}
 					$row=mysql_fetch_row($rslt);
 					$Alogin=$row[0];
 					$Acampaign=$row[1];
@@ -227,6 +249,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					$stmt="SELECT count(*) from vicidial_auto_calls where status IN('LIVE') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) );";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03007',$user,$server_ip,$session_name,$one_mysql_log);}
 					$row=mysql_fetch_row($rslt);
 					$RingCalls=$row[0];
 					if ($RingCalls > 0) {$RingCalls = "<font class=\"queue_text_red\">Calls in Queue: $RingCalls</font>";}
@@ -236,6 +259,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 					$stmt="SELECT count(*) from vicidial_auto_calls where status NOT IN('XFER') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) );";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03008',$user,$server_ip,$session_name,$one_mysql_log);}
 					$row=mysql_fetch_row($rslt);
 					$DiaLCalls=$row[0];
 
@@ -257,13 +281,23 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				$stmt="UPDATE vicidial_live_agents set random_id='$random' where user='$user' and server_ip='$server_ip';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
-
+			if ($mel > 0) {$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03009',$user,$server_ip,$session_name,$one_mysql_log);}
+				$retry_count=0;
+				while ( ($errno > 0) and ($retry_count < 5) )
+					{
+					$rslt=mysql_query($stmt, $link);
+					$one_mysql_log=1;
+					$errno = mysql_error_logging($NOW_TIME,$link,$mel,$stmt,"9309$retry_count",$user,$server_ip,$session_name,$one_mysql_log);
+					$one_mysql_log=0;
+					$retry_count++;
+					}
 				}
 
 			### grab the API hangup and API dispo fields in vicidial_live_agents
 			$stmt="SELECT external_hangup,external_status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03010',$user,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysql_fetch_row($rslt);
 			$external_hangup =	$row[0];
 			$external_status =	$row[1];
@@ -279,6 +313,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03011',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($rslt) {$sip_list = mysql_num_rows($rslt);}
 	#	echo "$sip_list|";
 		$loop_count=0;
@@ -292,6 +327,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03012',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($rslt) {$channels_list = mysql_num_rows($rslt);}
 	#	echo "$channels_list|";
 		$loop_count=0;
@@ -334,6 +370,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 		$stmt="UPDATE conferences set extension='$exten' where server_ip = '$server_ip' and conf_exten = '$conf_exten';";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03013',$user,$server_ip,$session_name,$one_mysql_log);}
 		}
 		echo "Conferenza $conf_exten e` stato registrato su $exten\n";
 	}
@@ -349,5 +386,27 @@ if ($format=='debug')
 	}
 	
 exit; 
+
+
+##### MySQL Error Logging #####
+function mysql_error_logging($NOW_TIME,$link,$mel,$stmt,$query_id,$user,$server_ip,$session_name,$one_mysql_log)
+{
+$NOW_TIME = date("Y-m-d H:i:s");
+#	mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00001',$user,$server_ip,$session_name,$one_mysql_log);
+$errno='';   $error='';
+if ( ($mel > 0) or ($one_mysql_log > 0) )
+	{
+	$errno = mysql_errno($link);
+	if ( ($errno > 0) or ($mel > 1) or ($one_mysql_log > 0) )
+		{
+		$error = mysql_error($link);
+		$efp = fopen ("./vicidial_mysql_errors.txt", "a");
+		fwrite ($efp, "$NOW_TIME|conf_check  |$query_id|$errno|$error|$stmt|$user|$server_ip|$session_name|\n");
+		fclose($efp);
+		}
+	}
+$one_mysql_log=0;
+return $errno;
+}
 
 ?>

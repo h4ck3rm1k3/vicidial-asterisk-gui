@@ -39,6 +39,9 @@
 # 80822-1222 - Added option for display of customer phone number
 # 81011-0335 - Fixed remote agent display bug
 # 81022-1500 - Added inbound call stats display option
+# 81029-1023 - Changed drop percent calculation for multi-stat reports
+# 81029-1706 - Added pause code display if enabled per campaign
+# 81108-2337 - Added inbound-only section
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -103,8 +106,8 @@ while ($i < $qm_conf_ct)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-if (!isset($RR))			{$gRRroup=4;}
-if (!isset($group))			{$group='';}
+if (!isset($RR))			{$RR=40;}
+if (!isset($group))			{$group='';  $RR=40;}
 if (!isset($usergroup))		{$usergroup='';}
 if (!isset($UGdisplay))		{$UGdisplay=0;}	# 0=no, 1=yes
 if (!isset($UidORname))		{$UidORname=0;}	# 0=id, 1=name
@@ -114,6 +117,8 @@ if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
 if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($with_inbound))	{$with_inbound='N';}  # 0=no, 1=yes
+if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
+$ingroup_detail='';
 
 function get_server_load($windows = false) {
 $os = strtolower(PHP_OS);
@@ -310,9 +315,15 @@ if ($UGdisplay > 0)
 if (!eregi('XXXX-ALL-ACTIVE-XXXX', $group))
 	{
 	echo " &nbsp; Inbound: <SELECT SIZE=1 NAME=with_inbound>\n";
-	echo "<option value=\"N\">No</option>\n";
-	echo "<option value=\"Y\">Yes</option>\n";
-	echo "<option selected>$with_inbound</option>\n";
+	echo "<option value=\"N\"";
+		if ($with_inbound=='N') {echo " selected";} 
+	echo ">No</option>\n";
+	echo "<option value=\"Y\"";
+		if ($with_inbound=='Y') {echo " selected";} 
+	echo ">Yes</option>\n";
+	echo "<option value=\"O\"";
+		if ($with_inbound=='O') {echo " selected";} 
+	echo ">Only</option>\n";
 	}
 echo "<INPUT type=submit NAME=INVIA VALUE=INVIA><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\">STOP</a> | ";
@@ -334,162 +345,424 @@ echo "\n\n";
 if (!$group) {echo "<BR><BR>per favore seleziona una campagna dal menu qui in alto</FORM>\n"; exit;}
 else
 {
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
-	{
-	$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses) from vicidial_campaigns;";
+$multi_drop=0;
 
-	$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats;";
-	}
-else
+##### INBOUND ONLY ###
+if (ereg('O',$with_inbound))
 	{
-	if ($DB > 0) {echo "\n|$with_inbound|$campaign_allow_inbound|\n";}
+	$multi_drop++;
+	$stmt = "select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+	$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$closer_campaigns = $row[0];
+		$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
+		$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
+		$closer_campaignsSQL = "'$closer_campaigns'";
+	if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
 
-	if ( (ereg('Y',$with_inbound)) and ($campaign_allow_inbound > 0) )
+	if ($adastats>1)
 		{
-		$stmt = "select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
-		$rslt=mysql_query($stmt, $link);
+		$stmtB="select calls_today,drops_today,answers_today,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4,hold_sec_stat_one,hold_sec_stat_two,hold_sec_answer_calls,hold_sec_drop_calls,hold_sec_queue_calls,campaign_id from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL);";
+
+		if ($DB > 0) {echo "\n|$stmtB|\n";}
+
+		$r=0;
+		$rslt=mysql_query($stmtB, $link);
+		$ingroups_to_print = mysql_num_rows($rslt);
+		if ($ingroups_to_print > 0)
+			{$ingroup_detail .= "<table cellpadding=0 cellspacing=0>";}
+			while ($ingroups_to_print > $r)
+			{
 			$row=mysql_fetch_row($rslt);
-			$closer_campaigns = $row[0];
-			$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
-			$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
-			$closer_campaignsSQL = "'$closer_campaigns'";
-		if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
+			$callsTODAY =				$row[0];
+			$dropsTODAY =				$row[1];
+			$answersTODAY =				$row[2];
+			$VSCcat1 =					$row[3];
+			$VSCcat1tally =				$row[4];
+			$VSCcat2 =					$row[5];
+			$VSCcat2tally =				$row[6];
+			$VSCcat3 =					$row[7];
+			$VSCcat3tally =				$row[8];
+			$VSCcat4 =					$row[9];
+			$VSCcat4tally =				$row[10];
+			$hold_sec_stat_one =		$row[11];
+			$hold_sec_stat_two =		$row[12];
+			$hold_sec_answer_calls =	$row[13];
+			$hold_sec_drop_calls =		$row[14];
+			$hold_sec_queue_calls =		$row[15];
+			$ingroupdetail =			$row[16];
+			if ( ($dropsTODAY > 0) and ($answersTODAY > 0) )
+				{
+				$drpctTODAY = ( ($dropsTODAY / $answersTODAY) * 100);
+				$drpctTODAY = round($drpctTODAY, 2);
+				$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
+				}
+			else
+				{$drpctTODAY=0;}
 
-		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+			if ($callsTODAY > 0)
+				{
+				$AVGhold_sec_queue_calls = ($hold_sec_queue_calls / $callsTODAY);
+				$AVGhold_sec_queue_calls = round($AVGhold_sec_queue_calls, 0);
+				}
+			else
+				{$AVGhold_sec_queue_calls=0;}
 
-		$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+			if ($dropsTODAY > 0)
+				{
+				$AVGhold_sec_drop_calls = ($hold_sec_drop_calls / $dropsTODAY);
+				$AVGhold_sec_drop_calls = round($AVGhold_sec_drop_calls, 0);
+				}
+			else
+				{$AVGhold_sec_drop_calls=0;}
+
+			if ($answersTODAY > 0)
+				{
+				$PCThold_sec_stat_one = ( ($hold_sec_stat_one / $answersTODAY) * 100);
+				$PCThold_sec_stat_one = round($PCThold_sec_stat_one, 2);
+				$PCThold_sec_stat_one = sprintf("%01.2f", $PCThold_sec_stat_one);
+				$PCThold_sec_stat_two = ( ($hold_sec_stat_two / $answersTODAY) * 100);
+				$PCThold_sec_stat_two = round($PCThold_sec_stat_two, 2);
+				$PCThold_sec_stat_two = sprintf("%01.2f", $PCThold_sec_stat_two);
+				$AVGhold_sec_answer_calls = ($hold_sec_answer_calls / $answersTODAY);
+				$AVGhold_sec_answer_calls = round($AVGhold_sec_answer_calls, 0);
+				if ($agent_non_pause_sec > 0)
+					{
+					$AVG_ANSWERagent_non_pause_sec = ($agent_non_pause_sec / $answersTODAY);
+					$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
+					$AVG_ANSWERagent_non_pause_sec = sprintf("%01.2f", $AVG_ANSWERagent_non_pause_sec);
+					}
+				else
+					{$AVG_ANSWERagent_non_pause_sec=0;}
+				}
+			else
+				{
+				$PCThold_sec_stat_one=0;
+				$PCThold_sec_stat_two=0;
+				$AVGhold_sec_answer_calls=0;
+				$AVG_ANSWERagent_non_pause_sec=0;
+				}
+
+			if (ereg("0$|2$|4$|6$|8$",$r)) {$bgcolor='#E6E6E6';}
+			else {$bgcolor='white';}
+			$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
+			$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font size=2> &nbsp; &nbsp; &nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>$ingroupdetail &nbsp; </B></TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>CHIAMATE OGGI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>TMA 1:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for Answered Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
+			$ingroup_detail .= "</TR>";
+			$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
+			$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font size=2></TD><TD ALIGN=LEFT><font size=2></TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>DROPS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>TMA 2:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for Dropped Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
+			$ingroup_detail .= "</TR>";
+			$ingroup_detail .= "<TR bgcolor=\"$bgcolor\">";
+			$ingroup_detail .= "<TD ALIGN=RIGHT bgcolor=white><font size=2></TD><TD ALIGN=LEFT><font size=2></TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>ANSWERS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>DROP PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
+			$ingroup_detail .= "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for All Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
+			$ingroup_detail .= "</TR>";
+
+			$r++;
+			}
+
+		if ($ingroups_to_print > 0)
+			{$ingroup_detail .= "</table>";}
+
+		}
+
+	$stmt="select agent_pause_codes_active from vicidial_campaigns where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+
+	$stmtB="select sum(calls_today),sum(drops_today),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4),sum(hold_sec_stat_one),sum(hold_sec_stat_two),sum(hold_sec_answer_calls),sum(hold_sec_drop_calls),sum(hold_sec_queue_calls) from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL);";
+
+	$stmtC="select agent_non_pause_sec from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+
+
+	if ($DB > 0) {echo "\n|$stmt|$stmtB|$stmtC|\n";}
+
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$agent_pause_codes_active = $row[0];
+
+	$rslt=mysql_query($stmtC, $link);
+	$row=mysql_fetch_row($rslt);
+	$agent_non_pause_sec = $row[0];
+
+	$rslt=mysql_query($stmtB, $link);
+	$row=mysql_fetch_row($rslt);
+	$callsTODAY =				$row[0];
+	$dropsTODAY =				$row[1];
+	$answersTODAY =				$row[2];
+	$VSCcat1 =					$row[3];
+	$VSCcat1tally =				$row[4];
+	$VSCcat2 =					$row[5];
+	$VSCcat2tally =				$row[6];
+	$VSCcat3 =					$row[7];
+	$VSCcat3tally =				$row[8];
+	$VSCcat4 =					$row[9];
+	$VSCcat4tally =				$row[10];
+	$hold_sec_stat_one =		$row[11];
+	$hold_sec_stat_two =		$row[12];
+	$hold_sec_answer_calls =	$row[13];
+	$hold_sec_drop_calls =		$row[14];
+	$hold_sec_queue_calls =		$row[15];
+	if ( ($dropsTODAY > 0) and ($answersTODAY > 0) )
+		{
+		$drpctTODAY = ( ($dropsTODAY / $answersTODAY) * 100);
+		$drpctTODAY = round($drpctTODAY, 2);
+		$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
+		}
+	else
+		{$drpctTODAY=0;}
+
+	if ($callsTODAY > 0)
+		{
+		$AVGhold_sec_queue_calls = ($hold_sec_queue_calls / $callsTODAY);
+		$AVGhold_sec_queue_calls = round($AVGhold_sec_queue_calls, 0);
+		}
+	else
+		{$AVGhold_sec_queue_calls=0;}
+
+	if ($dropsTODAY > 0)
+		{
+		$AVGhold_sec_drop_calls = ($hold_sec_drop_calls / $dropsTODAY);
+		$AVGhold_sec_drop_calls = round($AVGhold_sec_drop_calls, 0);
+		}
+	else
+		{$AVGhold_sec_drop_calls=0;}
+
+	if ($answersTODAY > 0)
+		{
+		$PCThold_sec_stat_one = ( ($hold_sec_stat_one / $answersTODAY) * 100);
+		$PCThold_sec_stat_one = round($PCThold_sec_stat_one, 2);
+		$PCThold_sec_stat_one = sprintf("%01.2f", $PCThold_sec_stat_one);
+		$PCThold_sec_stat_two = ( ($hold_sec_stat_two / $answersTODAY) * 100);
+		$PCThold_sec_stat_two = round($PCThold_sec_stat_two, 2);
+		$PCThold_sec_stat_two = sprintf("%01.2f", $PCThold_sec_stat_two);
+		$AVGhold_sec_answer_calls = ($hold_sec_answer_calls / $answersTODAY);
+		$AVGhold_sec_answer_calls = round($AVGhold_sec_answer_calls, 0);
+		if ($agent_non_pause_sec > 0)
+			{
+			$AVG_ANSWERagent_non_pause_sec = ($agent_non_pause_sec / $answersTODAY);
+			$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
+			$AVG_ANSWERagent_non_pause_sec = sprintf("%01.2f", $AVG_ANSWERagent_non_pause_sec);
+			}
+		else
+			{$AVG_ANSWERagent_non_pause_sec=0;}
 		}
 	else
 		{
-		$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
-
-		$stmtB="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4 from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+		$PCThold_sec_stat_one=0;
+		$PCThold_sec_stat_two=0;
+		$AVGhold_sec_answer_calls=0;
+		$AVG_ANSWERagent_non_pause_sec=0;
 		}
-	}
-if ($DB > 0) {echo "\n|$stmt|$stmtB|\n";}
 
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$DIALlev =		$row[0];
-$DIALstatusA =	$row[1];
-$DIALstatusB =	$row[2];
-$DIALstatusC =	$row[3];
-$DIALstatusD =	$row[4];
-$DIALstatusE =	$row[5];
-$DIALorder =	$row[6];
-$DIALfilter =	$row[7];
-$HOPlev =		$row[8];
-$DIALmethod =	$row[9];
-$maxDIALlev =	$row[10];
-$DROPmax =		$row[11];
-$targetDIFF =	$row[12];
-$ADAintense =	$row[13];
-$ADAavailonly =	$row[14];
-$TAPERtime =	$row[15];
-$CALLtime =		$row[16];
-$DIALtimeout =	$row[17];
-$DIALstatuses =	$row[18];
-	$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
-	$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
-
-$stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
-	{
-	$stmt="select count(*) from vicidial_hopper;";
-	}
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$VDhop = $row[0];
-
-$rslt=mysql_query($stmtB, $link);
-$row=mysql_fetch_row($rslt);
-$DAleads =		$row[0];
-$callsTODAY =	$row[1];
-$dropsTODAY =	$row[2];
-$drpctTODAY =	$row[3];
-$diffONEMIN =	$row[4];
-$agentsONEMIN = $row[5];
-$balanceFILL =	$row[6];
-$answersTODAY = $row[7];
-$VSCcat1 =		$row[8];
-$VSCcat1tally = $row[9];
-$VSCcat2 =		$row[10];
-$VSCcat2tally = $row[11];
-$VSCcat3 =		$row[12];
-$VSCcat3tally = $row[13];
-$VSCcat4 =		$row[14];
-$VSCcat4tally = $row[15];
-
-if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
-	{
-	$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
-	$diffpctONEMIN = sprintf("%01.2f", $diffpctONEMIN);
-	}
-else {$diffpctONEMIN = '0.00';}
-
-$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
-if ($group=='XXXX-ALL-ACTIVE-XXXX') 
-	{
-	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
-	}
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$balanceSHORT = $row[0];
-
-echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>LIVELLO CHIAMATE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>TRUNK SHORT/FILL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>FILTRO:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B> DATA:</B> &nbsp; </TD><TD ALIGN=LEFT><font size=2> $NOW_TIME </TD>";
-echo "";
-echo "</TR>";
-
-if ($adastats>1)
-	{
-	echo "<TR BGCOLOR=\"#CCCCCC\">";
-	echo "<TD ALIGN=RIGHT><a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=1\"><font size=1>- min </font></a><font size=2>&nbsp; <B>LIVELLO MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $maxDIALlev &nbsp; </TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>ABBATTIMENTO MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>TARGET DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>INTENSITY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
+	echo "<BR><table cellpadding=0 cellspacing=0><TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>CHIAMATE OGGI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY&nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>TMA 1:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $PCThold_sec_stat_one% &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for Answered Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_answer_calls &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B> DATA:</B> &nbsp; </TD><TD ALIGN=LEFT><font size=2> $NOW_TIME </TD>";
+	echo "";
 	echo "</TR>";
-
-	echo "<TR BGCOLOR=\"#CCCCCC\">";
-	echo "<TD ALIGN=RIGHT><font size=2><B>TIMEOUT CHIAMATA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALtimeout &nbsp;</TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>TAPER TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $TAPERtime &nbsp;</TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>LOCAL TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $CALLtime &nbsp;</TD>";
-	echo "<TD ALIGN=RIGHT><font size=2><B>AVAIL ONLY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAavailonly &nbsp;</TD>";
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DROPS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY&nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>TMA 2:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $PCThold_sec_stat_two% &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for Dropped Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_drop_calls &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2> </TD><TD ALIGN=LEFT><font size=2> </TD>";
+	echo "";
+	echo "</TR>";
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>ANSWERS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $answersTODAY&nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT COLSPAN=2><font size=2><B>(Agent non-pause time / Answers)</B></TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>Average Hold time for All Calls:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVGhold_sec_queue_calls &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2> </TD><TD ALIGN=LEFT><font size=2> </TD>";
+	echo "";
+	echo "</TR>";
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DROP PERCENT:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $drpctTODAY%&nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>PRODUCTIVITY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $AVG_ANSWERagent_non_pause_sec &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2></TD><TD ALIGN=LEFT><font size=2></TD>";
+	echo "<TD ALIGN=RIGHT><font size=2></TD><TD ALIGN=LEFT><font size=2></TD>";
+	echo "";
 	echo "</TR>";
 	}
 
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CONTATTI CHIAMABILI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CHIAMATE OGGI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>MEDIA OPERATORI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>METODO CHIAMATA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
-echo "</TR>";
-
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>LIVELLO CODA CHIAMATE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>ABBATTUTE / RISPOSTE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>ESITI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
-echo "</TR>";
-
-echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>CONTATTI IN CODA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $VDhop &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>PERCENT ABBATTIMENTO:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; ";
-if ($drpctTODAY >= $DROPmax)
-	{echo "<font color=red><B>$drpctTODAY%</B></font>";}
+##### NOT INBOUND ONLY ###
 else
-	{echo "$drpctTODAY%";}
-echo " &nbsp; &nbsp;</TD>";
+	{
+	if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+		{
+		$multi_drop++;
+		$stmt="select avg(auto_dial_level),min(dial_status_a),min(dial_status_b),min(dial_status_c),min(dial_status_d),min(dial_status_e),min(lead_order),min(lead_filter_id),sum(hopper_level),min(dial_method),avg(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),min(available_only_ratio_tally),min(adaptive_latest_server_time),min(local_call_time),avg(dial_timeout),min(dial_statuses),max(agent_pause_codes_active) from vicidial_campaigns;";
+
+		$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats;";
+		}
+	else
+		{
+		if ($DB > 0) {echo "\n|$with_inbound|$campaign_allow_inbound|\n";}
+
+		if ( (ereg('Y',$with_inbound)) and ($campaign_allow_inbound > 0) )
+			{
+			$multi_drop++;
+			$stmt = "select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+			$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$closer_campaigns = $row[0];
+				$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
+				$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
+				$closer_campaignsSQL = "'$closer_campaigns'";
+			if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
+
+			$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+
+			$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),min(status_category_1),sum(status_category_count_1),min(status_category_2),sum(status_category_count_2),min(status_category_3),sum(status_category_count_3),min(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats where campaign_id IN ('" . mysql_real_escape_string($group) . "',$closer_campaignsSQL);";
+			}
+		else
+			{
+			$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+
+			$stmtB="select dialable_leads,calls_today,drops_today,drops_answers_today_pct,differential_onemin,agents_average_onemin,balance_trunk_fill,answers_today,status_category_1,status_category_count_1,status_category_2,status_category_count_2,status_category_3,status_category_count_3,status_category_4,status_category_count_4 from vicidial_campaign_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+			}
+		}
+	if ($DB > 0) {echo "\n|$stmt|$stmtB|\n";}
+
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$DIALlev =		$row[0];
+	$DIALstatusA =	$row[1];
+	$DIALstatusB =	$row[2];
+	$DIALstatusC =	$row[3];
+	$DIALstatusD =	$row[4];
+	$DIALstatusE =	$row[5];
+	$DIALorder =	$row[6];
+	$DIALfilter =	$row[7];
+	$HOPlev =		$row[8];
+	$DIALmethod =	$row[9];
+	$maxDIALlev =	$row[10];
+	$DROPmax =		$row[11];
+	$targetDIFF =	$row[12];
+	$ADAintense =	$row[13];
+	$ADAavailonly =	$row[14];
+	$TAPERtime =	$row[15];
+	$CALLtime =		$row[16];
+	$DIALtimeout =	$row[17];
+	$DIALstatuses =	$row[18];
+		$DIALstatuses = (preg_replace("/ -$|^ /","",$DIALstatuses));
+		$DIALstatuses = (ereg_replace(' ',', ',$DIALstatuses));
+	$agent_pause_codes_active = $row[19];
 
 
+	$stmt="select count(*) from vicidial_hopper where campaign_id='" . mysql_real_escape_string($group) . "';";
+	if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+		{
+		$stmt="select count(*) from vicidial_hopper;";
+		}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$VDhop = $row[0];
+
+	$rslt=mysql_query($stmtB, $link);
+	$row=mysql_fetch_row($rslt);
+	$DAleads =		$row[0];
+	$callsTODAY =	$row[1];
+	$dropsTODAY =	$row[2];
+	$drpctTODAY =	$row[3];
+	$diffONEMIN =	$row[4];
+	$agentsONEMIN = $row[5];
+	$balanceFILL =	$row[6];
+	$answersTODAY = $row[7];
+	if ($multi_drop > 0)
+		{
+		if ( ($dropsTODAY > 0) and ($answersTODAY > 0) )
+			{
+			$drpctTODAY = ( ($dropsTODAY / $answersTODAY) * 100);
+			$drpctTODAY = round($drpctTODAY, 2);
+			$drpctTODAY = sprintf("%01.2f", $drpctTODAY);
+			}
+		else
+			{$drpctTODAY=0;}
+		}
+	$VSCcat1 =		$row[8];
+	$VSCcat1tally = $row[9];
+	$VSCcat2 =		$row[10];
+	$VSCcat2tally = $row[11];
+	$VSCcat3 =		$row[12];
+	$VSCcat3tally = $row[13];
+	$VSCcat4 =		$row[14];
+	$VSCcat4tally = $row[15];
+
+	if ( ($diffONEMIN != 0) and ($agentsONEMIN > 0) )
+		{
+		$diffpctONEMIN = ( ($diffONEMIN / $agentsONEMIN) * 100);
+		$diffpctONEMIN = sprintf("%01.2f", $diffpctONEMIN);
+		}
+	else {$diffpctONEMIN = '0.00';}
+
+	$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats where campaign_id='" . mysql_real_escape_string($group) . "';";
+	if ($group=='XXXX-ALL-ACTIVE-XXXX') 
+		{
+		$stmt="select sum(local_trunk_shortage) from vicidial_campaign_server_stats;";
+		}
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$balanceSHORT = $row[0];
+
+	echo "<BR><table cellpadding=0 cellspacing=0><TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>LIVELLO CHIAMATE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>TRUNK SHORT/FILL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>FILTRO:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B> DATA:</B> &nbsp; </TD><TD ALIGN=LEFT><font size=2> $NOW_TIME </TD>";
+	echo "";
+	echo "</TR>";
+
+	if ($adastats>1)
+		{
+		echo "<TR BGCOLOR=\"#CCCCCC\">";
+		echo "<TD ALIGN=RIGHT><a href=\"$PHP_SELF?group=$group&RR=4&DB=$DB&adastats=1\"><font size=1>- min </font></a><font size=2>&nbsp; <B>LIVELLO MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $maxDIALlev &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>ABBATTIMENTO MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>TARGET DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>INTENSITY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
+		echo "</TR>";
+
+		echo "<TR BGCOLOR=\"#CCCCCC\">";
+		echo "<TD ALIGN=RIGHT><font size=2><B>TIMEOUT CHIAMATA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALtimeout &nbsp;</TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>TAPER TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $TAPERtime &nbsp;</TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>LOCAL TIME:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $CALLtime &nbsp;</TD>";
+		echo "<TD ALIGN=RIGHT><font size=2><B>AVAIL ONLY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAavailonly &nbsp;</TD>";
+		echo "</TR>";
+		}
+
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>CONTATTI CHIAMABILI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>CHIAMATE OGGI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>MEDIA OPERATORI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>METODO CHIAMATA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
+	echo "</TR>";
+
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>LIVELLO CODA CHIAMATE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>ABBATTUTE / RISPOSTE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>ESITI:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
+	echo "</TR>";
+
+	echo "<TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>CONTATTI IN CODA:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $VDhop &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>PERCENT ABBATTIMENTO:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; ";
+	if ($drpctTODAY >= $DROPmax)
+		{echo "<font color=red><B>$drpctTODAY%</B></font>";}
+	else
+		{echo "$drpctTODAY%";}
+	echo " &nbsp; &nbsp;</TD>";
 
 
-echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>ORDINE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALorder &nbsp; &nbsp; </TD>";
-echo "</TR>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffpctONEMIN% &nbsp; &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2><B>ORDINE:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALorder &nbsp; &nbsp; </TD>";
+	echo "</TR>";
+	}
 
 echo "<TR>";
 echo "<TD ALIGN=LEFT COLSPAN=8>";
@@ -505,9 +778,15 @@ echo "</TD></TR>";
 echo "<TR>";
 echo "<TD ALIGN=LEFT COLSPAN=8>";
 
+echo "$ingroup_detail";
+
 if ($adastats<2)
 	{
-	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\"><font size=1>+ VISUALIZZA PIU DATI</font></a>";
+	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=2&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\"><font size=1>+ VIEW MORE</font></a>";
+	}
+else
+	{
+	echo "<a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=1&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\"><font size=1>+ VIEW LESS</font></a>";
 	}
 if ($UGdisplay>0)
 	{
@@ -779,7 +1058,16 @@ $HDcampaign =		"------------+";
 $HTcampaign =		" <a href=\"$PHP_SELF?group=$group&RR=$RR&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$campaignord&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\">CAMPAGNA</a>   |";
 $HDcalls =			"-------+";
 $HTcalls =			" CALLS |";
+$HDpause =	'';
+$HTpause =	'';
 
+if (!ereg("N",$agent_pause_codes_active))
+	{
+	$HDstatus =			"----------";
+	$HTstatus =			" STATUS   ";
+	$HDpause =			"-------+";
+	$HTpause =			" PAUSE |";
+	}
 if ($PHONEdisplay < 1)
 	{
 	$HDphone =	'';
@@ -815,8 +1103,8 @@ if ($SERVdisplay < 1)
 
 
 
-$Aline  = "$HDbegin$HDstation$HDphone$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDcustphone$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
-$Bline  = "$HTbegin$HTstation$HTphone$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTcustphone$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
+$Aline  = "$HDbegin$HDstation$HDphone$HDuser$HDusergroup$HDsessionid$HDbarge$HDstatus$HDpause$HDcustphone$HDserver_ip$HDcall_server_ip$HDtime$HDcampaign$HDcalls\n";
+$Bline  = "$HTbegin$HTstation$HTphone$HTuser$HTusergroup$HTsessionid$HTbarge$HTstatus$HTpause$HTcustphone$HTserver_ip$HTcall_server_ip$HTtime$HTcampaign$HTcalls\n";
 $Aecho .= "$Aline";
 $Aecho .= "$Bline";
 $Aecho .= "$Aline";
@@ -876,6 +1164,7 @@ $talking_to_print = mysql_num_rows($rslt);
 		}
 
 $callerids='';
+$pausecode='';
 $stmt="select callerid,lead_id,phone_number from vicidial_auto_calls;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
@@ -1013,6 +1302,11 @@ $calls_to_list = mysql_num_rows($rslt);
 		$comments=		$Acomments[$i];
 		$calls_today =	sprintf("%-5s", $Acalls_today[$i]);
 
+		if (!ereg("N",$agent_pause_codes_active))
+			{$pausecode='       ';}
+		else
+			{$pausecode='';}
+
 		if (eregi("INCALL",$Lstatus)) 
 			{
 	### temporarily deactivate DEAD calls display until bug is fixed
@@ -1109,6 +1403,17 @@ $calls_to_list = mysql_num_rows($rslt);
 			}
 		if ($Lstatus=='PAUSED') 
 			{
+			if (!ereg("N",$agent_pause_codes_active))
+				{
+				$stmtC="select sub_status from vicidial_agent_log where user='$Luser' order by agent_log_id desc limit 1;";
+				$rsltC=mysql_query($stmtC,$link);
+				$rowC=mysql_fetch_row($rsltC);
+				$pausecode = sprintf("%-6s", $rowC[0]);
+				$pausecode = "$pausecode ";
+				}
+			else
+				{$pausecode='';}
+
 			if ($call_time_M_int >= 360) 
 				{$j++; continue;} 
 			else
@@ -1173,7 +1478,7 @@ $calls_to_list = mysql_num_rows($rslt);
 
 		$agentcount++;
 
-		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM | $CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
+		$Aecho .= "| $G$extension$EG |$phoneD <a href=\"./user_status.php?user=$Luser\" target=\"_blank\">$G$user$EG</a> |$UGD $G$sessionid$EG$L$R | $G$status$EG $CM $pausecode| $CP$SVD$G$call_time_MS$EG | $G$campaign_id$EG | $G$calls_today$EG |$INGRP\n";
 
 		$j++;
 		}
