@@ -172,12 +172,13 @@
 # 81106-0410 - Added force_timeclock_login option to LoginCampaigns function
 # 81107-0424 - Added carryover of script and presets for in-group calls from campaign settings
 # 81110-0058 - Changed Pause time to start new vicidial_agent_log on every pause
+# 81110-1512 - Added hangup_all_non_reserved to fix non-Hangup bug
 #
 
-$version = '2.0.5-90';
-$build = '81110-0058';
+$version = '2.0.5-91';
+$build = '81110-1512';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=182;
+$mysql_log_count=183;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -329,6 +330,8 @@ if (isset($_GET["conf_dialed"]))				{$conf_dialed=$_GET["conf_dialed"];}
 	elseif (isset($_POST["conf_dialed"]))		{$conf_dialed=$_POST["conf_dialed"];}
 if (isset($_GET["leaving_threeway"]))			{$leaving_threeway=$_GET["leaving_threeway"];}
 	elseif (isset($_POST["leaving_threeway"]))	{$leaving_threeway=$_POST["leaving_threeway"];}
+if (isset($_GET["hangup_all_non_reserved"]))			{$hangup_all_non_reserved=$_GET["hangup_all_non_reserved"];}
+	elseif (isset($_POST["hangup_all_non_reserved"]))	{$hangup_all_non_reserved=$_POST["hangup_all_non_reserved"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -2090,7 +2093,7 @@ if ($stage == "end")
 			else
 				{
 		#		if (preg_match("/$agentchannel/i",$row[0]))
-				if ($agentchannel == "$row[0]")
+				if ( ($agentchannel == "$row[0]") or (ereg('ASTblind',$row[0])) )
 					{
 					$donothing=1;
 					}
@@ -2105,7 +2108,7 @@ if ($stage == "end")
 			}
 
 		### if a conference call or 3way call was attempted, then hangup all channels except for the agentchannel
-		if ( ($conf_dialed > 0) and ($leaving_threeway < 1) )
+		if ( ( ($conf_dialed > 0) or ($hangup_all_non_reserved > 0) ) and ($leaving_threeway < 1) )
 			{
 			$loop_count=0;
 			while($loop_count < $total_hangup)
