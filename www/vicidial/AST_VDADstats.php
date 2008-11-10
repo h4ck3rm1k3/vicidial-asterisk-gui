@@ -14,6 +14,7 @@
 # 80709-0230 - Added time stats to call statuses
 # 80717-2118 - Added calls/hour out of agent login time in status summary
 # 80722-2049 - Added Status Category stats
+# 81109-2341 - Added Productivity Rating
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -208,6 +209,7 @@ else
 echo "Total Calls placed from this Campaign:        $TOTALcalls\n";
 echo "Average Call Length for all Calls in seconds: $average_hold_seconds\n";
 
+
 echo "\n";
 echo "---------- DROPS\n";
 
@@ -297,6 +299,46 @@ else
 echo "Total DROP Calls:                             $DROPcalls  $DROPpercent%\n";
 echo "Percent of DROP Calls taken out of Answers:   $DROPcalls / $ANSWERcalls  $DROPANSWERpercent%\n";
 echo "Average Length for DROP Calls in seconds:     $average_hold_seconds\n";
+
+
+
+
+
+$stmt = "select closer_campaigns from vicidial_campaigns where campaign_id='" . mysql_real_escape_string($group) . "';";
+$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$closer_campaigns = $row[0];
+	$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
+	$closer_campaigns = preg_replace("/ /","','",$closer_campaigns);
+	$closer_campaignsSQL = "'$closer_campaigns'";
+if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
+
+$stmt="select count(*) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($closer_campaignsSQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE');";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+$TOTALanswers = ($row[0] + $ANSWERcalls);
+
+
+$stmt = "SELECT sum(wait_sec + talk_sec + dispo_sec) from vicidial_agent_log where campaign_id='" . mysql_real_escape_string($group) . "' and event_time >= '$query_date_BEGIN' and event_time <= '$query_date_END';";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$row=mysql_fetch_row($rslt);
+$agent_non_pause_sec = $row[0];
+
+if ($agent_non_pause_sec > 0)
+	{
+	$AVG_ANSWERagent_non_pause_sec = (($TOTALanswers / $agent_non_pause_sec) * 60);
+	$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
+	}
+else
+	{$AVG_ANSWERagent_non_pause_sec=0;}
+$AVG_ANSWERagent_non_pause_sec = sprintf("%10s", $AVG_ANSWERagent_non_pause_sec);
+
+echo "Productivity Rating:                          $AVG_ANSWERagent_non_pause_sec\n";
+
+
+
 
 echo "\n";
 echo "---------- AUTO-DIAL NO ANSWERS\n";

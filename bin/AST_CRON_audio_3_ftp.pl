@@ -24,6 +24,8 @@
 # FLAG FOR NO DATE DIRECTORY ON FTP
 # --NODATEDIR
 #
+# if pinging is not working, try the 'icmp' Ping command in the code instead
+# 
 # make sure that the following directories exist:
 # /var/spool/asterisk/monitorDONE	# where the mixed -all files are put
 # 
@@ -251,6 +253,7 @@ foreach(@FILES)
 
 	### BEGIN Remote file transfer
 			$p = Net::Ping->new();
+	#		$p = Net::Ping->new("icmp");
 			$ping_good = $p->ping("$VARFTP_host");
 
 			if ($ping_good)
