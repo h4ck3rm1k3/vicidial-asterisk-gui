@@ -14,6 +14,7 @@
 # 81030-0346 - Added pause code stats
 # 81030-1924 - Added total non-pause and total logged-in time to pause code section
 # 81108-0716 - fixed user same-name bug
+# 81110-0056 - fixed pause code display bug
 #
 
 require("dbconnect.php");
@@ -614,6 +615,8 @@ while ($i < $subs_to_print)
 	$PCpause_sec[$i] =	$row[2];
 	$sub_status[$i] =	$row[3];
 	$PCnon_pause_sec[$i] =	$row[4];
+
+#	echo "$sub_status[$i]|$PCpause_sec[$i]\n";
 #	if ( (!eregi("-$sub_status[$i]-", $sub_statuses)) and (strlen($sub_status[$i])>0) )
 	if (!eregi("-$sub_status[$i]-", $sub_statuses))
 		{
@@ -671,7 +674,7 @@ while ($m < $k)
 		$SstatusTXT='';
 		### BEGIN loop through each stat line ###
 		$i=0; $status_found=0;
-		while ($i < $rows_to_print)
+		while ($i < $subs_to_print)
 			{
 			if ( ($Suser=="$PCuser[$i]") and ($Sstatus=="$sub_status[$i]") )
 				{
@@ -773,7 +776,7 @@ while ($n < $j)
 	$SUMstatusTXT='';
 	### BEGIN loop through each stat line ###
 	$i=0; $status_found=0;
-	while ($i < $rows_to_print)
+	while ($i < $subs_to_print)
 		{
 		if ($Sstatus=="$sub_status[$i]")
 			{

@@ -205,10 +205,11 @@
 # 81104-0140 - Added mysql error logging capability
 # 81104-1618 - Changed MySQL queries logging
 # 81106-0411 - Changedthe campaign login list behaviour
+# 81110-0057 - Changed Pause time to start new vicidial_agent_log on every pause
 #
 
-$version = '2.0.5-184';
-$build = '81106-0411';
+$version = '2.0.5-185';
+$build = '81110-0057';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=51;
 $one_mysql_log=0;
@@ -4322,7 +4323,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{ 
 				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 					{
-			//		alert(xmlhttp.responseText);
+					var check_dispo = null;
+					check_dispo = xmlhttp.responseText;
+					var check_DS_array=check_dispo.split("\n");
+				//	alert(xmlhttp.responseText + "\n|" + check_DS_array[1] + "\n|" + check_DS_array[2] + "|");
+					if (check_DS_array[1] == 'Next agent_log_id:')
+						{
+						agent_log_id = check_DS_array[2];
+						}
 					}
 				}
 			delete xmlhttp;
@@ -5530,14 +5538,14 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						{ 
 						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
 							{
-							var check_dispo = null;
-							check_dispo = xmlhttp.responseText;
-							var check_DS_array=check_dispo.split("\n");
+						//	var check_dispo = null;
+						//	check_dispo = xmlhttp.responseText;
+						//	var check_DS_array=check_dispo.split("\n");
 						//	alert(xmlhttp.responseText + "\n|" + check_DS_array[1] + "\n|" + check_DS_array[2] + "|");
-							if (check_DS_array[1] == 'Next agent_log_id:')
-								{
-								agent_log_id = check_DS_array[2];
-								}
+						//	if (check_DS_array[1] == 'Next agent_log_id:')
+						//		{
+						//		agent_log_id = check_DS_array[2];
+						//		}
 							}
 						}
 					delete xmlhttp;
@@ -5603,7 +5611,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (auto_dial_level != '0')
 							{
 							AutoDialWaiting = 0;
-							AutoDial_ReSume_PauSe("VDADpause","NO");
+							AutoDial_ReSume_PauSe("VDADpause");
 					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
 							}
 						VICIDiaL_pause_calling = 1;
@@ -5617,7 +5625,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (auto_dial_level != '0')
 							{
 							AutoDialWaiting = 1;
-							AutoDial_ReSume_PauSe("VDADready","NO");
+							AutoDial_ReSume_PauSe("VDADready","NEW_ID");
 					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
 							}
 						else
@@ -5805,7 +5813,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (auto_dial_level > 0)
 			{
-			AutoDial_ReSume_PauSe("VDADpause","NO");
+			AutoDial_ReSume_PauSe("VDADpause");
 			}
 		}
 
@@ -6846,7 +6854,7 @@ else
 							if (auto_dial_level != '0')
 								{
 								AutoDialWaiting = 0;
-								AutoDial_ReSume_PauSe("VDADpause","NO");
+								AutoDial_ReSume_PauSe("VDADpause");
 						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
 								}
 							VICIDiaL_pause_calling = 1;
@@ -6860,7 +6868,7 @@ else
 							if (auto_dial_level != '0')
 								{
 								AutoDialWaiting = 1;
-								AutoDial_ReSume_PauSe("VDADready","NO");
+								AutoDial_ReSume_PauSe("VDADready");
 						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
 								}
 							}
