@@ -173,10 +173,11 @@
 # 81107-0424 - Added carryover of script and presets for in-group calls from campaign settings
 # 81110-0058 - Changed Pause time to start new vicidial_agent_log on every pause
 # 81110-1512 - Added hangup_all_non_reserved to fix non-Hangup bug
+# 81111-1630 - Added another hangup fix for non-hangup
 #
 
-$version = '2.0.5-91';
-$build = '81110-1512';
+$version = '2.0.5-92';
+$build = '81111-1630';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=183;
 $one_mysql_log=0;
@@ -2106,6 +2107,38 @@ if ($stage == "end")
 			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
 			$loop_count++; 
 			}
+
+		$loop_count=0;
+		$stmt="SELECT channel FROM live_channels where server_ip = '$server_ip' and extension = '$conf_exten' order by channel desc;";
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00184',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($rslt) {$rec_list = mysql_num_rows($rslt);}
+			while ($rec_list>$loop_count)
+			{
+			$row=mysql_fetch_row($rslt);
+			if (preg_match("/Local\/$conf_silent_prefix$conf_exten\@/i",$row[0]))
+				{
+				$rec_channels[$total_rec] = "$row[0]";
+				$total_rec++;
+				}
+			else
+				{
+		#		if (preg_match("/$agentchannel/i",$row[0]))
+				if ( ($agentchannel == "$row[0]") or (ereg('ASTblind',$row[0])) )
+					{
+					$donothing=1;
+					}
+				else
+					{
+					$hangup_channels[$total_hangup] = "$row[0]";
+					$total_hangup++;
+					}
+				}
+			if ($format=='debug') {echo "\n<!-- $row[0] -->";}
+			$loop_count++; 
+			}
+
 
 		### if a conference call or 3way call was attempted, then hangup all channels except for the agentchannel
 		if ( ( ($conf_dialed > 0) or ($hangup_all_non_reserved > 0) ) and ($leaving_threeway < 1) )
