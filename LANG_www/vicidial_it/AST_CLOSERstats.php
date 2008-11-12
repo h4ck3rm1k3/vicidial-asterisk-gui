@@ -17,6 +17,7 @@
 # 81015-0705 - Added IVR calls count
 # 81024-0037 - Added multi-select inbound-groups
 # 81105-2118 - Added Answered calls 15-minute breakdown
+# 81109-2340 - Added custom indicators section
 #
 
 require("dbconnect.php");
@@ -271,7 +272,7 @@ if ($group_ct > 1)
 		if ($DB) {echo "$stmt\n";}
 		$rowx=mysql_fetch_row($rslt);
 
-		$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='$group[$i]' and status IN('DROP','XDROP') and (length_in_sec <= 9999 or length_in_sec is null);";
+		$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id='$group[$i]' and status IN('DROP','XDROP') and (length_in_sec <= 49999 or length_in_sec is null);";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$rowy=mysql_fetch_row($rslt);
@@ -307,7 +308,7 @@ $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 
-$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE');";
+$stmt="select count(*),sum(queue_seconds) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE');";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rowy=mysql_fetch_row($rslt);
@@ -352,10 +353,11 @@ echo "Answered Calls:                               $ANSWEREDcalls  $ANSWEREDper
 echo "Average queue time for Answered Calls:        $average_answer_seconds seconds\n";
 echo "Calls taken into the IVR for this In-Gruppo:   $IVRcalls\n";
 
+
 echo "\n";
 echo "---------- ABBATTUTE\n";
 
-$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status IN('DROP','XDROP') and (length_in_sec <= 9999 or length_in_sec is null);";
+$stmt="select count(*),sum(length_in_sec) from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and campaign_id IN($group_SQL) and status IN('DROP','XDROP') and (length_in_sec <= 49999 or length_in_sec is null);";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
@@ -389,6 +391,47 @@ else
 
 echo "Totale Chiamate ABBATTUTE: $DROPcalls  $DROPpercent%               drop/answered: $DROP_ANSWEREDpercent%\n";
 echo "Average hold time for DROP Calls:             $average_hold_seconds seconds\n";
+
+
+
+
+if (strlen($group_SQL)>3)
+	{
+	$stmt = "SELECT answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two from vicidial_inbound_groups where group_id IN($group_SQL) order by answer_sec_pct_rt_stat_one desc limit 1;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$row=mysql_fetch_row($rslt);
+	$Sanswer_sec_pct_rt_stat_one = $row[0];
+	$Sanswer_sec_pct_rt_stat_two = $row[1];
+
+	$stmt = "SELECT count(*) from vicidial_closer_log where campaign_id IN($group_SQL) and call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and queue_seconds <= $Sanswer_sec_pct_rt_stat_one;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$row=mysql_fetch_row($rslt);
+	$answer_sec_pct_rt_stat_one = $row[0];
+
+	$stmt = "SELECT count(*) from vicidial_closer_log where campaign_id IN($group_SQL) and call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and queue_seconds <= $Sanswer_sec_pct_rt_stat_two;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$row=mysql_fetch_row($rslt);
+	$answer_sec_pct_rt_stat_two = $row[0];
+
+	if ( ($ANSWEREDcalls > 0) and ($answer_sec_pct_rt_stat_one > 0) and ($answer_sec_pct_rt_stat_two > 0) )
+		{
+		$PCTanswer_sec_pct_rt_stat_one = (($answer_sec_pct_rt_stat_one / $ANSWEREDcalls) * 100);
+		$PCTanswer_sec_pct_rt_stat_one = round($PCTanswer_sec_pct_rt_stat_one, 0);
+		#$PCTanswer_sec_pct_rt_stat_one = sprintf("%10s", $PCTanswer_sec_pct_rt_stat_one);
+		$PCTanswer_sec_pct_rt_stat_two = (($answer_sec_pct_rt_stat_two / $ANSWEREDcalls) * 100);
+		$PCTanswer_sec_pct_rt_stat_two = round($PCTanswer_sec_pct_rt_stat_two, 0);
+		#$PCTanswer_sec_pct_rt_stat_two = sprintf("%10s", $PCTanswer_sec_pct_rt_stat_two);
+		}
+	}
+echo "\n";
+echo "---------- CUSTOM INDICATORS\n";
+echo "GDE (Answered/Llamadas totales tomadas in to this In-Group):  $ANSWEREDpercent%\n";
+echo "ACR (Dropped/Answered):                                $DROP_ANSWEREDpercent%\n";
+echo "TMR1 (Answered within $Sanswer_sec_pct_rt_stat_one seconds/Answered):            $PCTanswer_sec_pct_rt_stat_one%\n";
+echo "TMR2 (Answered within $Sanswer_sec_pct_rt_stat_two seconds/Answered):            $PCTanswer_sec_pct_rt_stat_two%\n";
 
 
 # GET LIST OF ALL STATUSES and create SQL from human_answered statuses
@@ -609,7 +652,7 @@ echo "          +---------------------------------------------------------------
 echo "          |     0     5    10    15    20    25    30    35    40    45    50    55    60    90   +90 | TOTAL      |\n";
 echo "----------+-------------------------------------------------------------------------------------------+------------+\n";
 
-$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
+$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date_BEGIN' and call_date <= '$query_date_END' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE') group by queue_seconds;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $reasons_to_print = mysql_num_rows($rslt);
@@ -1375,7 +1418,7 @@ while ($i <= 96)
 	$ad_0=0; $ad_5=0; $ad10=0; $ad15=0; $ad20=0; $ad25=0; $ad30=0; $ad35=0;
 	$ad40=0; $ad45=0; $ad50=0; $ad55=0; $ad60=0; $ad90=0; $ad99=0; $BDansweredCALLS=0; 
 
-	$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date $SQLtime' and call_date < '$query_date $SQLtimeEND' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE') group by queue_seconds;";
+	$stmt="select count(*),queue_seconds from vicidial_closer_log where call_date >= '$query_date $SQLtime' and call_date < '$query_date $SQLtimeEND' and  campaign_id IN($group_SQL) and status NOT IN('DROP','XDROP','HXFER','QVMAIL','HOLDTO','LIVE','QUEUE') group by queue_seconds;";
 	$rslt=mysql_query($stmt, $link);
 	if ($DB) {echo "$stmt\n";}
 	$reasons_to_print = mysql_num_rows($rslt);

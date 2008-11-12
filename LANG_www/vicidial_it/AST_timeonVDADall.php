@@ -116,7 +116,7 @@ if (!isset($SERVdisplay))	{$SERVdisplay=1;}	# 0=no, 1=yes
 if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
 if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=0;}	# 0=no, 1=yes
-if (!isset($with_inbound))	{$with_inbound='N';}  # 0=no, 1=yes
+if (!isset($with_inbound))	{$with_inbound='N';}  # N=no, Y=yes, O=only
 if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
 $ingroup_detail='';
 
@@ -428,7 +428,7 @@ if (ereg('O',$with_inbound))
 				$AVGhold_sec_answer_calls = round($AVGhold_sec_answer_calls, 0);
 				if ($agent_non_pause_sec > 0)
 					{
-					$AVG_ANSWERagent_non_pause_sec = ($agent_non_pause_sec / $answersTODAY);
+					$AVG_ANSWERagent_non_pause_sec = (($answersTODAY / $agent_non_pause_sec) * 60);
 					$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
 					$AVG_ANSWERagent_non_pause_sec = sprintf("%01.2f", $AVG_ANSWERagent_non_pause_sec);
 					}
@@ -545,7 +545,7 @@ if (ereg('O',$with_inbound))
 		$AVGhold_sec_answer_calls = round($AVGhold_sec_answer_calls, 0);
 		if ($agent_non_pause_sec > 0)
 			{
-			$AVG_ANSWERagent_non_pause_sec = ($agent_non_pause_sec / $answersTODAY);
+			$AVG_ANSWERagent_non_pause_sec = (($answersTODAY / $agent_non_pause_sec) * 60);
 			$AVG_ANSWERagent_non_pause_sec = round($AVG_ANSWERagent_non_pause_sec, 2);
 			$AVG_ANSWERagent_non_pause_sec = sprintf("%01.2f", $AVG_ANSWERagent_non_pause_sec);
 			}
