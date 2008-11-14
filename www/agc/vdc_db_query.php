@@ -174,10 +174,11 @@
 # 81110-0058 - Changed Pause time to start new vicidial_agent_log on every pause
 # 81110-1512 - Added hangup_all_non_reserved to fix non-Hangup bug
 # 81111-1630 - Added another hangup fix for non-hangup
+# 81114-0126 - More vicidial_agent_log bug fixes
 #
 
-$version = '2.0.5-92';
-$build = '81111-1630';
+$version = '2.0.5-93';
+$build = '81114-0126';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=183;
 $one_mysql_log=0;
@@ -2242,8 +2243,9 @@ if ($stage == "end")
 
 
 	$talk_sec=0;
+	$talk_epochSQL='';
 	$StarTtime = date("U");
-	$stmt = "select talk_epoch,talk_sec from vicidial_agent_log where agent_log_id='$agent_log_id';";
+	$stmt = "select talk_epoch,talk_sec,wait_sec from vicidial_agent_log where agent_log_id='$agent_log_id';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00101',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2251,9 +2253,14 @@ if ($stage == "end")
 	if ($VDpr_ct > 0)
 		{
 		$row=mysql_fetch_row($rslt);
+		if ( (eregi("NULL",$row[0])) or ($row[0] < 1000) )
+			{
+			$talk_epochSQL=",talk_epoch='$StarTtime'";
+			$row[0]=$row[2];
+			}
 		$talk_sec = (($StarTtime - $row[0]) + $row[1]);
 		}
-	$stmt="UPDATE vicidial_agent_log set talk_sec='$talk_sec',talk_epoch='$StarTtime',dispo_epoch='$StarTtime' where agent_log_id='$agent_log_id';";
+	$stmt="UPDATE vicidial_agent_log set talk_sec='$talk_sec',dispo_epoch='$StarTtime' $talk_epochSQL where agent_log_id='$agent_log_id';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00102',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3068,8 +3075,9 @@ if ($ACTION == 'updateDISPO')
 	}
 
 	$dispo_sec=0;
+	$dispo_epochSQL='';
 	$StarTtime = date("U");
-	$stmt = "select dispo_epoch,dispo_sec from vicidial_agent_log where agent_log_id='$agent_log_id';";
+	$stmt = "select dispo_epoch,dispo_sec,talk_epoch from vicidial_agent_log where agent_log_id='$agent_log_id';";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00150',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3077,9 +3085,14 @@ if ($ACTION == 'updateDISPO')
 	if ($VDpr_ct > 0)
 		{
 		$row=mysql_fetch_row($rslt);
+		if ( (eregi("NULL",$row[0])) or ($row[0] < 1000) )
+			{
+			$dispo_epochSQL=",dispo_epoch='$StarTtime'";
+			$row[0]=$row[2];
+			}
 		$dispo_sec = (($StarTtime - $row[0]) + $row[1]);
 		}
-	$stmt="UPDATE vicidial_agent_log set dispo_sec='$dispo_sec',dispo_epoch='$StarTtime',status='$dispo_choice' where agent_log_id='$agent_log_id';";
+	$stmt="UPDATE vicidial_agent_log set dispo_sec='$dispo_sec',status='$dispo_choice' $dispo_epochSQL where agent_log_id='$agent_log_id';";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00151',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3394,6 +3407,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	if ($VDpr_ct > 0)
 		{
 		$row=mysql_fetch_row($rslt);
+		$dispo_epoch = $row[4];
 		$wait_sec=0;
 		if ($row[2] > 0)
 			{
@@ -3407,17 +3421,23 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		}
 	if ($ACTION == 'VDADready')
 		{
-		$stmt="UPDATE vicidial_agent_log set pause_sec='$pause_sec',wait_epoch='$StarTtime' where agent_log_id='$agent_log_id';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00170',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ( (eregi("NULL",$dispo_epoch)) or ($dispo_epoch < 1000) )
+			{
+			$stmt="UPDATE vicidial_agent_log set pause_sec='$pause_sec',wait_epoch='$StarTtime' where agent_log_id='$agent_log_id';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00170',$user,$server_ip,$session_name,$one_mysql_log);}
+			}
 		}
 	if ($ACTION == 'VDADpause')
 		{
-		$stmt="UPDATE vicidial_agent_log set wait_sec='$wait_sec' where agent_log_id='$agent_log_id';";
-			if ($format=='debug') {echo "\n<!-- $stmt -->";}
-		$rslt=mysql_query($stmt, $link);
-		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00171',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ( (eregi("NULL",$dispo_epoch)) or ($dispo_epoch < 1000) )
+			{
+			$stmt="UPDATE vicidial_agent_log set wait_sec='$wait_sec' where agent_log_id='$agent_log_id';";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00171',$user,$server_ip,$session_name,$one_mysql_log);}
+			}
 		
 		$agent_log = 'NEW_ID';
 		}
