@@ -16,6 +16,7 @@
 # 60711-0945 - Changed to DBI by Marin Blu
 # 60715-2301 - Changed to use /etc/astguiclient.conf for configs
 # 81029-0124 - Added portion to clean up queue_log entries if QM enabled
+# 81114-0155 - Added portion to remove queue_log COMPLETE duplicates
 #
 
 # constants
@@ -563,6 +564,32 @@ if ($enable_queuemetrics_logging > 0)
 		$h++;
 		}
 
+
+	##### grab all queue_log entries with more than one COMPLETE verb to clean up
+	$stmtB = "SELECT call_id, count(*) FROM queue_log WHERE verb IN('COMPLETEAGENT','COMPLETECALLER','TRANSFER') GROUP BY call_id HAVING count(*)>1 ORDER BY count(*) DESC;";
+	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+	$XC_records=$sthB->rows;
+	if ($DB) {print "Extra COMPLETE Records: $XC_records|$stmtB|\n\n";}
+	$h=0;
+	while ($XC_records > $h)
+		{
+		@aryB = $sthB->fetchrow_array;
+		$CDcall_id[$h] =	"$aryB[0]";
+		$h++;
+		}
+	$sthB->finish();
+
+	$h=0;
+	while ($XC_records > $h)
+		{
+		##### grab oldest COMPLETE record to delete
+		$stmtB = "DELETE FROM queue_log WHERE call_id='$CDcall_id[$h]' and verb IN('COMPLETEAGENT','COMPLETECALLER','TRANSFER') ORDER BY unique_row_count DESC LIMIT 1;";
+		if (!$TEST)	{$Baffected_rows = $dbhB->do($stmtB);  }
+		if ($DB) {print "Extra COMPLETE Record Deleted: $Baffected_rows|$stmtB|\n\n";}
+
+		$h++;
+		}
 
 	$dbhB->disconnect();
 	}
