@@ -180,7 +180,7 @@
 $version = '2.0.5-93';
 $build = '81114-0126';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=183;
+$mysql_log_count=184;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -498,6 +498,7 @@ if ($ACTION == 'LogiNCamPaigns')
 			$stmt="SELECT event from vicidial_timeclock_log where user='$user' and event_epoch >= '$EoD' order by timeclock_id desc limit 1;";
 			if ($DB>0) {echo "|$stmt|";}
 			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00184',$user,$server_ip,$session_name,$one_mysql_log);}
 			$events_to_parse = mysql_num_rows($rslt);
 			if ($events_to_parse > 0)
 				{

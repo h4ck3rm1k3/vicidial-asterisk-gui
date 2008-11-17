@@ -202,12 +202,12 @@ else
 	{$UpsalePERCENT = (($rowD[1] / $Utotal) * 100);   $UpsalePERCENT = round($UpsalePERCENT, 2);}
 $UpsalePERCENT =	sprintf("%6s", $UpsalePERCENT);
 
-$archv =	sprintf("%7s", $rowD[0]);
-$Uarchv =	sprintf("%7s", $rowD[1]);
-if ( ($Utotal < 1) or ($rowD[1] < 1) )
+$archv =	sprintf("%7s", $rowE[0]);
+$Uarchv =	sprintf("%7s", $rowE[1]);
+if ( ($Utotal < 1) or ($rowE[1] < 1) )
 	{$UarchvPERCENT = '0';}
 else
-	{$UarchvPERCENT = (($rowD[1] / $Utotal) * 100);   $UarchvPERCENT = round($UarchvPERCENT, 2);}
+	{$UarchvPERCENT = (($rowE[1] / $Utotal) * 100);   $UarchvPERCENT = round($UarchvPERCENT, 2);}
 $UarchvPERCENT =	sprintf("%6s", $UarchvPERCENT);
 
 $total =	sprintf("%7s", $total);

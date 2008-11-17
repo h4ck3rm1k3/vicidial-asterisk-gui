@@ -212,7 +212,7 @@
 $version = '2.0.5-186';
 $build = '81110-1514';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=51;
+$mysql_log_count=53;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -285,7 +285,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -299,6 +299,7 @@ while ($i < $qm_conf_ct)
 	$vdc_customer_date_format =		$row[2];
 	$vdc_header_phone_format =		$row[3];
 	$WeBRooTWritablE =				$row[4];
+	$timeclock_end_of_day =			$row[5];
 
 	$i++;
 	}
@@ -711,6 +712,48 @@ $VDloginDISPLAY=0;
 		$VU_user_group=$row[10];
 		$VU_vicidial_recording_override=$row[11];
 		$VU_alter_custphone_override=$row[12];
+
+		
+		### BEGIN - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
+		$stmt="SELECT forced_timeclock_login from vicidial_user_groups where user_group='$VU_user_group';";
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01052',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+		$row=mysql_fetch_row($rslt);
+		$forced_timeclock_login = $row[0];
+
+		if ( (ereg('Y',$forced_timeclock_login)) or ( (ereg('ADMIN_EXEMPT',$forced_timeclock_login)) and ($VU_user_level < 8) ) )
+			{
+			$last_agent_event='';
+			$HHMM = date("Hi");
+			$HHteod = substr($timeclock_end_of_day,0,2);
+			$MMteod = substr($timeclock_end_of_day,2,2);
+
+			if ($HHMM < $timeclock_end_of_day)
+				{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d")-1, date("Y"));}
+			else
+				{$EoD = mktime($HHteod, $MMteod, 10, date("m"), date("d"), date("Y"));}
+
+			$EoDdate = date("Y-m-d H:i:s", $EoD);
+
+			##### grab timeclock logged-in time for each user #####
+			$stmt="SELECT event from vicidial_timeclock_log where user='$VD_login' and event_epoch >= '$EoD' order by timeclock_id desc limit 1;";
+			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01053',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+			$events_to_parse = mysql_num_rows($rslt);
+			if ($events_to_parse > 0)
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$last_agent_event = $rowx[0];
+				}
+			if ($DB>0) {echo "|$stmt|$events_to_parse|$last_agent_event|";}
+			if ( (strlen($last_agent_event)<2) or (ereg('LOGOUT',$last_agent_event)) )
+				{
+				$VDloginDISPLAY=1;
+				$VDdisplayMESSAGE = "YOU MUST LOG IN TO THE TIMECLOCK FIRST<BR>";
+				}
+			}
+		### END - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
+
 
 		if ($WeBRooTWritablE > 0)
 			{
