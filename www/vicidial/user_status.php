@@ -7,6 +7,7 @@
 #
 # 60619-1738 - Added variable filtering to eliminate SQL injection attack threat
 # 80603-1452 - Added manager timeclock force login/logout of user
+# 81118-1034 - Disabled change campaign because it does not work
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -398,7 +399,7 @@ if ($agents_to_print > 0)
 				$o++;
 			}
 		echo "</SELECT>\n";
-		echo "<input type=submit name=submit value=CHANGE><BR></form>\n";
+		echo "<input type=submit name=submit value=CHANGE disabled><BR></form>\n";
 
 
 		echo "<form action=$PHP_SELF method=POST>\n";
