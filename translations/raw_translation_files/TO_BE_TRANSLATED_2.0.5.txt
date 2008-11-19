@@ -377,6 +377,9 @@ Alt Count: ||
 Change this phone number to INACTIVE||
 Change this phone number to ACTIVE||
 YOU MUST LOG IN TO THE TIMECLOCK FIRST||
+ACTIVE LISTS CHANGED||
+SUBMIT ACTIVE LIST CHANGES||
+LAST CALL DATE||
 
 
 ############################################################  MANAGER Manual

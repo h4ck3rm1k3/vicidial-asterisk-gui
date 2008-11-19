@@ -853,6 +853,8 @@ if (isset($_GET["answer_sec_pct_rt_stat_one"]))				{$answer_sec_pct_rt_stat_one=
 	elseif (isset($_POST["answer_sec_pct_rt_stat_one"]))	{$answer_sec_pct_rt_stat_one=$_POST["answer_sec_pct_rt_stat_one"];}
 if (isset($_GET["answer_sec_pct_rt_stat_two"]))				{$answer_sec_pct_rt_stat_two=$_GET["answer_sec_pct_rt_stat_two"];}
 	elseif (isset($_POST["answer_sec_pct_rt_stat_two"]))	{$answer_sec_pct_rt_stat_two=$_POST["answer_sec_pct_rt_stat_two"];}
+if (isset($_GET["list_active_change"]))				{$list_active_change=$_GET["list_active_change"];}
+	elseif (isset($_POST["list_active_change"]))	{$list_active_change=$_POST["list_active_change"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -1476,11 +1478,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 81103-1408 - Added 3way call dial prefix option
 # 81107-1551 - Added Stats Percent of Calls Answered Within X seconds fields to in-groups
 # 81118-0933 - Changed lists listing with links and more options
+# 81119-0715 - Added ability to bulk enable/disable lists from modify campaign screen
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-150';
-$build = '81118-0933';
+$admin_version = '2.0.5-151';
+$build = '81119-0715';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -7628,84 +7631,113 @@ $ADD=3;		# go to user modification below
 if ($ADD==41)
 {
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 		{
-		 echo "<br>CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered\n";
-		 echo "<br>the campaign name needs to be at least 6 characters in length\n";
-		 echo "<br>|$campaign_name|$active|\n";
-		}
-	 else
-		{
-		echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		if ($dial_method == 'MANUAL') 
+		if (ereg('list_activation',$stage))
 			{
-			$auto_dial_level='0';
-			$adlSQL = "auto_dial_level='0',";
-			}
-		else
-			{
-			if ($dial_level_override > 0)
+			$p=0;
+			echo "<BR>ACTIVE LISTS CHANGED";
+			$list_active_change_ct = count($list_active_change);
+			while ($p < $list_active_change_ct)
 				{
-				$adlSQL = "auto_dial_level='$auto_dial_level',";
+				$LIST_ACTIVATE .= "'$list_active_change[$p]',";
+				$p++;
 				}
-			else
-				{
-				if ($dial_method == 'RATIO')
-					{
-					if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
-					$adlSQL = "auto_dial_level='$auto_dial_level',";
-					}
-				else
-					{
-					$adlSQL = "";
-					if ($auto_dial_level < 1) 
-						{
-						$auto_dial_level = "1.0";
-						$adlSQL = "auto_dial_level='$auto_dial_level',";
-						}
-					}
-				}
-			}
-		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
-			{$hopper_level='100';}
-
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix' where campaign_id='$campaign_id';";
-		$rslt=mysql_query($stmtA, $link);
-
-		if ($reset_hopper == 'Y')
-			{
-			echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
-			echo "<br> - Wait 1 minute before dialing next number\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
+			
+			$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
+			$rslt=mysql_query($stmtB, $link);
 
-			### LOG RESET TO LOG FILE ###
+			### LOG LIST ACTIVATIONS TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|CAMPAIGN LIST CHANGE|$PHP_AUTH_USER|$ip|$stmt|$stmtB|\n");
 				fclose($fp);
 				}
-			}
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+			if ($DB > 0) {echo "|$stmt|\n|$stmtB|\n";}
+			}
+		else
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
-			fclose($fp);
+			 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
+				{
+				 echo "<br>CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered\n";
+				 echo "<br>the campaign name needs to be at least 6 characters in length\n";
+				 echo "<br>|$campaign_name|$active|\n";
+				}
+			 else
+				{
+				echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
+
+				if ($dial_method == 'MANUAL') 
+					{
+					$auto_dial_level='0';
+					$adlSQL = "auto_dial_level='0',";
+					}
+				else
+					{
+					if ($dial_level_override > 0)
+						{
+						$adlSQL = "auto_dial_level='$auto_dial_level',";
+						}
+					else
+						{
+						if ($dial_method == 'RATIO')
+							{
+							if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
+							$adlSQL = "auto_dial_level='$auto_dial_level',";
+							}
+						else
+							{
+							$adlSQL = "";
+							if ($auto_dial_level < 1) 
+								{
+								$auto_dial_level = "1.0";
+								$adlSQL = "auto_dial_level='$auto_dial_level',";
+								}
+							}
+						}
+					}
+				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+					{$hopper_level='100';}
+
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmtA, $link);
+
+				if ($reset_hopper == 'Y')
+					{
+					echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
+					echo "<br> - Wait 1 minute before dialing next number\n";
+					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG RESET TO LOG FILE ###
+					if ($WeBRooTWritablE > 0)
+						{
+						$fp = fopen ("./admin_changes_log.txt", "a");
+						fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
+						fclose($fp);
+						}
+					}
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
+					fclose($fp);
+					}
+				}
 			}
 		}
-	}
-	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
-	}
+		else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -7821,76 +7853,106 @@ $ADD=31;	# go to campaign modification form below
 if ($ADD==44)
 {
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 		{
-		 echo "<br>CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered\n";
-		 echo "<br>the campaign name needs to be at least 6 characters in length\n";
-		}
-	 else
-		{
-		echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		if ($dial_method == 'RATIO')
+		if (ereg('list_activation',$stage))
 			{
-			if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
-			$adlSQL = "auto_dial_level='$auto_dial_level',";
-			}
-		else
-			{
-			if ($dial_method == 'MANUAL') 
+			$p=0;
+			echo "<BR>ACTIVE LISTS CHANGED";
+			$list_active_change_ct = count($list_active_change);
+			while ($p < $list_active_change_ct)
 				{
-				$auto_dial_level='0';
-				$adlSQL = "auto_dial_level='0',";
+				$LIST_ACTIVATE .= "'$list_active_change[$p]',";
+				$p++;
 				}
-			else
-				{
-				$adlSQL = "";
-				if ($auto_dial_level < 1) 
-					{
-					$auto_dial_level = "1.0";
-					$adlSQL = "auto_dial_level='$auto_dial_level',";
-					}
-				}
-			}
-		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
-			{$hopper_level='100';}
-
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
-		$rslt=mysql_query($stmtA, $link);
-
-		if ($reset_hopper == 'Y')
-			{
-			echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
-			echo "<br> - Wait 1 minute before dialing next number\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
+			
+			$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
+			$rslt=mysql_query($stmtB, $link);
 
-			### LOG HOPPER RESET TO LOG FILE ###
+			### LOG LIST ACTIVATIONS TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
 				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
+				fwrite ($fp, "$date|CAMPAIGN LIST CHANGE|$PHP_AUTH_USER|$ip|$stmt|$stmtB|\n");
 				fclose($fp);
 				}
-			}
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+			if ($DB > 0) {echo "|$stmt|\n|$stmtB|\n";}
+			}
+		else
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
-			fclose($fp);
+
+			 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
+				{
+				 echo "<br>CAMPAIGN NOT MODIFIED - Please go back and look at the data you entered\n";
+				 echo "<br>the campaign name needs to be at least 6 characters in length\n";
+				}
+			 else
+				{
+				echo "<br><B>CAMPAIGN MODIFIED: $campaign_id</B>\n";
+
+				if ($dial_method == 'RATIO')
+					{
+					if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
+					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					}
+				else
+					{
+					if ($dial_method == 'MANUAL') 
+						{
+						$auto_dial_level='0';
+						$adlSQL = "auto_dial_level='0',";
+						}
+					else
+						{
+						$adlSQL = "";
+						if ($auto_dial_level < 1) 
+							{
+							$auto_dial_level = "1.0";
+							$adlSQL = "auto_dial_level='$auto_dial_level',";
+							}
+						}
+					}
+				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+					{$hopper_level='100';}
+
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmtA, $link);
+
+				if ($reset_hopper == 'Y')
+					{
+					echo "<br>RESETTING CAMPAIGN LEAD HOPPER\n";
+					echo "<br> - Wait 1 minute before dialing next number\n";
+					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG HOPPER RESET TO LOG FILE ###
+					if ($WeBRooTWritablE > 0)
+						{
+						$fp = fopen ("./admin_changes_log.txt", "a");
+						fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
+						fclose($fp);
+						}
+					}
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
+					fclose($fp);
+					}
+				}
 			}
 		}
-	}
-	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
-	}
+		else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 $ADD=34;	# go to campaign modification form below
 }
 
@@ -11550,6 +11612,12 @@ if ($ADD==31)
 		echo "</TABLE></center></FORM>\n";
 
 	echo "<center>\n";
+
+	echo "<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=41>\n";
+	echo "<input type=hidden name=DB value=$DB>\n";
+	echo "<input type=hidden name=stage value=list_activation>\n";
+	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 	echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
 
 	echo "<TABLE><TR><TD>\n";
@@ -11581,7 +11649,7 @@ if ($ADD==31)
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
+		echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
 		echo "</TR>\n";
@@ -11599,16 +11667,29 @@ if ($ADD==31)
 			echo "<td><font size=1> $row[2]</td>";
 			echo "<td><font size=1> $row[3]</td>";
 			echo "<td><font size=1> $row[4]</td>";
+			echo "<td>";
+
+			if (ereg('Y',$row[4]))
+				{
+				$active_lists++;
+				$camp_lists .= "'$row[0]',";
+				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+				}
+			else
+				{
+				$inactive_lists++;
+				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+				}
+
+			echo "</td>";
 			echo "<td><font size=1> $row[5]</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
-
-				if (ereg("Y", $row[4])) {$active_lists++;   $camp_lists .= "'$row[0]',";}
-				if (ereg("N", $row[4])) {$inactive_lists++;}
 
 			$o++;
 			}
 
-		echo "</TABLE></center><BR>\n";
+		echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
+		echo "</TABLE></center><BR></FORM>\n";
 
 	echo "<center><b>\n";
 
@@ -12333,7 +12414,13 @@ if ($ADD==34)
 		echo "</TABLE></center></FORM>\n";
 
 		echo "<center>\n";
-		echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
+
+	echo "<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=44>\n";
+	echo "<input type=hidden name=DB value=$DB>\n";
+	echo "<input type=hidden name=stage value=list_activation>\n";
+	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+	echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
 
 	echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -12364,7 +12451,7 @@ if ($ADD==34)
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
+		echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
 		echo "</TR>\n";
@@ -12382,6 +12469,21 @@ if ($ADD==34)
 			echo "<td><font size=1> $row[2]</td>";
 			echo "<td><font size=1> $row[3]</td>";
 			echo "<td><font size=1> $row[4]</td>";
+			echo "<td>";
+
+			if (ereg('Y',$row[4]))
+				{
+				$active_lists++;
+				$camp_lists .= "'$row[0]',";
+				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+				}
+			else
+				{
+				$inactive_lists++;
+				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+				}
+
+			echo "</td>";
 			echo "<td><font size=1> $row[5]</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
 
@@ -12391,7 +12493,8 @@ if ($ADD==34)
 			$o++;
 			}
 
-		echo "</TABLE></center><BR>\n";
+		echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
+		echo "</TABLE></center><BR></FORM>\n";
 		echo "<center><b>\n";
 
 		$filterSQL = $filtersql_list[$lead_filter_id];
