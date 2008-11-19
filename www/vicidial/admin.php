@@ -11583,7 +11583,6 @@ if ($ADD==31)
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CAMPAIGNlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>CAMPAIGN</B></a></TD>\n";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
 		echo "</TR>\n";
 
@@ -11601,7 +11600,6 @@ if ($ADD==31)
 			echo "<td><font size=1> $row[3]</td>";
 			echo "<td><font size=1> $row[4]</td>";
 			echo "<td><font size=1> $row[5]</td>";
-			echo "<td><font size=1> $row[6]</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
 
 				if (ereg("Y", $row[4])) {$active_lists++;   $camp_lists .= "'$row[0]',";}
@@ -12368,7 +12366,6 @@ if ($ADD==34)
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
 		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CAMPAIGNlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>CAMPAIGN</B></a></TD>\n";
 		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
 		echo "</TR>\n";
 
@@ -12386,7 +12383,6 @@ if ($ADD==34)
 			echo "<td><font size=1> $row[3]</td>";
 			echo "<td><font size=1> $row[4]</td>";
 			echo "<td><font size=1> $row[5]</td>";
-			echo "<td><font size=1> $row[6]</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
 
 				if (ereg("Y", $row[4])) {$active_lists++;   $camp_lists .= "'$row[0]',";}

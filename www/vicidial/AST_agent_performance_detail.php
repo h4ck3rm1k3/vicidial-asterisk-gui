@@ -323,8 +323,9 @@ while ($m < $k)
 	if ( ($Scalls > 0) and ($Sdispo_sec > 0) ) {$Sdispo_avg = ($Sdispo_sec/$Scalls);}
 		else {$Sdispo_avg=0;}
 
-	$Scalls =	sprintf("%6s", $Scalls);
 	$RAWuser = $Suser;
+	$RAWcalls = $Scalls;
+	$Scalls =	sprintf("%6s", $Scalls);
 
 	if ($non_latin < 1)
 		{
@@ -438,11 +439,11 @@ while ($m < $k)
 	$TOPsorted_output[$m] = $Toutput;
 
 	if ($stage == 'ID')
-		{$TOPsort[$m] =	'' . sprintf("%08s", $Suser) . '-----' . $m . '-----' . sprintf("%020s", $Suser);}
+		{$TOPsort[$m] =	'' . sprintf("%08s", $RAWuser) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
 	if ($stage == 'CALLS')
-		{$TOPsort[$m] =	'' . sprintf("%08s", $Scalls) . '-----' . $m . '-----' . sprintf("%020s", $Suser);}
+		{$TOPsort[$m] =	'' . sprintf("%08s", $RAWcalls) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
 	if ($stage == 'TIME')
-		{$TOPsort[$m] =	'' . sprintf("%08s", $Stime) . '-----' . $m . '-----' . sprintf("%020s", $Suser);}
+		{$TOPsort[$m] =	'' . sprintf("%08s", $Stime) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
 	if (!ereg("ID|TIME|CALLS",$stage))
 		{echo "$Toutput";}
 
@@ -455,7 +456,10 @@ while ($m < $k)
 ### BEGIN sort through output to display properly ###
 if (ereg("ID|TIME|CALLS",$stage))
 	{
-	sort($TOPsort, SORT_NUMERIC);
+	if (ereg("ID",$stage))
+		{sort($TOPsort, SORT_NUMERIC);}
+	if (ereg("TIME|CALLS",$stage))
+		{rsort($TOPsort, SORT_NUMERIC);}
 
 	$m=0;
 	while ($m < $k)
