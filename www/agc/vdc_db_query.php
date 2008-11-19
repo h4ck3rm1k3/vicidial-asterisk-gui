@@ -175,10 +175,11 @@
 # 81110-1512 - Added hangup_all_non_reserved to fix non-Hangup bug
 # 81111-1630 - Added another hangup fix for non-hangup
 # 81114-0126 - More vicidial_agent_log bug fixes
+# 81119-1809 - webform backslash fix
 #
 
-$version = '2.0.5-93';
-$build = '81114-0126';
+$version = '2.0.5-94';
+$build = '81119-1809';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=184;
 $one_mysql_log=0;
@@ -2617,7 +2618,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$row=mysql_fetch_row($rslt);
 				$VDCL_group_name =					$row[0];
 				$VDCL_group_color =					$row[1];
-				$VDCL_group_web	=					$row[2];
+				$VDCL_group_web	=					stripslashes($row[2]);
 				$VDCL_fronter_display =				$row[3];
 				$VDCL_ingroup_script =				$row[4];
 				$VDCL_get_call_launch =				$row[5];

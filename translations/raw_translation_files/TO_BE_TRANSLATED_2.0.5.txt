@@ -380,6 +380,8 @@ YOU MUST LOG IN TO THE TIMECLOCK FIRST||
 ACTIVE LISTS CHANGED||
 SUBMIT ACTIVE LIST CHANGES||
 LAST CALL DATE||
+User Group Bulk Change||
+Bulk Group Change||
 
 
 ############################################################  MANAGER Manual

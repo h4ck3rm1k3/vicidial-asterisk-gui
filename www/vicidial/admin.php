@@ -2,7 +2,7 @@
 # admin.php - VICIDIAL administration page
 #
 # Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
-#
+# 
 
 require("dbconnect.php");
 
@@ -5031,7 +5031,7 @@ if (strlen($ingroups_hh) > 1) {
 <? } 
 if (strlen($usergroups_hh) > 1) { 
 	?>
-<TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show User Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User Group </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Group Hourly Report </a></TD></TR>
+<TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show User Groups </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User Group </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Group Hourly Report </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="user_group_bulk_change.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Bulk Group Change </a></TD></TR>
 <? } 
 if (strlen($remoteagent_hh) > 1) { 
 	?>
@@ -11067,7 +11067,7 @@ if ($ADD==31)
 		$dial_status_d = $row[6];
 		$dial_status_e = $row[7];
 		$lead_order = $row[8];
-		$web_form_address = $row[11];
+		$web_form_address = stripslashes($row[11]);
 		$allow_closers = $row[12];
 		$hopper_level = $row[13];
 		$auto_dial_level = $row[14];
@@ -11133,7 +11133,7 @@ if ($ADD==31)
 		$qc_shift_id = $row[74];
 		$qc_get_record_launch = $row[75];
 		$qc_show_recording = $row[76];
-		$qc_web_form_address = $row[77];
+		$qc_web_form_address = stripslashes($row[77]);
 		$qc_script = $row[78];
 		$survey_first_audio_file = $row[79];
 		$survey_dtmf_digits = $row[80];
@@ -13547,7 +13547,7 @@ if ($ADD==3111)
 	$group_name =				$row[1];
 	$group_color =				$row[2];
 	$active =					$row[3];
-	$web_form_address =			$row[4];
+	$web_form_address =			stripslashes($row[4]);
 	$voicemail_ext =			$row[5];
 	$next_agent_call =			$row[6];
 	$fronter_display =			$row[7];
@@ -13582,7 +13582,7 @@ if ($ADD==3111)
 	$qc_shift_id =				$row[36];
 	$qc_get_record_launch =		$row[37];
 	$qc_show_recording =		$row[38];
-	$qc_web_form_address =		$row[39];
+	$qc_web_form_address =		stripslashes($row[39]);
 	$qc_script =				$row[40];
 	$play_place_in_line = 		$row[41];
 	$play_estimate_hold_time = 	$row[42];

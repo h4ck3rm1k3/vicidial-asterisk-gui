@@ -207,10 +207,11 @@
 # 81106-0411 - Changedthe campaign login list behaviour
 # 81110-0057 - Changed Pause time to start new vicidial_agent_log on every pause
 # 81110-1514 - Added hangup_all_non_reserved to fix non-Hangup bug
+# 81119-1811 - webform backslash fix
 #
 
-$version = '2.0.5-186';
-$build = '81110-1514';
+$version = '2.0.5-187';
+$build = '81119-1811';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -885,7 +886,7 @@ $VDloginDISPLAY=0;
 			$row=mysql_fetch_row($rslt);
 				$park_ext =					$row[0];
 				$park_file_name =			$row[1];
-				$web_form_address =			$row[2];
+				$web_form_address =			stripslashes($row[2]);
 				$allow_closers =			$row[3];
 				$auto_dial_level =			$row[4];
 				$dial_timeout =				$row[5];
