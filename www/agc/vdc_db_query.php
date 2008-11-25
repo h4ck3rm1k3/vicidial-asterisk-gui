@@ -77,7 +77,8 @@
 #  - $agentchannel = ('Zap/1-1','SIP/testing-6ry4i3',...)
 #  - $conf_dialed = ('0','1')
 #  - $leaving_threeway = ('0','1')
-
+#  - $blind_transfer = ('0','1')
+#
 # CHANGELOG:
 # 50629-1044 - First build of script
 # 50630-1422 - Added manual dial action and MD channel lookup
@@ -176,10 +177,11 @@
 # 81111-1630 - Added another hangup fix for non-hangup
 # 81114-0126 - More vicidial_agent_log bug fixes
 # 81119-1809 - webform backslash fix
+# 81124-2212 - Fixes blind transfer bug
 #
 
-$version = '2.0.5-94';
-$build = '81119-1809';
+$version = '2.0.5-95';
+$build = '81124-2212';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=184;
 $one_mysql_log=0;
@@ -335,6 +337,8 @@ if (isset($_GET["leaving_threeway"]))			{$leaving_threeway=$_GET["leaving_threew
 	elseif (isset($_POST["leaving_threeway"]))	{$leaving_threeway=$_POST["leaving_threeway"];}
 if (isset($_GET["hangup_all_non_reserved"]))			{$hangup_all_non_reserved=$_GET["hangup_all_non_reserved"];}
 	elseif (isset($_POST["hangup_all_non_reserved"]))	{$hangup_all_non_reserved=$_POST["hangup_all_non_reserved"];}
+if (isset($_GET["blind_transfer"]))				{$blind_transfer=$_GET["blind_transfer"];}
+	elseif (isset($_POST["blind_transfer"]))	{$blind_transfer=$_POST["blind_transfer"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -2144,7 +2148,7 @@ if ($stage == "end")
 
 
 		### if a conference call or 3way call was attempted, then hangup all channels except for the agentchannel
-		if ( ( ($conf_dialed > 0) or ($hangup_all_non_reserved > 0) ) and ($leaving_threeway < 1) )
+		if ( ( ($conf_dialed > 0) or ($hangup_all_non_reserved > 0) ) and ($leaving_threeway < 1) and ($blind_transfer < 1) )
 			{
 			$loop_count=0;
 			while($loop_count < $total_hangup)

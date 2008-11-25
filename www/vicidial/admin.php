@@ -1489,6 +1489,8 @@ $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
 $MT[0]='';
 $US='_';
+$active_lists=0;
+$inactive_lists=0;
 
 $month_old = mktime(0, 0, 0, date("m")-1, date("d"),  date("Y"));
 $past_month_date = date("Y-m-d H:i:s",$month_old);
@@ -12486,9 +12488,6 @@ if ($ADD==34)
 			echo "</td>";
 			echo "<td><font size=1> $row[5]</td>";
 			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
-
-				if (ereg("Y", $row[4])) {$active_lists++;   $camp_lists .= "'$row[0]',";}
-				if (ereg("N", $row[4])) {$inactive_lists++;}
 
 			$o++;
 			}

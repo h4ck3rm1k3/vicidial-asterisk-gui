@@ -514,7 +514,8 @@ if ( ($ct_day_start > 0) || ($ct_day_stop > 0) )
 	$ct_default_stop	=	$ct_day_stop;
 	}
 
-$AGI->stream_file('beep');
+$AGI->stream_file('sip-silence');
+$AGI->stream_file('sip-silence');
 
 if ($call_handle_method =~ /DIGITID$/)
 {

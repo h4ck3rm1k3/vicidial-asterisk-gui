@@ -208,10 +208,11 @@
 # 81110-0057 - Changed Pause time to start new vicidial_agent_log on every pause
 # 81110-1514 - Added hangup_all_non_reserved to fix non-Hangup bug
 # 81119-1811 - webform backslash fix
+# 81124-2213 - Fixes blind transfer bug
 #
 
-$version = '2.0.5-187';
-$build = '81119-1811';
+$version = '2.0.5-188';
+$build = '81124-2213';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -2140,6 +2141,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var agentphonelive = 0;
 	var conf_dialed = 0;
 	var leaving_threeway = 0;
+	var blind_transfer = 0;
 	var hangup_all_non_reserved = '<? echo $hangup_all_non_reserved ?>';
 	var dial_method = '<? echo $dial_method ?>';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
@@ -2945,6 +2947,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 // Covers the following types: XFER, VMAIL, ENTRY, CONF, PARK, FROMPARK, XfeRLOCAL, XfeRINTERNAL, XfeRBLIND, VfeRVMAIL
 	function mainxfer_send_redirect(taskvar,taskxferconf,taskserverip,taskdebugnote) 
 		{
+		blind_transfer=1;
 	//	conf_dialed=1;
 		if (auto_dial_level == 0) {RedirecTxFEr = 1;}
 		var xmlhttpXF=false;
@@ -3084,6 +3087,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (taskvar == 'ParK')
 				{
+				blind_transfer=0;
 				var queryCID = "LPvdcW" + epoch_sec + user_abb;
 				var redirectdestination = taskxferconf;
 				var redirectdestserverip = taskserverip;
@@ -3095,6 +3099,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				}
 			if (taskvar == 'FROMParK')
 				{
+				blind_transfer=0;
 				var queryCID = "FPvdcW" + epoch_sec + user_abb;
 				var redirectdestination = taskxferconf;
 				var redirectdestserverip = taskserverip;
@@ -3267,7 +3272,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			"&list_id=" + document.vicidial_form.list_id.value + 
 			"&length_in_sec=0&phone_code=" + document.vicidial_form.phone_code.value + 
 			"&phone_number=" + lead_dial_number + 
-			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&alt_dial=" + dialed_label + "&DB=0" + "&agentchannel=" + agentchannel + "&conf_dialed=" + conf_dialed + "&leaving_threeway=" + leaving_threeway + "&hangup_all_non_reserved=" + hangup_all_non_reserved;
+			"&exten=" + extension + "&channel=" + lastcustchannel + "&start_epoch=" + MDlogEPOCH + "&auto_dial_level=" + auto_dial_level + "&VDstop_rec_after_each_call=" + VDstop_rec_after_each_call + "&conf_silent_prefix=" + conf_silent_prefix + "&protocol=" + protocol + "&extension=" + extension + "&ext_context=" + ext_context + "&conf_exten=" + session_id + "&user_abb=" + user_abb + "&agent_log_id=" + agent_log_id + "&MDnextCID=" + LasTCID + "&inOUT=" + inOUT + "&alt_dial=" + dialed_label + "&DB=0" + "&agentchannel=" + agentchannel + "&conf_dialed=" + conf_dialed + "&leaving_threeway=" + leaving_threeway + "&hangup_all_non_reserved=" + hangup_all_non_reserved + "&blind_transfer=" + blind_transfer;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 		//		document.getElementById("busycallsdebug").innerHTML = "vdc_db_query.php?" + manDiaLlog_query;
@@ -5503,6 +5508,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	function WeBForMDispoSelect_submit()
 		{
 		leaving_threeway=0;
+		blind_transfer=0;
 		document.vicidial_form.callchannel.value = '';
 		document.vicidial_form.callserverip.value = '';
 		document.vicidial_form.xferchannel.value = '';
@@ -5538,6 +5544,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		else
 			{var group = campaign;}
 		leaving_threeway=0;
+		blind_transfer=0;
 		document.vicidial_form.callchannel.value = '';
 		document.vicidial_form.callserverip.value = '';
 		document.vicidial_form.xferchannel.value = '';
