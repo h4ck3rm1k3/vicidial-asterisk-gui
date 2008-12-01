@@ -178,10 +178,11 @@
 # 81114-0126 - More vicidial_agent_log bug fixes
 # 81119-1809 - webform backslash fix
 # 81124-2212 - Fixes blind transfer bug
+# 81126-1522 - Fixed callback comments bug
 #
 
-$version = '2.0.5-95';
-$build = '81124-2212';
+$version = '2.0.5-96';
+$build = '81126-1522';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=184;
 $one_mysql_log=0;
@@ -3125,9 +3126,10 @@ if ($ACTION == 'updateDISPO')
 	### CALLBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
+		$comments = eregi_replace('"','',$comments);
 		$comments = eregi_replace("'",'',$comments);
-		$comments = eregi_replace("\\",' ',$comments);
 		$comments = eregi_replace(';','',$comments);
+		$comments = eregi_replace("\\\\",' ',$comments);
 		$stmt="INSERT INTO vicidial_callbacks (lead_id,list_id,campaign_id,status,entry_time,callback_time,user,recipient,comments,user_group) values('$lead_id','$list_id','$campaign','ACTIVE','$NOW_TIME','$CallBackDatETimE','$user','$recipient','$comments','$user_group');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
