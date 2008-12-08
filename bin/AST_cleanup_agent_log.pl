@@ -17,6 +17,7 @@
 # 60715-2301 - Changed to use /etc/astguiclient.conf for configs
 # 81029-0124 - Added portion to clean up queue_log entries if QM enabled
 # 81114-0155 - Added portion to remove queue_log COMPLETE duplicates
+# 81208-0133 - Added portion to check for more missing queue_log entries
 #
 
 # constants
@@ -41,7 +42,7 @@ if (length($ARGV[0])>1)
 		print "  [-last-24hours] = will clean up logs for the last 24 hours only\n";
 		print "  [-more-than-24hours] = will clean up logs older than 24 hours only\n";
 		print "  [-q] = quiet, no output\n";
-		print "  [-t] = test\n";
+		print "  [-test] = test\n";
 		print "  [-debug] = verbose debug messages\n";
 		print "  [-debugX] = Extra-verbose debug messages\n\n";
 		exit;
@@ -62,7 +63,7 @@ if (length($ARGV[0])>1)
 			$DBX=1;
 			if ($Q < 1) {print "\n----- SUPER-DUPER DEBUGGING -----\n\n";}
 			}
-		if ($args =~ /-t/i)
+		if ($args =~ /-test/i)
 			{
 			$TEST=1;
 			$T=1;
@@ -81,7 +82,7 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-more-than-24hours/i)
 			{
 			$TWENTYFOUR_OLDER=1;
-			if ($Q < 1) {print "\n----- LAST 24 HOURS ONLY -----\n\n";}
+			if ($Q < 1) {print "\n----- MORE THAN 24 HOURS OLD ONLY -----\n\n";}
 			}
 		}
 }
@@ -240,7 +241,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 		{
 		$stmtA = "UPDATE vicidial_agent_log set pause_sec='$pause_sec[$h]' where agent_log_id='$agent_log_id[$h]';";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
-		if (!$TEST)	{$affected_rows = $dbhA->do($stmtA); }
+		if ($TEST < 1)	{$affected_rows = $dbhA->do($stmtA); }
 		$h++;
 		}
 	if ($DB) {print STDERR "     Pause times fixed: $h\n";}
@@ -283,7 +284,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 		{
 		$stmtA = "UPDATE vicidial_agent_log set wait_sec='$wait_sec[$h]' where agent_log_id='$agent_log_id[$h]';";
 			if($DBX){print STDERR "\n|$stmtA|\n";}
-		if (!$TEST)	{$affected_rows = $dbhA->do($stmtA); }
+		if ($TEST < 1)	{$affected_rows = $dbhA->do($stmtA); }
 		$h++;
 		}
 	if ($DB) {print STDERR "     Wait times fixed: $h\n";}
@@ -326,7 +327,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 		{
 		$stmtA = "UPDATE vicidial_agent_log set talk_sec='$talk_sec[$h]' where agent_log_id='$agent_log_id[$h]';";
 			if($DBX){print STDERR "|$stmtA|\n";}
-		if (!$TEST)	{$affected_rows = $dbhA->do($stmtA);  }
+		if ($TEST < 1)	{$affected_rows = $dbhA->do($stmtA);  }
 		$h++;
 		}
 	if ($DB) {print STDERR "     Talk times fixed: $h\n";}
@@ -340,7 +341,7 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 	if ($DB) {print " - cleaning up dispo time\n";}
 		$stmtA = "UPDATE vicidial_agent_log set dispo_sec='0' where dispo_sec>43999 $VDAD_SQL_time;";
 			if($DBX){print STDERR "|$stmtA|\n";}
-	if (!$TEST)
+	if ($TEST < 1)
 		{
 		$affected_rows = $dbhA->do($stmtA); 	
 	    }
@@ -387,6 +388,7 @@ if ($enable_queuemetrics_logging > 0)
 	$CONNECTinsert=0;
 	$noCONNECT=0;
 	$noCALLSTATUS=0;
+	$noCOMPLETEinsert=0;
 	##### grab all queue_log entries for ENTERQUEUE verb to validate
 	$stmtB = "SELECT time_id,call_id,queue,agent,verb,serverid FROM queue_log where verb='ENTERQUEUE' $QM_SQL_time order by time_id;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
@@ -476,11 +478,11 @@ if ($enable_queuemetrics_logging > 0)
 					if ($COMPLETEqueue[$h] < 1)
 						{
 						$stmtB = "UPDATE queue_log SET queue='$queue[$h]' where verb IN('COMPLETEAGENT','COMPLETECALLER') and call_id='$call_id[$h]' and agent='$Cagent[$h]';";
-						if (!$TEST)
+						if ($TEST < 1)
 							{
 							$Baffected_rows = $dbhB->do($stmtB);
 							}
-						if ($DB) {print "MCRI: $affected_rows|$stmtB|\n";}
+						if ($DB) {print "MCRI: $Baffected_rows|$stmtB|\n";}
 						$COMPLETEupdate++;
 						}
 					}
@@ -489,11 +491,11 @@ if ($enable_queuemetrics_logging > 0)
 					##### insert a COMPLETEAGENT record for this call into the queue_log
 					$CALLtime[$h] = ($Stime_id[$h] - $time_id[$h]);
 					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$Stime_id[$h]',call_id='$Scall_id[$h]',queue='$Squeue[$h]',agent='$Sagent[$h]',verb='COMPLETEAGENT',data1='$Cdata1[$h]',data2='$CALLtime[$h]',data3='1',serverid='$Sserverid[$h]';";
-					if (!$TEST)
+					if ($TEST < 1)
 						{
 						$Baffected_rows = $dbhB->do($stmtB);
 						}
-					if ($DB) {print "MCRI: $affected_rows|$stmtB|\n";}
+					if ($DB) {print "MCRI: $Baffected_rows|$stmtB|\n";}
 					$COMPLETEinsert++;
 					}
 				}
@@ -523,12 +525,76 @@ if ($enable_queuemetrics_logging > 0)
 					##### insert a CALLSTATUS record for this call into the queue_log
 					$CALLtime[$h] = ($Stime_id[$h] - $time_id[$h]);
 					$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$Stime_id[$h]',call_id='$Scall_id[$h]',queue='$Cqueue[$h]',agent='$Sagent[$h]',verb='CALLSTATUS',data1='PU',serverid='$Sserverid[$h]';";
-					if (!$TEST)
+					if ($TEST < 1)
 						{
 						$Baffected_rows = $dbhB->do($stmtB);
 						}
-					if ($DB) {print "MCSI: $affected_rows|$stmtB|\n";}
+					if ($DB) {print "MCSI: $Baffected_rows|$stmtB|\n";}
 					$CONNECTinsert++;
+					}
+				else
+					{
+					$old_call_sec = ($secX - 10800);
+					if ($Ctime_id[$h] < $old_call_sec) 
+						{
+						$search_sec_BEGIN = ($Ctime_id[$h] - 3600);
+						$search_sec_END = ($Ctime_id[$h] + 3600);
+						$search_lead_id = substr($call_id[$h], 11, 9);
+						$search_lead_id = ($search_lead_id + 0);
+						$VALuser = $Cagent[$h];
+						$VALuser =~ s/Agent\///gi;
+
+						##### insert a COMPLETEAGENT record for this call into the queue_log
+						$stmtA = "SELECT pause_epoch,wait_epoch,talk_epoch,dispo_epoch,status FROM vicidial_agent_log where lead_id='$search_lead_id' and user='$VALuser' and pause_epoch > \"$search_sec_BEGIN\" and pause_epoch < \"$search_sec_END\" order by pause_epoch desc;";
+						$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+						$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+						$sthArows=$sthA->rows;
+						$rec_count=0;
+						while ($sthArows > $rec_count)
+							{
+							 @aryA = $sthA->fetchrow_array;
+								$VALpause =	"$aryA[0]";
+								$VALwait =	"$aryA[1]";
+								$VALtalk =	"$aryA[2]";
+								$VALdispo =	"$aryA[3]";
+								$VALstatus ="$aryA[4]";
+								$queuemetrics_log_id =		"$aryA[5]";
+								$queuemetrics_eq_prepend =	"$aryA[6]";
+							 $rec_count++;
+							}
+						$sthA->finish();
+						
+						if ($rec_count > 0)
+							{
+							$Stime_id[$h]=0;
+							if ($VALwait >= $Ctime_id[$h]) {$Stime_id[$h] = $VALwait;}
+							if ($VALtalk >= $Ctime_id[$h]) {$Stime_id[$h] = $VALtalk;}
+							if ($VALdispo >= $Ctime_id[$h]) {$Stime_id[$h] = $VALdispo;}
+							if ($Stime_id[$h] < 1) {$Stime_id[$h] = ($time_id[$h] + 1);}
+							$VALstatus =~ s/ //gi;
+							if ( ($VALstatus =~ /NULL/i) || (length($VALstatus<1)) ) {$VALstatus='ERI';}
+
+							##### insert a COMPLETEAGENT record for this call into the queue_log
+							$CALLtime[$h] = ($Stime_id[$h] - $time_id[$h]);
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$Stime_id[$h]',call_id='$Ccall_id[$h]',queue='$Cqueue[$h]',agent='$Cagent[$h]',verb='COMPLETEAGENT',data1='$Cdata1[$h]',data2='$CALLtime[$h]',data3='1',serverid='$Cserverid[$h]';";
+							if ($TEST < 1)
+								{
+								$Baffected_rows = $dbhB->do($stmtB) or die "ERROR: $stmtB" . DBI->errstr;
+								}
+							if ($DB) {print "MNCI: $Baffected_rows|$stmtB|$TEST\n";}
+
+							##### insert a CALLSTATUS record for this call into the queue_log
+							$CALLtime[$h] = ($Stime_id[$h] - $time_id[$h]);
+							$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$Stime_id[$h]',call_id='$Ccall_id[$h]',queue='$Cqueue[$h]',agent='$Cagent[$h]',verb='CALLSTATUS',data1='$VALstatus',serverid='$Cserverid[$h]';";
+							if ($TEST < 1)
+								{
+								$Baffected_rows = $dbhB->do($stmtB) or die "ERROR: $stmtB" . DBI->errstr;
+								}
+							if ($DB) {print "MNCI: $Baffected_rows|$stmtB|$TEST\n";}
+							$noCOMPLETEinsert++;
+
+							}
+						}
 					}
 				}
 			}
@@ -559,7 +625,7 @@ if ($enable_queuemetrics_logging > 0)
 			if ($h =~ /7$/) {$k='-';}
 			if ($h =~ /8$/) {$k="\\";}
 			if ($h =~ /9$/) {$k='0';}
-			print STDERR "$k  $noCONNECT $noCALLSTATUS $COMPLETEinsert|$COMPLETEupdate $CONNECTinsert $h/$EQ_records  $DBSQLdate|$time_id[$h]   $Ctime_id[$h]|$CQ_records   $Stime_id[$h]|$SQ_records   $call_id[$h]|$COMPLETEcount[$h]\r";
+			print STDERR "$k  $noCONNECT $noCALLSTATUS $COMPLETEinsert|$COMPLETEupdate $CONNECTinsert $noCOMPLETEinsert $h/$EQ_records  $DBSQLdate|$time_id[$h]   $Ctime_id[$h]|$CQ_records   $Stime_id[$h]|$SQ_records   $call_id[$h]|$COMPLETEcount[$h]\r";
 			}
 		$h++;
 		}
@@ -585,7 +651,7 @@ if ($enable_queuemetrics_logging > 0)
 		{
 		##### grab oldest COMPLETE record to delete
 		$stmtB = "DELETE FROM queue_log WHERE call_id='$CDcall_id[$h]' and verb IN('COMPLETEAGENT','COMPLETECALLER','TRANSFER') ORDER BY unique_row_count DESC LIMIT 1;";
-		if (!$TEST)	{$Baffected_rows = $dbhB->do($stmtB);  }
+		if ($TEST < 1)	{$Baffected_rows = $dbhB->do($stmtB);  }
 		if ($DB) {print "Extra COMPLETE Record Deleted: $Baffected_rows|$stmtB|\n\n";}
 
 		$h++;
