@@ -544,3 +544,7 @@ ALTER TABLE vicidial_campaign_stats ADD hold_sec_queue_calls MEDIUMINT(8) UNSIGN
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
 UPDATE system_settings SET db_schema_version='1118';
+
+ALTER TABLE vicidial_campaigns ADD web_form_target VARCHAR(100) NOT NULL default 'vdcwebform';
+
+UPDATE system_settings SET db_schema_version='1119';

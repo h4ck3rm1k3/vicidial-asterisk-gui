@@ -218,8 +218,7 @@ else
 		if ( -e ('/bin/mysqldump')) {$mysqldumpbin = '/bin/mysqldump';}
 		else
 			{
-			print "Can't find mysqldump binary! Exiting...\n";
-			exit;
+			print "Can't find mysqldump binary! MySQL backups will not work...\n";
 			}
 		}
 	}

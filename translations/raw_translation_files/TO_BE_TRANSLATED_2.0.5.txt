@@ -340,6 +340,9 @@ Force Timeclock Login -<\/B> This option allows you to not let an agent log in t
 Force Timeclock Login||
 Stats Percent of Calls Answered Within X seconds -</B> This field allows you to set the number of hold seconds that the realtime stats display will use to calculate the percentage of answered calls that were answered within X number of seconds on hold||
 Stats Percent of Calls Answered Within X seconds||
+Web Form Target-<\/B> This is where you can set the custom web page frame that the web form will be opened in when the user clicks on the WEB FORM button. Default is _blank.||
+Web Form Target||
+To customize the query string after the web form, simply begin the web form with VAR and then the URL that you want to use, replacing the variables with the variable names that you want to use --A--phone_number--B-- just like in the SCRIPTS tab section||
 
 
 ############################################################ CLIENT

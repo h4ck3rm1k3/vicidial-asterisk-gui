@@ -596,7 +596,8 @@ agent_clipboard_copy VARCHAR(50) default 'NONE',
 agent_extended_alt_dial ENUM('Y','N') default 'N',
 use_campaign_dnc ENUM('Y','N') default 'N',
 three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN',
-three_way_dial_prefix VARCHAR(20) default ''
+three_way_dial_prefix VARCHAR(20) default '',
+web_form_target VARCHAR(100) NOT NULL default 'vdcwebform'
 );
 
 CREATE TABLE vicidial_lists (

@@ -192,12 +192,12 @@ make install
 
 
 cd /usr/local
-wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.10.tar.gz
-gunzip httpd-2.2.10.tar.gz
-tar xvf httpd-2.2.10.tar
 wget http://us2.php.net/distributions/php-5.2.6.tar.gz
 gunzip php-5.2.6.tar.gz
 tar xvf php-5.2.6.tar
+wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.10.tar.gz
+gunzip httpd-2.2.10.tar.gz
+tar xvf httpd-2.2.10.tar
 cd httpd-2.2.10
 make clean
 ./configure --prefix=/usr/local/apache2 --enable-ssl --enable-setenvif --enable-so --with-apxs2 --enable-dav --enable-maintainer-mode
