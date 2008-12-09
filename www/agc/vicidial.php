@@ -2147,6 +2147,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var hangup_all_non_reserved = '<? echo $hangup_all_non_reserved ?>';
 	var dial_method = '<? echo $dial_method ?>';
 	var web_form_target = '<? echo $web_form_target ?>';
+	var TEMP_VDIC_web_form_address = '';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\" Pause \"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -4027,7 +4028,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							if (get_call_launch == 'WEBFORM')
 								{
-								window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								}
 
 							}
@@ -4296,7 +4297,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 						if (get_call_launch == 'WEBFORM')
 							{
-							window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+							window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 							}
 
 						}
@@ -4861,7 +4862,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 							if (CalL_AutO_LauncH == 'WEBFORM')
 								{
-								window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+								window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 								}
 
 							if ( (CopY_tO_ClipboarD != 'NONE') && (useIE > 0) )
@@ -5564,7 +5565,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	
 			WebFormRefresH('NO','YES');
 
-			window.open(VDIC_web_form_address + "" + web_form_vars, 'webform', 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
+			window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 
 			DispoSelect_submit();
 			}
