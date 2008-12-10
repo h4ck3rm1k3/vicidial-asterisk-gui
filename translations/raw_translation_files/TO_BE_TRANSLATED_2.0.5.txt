@@ -343,6 +343,9 @@ Stats Percent of Calls Answered Within X seconds||
 Web Form Target-<\/B> This is where you can set the custom web page frame that the web form will be opened in when the user clicks on the WEB FORM button. Default is _blank.||
 Web Form Target||
 To customize the query string after the web form, simply begin the web form with VAR and then the URL that you want to use, replacing the variables with the variable names that you want to use --A--phone_number--B-- just like in the SCRIPTS tab section||
+Recording Web Link -<\/B> This setting allows you to override the default of the display of the recording link in the admin web pages. Default is SERVER_IP||
+Alternate Recording Server IP -<\/B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty||
+Recording Web Link||
 
 
 ############################################################ CLIENT

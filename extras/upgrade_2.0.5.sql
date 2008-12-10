@@ -548,3 +548,8 @@ UPDATE system_settings SET db_schema_version='1118';
 ALTER TABLE vicidial_campaigns ADD web_form_target VARCHAR(100) NOT NULL default 'vdcwebform';
 
 UPDATE system_settings SET db_schema_version='1119';
+
+ALTER TABLE servers ADD recording_web_link ENUM('SERVER_IP','ALT_IP') default 'SERVER_IP';
+ALTER TABLE servers ADD alt_server_ip VARCHAR(100) default '';
+
+UPDATE system_settings SET db_schema_version='1120';

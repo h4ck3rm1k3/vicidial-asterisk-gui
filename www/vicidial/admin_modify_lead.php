@@ -27,6 +27,7 @@
 # 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
 # 80701-0832 - Changed to allow for altering of main phone number
 # 80805-2106 - Changed comments to TEXTAREA
+# 81210-1529 - Added server recording display options
 #
 
 require("dbconnect.php");
@@ -380,7 +381,7 @@ else
 			$agent_log .= "<td><font size=1>$y</td>";
 			$agent_log .= "<td><font size=2>$row[3]</td>";
 			$agent_log .= "<td align=left><font size=2> $row[5]</td>\n";
-			$agent_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[1]</A> </td>\n";
+			$agent_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[7]</td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[9] </td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[11] </td>\n";
@@ -636,9 +637,9 @@ echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
 echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td><td align=left><font size=2>TSR</td></tr>\n";
 
-	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
-	$rslt=mysql_query($stmt, $link);
-	$logs_to_print = mysql_num_rows($rslt);
+$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
+$rslt=mysql_query($stmt, $link);
+$logs_to_print = mysql_num_rows($rslt);
 
 	$u=0;
 	while ($logs_to_print > $u) 
@@ -650,6 +651,30 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
 		$location = $row[11];
+
+		if (strlen($location)>2)
+			{
+			$URLserver_ip = $location;
+			$URLserver_ip = eregi_replace('http://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace('https://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace("\/.*",'',$URLserver_ip);
+			$stmt="select count(*) from servers where server_ip='$URLserver_ip';";
+			$rsltx=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rsltx);
+			
+			if ($rowx[0] > 0)
+				{
+				$stmt="select recording_web_link,alt_server_ip from servers where server_ip='$URLserver_ip';";
+				$rsltx=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rsltx);
+				
+				if (eregi("ALT_IP",$rowx[0]))
+					{
+					$location = eregi_replace($URLserver_ip, $rowx[1], $location);
+					}
+				}
+			}
+
 		if (strlen($location)>30)
 			{$locat = substr($location,0,27);  $locat = "$locat...";}
 		else

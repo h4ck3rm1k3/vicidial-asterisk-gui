@@ -857,6 +857,10 @@ if (isset($_GET["list_active_change"]))				{$list_active_change=$_GET["list_acti
 	elseif (isset($_POST["list_active_change"]))	{$list_active_change=$_POST["list_active_change"];}
 if (isset($_GET["web_form_target"]))			{$web_form_target=$_GET["web_form_target"];}
 	elseif (isset($_POST["web_form_target"]))	{$web_form_target=$_POST["web_form_target"];}
+if (isset($_GET["alt_server_ip"]))				{$alt_server_ip=$_GET["alt_server_ip"];}
+	elseif (isset($_POST["alt_server_ip"]))	{$alt_server_ip=$_POST["alt_server_ip"];}
+if (isset($_GET["recording_web_link"]))				{$recording_web_link=$_GET["recording_web_link"];}
+	elseif (isset($_POST["recording_web_link"]))	{$recording_web_link=$_POST["recording_web_link"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -1221,6 +1225,7 @@ $hold_time_option_callback_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_ti
 $exten_context = ereg_replace("[^-\_0-9a-zA-Z]","",$exten_context);
 $three_way_call_cid = ereg_replace("[^-\_0-9a-zA-Z]","",$three_way_call_cid);
 $web_form_target = ereg_replace("[^-\_0-9a-zA-Z]","",$web_form_target);
+$recording_web_link = ereg_replace("[^-\_0-9a-zA-Z]","",$recording_web_link);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1273,6 +1278,7 @@ $code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$code_name);
 $alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alias_name);
 $shift_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$shift_name);
 $did_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$did_description);
+$alt_server_ip = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alt_server_ip);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1483,11 +1489,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 81118-0933 - Changed lists listing with links and more options
 # 81119-0715 - Added ability to bulk enable/disable lists from modify campaign screen
 # 81209-1538 - Added web_form_target to campaign screen
+# 81210-1430 - Added http server IP and recording link options to servers
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-152';
-$build = '81209-1538';
+$admin_version = '2.0.5-153';
+$build = '81210-1430';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -4252,6 +4259,18 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <A NAME="servers-balance_trunks_offlimits">
 <BR>
 <B>VICIDIAL Balance Offlimits -</B> This setting defines the number of trunks to not allow VICIDIAL balance dialing to use. For example if you have 40 max vicidial trunks and balance offlimits is set to 10 you will only be able to use 30 trunk lines for VICIDIAL balance dialing. Default is 0.
+
+<BR>
+<A NAME="servers-recording_web_link">
+<BR>
+<B>Recording Web Link -</B> This setting allows you to override the default of the display of the recording link in the admin web pages. Default is SERVER_IP.
+
+<BR>
+<A NAME="servers-alt_server_ip">
+<BR>
+<B>Alternate Recording Server IP -</B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty.
+
+
 
 
 <BR><BR><BR><BR>
@@ -9022,7 +9041,7 @@ if ($ADD==411111111111)
 				{
 				echo "<br>SERVER MODIFIED: $server_ip\n";
 
-				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active', balance_trunks_offlimits='$balance_trunks_offlimits' where server_id='$old_server_id';";
+				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active', balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip' where server_id='$old_server_id';";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
@@ -15065,6 +15084,8 @@ if ($ADD==311111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>System Performance: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$row[17]</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$row[18]</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>AGI Output: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$row[19]</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Recording Web Link: </td><td align=left><select size=1 name=recording_web_link><option>SERVER_IP</option><option>ALT_IP</option><option selected>$row[22]</option></select>$NWB#servers-recording_web_link$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alternate Recording Server IP: </td><td align=left><input type=text name=alt_server_ip size=30 maxlength=100 value=\"$row[23]\">$NWB#servers-alt_server_ip$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center></form>\n";
 

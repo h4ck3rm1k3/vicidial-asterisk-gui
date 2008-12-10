@@ -13,6 +13,7 @@
 # 80501-0506 - Added Hangup Reason to logs display
 # 80523-2012 - Added vicidial timeclock records display
 # 80617-1402 - Fixed timeclock total logged-in time
+# 81210-1634 - Added server recording display options
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -503,6 +504,30 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
 		$location = $row[11];
+
+		if (strlen($location)>2)
+			{
+			$URLserver_ip = $location;
+			$URLserver_ip = eregi_replace('http://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace('https://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace("\/.*",'',$URLserver_ip);
+			$stmt="select count(*) from servers where server_ip='$URLserver_ip';";
+			$rsltx=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rsltx);
+			
+			if ($rowx[0] > 0)
+				{
+				$stmt="select recording_web_link,alt_server_ip from servers where server_ip='$URLserver_ip';";
+				$rsltx=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rsltx);
+				
+				if (eregi("ALT_IP",$rowx[0]))
+					{
+					$location = eregi_replace($URLserver_ip, $rowx[1], $location);
+					}
+				}
+			}
+
 		if (strlen($location)>30)
 			{$locat = substr($location,0,27);  $locat = "$locat...";}
 		else
