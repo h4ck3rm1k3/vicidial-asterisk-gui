@@ -210,10 +210,11 @@
 # 81119-1811 - webform backslash fix
 # 81124-2213 - Fixes blind transfer bug
 # 81209-1617 - Added campaign web form target option and web form address variables
+# 81211-0422 - Fixed Manual dial agent_log bug
 #
 
-$version = '2.0.5-189';
-$build = '81209-1617';
+$version = '2.0.5-190';
+$build = '81211-0422';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -5627,16 +5628,16 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					xmlhttp.send(DSupdate_query); 
 					xmlhttp.onreadystatechange = function() 
 						{ 
-						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+						if ( (xmlhttp.readyState == 4 && xmlhttp.status == 200) && (auto_dial_level < 1) )
 							{
-						//	var check_dispo = null;
-						//	check_dispo = xmlhttp.responseText;
-						//	var check_DS_array=check_dispo.split("\n");
+							var check_dispo = null;
+							check_dispo = xmlhttp.responseText;
+							var check_DS_array=check_dispo.split("\n");
 						//	alert(xmlhttp.responseText + "\n|" + check_DS_array[1] + "\n|" + check_DS_array[2] + "|");
-						//	if (check_DS_array[1] == 'Next agent_log_id:')
-						//		{
-						//		agent_log_id = check_DS_array[2];
-						//		}
+							if (check_DS_array[1] == 'Next agent_log_id:')
+								{
+								agent_log_id = check_DS_array[2];
+								}
 							}
 						}
 					delete xmlhttp;

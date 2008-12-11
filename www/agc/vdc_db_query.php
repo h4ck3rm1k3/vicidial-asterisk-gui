@@ -179,10 +179,11 @@
 # 81119-1809 - webform backslash fix
 # 81124-2212 - Fixes blind transfer bug
 # 81126-1522 - Fixed callback comments bug
+# 81211-0420 - Fixed Manual dial agent_log bug
 #
 
-$version = '2.0.5-96';
-$build = '81126-1522';
+$version = '2.0.5-97';
+$build = '81211-0420';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=184;
 $one_mysql_log=0;
@@ -3116,12 +3117,15 @@ if ($ACTION == 'updateDISPO')
 			$user_group =		trim("$row[0]");
 			}
 
-#	$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group');";
-#	if ($DB) {echo "$stmt\n";}
-#	$rslt=mysql_query($stmt, $link);
-#			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00153',$user,$server_ip,$session_name,$one_mysql_log);}
-#	$affected_rows = mysql_affected_rows($link);
-#	$agent_log_id = mysql_insert_id($link);
+	if ($auto_dial_level < 1)
+		{
+		$stmt="INSERT INTO vicidial_agent_log (user,server_ip,event_time,campaign_id,pause_epoch,pause_sec,wait_epoch,user_group) values('$user','$server_ip','$NOW_TIME','$campaign','$StarTtime','0','$StarTtime','$user_group');";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00153',$user,$server_ip,$session_name,$one_mysql_log);}
+		$affected_rows = mysql_affected_rows($link);
+		$agent_log_id = mysql_insert_id($link);
+		}
 
 	### CALLBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
