@@ -553,3 +553,7 @@ ALTER TABLE servers ADD recording_web_link ENUM('SERVER_IP','ALT_IP') default 'S
 ALTER TABLE servers ADD alt_server_ip VARCHAR(100) default '';
 
 UPDATE system_settings SET db_schema_version='1120';
+
+ALTER TABLE vicidial_campaigns MODIFY campaign_vdad_exten VARCHAR(20) default '8368';
+
+UPDATE system_settings SET db_schema_version='1121';
