@@ -1490,11 +1490,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 81119-0715 - Added ability to bulk enable/disable lists from modify campaign screen
 # 81209-1538 - Added web_form_target to campaign screen
 # 81210-1430 - Added http server IP and recording link options to servers
+# 81222-0500 - Reformatted all listings to same format changed to field selects instead of *
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-153';
-$build = '81210-1430';
+$admin_version = '2.0.5-154';
+$build = '81222-0500';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -16026,148 +16027,188 @@ echo "$CBinactiveLINK";
 # ADD=0 display all active users
 ######################
 if ($ADD==0)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$USERlink='stage=USERIDDOWN';
-$NAMElink='stage=NAMEDOWN';
-$LEVELlink='stage=LEVELDOWN';
-$GROUPlink='stage=GROUPDOWN';
-$SQLorder='order by full_name';
-if (eregi("USERIDUP",$stage)) {$SQLorder='order by user asc';   $USERlink='stage=USERIDDOWN';}
-if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc';   $USERlink='stage=USERIDUP';}
-if (eregi("NAMEUP",$stage)) {$SQLorder='order by full_name asc';   $NAMElink='stage=NAMEDOWN';}
-if (eregi("NAMEDOWN",$stage)) {$SQLorder='order by full_name desc';   $NAMElink='stage=NAMEUP';}
-if (eregi("LEVELUP",$stage)) {$SQLorder='order by user_level asc';   $LEVELlink='stage=LEVELDOWN';}
-if (eregi("LEVELDOWN",$stage)) {$SQLorder='order by user_level desc';   $LEVELlink='stage=LEVELUP';}
-if (eregi("GROUPUP",$stage)) {$SQLorder='order by user_group asc';   $GROUPlink='stage=GROUPDOWN';}
-if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPlink='stage=GROUPUP';}
-	$stmt="SELECT * from vicidial_users $SQLorder";
+	$USERlink='stage=USERIDDOWN';
+	$NAMElink='stage=NAMEDOWN';
+	$LEVELlink='stage=LEVELDOWN';
+	$GROUPlink='stage=GROUPDOWN';
+	$SQLorder='order by full_name';
+	if (eregi("USERIDUP",$stage)) {$SQLorder='order by user asc';   $USERlink='stage=USERIDDOWN';}
+	if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc';   $USERlink='stage=USERIDUP';}
+	if (eregi("NAMEUP",$stage)) {$SQLorder='order by full_name asc';   $NAMElink='stage=NAMEDOWN';}
+	if (eregi("NAMEDOWN",$stage)) {$SQLorder='order by full_name desc';   $NAMElink='stage=NAMEUP';}
+	if (eregi("LEVELUP",$stage)) {$SQLorder='order by user_level asc';   $LEVELlink='stage=LEVELDOWN';}
+	if (eregi("LEVELDOWN",$stage)) {$SQLorder='order by user_level desc';   $LEVELlink='stage=LEVELUP';}
+	if (eregi("GROUPUP",$stage)) {$SQLorder='order by user_group asc';   $GROUPlink='stage=GROUPDOWN';}
+	if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPlink='stage=GROUPUP';}
+	$stmt="SELECT user,full_name,user_level,user_group from vicidial_users $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$people_to_print = mysql_num_rows($rslt);
 
-echo "<br>USER LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$LEVELlink\"><font size=1 color=white><B>LEVEL</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
-echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
+	echo "<br>USER LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&$LEVELlink\"><font size=1 color=white><B>LEVEL</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
+	echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($people_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=3&user=$row[1]\"><font size=1 color=black>$row[1]</a></td><td><font size=1>$row[3]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$row[1]\">MODIFY</a> | <a href=\"./user_stats.php?user=$row[1]\">STATS</a> | <a href=\"./user_status.php?user=$row[1]\">STATUS</a> | <a href=\"./AST_agent_time_sheet.php?agent=$row[1]\">TIME</a></td></tr>\n";
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=3&user=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1><CENTER><a href=\"$PHP_SELF?ADD=3&user=$row[0]\">MODIFY</a> | <a href=\"./user_stats.php?user=$row[0]\">STATS</a> | <a href=\"./user_status.php?user=$row[0]\">STATUS</a> | <a href=\"./AST_agent_time_sheet.php?agent=$row[0]\">TIME</a></CENTER></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10 display all campaigns
 ######################
 if ($ADD==10)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_campaigns order by campaign_id";
+	$stmt="SELECT campaign_id,campaign_name,active,dial_method,auto_dial_level,lead_order,dial_statuses from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$campaigns_to_print = mysql_num_rows($rslt);
 
-echo "<br>CAMPAIGN LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>CAMPAIGN LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CAMPAIGN ID</B></td>";
+	echo "<td><font size=1 color=white><CENTER><B>NAME</B></CENTER></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>DIAL METHOD &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B> LEVEL &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>LEAD ORDER &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>DIAL STATUSES &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($campaigns_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\">$row[0]</a></td>";
-		echo "<td><font size=1> $row[1] </td>";
-		echo "<td><font size=1> $row[2]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1> $row[6]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\">$row[0]</a> &nbsp; </td>";
+		echo "<td><font size=1>$row[1] &nbsp; </td>";
+		echo "<td><font size=1>$row[2] &nbsp; </td>";
+		echo "<td><font size=1>$row[3] &nbsp; </td>";
+		echo "<td><font size=1>$row[4] &nbsp; </td>";
+		echo "<td><font size=1>$row[5] &nbsp; </td>";
+		echo "<td><font size=1>$row[6]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100 display all lists
 ######################
 if ($ADD==100)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$LISTlink='stage=LISTIDDOWN';
-$TALLYlink='stage=TALLYDOWN';
-$ACTIVElink='stage=ACTIVEDOWN';
-$CAMPAIGNlink='stage=CAMPAIGNDOWN';
-$CALLDATElink='stage=CALLDATEDOWN';
-$SQLorder='order by list_id';
-if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
-if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
-if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
-if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
-if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
-if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
-if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
-if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
-if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
-if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+	$LISTlink='stage=LISTIDDOWN';
+	$TALLYlink='stage=TALLYDOWN';
+	$ACTIVElink='stage=ACTIVEDOWN';
+	$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+	$CALLDATElink='stage=CALLDATEDOWN';
+	$SQLorder='order by list_id';
+	if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+	if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+	if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+	if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+	if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+	if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+	if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+	if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+	if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+	if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
 	$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id group by list_id $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$lists_to_print = mysql_num_rows($rslt);
 
-echo "<br>LIST LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<TR BGCOLOR=BLACK>";
-echo "<TD><a href=\"$PHP_SELF?ADD=100&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
-echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
-echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
-echo "<TD><a href=\"$PHP_SELF?ADD=100&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
-echo "<TD><a href=\"$PHP_SELF?ADD=100&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
-echo "<TD><a href=\"$PHP_SELF?ADD=100&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
-echo "<TD><a href=\"$PHP_SELF?ADD=100&$CAMPAIGNlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>CAMPAIGN</B></a></TD>\n";
-echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
-echo "</TR>\n";
+	echo "<br>LIST LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$CAMPAIGNlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>CAMPAIGN</B></a></TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
+	echo "</TR>\n";
 
-$o=0;
-while ($lists_to_print > $o)
-	{
-	$row=mysql_fetch_row($rslt);
-	if (eregi("1$|3$|5$|7$|9$", $o))
-		{$bgcolor='bgcolor="#B9CBFD"';} 
-	else
-		{$bgcolor='bgcolor="#9BB9FB"';}
-	echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
-	echo "<td><font size=1> $row[1]</td>";
-	echo "<td><font size=1> $row[2]</td>";
-	echo "<td><font size=1> $row[3]</td>";
-	echo "<td><font size=1> $row[4]</td>";
-	echo "<td><font size=1> $row[5]</td>";
-	echo "<td><font size=1> $row[6]</td>";
-	echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
-	$o++;
+	$lists_printed = '';
+	$o=0;
+	while ($lists_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> $row[6]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$lists_printed .= "'$row[0]',";
+		$o++;
+		}
+
+	$stmt="SELECT list_id,list_name,list_description,0,active,list_lastcalldate,campaign_id from vicidial_lists where list_id NOT IN($lists_printed'');";
+	$rslt=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($lists_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> $row[6]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
-
-echo "</TABLE></center>\n";
-}
 
 
 
@@ -16175,28 +16216,29 @@ echo "</TABLE></center>\n";
 # ADD=1000 display all inbound groups
 ######################
 if ($ADD==1000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_inbound_groups order by group_id";
+	$stmt="SELECT group_id,group_name,queue_priority,active,call_time_id,group_color from vicidial_inbound_groups order by group_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$ingroups_to_print = mysql_num_rows($rslt);
 
-echo "<br>INBOUND GROUP LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<TR BGCOLOR=BLACK>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>IN-GROUP</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>NAME</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>PRIORITY</TD>\n";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>ACTIVE</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>TIME</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>COLOR</TD>\n";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>MODIFY</TD>\n";
-echo "</TR>\n";
+	echo "<br>INBOUND GROUP LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><font size=1 color=white>IN-GROUP</TD>";
+	echo "<TD><font size=1 color=white>NAME</TD>";
+	echo "<TD><font size=1 color=white>PRIORITY</TD>\n";
+	echo "<TD><font size=1 color=white>ACTIVE</TD>";
+	echo "<TD><font size=1 color=white>TIME</TD>";
+	echo "<TD><font size=1 color=white>COLOR</TD>\n";
+	echo "<TD><font size=1 color=white>MODIFY</TD>\n";
+	echo "</TR>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($ingroups_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16204,43 +16246,44 @@ echo "</TR>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[29]</td>";
+		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3]</td>";
-		echo "<td><font size=1> $row[17]</td>";
-		echo "<td bgcolor=\"$row[2]\"><font size=1> &nbsp;</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td bgcolor=\"$row[5]\"><font size=1> &nbsp;</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=1300 display all inbound dids
 ######################
 if ($ADD==1300)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_inbound_dids order by did_pattern";
+	$stmt="SELECT did_id,did_pattern,did_description,did_active,did_route from vicidial_inbound_dids order by did_pattern";
 	$rslt=mysql_query($stmt, $link);
 	$dids_to_print = mysql_num_rows($rslt);
 
-echo "<br>INBOUND GROUP LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<TR BGCOLOR=BLACK>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>#</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>DID</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>DESCRIPTION</TD>\n";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>ACTIVE</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>ROUTE</TD>";
-echo "<TD><FONT FACE=\"Arial,Helvetica\" size=2 color=white>MODIFY</TD>\n";
-echo "</TR>\n";
+	echo "<br>INBOUND GROUP LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><font size=1 color=white>#</TD>";
+	echo "<TD><font size=1 color=white>DID</TD>";
+	echo "<TD><font size=1 color=white>DESCRIPTION</TD>\n";
+	echo "<TD><font size=1 color=white>ACTIVE</TD>";
+	echo "<TD><font size=1 color=white>ROUTE</TD>";
+	echo "<TD><font size=1 color=white>MODIFY</TD>\n";
+	echo "</TR>\n";
 
 	$o=0;
-	while ($dids_to_print > $o) {
+	while ($dids_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16253,29 +16296,38 @@ echo "</TR>\n";
 		echo "<td><font size=1> $row[4]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3311&did_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=10000 display all remote agents
 ######################
 if ($ADD==10000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_remote_agents order by server_ip,campaign_id,user_start";
+	$stmt="SELECT remote_agent_id,user_start,number_of_lines,server_ip,conf_exten,status,campaign_id from vicidial_remote_agents order by server_ip,campaign_id,user_start";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$remoteagents_to_print = mysql_num_rows($rslt);
 
-echo "<br>REMOTE AGENTS LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>REMOTE AGENTS LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>USER</B></td>";
+	echo "<td><font size=1 color=white><B>LINES</B></td>";
+	echo "<td><font size=1 color=white><B>SERVER &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>CONF-EXTEN &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>STATUS &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>CAMPAIGN &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($remoteagents_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16287,31 +16339,37 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<td><font size=1> $row[4]</td>";
 		echo "<td><font size=1> $row[5]</td>";
 		echo "<td><font size=1> $row[6]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100000 display all user groups
 ######################
 if ($ADD==100000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_user_groups order by user_group";
+	$stmt="SELECT user_group,group_name,forced_timeclock_login from vicidial_user_groups order by user_group";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$usergroups_to_print = mysql_num_rows($rslt);
 
-echo "<br>USER GROUPS LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>USER GROUPS LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>USER GROUP</B></td>";
+	echo "<td><font size=1 color=white><B>GROUP NAME</B></td>";
+	echo "<td><font size=1 color=white><B>FORCE TIMECLOCK &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($usergroups_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16319,31 +16377,38 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=1000000 display all scripts
 ######################
 if ($ADD==1000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_scripts order by script_id";
+	$stmt="SELECT script_id,script_name,active from vicidial_scripts order by script_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$scripts_to_print = mysql_num_rows($rslt);
 
-echo "<br>SCRIPTS LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>SCRIPTS LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SCRIPT ID</B></td>";
+	echo "<td><font size=1 color=white><B>SCRIPT NAME</B></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($scripts_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16351,32 +16416,37 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=10000000 display all filters
 ######################
 if ($ADD==10000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_lead_filters order by lead_filter_id";
+	$stmt="SELECT lead_filter_id,lead_filter_name from vicidial_lead_filters order by lead_filter_id";
 	$rslt=mysql_query($stmt, $link);
 	$filters_to_print = mysql_num_rows($rslt);
 
-echo "<br>LEAD FILTER LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>LEAD FILTER LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SCRIPT ID</B></td>";
+	echo "<td><font size=1 color=white><B>SCRIPT NAME</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($filters_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16384,32 +16454,38 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100000000 display all call times
 ######################
 if ($ADD==100000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_call_times order by call_time_id";
+	$stmt="SELECT call_time_id,call_time_name,ct_default_start,ct_default_stop from vicidial_call_times order by call_time_id";
 	$rslt=mysql_query($stmt, $link);
-	$filters_to_print = mysql_num_rows($rslt);
+	$calltimes_to_print = mysql_num_rows($rslt);
 
-echo "<br>CALL TIME LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>CALL TIME LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CALLTIME ID</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME NAME</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT START</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT STOP</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($calltimes_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16417,33 +16493,41 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2] </td>";
 		echo "<td><font size=1> $row[3] </td>";
-		echo "<td><font size=1> $row[4] </td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=1000000000 display all state call times
 ######################
 if ($ADD==1000000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_state_call_times order by state_call_time_id";
+	$stmt="SELECT state_call_time_id,state_call_time_state,state_call_time_name,sct_default_start,sct_default_stop from vicidial_state_call_times order by state_call_time_id";
 	$rslt=mysql_query($stmt, $link);
-	$filters_to_print = mysql_num_rows($rslt);
+	$statecalltimes_to_print = mysql_num_rows($rslt);
 
-echo "<br>STATE CALL TIME LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>STATE CALL TIME LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CALLTIME ID</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME STATE</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME NAME</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT START</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT STOP</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($statecalltimes_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16454,31 +16538,38 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3] </td>";
 		echo "<td><font size=1> $row[4] </td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=130000000 display all shifts
 ######################
 if ($ADD==130000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_shifts order by shift_id";
+	$stmt="SELECT shift_id,shift_name,shift_start_time,shift_length,shift_weekdays from vicidial_shifts order by shift_id";
 	$rslt=mysql_query($stmt, $link);
-	$filters_to_print = mysql_num_rows($rslt);
+	$shifts_to_print = mysql_num_rows($rslt);
 
-echo "<br>SHIFT LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>SHIFT LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SHIFT ID</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT NAME</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT START</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT LENGTH</B></td>";
+	echo "<td><font size=1 color=white><B>WEEKDAYS</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($shifts_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16489,182 +16580,219 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<td><font size=1> $row[2] </td>";
 		echo "<td><font size=1> $row[3] </td>";
 		echo "<td><font size=1> $row[4] </td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10000000000 display all phones
 ######################
 if ($ADD==10000000000)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$EXTENlink='stage=EXTENDOWN';
-$PROTOlink='stage=PROTODOWN';
-$SERVERlink='stage=SERVERDOWN';
-$STATUSlink='stage=STATUSDOWN';
-$SQLorder='order by extension,server_ip';
-if (eregi("EXTENUP",$stage)) {$SQLorder='order by extension asc';   $EXTENlink='stage=EXTENDOWN';}
-if (eregi("EXTENDOWN",$stage)) {$SQLorder='order by extension desc';   $EXTENlink='stage=EXTENUP';}
-if (eregi("PROTOUP",$stage)) {$SQLorder='order by protocol asc';   $PROTOlink='stage=PROTODOWN';}
-if (eregi("PROTODOWN",$stage)) {$SQLorder='order by protocol desc';   $PROTOlink='stage=PROTOUP';}
-if (eregi("SERVERUP",$stage)) {$SQLorder='order by server_ip asc';   $SERVERlink='stage=SERVERDOWN';}
-if (eregi("SERVERDOWN",$stage)) {$SQLorder='order by server_ip desc';   $SERVERlink='stage=SERVERUP';}
-if (eregi("STATUSUP",$stage)) {$SQLorder='order by status asc';   $STATUSlink='stage=STATUSDOWN';}
-if (eregi("STATUSDOWN",$stage)) {$SQLorder='order by status desc';   $STATUSlink='stage=STATUSUP';}
-	$stmt="SELECT * from phones $SQLorder";
+	$EXTENlink='stage=EXTENDOWN';
+	$PROTOlink='stage=PROTODOWN';
+	$SERVERlink='stage=SERVERDOWN';
+	$STATUSlink='stage=STATUSDOWN';
+	$SQLorder='order by extension,server_ip';
+	if (eregi("EXTENUP",$stage)) {$SQLorder='order by extension asc';   $EXTENlink='stage=EXTENDOWN';}
+	if (eregi("EXTENDOWN",$stage)) {$SQLorder='order by extension desc';   $EXTENlink='stage=EXTENUP';}
+	if (eregi("PROTOUP",$stage)) {$SQLorder='order by protocol asc';   $PROTOlink='stage=PROTODOWN';}
+	if (eregi("PROTODOWN",$stage)) {$SQLorder='order by protocol desc';   $PROTOlink='stage=PROTOUP';}
+	if (eregi("SERVERUP",$stage)) {$SQLorder='order by server_ip asc';   $SERVERlink='stage=SERVERDOWN';}
+	if (eregi("SERVERDOWN",$stage)) {$SQLorder='order by server_ip desc';   $SERVERlink='stage=SERVERUP';}
+	if (eregi("STATUSUP",$stage)) {$SQLorder='order by status asc';   $STATUSlink='stage=STATUSDOWN';}
+	if (eregi("STATUSDOWN",$stage)) {$SQLorder='order by status desc';   $STATUSlink='stage=STATUSUP';}
+	$stmt="SELECT extension,protocol,server_ip,dialplan_number,voicemail_id,status,fullname,messages,old_messages from phones $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$phones_to_print = mysql_num_rows($rslt);
 
-echo "<br>PHONE LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$EXTENlink\"><font size=1 color=white><B>EXTEN</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$PROTOlink\"><font size=1 color=white><B>PROTO</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$SERVERlink\"><font size=1 color=white><B>SERVER</B></a></td>";
-echo "<td colspan=2><font size=1 color=white><B>DIAL PLAN</B></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$STATUSlink\"><font size=1 color=white><B>STATUS</B></a></td>";
-echo "<td><font size=1 color=white><B>NAME</B></td>";
-echo "<td colspan=2><font size=1 color=white><B>VMAIL</B></td>";
-echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
+	echo "<br>PHONE LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$EXTENlink\"><font size=1 color=white><B>EXTEN</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$PROTOlink\"><font size=1 color=white><B>PROTO</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$SERVERlink\"><font size=1 color=white><B>SERVER</B></a></td>";
+	echo "<td colspan=2><font size=1 color=white><B>DIAL PLAN</B></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$STATUSlink\"><font size=1 color=white><B>STATUS</B></a></td>";
+	echo "<td><font size=1 color=white><B>NAME</B></td>";
+	echo "<td colspan=2><font size=1 color=white><B>VMAIL</B></td>";
+	echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($phones_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[16]</td><td><font size=1>$row[5]</td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td><td><font size=1>$row[8]</td><td><font size=1>$row[11]</td><td><font size=1>$row[14]</td><td><font size=1>$row[15]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\">MODIFY</a> | <a href=\"./phone_stats.php?extension=$row[0]&server_ip=$row[5]\">STATS</a></td></tr>\n";
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]\"><font size=1 color=black>$row[0]</font></a></td>
+		<td><font size=1>$row[1]</td>
+		<td><font size=1>$row[2]</td>
+		<td><font size=1>$row[3]</td>
+		<td><font size=1>$row[4]</td>
+		<td><font size=1>$row[5]</td>
+		<td><font size=1>$row[6]</td>
+		<td><font size=1>$row[7]</td>
+		<td><font size=1>$row[8]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]\">MODIFY</a> | <a href=\"./phone_stats.php?extension=$row[0]&server_ip=$row[2]\">STATS</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=12000000000 display all phones alias
 ######################
 if ($ADD==12000000000)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from phones_alias order by alias_id;";
+	$stmt="SELECT alias_id,alias_name,logins_list from phones_alias order by alias_id;";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$phonealias_to_print = mysql_num_rows($rslt);
 
-echo "<br>PHONE ALIAS LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black>";
-echo "<td><font size=1 color=white><B>ALIAS ID</B></a></td>";
-echo "<td><font size=1 color=white><B>ALIAS NAME</B></a></td>";
-echo "<td><font size=1 color=white><B>PHONE LOGINS LIST</B></a></td>";
-echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+	echo "<br>PHONE ALIAS LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white><B>ALIAS ID</B></a></td>";
+	echo "<td><font size=1 color=white><B>ALIAS NAME</B></a></td>";
+	echo "<td><font size=1 color=white><B>PHONE LOGINS LIST</B></a></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($phonealias_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=100000000000 display all servers
 ######################
 if ($ADD==100000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from servers order by server_id";
+	$stmt="SELECT server_id,server_description,server_ip,active,asterisk_version,max_vicidial_trunks,local_gmt from servers order by server_id";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$servers_to_print = mysql_num_rows($rslt);
 
-echo "<br>SERVER LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>SERVER LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SERVER ID</B></td>";
+	echo "<td><font size=1 color=white><B>NAME</B></td>";
+	echo "<td><font size=1 color=white><B>SERVER IP</B></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE</B></td>";
+	echo "<td><font size=1 color=white><B>ASTERISK</B></td>";
+	echo "<td><font size=1 color=white><B>TRUNKS</B></td>";
+	echo "<td><font size=1 color=white><B>GMT</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($servers_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">$row[0]</a></td><td><font size=1>$row[1]</td>";
-		echo "<td><font size=1> $row[2]</td>";
-		echo "<td><font size=1> $row[4]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">MODIFY</a></td></tr>\n";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1>$row[5]</td>";
+		echo "<td><font size=1>$row[6]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=1000000000000 display all conferences
 ######################
 if ($ADD==1000000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from conferences order by conf_exten";
+	$stmt="SELECT conf_exten,server_ip,extension from conferences order by conf_exten";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$conferences_to_print = mysql_num_rows($rslt);
 
-echo "<br>CONFERENCE LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>CONFERENCE LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CONFERENCE</B></td>";
+	echo "<td><font size=1 color=white><B>SERVER IP</B></td>";
+	echo "<td><font size=1 color=white><B>EXTENSION</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($conferences_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
-		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">MODIFY</a></td></tr>\n";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">MODIFY</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10000000000000 display all vicidial conferences
 ######################
 if ($ADD==10000000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_conferences order by conf_exten";
+	$stmt="SELECT conf_exten,server_ip,extension from vicidial_conferences order by conf_exten";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$vicidialconf_to_print = mysql_num_rows($rslt);
 
-echo "<br>CONFERENCE LISTINGS:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>VICIDIAL CONFERENCE LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CONFERENCE</B></td>";
+	echo "<td><font size=1 color=white><B>SERVER IP</B></td>";
+	echo "<td><font size=1 color=white><B>EXTENSION</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($vicidialconf_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16672,13 +16800,18 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">MODIFY</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">MODIFY</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+
+
+
+
 
 ######################
 # ADD=999999 display reports section
@@ -16689,10 +16822,6 @@ if ($ADD==999999)
 	{
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	$stmt="SELECT * from vicidial_conferences order by conf_exten";
-	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
 
 	$stmt="select * from servers;";
 	$rslt=mysql_query($stmt, $link);
