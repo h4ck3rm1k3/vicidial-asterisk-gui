@@ -1,0 +1,227 @@
+VICIDIAL and Vtiger
+
+Current VICIDIAL integration with Vtiger is for the 5.0.4 release version of Vtiger only
+
+Current integration features:
+- vicidial.php WEBFORM search for lead/account/vendor
+- user synchronization of VICIDIAL users to Vtiger user database
+
+There has been a basic vtiger integration option available in VICIDIAL since the 1.X release versions through the vtiger_search.php web script(when used as a web form in the campaign) that will search through the leads for the dialed phone number in vicidial.php and if it is not in the vtiger system as a lead then it will be put in as a new contact.
+
+More in-depth integration with Vtiger is a bit complicated due to the fact that it has 312 database tables(and you though VICIDIAL had a lot at 70). Attempts at using the built-in 5.0.4 API structure were unsuccessful because of inaccurate documentation and the inability to use the modules easily outside of the vtiger directory tree without major reworking of the vtiger code, so we decided to have VICIDIAL work directly with the database instead. Unfortunately, working only with the database doesn't get you the whole way with Vtiger. For user synchronization you need to make sure that the patch(vtiger_user_file_504.patch) is applied to Vtiger(see instructions below). This patch is used to create blank user profile files so Vtiger will load properly with synchronized users from VICIDIAL. Vtiger doesn't check to see if these user profile files exist before trying to use them, so all this patch does is check if the files exist for each user, and if they do not, it will create them with a simple placeholder.
+
+as of 2008-12-31, several user synchronization features have been added to allow for the creation of vtiger users from the vicidial_users user database. The vtiger_search.php script has also been updated to work with the current vtiger release 5.0.4. To enable the Vtiger integration features you will need to go to the Admin -> System Settings section of the admin.php Administartion web page to set Vtiger Integration to enabled and configure the connection details for the Vtiger database.
+
+There are options in the VICIDIAL Modify Campaign Detail screen that you can choose how you want the vtiger_search.php to search for a Vtiger record in the Vtiger system. If Vtiger integration is enabled in the system_settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: 
+	ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger accountid.     If unsuccessful it will try any other methods listed that you have selected. 
+	ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number
+	VENDOR- This option will only search through the Vtiger vendors
+	LEAD- This option will search through the Vtiger leads only
+
+Multiple search options can be used for each campaign, but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
+
+Here are the SQL queries used by the vtiger_search.php script to find records in the vtiger system:
+
+ACCTID:
+$stmt="SELECT count(*) from vtiger_account where accountid='$vendor_id';";
+
+ACCOUNT:
+$stmt="SELECT count(*) from vtiger_account where phone='$phone' or otherphone='$phone' or fax='$phone';";
+$stmt="SELECT count(*) from vtiger_contactdetails where phone='$phone' or mobile='$phone' or fax='$phone';";
+$stmt="SELECT count(*) from vtiger_contactsubdetails where homephone='$phone' or otherphone='$phone' or assistantphone='$phone';";
+
+VENDOR:
+$stmt="SELECT count(*) from vtiger_vendor where phone='$phone';";
+
+LEAD:
+$stmt="SELECT count(*) from vtiger_leadaddress where phone='$phone' or mobile='$phone' or fax='$phone';";
+
+
+
+
+
+Here is a short summary of the needed steps to install vtiger on your system:
+
+NOTE: vtiger requires PHP5, APACHE2.2 and MySQL5, 
+      see the REQUIRED_APPS.txt doc for install instructions for those packages
+
+
+mysql
+GRANT ALL on vtigercrm504.* TO vtiger@'%' IDENTIFIED BY 'vtuser';
+GRANT ALL on vtigercrm504.* TO vtiger@localhost IDENTIFIED BY 'vtuser';
+create database vtigercrm504;
+quit
+
+cd /usr/local/apache2/htdocs/
+wget http://voxel.dl.sourceforge.net/sourceforge/vtigercrm/vtigercrm-5.0.4.tar.gz
+gunzip vtigercrm-5.0.4.tar.gz
+tar xvf vtigercrm-5.0.4.tar
+chmod -R 0777 vtigercrm
+cd vtigercrm
+ls -l
+* in browser go to the following URL: http://ip-address/vtigetcrm/index.php
+* enter contact info and click the START button at the bottom of the screen
+* in system configuration set the database host to: <ip-address>
+* database user/pass: vtiger/vtuser
+* database name: vtigercrm504
+* change default admin(vtadmin) and standarduser(vtuser) passwords
+* click to install vtiger, then follow the on-screen instructions
+# patch vtiger to fix issue with user synchronization:
+wget http://www.eflo.net/files/vtiger_user_file_504.patch
+patch -p1 < ./vtiger_user_file_504.patch
+
+
+
+
+
+Now to explain the database side of things. 
+First, here is how users are stored in vtiger:
+
+THE USER TABLES:
+vtiger_users
+vtiger_user2role
+vtiger_users2group
+vtiger_users_last_import
+vtiger_users_seq
+vtiger_usertype
+
+
+TABLE DETAIL:
+
+The vtiger_users table has the basic user information for users fo the vtiger system. An agent must have an entry in this table to be able to access the vtigers system. user_name is the field that is synchronized with the vicidial_users.user field in VICIDIAL.
+mysql> describe vtiger_users;
++--------------------+--------------+------+-----+-----------------------------------------------------------------+----------------+
+| Field              | Type         | Null | Key | Default                                                         | Extra          |
++--------------------+--------------+------+-----+-----------------------------------------------------------------+----------------+
+| id                 | int(11)      | NO   | PRI | NULL                                                            | auto_increment |
+| user_name          | varchar(255) | YES  | MUL | NULL                                                            |                |
+| user_password      | varchar(30)  | YES  | MUL | NULL                                                            |                |
+| user_hash          | varchar(32)  | YES  |     | NULL                                                            |                |
+| cal_color          | varchar(25)  | YES  |     | #E6FAD8                                                         |                |
+| first_name         | varchar(30)  | YES  |     | NULL                                                            |                |
+| last_name          | varchar(30)  | YES  |     | NULL                                                            |                |
+| reports_to_id      | varchar(36)  | YES  |     | NULL                                                            |                |
+| is_admin           | varchar(3)   | YES  |     | 0                                                               |                |
+| currency_id        | int(19)      | NO   |     | 1                                                               |                |
+| description        | text         | YES  |     | NULL                                                            |                |
+| date_entered       | timestamp    | NO   |     | CURRENT_TIMESTAMP                                               |                |
+| date_modified      | timestamp    | NO   |     | 0000-00-00 00:00:00                                             |                |
+| modified_user_id   | varchar(36)  | YES  |     | NULL                                                            |                |
+| title              | varchar(50)  | YES  |     | NULL                                                            |                |
+| department         | varchar(50)  | YES  |     | NULL                                                            |                |
+| phone_home         | varchar(50)  | YES  |     | NULL                                                            |                |
+| phone_mobile       | varchar(50)  | YES  |     | NULL                                                            |                |
+| phone_work         | varchar(50)  | YES  |     | NULL                                                            |                |
+| phone_other        | varchar(50)  | YES  |     | NULL                                                            |                |
+| phone_fax          | varchar(50)  | YES  |     | NULL                                                            |                |
+| email1             | varchar(100) | YES  |     | NULL                                                            |                |
+| email2             | varchar(100) | YES  |     | NULL                                                            |                |
+| yahoo_id           | varchar(100) | YES  |     | NULL                                                            |                |
+| status             | varchar(25)  | YES  |     | NULL                                                            |                |
+| signature          | varchar(250) | YES  |     | NULL                                                            |                |
+| address_street     | varchar(150) | YES  |     | NULL                                                            |                |
+| address_city       | varchar(100) | YES  |     | NULL                                                            |                |
+| address_state      | varchar(100) | YES  |     | NULL                                                            |                |
+| address_country    | varchar(25)  | YES  |     | NULL                                                            |                |
+| address_postalcode | varchar(9)   | YES  |     | NULL                                                            |                |
+| user_preferences   | text         | YES  |     | NULL                                                            |                |
+| tz                 | varchar(30)  | YES  |     | NULL                                                            |                |
+| holidays           | varchar(60)  | YES  |     | NULL                                                            |                |
+| namedays           | varchar(60)  | YES  |     | NULL                                                            |                |
+| workdays           | varchar(30)  | YES  |     | NULL                                                            |                |
+| weekstart          | int(11)      | YES  |     | NULL                                                            |                |
+| date_format        | varchar(200) | YES  |     | NULL                                                            |                |
+| hour_format        | varchar(30)  | YES  |     | am/pm                                                           |                |
+| start_hour         | varchar(30)  | YES  |     | 10:00                                                           |                |
+| end_hour           | varchar(30)  | YES  |     | 23:00                                                           |                |
+| homeorder          | varchar(255) | YES  |     | HDB,ALVT,PLVT,QLTQ,CVLVT,HLT,OLV,GRT,OLTSO,ILTI,MNL,OLTPO,LTFAQ |                |
+| activity_view      | varchar(200) | YES  |     | Today                                                           |                |
+| lead_view          | varchar(200) | YES  |     | Today                                                           |                |
+| imagename          | varchar(250) | YES  |     | NULL                                                            |                |
+| deleted            | int(1)       | NO   |     | 0                                                               |                |
+| defhomeview        | varchar(100) | YES  |     | NULL                                                            |                |
+| confirm_password   | varchar(30)  | YES  |     | NULL                                                            |                |
+| tagcloud_view      | int(1)       | YES  |     | 1                                                               |                |
+| internal_mailer    | varchar(3)   | NO   |     | 1                                                               |                |
+| crypt_type         | varchar(20)  | NO   |     | MD5                                                             |                |
++--------------------+--------------+------+-----+-----------------------------------------------------------------+----------------+
+mysql> select * from vtiger_users;
++----+--------------+------------------------------+----------------------------------+-----------+------------+---------------+---------------+----------+-------------+-------------+---------------------+---------------------+------------------+-------+------------+------------+--------------+------------+-------------+-----------+--------------------+--------+----------+--------+-----------+----------------+--------------+---------------+-----------------+--------------------+------------------+------+----------+----------+----------+-----------+-------------+-------------+------------+----------+-----------------------------------------------------------------+---------------+-----------+-----------+---------+-------------+------------------------------+---------------+-----------------+------------+
+| id | user_name    | user_password                | user_hash                        | cal_color | first_name | last_name     | reports_to_id | is_admin | currency_id | description | date_entered        | date_modified       | modified_user_id | title | department | phone_home | phone_mobile | phone_work | phone_other | phone_fax | email1             | email2 | yahoo_id | status | signature | address_street | address_city | address_state | address_country | address_postalcode | user_preferences | tz   | holidays | namedays | workdays | weekstart | date_format | hour_format | start_hour | end_hour | homeorder                                                       | activity_view | lead_view | imagename | deleted | defhomeview | confirm_password             | tagcloud_view | internal_mailer | crypt_type |
++----+--------------+------------------------------+----------------------------------+-----------+------------+---------------+---------------+----------+-------------+-------------+---------------------+---------------------+------------------+-------+------------+------------+--------------+------------+-------------+-----------+--------------------+--------+----------+--------+-----------+----------------+--------------+---------------+-----------------+--------------------+------------------+------+----------+----------+----------+-----------+-------------+-------------+------------+----------+-----------------------------------------------------------------+---------------+-----------+-----------+---------+-------------+------------------------------+---------------+-----------------+------------+
+|  1 | admin        | $1$ad$hsl2KFybNRnbXBa.b.WWv. | 21232f297a57a5a743894a0e4a801fc3 | #E6FAD8   |            | Administrator |               | on       |           1 |             | 2008-12-27 22:51:30 | 0000-00-00 00:00:00 | NULL             |       |            |            |              |            |             |           | mattf@vicidial.com |        |          | Active |           |                |              |               |                 |                    | NULL             | NULL | NULL     | NULL     | NULL     |      NULL | yyyy-mm-dd  | am/pm       | 08:00      | 23:00    | HDB,ALVT,PLVT,QLTQ,CVLVT,HLT,OLV,GRT,OLTSO,ILTI,MNL,OLTPO,LTFAQ | This Week     | Today     |           |       0 | NULL        | $1$ad$peilFE10wX.4b0aIm7/.t/ |             1 | 1               | MD5        |
+|  2 | standarduser | $1$st$k35HABw/iAKXXthyFMLPF/ | NULL                             | #E6FAD8   |            | StandardUser  |               | off      |           1 |             | 2008-12-27 22:47:55 | 0000-00-00 00:00:00 | NULL             |       |            |            |              |            |             |           | mattf@vicidial.com |        |          | Active |           |                |              |               |                 |                    | NULL             | NULL | NULL     | NULL     | NULL     |      NULL | yyyy-mm-dd  | 24          | 08:00      | 23:00    | HDB,ALVT,PLVT,QLTQ,CVLVT,HLT,OLV,GRT,OLTSO,ILTI,MNL,OLTPO,LTFAQ | This Week     | Today     |           |       0 | NULL        | $1$st$1iX6Nfn6NbdWdlCljgg3u1 |             1 | 1               | MD5        |
+|  4 | 6666         | $1$66$WpuoymV3Cudgm3vI8xWY.0 | 81dc9bdb52d04dc20036dbd8313ed055 | #E6FAD8   | NULL       | Admin         | NULL          | on       |           1 | NULL        | 2008-12-31 13:32:23 | 0000-00-00 00:00:00 | NULL             | NULL  | NULL       | NULL       | NULL         | NULL       | NULL        | NULL      | NULL               | NULL   | NULL     | Active | NULL      | NULL           | NULL         | NULL          | NULL            | NULL               | NULL             | NULL | NULL     | NULL     | NULL     |      NULL | NULL        | am/pm       | 10:00      | 23:00    | HDB,ALVT,PLVT,QLTQ,CVLVT,HLT,OLV,GRT,OLTSO,ILTI,MNL,OLTPO,LTFAQ | Today         | Today     | NULL      |       0 | NULL        | NULL                         |             1 | 1               | MD5        |
++----+--------------+------------------------------+----------------------------------+-----------+------------+---------------+---------------+----------+-------------+-------------+---------------------+---------------------+------------------+-------+------------+------------+--------------+------------+-------------+-----------+--------------------+--------+----------+--------+-----------+----------------+--------------+---------------+-----------------+--------------------+------------------+------+----------+----------+----------+-----------+-------------+-------------+------------+----------+-----------------------------------------------------------------+---------------+-----------+-----------+---------+-------------+------------------------------+---------------+-----------------+------------+
+
+This table stores the role of the vtiger users. VICIDIAL users will by default be set to H5(Sales Man), user_level 8 vicidial_users will be set to H4(Sales Manager) and user_level 9 vicidial_users will be set to H2(CEO).
+mysql> describe vtiger_user2role;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| userid | int(11)      | NO   | PRI |         |       |
+| roleid | varchar(255) | NO   | MUL |         |       |
++--------+--------------+------+-----+---------+-------+
+mysql> select * from vtiger_user2role;
++--------+--------+
+| userid | roleid |
++--------+--------+
+|      1 | H2     |
+|      2 | H3     |
++--------+--------+
+
+All VICIDIAL users will be entered into the Team Selling(groupid 1)
+mysql> describe vtiger_users2group;
++---------+---------+------+-----+---------+-------+
+| Field   | Type    | Null | Key | Default | Extra |
++---------+---------+------+-----+---------+-------+
+| groupid | int(19) | NO   | PRI |         |       |
+| userid  | int(19) | NO   | PRI |         |       |
++---------+---------+------+-----+---------+-------+
+mysql> select * from vtiger_users2group;
++---------+--------+
+| groupid | userid |
++---------+--------+
+|       2 |      1 |
+|       1 |      2 |
+|       2 |      2 |
+|       3 |      2 |
++---------+--------+
+
+mysql> describe vtiger_users_last_import;
++------------------+-------------+------+-----+---------+----------------+
+| Field            | Type        | Null | Key | Default | Extra          |
++------------------+-------------+------+-----+---------+----------------+
+| id               | int(36)     | NO   | PRI | NULL    | auto_increment |
+| assigned_user_id | varchar(36) | YES  | MUL | NULL    |                |
+| bean_type        | varchar(36) | YES  |     | NULL    |                |
+| bean_id          | varchar(36) | YES  |     | NULL    |                |
+| deleted          | int(1)      | NO   |     | 0       |                |
++------------------+-------------+------+-----+---------+----------------+
+
+This table keeps the sequence number of the auto-incremented vtiger_users.id field
+mysql> describe vtiger_users_seq;
++-------+---------+------+-----+---------+-------+
+| Field | Type    | Null | Key | Default | Extra |
++-------+---------+------+-----+---------+-------+
+| id    | int(11) | NO   |     |         |       |
++-------+---------+------+-----+---------+-------+
+mysql> select * from vtiger_users_seq;
++----+
+| id |
++----+
+|  2 |
++----+
+
+
+mysql> describe vtiger_usertype;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| usertypeid  | int(19)      | NO   | PRI | NULL    | auto_increment |
+| usertype    | varchar(200) | NO   | UNI |         |                |
+| sortorderid | int(19)      | NO   |     | 0       |                |
+| presence    | int(1)       | NO   |     | 1       |                |
++-------------+--------------+------+-----+---------+----------------+
+
+

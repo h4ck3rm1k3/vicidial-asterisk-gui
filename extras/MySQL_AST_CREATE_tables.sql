@@ -179,7 +179,8 @@ department VARCHAR(30)
 
 CREATE TABLE server_updater (
 server_ip VARCHAR(15) NOT NULL,
-last_update DATETIME
+last_update DATETIME,
+db_time TIMESTAMP
 );
 
 CREATE TABLE call_log (
@@ -473,7 +474,8 @@ delete_timeclock_log ENUM('1','0') default '0',
 alter_custphone_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
 vdc_agent_api_access ENUM('0','1') default '0',
 modify_inbound_dids ENUM('1','0') default '0',
-delete_inbound_dids ENUM('1','0') default '0'
+delete_inbound_dids ENUM('1','0') default '0',
+active ENUM('Y','N') default 'Y'
 );
 
 
@@ -599,7 +601,8 @@ agent_extended_alt_dial ENUM('Y','N') default 'N',
 use_campaign_dnc ENUM('Y','N') default 'N',
 three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN',
 three_way_dial_prefix VARCHAR(20) default '',
-web_form_target VARCHAR(100) NOT NULL default 'vdcwebform'
+web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
+vtiger_search_category VARCHAR(100) default 'LEAD'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1018,7 +1021,7 @@ queuemetrics_pass VARCHAR(50),
 queuemetrics_url VARCHAR(255),
 queuemetrics_log_id VARCHAR(10) default 'VIC',
 queuemetrics_eq_prepend VARCHAR(255) default 'NONE',
-vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'NOT_ACTIVE',
+vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'ALL',
 allow_sipsak_messages ENUM('0','1') default '0',
 admin_home_url VARCHAR(255) default '../vicidial/welcome.php',
 enable_agc_xfer_log ENUM('0','1') default '0',
@@ -1030,7 +1033,13 @@ vdc_header_date_format VARCHAR(50) default 'MS_DASH_24HR  2008-06-24 23:59:59',
 vdc_customer_date_format VARCHAR(50) default 'AL_TEXT_AMPM  OCT 24, 2008 11:59:59 PM',
 vdc_header_phone_format VARCHAR(50) default 'US_PARN (000)000-0000',
 vdc_agent_api_active ENUM('0','1') default '0',
-qc_last_pull_time DATETIME
+qc_last_pull_time DATETIME,
+enable_vtiger_integration ENUM('0','1') default '0',
+vtiger_server_ip VARCHAR(15),
+vtiger_dbname VARCHAR(50),
+vtiger_login VARCHAR(50),
+vtiger_pass VARCHAR(50),
+vtiger_url VARCHAR(255)
 );
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -1085,6 +1094,26 @@ prompt_audio_9 VARCHAR(20),
 prompt_response_9 TINYINT(1) UNSIGNED default '0',
 prompt_audio_10 VARCHAR(20),
 prompt_response_10 TINYINT(1) UNSIGNED default '0',
+prompt_audio_11 VARCHAR(20),
+prompt_response_11 TINYINT(1) UNSIGNED default '0',
+prompt_audio_12 VARCHAR(20),
+prompt_response_12 TINYINT(1) UNSIGNED default '0',
+prompt_audio_13 VARCHAR(20),
+prompt_response_13 TINYINT(1) UNSIGNED default '0',
+prompt_audio_14 VARCHAR(20),
+prompt_response_14 TINYINT(1) UNSIGNED default '0',
+prompt_audio_15 VARCHAR(20),
+prompt_response_15 TINYINT(1) UNSIGNED default '0',
+prompt_audio_16 VARCHAR(20),
+prompt_response_16 TINYINT(1) UNSIGNED default '0',
+prompt_audio_17 VARCHAR(20),
+prompt_response_17 TINYINT(1) UNSIGNED default '0',
+prompt_audio_18 VARCHAR(20),
+prompt_response_18 TINYINT(1) UNSIGNED default '0',
+prompt_audio_19 VARCHAR(20),
+prompt_response_19 TINYINT(1) UNSIGNED default '0',
+prompt_audio_20 VARCHAR(20),
+prompt_response_20 TINYINT(1) UNSIGNED default '0',
 index (phone_number),
 index (entry_time)
 );
@@ -1359,7 +1388,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1121';
+UPDATE system_settings SET db_schema_version='1122';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

@@ -861,7 +861,20 @@ if (isset($_GET["alt_server_ip"]))				{$alt_server_ip=$_GET["alt_server_ip"];}
 	elseif (isset($_POST["alt_server_ip"]))	{$alt_server_ip=$_POST["alt_server_ip"];}
 if (isset($_GET["recording_web_link"]))				{$recording_web_link=$_GET["recording_web_link"];}
 	elseif (isset($_POST["recording_web_link"]))	{$recording_web_link=$_POST["recording_web_link"];}
-
+if (isset($_GET["enable_vtiger_integration"]))			{$enable_vtiger_integration=$_GET["enable_vtiger_integration"];}
+	elseif (isset($_POST["enable_vtiger_integration"]))	{$enable_vtiger_integration=$_POST["enable_vtiger_integration"];}
+if (isset($_GET["vtiger_server_ip"]))			{$vtiger_server_ip=$_GET["vtiger_server_ip"];}
+	elseif (isset($_POST["vtiger_server_ip"]))	{$vtiger_server_ip=$_POST["vtiger_server_ip"];}
+if (isset($_GET["vtiger_dbname"]))				{$vtiger_dbname=$_GET["vtiger_dbname"];}
+	elseif (isset($_POST["vtiger_dbname"]))		{$vtiger_dbname=$_POST["vtiger_dbname"];}
+if (isset($_GET["vtiger_login"]))			{$vtiger_login=$_GET["vtiger_login"];}
+	elseif (isset($_POST["vtiger_login"]))	{$vtiger_login=$_POST["vtiger_login"];}
+if (isset($_GET["vtiger_pass"]))			{$vtiger_pass=$_GET["vtiger_pass"];}
+	elseif (isset($_POST["vtiger_pass"]))	{$vtiger_pass=$_POST["vtiger_pass"];}
+if (isset($_GET["vtiger_url"]))				{$vtiger_url=$_GET["vtiger_url"];}
+	elseif (isset($_POST["vtiger_url"]))	{$vtiger_url=$_POST["vtiger_url"];}
+if (isset($_GET["vtiger_search_category"]))				{$vtiger_search_category=$_GET["vtiger_search_category"];}
+	elseif (isset($_POST["vtiger_search_category"]))	{$vtiger_search_category=$_POST["vtiger_search_category"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1033,6 +1046,7 @@ $modify_inbound_dids = ereg_replace("[^0-9]","",$modify_inbound_dids);
 $delete_inbound_dids = ereg_replace("[^0-9]","",$delete_inbound_dids);
 $answer_sec_pct_rt_stat_one = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_one);
 $answer_sec_pct_rt_stat_two = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_two);
+$enable_vtiger_integration = ereg_replace("[^0-9]","",$enable_vtiger_integration);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -1121,6 +1135,7 @@ $phone_ip = ereg_replace("[^\.0-9]","",$phone_ip);
 $old_server_ip = ereg_replace("[^\.0-9]","",$old_server_ip);
 $computer_ip = ereg_replace("[^\.0-9]","",$computer_ip);
 $queuemetrics_server_ip = ereg_replace("[^\.0-9]","",$queuemetrics_server_ip);
+$vtiger_server_ip = ereg_replace("[^\.0-9]","",$vtiger_server_ip);
 
 ### ALPHA-NUMERIC and spaces and hash and star and comma
 $xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
@@ -1226,6 +1241,7 @@ $exten_context = ereg_replace("[^-\_0-9a-zA-Z]","",$exten_context);
 $three_way_call_cid = ereg_replace("[^-\_0-9a-zA-Z]","",$three_way_call_cid);
 $web_form_target = ereg_replace("[^-\_0-9a-zA-Z]","",$web_form_target);
 $recording_web_link = ereg_replace("[^-\_0-9a-zA-Z]","",$recording_web_link);
+$vtiger_search_category = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_search_category);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1297,6 +1313,9 @@ $after_hours_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$after
 $welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_message_filename);
 $onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
 $email = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$email);
+$vtiger_dbname = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_dbname);
+$vtiger_login = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_login);
+$vtiger_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_pass);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and space and colon
 $vdc_header_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_header_date_format);
@@ -1316,6 +1335,7 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # $queuemetrics_url
 # $admin_home_url
 # $qc_web_form_address
+# $vtiger_url
 
 ### VARIABLES not filtered at all ###
 # $script_text
@@ -1491,11 +1511,13 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 81209-1538 - Added web_form_target to campaign screen
 # 81210-1430 - Added http server IP and recording link options to servers
 # 81222-0500 - Reformatted all listings to same format changed to field selects instead of *
+# 81228-2300 - Added fields for vtiger integration and active vicidial_user display
+# 90101-1216 - Added options for user synchronization with vtiger
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-154';
-$build = '81222-0500';
+$admin_version = '2.0.5-156';
+$build = '90101-1216';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1536,7 +1558,7 @@ while ($i < $qm_conf_ct)
 ##### END SETTINGS LOOKUP #####
 ###########################################
 
-$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and active='Y';";
 if ($DB) {echo "|$stmt|\n";}
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
@@ -1567,7 +1589,7 @@ $browser = getenv("HTTP_USER_AGENT");
 			$stmt="SELECT * from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW';";
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
-			$LOGfullname				=$row[3];
+			$LOGfull_name				=$row[3];
 			$LOGuser_level				=$row[4];
 			$LOGuser_group				=$row[5];
 			$LOGdelete_users			=$row[8];
@@ -1605,7 +1627,7 @@ $browser = getenv("HTTP_USER_AGENT");
 
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfull_name|\n");
 			fclose($fp);
 			}
 		}
@@ -2374,6 +2396,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Phone Pass -</B> Here is where you can set a default phone pass value for when the user logs into vicidial.php. This value will populate the phone_pass automatically when the user logs in with their user-pass-campaign in the vicidial.php login screen.
 
 <BR>
+<A NAME="vicidial_users-active">
+<BR>
+<B>Active -</B> This field defines whether the user is active in the system and can use VICIDIAL resources. Default is Y
+
+<BR>
 <A NAME="vicidial_users-hotkeys_active">
 <BR>
 <B>Hot Keys Active -</B> This option if set to 1 allows the user to use the Hot Keys quick-dispositioning function in vicidial.php.
@@ -3073,7 +3100,10 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Survey Campaign Recording Directory -</B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.
 
-
+<BR>
+<A NAME="vicidial_campaigns-vtiger_search_category">
+<BR>
+<B>Vtiger Search Category -</B> If Vtiger integration is enabled in the system settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: LEAD- This option will search through the Vtiger leads only, ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number, VENDOR- This option will only search through the Vtiger vendors, ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger account ID. If unsuccessful it will try any other methods listed that you have selected. Multiple options can be used for each search, but on large databases this is not recommended. Default is LEAD.
 
 
 
@@ -4313,46 +4343,6 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 <B>Webroot Writable -</B> This setting allows you to define whether temp files and authentication files should be placed in the webroot on your web server. Default is 1.
 
 <BR>
-<A NAME="settings-enable_queuemetrics_logging">
-<BR>
-<B>Enable QueueMetrics Logging -</B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0.
-
-<BR>
-<A NAME="settings-queuemetrics_server_ip">
-<BR>
-<B>QueueMetrics Server IP -</B> This is the IP address of the database for your QueueMetrics installation.
-
-<BR>
-<A NAME="settings-queuemetrics_dbname">
-<BR>
-<B>QueueMetrics Database Name -</B> This is the database name for your QueueMetrics database.
-
-<BR>
-<A NAME="settings-queuemetrics_login">
-<BR>
-<B>QueueMetrics Database Login -</B> This is the user name used to log in to your QueueMetrics database.
-
-<BR>
-<A NAME="settings-queuemetrics_pass">
-<BR>
-<B>QueueMetrics Database Password -</B> This is the password used to log in to your QueueMetrics database.
-
-<BR>
-<A NAME="settings-queuemetrics_url">
-<BR>
-<B>QueueMetrics URL -</B> This is the URL or web site address used to get to your QueueMetrics installation.
-
-<BR>
-<A NAME="settings-queuemetrics_log_id">
-<BR>
-<B>QueueMetrics Log ID -</B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record.
-
-<BR>
-<A NAME="settings-queuemetrics_eq_prepend">
-<BR>
-<B>QueueMetrics EnterQueue Prepend -</B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything.
-
-<BR>
 <A NAME="settings-vicidial_agent_disable">
 <BR>
 <B>VICIDIAL Agent Disable Display -</B> This field is used to select when to show an agent when their session has been disabled by the system, a manager action or by an external measure. The NOT_ACTIVE setting will disable the message on the agents screen. The LIVE_AGENT setting will only display the disabled message when the agents vicidial_auto_calls record has been removed, such as during a force logout or emergency logout. 
@@ -4428,6 +4418,78 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <A NAME="settings-vdc_agent_api_active">
 <BR>
 <B>Agent interface API Access Active -</B> This option allows you to enable or disable the agent interface API. Default is 0.
+
+
+<BR>
+<A NAME="settings-enable_queuemetrics_logging">
+<BR>
+<B>Enable QueueMetrics Logging -</B> This setting allows you to define whether VICIDIAL will insert log entries into the queue_log database table as Asterisk Queues activity does. QueueMetrics is a standalone, closed-source statistical analysis program. You must have QueueMetrics already installed and configured before enabling this feature. Default is 0.
+
+<BR>
+<A NAME="settings-queuemetrics_server_ip">
+<BR>
+<B>QueueMetrics Server IP -</B> This is the IP address of the database for your QueueMetrics installation.
+
+<BR>
+<A NAME="settings-queuemetrics_dbname">
+<BR>
+<B>QueueMetrics Database Name -</B> This is the database name for your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_login">
+<BR>
+<B>QueueMetrics Database Login -</B> This is the user name used to log in to your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_pass">
+<BR>
+<B>QueueMetrics Database Password -</B> This is the password used to log in to your QueueMetrics database.
+
+<BR>
+<A NAME="settings-queuemetrics_url">
+<BR>
+<B>QueueMetrics URL -</B> This is the URL or web site address used to get to your QueueMetrics installation.
+
+<BR>
+<A NAME="settings-queuemetrics_log_id">
+<BR>
+<B>QueueMetrics Log ID -</B> This is the server ID that all VICIDIAL logs going into the QueueMetrics database will use as an identifier for each record.
+
+<BR>
+<A NAME="settings-queuemetrics_eq_prepend">
+<BR>
+<B>QueueMetrics EnterQueue Prepend -</B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything.
+
+<BR>
+<A NAME="settings-enable_vtiger_logging">
+<BR>
+<B>Enable Vtiger Integration -</B> This setting allows you to enable Vtiger integration with VICIDIAL. Currently links to Vtiger admin and search as well as user replication are the only integration features available. Default is 0.
+
+<BR>
+<A NAME="settings-vtiger_server_ip">
+<BR>
+<B>Vtiger DB Server IP -</B> This is the IP address of the database for your Vtiger installation.
+
+<BR>
+<A NAME="settings-vtiger_dbname">
+<BR>
+<B>Vtiger Database Name -</B> This is the database name for your Vtiger database.
+
+<BR>
+<A NAME="settings-vtiger_login">
+<BR>
+<B>Vtiger Database Login -</B> This is the user name used to log in to your Vtiger database.
+
+<BR>
+<A NAME="settings-vtiger_pass">
+<BR>
+<B>Vtiger Database Password -</B> This is the password used to log in to your Vtiger database.
+
+<BR>
+<A NAME="settings-vtiger_url">
+<BR>
+<B>Vtiger URL -</B> This is the URL or web site address used to get to your Vtiger installation.
+
 
 <BR><BR><BR><BR>
 
@@ -6140,6 +6202,106 @@ if ($ADD=="2")
 			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass) values('$user','$pass','$full_name','$user_level','$user_group','$phone_login','$phone_pass');";
 			$rslt=mysql_query($stmt, $link);
 
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
+				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				$user_name =		$user;
+				$user_password =	$pass;
+				$last_name =		$full_name;
+				$is_admin =			'off';
+				$roleid =			'H5';
+				$status =			'Active';
+				$groupid =			'1';
+					if ($user_level >= 8) {$roleid = 'H4';}
+					if ($user_level >= 9) {$roleid = 'H2';}
+					if ($user_level >= 9) {$is_admin = 'on';}
+				$salt = substr($user_name, 0, 2);
+				$salt = '$1$' . $salt . '$';
+				$encrypted_password = crypt($user_password, $salt);
+
+				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$found_count = $row[0];
+
+				### user exists in vtiger, update it
+				if ($found_count > 0)
+					{
+					$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$userid = $row[0];
+
+					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW USER RECORD IN VTIGER
+					$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$userid = mysql_insert_id($linkV);
+				
+					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW USER RECORD IN VTIGER
+					}
+
+				}
+			### END vtiger integration
+
 			### LOG CHANGES TO LOG FILE ###
 			if ($WeBRooTWritablE > 0)
 				{
@@ -6176,7 +6338,7 @@ if ($ADD=="2A")
 			}
 		 else
 			{
-			if (ereg('AUTOGENERA',$user))
+			if (ereg('AUTOGEN',$user))
 				{
 				$new_user=0;
 				$auto_user_add_value=0;
@@ -6214,7 +6376,7 @@ if ($ADD=="2A")
 				$rslt=mysql_query($stmt, $link);
 				}
 
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -6222,6 +6384,118 @@ if ($ADD=="2A")
 
 			$stmtA="INSERT INTO vicidial_campaign_agents (user,campaign_id,campaign_rank,campaign_weight,calls_today) SELECT \"$user\",campaign_id,campaign_rank,campaign_weight,\"0\" from vicidial_campaign_agents where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmtA, $link);
+
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
+				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				$stmt = "SELECT user_level,active FROM vicidial_users where user='$user';";
+				$rslt=mysql_query($stmt, $link);
+				if ($DB) {echo "$stmt\n";}
+				$vuul_conf_ct = mysql_num_rows($rslt);
+				if ($vuul_conf_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$user_level =	$row[0];
+					$active	=		$row[1];
+					}
+
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				$user_name =		$user;
+				$user_password =	$pass;
+				$last_name =		$full_name;
+				$is_admin =			'off';
+				$roleid =			'H5';
+				$status =			'Active';
+				$groupid =			'1';
+					if ($user_level >= 8) {$roleid = 'H4';}
+					if ($user_level >= 9) {$roleid = 'H2';}
+					if ($user_level >= 9) {$is_admin = 'on';}
+				if (ereg('N',$active)) {$status = 'Inactive';}
+				$salt = substr($user_name, 0, 2);
+				$salt = '$1$' . $salt . '$';
+				$encrypted_password = crypt($user_password, $salt);
+
+				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$found_count = $row[0];
+
+				### user exists in vtiger, update it
+				if ($found_count > 0)
+					{
+					$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$userid = $row[0];
+
+					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW USER RECORD IN VTIGER
+					$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$userid = mysql_insert_id($linkV);
+				
+					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW USER RECORD IN VTIGER
+					}
+
+				}
+			### END vtiger integration
 
 			echo "<br><B>USER COPIED: $user copied from $source_user_id</B>\n";
 			echo "<br><br>\n";
@@ -6318,7 +6592,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -7553,9 +7827,109 @@ if ($ADD=="4A")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
+			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Active';
+			$groupid =			'1';
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			if (ereg('N',$active)) {$status = 'Inactive';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+
+			}
+		### END vtiger integration
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
@@ -7594,8 +7968,110 @@ if ($ADD=="4B")
 		{
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
+
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
+			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Active';
+			$groupid =			'1';
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			if (ereg('N',$active)) {$status = 'Inactive';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+
+			}
+		### END vtiger integration
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
@@ -7635,8 +8111,110 @@ if ($ADD==4)
 		{
 		echo "<br><B>USER MODIFIED: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',active='$active' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
+
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
+			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Active';
+			$groupid =			'1';
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			if (ereg('N',$active)) {$status = 'Inactive';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+
+			}
+		### END vtiger integration
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
@@ -7735,7 +8313,7 @@ if ($ADD==41)
 				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
 					{$hopper_level='100';}
 
-				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target' where campaign_id='$campaign_id';";
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category' where campaign_id='$campaign_id';";
 				$rslt=mysql_query($stmtA, $link);
 
 				if ($reset_hopper == 'Y')
@@ -9211,7 +9789,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -10913,6 +11491,7 @@ if ($ADD==3)
 	$vdc_agent_api_access = $row[55];
 	$modify_inbound_dids =	$row[56];
 	$delete_inbound_dids =	$row[57];
+	$active =				$row[58];
 
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
@@ -10962,6 +11541,7 @@ if ($ADD==3)
 		echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20 value=\"$phone_login\">$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20 value=\"$phone_pass\">$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_users-active$NWE</td></tr>\n";
 
 		if ( ($LOGuser_level > 8) or ($LOGalter_agent_interface == "1") )
 			{
@@ -11088,6 +11668,12 @@ if ($ADD==31)
 			$rslt=mysql_query($stmt, $link);
 		}
 
+		$stmt="SELECT enable_vtiger_integration,vtiger_url from system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$enable_vtiger_integration_LU =		$row[0];
+		$vtiger_url_LU =					$row[1];
+
 		$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
@@ -11186,6 +11772,7 @@ if ($ADD==31)
 		$three_way_call_cid = $row[96];
 		$three_way_dial_prefix = $row[97];
 		$web_form_target = $row[98];
+		$vtiger_search_category = $row[99];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -11620,6 +12207,14 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Dial Prefix: </td><td align=left><input type=text name=three_way_dial_prefix size=15 maxlength=20 value=\"$three_way_dial_prefix\">$NWB#vicidial_campaigns-three_way_dial_prefix$NWE</td></tr>\n";
 
+		if ($enable_vtiger_integration_LU > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Search Category: </td><td align=left><select size=1 name=vtiger_search_category><option>LEAD</option><option>ACCOUNT</option><option>VENDOR</option><option>LEAD_ACCOUNT</option><option>LEAD_ACCOUNT_VENDOR</option><option>ACCTID</option><option>ACCTID_ACCOUNT</option><option>ACCTID_ACCOUNT_LEAD_VENDOR</option><option SELECTED>$vtiger_search_category</option></select>$NWB#vicidial_campaigns-vtiger_search_category$NWE</td></tr>\n";
+			}
+		else
+			{
+			echo "<input type=hidden name=vtiger_search_category value=\"$vtiger_search_category\">\n";
+			}
 
 		if ($campaign_allow_inbound == 'Y')
 			{
@@ -14267,14 +14862,14 @@ if ($ADD==311111)
 	### list of users in this user group
 
 		$active_confs = 0;
-		$stmt="SELECT user,full_name,user_level from vicidial_users where user_group='$user_group'";
+		$stmt="SELECT user,full_name,user_level,active from vicidial_users where user_group='$user_group'";
 		$rsltx=mysql_query($stmt, $link);
 		$users_to_print = mysql_num_rows($rsltx);
 
 		echo "<center>\n";
 		echo "<br><b>USERS WITHIN THIS USER GROUP: $users_to_print</b><br>\n";
 		echo "<TABLE width=400 cellspacing=3>\n";
-		echo "<tr><td>USER</td><td>FULL NAME</td><td>LEVEL</td></tr>\n";
+		echo "<tr><td>USER</td><td>FULL NAME</td><td>LEVEL</td><td>ACTIVE</td></tr>\n";
 
 		$o=0;
 		while ($users_to_print > $o) 
@@ -14291,6 +14886,7 @@ if ($ADD==311111)
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td>\n";
 		echo "<td><font size=1>$rowx[1]</td>\n";
 		echo "<td><font size=1>$rowx[2]</td>\n";
+		echo "<td><font size=1>$rowx[3]</td>\n";
 		echo "</tr>\n";
 		}
 
@@ -15347,7 +15943,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -15375,6 +15971,12 @@ if ($ADD==311111111111111)
 	$vdc_header_phone_format =		$row[22];
 	$vdc_agent_api_active =			$row[23];
 	$qc_last_pull_time = 			$row[24];
+	$enable_vtiger_integration = 	$row[25];
+	$vtiger_server_ip = 			$row[26];
+	$vtiger_dbname = 				$row[27];
+	$vtiger_login = 				$row[28];
+	$vtiger_pass = 					$row[29];
+	$vtiger_url = 					$row[30];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -15385,23 +15987,6 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Install Date: </td><td align=left> $install_date</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Use Non-Latin: </td><td align=left><select size=1 name=use_non_latin><option>1</option><option>0</option><option selected>$use_non_latin</option></select>$NWB#settings-use_non_latin$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Webroot Writable: </td><td align=left><select size=1 name=webroot_writable><option>1</option><option>0</option><option selected>$webroot_writable</option></select>$NWB#settings-webroot_writable$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Name: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Login: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics DB Password: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics Log ID: </td><td align=left><input type=text name=queuemetrics_log_id size=12 maxlength=10 value=\"$queuemetrics_log_id\">$NWB#settings-queuemetrics_log_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics EnterQueue Prepend: </td><td align=left><select size=1 name=queuemetrics_eq_prepend>\n";
-	echo "<option value=\"NONE\">NONE</option>\n";
-	echo "<option value=\"lead_id\">lead_id</option>\n";
-	echo "<option value=\"list_id\">list_id</option>\n";
-	echo "<option value=\"source_id\">source_id</option>\n";
-	echo "<option value=\"vendor_lead_code\">vendor_lead_code</option>\n";
-	echo "<option value=\"address3\">address3</option>\n";
-	echo "<option value=\"security_phrase\">security_phrase</option>\n";
-	echo "<option selected value=\"$queuemetrics_eq_prepend\">$queuemetrics_eq_prepend</option>\n";
-	echo "</select>$NWB#settings-queuemetrics_eq_prepend$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Agent Disable Display: </td><td align=left><select size=1 name=vicidial_agent_disable>\n";
 	echo "<option value=\"NOT_ACTIVE\">NOT_ACTIVE</option>\n";
 	echo "<option value=\"LIVE_AGENT\">LIVE_AGENT</option>\n";
@@ -15446,8 +16031,38 @@ if ($ADD==311111111111111)
 	echo "<option>IT_DASH 0000-000-000</option>\n";
 	echo "<option>FR_SPAC 00 00 00 00 00</option>\n";
 	echo "<option selected value=\"$vdc_header_phone_format\">$vdc_header_phone_format</option>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Agent API Active: </td><td align=left><select size=1 name=vdc_agent_api_active><option>1</option><option>0</option><option selected>$vdc_agent_api_active</option></select>$NWB#settings-vdc_agent_api_active$NWE</td></tr>\n";
 	echo "</select>$NWB#settings-vdc_header_phone_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent API Active: </td><td align=left><select size=1 name=vdc_agent_api_active><option>1</option><option>0</option><option selected>$vdc_agent_api_active</option></select>$NWB#settings-vdc_agent_api_active$NWE</td></tr>\n";
+
+
+	echo "<tr bgcolor=#99FFCC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics DB Name: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics DB Login: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics DB Password: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics Log ID: </td><td align=left><input type=text name=queuemetrics_log_id size=12 maxlength=10 value=\"$queuemetrics_log_id\">$NWB#settings-queuemetrics_log_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics EnterQueue Prepend: </td><td align=left><select size=1 name=queuemetrics_eq_prepend>\n";
+	echo "<option value=\"NONE\">NONE</option>\n";
+	echo "<option value=\"lead_id\">lead_id</option>\n";
+	echo "<option value=\"list_id\">list_id</option>\n";
+	echo "<option value=\"source_id\">source_id</option>\n";
+	echo "<option value=\"vendor_lead_code\">vendor_lead_code</option>\n";
+	echo "<option value=\"address3\">address3</option>\n";
+	echo "<option value=\"security_phrase\">security_phrase</option>\n";
+	echo "<option selected value=\"$queuemetrics_eq_prepend\">$queuemetrics_eq_prepend</option>\n";
+	echo "</select>$NWB#settings-queuemetrics_eq_prepend$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Enable Vtiger Integration: </td><td align=left><select size=1 name=enable_vtiger_integration><option>1</option><option>0</option><option selected>$enable_vtiger_integration</option></select>$NWB#settings-enable_vtiger_integration$NWE\n";
+	echo " &nbsp; <a href=\"./vtiger_user.php\" target=\"_blank\">Click here to Synchronize users with Vtiger</a>\n";
+	echo "</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Server IP: </td><td align=left><input type=text name=vtiger_server_ip size=18 maxlength=15 value=\"$vtiger_server_ip\">$NWB#settings-vtiger_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Name: </td><td align=left><input type=text name=vtiger_dbname size=18 maxlength=50 value=\"$vtiger_dbname\">$NWB#settings-vtiger_dbname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Login: </td><td align=left><input type=text name=vtiger_login size=18 maxlength=50 value=\"$vtiger_login\">$NWB#settings-vtiger_login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Password: </td><td align=left><input type=text name=vtiger_pass size=18 maxlength=50 value=\"$vtiger_pass\">$NWB#settings-vtiger_pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger URL: </td><td align=left><input type=text name=vtiger_url size=50 maxlength=255 value=\"$vtiger_url\">$NWB#settings-vtiger_url$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "</form>\n";
@@ -16030,6 +16645,17 @@ if ($ADD==0)
 	{
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	echo "<br>USER LISTINGS: ";
+	if (ereg('display_all',$status)) 
+		{
+		$SQLstatus = '';
+		echo " &nbsp; <a href=\"$PHP_SELF?ADD=0\"><font size=1 color=black>show only active users</a>\n";
+		}
+	else
+		{
+		$SQLstatus = "where active='Y'";
+		echo " &nbsp; <a href=\"$PHP_SELF?ADD=0&status=display_all\"><font size=1 color=black>show all users</a>\n";
+		}
 
 	$USERlink='stage=USERIDDOWN';
 	$NAMElink='stage=NAMEDOWN';
@@ -16044,17 +16670,17 @@ if ($ADD==0)
 	if (eregi("LEVELDOWN",$stage)) {$SQLorder='order by user_level desc';   $LEVELlink='stage=LEVELUP';}
 	if (eregi("GROUPUP",$stage)) {$SQLorder='order by user_group asc';   $GROUPlink='stage=GROUPDOWN';}
 	if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPlink='stage=GROUPUP';}
-	$stmt="SELECT user,full_name,user_level,user_group from vicidial_users $SQLorder";
+	$stmt="SELECT user,full_name,user_level,user_group,active from vicidial_users $SQLstatus $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$people_to_print = mysql_num_rows($rslt);
 
-	echo "<br>USER LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<tr bgcolor=black>";
-	echo "<td><a href=\"$PHP_SELF?ADD=0&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
-	echo "<td><a href=\"$PHP_SELF?ADD=0&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
-	echo "<td><a href=\"$PHP_SELF?ADD=0&$LEVELlink\"><font size=1 color=white><B>LEVEL</B></a></td>";
-	echo "<td><a href=\"$PHP_SELF?ADD=0&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$LEVELlink\"><font size=1 color=white><B>LEVEL</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE</B></td>";
 	echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
 
 	$o=0;
@@ -16069,6 +16695,7 @@ if ($ADD==0)
 		echo "<td><font size=1>$row[1]</td>";
 		echo "<td><font size=1>$row[2]</td>";
 		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
 		echo "<td><font size=1><CENTER><a href=\"$PHP_SELF?ADD=3&user=$row[0]\">MODIFY</a> | <a href=\"./user_stats.php?user=$row[0]\">STATS</a> | <a href=\"./user_status.php?user=$row[0]\">STATUS</a> | <a href=\"./AST_agent_time_sheet.php?agent=$row[0]\">TIME</a></CENTER></td></tr>\n";
 		$o++;
 		}
@@ -16838,11 +17465,13 @@ if ($ADD==999999)
 		$i++;
 		}
 
-	$stmt="SELECT enable_queuemetrics_logging,queuemetrics_url from system_settings;";
+	$stmt="SELECT enable_queuemetrics_logging,queuemetrics_url,enable_vtiger_integration,vtiger_url from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$enable_queuemetrics_logging_LU =	$row[0];
 	$queuemetrics_url_LU =				$row[1];
+	$enable_vtiger_integration_LU =		$row[2];
+	$vtiger_url_LU =					$row[3];
 
 	?>
 
@@ -16867,6 +17496,10 @@ if ($ADD==999999)
 	if ($enable_queuemetrics_logging_LU > 0)
 		{
 		echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS REPORTS</a></FONT>\n";
+		}
+	if ($enable_vtiger_integration_LU > 0)
+		{
+		echo "<LI><a href=\"$vtiger_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>VTIGER HOME</a></FONT>\n";
 		}
 ?>
 	</UL>

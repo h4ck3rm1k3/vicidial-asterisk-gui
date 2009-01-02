@@ -557,3 +557,41 @@ UPDATE system_settings SET db_schema_version='1120';
 ALTER TABLE vicidial_campaigns MODIFY campaign_vdad_exten VARCHAR(20) default '8368';
 
 UPDATE system_settings SET db_schema_version='1121';
+
+ALTER TABLE system_settings ADD enable_vtiger_integration ENUM('0','1') default '0';
+ALTER TABLE system_settings ADD vtiger_server_ip VARCHAR(15);
+ALTER TABLE system_settings ADD vtiger_dbname VARCHAR(50);
+ALTER TABLE system_settings ADD vtiger_login VARCHAR(50);
+ALTER TABLE system_settings ADD vtiger_pass VARCHAR(50);
+ALTER TABLE system_settings ADD vtiger_url VARCHAR(255);
+
+ALTER TABLE vicidial_users ADD active ENUM('Y','N') default 'Y';
+
+ALTER TABLE vicidial_campaigns ADD vtiger_search_category VARCHAR(100) default 'LEAD';
+
+ALTER TABLE server_updater ADD db_time TIMESTAMP;
+
+ALTER TABLE vicidial_ivr ADD prompt_audio_11 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_11 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_12 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_12 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_13 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_13 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_14 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_14 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_15 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_15 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_16 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_16 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_17 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_17 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_18 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_18 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_19 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_19 TINYINT(1) UNSIGNED default '0';
+ALTER TABLE vicidial_ivr ADD prompt_audio_20 VARCHAR(20);
+ALTER TABLE vicidial_ivr ADD prompt_response_20 TINYINT(1) UNSIGNED default '0';
+
+ALTER TABLE system_settings MODIFY vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'ALL';
+
+UPDATE system_settings SET db_schema_version='1122';

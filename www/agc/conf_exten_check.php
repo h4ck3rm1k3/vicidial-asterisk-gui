@@ -40,10 +40,11 @@
 # 80703-1106 - Added API functionality for Hangup and Dispo
 # 81104-0229 - Added mysql error logging capability
 # 81104-1409 - Added multi-retry for some vicidial_live_agents table MySQL queries
+# 90102-1402 - Added check for system and database time synchronization
 #
 
-$version = '2.0.4-15';
-$build = '81104-1409';
+$version = '2.0.4-16';
+$build = '90102-1402';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=14;
 $one_mysql_log=0;
@@ -303,8 +304,23 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			$external_status =	$row[1];
 			if (strlen($external_status)<1) {$external_status = '::::::::::';}
 
-			if ($Acount < 1) {$Alogin='DEAD_VLA';}
-			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
+			$web_epoch = date("U");
+			$stmt="select UNIX_TIMESTAMP(last_update),UNIX_TIMESTAMP(db_time) from server_updater where server_ip='$server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03014',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			$server_epoch =	$row[0];
+			$db_epoch =	$row[1];
+			$time_diff = ($server_epoch - $db_epoch);
+			$web_diff = ($db_epoch - $web_epoch);
+
+			if ( ( ($time_diff > 8) or ($time_diff < -8) or ($web_diff > 8) or ($web_diff < -8) ) and (eregi("0$",$StarTtime)) ) 
+				{$Alogin='TIME_SYNC';}
+			if ($Acount < 1) 
+				{$Alogin='DEAD_VLA';}
+			if ($AexternalDEAD > 0) 
+				{$Alogin='DEAD_EXTERNAL';}
 
 			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
 

@@ -346,6 +346,29 @@ To customize the query string after the web form, simply begin the web form with
 Recording Web Link -<\/B> This setting allows you to override the default of the display of the recording link in the admin web pages. Default is SERVER_IP||
 Alternate Recording Server IP -<\/B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty||
 Recording Web Link||
+Enable Vtiger Integration -<\/B> This setting allows you to enable Vtiger integration with VICIDIAL. Currently links to Vtiger admin and search as well as user replication are the only integration features available. Default is 0||
+Vtiger DB Server IP -<\/B> This is the IP address of the database for your Vtiger installation||
+Vtiger Database Name -<\/B> This is the database name for your Vtiger database||
+Vtiger Database Login -<\/B> This is the user name used to log in to your Vtiger database||
+Vtiger Database Password -<\/B> This is the password used to log in to your Vtiger database||
+Vtiger URL -<\/B> This is the URL or web site address used to get to your Vtiger installation||
+Enable Vtiger Integration:||
+Vtiger DB Server IP||
+Vtiger Database Name||
+Vtiger Database Login||
+Vtiger Database Password||
+Vtiger URL||
+VTIGER HOME||
+Active -<\/B> This field defines whether the user is active in the system and can use VICIDIAL resources. Default is Y||
+show only active users||
+show all users||
+Vtiger Search Category -<\/B> If Vtiger integration is enabled in the system settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: LEAD- This option will search through the Vtiger leads only, ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number, VENDOR- This option will only search through the Vtiger vendors, ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger account ID. If unsuccessful it will try any other methods listed that you have selected. Multiple options can be used for each search, but on large databases this is not recommended. Default is LEAD||
+Vtiger Search Category:||
+ACTIVE LISTS CHANGED||
+SUBMIT ACTIVE LIST CHANGES||
+LAST CALL DATE||
+User Group Bulk Change||
+Bulk Group Change||
 
 
 ############################################################ CLIENT
@@ -383,11 +406,7 @@ Alt Count: ||
 Change this phone number to INACTIVE||
 Change this phone number to ACTIVE||
 YOU MUST LOG IN TO THE TIMECLOCK FIRST||
-ACTIVE LISTS CHANGED||
-SUBMIT ACTIVE LIST CHANGES||
-LAST CALL DATE||
-User Group Bulk Change||
-Bulk Group Change||
+There is a time synchronization problem with your system, please tell your system administrator||
 
 
 ############################################################  MANAGER Manual

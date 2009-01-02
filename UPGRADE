@@ -217,6 +217,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
    features to existing inbound report. Created IVR stats report to show stats
    on Asterisk IVRs
 
+49. Updated Vtiger integration to version 5.0.4 and allow searching by 
+   leads/accounts/vendors. Also added user synchronization with vicidial_users
+
+50. Added notification of time synchronization problems in the vicidial.php page
+
 
 
 

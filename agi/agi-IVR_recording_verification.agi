@@ -35,11 +35,11 @@
 #exten => 1234,5,Hangup
 #
 # ;inbound IVR call from a VICIDIAL transfer:
-#exten => _83002*,1,Ringing		; call ringing
-#exten => _83002*,2,Wait(1)		; Wait 1 second for CID delivery
-#exten => _83002*,3,Answer		; Answer the line
-#exten => _83002*,4,AGI(agi-IVR_recording_verification.agi,7275551234---N---Y---N---N---Y-10-85100001---N---85100002-85100003---85100004---BOTH)
-#exten => _83002*,5,Hangup
+#exten => _83002*.,1,Ringing		; call ringing
+#exten => _83002*.,2,Wait(1)		; Wait 1 second for CID delivery
+#exten => _83002*.,3,Answer		; Answer the line
+#exten => _83002*.,4,AGI(agi-IVR_recording_verification.agi,7275551234---N---Y---N---N---Y-10-85100001---N---85100002-85100003---85100004---BOTH)
+#exten => _83002*.,5,Hangup
 #
 #
 # Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
@@ -256,6 +256,26 @@ if ($extension =~ /^832\d\d\*|^833\d\d\*/)
 #	prompt_response_9 TINYINT(1) UNSIGNED default '0',
 #	prompt_audio_10 VARCHAR(20),
 #	prompt_response_10 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_11 VARCHAR(20),
+#	prompt_response_11 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_12 VARCHAR(20),
+#	prompt_response_12 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_13 VARCHAR(20),
+#	prompt_response_13 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_14 VARCHAR(20),
+#	prompt_response_14 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_15 VARCHAR(20),
+#	prompt_response_15 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_16 VARCHAR(20),
+#	prompt_response_16 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_17 VARCHAR(20),
+#	prompt_response_17 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_18 VARCHAR(20),
+#	prompt_response_18 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_19 VARCHAR(20),
+#	prompt_response_19 TINYINT(1) UNSIGNED default '0',
+#	prompt_audio_20 VARCHAR(20),
+#	prompt_response_20 TINYINT(1) UNSIGNED default '0',
 #	index (phone_number),
 #	index (entry_time)
 #	);

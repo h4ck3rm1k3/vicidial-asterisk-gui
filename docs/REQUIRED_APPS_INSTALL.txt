@@ -192,13 +192,13 @@ make install
 
 
 cd /usr/local
-wget http://us2.php.net/distributions/php-5.2.6.tar.gz
-gunzip php-5.2.6.tar.gz
-tar xvf php-5.2.6.tar
-wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.10.tar.gz
-gunzip httpd-2.2.10.tar.gz
-tar xvf httpd-2.2.10.tar
-cd httpd-2.2.10
+wget http://us2.php.net/distributions/php-5.2.8.tar.gz
+gunzip php-5.2.8.tar.gz
+tar xvf php-5.2.8.tar
+wget http://mirror.nyi.net/apache/httpd/httpd-2.2.11.tar.gz
+gunzip httpd-2.2.11.tar.gz
+tar xvf httpd-2.2.11.tar
+cd httpd-2.2.11
 make clean
 ./configure --prefix=/usr/local/apache2 --enable-ssl --enable-setenvif --enable-so --with-apxs2 --enable-dav --enable-maintainer-mode
 make
@@ -212,7 +212,7 @@ openssl req -new -x509 -days 1200 -keyout /usr/local/apache2/conf/ssl.key/server
 openssl rsa -in /usr/local/apache2/conf/ssl.key/server.key.cpy -out /usr/local/apache2/conf/ssl.key/server.key
 
 
-cd ../php-5.2.6
+cd ../php-5.2.8
 make clean
 ./configure --with-mysql=/usr/local/mysql --enable-inline-optimization --enable-memory-limit --enable-track-vars --enable-libgcc --enable-sysvsem --with-openssl --with-apxs2=/usr/local/apache2/bin/apxs --with-zlib
 make
