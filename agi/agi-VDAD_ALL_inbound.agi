@@ -89,6 +89,7 @@
 # 81024-0006 - Changed LOOKUP to insert new lead if phone_number < 3 digits, changed queue_sec calculation
 # 81104-0301 - Changed code to alter callerIDnumber for remote agents to the number of the caller
 # 81105-0248 - Added MySQL error logging
+# 90103-0311 - Added sip-silences before transfers to fix rare MoH issues
 #
 
 $script = 'agi-VDAD_ALL_inbound.agi';
@@ -948,6 +949,9 @@ $hold_message_counter=($prompt_interval - 10);
 $hold_tone_counter=0;
 
 
+
+
+
 ############################################
 ### Loop to try to send call to an agent ###
 while ( ($drop_timer <= $DROP_TIME) && ($wait_in_queue > 0) )
@@ -1265,6 +1269,9 @@ if ($agent_search_method =~ /^SO|^LO/)
 			$affected_rows = $dbhA->do($stmtA);
 				$dbhP=$dbhA;   $mysql_count='02052';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|$insert_close_id|\n|$stmtA|";   &agi_output;}
+
+			$AGI->stream_file('sip-silence');
+			$AGI->stream_file('sip-silence');
 
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
@@ -1595,6 +1602,9 @@ if ($agent_search_method =~ /^LO|^LB/)
 				$dbhP=$dbhA;   $mysql_count='02072';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 			if ($AGILOG) {$agi_string = "--    VDCL vcl update: |$affected_rows|$insert_lead_id|\n|$stmtA|";   &agi_output;}
 
+			$AGI->stream_file('sip-silence');
+			$AGI->stream_file('sip-silence');
+
 			print "SET CONTEXT $ext_context\n";
 				checkresult($result);
 			print "SET EXTENSION $VDADremDIALstr\n";
@@ -1719,6 +1729,9 @@ if ($hold_recall_xfer_group !~ /NONE/)
 
 			$dbhB->disconnect();
 			}
+
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file('sip-silence');
 
 		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
 		print "SET CONTEXT $ext_context\n";
@@ -2128,6 +2141,9 @@ if ($wait_in_queue < 1)
 			$dbhB->disconnect();
 			}
 
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file('sip-silence');
+
 		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
 		print "SET CONTEXT $ext_context\n";
 			checkresult($result);
@@ -2288,6 +2304,9 @@ if ($AGILOG) {$agi_string = "--    VDCL DROP: |$drop_action|$DROPexten|";   &agi
 			$AGI->stream_file('ding'); # stop music-on-hold process
 			sleep(1);
 			}
+
+		$AGI->stream_file('sip-silence');
+		$AGI->stream_file('sip-silence');
 
 		if ($AGILOG) {$agi_string = "exiting the VDAD app, transferring call to $DROPexten";   &agi_output;}
 		print "SET CONTEXT $ext_context\n";
