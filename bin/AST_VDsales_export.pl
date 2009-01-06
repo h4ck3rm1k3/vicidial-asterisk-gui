@@ -5,7 +5,7 @@
 # This script is designed to gather sales for a VICIDIAL Outbound-only campaign and
 # post them to a directory
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 61219-1118 - First version
@@ -13,7 +13,8 @@
 # 70611-1154 - Added CLI options
 # 70709-1411 - Added FTP transfer option
 # 71005-0054 - Altered script to use astguiclient.conf for settings
-# 
+# 90105-1155 - Added AS400 export formats and changed around date override
+#
 
 $txt = '.txt';
 $US = '_';
@@ -31,76 +32,169 @@ $campaign = 'TESTCAMP';
 $sale_statuses = 'SALE-UPSELL';
 $output_format = 'pipe-standard';
 
+
+$secX = time();
+$time = $secX;
+	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$hour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+$timestamp = "$year-$mon-$mday $hour:$min:$sec";
+$filedate = "$year$mon$mday";
+$ABIfiledate = "$mon-$mday-$year$us$hour$min$sec";
+$shipdate = "$year-$mon-$mday";
+$datestamp = "$year/$mon/$mday $hour:$min";
+
+
+use Time::Local;
+
+### find epoch of 2AM today
+$TWOAMsec = ( ($secX - ($sec + ($min * 60) + ($hour * 3600) ) ) + 7200);
+### find epoch of 2AM yesterday
+$TWOAMsecY = ($TWOAMsec - 86400);
+
+($Tsec,$Tmin,$Thour,$Tmday,$Tmon,$Tyear,$Twday,$Tyday,$Tisdst) = localtime($TWOAMsecY);
+$Tyear = ($Tyear + 1900);
+$Tmon++;
+if ($Tmon < 10) {$Tmon = "0$Tmon";}
+if ($Tmday < 10) {$Tmday = "0$Tmday";}
+if ($Thour < 10) {$Thour = "0$Thour";}
+if ($Tmin < 10) {$Tmin = "0$Tmin";}
+if ($Tsec < 10) {$Tsec = "0$Tsec";}
+
+
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
-{
+	{
 	$i=0;
 	while ($#ARGV >= $i)
-	{
-	$args = "$args $ARGV[$i]";
-	$i++;
-	}
+		{
+		$args = "$args $ARGV[$i]";
+		$i++;
+		}
 
 	if ($args =~ /--help/i)
-	{
-	print "allowed run time options:\n";
-	print "  [--campaign=XXX] = Campaign that sales will be pulled from\n";
-	print "  [--sale-statuses=XXX-XXY] = Statuses that are deemed to be \"Sales\". Default SALE\n";
-	print "    NOTE: To include all statuses in the export, use \"--sale-statuses=---ALL---\"\n";
-	print "  [--output-format=XXX] = Format of file. Default \"pipe-standard\"\n";
-	print "  [--with-inbound=XXX-XXY] = include the following inbound groups\n";
-	print "  [--ftp-transfer] = Send results file by FTP to another server\n";
-	print "  [-q] = quiet\n";
-	print "  [-t] = test\n";
-	print "  [--debug] = debugging messages\n";
-	print "  [--debugX] = Super debugging messages\n";
-	print "\n";
+		{
+		print "allowed run time options:\n";
+		print "  [--date=YYYY-MM-DD] = date override\n";
+		print "  [--filename=XXX] = Name to be used for file\n";
+		print "  [--campaign=XXX] = Campaign that sales will be pulled from\n";
+		print "  [--sale-statuses=XXX-XXY] = Statuses that are deemed to be \"Sales\". Default SALE\n";
+		print "    NOTE: To include all statuses in the export, use \"--sale-statuses=---ALL---\"\n";
+		print "  [--output-format=XXX] = Format of file. Default \"pipe-standard\"\n";
+		print "  [--with-inbound=XXX-XXY] = include the following inbound groups\n";
+		print "  [--ftp-transfer] = Send results file by FTP to another server\n";
+		print "  [-q] = quiet\n";
+		print "  [-t] = test\n";
+		print "  [--debug] = debugging messages\n";
+		print "  [--debugX] = Super debugging messages\n";
+		print "\n";
 
-	exit;
-	}
+		exit;
+		}
 	else
-	{
+		{
 		if ($args =~ /--debug/i)
-		{
-		$DB=1;
-		print "\n----- DEBUG MODE -----\n\n";
-		}
+			{
+			$DB=1;
+			print "\n----- DEBUG MODE -----\n\n";
+			}
 		if ($args =~ /--debugX/i)
-		{
-		$DBX=1;
-		print "\n----- SUPER DEBUG MODE -----\n\n";
-		}
+			{
+			$DBX=1;
+			print "\n----- SUPER DEBUG MODE -----\n\n";
+			}
 		if ($args =~ /-q/i)
-		{
-		$q=1;   $Q=1;
-		}
+			{
+			$q=1;   $Q=1;
+			}
+
+		if ($args =~ /--date=/i)
+			{
+			@data_in = split(/--date=/,$args);
+			$shipdate = $data_in[1];
+			$shipdate =~ s/ .*//gi;
+			if ($shipdate =~ /today/)
+				{
+				$shipdate="$year-$mon-$mday";
+				$time = $TWOAMsec;
+				}
+			else
+				{
+				if ($shipdate =~ /yesterday/)
+					{
+					$shipdate="$Tyear-$Tmon-$Tmday";
+					$year = $Tyear;
+					$mon =	$Tmon;
+					$mday = $Tmday;
+					$time=$TWOAMsecY;
+					}
+				else
+					{
+					@cli_date = split("-",$shipdate);
+					$year = $cli_date[0];
+					$mon =	$cli_date[1];
+					$mday = $cli_date[2];
+					$cli_date[1] = ($cli_date[1] - 1);
+					$time = timelocal(0,0,2,$cli_date[2],$cli_date[1],$cli_date[0]);
+					}
+				}
+			print "\n----- DATE OVERRIDE: $shipdate -----\n\n";
+			}
+		else
+			{
+			$time=$TWOAMsec;
+			}
+
+
 		if ($args =~ /--campaign=/i)
-		{
-		#	print "\n|$ARGS|\n\n";
-		@data_in = split(/--campaign=/,$args);
+			{
+			#	print "\n|$ARGS|\n\n";
+			@data_in = split(/--campaign=/,$args);
 			$campaign = $data_in[1];
 			$campaign =~ s/ .*$//gi;
-		}
+			$campaignSQL = $campaign;
+			if ($campaignSQL =~ /-/) 
+				{
+				$campaignSQL =~ s/-/','/gi;
+				}
+			$campaignSQL = "'$campaignSQL'";
+			}
+		if ($args =~ /--filename=/i)
+			{
+			#	print "\n|$ARGS|\n\n";
+			@data_in = split(/--filename=/,$args);
+				$filename = $data_in[1];
+				$filename =~ s/ .*$//gi;
+				$filename =~ s/YYYY/$year/gi;
+				$filename =~ s/MM/$mon/gi;
+				$filename =~ s/DD/$mday/gi;
+			$filename_override=1;
+			}
 		if ($args =~ /--sale-statuses=/i)
-		{
-		@data_in = split(/--sale-statuses=/,$args);
-			$sale_statuses = $data_in[1];
-			$sale_statuses =~ s/ .*$//gi;
-			if ($sale_statuses =~ /---ALL---/)
-				{if (!$Q) {print "\n----- EXPORT ALL STATUSES -----\n\n";} }
-		}
+			{
+			@data_in = split(/--sale-statuses=/,$args);
+				$sale_statuses = $data_in[1];
+				$sale_statuses =~ s/ .*$//gi;
+				if ($sale_statuses =~ /---ALL---/)
+					{if (!$Q) {print "\n----- EXPORT ALL STATUSES -----\n\n";} }
+			}
 		if ($args =~ /--output-format=/i)
-		{
-		@data_in = split(/--output-format=/,$args);
-			$output_format = $data_in[1];
-			$output_format =~ s/ .*$//gi;
-		}
+			{
+			@data_in = split(/--output-format=/,$args);
+				$output_format = $data_in[1];
+				$output_format =~ s/ .*$//gi;
+			}
 		if ($args =~ /--with-inbound=/i)
-		{
-		@data_in = split(/--with-inbound=/,$args);
-			$with_inbound = $data_in[1];
-			$with_inbound =~ s/ .*$//gi;
-		}
+			{
+			@data_in = split(/--with-inbound=/,$args);
+				$with_inbound = $data_in[1];
+				$with_inbound =~ s/ .*$//gi;
+			}
 		if ($args =~ /-ftp-transfer/i)
 			{
 			if (!$Q)
@@ -108,39 +202,17 @@ if (length($ARGV[0])>1)
 			$ftp_transfer=1;
 			}
 		if ($args =~ /--test/i)
-		{
-		$T=1;   $TEST=1;
-		print "\n----- TESTING -----\n\n";
+			{
+			$T=1;   $TEST=1;
+			print "\n----- TESTING -----\n\n";
+			}
 		}
 	}
-}
 else
 {
 print "no command line options set, using defaults.\n";
 }
 ### end parsing run-time options ###
-
-
-$secX = time();
-	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-	$year = ($year + 1900);
-	$mon++;
-
-#	# rerun override - Use this to override the day manually
-#	$year='2007';
-#	$mon='5';
-#	$mday='18';
-
-	if ($mon < 10) {$mon = "0$mon";}
-	if ($mday < 10) {$mday = "0$mday";}
-	if ($hour < 10) {$hour = "0$hour";}
-	if ($min < 10) {$min = "0$min";}
-	if ($sec < 10) {$sec = "0$sec";}
-	$timestamp = "$year-$mon-$mday $hour:$min:$sec";
-	$filedate = "$year$mon$mday";
-	$ABIfiledate = "$mon-$mday-$year$us$hour$min$sec";
-	$shipdate = "$year-$mon-$mday";
-	$datestamp = "$year/$mon/$mday $hour:$min";
 
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -205,6 +277,8 @@ if ($output_format =~ /^pipe-vici$/)
 	{$DLT = '|';   $txt='.txt';   print "---- pipe-vici ----\n";}
 if ($output_format =~ /^html-rec$/) 
 	{$DLT = ' ';   $txt='.html';   print "---- html-rec ----\n";}
+if ($output_format =~ /^fixed-as400$/) 
+	{$DLT = '';   $txt='.txt';   print "---- fixed-as400 ----\n";}
 
 	if ($sale_statuses =~ /---ALL---/)
 		{
@@ -230,7 +304,7 @@ if (!$Q)
 	print "\n\n\n\n\n\n\n\n\n\n\n\n-- AST_VDsales_export.pl --\n\n";
 	print "This program is designed to gather sales from a VICIDIAL outbound-only campaign and post them to a file. \n";
 	print "\n";
-	print "Campaign:      $campaign\n";
+	print "Campaign:      $campaign    $campaignSQL\n";
 	print "Sale Statuses: $sale_statuses     $sale_statusesSQL\n";
 	print "Output Format: $output_format\n";
 	print "With Inbound:  $with_inbound     $with_inboundSQL\n";
@@ -238,6 +312,7 @@ if (!$Q)
 	}
 
 $outfile = "$campaign$US$filedate$US$sale_statuses$txt";
+if ($filename_override > 0) {$outfile = $filename;}
 
 ### open the X out file for writing ###
 open(out, ">$PATHweb/vicidial/server_reports/$outfile")
@@ -260,7 +335,7 @@ $TOTAL_SALES=0;
 ###########################################################################
 ########### CURRENT DAY SALES GATHERING outbound-only: vicidial_log  ######
 ###########################################################################
-$stmtA = "select vicidial_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_log.list_id from vicidial_list,vicidial_log,vicidial_users where campaign_id='$campaign' $sale_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_log.user;";
+$stmtA = "select vicidial_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_log.list_id,title,address3,last_local_call_time from vicidial_list,vicidial_log,vicidial_users where campaign_id IN($campaignSQL) $sale_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_log.user;";
 if ($DB) {print "|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -288,6 +363,9 @@ while ($sthArows > $rec_count)
 	$vendor_id =	$aryA[16];
 	$source_id =	$aryA[17];
 	$list_id =		$aryA[18];
+	$title =		$aryA[19];
+	$address3 =		$aryA[20];
+	$last_local_call_time = $aryA[21];
 
 	&select_format_loop;
 
@@ -300,7 +378,7 @@ if (length($with_inboundSQL)>3)
 	###########################################################################
 	########### CURRENT DAY SALES GATHERING inbound-only: vicidial_closer_log  ######
 	###########################################################################
-	$stmtA = "select vicidial_closer_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_closer_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_closer_log.list_id,campaign_id from vicidial_list,vicidial_closer_log,vicidial_users where campaign_id IN($with_inboundSQL) $close_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_closer_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_closer_log.user;";
+	$stmtA = "select vicidial_closer_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_closer_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_closer_log.list_id,campaign_id,title,address3,last_local_call_time from vicidial_list,vicidial_closer_log,vicidial_users where campaign_id IN($with_inboundSQL) $close_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_closer_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_closer_log.user;";
 	if ($DB) {print "|$stmtA|\n";}
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -329,6 +407,9 @@ if (length($with_inboundSQL)>3)
 		$source_id =	$aryA[17];
 		$list_id =		$aryA[18];
 		$campaign_id =	$aryA[19];
+		$title =		$aryA[20];
+		$address3 =		$aryA[21];
+		$last_local_call_time = $aryA[22];
 
 		$user = '';
 		$agent_name='';
@@ -374,7 +455,7 @@ $secY = time();
 $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
-if (!$Q) {print "SALES EXPORT FOR $timestamp: $outfile\n";}
+if (!$Q) {print "SALES EXPORT FOR $shipdate: $outfile\n";}
 if (!$Q) {print "TOTAL SALES: $TOTAL_SALES\n";}
 if (!$Q) {print "script execution time in seconds: $secZ     minutes: $secZm\n";}
 
@@ -481,6 +562,53 @@ if ($output_format =~ /^pipe-vici$/)
 if ($output_format =~ /^html-rec$/) 
 	{
 	$str = "$user|$agent_name|$closer|$closer_name|$call_date|$status|$first_name|$last_name|$phone_number|$address1|$address2|$city|$state|$postal_code|$comments|$security|$email|$vendor_id|$source_id|$lead_id|$list_id|$campaign|$campaign_id|<a href=\"$ivr_location\">$ivr_id</a>|\n";
+	}
+
+if ($output_format =~ /^fixed-as400$/) 
+	{
+	# 16884259  MRS.      JEAN           BROWN               RISALPUR                      BROMSBERROW HEATYH            LEDBURY                       HEREFORDSHIRE                 ENGLAND             HR8 1PQ  01531650052         1209200809:52NI              3205UK
+	$vendor_id =	sprintf("%-10s",$vendor_id);
+	$title =		sprintf("%-10s",$title);
+	$first_name =	sprintf("%-15s",$first_name);
+	$last_name =	sprintf("%-20s",$last_name);
+	$address1 =		sprintf("%-30s",$address1);
+	$address2 =		sprintf("%-30s",$address2);
+	$address3 =		sprintf("%-30s",$address3);
+	$city =			sprintf("%-50s",$city);
+	$postal_code =	sprintf("%-9s",$postal_code);
+	$phone_number =	sprintf("%-20s",$phone_number);
+	@dtsplit = split(" ",$last_local_call_time); 
+	@datesplit = split("-",$dtsplit[0]);
+	$timesplit = substr($dtsplit[1], 0, 5);
+	$formatted_date = "$datesplit[1]$datesplit[2]$datesplit[0]$timesplit";
+	$user =			sprintf("%-4s",$user);
+	if ($status =~ /^NA$/)		{$status = 'N';}
+	if ($status =~ /^DROP$/)	{$status = 'N';}
+	if ($status =~ /^SALE$/)	{$status = 'AP';}
+	if ($status =~ /^A6$/)		{$status = 'A6';}
+	if ($status =~ /^DC$/) 		{$status = 'D';}
+	if ($status =~ /^DIED$/)	{$status = 'DD';}
+	if ($status =~ /^COMP$/)	{$status = 'DD';}
+	if ($status =~ /^DEC$/)		{$status = 'DD';}
+	if ($status =~ /^ERI$/)		{$status = 'DD';}
+	if ($status =~ /^SP$/)		{$status = 'DD';}
+	if ($status =~ /^WRON$/)	{$status = 'DD';}
+	if ($status =~ /^HBED$/)	{$status = 'DD';}
+	if ($status =~ /^CALLBK$/)	{$status = 'A6';}
+	if ($status =~ /^HAP1$/)	{$status = 'NI';}
+	if ($status =~ /^HAP2$/)	{$status = 'NI';}
+	if ($status =~ /^NI$/)		{$status = 'NI';}
+	# DNC
+	# DNCL
+	# N
+	# B
+	# A
+	# AA
+	$status =	sprintf("%-16s",$status);
+	$user =~ s/VDAD/    /gi;	
+	$UK = 'UK';
+
+	$str = "$vendor_id$title$first_name$last_name$address1$address2$address3$city$postal_code$phone_number$formatted_date$status$user$UK\r\n";
 	}
 
 

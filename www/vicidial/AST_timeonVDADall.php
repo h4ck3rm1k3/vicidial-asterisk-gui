@@ -1,7 +1,7 @@
 <? 
 # AST_timeonVDADall.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -42,6 +42,7 @@
 # 81029-1023 - Changed drop percent calculation for multi-stat reports
 # 81029-1706 - Added pause code display if enabled per campaign
 # 81108-2337 - Added inbound-only section
+# 90105-1153 - Changed monitor links to use 0 prefix instead of 6
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -1439,8 +1440,8 @@ $calls_to_list = mysql_num_rows($rslt);
 
 		$L='';
 		$R='';
-		if ($SIPmonitorLINK>0) {$L=" <a href=\"sip:6$Lsessionid@$server_ip\">LISTEN</a>";   $R='';}
-		if ($IAXmonitorLINK>0) {$L=" <a href=\"iax:6$Lsessionid@$server_ip\">LISTEN</a>";   $R='';}
+		if ($SIPmonitorLINK>0) {$L=" <a href=\"sip:0$Lsessionid@$server_ip\">LISTEN</a>";   $R='';}
+		if ($IAXmonitorLINK>0) {$L=" <a href=\"iax:0$Lsessionid@$server_ip\">LISTEN</a>";   $R='';}
 		if ($SIPmonitorLINK>1) {$R=" | <a href=\"sip:$Lsessionid@$server_ip\">BARGE</a>";}
 		if ($IAXmonitorLINK>1) {$R=" | <a href=\"iax:$Lsessionid@$server_ip\">BARGE</a>";}
 
