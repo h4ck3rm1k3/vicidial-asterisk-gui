@@ -5,6 +5,8 @@
 # This script is designed to gather sales for a VICIDIAL Outbound-only campaign and
 # post them to a directory
 #
+# /usr/share/astguiclient/AST_VDsales_export.pl --campaign=GOODB-GROUP1-GROUP3-GROUP4-SPECIALS-DNC_BEDS --output-format=fixed-as400 --sale-statuses=SALE --debug --filename=BEDSsaleMMDD.txt --date=yesterday --email-list=test@gmail.com --email-sender=test@test.com
+#
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
@@ -14,6 +16,7 @@
 # 70709-1411 - Added FTP transfer option
 # 71005-0054 - Altered script to use astguiclient.conf for settings
 # 90105-1155 - Added AS400 export formats and changed around date override
+# 90106-2309 - Added email sending
 #
 
 $txt = '.txt';
@@ -88,6 +91,8 @@ if (length($ARGV[0])>1)
 		print "  [--output-format=XXX] = Format of file. Default \"pipe-standard\"\n";
 		print "  [--with-inbound=XXX-XXY] = include the following inbound groups\n";
 		print "  [--ftp-transfer] = Send results file by FTP to another server\n";
+		print "  [--email-list=test@test.com:test2@test.com] = send email results to these addresses\n";
+		print "  [--email-sender=vicidial@localhost] = sender for the email results\n";
 		print "  [-q] = quiet\n";
 		print "  [-t] = test\n";
 		print "  [--debug] = debugging messages\n";
@@ -206,6 +211,27 @@ if (length($ARGV[0])>1)
 			$T=1;   $TEST=1;
 			print "\n----- TESTING -----\n\n";
 			}
+		if ($args =~ /--email-list=/i)
+			{
+			@data_in = split(/--email-list=/,$args);
+				$email_list = $data_in[1];
+				$email_list =~ s/ .*//gi;
+				$email_list =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION: $email_list -----\n\n";
+			}
+		else
+			{$email_list = '';}
+
+		if ($args =~ /--email-sender=/i)
+			{
+			@data_in = split(/--email-sender=/,$args);
+				$email_sender = $data_in[1];
+				$email_sender =~ s/ .*//gi;
+				$email_sender =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION SENDER: $email_sender -----\n\n";
+			}
+		else
+			{$email_sender = 'vicidial@localhost';}
 		}
 	}
 else
@@ -315,8 +341,9 @@ $outfile = "$campaign$US$filedate$US$sale_statuses$txt";
 if ($filename_override > 0) {$outfile = $filename;}
 
 ### open the X out file for writing ###
-open(out, ">$PATHweb/vicidial/server_reports/$outfile")
-		|| die "Can't open $outfile: $!\n";
+$PATHoutfile = "$PATHweb/vicidial/server_reports/$outfile";
+open(out, ">$PATHoutfile")
+		|| die "Can't open $PATHoutfile: $!\n";
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
@@ -336,6 +363,7 @@ $TOTAL_SALES=0;
 ########### CURRENT DAY SALES GATHERING outbound-only: vicidial_log  ######
 ###########################################################################
 $stmtA = "select vicidial_log.user,first_name,last_name,address1,address2,city,state,postal_code,vicidial_list.phone_number,email,security_phrase,vicidial_list.comments,call_date,vicidial_list.lead_id,vicidial_users.full_name,vicidial_log.status,vicidial_list.vendor_lead_code,vicidial_list.source_id,vicidial_log.list_id,title,address3,last_local_call_time from vicidial_list,vicidial_log,vicidial_users where campaign_id IN($campaignSQL) $sale_statusesSQL and call_date > '$shipdate 00:00:01' and call_date < '$shipdate 23:59:59' and vicidial_log.lead_id=vicidial_list.lead_id and vicidial_users.user=vicidial_log.user;";
+#$stmtA = "select vicidial_users.user,first_name,last_name,address1,address2,city,state,postal_code,phone_number,email,security_phrase,comments,last_local_call_time,lead_id,vicidial_users.full_name,status,vendor_lead_code,source_id,list_id,title,address3,last_local_call_time from vicidial_list,vicidial_users where list_id NOT IN('999','998') $sale_statusesSQL and called_count > 0 and vicidial_users.user=vicidial_list.user;";
 if ($DB) {print "|$stmtA|\n";}
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -435,7 +463,55 @@ if (length($with_inboundSQL)>3)
 	$sthA->finish();
 	}
 
+
 close(out);
+
+
+###### EMAIL SECTION
+
+if ( (length($Ealert)>5) && (length($email_list) > 3) )
+	{
+	print "Sending email: $email_list\n";
+
+	use MIME::QuotedPrint;
+	use MIME::Base64;
+	use Mail::Sendmail;
+
+	$mailsubject = "VICIDIAL Lead Export $outfile";
+
+	  %mail = ( To      => "$email_list",
+							From    => "$email_sender",
+							Subject => "$mailsubject",
+					   );
+		$boundary = "====" . time() . "====";
+		$mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
+
+		$message = encode_qp( "VICIDIAL Lead Export:\n\n Attachment: $outfile\n Total Records: $TOTAL_SALES\n" );
+
+		$Zfile = "$PATHoutfile";
+
+		open (F, $Zfile) or die "Cannot read $Zfile: $!";
+		binmode F; undef $/;
+		$attachment = encode_base64(<F>);
+		close F;
+
+		$boundary = '--'.$boundary;
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: quoted-printable\n\n";
+		$mail{body} .= "$message\n";
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: application/octet-stream; name=\"$outfile\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: base64\n";
+		$mail{body} .= "Content-Disposition: attachment; filename=\"$outfile\"\n\n";
+		$mail{body} .= "$attachment\n";
+		$mail{body} .= "$boundary";
+		$mail{body} .= "--\n";
+
+			sendmail(%mail) or die $mail::Sendmail::error;
+		   print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
+
+	}
 
 
 if ($ftp_transfer > 0)
@@ -567,30 +643,39 @@ if ($output_format =~ /^html-rec$/)
 if ($output_format =~ /^fixed-as400$/) 
 	{
 	# 16884259  MRS.      JEAN           BROWN               RISALPUR                      BROMSBERROW HEATYH            LEDBURY                       HEREFORDSHIRE                 ENGLAND             HR8 1PQ  01531650052         1209200809:52NI              3205UK
-	$vendor_id =	sprintf("%-10s",$vendor_id);
-	$title =		sprintf("%-10s",$title);
-	$first_name =	sprintf("%-15s",$first_name);
-	$last_name =	sprintf("%-20s",$last_name);
-	$address1 =		sprintf("%-30s",$address1);
-	$address2 =		sprintf("%-30s",$address2);
-	$address3 =		sprintf("%-30s",$address3);
-	$city =			sprintf("%-50s",$city);
-	$postal_code =	sprintf("%-9s",$postal_code);
-	$phone_number =	sprintf("%-20s",$phone_number);
+	$vendor_id =	sprintf("%-10s",$vendor_id);	while(length($vendor_id)>10)	{$vendor_id =~ s/.$//gi;}
+	$title =		sprintf("%-10s",$title);		while(length($title)>10)		{$title =~ s/.$//gi;}
+	$first_name =	sprintf("%-15s",$first_name);	while(length($first_name)>15)	{$first_name =~ s/.$//gi;}
+	$last_name =	sprintf("%-20s",$last_name);	while(length($last_name)>20)	{$last_name =~ s/.$//gi;}
+	$address1 =		sprintf("%-30s",$address1);		while(length($address1)>30)		{$address1 =~ s/.$//gi;}
+	$address2 =		sprintf("%-30s",$address2);		while(length($address2)>30)		{$address2 =~ s/.$//gi;}
+	$address3 =		sprintf("%-30s",$address3);		while(length($address3)>30)		{$address3 =~ s/.$//gi;}
+	$city =			sprintf("%-50s",$city);			while(length($city)>50)			{$city =~ s/.$//gi;}
+	$postal_code =	sprintf("%-9s",$postal_code);	while(length($postal_code)>9)	{$postal_code =~ s/.$//gi;}
+	$phone_number =	sprintf("%-20s",$phone_number);	while(length($phone_number)>20)	{$phone_number =~ s/.$//gi;}
 	@dtsplit = split(" ",$last_local_call_time); 
 	@datesplit = split("-",$dtsplit[0]);
 	$timesplit = substr($dtsplit[1], 0, 5);
 	$formatted_date = "$datesplit[1]$datesplit[2]$datesplit[0]$timesplit";
 	$user =			sprintf("%-4s",$user);
+	if ($status =~ /^AA$/)		{$status = 'A';}
+	if ($status =~ /^A$/)		{$status = 'A';}
+	if ($status =~ /^B$/)		{$status = 'B';}
+	if ($status =~ /^N$/)		{$status = 'N';}
 	if ($status =~ /^NA$/)		{$status = 'N';}
+	if ($status =~ /^NP$/)		{$status = 'N';}
+	if ($status =~ /^PU$/)		{$status = 'N';}
 	if ($status =~ /^DROP$/)	{$status = 'N';}
 	if ($status =~ /^SALE$/)	{$status = 'AP';}
 	if ($status =~ /^A6$/)		{$status = 'A6';}
+	if ($status =~ /^DNC$/) 	{$status = 'DC';}
+	if ($status =~ /^DNCL$/) 	{$status = 'DC';}
 	if ($status =~ /^DC$/) 		{$status = 'D';}
 	if ($status =~ /^DIED$/)	{$status = 'DD';}
 	if ($status =~ /^COMP$/)	{$status = 'DD';}
 	if ($status =~ /^DEC$/)		{$status = 'DD';}
 	if ($status =~ /^ERI$/)		{$status = 'DD';}
+	if ($status =~ /^INCALL$/)	{$status = 'DD';}
 	if ($status =~ /^SP$/)		{$status = 'DD';}
 	if ($status =~ /^WRON$/)	{$status = 'DD';}
 	if ($status =~ /^HBED$/)	{$status = 'DD';}
@@ -598,13 +683,8 @@ if ($output_format =~ /^fixed-as400$/)
 	if ($status =~ /^HAP1$/)	{$status = 'NI';}
 	if ($status =~ /^HAP2$/)	{$status = 'NI';}
 	if ($status =~ /^NI$/)		{$status = 'NI';}
-	# DNC
-	# DNCL
-	# N
-	# B
-	# A
-	# AA
-	$status =	sprintf("%-16s",$status);
+
+	$status =	sprintf("%-16s",$status);			while(length($status)>16)		{$status =~ s/.$//gi;}
 	$user =~ s/VDAD/    /gi;	
 	$UK = 'UK';
 
@@ -612,6 +692,7 @@ if ($output_format =~ /^fixed-as400$/)
 	}
 
 
+$Ealert .= "$str"; 
 
 print out "$str"; 
 if ($DBX) {print "$str\n";}

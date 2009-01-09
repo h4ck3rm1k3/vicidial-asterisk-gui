@@ -486,6 +486,7 @@ PHASE 6: ADDING CRONTAB ENTRIES FOR ASTGUICLIENT/VICIDIAL SCRIPTS
 ### remove old vicidial logs and asterisk logs more than 2 days old
 28 0 * * * /usr/bin/find /var/log/astguiclient -maxdepth 1 -type f -mtime +2 -print | xargs rm -f
 29 0 * * * /usr/bin/find /var/log/asterisk -maxdepth 3 -type f -mtime +2 -print | xargs rm -f
+30 0 * * * /usr/bin/find / -maxdepth 1 -name "screenlog.0*" -mtime +4 -print | xargs rm -f
 
 
 

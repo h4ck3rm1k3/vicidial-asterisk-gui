@@ -5,11 +5,14 @@
 # This script is designed to gather stats for the lists and write to static files
 # this script should be run from the web server
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# /usr/share/astguiclient/AST_VDlist_summary_export.pl --email-list=test@gmail.com --email-sender=test@test.com
+#
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 81214-0001 - First version
-# 
+# 90106-2308 - Added email sending
+#
 
 $txt = '.txt';
 $US = '_';
@@ -17,52 +20,75 @@ $MT[0] = '';
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
-{
+	{
 	$i=0;
 	while ($#ARGV >= $i)
-	{
-	$args = "$args $ARGV[$i]";
-	$i++;
-	}
+		{
+		$args = "$args $ARGV[$i]";
+		$i++;
+		}
 
 	if ($args =~ /--help/i)
-	{
-	print "allowed run time options:\n";
-	print "  [-q] = quiet\n";
-	print "  [-t] = test\n";
-	print "  [--debug] = debugging messages\n";
-	print "  [--debugX] = Super debugging messages\n";
-	print "\n";
+		{
+		print "allowed run time options:\n";
+		print "  [-q] = quiet\n";
+		print "  [-t] = test\n";
+		print "  [--debug] = debugging messages\n";
+		print "  [--debugX] = Super debugging messages\n";
+		print "  [--email-list=test@test.com:test2@test.com] = send email results to these addresses\n";
+		print "  [--email-sender=vicidial@localhost] = sender for the email results\n";
+		print "\n";
 
-	exit;
-	}
+		exit;
+		}
 	else
-	{
+		{
 		if ($args =~ /--debug/i)
-		{
-		$DB=1;
-		print "\n----- DEBUG MODE -----\n\n";
-		}
+			{
+			$DB=1;
+			print "\n----- DEBUG MODE -----\n\n";
+			}
 		if ($args =~ /--debugX/i)
-		{
-		$DBX=1;
-		print "\n----- SUPER DEBUG MODE -----\n\n";
-		}
+			{
+			$DBX=1;
+			print "\n----- SUPER DEBUG MODE -----\n\n";
+			}
 		if ($args =~ /-q/i)
-		{
-		$q=1;   $Q=1;
-		}
+			{
+			$q=1;   $Q=1;
+			}
 		if ($args =~ /--test/i)
-		{
-		$T=1;   $TEST=1;
-		print "\n----- TESTING -----\n\n";
+			{
+			$T=1;   $TEST=1;
+			print "\n----- TESTING -----\n\n";
+			}
+		if ($args =~ /--email-list=/i)
+			{
+			@data_in = split(/--email-list=/,$args);
+				$email_list = $data_in[1];
+				$email_list =~ s/ .*//gi;
+				$email_list =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION: $email_list -----\n\n";
+			}
+		else
+			{$email_list = '';}
+
+		if ($args =~ /--email-sender=/i)
+			{
+			@data_in = split(/--email-sender=/,$args);
+				$email_sender = $data_in[1];
+				$email_sender =~ s/ .*//gi;
+				$email_sender =~ s/:/,/gi;
+			print "\n----- EMAIL NOTIFICATION SENDER: $email_sender -----\n\n";
+			}
+		else
+			{$email_sender = 'vicidial@localhost';}
 		}
 	}
-}
 else
-{
-print "no command line options set, using defaults.\n";
-}
+	{
+	print "no command line options set, using defaults.\n";
+	}
 ### end parsing run-time options ###
 
 
@@ -162,10 +188,11 @@ if (!$Q)
 $outfile = "LIST_REPORT_$filedate$txt";
 
 ### open the X out file for writing ###
-open(out, ">$PATHweb/vicidial/server_reports/$outfile")
-		|| die "Can't open $outfile: $!\n";
+$PATHoutfile = "$PATHweb/vicidial/server_reports/$outfile";
+open(out, ">$PATHoutfile")
+		|| die "Can't open $PATHoutfile: $!\n";
 
-print out "$timestamp         LIST STATUS SUMMARY REPORT\n\n";
+$Ealert = "$timestamp         LIST STATUS SUMMARY REPORT\n\n";
 
 
 if (!$VARDB_port) {$VARDB_port='3306';}
@@ -297,16 +324,10 @@ foreach(@lists_list_id)
 	$lists_line_output[$i] =~ s/Campaign Name/Campaign Name: $lists_campaign_name[$i]/gi;
 	$lists_line_output[$i] =~ s/TOTAL LEADS IN LIST/TOTAL LEADS IN LIST: $lists_line_tally[$i]/gi;
 
-	print "\n";
-	print " LIST INFORMATION                          STATUS  DESCRIPTION            COUNT\n";
-	print "-------------------------------------------------------------------------------\n";
-	print "$lists_line_output[$i]";
-
-	print out "\n";
-	print out " LIST INFORMATION                          STATUS  DESCRIPTION            COUNT\n";
-	print out "--------------------------------------------------------------------------------\n";
-	print out "$lists_line_output[$i]";
-
+	$Ealert .= "\n";
+	$Ealert .= " LIST INFORMATION                          STATUS  DESCRIPTION            COUNT\n";
+	$Ealert .= "-------------------------------------------------------------------------------\n";
+	$Ealert .= "$lists_line_output[$i]";
 	}
 	$i++;
 	}
@@ -332,17 +353,61 @@ $secY = time();
 $secZ = ($secY - $secX);
 $secZm = ($secZ /60);
 
-print "\n";
-print "-------------------------------------------------------------------------------------\n";
-print "LIST REPORT FOR $timestamp: $outfile\n";
-print "TOTAL LEADS IN SYSTEM: $TOTAL_LEADS\n";
+$Ealert .= "\n";
+$Ealert .= "-------------------------------------------------------------------------------------\n";
+$Ealert .= "LIST REPORT FOR $timestamp: $outfile\n";
+$Ealert .= "TOTAL LEADS IN SYSTEM: $TOTAL_LEADS\n";
 print "script execution time in seconds: $secZ     minutes: $secZm\n";
 
-print out"\n";
-print out "-------------------------------------------------------------------------------------\n";
-print out "LIST REPORT FOR $timestamp: $outfile\n";
-print out "TOTAL LEADS IN SYSTEM: $TOTAL_LEADS\n";
+print out "$Ealert";
 
 close(out);
+
+###### EMAIL SECTION
+
+if ( (length($Ealert)>5) && (length($email_list) > 3) )
+	{
+	print "Sending email: $email_list\n";
+
+	use MIME::QuotedPrint;
+	use MIME::Base64;
+	use Mail::Sendmail;
+
+	$mailsubject = "VICIDIAL Lead Lists Report $shipdate";
+
+	  %mail = ( To      => "$email_list",
+							From    => "$email_sender",
+							Subject => "$mailsubject",
+					   );
+		$boundary = "====" . time() . "====";
+		$mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
+
+		$message = encode_qp( "VICIDIAL Lead Lists Report for $shipdate:\n\n Attachment: $outfile" );
+
+		$Zfile = "$PATHoutfile";
+
+		open (F, $Zfile) or die "Cannot read $Zfile: $!";
+		binmode F; undef $/;
+		$attachment = encode_base64(<F>);
+		close F;
+
+		$boundary = '--'.$boundary;
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: quoted-printable\n\n";
+		$mail{body} .= "$message\n";
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: application/octet-stream; name=\"$outfile\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: base64\n";
+		$mail{body} .= "Content-Disposition: attachment; filename=\"$outfile\"\n\n";
+		$mail{body} .= "$attachment\n";
+		$mail{body} .= "$boundary";
+		$mail{body} .= "--\n";
+
+			sendmail(%mail) or die $mail::Sendmail::error;
+		   print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
+
+	}
+
 
 exit;
