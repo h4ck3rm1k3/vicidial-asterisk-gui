@@ -5,12 +5,13 @@ Current VICIDIAL integration with Vtiger is for the 5.0.4 release version of Vti
 Current integration features:
 - vicidial.php WEBFORM search for lead/account/vendor
 - user synchronization of VICIDIAL users to Vtiger user database
+- added activity event option(call logging in Vtiger) when going from VICIDIAL to Vtiger
 
 There has been a basic vtiger integration option available in VICIDIAL since the 1.X release versions through the vtiger_search.php web script(when used as a web form in the campaign) that will search through the leads for the dialed phone number in vicidial.php and if it is not in the vtiger system as a lead then it will be put in as a new contact.
 
 More in-depth integration with Vtiger is a bit complicated due to the fact that it has 312 database tables(and you though VICIDIAL had a lot at 70). Attempts at using the built-in 5.0.4 API structure were unsuccessful because of inaccurate documentation and the inability to use the modules easily outside of the vtiger directory tree without major reworking of the vtiger code, so we decided to have VICIDIAL work directly with the database instead. Unfortunately, working only with the database doesn't get you the whole way with Vtiger. For user synchronization you need to make sure that the patch(vtiger_user_file_504.patch) is applied to Vtiger(see instructions below). This patch is used to create blank user profile files so Vtiger will load properly with synchronized users from VICIDIAL. Vtiger doesn't check to see if these user profile files exist before trying to use them, so all this patch does is check if the files exist for each user, and if they do not, it will create them with a simple placeholder.
 
-as of 2008-12-31, several user synchronization features have been added to allow for the creation of vtiger users from the vicidial_users user database. The vtiger_search.php script has also been updated to work with the current vtiger release 5.0.4. To enable the Vtiger integration features you will need to go to the Admin -> System Settings section of the admin.php Administartion web page to set Vtiger Integration to enabled and configure the connection details for the Vtiger database.
+as of 2008-12-31, several user synchronization features have been added to allow for the creation of vtiger users from the vicidial_users user database. The vtiger_search.php script has also been updated to work with the current vtiger release 5.0.4. To enable the Vtiger integration features you will need to go to the Admin -> System Settings section of the admin.php Administration web page to set Vtiger Integration to enabled and configure the connection details for the Vtiger database.
 
 There are options in the VICIDIAL Modify Campaign Detail screen that you can choose how you want the vtiger_search.php to search for a Vtiger record in the Vtiger system. If Vtiger integration is enabled in the system_settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: 
 	ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger accountid.     If unsuccessful it will try any other methods listed that you have selected. 
@@ -18,7 +19,7 @@ There are options in the VICIDIAL Modify Campaign Detail screen that you can cho
 	VENDOR- This option will only search through the Vtiger vendors
 	LEAD- This option will search through the Vtiger leads only
 
-Multiple search options can be used for each campaign, but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
+Multiple search options can be used for each campaign, but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
 
 Here are the SQL queries used by the vtiger_search.php script to find records in the vtiger system:
 
@@ -223,5 +224,57 @@ mysql> describe vtiger_usertype;
 | sortorderid | int(19)      | NO   |     | 0       |                |
 | presence    | int(1)       | NO   |     | 1       |                |
 +-------------+--------------+------+-----+---------+----------------+
+
+
+## Logging calls in Vtiger:
+vtiger_crmentity_seq -		increment once to account for call log and use for activity ID
+vtiger_activity -		Where calls are logged 
+vtiger_cntactivityrel -		links a contact to an activity(call)
+vtiger_salesmanactivityrel -	links a user to an activity(call)
+vtiger_seactivityrel -		links crmid(account) to an activity(call)
+vtiger_seactivityrel_seq -	does not appear to be used
+
+mysql> describe vtiger_activity;
++------------------+--------------+------+-----+---------+-------+
+| Field            | Type         | Null | Key | Default | Extra |
++------------------+--------------+------+-----+---------+-------+
+| activityid       | int(19)      | NO   | PRI | 0       |       |
+| subject          | varchar(100) | NO   |     |         |       |
+| semodule         | varchar(20)  | YES  |     | NULL    |       |
+| activitytype     | varchar(200) | NO   | MUL |         |       |
+| date_start       | date         | NO   | MUL |         |       |
+| due_date         | date         | YES  |     | NULL    |       |
+| time_start       | varchar(50)  | YES  |     | NULL    |       |
+| time_end         | varchar(50)  | YES  |     | NULL    |       |
+| sendnotification | varchar(3)   | NO   |     | 0       |       |
+| duration_hours   | varchar(2)   | YES  |     | NULL    |       |
+| duration_minutes | varchar(200) | YES  |     | NULL    |       |
+| status           | varchar(200) | YES  | MUL | NULL    |       |
+| eventstatus      | varchar(200) | YES  | MUL | NULL    |       |
+| priority         | varchar(200) | YES  |     | NULL    |       |
+| location         | varchar(150) | YES  |     | NULL    |       |
+| notime           | varchar(3)   | NO   |     | 0       |       |
+| visibility       | varchar(50)  | NO   |     | all     |       |
+| recurringtype    | varchar(200) | YES  |     | NULL    |       |
++------------------+--------------+------+-----+---------+-------+
+
+      activityid: 12
+         subject: VICIDIAL call
+        semodule: NULL
+    activitytype: Call
+      date_start: 2009-01-11
+        due_date: 2009-01-11
+      time_start: 07:00
+        time_end: 07:05
+sendnotification: 0
+  duration_hours: 0
+duration_minutes: 5
+          status:
+     eventstatus: Held
+        priority: Medium
+        location: Dialer
+          notime: 0
+      visibility: Public
+   recurringtype: --None--
 
 

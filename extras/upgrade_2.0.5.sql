@@ -595,3 +595,9 @@ ALTER TABLE vicidial_ivr ADD prompt_response_20 TINYINT(1) UNSIGNED default '0';
 ALTER TABLE system_settings MODIFY vicidial_agent_disable ENUM('NOT_ACTIVE','LIVE_AGENT','EXTERNAL','ALL') default 'ALL';
 
 UPDATE system_settings SET db_schema_version='1122';
+
+ALTER TABLE vicidial_campaigns ADD vtiger_create_call_record ENUM('Y','N') default 'Y';
+ALTER TABLE vicidial_campaigns ADD vtiger_create_lead_record ENUM('Y','N') default 'Y';
+
+UPDATE system_settings SET db_schema_version='1123';
+

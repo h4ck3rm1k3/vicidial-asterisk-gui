@@ -369,6 +369,10 @@ SUBMIT ACTIVE LIST CHANGES||
 LAST CALL DATE||
 User Group Bulk Change||
 Bulk Group Change||
+Vtiger Create Call Record -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether a new Vtiger activity record is created for the call when the agent goes to the vtiger_search page. Default is Y||
+Vtiger Create Call Record:||
+Vtiger Create Lead Record -<\/B> If Vtiger integration is enabled in the system settings and Vtiger Search Category includes LEAD then this setting will define whether a new Vtiger lead record is created when the agent goes to the vtiger_search page and no record is found to have the call phone number. Default is Y||
+Vtiger Create Lead Record:||
 
 
 ############################################################ CLIENT

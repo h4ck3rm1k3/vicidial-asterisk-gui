@@ -42,6 +42,43 @@ exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,To)
 ; exten => _010*010*010*016*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 
 
+;;;;;;;;;; BEGIN Voicemail and Prompts Section ;;;;;;;;;;;;;;;;;;;;;;;
+; Give voicemail at extension 8500
+exten => 8500,1,VoicemailMain
+exten => 8500,2,Goto(s,6)
+
+; this is used to allow the GUI to send you directly into voicemail
+;     don't forget to set GUI variable $voicemail_exten to this extension
+exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
+exten => 8501,2,Hangup
+
+; this is used to allow the GUI to send live calls directly into voicemail
+;     don't forget to set GUI variable $voicemail_dump_exten to this extension
+exten => _85026666666666.,1,Wait(1)
+exten => _85026666666666.,2,Voicemail(${EXTEN:14}|u)
+exten => _85026666666666.,3,Hangup
+
+; prompts for recording AGI script, ID is 4321
+; first variable is format (gsm/wav)
+; second variable is timeout in milliseconds (default is 720000 [12 minutes])
+exten => 8167,1,Answer
+exten => 8167,2,AGI(agi-record_prompts.agi,wav-----720000)
+exten => 8167,3,Hangup
+exten => 8168,1,Answer
+exten => 8168,2,AGI(agi-record_prompts.agi,gsm-----720000)
+exten => 8168,3,Hangup
+
+; playback of recorded prompts
+exten => _851XXXXX,1,Answer
+exten => _851XXXXX,2,Playback(${EXTEN})
+exten => _851XXXXX,3,Hangup
+;;;;;;;;;; END Voicemail and Prompts Section ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; FastAGI for VICIDIAL/astGUIclient call logging
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+
 ; Example phone extensions
 
 ; Extension 2000 Sipura/Linksys ATA line 1
@@ -78,12 +115,6 @@ exten => #,2,Hangup                     ; Hang them up.
 exten => t,1,Goto(#,1)                  ; If they take too long, give up
 exten => i,1,Playback(invalid)          ; "That's not valid, try again"
 
-; Give voicemail at extension 8500
-exten => 8500,1,VoicemailMain
-exten => 8500,2,Goto(s,6)
-
-; FastAGI for VICIDIAL/astGUIclient call logging
-exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
 
 ; Inbound call from BINFONE
 ; exten => 1112223333,1,AGI(agi://127.0.0.1:4577/call_log)
@@ -352,32 +383,6 @@ exten => 8320,4,Hangup
 exten => 8352,1,AGI(agi-VDADselective_CID_hangup.agi,${EXTEN})
 exten => 8352,2,Playback(safe_harbor)
 exten => 8352,3,Hangup
-
-; prompts for recording AGI script, ID is 4321
-; first variable is format (gsm/wav)
-; second variable is timeout in milliseconds (default is 720000 [12 minutes])
-exten => 8167,1,Answer
-exten => 8167,2,AGI(agi-record_prompts.agi,wav-----720000)
-exten => 8167,3,Hangup
-exten => 8168,1,Answer
-exten => 8168,2,AGI(agi-record_prompts.agi,gsm-----720000)
-exten => 8168,3,Hangup
-
-; playback of recorded prompts
-exten => _851XXXXX,1,Answer
-exten => _851XXXXX,2,Playback(${EXTEN})
-exten => _851XXXXX,3,Hangup
-
-; this is used to allow the GUI to send you directly into voicemail
-;     don't forget to set GUI variable $voicemail_exten to this extension
-exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
-exten => 8501,2,Hangup
-
-; this is used to allow the GUI to send live calls directly into voicemail
-;     don't forget to set GUI variable $voicemail_dump_exten to this extension
-exten => _85026666666666.,1,Wait(1)
-exten => _85026666666666.,2,Voicemail(${EXTEN:14}|u)
-exten => _85026666666666.,3,Hangup
 
 ; this is used for sending DTMF signals within conference calls, the client app
 ;    sends the digits to be played in the callerID field

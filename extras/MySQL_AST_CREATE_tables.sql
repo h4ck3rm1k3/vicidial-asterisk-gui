@@ -602,7 +602,9 @@ use_campaign_dnc ENUM('Y','N') default 'N',
 three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN',
 three_way_dial_prefix VARCHAR(20) default '',
 web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
-vtiger_search_category VARCHAR(100) default 'LEAD'
+vtiger_search_category VARCHAR(100) default 'LEAD',
+vtiger_create_call_record ENUM('Y','N') default 'Y',
+vtiger_create_lead_record ENUM('Y','N') default 'Y'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1388,7 +1390,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1122';
+UPDATE system_settings SET db_schema_version='1123';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

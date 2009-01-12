@@ -167,10 +167,16 @@ If you have any questions or problems please post to the astguiclient-users list
 
 8. On all servers but one you should DELETE the following line from your extensions.conf:
 	; prompt recording AGI script, ID is 4321
+	exten => 8167,1,Answer
+	exten => 8167,2,AGI(agi-record_prompts.agi,wav-----720000)
+	exten => 8167,3,Hangup
 	exten => 8168,1,Answer
-	exten => 8168,2,AGI(agi-record_prompts.agi)
+	exten => 8168,2,AGI(agi-record_prompts.agi,gsm-----720000)
 	exten => 8168,3,Hangup
-This should help to prevent overwriting of prompts that are copied over from the one server that is used to do prompt creation.
+    This should help to prevent overwriting of prompts that are copied over from the one server that is used to do prompt creation.
+    Or you can simply redirect to the server that does have the recordings on it:
+	exten => 8167,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
+	exten => 8168,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
 
 9. On all servers but one you should consider redirecting voicemail direct calls to a single server:
     Change this:
@@ -180,9 +186,17 @@ This should help to prevent overwriting of prompts that are copied over from the
     To something like this:
 	exten => _85026666666666.,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
 
+    Change this:
+	exten => 8500,1,VoicemailMain
+	exten => 8500,2,Goto(s,6)
+    To something like this:
+	exten => 8500,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
 
-
-
+    Change this:
+	exten => 8501,1,VoicemailMain(s${CALLERIDNUM})
+	exten => 8501,2,Hangup
+    To something like this:
+	exten => 8501,1,Dial(${TRUNKIAX2}/${EXTEN},55,o)
 
 THREE VICIDIAL SERVER LOAD BALANCING SETUP:
 
@@ -294,6 +308,12 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
+	exten => 8167,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8168,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => _85026666666666.,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8500,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8501,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+
   SERVER THREE(ASTtest3-10.10.10.17) 
     extensions.conf:
 	[globals]
@@ -308,9 +328,15 @@ The only steps that are different as you add more load-balanced servers are step
 	exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 	exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 
+	exten => 8167,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8168,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => _85026666666666.,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8500,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
+	exten => 8501,1,Dial(${TRUNKIAX1}/${EXTEN},55,o)
 
 
-Example Monitoring of Load Balancing agents on other servers:
+
+Example Audio Monitoring of Load Balancing agents on other servers:
 
 exten => _589XXX,1,Goto(default,8600${EXTEN:3},1)
 exten => _689XXX,1,Dial(${TRUNKIAX1}/08600${EXTEN:3},55,o)
