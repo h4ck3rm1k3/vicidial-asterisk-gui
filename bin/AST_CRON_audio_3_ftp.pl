@@ -85,7 +85,7 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-nodatedir/i)
 		{
 		$NODATEDIR=1;
-		print "\n----- NO DATE DIRECTORIES -----\n\n";
+		if ($DB) {print "\n----- NO DATE DIRECTORIES -----\n\n";}
 		}
 		if ($args =~ /--GSM/i)
 		{

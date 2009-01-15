@@ -14,6 +14,7 @@
 #
 # changes:
 # 81007-0324 - First Build
+# 90115-0645 - Activated AGENT call routing
 #
 
 $script = 'agi-DID_route.agi';
@@ -279,6 +280,15 @@ if ($did_route =~ /IN_GROUP/)
 	}
 
 
+### Route call to a logged-in VICIDIAL agent
+if ($did_route =~ /AGENT/)
+	{
+	$did_extension = "99909$S$did_id$S";
+	$exten_context = $ext_context;
+	$did_route = 'EXTEN';
+	}
+
+
 ### Route call to an extension on the system
 if ($did_route =~ /EXTEN/)
 	{
@@ -295,14 +305,6 @@ if ($did_route =~ /EXTEN/)
 	}
 
 
-
-
-### Route call to a logged-in VICIDIAL agent
-if ($did_route =~ /AGENT/)
-	{
-	# THIS FEATURE NOT YET DONE	
-	exit;
-	}
 
 
 

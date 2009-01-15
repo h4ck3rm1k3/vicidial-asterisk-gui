@@ -222,6 +222,11 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 50. Added notification of time synchronization problems in the vicidial.php page
 
+51. Added AGENTDIRECT queueing to be able to send calls to only one agent 
+   without having to create a new in-group for each agent. You can configure
+   DIDs to use AGENTDIRECT, and you can have VICIDIAL agents send calls to 
+   specific agents using the AGENTDIRECT transfer group with LOCAL CLOSER button
+   and putting the agent to send the call to in the Number To Dial field.
 
 
 

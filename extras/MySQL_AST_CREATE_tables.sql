@@ -396,6 +396,7 @@ user_group VARCHAR(20),
 xfercallid INT(9) UNSIGNED,
 term_reason  ENUM('CALLER','AGENT','QUEUETIMEOUT','ABANDON','AFTERHOURS','NONE') default 'NONE',
 uniqueid VARCHAR(20) NOT NULL default '',
+agent_only VARCHAR(20) default '',
 index (lead_id),
 index (call_date),
 index (campaign_id),
@@ -1318,7 +1319,7 @@ ALTER TABLE web_client_sessions ENGINE=HEAP;
 
 UPDATE system_settings SET auto_user_add_value='1101';
 
-INSERT INTO vicidial_inbound_groups(group_id,group_name,group_color,active) values('AGENTDIRECT','Single Agent Direct Queue','white','Y');
+INSERT INTO vicidial_inbound_groups(group_id,group_name,group_color,active,queue_priority) values('AGENTDIRECT','Single Agent Direct Queue','white','Y','99');
 
 INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
 INSERT INTO vicidial_lists SET list_id='998',list_name='Default Manual list',campaign_id='TESTCAMP',active='N';
@@ -1390,7 +1391,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1123';
+UPDATE system_settings SET db_schema_version='1124';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

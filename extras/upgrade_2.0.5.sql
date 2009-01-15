@@ -601,3 +601,6 @@ ALTER TABLE vicidial_campaigns ADD vtiger_create_lead_record ENUM('Y','N') defau
 
 UPDATE system_settings SET db_schema_version='1123';
 
+ALTER TABLE vicidial_closer_log ADD agent_only VARCHAR(20) default '';
+
+UPDATE system_settings SET db_schema_version='1124';

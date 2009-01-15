@@ -212,10 +212,11 @@
 # 81209-1617 - Added campaign web form target option and web form address variables
 # 81211-0422 - Fixed Manual dial agent_log bug
 # 90102-1402 - Added time sync check notification
+# 90115-0619 - Added ability to send Local Closer to AGENTDIRECT agent_only
 #
 
-$version = '2.0.5-191';
-$build = '90102-1402';
+$version = '2.0.5-192';
+$build = '90115-0619';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -3041,8 +3042,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				var XfeRSelecT = document.getElementById("XfeRGrouP");
 				var queryCID = "XLvdcW" + epoch_sec + user_abb;
-				// 		 "90009*$group**$lead_id**$phone_number*$user*";
-				var redirectdestination = closerxferinternal + '90009*' + XfeRSelecT.value + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*';
+				// 		 "90009*$group**$lead_id**$phone_number*$user*$agent_only*";
+				var redirectdestination = closerxferinternal + '90009*' + XfeRSelecT.value + '**' + document.vicidial_form.lead_id.value + '**' + document.vicidial_form.phone_number.value + '*' + user + '*' + document.vicidial_form.xfernumber.value + '*';
 
 				xferredirect_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=RedirectVD&format=text&channel=" + redirectvalue + "&call_server_ip=" + redirectserverip + "&queryCID=" + queryCID + "&exten=" + redirectdestination + "&ext_context=" + ext_context + "&ext_priority=1&auto_dial_level=" + auto_dial_level + "&campaign=" + campaign + "&uniqueid=" + document.vicidial_form.uniqueid.value + "&lead_id=" + document.vicidial_form.lead_id.value + "&secondS=" + VD_live_call_secondS + "&session_id=" + session_id;
 				}
