@@ -718,6 +718,8 @@ if ($call_handle_method =~ /SURVEY/)
 						checkresult($result);
 					print "SET PRIORITY 1\n";
 						checkresult($result);
+
+					exit;
 					}
 
 				if ($survey_method =~ /HANGUP/)
@@ -732,6 +734,8 @@ if ($call_handle_method =~ /SURVEY/)
 						}
 
 					$AGI->hangup();
+
+					exit;
 					}
 				}
 
