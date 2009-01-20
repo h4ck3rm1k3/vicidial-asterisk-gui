@@ -17,6 +17,15 @@ if (($phone_number eq "--help") || ($exten eq "--help") || ($cid_name eq "--help
 
 # get the current time
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
 my $date = "$year-$mon-$mday $hour:$min:$sec";
 
 # default path to astguiclient configuration file:
@@ -50,6 +59,7 @@ $dbhB = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 
 # Insert our call record
 $stmtB = "INSERT INTO vicidial_manager values( '', '', '$date', 'NEW', 'N', '$VARserver_ip', '', 'Originate', 'TESTCIDBLASTCALL0124', 'Channel: Local/$phone_number@default', 'Context; default', 'Exten: $exten', 'Priority: 1', 'Callerid: \"$cid_name\" <$cid_num>', '', '', '', '', '' );";
+print $stmtB . "\n";
 $sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 $sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 $sthB->finish();
