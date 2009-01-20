@@ -15,6 +15,7 @@
 # changes:
 # 81007-0324 - First Build
 # 90115-0645 - Activated AGENT call routing
+# 90117-0756 - Added vicidial_did_log logging to database
 #
 
 $script = 'agi-DID_route.agi';
@@ -171,6 +172,11 @@ if ($sthArows > 0)
 	$user_route_settings_ingroup =	$aryA[12];
 	}
 $sthA->finish();
+
+$stmtA = "INSERT INTO vicidial_did_log SET uniqueid='$uniqueid',channel='$channel',server_ip='$VARserver_ip',caller_id_number='$callerid',caller_id_name='$calleridname',extension='$extension',call_date='$SQLdate',did_id='$did_id',did_route='$did_route';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$affected_rowsL = $dbhA->do($stmtA);
+if ($AGILOG) {$agi_string = "--    DID LOG : |$affected_rowsL|$stmtA|";   &agi_output;}
 
 if ($AGILOG) {$did_string = "$SQLdate|$uniqueid|$channel|$extension|$callerid|$calleridname|$did_id|$did_route|";   &did_output;}
 

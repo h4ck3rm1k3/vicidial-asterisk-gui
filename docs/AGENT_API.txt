@@ -1,4 +1,4 @@
-AGENT API DOCUMENT			2008-07-03
+AGENT API DOCUMENT			                           2008-07-03
 
 This document describes the functions of an API(Application Programming Interface)
 for the VICIDIAL Agent screen. This functionality will be rather limited at first
@@ -10,8 +10,11 @@ read the NON-AGENT_API.txt document.
 
 
 API functions:
+version - shows version and build of the API, along with the date/time
 external_hangup - sends command to hangup the current phone call for one specific agent(Hangup Customer)
 external_status - sends command to set the disposition for one specific agent and move on to next call
+external_pause - sends command to pause/resume an agent now if not on a call, or pause after their next call if on call
+external_dial - sends command to manually dial a number on the agent's screen
 
 
 
@@ -20,22 +23,161 @@ New scripts:
 
 
 
+Required variables for API calls:
+# user - is the API user
+# pass - is the API user password
+# agent_user - is the user whose session that you want to affect
+# source - description of what originated the API call (maximum 20 characters)
+
 Example URL strings for API calls:
+http://server/agc/api.php?function=version
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_status&value=A
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=RESUME
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES
+
+
+To hangup the call, disposition it and then pause the agent, do the following in order:
+http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
 http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
 http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_status&value=A
 
 
 
-Example MySQL queries for executing API functions:
+Response to calls will return either an ERROR or a SUCCESS along with an explanation.
+for example:
+SUCCESS: external_status function set - 6666|A
+ERROR: agent_user is not logged in - 6666
+
+
+
+DETAIL OF EACH FUNCTION:
+--------------------------------------------------------------------------------
+
+
+
+version -
+
+DESCRIPTION:
+shows version and build of the API, along with the date/time
+
+VALUES: NONE
+
+RESPONSES:
+VERSION: 2.0.5-2|BUILD: 90116-1229|DATE: 2009-01-15 14:59:33|EPOCH: 1222020803 
+
+
+
+external_hangup - 
+
+DESCRIPTION:
+Hangs up the current customer call on the agent screen
+
+VALUES: (value)
+1  - the only valid value for this function
+
+RESPONSES:
+ERROR: external_hangup not valid - 1|6666
+ERROR: agent_user is not logged in - 6666
+SUCCESS: external_hangup function set - 1|6666
+
+
+
+external_status - 
+
+DESCRIPTION:
+Sets the status of the current customer call on the agent dispotion screen
+
+VALUES: (value)
+Any valid status in the VICIDIAL system will work for this function
+
+RESPONSES:
+ERROR: external_status not valid - A|6666
+ERROR: agent_user is not logged in - 6666
+SUCCESS: external_status function set - A|6666
+
+
+
+external_pause - 
+
+DESCRIPTION:
+Pauses or Resumes the agent. If a Pause and the agent is on a live call will pause after the live call is dispositioned
+
+VALUES: (value)
+PAUSE  - Pauses the agent session
+RESUME  - Resumes the agent session
+
+RESPONSES:
+ERROR: external_pause not valid - PAUSE|6666
+ERROR: agent_user is not logged in - 6666
+SUCCESS: external_pause function set - PAUSE|1232020456|6666
+
+
+
+external_dial - 
+
+DESCRIPTION:
+Places a manual dial phone call on the agent screen, you can define whether to search for the lead in the existing database or not and you can define the phone_code and the number to dial. This action will pause the agent after their current call, enter in the information to place the call, and dialing the call on the agent screen.
+
+VALUES:
+value - 
+ Any valid phone number (7275551212)
+phone_code -
+ Any valid phone country code (1 for USA/Canada, 44 for UK, etc...)
+search -
+ YES  - perform a search in the campaign-defined vicidial_list list for this phone number and bring up that lead
+ NO  - do not search, create a new vicidial_list record for the call
+preview -
+ YES  - preview the lead in the vicidial screen without dialing
+ NO  - do not preview the lead, place call immediately
+focus -
+ YES  - change the focus of the screen to the vicidial.php agent interface
+ NO  - do not change focus
+
+
+RESPONSES:
+ERROR: external_dial not valid - 7275551212|1|YES|6666
+ERROR: agent_user is not allowed to place manual dial calls - 6666
+ERROR: agent_user is not logged in - 6666
+SUCCESS: external_dial function set - 7275551212|1|YES|1232020456|6666
+
+
+
+
+
+
+
+
+
+
+
+Example MySQL query options for executing API functions(not available for all functions):
 update vicidial_live_agents set external_hangup=1 where user='1000';
 update vicidial_live_agents set external_status='A' where user='1000';
-update vicidial_live_agents set status='PAUSED' where user='1000';
 
 
-Database changes:
+Database changes: (these are already in the system, DO NOT RUN THEM)
 ALTER TABLE vicidial_live_agents ADD external_hangup VARCHAR(1) default '';
 ALTER TABLE vicidial_live_agents ADD external_status VARCHAR(6) default '';
+ALTER TABLE vicidial_live_agents ADD external_pause VARCHAR(20) default '';
+ALTER TABLE vicidial_live_agents ADD external_dial VARCHAR(100) default '';
 
 ALTER TABLE vicidial_users ADD vdc_agent_api_access ENUM('0','1') default '0';
 
 ALTER TABLE system_settings ADD vdc_agent_api_active ENUM('0','1') default '0';
+
+CREATE TABLE vicidial_api_log (
+api_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20) NOT NULL,
+api_date DATETIME,
+api_script VARCHAR(10),
+function VARCHAR(20) NOT NULL,
+agent_user VARCHAR(20),
+value VARCHAR(255),
+result VARCHAR(10),
+result_reason VARCHAR(255),
+source VARCHAR(20),
+data TEXT,
+index(api_date)
+);

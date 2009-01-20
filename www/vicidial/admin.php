@@ -1,7 +1,7 @@
 <?
 # admin.php - VICIDIAL administration page
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 # 
 
 require("dbconnect.php");

@@ -41,10 +41,11 @@
 # 81104-0229 - Added mysql error logging capability
 # 81104-1409 - Added multi-retry for some vicidial_live_agents table MySQL queries
 # 90102-1402 - Added check for system and database time synchronization
+# 90120-1720 - Added compatibility for API pause/resume and dial a number
 #
 
-$version = '2.0.4-16';
-$build = '90102-1402';
+$version = '2.0.4-17';
+$build = '90120-1720';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=14;
 $one_mysql_log=0;
@@ -295,13 +296,15 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				}
 
 			### grab the API hangup and API dispo fields in vicidial_live_agents
-			$stmt="SELECT external_hangup,external_status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+			$stmt="SELECT external_hangup,external_status,external_pause,external_dial from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03010',$user,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysql_fetch_row($rslt);
 			$external_hangup =	$row[0];
 			$external_status =	$row[1];
+			$external_pause =	$row[2];
+			$external_dial =	$row[3];
 			if (strlen($external_status)<1) {$external_status = '::::::::::';}
 
 			$web_epoch = date("U");
@@ -322,7 +325,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($AexternalDEAD > 0) 
 				{$Alogin='DEAD_EXTERNAL';}
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Status: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . "|\n";
 
 			}
 		$total_conf=0;

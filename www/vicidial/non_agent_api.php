@@ -1,7 +1,7 @@
 <?
 # non_agent_api.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed as an API(Application Programming Interface) to allow
 # other programs to interact with all non-agent-screen VICIDIAL functions
@@ -10,6 +10,7 @@
 #  - $user
 #  - $pass
 #  - $function - ('add_lead','version')
+#  - $source - ('vtiger','webform','adminweb')
 #  - $format - ('text','debug')
 
 # CHANGELOG:
@@ -17,10 +18,11 @@
 # 80801-0047 - Added gmt lookup and hopper insert time validation
 # 80909-2012 - Added support for campaign-specific DNC lists
 # 80910-0020 - Added support for multi-alt-phones, added version function
+# 90118-1056 - Added logging of API functions
 #
 
-$version = '2.0.5-4';
-$build = '80910-0020';
+$version = '2.0.5-5';
+$build = '90118-1056';
 
 require("dbconnect.php");
 
@@ -95,6 +97,8 @@ if (isset($_GET["campaign_id"]))				{$campaign_id=$_GET["campaign_id"];}
 	elseif (isset($_POST["campaign_id"]))		{$campaign_id=$_POST["campaign_id"];}
 if (isset($_GET["multi_alt_phones"]))			{$multi_alt_phones=$_GET["multi_alt_phones"];}
 	elseif (isset($_POST["multi_alt_phones"]))	{$multi_alt_phones=$_POST["multi_alt_phones"];}
+if (isset($_GET["source"]))						{$source=$_GET["source"];}
+	elseif (isset($_POST["source"]))			{$source=$_POST["source"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -169,6 +173,7 @@ if ($non_latin < 1)
 	$campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$campaign_id);
 	$multi_alt_phones = ereg_replace("[^- \+\!\:\_0-9a-zA-Z]","",$multi_alt_phones);
 		$multi_alt_phones = ereg_replace("\+"," ",$multi_alt_phones);
+	$source = ereg_replace("[^0-9a-zA-Z]","",$source);
 	}
 
 if (strlen($list_id)<1) {$list_id='999';}
@@ -184,6 +189,9 @@ $CIDdate = date("mdHis");
 $ENTRYdate = date("YmdHis");
 $MT[0]='';
 $postalgmt='';
+$api_script = 'non-agent';
+$api_logging = 1;
+
 
 $secX = date("U");
 $hour = date("H");
@@ -235,7 +243,10 @@ $LOCAL_GMT_OFF_STD = $SERVER_GMT;
 ################################################################################
 if ($function == 'version')
 	{
-	echo "VERSION: $version|BUILD: $build|DATE: $NOW_TIME|EPOCH: $StarTtime\n";
+	$data = "VERSION: $version|BUILD: $build|DATE: $NOW_TIME|EPOCH: $StarTtime";
+	$result = 'SUCCESS';
+	echo "$data\n";
+	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 	exit;
 	}
 
@@ -247,158 +258,212 @@ if ($function == 'version')
 ################################################################################
 if ($function == 'add_lead')
 	{
-	$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and vdc_agent_api_access='1' and modify_leads='1';";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$modify_leads=$row[0];
-
-	if ($modify_leads < 1)
+	if(strlen($source)<2)
 		{
-		echo "ERROR: add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM - $user|$modify_leads\n";
+		$result = 'ERROR';
+		$result_reason = "Invalid Source";
+		echo "$result: $result_reason - $source\n";
+		api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+		echo "ERROR: Invalid Source: |$source|\n";
 		exit;
 		}
 	else
 		{
-		if ( (strlen($phone_number)<6) || (strlen($phone_number)>16) )
+		$stmt="SELECT count(*) from vicidial_users where user='$user' and pass='$pass' and vdc_agent_api_access='1' and modify_leads='1';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$modify_leads=$row[0];
+
+		if ($modify_leads < 1)
 			{
-			echo "ERROR: add_lead INVALID PHONE NUMBER - $phone_number|$user\n";
+			$result = 'ERROR';
+			$result_reason = "add_lead USER DOES NOT HAVE PERMISSION TO ADD LEADS TO THE SYSTEM";
+			echo "$result: $result_reason: |$user|$modify_leads|\n";
+			$data = "$modify_leads";
+			api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 			exit;
 			}
 		else
 			{
-			if ($dnc_check == 'Y')
+			if ( (strlen($phone_number)<6) || (strlen($phone_number)>16) )
 				{
-				$stmt="SELECT count(*) from vicidial_dnc where phone_number='$phone_number';";
-				if ($DB) {echo "|$stmt|\n";}
-				$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				$dnc_found=$row[0];
-
-				if ($dnc_found > 0) 
-					{
-					echo "ERROR: add_lead PHONE NUMBER IN DNC - $phone_number|$user\n";
-					exit;
-					}
-				}
-			if ($campaign_dnc_check == 'Y')
-				{
-				$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign_id';";
-				if ($DB) {echo "|$stmt|\n";}
-				$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				$dnc_found=$row[0];
-
-				if ($dnc_found > 0) 
-					{
-					echo "ERROR: add_lead PHONE NUMBER IN CAMPAIGN DNC - $phone_number|$campaign_id|$user\n";
-					exit;
-					}
-				}
-			
-			### get current gmt_offset of the phone_number
-			$gmt_offset = lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$Ssec,$Smon,$Smday,$Syear,$postalgmt,$postal_code);
-
-
-			### insert a new lead in the system with this phone number
-			$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='NEW',user='$user',vendor_lead_code='$vendor_lead_code',source_id='$source_id',gmt_offset_now='$gmt_offset',title='$title',first_name='$first_name',middle_initial='$middle_initial',last_name='$last_name',address1='$address1',address2='$address2',address3='$address3',city='$city',state='$state',province='$province',postal_code='$postal_code',country_code='$country_code',gender='$gender',date_of_birth='$date_of_birth',alt_phone='$alt_phone',email='$email',security_phrase='$security_phrase',comments='$comments',called_since_last_reset='N',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $link);
-			$affected_rows = mysql_affected_rows($link);
-			if ($affected_rows > 0)
-				{
-				$lead_id = mysql_insert_id($link);
-
-				echo "SUCCESS: add_lead LEAD HAS BEEN ADDED - $phone_number|$user|$list_id|$lead_id|$gmt_offset\n";
-
-				if (strlen($multi_alt_phones) > 5)
-					{
-					$map=$MT;  $ALTm_phone_code=$MT;  $ALTm_phone_number=$MT;  $ALTm_phone_note=$MT;
-					$map = explode('!', $multi_alt_phones);
-					$map_count = count($map);
-					if ($DB) {echo "multi-al-entry: $a|$map_count|$multi_alt_phones\n";}
-					$g++;
-					$r=0;   $s=0;   $inserted_alt_phones=0;
-					while ($r < $map_count)
-						{
-						$s++;
-						$ncn=$MT;
-						$ncn = explode('_', $map[$r]);
-						print "$ncn[0]|$ncn[1]|$ncn[2]";
-
-						if (strlen($forcephonecode) > 0)
-							{$ALTm_phone_code[$r] =	$forcephonecode;}
-						else
-							{$ALTm_phone_code[$r] =		$ncn[1];}
-						if (strlen($ALTm_phone_code[$r]) < 1)
-							{$ALTm_phone_code[$r]='1';}
-						$ALTm_phone_number[$r] =	$ncn[0];
-						$ALTm_phone_note[$r] =		$ncn[2];
-						$stmt = "INSERT INTO vicidial_list_alt_phones (lead_id,phone_code,phone_number,alt_phone_note,alt_phone_count) values('$lead_id','$ALTm_phone_code[$r]','$ALTm_phone_number[$r]','$ALTm_phone_note[$r]','$s');";
-						if ($DB) {echo "$stmt\n";}
-						$rslt=mysql_query($stmt, $link);
-						$Zaffected_rows = mysql_affected_rows($link);
-						$inserted_alt_phones = ($inserted_alt_phones + $Zaffected_rows);
-						$r++;
-						}
-					echo "NOTICE: add_lead MULTI-ALT-PHONE NUMBERS LOADED - $inserted_alt_phones|$user|$lead_id\n";
-					}
-
-				if ($add_to_hopper == 'Y')
-					{
-					$dialable=1;
-
-					$stmt="SELECT local_call_time,vicidial_campaigns.campaign_id from vicidial_campaigns,vicidial_lists where list_id='$list_id' and vicidial_campaigns.campaign_id=vicidial_lists.campaign_id;";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $link);
-					$row=mysql_fetch_row($rslt);
-					$local_call_time=$row[0];
-					$VD_campaign_id=$row[1];
-
-					if ($hopper_local_call_time_check == 'Y')
-						{
-						### call function to determine if lead is dialable
-						$dialable = dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state);
-						}
-					if ($dialable < 1) 
-						{
-						echo "NOTICE: add_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME - $phone_number|$user|$lead_id|$gmt_offset|$dialable\n";
-						}
-					else
-						{
-						### code to insert into hopper goes here
-
-						### insert record into vicidial_hopper for alt_phone call attempt
-						$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$list_id',gmt_offset_now='$gmt_offset',state='$state',user='',priority='$hopper_priority';";
-						if ($DB) {echo "$stmt\n";}
-						$rslt=mysql_query($stmt, $link);
-						$Haffected_rows = mysql_affected_rows($link);
-						if ($Haffected_rows > 0)
-							{
-							$hopper_id = mysql_insert_id($link);
-
-							echo "NOTICE: add_lead ADDED TO HOPPER - $phone_number|$user|$lead_id|$hopper_id\n";
-							}
-						else
-							{
-							echo "NOTICE: add_lead NOT ADDED TO HOPPER - $phone_number|$user|$lead_id|$stmt\n";
-							}
-						}
-					}
+				$result = 'ERROR';
+				$result_reason = "add_lead INVALID PHONE NUMBER";
+				echo "$result: $result_reason - $phone_number|$user\n";
+				$data = "$phone_number";
+				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+				exit;
 				}
 			else
 				{
-				echo "ERROR: add_lead LEAD HAS NOT BEEN ADDED - $phone_number|$user|$list_id|$stmt\n";
+				if ($dnc_check == 'Y')
+					{
+					$stmt="SELECT count(*) from vicidial_dnc where phone_number='$phone_number';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					$dnc_found=$row[0];
+
+					if ($dnc_found > 0) 
+						{
+						$result = 'ERROR';
+						$result_reason = "add_lead PHONE NUMBER IN DNC";
+						echo "$result: $result_reason - $phone_number|$user\n";
+						$data = "$phone_number";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						exit;
+						}
+					}
+				if ($campaign_dnc_check == 'Y')
+					{
+					$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign_id';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					$dnc_found=$row[0];
+
+					if ($dnc_found > 0) 
+						{
+						$result = 'ERROR';
+						$result_reason = "add_lead PHONE NUMBER IN CAMPAIGN DNC";
+						echo "$result: $result_reason - $phone_number|$campaign_id|$user\n";
+						$data = "$phone_number|$campaign_id";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						exit;
+						}
+					}
+				
+				### get current gmt_offset of the phone_number
+				$gmt_offset = lookup_gmt($phone_code,$USarea,$state,$LOCAL_GMT_OFF_STD,$Shour,$Smin,$Ssec,$Smon,$Smday,$Syear,$postalgmt,$postal_code);
+
+
+				### insert a new lead in the system with this phone number
+				$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='NEW',user='$user',vendor_lead_code='$vendor_lead_code',source_id='$source_id',gmt_offset_now='$gmt_offset',title='$title',first_name='$first_name',middle_initial='$middle_initial',last_name='$last_name',address1='$address1',address2='$address2',address3='$address3',city='$city',state='$state',province='$province',postal_code='$postal_code',country_code='$country_code',gender='$gender',date_of_birth='$date_of_birth',alt_phone='$alt_phone',email='$email',security_phrase='$security_phrase',comments='$comments',called_since_last_reset='N',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$affected_rows = mysql_affected_rows($link);
+				if ($affected_rows > 0)
+					{
+					$lead_id = mysql_insert_id($link);
+
+					$result = 'SUCCESS';
+					$result_reason = "add_lead LEAD HAS BEEN ADDED";
+					echo "$result: $result_reason - $phone_number|$list_id|$lead_id|$gmt_offset|$user\n";
+					$data = "$phone_number|$list_id|$lead_id|$gmt_offset";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+
+					if (strlen($multi_alt_phones) > 5)
+						{
+						$map=$MT;  $ALTm_phone_code=$MT;  $ALTm_phone_number=$MT;  $ALTm_phone_note=$MT;
+						$map = explode('!', $multi_alt_phones);
+						$map_count = count($map);
+						if ($DB) {echo "multi-al-entry: $a|$map_count|$multi_alt_phones\n";}
+						$g++;
+						$r=0;   $s=0;   $inserted_alt_phones=0;
+						while ($r < $map_count)
+							{
+							$s++;
+							$ncn=$MT;
+							$ncn = explode('_', $map[$r]);
+							print "$ncn[0]|$ncn[1]|$ncn[2]";
+
+							if (strlen($forcephonecode) > 0)
+								{$ALTm_phone_code[$r] =	$forcephonecode;}
+							else
+								{$ALTm_phone_code[$r] =		$ncn[1];}
+							if (strlen($ALTm_phone_code[$r]) < 1)
+								{$ALTm_phone_code[$r]='1';}
+							$ALTm_phone_number[$r] =	$ncn[0];
+							$ALTm_phone_note[$r] =		$ncn[2];
+							$stmt = "INSERT INTO vicidial_list_alt_phones (lead_id,phone_code,phone_number,alt_phone_note,alt_phone_count) values('$lead_id','$ALTm_phone_code[$r]','$ALTm_phone_number[$r]','$ALTm_phone_note[$r]','$s');";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $link);
+							$Zaffected_rows = mysql_affected_rows($link);
+							$inserted_alt_phones = ($inserted_alt_phones + $Zaffected_rows);
+							$r++;
+							}
+						$result = 'NOTICE';
+						$result_reason = "add_lead MULTI-ALT-PHONE NUMBERS LOADED";
+						echo "$result: $result_reason - $inserted_alt_phones|$lead_id|$user\n";
+						$data = "$inserted_alt_phones|$lead_id";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						}
+
+					if ($add_to_hopper == 'Y')
+						{
+						$dialable=1;
+
+						$stmt="SELECT local_call_time,vicidial_campaigns.campaign_id from vicidial_campaigns,vicidial_lists where list_id='$list_id' and vicidial_campaigns.campaign_id=vicidial_lists.campaign_id;";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $link);
+						$row=mysql_fetch_row($rslt);
+						$local_call_time=$row[0];
+						$VD_campaign_id=$row[1];
+
+						if ($hopper_local_call_time_check == 'Y')
+							{
+							### call function to determine if lead is dialable
+							$dialable = dialable_gmt($DB,$link,$local_call_time,$gmt_offset,$state);
+							}
+						if ($dialable < 1) 
+							{
+							$result = 'NOTICE';
+							$result_reason = "add_lead NOT ADDED TO HOPPER, OUTSIDE OF LOCAL TIME";
+							echo "$result: $result_reason - $phone_number|$lead_id|$gmt_offset|$dialable|$user\n";
+							$data = "$phone_number|$lead_id|$gmt_offset|$dialable";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							}
+						else
+							{
+							### code to insert into hopper goes here
+
+							### insert record into vicidial_hopper for alt_phone call attempt
+							$stmt = "INSERT INTO vicidial_hopper SET lead_id='$lead_id',campaign_id='$VD_campaign_id',status='READY',list_id='$list_id',gmt_offset_now='$gmt_offset',state='$state',user='',priority='$hopper_priority';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $link);
+							$Haffected_rows = mysql_affected_rows($link);
+							if ($Haffected_rows > 0)
+								{
+								$hopper_id = mysql_insert_id($link);
+
+								$result = 'NOTICE';
+								$result_reason = "add_lead ADDED TO HOPPER";
+								echo "$result: $result_reason - $phone_number|$lead_id|$hopper_id|$user\n";
+								$data = "$phone_number|$lead_id|$hopper_id";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								}
+							else
+								{
+								$result = 'NOTICE';
+								$result_reason = "add_lead NOT ADDED TO HOPPER";
+								echo "$result: $result_reason - $phone_number|$lead_id|$stmt|$user\n";
+								$data = "$phone_number|$lead_id|$stmt";
+								api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+								}
+							}
+						}
+					}
+				else
+					{
+					$result = 'ERROR';
+					$result_reason = "add_lead LEAD HAS NOT BEEN ADDED";
+					echo "$result: $result_reason - $phone_number|$list_id|$stmt|$user\n";
+					$data = "$phone_number|$list_id|$stmt";
+					api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+					}
 				}
 			}
+		exit;
 		}
-	exit;
 	}
 
 
 
-
-echo "ERROR: NO FUNCTION SPECIFIED\n";
+$result = 'ERROR';
+$result_reason = "NO FUNCTION SPECIFIED";
+echo "$result: $result_reason\n";
+api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 
 
 
@@ -1334,5 +1399,21 @@ return $dialable;
 		}
 
 */
+
+
+
+
+##### Logging #####
+function api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data)
+{
+if ($api_logging > 0)
+	{
+	$NOW_TIME = date("Y-m-d H:i:s");
+#	api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+	$stmt="INSERT INTO vicidial_api_log set user='$user',agent_user='$agent_user',function='$function',value='$value',result='$result',result_reason='$result_reason',source='$source',data='$data',api_date='$NOW_TIME',api_script='$api_script';";
+	$rslt=mysql_query($stmt, $link);
+	}
+return 1;
+}
 
 ?>

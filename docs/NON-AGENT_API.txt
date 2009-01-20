@@ -44,6 +44,7 @@ REQUIRED FIELDS-
 phone_number -		must be all numbers, 6-16 digits
 phone_code -		must be all numbers, 1-4 digits, defaults to 1 if not set
 list_id -		must be all numbers, 3-12 digits, defaults to 999 if not set
+source -		description of what originated the API call (maximum 20 characters)
 
 SETTINGS FIELDS-
 dnc_check -		Y or N, default is N

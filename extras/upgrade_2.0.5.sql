@@ -604,3 +604,39 @@ UPDATE system_settings SET db_schema_version='1123';
 ALTER TABLE vicidial_closer_log ADD agent_only VARCHAR(20) default '';
 
 UPDATE system_settings SET db_schema_version='1124';
+
+ALTER TABLE vicidial_live_agents ADD external_pause VARCHAR(20) default '';
+ALTER TABLE vicidial_live_agents ADD external_dial VARCHAR(100) default '';
+
+CREATE TABLE vicidial_did_log (
+uniqueid VARCHAR(20) NOT NULL,
+channel VARCHAR(100) NOT NULL,
+server_ip VARCHAR(15) NOT NULL,
+caller_id_number VARCHAR(18),
+caller_id_name VARCHAR(20),
+extension VARCHAR(100),
+call_date DATETIME,
+did_id VARCHAR(9) default '',
+did_route VARCHAR(9) default '',
+index (uniqueid),
+index (caller_id_number),
+index (extension),
+index (call_date)
+);
+
+CREATE TABLE vicidial_api_log (
+api_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20) NOT NULL,
+api_date DATETIME,
+api_script VARCHAR(10),
+function VARCHAR(20) NOT NULL,
+agent_user VARCHAR(20),
+value VARCHAR(255),
+result VARCHAR(10),
+result_reason VARCHAR(255),
+source VARCHAR(20),
+data TEXT,
+index(api_date)
+);
+
+UPDATE system_settings SET db_schema_version='1125';

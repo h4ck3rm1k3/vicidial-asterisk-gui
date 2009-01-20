@@ -213,10 +213,11 @@
 # 81211-0422 - Fixed Manual dial agent_log bug
 # 90102-1402 - Added time sync check notification
 # 90115-0619 - Added ability to send Local Closer to AGENTDIRECT agent_only
+# 90120-1719 - Added API pause/resume and number dial functionality
 #
 
-$version = '2.0.5-192';
-$build = '90115-0619';
+$version = '2.0.5-193';
+$build = '90120-1719';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -1885,6 +1886,7 @@ $CCAL_OUT .= "</table>";
 	var CallBackCommenTs = '';
 	var scheduled_callbacks = '<? echo $scheduled_callbacks ?>';
 	var dispo_check_all_pause = '<? echo $dispo_check_all_pause ?>';
+	var api_check_all_pause = '<? echo $api_check_all_pause ?>';
 	var agent_pause_codes_active = '<? echo $agent_pause_codes_active ?>';
 	VARpause_codes = new Array(<? echo $VARpause_codes ?>);
 	VARpause_code_names = new Array(<? echo $VARpause_code_names ?>);
@@ -2149,6 +2151,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var dial_method = '<? echo $dial_method ?>';
 	var web_form_target = '<? echo $web_form_target ?>';
 	var TEMP_VDIC_web_form_address = '';
+	var APIPausE_ID = '99999';
+	var APIDiaL_ID = '99999';
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\" Pause \"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2385,7 +2389,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				if (omit_phone_code == 'Y') {var temp_phone_code = '';}
 				else {var temp_phone_code = document.vicidial_form.phone_code.value;}
 
-				if (manual_string.length > 9)
+				if (manual_string.length > 7)
 					{manual_string = temp_dial_prefix + "" + temp_phone_code + "" + manual_string;}
 				}
 			}
@@ -2674,6 +2678,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						var APIHanguP = APIHanguP_array[1];
 						var APIStatuS_array = check_time_array[7].split("APIStatuS: ");
 						var APIStatuS = APIStatuS_array[1];
+						var APIPausE_array = check_time_array[8].split("APIPausE: ");
+						var APIPausE = APIPausE_array[1];
+						var APIDiaL_array = check_time_array[9].split("APIDiaL: ");
+						var APIDiaL = APIDiaL_array[1];
 						if ( (APIHanguP==1) && (VD_live_customer_call==1) )
 							{
 							hideDiv('CustomerGoneBox');
@@ -2687,7 +2695,74 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							document.vicidial_form.DispoSelection.value = APIStatuS;
 							DispoSelect_submit();
 							}
+						if (APIPausE.length > 4)
+							{
+							var APIPausE_array = APIPausE.split("!");
+							if (APIPausE_ID == APIPausE_array[1])
+								{
+							//	alert("PAUSE ALREADY RECEIVED");
+								}
+							else
+								{
+								APIPausE_ID = APIPausE_array[1];
+								if (APIPausE_array[0]=='PAUSE')
+									{
+									if (VD_live_customer_call==1)
+										{
+										// set to pause on next dispo
+										document.vicidial_form.DispoSelectStop.checked=true;
+										alert("Setting dispo to PAUSE");
+										}
+									else
+										{
+										if (AutoDialReady==1)
+											{
+											if (auto_dial_level != '0')
+												{
+												AutoDialWaiting = 0;
+												AutoDial_ReSume_PauSe("VDADpause");
+												}
+											VICIDiaL_pause_calling = 1;
+											}
+										}
+									}
+								if ( (APIPausE_array[0]=='RESUME') && (AutoDialReady < 1) && (auto_dial_level > 0) )
+									{
+									AutoDialWaiting = 1;
+									AutoDial_ReSume_PauSe("VDADready");
+									}
+								}
+							}
+						if (APIDiaL.length > 8)
+							{
+							var APIDiaL_array_detail = APIDiaL.split("!");
+							if (APIDiaL_ID == APIDiaL_array_detail[5])
+								{
+							//	alert("DiaL ALREADY RECEIVED: " + APIDiaL_ID + "|" + APIDiaL_array_detail[5]);
+								}
+							else
+								{
+								APIDiaL_ID = APIDiaL_array_detail[5];
+								document.vicidial_form.MDDiaLCodE.value = APIDiaL_array_detail[1];
+								document.vicidial_form.phone_code.value = APIDiaL_array_detail[1];
+								document.vicidial_form.MDPhonENumbeR.value = APIDiaL_array_detail[0];
 
+							//	alert(APIDiaL_array_detail[1] + "-----" + APIDiaL + "-----" + document.vicidial_form.MDDiaLCodE.value + "-----" + document.vicidial_form.phone_code.value);
+
+								if (APIDiaL_array_detail[2] == 'YES')  // lookup lead in system
+									{document.vicidial_form.LeadLookuP.checked=true;}
+								else
+									{document.vicidial_form.LeadLookuP.checked=false;}
+								if (APIDiaL_array_detail[4] == 'YES')  // focus on vicidial agent screen
+									{window.focus();}
+								if (APIDiaL_array_detail[3] == 'YES')  // call preview
+									{NeWManuaLDiaLCalLSubmiT('PREVIEW');}
+								else
+									{NeWManuaLDiaLCalLSubmiT('NOW');}
+								}
+							}
+
+// ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ  above section working on API functions
 						var check_conf_array=check_ALL_array[1].split("|");
 						var live_conf_calls = check_conf_array[0];
 						var conf_chan_array = check_conf_array[1].split(" ~");
@@ -3012,7 +3087,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (omit_phone_code == 'Y') {var temp_phone_code = '';}
 						else {var temp_phone_code = document.vicidial_form.phone_code.value;}
 
-						if (blindxferdialstring.length > 9)
+						if (blindxferdialstring.length > 7)
 							{blindxferdialstring = temp_dial_prefix + "" + temp_phone_code + "" + blindxferdialstring;}
 						}
 					}
@@ -3517,7 +3592,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Insert the new manual dial as a lead and go to manual dial screen
-	function NeWManuaLDiaLCalLSubmiT()
+	function NeWManuaLDiaLCalLSubmiT(tempDiaLnow)
 		{
 		hideDiv('NeWManuaLDiaLBox');
 		var MDDiaLCodEform = document.vicidial_form.MDDiaLCodE.value;
@@ -3526,6 +3601,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var MDLookuPLeaD = 'new';
 		if (document.vicidial_form.LeadLookuP.checked==true)
 			{MDLookuPLeaD = 'lookup';}
+
+		if (MDDiaLCodEform.length < 1)
+			{MDDiaLCodEform = document.vicidial_form.phone_code.value;}
 
 		if (MDDiaLOverridEform.length > 0)
 			{
@@ -3537,10 +3615,13 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			auto_dial_level=0;
 			manual_dial_in_progress=1;
 			MainPanelToFront();
-			buildDiv('DiaLLeaDPrevieW');
-			buildDiv('DiaLDiaLAltPhonE');
-			document.vicidial_form.LeadPreview.checked=true;
-			document.vicidial_form.DiaLAltPhonE.checked=true;
+			if (tempDiaLnow == 'PREVIEW')
+				{
+				buildDiv('DiaLLeaDPrevieW');
+				buildDiv('DiaLDiaLAltPhonE');
+				document.vicidial_form.LeadPreview.checked=true;
+				document.vicidial_form.DiaLAltPhonE.checked=true;
+				}
 			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD);
 			}
 
@@ -3796,7 +3877,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (xmlhttp) 
 			{ 
 			manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + dial_timeout + "&dial_prefix=" + dial_prefix + "&campaign_cid=" + campaign_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter;
-		//			alert(manual_dial_filter + "\n" +manDiaLnext_query);
+			//		alert(manual_dial_filter + "\n" +manDiaLnext_query);
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(manDiaLnext_query); 
@@ -6958,6 +7039,7 @@ else
 							if (dispo_check_all_pause != '1')
 								{
 								document.vicidial_form.DispoSelectStop.checked=false;
+								alert("unchecking PAUSE");
 								}
 							}
 						else
@@ -7517,7 +7599,9 @@ echo "</head>\n";
 	</td>
 	</tr></table>
 	<BR>
-	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT();return false;">Dial Now</a>
+	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT('NOW');return false;">Dial Now</a>
+	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
+	<a href="#" onclick="NeWManuaLDiaLCalLSubmiT('PREVIEW');return false;">Preview Call</a>
 	 &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; 
 	<a href="#" onclick="hideDiv('NeWManuaLDiaLBox');return false;">Go Back</a>
 	</TD></TR></TABLE>

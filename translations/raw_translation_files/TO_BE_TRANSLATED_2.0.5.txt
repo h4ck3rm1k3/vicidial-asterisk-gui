@@ -411,6 +411,7 @@ Change this phone number to INACTIVE||
 Change this phone number to ACTIVE||
 YOU MUST LOG IN TO THE TIMECLOCK FIRST||
 There is a time synchronization problem with your system, please tell your system administrator||
+Preview Call||
 
 
 ############################################################  MANAGER Manual
