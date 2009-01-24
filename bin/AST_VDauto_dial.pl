@@ -25,7 +25,7 @@
 # It is good practice to keep this program running by placing the associated 
 # KEEPALIVE script running every minute to ensure this program is always running
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 50125-1201 - Changed dial timeout to 120 seconds from 180 seconds
@@ -72,6 +72,7 @@
 # 80909-0845 - Added support for campaign-specific DNC lists
 # 81013-2216 - Fixed improper deletion of auto_calls records
 # 81020-0125 - Bug fixes from changes to auto_calls deletion changes
+# 90124-0721 - Added parameter to ensure no auto-dial calls are placed for MANUAL campaigns
 #
 
 
@@ -295,6 +296,7 @@ while($one_day_interval > 0)
 		@DBIPserver_trunks_other=@MT;
 		@DBIPserver_trunks_allowed=@MT;
 		@DBIPqueue_priority=@MT;
+		@DBIPdial_method=@MT;
 
 		$active_line_counter=0;
 		$user_counter=0;
@@ -447,7 +449,7 @@ while($one_day_interval > 0)
 
 			### grab the dial_level and multiply by active agents to get your goalcalls
 			$DBIPadlevel[$user_CIPct]=0;
-			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
+			$stmtA = "SELECT auto_dial_level,local_call_time,dial_timeout,dial_prefix,campaign_cid,active,campaign_vdad_exten,closer_campaigns,omit_phone_code,available_only_ratio_tally,auto_alt_dial,campaign_allow_inbound,queue_priority,dial_method FROM vicidial_campaigns where campaign_id='$DBIPcampaign[$user_CIPct]'";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 			$sthArows=$sthA->rows;
@@ -476,6 +478,7 @@ while($one_day_interval > 0)
 					$DBIPautoaltdial[$user_CIPct] =	"$aryA[10]";
 					$DBIPcampaign_allow_inbound[$user_CIPct] =	"$aryA[11]";
 					$DBIPqueue_priority[$user_CIPct] =	"$aryA[12]";
+					$DBIPdial_method[$user_CIPct] =	"$aryA[13]";
 				$rec_count++;
 				}
 			$sthA->finish();
@@ -672,7 +675,7 @@ while($one_day_interval > 0)
 
 			if ( ($DBIPold_trunk_shortage[$user_CIPct] > $DBIPtrunk_shortage[$user_CIPct]) || ($DBIPold_trunk_shortage[$user_CIPct] < $DBIPtrunk_shortage[$user_CIPct]) )
 				{
-				if ($DBIPadlevel[$user_CIPct] < 1) 
+				if ( ($DBIPadlevel[$user_CIPct] < 1) || ($DBIPdial_method[$user_CIPct] =~ /MANUAL|INBOUND_MAN/) )
 					{
 					$event_string="Manual Dial Override for Shortage |$DBIPadlevel[$user_CIPct]|$DBIPtrunk_shortage[$user_CIPct]|";
 					&event_logger;
@@ -696,17 +699,24 @@ while($one_day_interval > 0)
 		$user_CIPct = 0;
 		foreach(@DBIPcampaign)
 			{
-			$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: CALLING";
-			&event_logger;
-			$call_CMPIPct=0;
-			$lead_id_call_list='|';
-			my $UDaffected_rows=0;
-			if ($call_CMPIPct < $DBIPmakecalls[$user_CIPct])
+			if ($DBIPdial_method[$user_CIPct] =~ /MANUAL|INBOUND_MAN/)
 				{
-				$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
-				print "|$stmtA|\n";
-			   $UDaffected_rows = $dbhA->do($stmtA);
-				print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
+				$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: MANUAL DIAL CAMPAIGN, NO DIALING";
+				&event_logger;
+				}
+			else
+				{
+				$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: CALLING";
+				&event_logger;
+				$call_CMPIPct=0;
+				$lead_id_call_list='|';
+				my $UDaffected_rows=0;
+				if ($call_CMPIPct < $DBIPmakecalls[$user_CIPct])
+					{
+					$stmtA = "UPDATE vicidial_hopper set status='QUEUE', user='VDAD_$server_ip' where campaign_id='$DBIPcampaign[$user_CIPct]' and status='READY' order by priority desc,hopper_id LIMIT $DBIPmakecalls[$user_CIPct]";
+					print "|$stmtA|\n";
+				   $UDaffected_rows = $dbhA->do($stmtA);
+					print "hopper rows updated to QUEUE: |$UDaffected_rows|\n";
 
 					if ($UDaffected_rows)
 					{
@@ -862,7 +872,7 @@ while($one_day_interval > 0)
 
 								if ($RECcount)
 									{
-								    if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
+									if ( (length($RECprefix)>0) && ($called_count < $RECcount) )
 									   {$Local_out_prefix .= "$RECprefix";}
 									}
 								$PADlead_id = sprintf("%09s", $lead_id);	while (length($PADlead_id) > 9) {chop($PADlead_id);}
@@ -903,9 +913,8 @@ while($one_day_interval > 0)
 						$call_CMPIPct++;
 						}
 					}
-
+				}
 			}
-
 		$user_CIPct++;
 		}
 
