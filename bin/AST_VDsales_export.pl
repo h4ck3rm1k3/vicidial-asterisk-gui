@@ -668,9 +668,9 @@ if ($output_format =~ /^fixed-as400$/)
 	if ($status =~ /^DROP$/)	{$status = 'N';}
 	if ($status =~ /^SALE$/)	{$status = 'AP';}
 	if ($status =~ /^A6$/)		{$status = 'A6';}
+	if ($status =~ /^DC$/) 		{$status = 'D';}
 	if ($status =~ /^DNC$/) 	{$status = 'DC';}
 	if ($status =~ /^DNCL$/) 	{$status = 'DC';}
-	if ($status =~ /^DC$/) 		{$status = 'D';}
 	if ($status =~ /^DIED$/)	{$status = 'DD';}
 	if ($status =~ /^COMP$/)	{$status = 'DD';}
 	if ($status =~ /^DEC$/)		{$status = 'DD';}

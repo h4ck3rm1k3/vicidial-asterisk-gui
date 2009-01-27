@@ -13,7 +13,7 @@
 #  - $pass
 # optional variables:
 #  - $format - ('text','debug')
-#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit','LogiNCamPaigns','alt_phone_change')
+#  - $ACTION - ('regCLOSER','manDiaLnextCALL','manDiaLskip','manDiaLonly','manDiaLlookCALL','manDiaLlogCALL','userLOGout','updateDISPO','VDADpause','VDADready','VDADcheckINCOMING','UpdatEFavoritEs','CalLBacKLisT','CalLBacKCounT','PauseCodeSubmit','LogiNCamPaigns','alt_phone_change','AlertControl')
 #  - $stage - ('start','finish','lookup','new')
 #  - $closer_choice - ('CL_TESTCAMP_L CL_OUT123_L -')
 #  - $conf_exten - ('8600011',...)
@@ -181,12 +181,13 @@
 # 81126-1522 - Fixed callback comments bug
 # 81211-0420 - Fixed Manual dial agent_log bug
 # 90120-1718 - Added external pause and dial option
+# 90126-1759 - Fixed QM section that wasn't qualified and added agent alert option
 #
 
-$version = '2.0.5-98';
-$build = '90120-1718';
+$version = '2.0.5-99';
+$build = '90126-1759';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=184;
+$mysql_log_count=185;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -1125,6 +1126,34 @@ if ($ACTION == 'alt_phone_change')
 
 
 ################################################################################
+### AlertControl - change the agent alert setting in vicidial_users
+### 
+################################################################################
+if ($ACTION == 'AlertControl')
+{
+	if (strlen($stage)<1)
+		{
+		$channel_live=0;
+		echo "AGENT ALERT SETTING NOT CHANGED\n";
+		echo "$stage is not valid\n";
+		exit;
+		}
+	else
+		{
+		if (ereg('ON',$stage)) {$stage = '1';}
+		else {$stage = '0';}
+
+		$stmt = "UPDATE vicidial_users set alert_enabled='$stage' where user='$user' and pass='$pass';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'000185',$user,$server_ip,$session_name,$one_mysql_log);}
+
+		echo "AGENT ALERT SETTING CHANGED $stage\n";
+		}
+}
+
+
+################################################################################
 ### manDiaLskip - for manual VICIDiaL dialing this skips the lead that was
 ###               previewed in the step above and puts it back in orig status
 ################################################################################
@@ -2052,25 +2081,28 @@ if ($stage == "end")
 				$affected_rows = mysql_affected_rows($link);
 				}
 
-			if ( (strlen($QL_term) > 0) and ($leaving_threeway > 0) )
+			if ($enable_queuemetrics_logging > 0)
 				{
-				$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETEAGENT' and queue='$VDcampaign_id';";
-				$rslt=mysql_query($stmt, $linkB);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00093',$user,$server_ip,$session_name,$one_mysql_log);}
-				if ($DB) {echo "$stmt\n";}
-				$VAC_cc_ct = mysql_num_rows($rslt);
-				if ($VAC_cc_ct > 0)
+				if ( (strlen($QL_term) > 0) and ($leaving_threeway > 0) )
 					{
-					$row=mysql_fetch_row($rslt);
-					$agent_complete	= $row[0];
-					}
-				if ($agent_complete < 1)
-					{
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
-					if ($DB) {echo "$stmt\n";}
+					$stmt="SELECT count(*) from queue_log where call_id='$MDnextCID' and verb='COMPLETEAGENT' and queue='$VDcampaign_id';";
 					$rslt=mysql_query($stmt, $linkB);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00094',$user,$server_ip,$session_name,$one_mysql_log);}
-					$affected_rows = mysql_affected_rows($linkB);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00093',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$VAC_cc_ct = mysql_num_rows($rslt);
+					if ($VAC_cc_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$agent_complete	= $row[0];
+						}
+					if ($agent_complete < 1)
+						{
+						$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$VDcampaign_id',agent='Agent/$user',verb='COMPLETEAGENT',data1='$CLstage',data2='$length_in_sec',data3='1',serverid='$queuemetrics_log_id';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkB);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00094',$user,$server_ip,$session_name,$one_mysql_log);}
+						$affected_rows = mysql_affected_rows($linkB);
+						}
 					}
 				}
 			}

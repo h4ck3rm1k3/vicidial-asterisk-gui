@@ -283,7 +283,7 @@ if ($acctid_search > 0)
 			}
 		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 
 		echo "<PRE>";
@@ -444,7 +444,7 @@ if ($account_search > 0)
 			}
 		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 
 		echo "<PRE>";
@@ -491,7 +491,7 @@ if ($vendor_search > 0)
 		$account_URL = "$vtiger_url/index.php?module=Vendors&action=DetailView&record=$vendorid&parenttab=Inventory";
 		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 
 		echo "<PRE>";
@@ -527,7 +527,7 @@ if ($lead_search > 0)
 		if (ereg('Y',$vtiger_create_lead_record))
 			{
 			echo "</head>\n";
-			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 			echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 			echo "$phone not found, creating account...\n";
 
@@ -656,7 +656,7 @@ if ($lead_search > 0)
 
 			echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 			echo "</head>\n";
-			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 			echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 
 			echo "<PRE>";
@@ -740,7 +740,7 @@ if ($lead_search > 0)
 			}
 		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
 		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0 onLoad=\"document.forms[0].search_phone.focus(); setTimeout('document.forms[0].phone.focus()', 1000); self.focus()\">\n";
+		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
 		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
 
 		echo "<PRE>";

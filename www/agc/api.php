@@ -366,6 +366,8 @@ if ($function == 'external_pause')
 ################################################################################
 if ($function == 'external_dial')
 {
+	$value = ereg_replace("[^0-9]","",$value);
+
 	if ( (strlen($value)<2) || (strlen($agent_user)<2) || (strlen($search)<2) || (strlen($preview)<2) || (strlen($focus)<2) )
 	{
 	$result = 'ERROR';

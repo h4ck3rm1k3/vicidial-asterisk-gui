@@ -478,7 +478,8 @@ alter_custphone_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
 vdc_agent_api_access ENUM('0','1') default '0',
 modify_inbound_dids ENUM('1','0') default '0',
 delete_inbound_dids ENUM('1','0') default '0',
-active ENUM('Y','N') default 'Y'
+active ENUM('Y','N') default 'Y',
+alert_enabled ENUM('1','0') default '0'
 );
 
 
@@ -607,7 +608,8 @@ three_way_dial_prefix VARCHAR(20) default '',
 web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
 vtiger_search_category VARCHAR(100) default 'LEAD',
 vtiger_create_call_record ENUM('Y','N') default 'Y',
-vtiger_create_lead_record ENUM('Y','N') default 'Y'
+vtiger_create_lead_record ENUM('Y','N') default 'Y',
+vtiger_screen_login ENUM('Y','N') default 'Y'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1357,7 +1359,7 @@ INSERT INTO vicidial_inbound_groups(group_id,group_name,group_color,active,queue
 INSERT INTO vicidial_lists SET list_id='999',list_name='Default inbound list',campaign_id='TESTCAMP',active='N';
 INSERT INTO vicidial_lists SET list_id='998',list_name='Default Manual list',campaign_id='TESTCAMP',active='N';
 
-INSERT INTO system_settings (version,install_date) values('2.0.X', CURDATE());
+INSERT INTO system_settings (version,install_date) values('2.0.5b0.5', CURDATE());
 
 INSERT INTO vicidial_status_categories (vsc_id,vsc_name) values('UNDEFINED','Default Category');
 
@@ -1424,7 +1426,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1125';
+UPDATE system_settings SET db_schema_version='1126';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

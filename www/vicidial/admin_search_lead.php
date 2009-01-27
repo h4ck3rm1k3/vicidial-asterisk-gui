@@ -1,7 +1,7 @@
 <?
 # admin_search_lead.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI database administration search for lead info
 # admin_modify_lead.php
@@ -15,6 +15,7 @@
 #            - Added required user/pass to gain access to this page
 #            - Changed results to multi-record
 # 80710-0023 - Added searching by list, user, status
+# 90121-0500 - Added filter for phone to remove non-digits
 #
 
 require("dbconnect.php");
@@ -43,6 +44,7 @@ if (isset($_GET["list_id"]))			{$list_id=$_GET["list_id"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
+$phone = ereg_replace("[^0-9]","",$phone);
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -108,7 +110,7 @@ $browser = getenv("HTTP_USER_AGENT");
 </head>
 <body bgcolor=white>
 <? 
-echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search<BR>\n";
+echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search: $vendor_id $phone $lead_id $status $list_id $user<BR>\n";
 
 
 if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) )) 

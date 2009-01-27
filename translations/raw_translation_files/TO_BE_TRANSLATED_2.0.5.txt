@@ -373,7 +373,10 @@ Vtiger Create Call Record -<\/B> If Vtiger integration is enabled in the system 
 Vtiger Create Call Record:||
 Vtiger Create Lead Record -<\/B> If Vtiger integration is enabled in the system settings and Vtiger Search Category includes LEAD then this setting will define whether a new Vtiger lead record is created when the agent goes to the vtiger_search page and no record is found to have the call phone number. Default is Y||
 Vtiger Create Lead Record:||
-
+Vtiger Screen Login -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y||
+Vtiger Screen Login:||
+Alert Enabled -<\/B> This field shows whether the agent has web browser alerts enabled for when calls come into their vicidial.php session. Default is 0 for NO||
+Alert Enabled:||
 
 ############################################################ CLIENT
 

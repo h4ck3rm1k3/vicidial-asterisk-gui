@@ -6,10 +6,11 @@ Current integration features:
 - vicidial.php WEBFORM search for lead/account/vendor
 - user synchronization of VICIDIAL users to Vtiger user database
 - added activity event option(call logging in Vtiger) when going from VICIDIAL to Vtiger
+- added ability to click-to-dial a phone number from a record in Vtiger screen to the vicidial.php screen
 
-There has been a basic vtiger integration option available in VICIDIAL since the 1.X release versions through the vtiger_search.php web script(when used as a web form in the campaign) that will search through the leads for the dialed phone number in vicidial.php and if it is not in the vtiger system as a lead then it will be put in as a new contact.
+There has been a basic vtiger integration option available in VICIDIAL since the 1.X release versions through the vtiger_search.php web script(when used as a web form in the campaign) that will search through the leads for the dialed phone number in vicidial.php and if it is not in the vtiger system as a lead then it will be put in as a new lead.
 
-More in-depth integration with Vtiger is a bit complicated due to the fact that it has 312 database tables(and you though VICIDIAL had a lot at 70). Attempts at using the built-in 5.0.4 API structure were unsuccessful because of inaccurate documentation and the inability to use the modules easily outside of the vtiger directory tree without major reworking of the vtiger code, so we decided to have VICIDIAL work directly with the database instead. Unfortunately, working only with the database doesn't get you the whole way with Vtiger. For user synchronization you need to make sure that the patch(vtiger_user_file_504.patch) is applied to Vtiger(see instructions below). This patch is used to create blank user profile files so Vtiger will load properly with synchronized users from VICIDIAL. Vtiger doesn't check to see if these user profile files exist before trying to use them, so all this patch does is check if the files exist for each user, and if they do not, it will create them with a simple placeholder.
+More in-depth integration with Vtiger is a bit complicated due to the fact that it has 312 database tables(and you though VICIDIAL had a lot with about 70). Attempts at using the built-in 5.0.4 API structure were unsuccessful because of inaccurate documentation and the inability to use the modules easily outside of the vtiger directory tree without major reworking of the vtiger code, so we decided to have VICIDIAL work directly with the database instead. Unfortunately, working only with the database doesn't get you the whole way with Vtiger. For user synchronization you need to make sure that the patch(Vtiger504_vicidial.patch) is applied to Vtiger(see instructions below). This patch is used to create blank user profile files so Vtiger will load properly with synchronized users from VICIDIAL. Vtiger doesn't check to see if these user profile files exist before trying to use them, so one thing this patch does is check if the files exist for each user, and if they do not, it will create them with a simple placeholder. Another purpose of this patch is to allow for click-to-dial phone numbers in Vtiger, so that the numbers will be dialed as manual dial calls in a VICIDIAL agent screen. For this to work you must have applied the patch and the agent needs to be logged into vicidial.php(there is also a VICIDIAL Campaign Detail option to automatically login to Vtiger when an agent logs into vicidial.php) then when the agent clicks on any phone number with a "VCcall:" lable bext to it, a call will be placed in their vicidial.php agent screen and the Vtiger window will be closed so that they can open it up again with the vicidial.php WEB FORM button in VICIDIAL.
 
 as of 2008-12-31, several user synchronization features have been added to allow for the creation of vtiger users from the vicidial_users user database. The vtiger_search.php script has also been updated to work with the current vtiger release 5.0.4. To enable the Vtiger integration features you will need to go to the Admin -> System Settings section of the admin.php Administration web page to set Vtiger Integration to enabled and configure the connection details for the Vtiger database.
 
@@ -19,7 +20,8 @@ There are options in the VICIDIAL Modify Campaign Detail screen that you can cho
 	VENDOR- This option will only search through the Vtiger vendors
 	LEAD- This option will search through the Vtiger leads only
 
-Multiple search options can be used for each campaign, but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
+    NOTE: For this to work, you must have the vtiger_search.php set as your webform page, i.e.(http://10.10.10.15/vicidial/vtiger_search.php) 
+Multiple search options can be used for each campaign(in the VICIDIAL Campaign Detail screen), but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
 
 Here are the SQL queries used by the vtiger_search.php script to find records in the vtiger system:
 
@@ -67,9 +69,9 @@ ls -l
 * database name: vtigercrm504
 * change default admin(vtadmin) and standarduser(vtuser) passwords
 * click to install vtiger, then follow the on-screen instructions
-# patch vtiger to fix issue with user synchronization:
-wget http://www.eflo.net/files/vtiger_user_file_504.patch
-patch -p1 < ./vtiger_user_file_504.patch
+# patch vtiger to fix issue with user synchronization and add click-to-dial:
+wget http://www.eflo.net/files/Vtiger504_vicidial.patch
+patch -p1 < ./Vtiger504_vicidial.patch
 
 
 
@@ -276,5 +278,19 @@ duration_minutes: 5
           notime: 0
       visibility: Public
    recurringtype: --None--
+
+
+
+Files edited within Vtiger to allow for click-to-dial and user integration:
+./include/utils/ListViewUtils.php
+./Smarty/templates/DetailViewFields.tpl
+./Smarty/templates/DetailViewUI.tpl
+./include/js/general.js
+./include/js/dtlviewajax.js
+./vtigerservice.php
+./include/utils/UserInfoUtil.php
+
+Click-to-dial:
+uitype = '11' for phone fields
 
 

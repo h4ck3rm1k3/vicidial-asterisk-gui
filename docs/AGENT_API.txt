@@ -31,17 +31,17 @@ Required variables for API calls:
 
 Example URL strings for API calls:
 http://server/agc/api.php?function=version
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_status&value=A
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=RESUME
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_status&value=A
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_pause&value=RESUME
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES&preview=NO&focus=YES
 
 
 To hangup the call, disposition it and then pause the agent, do the following in order:
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
-http://server/agc/api.php?user=6666&pass=1234&agent_user=1000&function=external_status&value=A
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_hangup&value=1
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_status&value=A
 
 
 

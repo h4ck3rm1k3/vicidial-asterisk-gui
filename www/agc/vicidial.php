@@ -214,10 +214,11 @@
 # 90102-1402 - Added time sync check notification
 # 90115-0619 - Added ability to send Local Closer to AGENTDIRECT agent_only
 # 90120-1719 - Added API pause/resume and number dial functionality
+# 90126-2302 - Added Vtiger login option and agent alert option
 #
 
-$version = '2.0.5-193';
-$build = '90120-1719';
+$version = '2.0.5-194';
+$build = '90126-2302';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -292,7 +293,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -307,6 +308,8 @@ while ($i < $qm_conf_ct)
 	$vdc_header_phone_format =		$row[3];
 	$WeBRooTWritablE =				$row[4];
 	$timeclock_end_of_day =			$row[5];
+	$vtiger_url =					$row[6];
+	$enable_vtiger_integration =	$row[7];
 
 	$i++;
 	}
@@ -341,6 +344,7 @@ $hangup_all_non_reserved= '1';	# set to 1 to force hangup all non-reserved chann
 $LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent logout
 $PhoneSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
 $DefaulTAlTDiaL			= '0';	# set to 1 to enable ALT DIAL by default if enabled for the campaign
+$AgentAlert_allowed		= '1';	# set to 1 to allow Agent alert option
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -702,7 +706,7 @@ $VDloginDISPLAY=0;
 		$login=strtoupper($VD_login);
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
-		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override,alert_enabled from vicidial_users where user='$VD_login' and pass='$VD_pass'";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01007',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
@@ -719,8 +723,11 @@ $VDloginDISPLAY=0;
 		$VU_user_group=$row[10];
 		$VU_vicidial_recording_override=$row[11];
 		$VU_alter_custphone_override=$row[12];
+		$VU_alert_enabled=$row[13];
 
-		
+		if ($VU_alert_enabled > 0) {$VU_alert_enabled = 'ON';}
+		else {$VU_alert_enabled = 'OFF';}
+
 		### BEGIN - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
 		$stmt="SELECT forced_timeclock_login from vicidial_user_groups where user_group='$VU_user_group';";
 		$rslt=mysql_query($stmt, $link);
@@ -885,7 +892,7 @@ $VDloginDISPLAY=0;
 			$HKstatusnames = substr("$HKstatusnames", 0, -1); 
 
 			##### grab the campaign settings
-			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
+			$stmt="SELECT park_ext,park_file_name,web_form_address,allow_closers,auto_dial_level,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,agent_pause_codes_active,no_hopper_leads_logins,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,xfer_groups,disable_alter_custphone,display_queue_count,manual_dial_filter,agent_clipboard_copy,use_campaign_dnc,three_way_call_cid,dial_method,three_way_dial_prefix,web_form_target,vtiger_screen_login FROM vicidial_campaigns where campaign_id = '$VD_campaign';";
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01013',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 			if ($DB) {echo "$stmt\n";}
@@ -932,6 +939,7 @@ $VDloginDISPLAY=0;
 				$dial_method =				$row[39];
 				$three_way_dial_prefix =	$row[40];
 				$web_form_target =			$row[41];
+				$vtiger_screen_login =		$row[42];
 
 			if ( (!ereg('DISABLED',$VU_vicidial_recording_override)) and ($VU_vicidial_recording > 0) )
 				{
@@ -2153,6 +2161,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var TEMP_VDIC_web_form_address = '';
 	var APIPausE_ID = '99999';
 	var APIDiaL_ID = '99999';
+	var VtigeRLogiNScripT = '<? echo $vtiger_screen_login ?>';
+	var VtigeRurl = '<? echo $vtiger_url ?>';
+	var VtigeREnableD = '<? echo $enable_vtiger_integration ?>';
+	var alert_enabled = '<? echo $VU_alert_enabled ?>'
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\" Pause \"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2310,6 +2322,60 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				{
 				document.getElementById("AgentMuteSpan").innerHTML = "<a href=\"#CHAN-" + agentchannel + "\" onclick=\"volume_control('MUTING','" + agentchannel + "','AgenT');return false;\"><IMG SRC=\"./images/vdc_volume_MUTE.gif\" BORDER=0></a>";
 				}
+			}
+
+		}
+
+
+// ################################################################################
+// Send alert control command for agent
+	function alert_control(taskalert) 
+		{
+		var xmlhttp=false;
+		/*@cc_on @*/
+		/*@if (@_jscript_version >= 5)
+		// JScript gives us Conditional compilation, we can cope with old IE versions.
+		// and security blocked creation of the objects.
+		 try {
+		  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+		 } catch (e) {
+		  try {
+		   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		  } catch (E) {
+		   xmlhttp = false;
+		  }
+		 }
+		@end @*/
+		if (!xmlhttp && typeof XMLHttpRequest!='undefined')
+			{
+			xmlhttp = new XMLHttpRequest();
+			}
+		if (xmlhttp) 
+			{ 
+			alert_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&user=" + user + "&pass=" + pass + "&ACTION=AlertControl&format=text&stage=" + taskalert;
+			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+			xmlhttp.send(alert_query); 
+			xmlhttp.onreadystatechange = function() 
+				{ 
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 200) 
+					{
+					Nactiveext = null;
+					Nactiveext = xmlhttp.responseText;
+				//	alert(xmlhttp.responseText);
+					}
+				}
+			delete xmlhttp;
+			}
+		if (taskalert=='ON')
+			{
+			alert_enabled = 'ON';
+			document.getElementById("AgentAlertSpan").innerHTML = "<a href=\"#\" onclick=\"alert_control('OFF');return false;\">Alert is ON</a>";
+			}
+		else
+			{
+			alert_enabled = 'OFF';
+			document.getElementById("AgentAlertSpan").innerHTML = "<a href=\"#\" onclick=\"alert_control('ON');return false;\">Alert is OFF</a>";
 			}
 
 		}
@@ -2711,7 +2777,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 										{
 										// set to pause on next dispo
 										document.vicidial_form.DispoSelectStop.checked=true;
-										alert("Setting dispo to PAUSE");
+									//	alert("Setting dispo to PAUSE");
 										}
 									else
 										{
@@ -2754,7 +2820,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								else
 									{document.vicidial_form.LeadLookuP.checked=false;}
 								if (APIDiaL_array_detail[4] == 'YES')  // focus on vicidial agent screen
-									{window.focus();}
+									{window.focus();   alert("Placing call to:" + APIDiaL_array_detail[1] + " " + APIDiaL_array_detail[0]);}
 								if (APIDiaL_array_detail[3] == 'YES')  // call preview
 									{NeWManuaLDiaLCalLSubmiT('PREVIEW');}
 								else
@@ -3999,7 +4065,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (VDIC_web_form_address.match(regWFAcustom))
 							{
 							URLDecode(VDIC_web_form_address,'YES');
-							var TEMP_VDIC_web_form_address = decoded;
+							TEMP_VDIC_web_form_address = decoded;
 							TEMP_VDIC_web_form_address = TEMP_VDIC_web_form_address.replace(regWFAcustom, '');
 							}
 						else
@@ -4066,7 +4132,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							else
 								{web_form_vars = '?' + web_form_vars}
 
-							var TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
+							TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
 							}
 
 						document.getElementById("WebFormSpan").innerHTML = "<a href=\"" + TEMP_VDIC_web_form_address + "\" target=\"" + web_form_target + "\" onMouseOver=\"WebFormRefresH();\"><IMG SRC=\"./images/vdc_LB_webform.gif\" border=0 alt=\"Web Form\"></a>\n";
@@ -4851,7 +4917,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							if (VDIC_web_form_address.match(regWFAcustom))
 								{
 								URLDecode(VDIC_web_form_address,'YES');
-								var TEMP_VDIC_web_form_address = decoded;
+								TEMP_VDIC_web_form_address = decoded;
 								TEMP_VDIC_web_form_address = TEMP_VDIC_web_form_address.replace(regWFAcustom, '');
 								}
 							else
@@ -4918,7 +4984,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								else
 									{web_form_vars = '?' + web_form_vars}
 
-								var TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
+								TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
 								}
 
 
@@ -4957,6 +5023,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 								window.clipboardData.setData('Text', tmp_clip.value)
 								}
 
+							if (alert_enabled=='ON')
+								{
+								alert(" Incoming: " + status_display_number + "\n Group- " + VDIC_data_VDIG[1] + " &nbsp; " + VDIC_fronter);
+								}
 							}
 						else
 							{
@@ -4991,7 +5061,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		if (VDIC_web_form_address.match(regWFAcustom))
 			{
 			URLDecode(VDIC_web_form_address,'YES');
-			var TEMP_VDIC_web_form_address = decoded;
+			TEMP_VDIC_web_form_address = decoded;
 			TEMP_VDIC_web_form_address = TEMP_VDIC_web_form_address.replace(regWFAcustom, '');
 			}
 		else
@@ -5058,7 +5128,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			else
 				{web_form_vars = '?' + web_form_vars}
 
-			var TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
+			TEMP_VDIC_web_form_address = VDIC_web_form_address + "" + web_form_vars;
 			}
 
 
@@ -5650,6 +5720,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			LeaDDispO = DispoChoice;
 	
 			WebFormRefresH('NO','YES');
+
+			document.getElementById("WebFormSpan").innerHTML = "<IMG SRC=\"./images/vdc_LB_webform_OFF.gif\" border=0 alt=\"Web Form\">";
 
 			window.open(TEMP_VDIC_web_form_address, web_form_target, 'toolbar=1,scrollbars=1,location=1,statusbar=1,menubar=1,resizable=1,width=640,height=450');
 
@@ -6886,6 +6958,11 @@ else
 					document.getElementById("DiaLControl").innerHTML = DiaLControl_manual_HTML;
 					}
 				}
+			if ( (VtigeRLogiNScripT == 'Y') && (VtigeREnableD > 0) )
+				{
+				document.getElementById("ScriptContents").innerHTML = "<iframe src=\"" + VtigeRurl + "?index.php?module=Users&action=Authenticate&return_module=Users&return_action=Login&user_name=" + user + "&user_password=" + pass + "&login_theme=softed&login_language=en_us\" style=\"width:580;height:290;background-color:transparent;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"popupFrame\" name=\"popupFrame\" width=\"460\" height=\"290\" STYLE=\"z-index:17\"> </iframe> ";
+
+				}
 			VICIDiaL_closer_login_checked = 1;
 			}
 		else
@@ -7888,6 +7965,14 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </td></tr>
 <tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
 
+<tr><td colspan=3><font class="body_small"><span id="AgentAlertSpan">
+<?
+if ( (ereg('ON',$VU_alert_enabled)) and ($AgentAlert_allowed > 0) )
+	{echo "<a href=\"#\" onclick=\"alert_control('OFF');return false;\">Alert is ON</a>";}
+else
+	{echo "<a href=\"#\" onclick=\"alert_control('ON');return false;\">Alert is OFF</a>";}
+?>
+</span></td></tr>
 <tr><td colspan=3>
 <font class="body_small">
 <span style="position:absolute;left:0px;top:700px;z-index:66;" id="debugbottomspan"></span>

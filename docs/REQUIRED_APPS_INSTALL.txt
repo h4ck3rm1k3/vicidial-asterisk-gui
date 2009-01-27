@@ -40,7 +40,7 @@ vi /etc/my.cnf
 	# add this line below 'skip-locking'
 	skip-name-resolve
 	# comment out the line 'log-bin=mysql-bin'
-
+	max_connections = 200
 
 perl -MCPAN -e shell
 install MD5
@@ -510,9 +510,9 @@ rm -f /usr/lib/asterisk/modules/res_speech.so
 
 mkdir /usr/src/asterisk-1.4
 cd /usr/src/asterisk-1.4
-wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.4.21.2.tar.gz
-wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.4.12.1.tar.gz
-wget http://ftp.digium.com/pub/libpri/releases/libpri-1.4.7.tar.gz
+wget http://downloads.digium.com/pub/asterisk/releases/asterisk-1.4.21.2.tar.gz
+wget http://downloads.digium.com/pub/zaptel/releases/zaptel-1.4.12.1.tar.gz
+wget http://downloads.digium.com/pub/libpri/releases/libpri-1.4.7.tar.gz
 gunzip asterisk-1.4.21.2.tar.gz
 tar xvf asterisk-1.4.21.2.tar
 gunzip zaptel-1.4.12.1.tar.gz

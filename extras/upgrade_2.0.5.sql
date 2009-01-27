@@ -640,3 +640,9 @@ index(api_date)
 );
 
 UPDATE system_settings SET db_schema_version='1125';
+
+ALTER TABLE vicidial_campaigns ADD vtiger_screen_login ENUM('Y','N') default 'Y';
+
+ALTER TABLE vicidial_users ADD alert_enabled ENUM('1','0') default '0';
+
+UPDATE system_settings SET db_schema_version='1126';
