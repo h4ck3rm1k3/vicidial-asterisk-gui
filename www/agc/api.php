@@ -12,7 +12,7 @@
 #  - $agent_user
 #  - $function - ('external_hangup','external_status','external_pause')
 #  - $value
-#  - $value_a
+#  - $vendor_id
 #  - $focus
 #  - $preview
 #  - $notes
@@ -25,10 +25,11 @@
 # 80703-2225 - First build of script
 # 90116-1229 - Added external_pause and external_dial functions
 # 90118-1051 - Added logging of API functions
+# 90128-0229 - Added vendor_id to dial function
 #
 
-$version = '2.0.5-3';
-$build = '90118-1051';
+$version = '2.0.5-4';
+$build = '90128-0229';
 
 require("dbconnect.php");
 
@@ -43,8 +44,8 @@ if (isset($_GET["function"]))					{$function=$_GET["function"];}
 	elseif (isset($_POST["function"]))			{$function=$_POST["function"];}
 if (isset($_GET["value"]))						{$value=$_GET["value"];}
 	elseif (isset($_POST["value"]))				{$value=$_POST["value"];}
-if (isset($_GET["value_a"]))					{$value_a=$_GET["value_a"];}
-	elseif (isset($_POST["value_a"]))			{$value_a=$_POST["value_a"];}
+if (isset($_GET["vendor_id"]))					{$vendor_id=$_GET["vendor_id"];}
+	elseif (isset($_POST["vendor_id"]))			{$vendor_id=$_POST["vendor_id"];}
 if (isset($_GET["focus"]))						{$focus=$_GET["focus"];}
 	elseif (isset($_POST["focus"]))				{$focus=$_POST["focus"];}
 if (isset($_GET["preview"]))					{$preview=$_GET["preview"];}
@@ -88,7 +89,7 @@ $pass=ereg_replace("[^0-9a-zA-Z]","",$pass);
 $agent_user=ereg_replace("[^0-9a-zA-Z]","",$agent_user);
 $function = ereg_replace("[^-\_0-9a-zA-Z]","",$function);
 $value = ereg_replace("[^-\_0-9a-zA-Z]","",$value);
-$value_a = ereg_replace("[^-\_0-9a-zA-Z]","",$value_a);
+$vendor_id = ereg_replace("[^-\_0-9a-zA-Z]","",$vendor_id);
 $focus = ereg_replace("[^-\_0-9a-zA-Z]","",$focus);
 $preview = ereg_replace("[^-\_0-9a-zA-Z]","",$preview);
 	$notes = ereg_replace("\+"," ",$notes);
@@ -397,12 +398,12 @@ if ($function == 'external_dial')
 			$row=mysql_fetch_row($rslt);
 			if ($row[0] > 0)
 				{
-				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$epoch' where user='$agent_user';";
+				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch' where user='$agent_user';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$result = 'SUCCESS';
 				$result_reason = "external_dial function set";
-				$data = "$phone_code|$search|$preview|$focus|$epoch";
+				$data = "$phone_code|$search|$preview|$focus|$vendor_id|$epoch";
 				echo "$result: $result_reason - $value|$agent_user|$data\n";
 				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 				}

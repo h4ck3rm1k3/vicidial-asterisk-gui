@@ -119,12 +119,12 @@
 +			$log->debug('Current user is: '.$current_user->user_name);
 +		}
 +
-+		$phone = $_REQUEST['phone'];
++		$phone = $_REQUEST['phone'];   $vendor_id = $_REQUEST['vendor_id'];
 +		$user = $current_user->user_name;
 +
 +		$VCapiURL = "/agc/api.php";
 +		$VCpauseQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_pause&value=PAUSE";
-+		$VCcallQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_dial&value=$phone&phone_code=1&search=YES&preview=NO&focus=YES";
++		$VCcallQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_dial&value=$phone&phone_code=1&search=YES&preview=NO&focus=YES&vendor_id=$vendor_id";
 +		$replyP = file("$URLbase$VCapiURL$VCpauseQuery");
 +//		sleep(1);
 +		$replyC = file("$URLbase$VCapiURL$VCcallQuery");
@@ -185,7 +185,7 @@
 +	}
 +if (xmlhttp) 
 +	{ 
-+	var VCcallQuery = "VCcall=1&phone=" + phone;
++	var VCcallQuery = "VCcall=1&phone=" + phone + "&vendor_id=" + record_id;
 +	xmlhttp.open('POST', 'vtigerservice.php'); 
 +	xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 +	xmlhttp.send(VCcallQuery); 

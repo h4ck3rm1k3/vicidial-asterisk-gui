@@ -4,9 +4,14 @@ Current VICIDIAL integration with Vtiger is for the 5.0.4 release version of Vti
 
 Current integration features:
 - vicidial.php WEBFORM search for lead/account/vendor
-- user synchronization of VICIDIAL users to Vtiger user database
-- added activity event option(call logging in Vtiger) when going from VICIDIAL to Vtiger
-- added ability to click-to-dial a phone number from a record in Vtiger screen to the vicidial.php screen
+- User synchronization of VICIDIAL users to Vtiger user database
+- Added activity event option(call logging in Vtiger) when going from VICIDIAL to Vtiger
+- Ability to click-to-dial a phone number from a record in Vtiger screen to the vicidial.php screen
+- Optional script to bulk load leads into Vtiger from a CSV file since Vtiger only seems to want to load 500 at a time: 
+    Vtiger_IN_new_accounts_file.pl
+- Batch Account synchronization through script to output new leads from Vtiger and update existing leads in the VICIDIAL system:
+    Vtiger_OUT_sync2VICIDIAL_file.pl then you run the VICIDIAL_IN_new_leads_file.pl script to load the new leads
+
 
 There has been a basic vtiger integration option available in VICIDIAL since the 1.X release versions through the vtiger_search.php web script(when used as a web form in the campaign) that will search through the leads for the dialed phone number in vicidial.php and if it is not in the vtiger system as a lead then it will be put in as a new lead.
 
@@ -22,6 +27,18 @@ There are options in the VICIDIAL Modify Campaign Detail screen that you can cho
 
     NOTE: For this to work, you must have the vtiger_search.php set as your webform page, i.e.(http://10.10.10.15/vicidial/vtiger_search.php) 
 Multiple search options can be used for each campaign(in the VICIDIAL Campaign Detail screen), but on large databases this is not recommended. Default is LEAD. The order that you see the searching options above is the order in which they will be searched if you have selected multiple searching methods. If an account does not exist and you have LEAD selected as a search method, then(if the create lead option is enabled) it will insert the lead with that phone number and you will be taken to the edit screen for that lead when you go to the vtiger_search web page. There is also an option to log the call as an event in Vtiger that will associate with the Lead or Account that the agent screen is sent to. Vtiger recommends on standard equipment a limit of 50,000 account records, but many users report no issues with 100,000 or more account records in their Vtiger systems. 
+
+
+Here are the procedures to load leads into Vtiger, then output them from Vtiger and then load them into VICIDIAL:
+(the vicidial_list.vendor_lead_code field[=vtiger_accounts.accountid] is used as a key between systems)
+- put properly formatted CSV file into /usr/share/astguiclient/VTIGER_IN/
+- /usr/share/astguiclient/Vtiger_IN_new_accounts_file.pl --duplicate-system-website
+- /usr/share/astguiclient/Vtiger_OUT_sync2VICIDIAL_file.pl --duplicate-system-vendor
+- /usr/share/astguiclient/VICIDIAL_IN_new_leads_file.pl --forcelistid=9988
+
+Then to keep the two systems in sync you would run the last two steps every day or at some other interval.
+
+
 
 Here are the SQL queries used by the vtiger_search.php script to find records in the vtiger system:
 

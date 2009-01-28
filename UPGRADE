@@ -219,7 +219,8 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 49. Updated Vtiger integration to version 5.0.4 and allow searching by 
    leads/accounts/vendors. Also added user synchronization with vicidial_users. 
-   Also added click-to-dial from Vtiger sending call to vicidial agent screen
+   Also added click-to-dial from Vtiger sending call to vicidial agent screen.
+   Also added batch synchronization of Accounts between Vtiger and VICIDIAL.
 
 50. Added notification of time synchronization problems in the vicidial.php page
 

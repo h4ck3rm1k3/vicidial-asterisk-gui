@@ -134,7 +134,8 @@ preview -
 focus -
  YES  - change the focus of the screen to the vicidial.php agent interface
  NO  - do not change focus
-
+vendor_id -
+ Any valid Vendor lead code
 
 RESPONSES:
 ERROR: external_dial not valid - 7275551212|1|YES|6666

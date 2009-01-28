@@ -215,10 +215,11 @@
 # 90115-0619 - Added ability to send Local Closer to AGENTDIRECT agent_only
 # 90120-1719 - Added API pause/resume and number dial functionality
 # 90126-2302 - Added Vtiger login option and agent alert option
+# 90128-0230 - Added vendor_lead_code to API dial and manuald dial with lookup
 #
 
-$version = '2.0.5-194';
-$build = '90126-2302';
+$version = '2.0.5-195';
+$build = '90128-0230';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -2802,16 +2803,17 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						if (APIDiaL.length > 8)
 							{
 							var APIDiaL_array_detail = APIDiaL.split("!");
-							if (APIDiaL_ID == APIDiaL_array_detail[5])
+							if (APIDiaL_ID == APIDiaL_array_detail[6])
 								{
 							//	alert("DiaL ALREADY RECEIVED: " + APIDiaL_ID + "|" + APIDiaL_array_detail[5]);
 								}
 							else
 								{
-								APIDiaL_ID = APIDiaL_array_detail[5];
+								APIDiaL_ID = APIDiaL_array_detail[6];
 								document.vicidial_form.MDDiaLCodE.value = APIDiaL_array_detail[1];
 								document.vicidial_form.phone_code.value = APIDiaL_array_detail[1];
 								document.vicidial_form.MDPhonENumbeR.value = APIDiaL_array_detail[0];
+								document.vicidial_form.vendor_lead_code.value = APIDiaL_array_detail[5];
 
 							//	alert(APIDiaL_array_detail[1] + "-----" + APIDiaL + "-----" + document.vicidial_form.MDDiaLCodE.value + "-----" + document.vicidial_form.phone_code.value);
 
@@ -3664,6 +3666,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		var MDDiaLCodEform = document.vicidial_form.MDDiaLCodE.value;
 		var MDPhonENumbeRform = document.vicidial_form.MDPhonENumbeR.value;
 		var MDDiaLOverridEform = document.vicidial_form.MDDiaLOverridE.value;
+		var MDVendorLeadCode = document.vicidial_form.vendor_lead_code.value;
 		var MDLookuPLeaD = 'new';
 		if (document.vicidial_form.LeadLookuP.checked==true)
 			{MDLookuPLeaD = 'lookup';}
@@ -3688,7 +3691,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 				document.vicidial_form.LeadPreview.checked=true;
 				document.vicidial_form.DiaLAltPhonE.checked=true;
 				}
-			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD);
+			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD,MDVendorLeadCode);
 			}
 
 		document.vicidial_form.MDPhonENumbeR.value = '';
@@ -3701,6 +3704,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		var MDDiaLCodEform = document.vicidial_form.phone_code.value;
 		var MDPhonENumbeRform = document.vicidial_form.phone_number.value;
+		var MDVendorLeadCode = document.vicidial_form.vendor_lead_code.value;
 
 		if ( (MDDiaLCodEform.length < 1) || (MDPhonENumbeRform.length < 5) )
 			{
@@ -3720,7 +3724,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			buildDiv('DiaLDiaLAltPhonE');
 			document.vicidial_form.LeadPreview.checked=false;
 			document.vicidial_form.DiaLAltPhonE.checked=true;
-			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD);
+			ManualDialNext("","",MDDiaLCodEform,MDPhonENumbeRform,MDLookuPLeaD,MDVendorLeadCode);
 			}
 		}
 
@@ -3891,7 +3895,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Send the Manual Dial Next Number request
-	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE)
+	function ManualDialNext(mdnCBid,mdnBDleadid,mdnDiaLCodE,mdnPhonENumbeR,mdnStagE,mdVendorid)
 		{
 		inOUT = 'OUT';
 		all_record = 'NO';
@@ -3942,9 +3946,9 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + dial_timeout + "&dial_prefix=" + dial_prefix + "&campaign_cid=" + campaign_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter;
+			manDiaLnext_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=manDiaLnextCaLL&conf_exten=" + session_id + "&user=" + user + "&pass=" + pass + "&campaign=" + campaign + "&ext_context=" + ext_context + "&dial_timeout=" + dial_timeout + "&dial_prefix=" + dial_prefix + "&campaign_cid=" + campaign_cid + "&preview=" + man_preview + "&agent_log_id=" + agent_log_id + "&callback_id=" + mdnCBid + "&lead_id=" + mdnBDleadid + "&phone_code=" + mdnDiaLCodE + "&phone_number=" + mdnPhonENumbeR + "&list_id=" + mdnLisT_id + "&stage=" + mdnStagE  + "&use_internal_dnc=" + use_internal_dnc + "&use_campaign_dnc=" + use_campaign_dnc + "&omit_phone_code=" + omit_phone_code + "&manual_dial_filter=" + manual_dial_filter + "&vendor_lead_code=" + mdVendorid;
 			//		alert(manual_dial_filter + "\n" +manDiaLnext_query);
-			xmlhttp.open('POST', 'vdc_db_query.php'); 
+			xmlhttp.open('POST', 'vdc_db_query.php');
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(manDiaLnext_query); 
 			xmlhttp.onreadystatechange = function() 

@@ -182,10 +182,11 @@
 # 81211-0420 - Fixed Manual dial agent_log bug
 # 90120-1718 - Added external pause and dial option
 # 90126-1759 - Fixed QM section that wasn't qualified and added agent alert option
+# 90128-0231 - Aded vendor_lead_code to manual dial lead lookup
 #
 
-$version = '2.0.5-99';
-$build = '90126-1759';
+$version = '2.0.5-100';
+$build = '90128-0231';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=185;
 $one_mysql_log=0;
@@ -745,11 +746,24 @@ if ($ACTION == 'manDiaLnextCaLL')
 				}
 			if ($stage=='lookup')
 				{
-				$stmt="SELECT lead_id FROM vicidial_list where phone_number='$phone_number' order by modify_date desc LIMIT 1;";
-				$rslt=mysql_query($stmt, $link);
-			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00021',$user,$server_ip,$session_name,$one_mysql_log);}
-				if ($DB) {echo "$stmt\n";}
-				$man_leadID_ct = mysql_num_rows($rslt);
+				if (strlen($vendor_lead_code)>0)
+					{
+					$stmt="SELECT lead_id FROM vicidial_list where vendor_lead_code='$vendor_lead_code' order by modify_date desc LIMIT 1;";
+					$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00021',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$man_leadID_ct = mysql_num_rows($rslt);
+					if ( ($man_leadID_ct > 0) and (strlen($phone_number) > 5) )
+						{$override_phone++;}
+					}
+				else
+					{
+					$stmt="SELECT lead_id FROM vicidial_list where phone_number='$phone_number' order by modify_date desc LIMIT 1;";
+					$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00021',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$man_leadID_ct = mysql_num_rows($rslt);
+					}
 				if ($man_leadID_ct > 0)
 					{
 					$row=mysql_fetch_row($rslt);
@@ -760,7 +774,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				else
 					{
 					### insert a new lead in the system with this phone number
-					$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME';";
+					$stmt = "INSERT INTO vicidial_list SET phone_code='$phone_code',phone_number='$phone_number',list_id='$list_id',status='QUEUE',user='$user',called_since_last_reset='Y',entry_date='$ENTRYdate',last_local_call_time='$NOW_TIME',vendor_lead_code='$vendor_lead_code';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00022',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -827,7 +841,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 				$gmt_offset_now	= trim("$row[8]");
 				$called_since_last_reset = trim("$row[9]");
 				$phone_code		= trim("$row[10]");
-				$phone_number	= trim("$row[11]");
+				if ($override_phone < 1)
+					{$phone_number	= trim("$row[11]");}
 				$title			= trim("$row[12]");
 				$first_name		= trim("$row[13]");
 				$middle_initial	= trim("$row[14]");

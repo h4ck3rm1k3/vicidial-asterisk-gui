@@ -2109,6 +2109,9 @@ if ($WEBONLY < 1)
 	`mkdir -p $PATHhome/LEADS_IN`;
 	`mkdir -p $PATHhome/LEADS_IN/DONE`;
 	`chmod -R 0766 $PATHhome/LEADS_IN`;
+	`mkdir -p $PATHhome/VTIGER_IN`;
+	`mkdir -p $PATHhome/VTIGER_IN/DONE`;
+	`chmod -R 0766 $PATHhome/VTIGER_IN`;
 
 	print "Creating $PATHmonitor directories...\n";
 	`mkdir -p $PATHmonitor`;
