@@ -2,7 +2,7 @@
 #
 # ADMIN_area_code_populate.pl    version 2.0.5
 #
-# Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Description:
 # server application that allows load areacodes into to asterisk list database
@@ -12,7 +12,9 @@
 # 60807-1003 - Changed to DBI
 #            - changed to use /etc/astguiclient.conf for configs
 # 61122-1902 - Added GMT_USA_zip.txt data import for USA postal GMT data
-# 80416-1017 - 
+# 80416-1017 - Added download of phone codes from remote host
+# 90129-0932 - Added optional NANP prefix/time date import "--load-NANPA-prefix" flag
+#
 
 
 # default path to astguiclient configuration file:
@@ -20,6 +22,80 @@ $PATHconf =		"/etc/astguiclient.conf";
 $domain   =		"http://phonecodes.vicidial.com";
 $URL1     =		"$domain/phone_codes_GMT-latest.txt";
 $URL2     =		"$domain/GMT_USA_zip-latest.txt";
+
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+	{
+	$i=0;
+	while ($#ARGV >= $i)
+		{
+		$args = "$args $ARGV[$i]";
+		$i++;
+		}
+
+	if ($args =~ /--help|-h/i)
+		{
+		print "allowed run time options:\n";
+		print "  [-q] = quiet\n";
+		print "  [-t] = test\n";
+		print "  [--debug] = debug output\n";
+		print "  [--use-local-files] = Do not download files, use local copies\n";
+		print "  [--load-NANPA-prefix] = Only loads the special NANPA list into the database\n";
+		print "\n     files used by this script are:\n";
+		print "   phone_codes_GMT-latest.txt - Phone codes and country codes with time zone data\n";
+		print "   GMT_USA_zip-latest.txt - USA zip code and time zone data\n";
+		print "   NANPA_prefix-latest.txt - North American areacode, prefix and time zone data\n";
+
+		exit;
+		}
+	else
+		{
+		if ($args =~ /-debug/i)
+			{
+			$DB=1;
+			print "\n----- DEBUGGING -----\n\n";
+			}
+		if ($args =~ /-debugX/i)
+			{
+			$DBX=1;
+			print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
+			}
+		else {$DBX=0;}
+
+		if ($args =~ /-q/i)
+			{
+			$q=1;
+			}
+		if ($args =~ /-t/i)
+			{
+			$T=1;
+			$TEST=1;
+			print "\n----- TESTING -----\n\n";
+			}
+		if ($args =~ /--use-local-files/i)
+			{
+			$use_local_files=1;
+			print "\n----- USING LOCAL DATA FILES -----\n\n";
+			}
+		if ($args =~ /--load-NANPA-prefix/i)
+			{
+			$nanpa_load=1;
+			print "\n----- NANPA PHONE PREFIX DATA LOAD -----\n\n";
+			}
+		}
+	}
+else
+	{
+	print "no command line options set\n";
+	$args = "";
+	$i=0;
+	$forcelistid = '';
+	$format='standard';
+	}
+### end parsing run-time options ###
+
+
 
 open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
 @conf = <conf>;
@@ -58,6 +134,7 @@ foreach(@conf)
 
 # Customized Variables
 $server_ip = $VARserver_ip;		# Asterisk server IP
+$slash_star = '\*';
 
 
 use Time::HiRes ('gettimeofday','usleep','sleep');  # needed to have perl sleep in increments of less than one second
@@ -68,97 +145,166 @@ if (!$VARDB_port) {$VARDB_port='3306';}
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
  or die "Couldn't connect to database: " . DBI->errstr;
 
-$slash_star = '\*';
 
-#### download the latest phone code table ####
-chdir("$PATHhome");
 
-$wget = `which wget`;
-print "$wget\n";
-if ( $wget eq "" ) {
-	print STDERR "Please install the wget command\n";
-	exit();
-}
-
-print STDERR "Downloading latest phone codes tables\n";
-
-`wget $URL1`;
-`wget $URL2`;
-
-#### BEGIN vicidial_phone_codes population from phone_codes_GMT.txt file ####
-open(codefile, "$PATHhome/phone_codes_GMT-latest.txt") || die "can't open $PATHhome/phone_codes_GMT-latest.txt: $!\n";
-@codefile = <codefile>;
-close(codefile);
-$pc=0;
-$ins_stmt="insert into vicidial_phone_codes VALUES ";
-foreach (@codefile) 
-{
-	@row=split(/\t/, $codefile[$pc]);
-	if ($codefile[$pc] !~ /GEOGRAPHIC DESCRIPTION/)
+if ($nanpa_load > 0)
 	{
-		$pc++;
-		$row[7] =~ s/\r|\n|\t| $//gi;
-		$row[6] =~ s/\r|\n|\t| $//gi;
-		$row[5] =~ s/\r|\n|\t| $//gi;
-		$row[4] =~ s/\r|\n|\t| $//gi;
-		$row[3] =~ s/\r|\n|\t| $//gi;
-		$row[2] =~ s/\r|\n|\t| $//gi;
-		$row[1] =~ s/\r|\n|\t| $//gi;
-		$row[0] =~ s/\r|\n|\t| $//gi;
-		$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]'), ";
-		if ($pc =~ /00$/) 
+	#### load special North American phone code prefix table ####
+	# LONG  # NPA,NXX,,,,,,,,,,,,,TZ,DST,,,,,,,,,,,,LATITUDE,LONGITUDE,,,,,
+	# SHORT # NPA,NXX,TZ,DST,LATITUDE,LONGITUDE
+
+	#### BEGIN vicidial_nanpa_prefix_codes population from NANPA_prefix-latest.txt file ####
+	open(prefixfile, "$PATHhome/NANPA_prefix-latest.txt") || die "can't open $PATHhome/NANPA_prefix-latest.txt: $!\n";
+	@prefixfile = <prefixfile>;
+	close(prefixfile);
+	$pc=0;   $full_file=0;
+	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
+	foreach (@prefixfile) 
 		{
+		if (length($prefixfile[$pc])>60)
+			{$full_file++;}
+		if ( ($prefixfile[$pc] !~ /XXXXX/) && ($prefixfile[$pc] !~ /^\D|^0|^1/) )
+			{
+			$prefixfile[$pc] =~ s/\r|\n|\t| $//gi;
+			@row=split(/,/, $prefixfile[$pc]);
+			$pc++;
+			if ($full_file > 0)
+				{
+				if ($row[14] !~ /XX/)
+					{
+					$row[14] =~ s/NT/-3.50/gi;
+					$row[14] =~ s/AT/-4.00/gi;
+					$row[14] =~ s/ET/-5.00/gi;
+					$row[14] =~ s/CT/-6.00/gi;
+					$row[14] =~ s/MT/-7.00/gi;
+					$row[14] =~ s/PT/-8.00/gi;
+					$row[14] =~ s/AK/-9.00/gi;
+					$row[14] =~ s/HT/-10.00/gi;
+					$row[14] =~ s/AS/-11.00/gi;
+					$row[14] =~ s/CH/10.00/gi;
+					$row[15] =~ s/X/N/gi;
+					$ins_stmt.="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]'), ";
+					}
+				}
+			else
+				{$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]'), ";}
+			if ($pc =~ /000$/) 
+				{
+				chop($ins_stmt);
+				chop($ins_stmt);
+				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
+				$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
+				print STDERR "$pc\n";
+				}
+			}
+		else 
+			{$pc++;}
+		}
+
+	chop($ins_stmt);
+	chop($ins_stmt);
+	$affected_rows = $dbhA->do($ins_stmt);
+	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
+	print STDERR "$pc\n";
+	#### END vicidial_nanpa_prefix_codes population ####
+
+	}
+else
+	{
+	#### download the latest phone code table ####
+	chdir("$PATHhome");
+
+	if ($use_local_files < 1)
+		{
+		$wget = `which wget`;
+		print "$wget\n";
+		if ( $wget eq "" ) 
+			{
+			print STDERR "Please install the wget command\n";
+			exit();
+			}
+
+		print STDERR "Downloading latest phone codes tables\n";
+
+		`wget $URL1`;
+		`wget $URL2`;
+		}
+
+	#### BEGIN vicidial_phone_codes population from phone_codes_GMT-latest.txt file ####
+	open(codefile, "$PATHhome/phone_codes_GMT-latest.txt") || die "can't open $PATHhome/phone_codes_GMT-latest.txt: $!\n";
+	@codefile = <codefile>;
+	close(codefile);
+	$pc=0;
+	$ins_stmt="insert into vicidial_phone_codes VALUES ";
+	foreach (@codefile) 
+		{
+		@row=split(/\t/, $codefile[$pc]);
+		if ($codefile[$pc] !~ /GEOGRAPHIC DESCRIPTION/)
+			{
+			$pc++;
+			$row[7] =~ s/\r|\n|\t| $//gi;
+			$row[6] =~ s/\r|\n|\t| $//gi;
+			$row[5] =~ s/\r|\n|\t| $//gi;
+			$row[4] =~ s/\r|\n|\t| $//gi;
+			$row[3] =~ s/\r|\n|\t| $//gi;
+			$row[2] =~ s/\r|\n|\t| $//gi;
+			$row[1] =~ s/\r|\n|\t| $//gi;
+			$row[0] =~ s/\r|\n|\t| $//gi;
+			$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]'), ";
+			if ($pc =~ /00$/) 
+				{
+				chop($ins_stmt);
+				chop($ins_stmt);
+				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
+				$ins_stmt="insert into vicidial_phone_codes VALUES ";
+				print STDERR "$pc\n";
+				}
+			}
+		else {$pc++;}
+		}
+
+	chop($ins_stmt);
+	chop($ins_stmt);
+	$affected_rows = $dbhA->do($ins_stmt);
+	$ins_stmt="insert into vicidial_phone_codes VALUES ";
+	print STDERR "$pc\n";
+	#### END vicidial_phone_codes population ####
+
+
+	#### BEGIN vicidial_postal_codes population from GMT_USA_zip-latest.txt file ####
+	open(zipfile, "$PATHhome/GMT_USA_zip-latest.txt") || die "can't open $PATHhome/GMT_USA_zip-latest.txt: $!\n";
+	@zipfile = <zipfile>;
+	close(zipfile);
+	$pc=0;
+	$ins_stmt="insert into vicidial_postal_codes VALUES ";
+	foreach (@zipfile) 
+		{
+		@row=split(/\t/, $zipfile[$pc]);
+		$pc++;
+		$row[0] =~ s/\r|\n|\t| $//gi;
+		$row[1] =~ s/\r|\n|\t| $//gi;
+		$row[2] =~ s/\r|\n|\t| $//gi;
+		$row[3] =~ s/\r|\n|\t| $//gi;
+		if ($row[3] =~ /Y/i) {$DST_range = 'SSM-FSN';}
+		else {$DST_range = '';}
+		$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$DST_range', 'USA', '1'), ";
+		if ($pc =~ /00$/) 
+			{
 			chop($ins_stmt);
 			chop($ins_stmt);
 			$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
-			$ins_stmt="insert into vicidial_phone_codes VALUES ";
+			$ins_stmt="insert into vicidial_postal_codes VALUES ";
 			print STDERR "$pc\n";
+			}
 		}
+
+	chop($ins_stmt);
+	chop($ins_stmt);
+	$affected_rows = $dbhA->do($ins_stmt);
+	$ins_stmt="insert into vicidial_postal_codes VALUES ";
+	print STDERR "$pc\n";
+	#### END vicidial_postal_codes population ####
 	}
-	else {$pc++;}
-}
-
-chop($ins_stmt);
-chop($ins_stmt);
-$affected_rows = $dbhA->do($ins_stmt);
-$ins_stmt="insert into vicidial_phone_codes VALUES ";
-print STDERR "$pc\n";
-#### END vicidial_phone_codes population from phone_codes_GMT.txt file ####
-
-
-#### BEGIN vicidial_postal_codes population from GMT_USA_zip.txt file ####
-open(zipfile, "$PATHhome/GMT_USA_zip-latest.txt") || die "can't open $PATHhome/GMT_USA_zip-latest.txt: $!\n";
-@zipfile = <zipfile>;
-close(zipfile);
-$pc=0;
-$ins_stmt="insert into vicidial_postal_codes VALUES ";
-foreach (@zipfile) 
-{
-	@row=split(/\t/, $zipfile[$pc]);
-	$pc++;
-	$row[0] =~ s/\r|\n|\t| $//gi;
-	$row[1] =~ s/\r|\n|\t| $//gi;
-	$row[2] =~ s/\r|\n|\t| $//gi;
-	$row[3] =~ s/\r|\n|\t| $//gi;
-	if ($row[3] =~ /Y/i) {$DST_range = 'SSM-FSN';}
-	else {$DST_range = '';}
-	$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$DST_range', 'USA', '1'), ";
-	if ($pc =~ /00$/) 
-	{
-		chop($ins_stmt);
-		chop($ins_stmt);
-		$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
-		$ins_stmt="insert into vicidial_postal_codes VALUES ";
-		print STDERR "$pc\n";
-	}
-}
-
-chop($ins_stmt);
-chop($ins_stmt);
-$affected_rows = $dbhA->do($ins_stmt);
-$ins_stmt="insert into vicidial_postal_codes VALUES ";
-print STDERR "$pc\n";
-#### END vicidial_postal_codes population from GMT_USA_zip.txt file ####
 
 $dbhA->disconnect();
 

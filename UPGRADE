@@ -233,6 +233,10 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 52. Added agent alert option to agent screen. sends browser alert prompt when
    a call is send to the agent screen.
 
+53. Added option for using North American NANPA prefix timezone encoding for
+   more accurate time zone encoding. The data is NOT included but can be 
+   purchased from the VICIDIAL Group.
+
 
 
 
