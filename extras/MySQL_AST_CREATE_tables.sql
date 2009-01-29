@@ -1338,6 +1338,17 @@ data TEXT,
 index(api_date)
 );
 
+CREATE TABLE vicidial_nanpa_prefix_codes (
+areacode CHAR(3),
+prefix CHAR(3),
+GMT_offset VARCHAR(6),
+DST enum('Y','N'),
+latitude VARCHAR(17),
+longitude VARCHAR(17)
+);
+
+CREATE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
+
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1426,7 +1437,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1126';
+UPDATE system_settings SET db_schema_version='1127';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

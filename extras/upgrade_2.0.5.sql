@@ -647,10 +647,6 @@ ALTER TABLE vicidial_users ADD alert_enabled ENUM('1','0') default '0';
 
 UPDATE system_settings SET db_schema_version='1126';
 
-
-
-
-
 CREATE TABLE vicidial_nanpa_prefix_codes (
 areacode CHAR(3),
 prefix CHAR(3),
