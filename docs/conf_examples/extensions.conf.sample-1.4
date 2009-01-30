@@ -72,6 +72,14 @@ exten => 8168,3,Hangup
 exten => _851XXXXX,1,Answer
 exten => _851XXXXX,2,Playback(${EXTEN})
 exten => _851XXXXX,3,Hangup
+
+; this is used for playing a message to an answering machine forwarded from AMD in VICIDIAL
+exten => _7851XXXXX,1,WaitForSilence(2000,2) ; AMD got machine.  leave message after recording
+exten => _7851XXXXX,2,Playback(${EXTEN:1})
+exten => _7851XXXXX,3,AGI(VD_amd_post.agi,${EXTEN:1})
+exten => _7851XXXXX,4,Hangup
+
+
 ;;;;;;;;;; END Voicemail and Prompts Section ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
