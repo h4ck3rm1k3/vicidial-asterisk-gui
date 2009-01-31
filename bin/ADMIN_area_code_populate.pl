@@ -14,6 +14,7 @@
 # 61122-1902 - Added GMT_USA_zip.txt data import for USA postal GMT data
 # 80416-1017 - Added download of phone codes from remote host
 # 90129-0932 - Added optional NANP prefix/time date import "--load-NANPA-prefix" flag
+# 90131-0933 - Added purge-table option to clear out old records before adding new ones
 #
 
 
@@ -42,6 +43,7 @@ if (length($ARGV[0])>1)
 		print "  [--debug] = debug output\n";
 		print "  [--use-local-files] = Do not download files, use local copies\n";
 		print "  [--load-NANPA-prefix] = Only loads the special NANPA list into the database\n";
+		print "  [--purge-table] = Purges the table to be inserted before inserting\n";
 		print "\n     files used by this script are:\n";
 		print "   phone_codes_GMT-latest.txt - Phone codes and country codes with time zone data\n";
 		print "   GMT_USA_zip-latest.txt - USA zip code and time zone data\n";
@@ -82,6 +84,11 @@ if (length($ARGV[0])>1)
 			{
 			$nanpa_load=1;
 			print "\n----- NANPA PHONE PREFIX DATA LOAD -----\n\n";
+			}
+		if ($args =~ /--purge-table/i)
+			{
+			$purge_table=1;
+			print "\n----- PURGE TABLE BEFORE DATA LOAD -----\n\n";
 			}
 		}
 	}
@@ -157,6 +164,17 @@ if ($nanpa_load > 0)
 	open(prefixfile, "$PATHhome/NANPA_prefix-latest.txt") || die "can't open $PATHhome/NANPA_prefix-latest.txt: $!\n";
 	@prefixfile = <prefixfile>;
 	close(prefixfile);
+	if ( ($purge_table > 0) && ($#prefixfile > 10) )
+		{
+		print "\n----- PURGING DATA IN vicidial_nanpa_prefix_codes TABLE -----\n\n";
+
+		$stmtA = "DELETE from vicidial_nanpa_prefix_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		$stmtA = "OPTIMIZE table vicidial_nanpa_prefix_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		}
 	$pc=0;   $full_file=0;
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
 	foreach (@prefixfile) 
@@ -234,6 +252,17 @@ else
 	open(codefile, "$PATHhome/phone_codes_GMT-latest.txt") || die "can't open $PATHhome/phone_codes_GMT-latest.txt: $!\n";
 	@codefile = <codefile>;
 	close(codefile);
+	if ( ($purge_table > 0) && ($#codefile > 10) )
+		{
+		print "\n----- PURGING DATA IN vicidial_phone_codes TABLE -----\n\n";
+
+		$stmtA = "DELETE from vicidial_phone_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		$stmtA = "OPTIMIZE table vicidial_phone_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		}
 	$pc=0;
 	$ins_stmt="insert into vicidial_phone_codes VALUES ";
 	foreach (@codefile) 
@@ -275,6 +304,17 @@ else
 	open(zipfile, "$PATHhome/GMT_USA_zip-latest.txt") || die "can't open $PATHhome/GMT_USA_zip-latest.txt: $!\n";
 	@zipfile = <zipfile>;
 	close(zipfile);
+	if ( ($purge_table > 0) && ($#zipfile > 10) )
+		{
+		print "\n----- PURGING DATA IN vicidial_postal_codes TABLE -----\n\n";
+
+		$stmtA = "DELETE from vicidial_postal_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		$stmtA = "OPTIMIZE table vicidial_postal_codes;";
+				if($DB){print STDERR "\n|$stmtA|\n";}
+		$affected_rows = $dbhA->do($stmtA);
+		}
 	$pc=0;
 	$ins_stmt="insert into vicidial_postal_codes VALUES ";
 	foreach (@zipfile) 
