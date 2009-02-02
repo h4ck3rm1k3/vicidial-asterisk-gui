@@ -659,3 +659,26 @@ longitude VARCHAR(17)
 CREATE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
 
 UPDATE system_settings SET db_schema_version='1127';
+
+ALTER TABLE system_settings ADD qc_features_active ENUM('1','0') default '0';
+ALTER TABLE system_settings ADD outbound_autodial_active ENUM('1','0') default '1';
+
+CREATE TABLE vicidial_cpd_log (
+cpd_id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+channel VARCHAR(100) NOT NULL,
+uniqueid VARCHAR(20),
+callerid VARCHAR(20),
+server_ip VARCHAR(15) NOT NULL,
+lead_id INT(9) UNSIGNED,
+event_date DATETIME,
+result VARCHAR(20),
+status ENUM('NEW','PROCESSED') default 'NEW',
+cpd_seconds DECIMAL(7,2) default '0',
+index(uniqueid),
+index(callerid),
+index(lead_id)
+);
+
+ALTER TABLE vicidial_campaigns ADD cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED';
+
+UPDATE system_settings SET db_schema_version='1128';

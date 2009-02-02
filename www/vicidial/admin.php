@@ -881,6 +881,12 @@ if (isset($_GET["vtiger_create_lead_record"]))			{$vtiger_create_lead_record=$_G
 	elseif (isset($_POST["vtiger_create_lead_record"]))	{$vtiger_create_lead_record=$_POST["vtiger_create_lead_record"];}
 if (isset($_GET["vtiger_screen_login"]))			{$vtiger_screen_login=$_GET["vtiger_screen_login"];}
 	elseif (isset($_POST["vtiger_screen_login"]))	{$vtiger_screen_login=$_POST["vtiger_screen_login"];}
+if (isset($_GET["qc_features_active"]))				{$qc_features_active=$_GET["qc_features_active"];}
+	elseif (isset($_POST["qc_features_active"]))	{$qc_features_active=$_POST["qc_features_active"];}
+if (isset($_GET["outbound_autodial_active"]))			{$outbound_autodial_active=$_GET["outbound_autodial_active"];}
+	elseif (isset($_POST["outbound_autodial_active"]))	{$outbound_autodial_active=$_POST["outbound_autodial_active"];}
+if (isset($_GET["cpd_amd_action"]))				{$cpd_amd_action=$_GET["cpd_amd_action"];}
+	elseif (isset($_POST["cpd_amd_action"]))	{$cpd_amd_action=$_POST["cpd_amd_action"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -893,7 +899,7 @@ if (strlen($dial_status) > 0)
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin FROM system_settings;";
+$stmt = "SELECT use_non_latin,enable_queuemetrics_logging,enable_vtiger_integration,qc_features_active,outbound_autodial_active FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysql_num_rows($rslt);
@@ -901,7 +907,11 @@ $i=0;
 while ($i < $qm_conf_ct)
 	{
 	$row=mysql_fetch_row($rslt);
-	$non_latin =					$row[0];
+	$non_latin =						$row[0];
+	$SSenable_queuemetrics_logging =	$row[1];
+	$SSenable_vtiger_integration =		$row[2];
+	$SSqc_features_active =				$row[3];
+	$SSoutbound_autodial_active =		$row[4];
 	$i++;
 	}
 ##### END SETTINGS LOOKUP #####
@@ -1053,6 +1063,8 @@ $delete_inbound_dids = ereg_replace("[^0-9]","",$delete_inbound_dids);
 $answer_sec_pct_rt_stat_one = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_one);
 $answer_sec_pct_rt_stat_two = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_two);
 $enable_vtiger_integration = ereg_replace("[^0-9]","",$enable_vtiger_integration);
+$qc_features_active = ereg_replace("[^0-9]","",$qc_features_active);
+$outbound_autodial_active = ereg_replace("[^0-9]","",$outbound_autodial_active);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -1251,6 +1263,7 @@ $vtiger_search_category = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_search_categ
 $vtiger_create_call_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_call_record);
 $vtiger_create_lead_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_lead_record);
 $vtiger_screen_login = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_screen_login);
+$cpd_amd_action = ereg_replace("[^-\_0-9a-zA-Z]","",$cpd_amd_action);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1525,11 +1538,14 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 90112-0335 - Added vtiger_create_lead_record and vtiger_create_lead_record options
 # 90115-0502 - Activated AGENT DID routing option
 # 90126-2256 - Added vtiger_screen_login campaign option and user agent alert option
+# 90201-1503 - Added option to disable the viewing of inactive QC features
+# 90202-0112 - Added option to disable outbound autodialing(or list dialing)
+# 90202-0444 - Added cpd_amd_action option for processing of AMD messages
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-159';
-$build = '90126-2256';
+$admin_version = '2.0.5-162';
+$build = '90202-0444';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2448,10 +2464,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Vicidial Transfers -</B> This option can prevent an agent from opening the transfer - conference session of vicidial. If this is disabled, the agent cannot third party call or blind transfer any calls.
 
-<BR>
-<A NAME="vicidial_users-closer_default_blended">
-<BR>
-<B>Closer Default Blended -</B> This option simply defaults the Blended checkbox on a CLOSER login screen.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-closer_default_blended">
+	<BR>
+	<B>Closer Default Blended -</B> This option simply defaults the Blended checkbox on a CLOSER login screen.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-vicidial_recording_override">
@@ -2518,10 +2541,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Delete Remote Agents -</B> This option if set to 1 allows the user to delete vicidial remote agents from the system.
 
-<BR>
-<A NAME="vicidial_users-load_leads">
-<BR>
-<B>Load Leads -</B> This option if set to 1 allows the user to load vicidial leads into the vicidial_list table by way of the web based lead loader.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-load_leads">
+	<BR>
+	<B>Load Leads -</B> This option if set to 1 allows the user to load vicidial leads into the vicidial_list table by way of the web based lead loader.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-campaign_detail">
@@ -2553,10 +2583,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Change Agent Campaign -</B> This option if set to 1 allows the user to alter the campaign that an agent is logged into while they are logged into it.
 
-<BR>
-<A NAME="vicidial_users-delete_filters">
-<BR>
-<B>Delete Filters -</B> This option allows the user to be able to delete vicidial lead filters from the system.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-delete_filters">
+	<BR>
+	<B>Delete Filters -</B> This option allows the user to be able to delete vicidial lead filters from the system.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-delete_call_times">
@@ -2578,37 +2615,44 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>View Reports -</B> This option allows the user to view the VICIDIAL reports.
 
-<BR>
-<A NAME="vicidial_users-qc_enabled">
-<BR>
-<B>QC Enabled -</B> This option allows the user to log in to the Quality Control agent screen.
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-qc_enabled">
+	<BR>
+	<B>QC Enabled -</B> This option allows the user to log in to the Quality Control agent screen.
 
-<BR>
-<A NAME="vicidial_users-qc_user_level">
-<BR>
-<B>QC User Level -</B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section:<BR>
-1 - Modify Nothing<BR>
-2 - Modify Nothing Except Status<BR>
-3 - Modify All Fields<BR>
-4 - Verify First Round of QC<BR>
-5 - View QC Statistics<BR>
-6 - Ability to Modify FINISHed records<BR>
-7 - Manager Level<BR>
+	<BR>
+	<A NAME="vicidial_users-qc_user_level">
+	<BR>
+	<B>QC User Level -</B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section:<BR>
+	1 - Modify Nothing<BR>
+	2 - Modify Nothing Except Status<BR>
+	3 - Modify All Fields<BR>
+	4 - Verify First Round of QC<BR>
+	5 - View QC Statistics<BR>
+	6 - Ability to Modify FINISHed records<BR>
+	7 - Manager Level<BR>
 
-<BR>
-<A NAME="vicidial_users-qc_pass">
-<BR>
-<B>QC Record Pass -</B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record.
+	<BR>
+	<A NAME="vicidial_users-qc_pass">
+	<BR>
+	<B>QC Record Pass -</B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record.
 
-<BR>
-<A NAME="vicidial_users-qc_finish">
-<BR>
-<B>QC Record Finish -</B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record.
+	<BR>
+	<A NAME="vicidial_users-qc_finish">
+	<BR>
+	<B>QC Record Finish -</B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record.
 
-<BR>
-<A NAME="vicidial_users-qc_commit">
-<BR>
-<B>QC Record Commit -</B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone.
+	<BR>
+	<A NAME="vicidial_users-qc_commit">
+	<BR>
+	<B>QC Record Commit -</B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-add_timeclock_log">
@@ -2706,101 +2750,254 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Allowed Transfer Groups -</B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up.
 
-<BR>
-<A NAME="vicidial_campaigns-campaign_allow_inbound">
-<BR>
-<B>Allow Inbound and Blended -</B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_campaigns-campaign_allow_inbound">
+	<BR>
+	<B>Allow Inbound and Blended -</B> This is where you can set whether the users of this campaign will have the option to take inbound calls with this campaign. If you want to do blended inbound and outbound then this must be set to Y. If you only want to do outbound dialing on this campaign set this to N. Default is N.
 
-<BR>
-<A NAME="vicidial_campaigns-dial_status">
-<BR>
-<B>Dial Status -</B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below. To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove.
+	<BR>
+	<A NAME="vicidial_campaigns-dial_status">
+	<BR>
+	<B>Dial Status -</B> This is where you set the statuses that you are wanting to dial on within the lists that are active for the campaign below. To add another status to dial, select it from the drop-down list and click ADD. To remove one of the dial statuses, click on the REMOVE link next to the status you want to remove.
 
-<BR>
-<A NAME="vicidial_campaigns-lead_order">
-<BR>
-<B>List Order -</B> This menu is where you select how the leads that match the statuses selected above will be put in the lead hopper:
- <BR> &nbsp; - DOWN: select the first leads loaded into the vicidial_list table
- <BR> &nbsp; - UP: select the last leads loaded into the vicidial_list table
- <BR> &nbsp; - UP PHONE: select the highest phone number and works its way down
- <BR> &nbsp; - DOWN PHONE: select the lowest phone number and works its way up
- <BR> &nbsp; - UP LAST NAME: starts with last names starting with Z and works its way down
- <BR> &nbsp; - DOWN LAST NAME: starts with last names starting with A and works its way up
- <BR> &nbsp; - UP COUNT: starts with most called leads and works its way down
- <BR> &nbsp; - DOWN COUNT: starts with least called leads and works its way up
- <BR> &nbsp; - DOWN COUNT 2nd NEW: starts with least called leads and works its way up inserting a NEW lead in every other lead - Must NOT have NEW selected in the dial statuses
- <BR> &nbsp; - DOWN COUNT 3nd NEW: starts with least called leads and works its way up inserting a NEW lead in every third lead - Must NOT have NEW selected in the dial statuses
- <BR> &nbsp; - DOWN COUNT 4th NEW: starts with least called leads and works its way up inserting a NEW lead in every forth lead - Must NOT have NEW selected in the dial statuses
+	<BR>
+	<A NAME="vicidial_campaigns-lead_order">
+	<BR>
+	<B>List Order -</B> This menu is where you select how the leads that match the statuses selected above will be put in the lead hopper:
+	 <BR> &nbsp; - DOWN: select the first leads loaded into the vicidial_list table
+	 <BR> &nbsp; - UP: select the last leads loaded into the vicidial_list table
+	 <BR> &nbsp; - UP PHONE: select the highest phone number and works its way down
+	 <BR> &nbsp; - DOWN PHONE: select the lowest phone number and works its way up
+	 <BR> &nbsp; - UP LAST NAME: starts with last names starting with Z and works its way down
+	 <BR> &nbsp; - DOWN LAST NAME: starts with last names starting with A and works its way up
+	 <BR> &nbsp; - UP COUNT: starts with most called leads and works its way down
+	 <BR> &nbsp; - DOWN COUNT: starts with least called leads and works its way up
+	 <BR> &nbsp; - DOWN COUNT 2nd NEW: starts with least called leads and works its way up inserting a NEW lead in every other lead - Must NOT have NEW selected in the dial statuses
+	 <BR> &nbsp; - DOWN COUNT 3nd NEW: starts with least called leads and works its way up inserting a NEW lead in every third lead - Must NOT have NEW selected in the dial statuses
+	 <BR> &nbsp; - DOWN COUNT 4th NEW: starts with least called leads and works its way up inserting a NEW lead in every forth lead - Must NOT have NEW selected in the dial statuses
 
-<BR>
-<A NAME="vicidial_campaigns-hopper_level">
-<BR>
-<B>Hopper Level -</B> This is how many leads the VDhopper script tries to keep in the vicidial_hopper table for this campaign. If running VDhopper script every minute, make this slightly greater than the number of leads you go through in a minute.
+	<BR>
+	<A NAME="vicidial_campaigns-hopper_level">
+	<BR>
+	<B>Hopper Level -</B> This is how many leads the VDhopper script tries to keep in the vicidial_hopper table for this campaign. If running VDhopper script every minute, make this slightly greater than the number of leads you go through in a minute.
 
-<BR>
-<A NAME="vicidial_campaigns-lead_filter_id">
-<BR>
-<B>Lead Filter -</B> This is a method of filtering your leads using a fragment of a SQL query. Use this feature with caution, it is easy to stop dialing accidentally with the slightest alteration to the SQL statement. Default is NONE.
+	<BR>
+	<A NAME="vicidial_campaigns-lead_filter_id">
+	<BR>
+	<B>Lead Filter -</B> This is a method of filtering your leads using a fragment of a SQL query. Use this feature with caution, it is easy to stop dialing accidentally with the slightest alteration to the SQL statement. Default is NONE.
 
-<BR>
-<A NAME="vicidial_campaigns-force_reset_hopper">
-<BR>
-<B>Force Reset of Hopper -</B> This allows you to wipe out the hopper contents upon form submission. It should be filled again when the VDhopper script runs.
+	<BR>
+	<A NAME="vicidial_campaigns-force_reset_hopper">
+	<BR>
+	<B>Force Reset of Hopper -</B> This allows you to wipe out the hopper contents upon form submission. It should be filled again when the VDhopper script runs.
 
-<BR>
-<A NAME="vicidial_campaigns-dial_method">
-<BR>
-<B>Dial Method -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. You cannot change the Auto Dial Level if you are in any of the ADAPT dial methods. Only the Dialer can change the dial level when in predictive dialing mode. INBOUND_MAN allows the agent to place manual dial calls from a campaign list while being able to take inbound calls between manual dial calls.
+	<BR>
+	<A NAME="vicidial_campaigns-dial_method">
+	<BR>
+	<B>Dial Method -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Dial Method is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. You cannot change the Auto Dial Level if you are in any of the ADAPT dial methods. Only the Dialer can change the dial level when in predictive dialing mode. INBOUND_MAN allows the agent to place manual dial calls from a campaign list while being able to take inbound calls between manual dial calls.
 
-<BR>
-<A NAME="vicidial_campaigns-auto_dial_level">
-<BR>
-<B>Auto Dial Level -</B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow. The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.
+	<BR>
+	<A NAME="vicidial_campaigns-auto_dial_level">
+	<BR>
+	<B>Auto Dial Level -</B> This is where you set how many lines VICIDIAL should use per active agent. zero 0 means auto dialing is off and the agents will click to dial each number. Otherwise VICIDIAL will keep dialing lines equal to active agents multiplied by the dial level to arrive at how many lines this campaign on each server should allow. The ADAPT OVERRIDE checkbox allows you to force a new dial level even though the dial method is in an ADAPT mode. This is useful if there is a dramatic shift in the quality of leads and you want to drastically change the dial_level manually.
 
-<BR>
-<A NAME="vicidial_campaigns-available_only_ratio_tally">
-<BR>
-<B>Available Only Tally -</B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
+	<BR>
+	<A NAME="vicidial_campaigns-available_only_ratio_tally">
+	<BR>
+	<B>Available Only Tally -</B> This field if set to Y will leave out INCALL and QUEUE status agents when calculating the number of calls to dial when not in MANUAL dial mode. Default is N.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_dropped_percentage">
-<BR>
-<B>Drop Percentage Limit -</B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_dropped_percentage">
+	<BR>
+	<B>Drop Percentage Limit -</B> This field is where you set the limit of the percentage of dropped calls you would like while using an adaptive-predictive dial method, not MANUAL or RATIO.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_maximum_level">
-<BR>
-<B>Maximum Adapt Dial Level -</B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_maximum_level">
+	<BR>
+	<B>Maximum Adapt Dial Level -</B> This field is where you set the limit of the limit to the numbr of lines you would like dialed per agent while using an adaptive-predictive dial method, not MANUAL or RATIO. This number can be higher than the Auto Dial Level if your hardware will support it. Value must be a positive number greater than one and can have decimal places Default 3.0.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_latest_server_time">
-<BR>
-<B>Latest Server Time -</B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_latest_server_time">
+	<BR>
+	<B>Latest Server Time -</B> This field is only used by the ADAPT_TAPERED dial method. You should enter in the hour and minute that you will stop calling on this campaign, 2100 would mean that you will stop dialing this campaign at 9PM server time. This allows the Tapered algorithm to decide how aggressively to dial by how long you have until you will be finished calling.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_intensity">
-<BR>
-<B>Adapt Intensity Modifier -</B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_intensity">
+	<BR>
+	<B>Adapt Intensity Modifier -</B> This field is used to adjust the predictive intensity either higher or lower. The higher a positive number you select, the greater the dialer will increase the call pacing when it goes up and the slower the dialer will decrease the call pacing when it goes down. The lower the negative number you select here, the slower the dialer will increase the call pacing and the faster the dialer will lower the call pacing when it goes down. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_dl_diff_target">
-<BR>
-<B>Dial Level Difference Target -</B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_dl_diff_target">
+	<BR>
+	<B>Dial Level Difference Target -</B> This field is used to define whether you want to target having a specific number of agents waiting for calls or calls waiting for agents. For example if you would always like to have on average one agent free to take calls immediately you would set this to -1, if you would like to target always having one call on hold waiting for an agent you would set this to 1. Default is 0. This field is not used by the MANUAL or RATIO dial methods.
 
-<BR>
-<A NAME="vicidial_campaigns-concurrent_transfers">
-<BR>
-<B>Concurrent Transfers -</B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method.
+	<BR>
+	<A NAME="vicidial_campaigns-concurrent_transfers">
+	<BR>
+	<B>Concurrent Transfers -</B> This setting is used to define the number of calls that can be sent to agents at the same time. It is recommended that this setting is left at AUTO. This field is not used by the MANUAL dial method.
 
-<BR>
-<A NAME="vicidial_campaigns-queue_priority">
-<BR>
-<B>Queue Priority -</B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode.
+	<BR>
+	<A NAME="vicidial_campaigns-queue_priority">
+	<BR>
+	<B>Queue Priority -</B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode.
 
-<BR>
-<A NAME="vicidial_campaigns-auto_alt_dial">
-<BR>
-<B>Auto Alt-Number Dialing -</B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method. EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.
+	<BR>
+	<A NAME="vicidial_campaigns-auto_alt_dial">
+	<BR>
+	<B>Auto Alt-Number Dialing -</B> This setting is used to automatically dial alternate number fields while dialing in the RATIO and ADAPT dial methods when there is no contact at the main phone number for a lead, the NA, B, DC and N statuses. This setting is not used by the MANUAL dial method. EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.
+
+	<BR>
+	<A NAME="vicidial_campaigns-dial_timeout">
+	<BR>
+	<B>Dial Timeout -</B> If defined, calls that would normally hang up after the timeout defined in extensions.conf would instead timeout at this amount of seconds if it is less than the extensions.conf timeout. This allows for quickly changing dial timeouts from server to server and limiting the effects to a single campaign. If you are having a lot of Answering Machine or Voicemail calls you may want to try changing this value to between 21-26 and see if results improve.
+
+	<BR>
+	<A NAME="vicidial_campaigns-campaign_vdad_exten">
+	<BR>
+	<B>Campaign VDAD extension -</B> This field allows for a custom VDAD transfer extension. This allows you to use different VDADtransfer...agi scripts depending upon your campaign. The default transfer AGI - exten 8365 agi-VDADtransfer.agi - just immediately sends the calls on to agents as soon as they are picked up. An additional sample political survey AGI is also now included - 8366 agi-VDADtransferSURVEY.agi - that plays a message to the called person and allows them to make a choice by pressing buttons - effectively pre-screening the lead - . Please note that except for surveys, political calls and charities this form of calling is illegal in the United States.
+
+	<BR>
+	<A NAME="vicidial_campaigns-am_message_exten">
+	<BR>
+	<B>Answering Machine Message -</B> This field is for entering in an extension to blind transfer calls to when the agent gets an answering machine and clicks on the Answering Machine Message button in the transfer conference frame. You must set this exten up in the dial plan - extensions.conf - and make sure it plays an audio file then hangs up. 
+
+	<BR>
+	<A NAME="vicidial_campaigns-amd_send_to_vmx">
+	<BR>
+	<B>AMD send to vm exten -</B> This menu allows you to define whether a message is left on an answering machine when it is detected. the call will be immediately forwarded to the Answering-Machine-Message extension if AMD is active and it is determined that the call is an answering machine.
+
+	<BR>
+	<A NAME="vicidial_campaigns-cpd_amd_action">
+	<BR>
+	<B>CPD AMD Action -</B> If you are using the Sangoma ParaXip Call Progress Detection software then you will want to enable this setting either setting it to DISPO which will disposition the call as AA and hang it up if the call is being processed and has not been sent to an agent yet or MESSAGE which will send the call to the defined Answering Machine Message for this campaign. Default is DISABLED.
+
+	<BR>
+	<A NAME="vicidial_campaigns-alt_number_dialing">
+	<BR>
+	<B>Agent Alt Num Dialing -</B> This option allows an agent to manually dial the alternate phone number or address3 field after the main number has been called.
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_call_seconds">
+	<BR>
+	<B>Drop Call Seconds -</B> The number of seconds from the time the customer line is picked up until the call is considered a DROP, only applies to outbound calls.
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_action">
+	<BR>
+	<B>Drop Action -</B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below||
+
+	<BR>
+	<A NAME="vicidial_campaigns-safe_harbor_exten">
+	<BR>
+	<B>Safe Harbor Exten -</B> This is the dial plan extension that the desired Safe Harbor audio file is located at on your server.
+
+	<BR>
+	<A NAME="vicidial_campaigns-voicemail_ext">
+	<BR>
+	<B>Voicemail -</B> If defined, calls that would normally DROP would instead be directed to this voicemail box to hear and leave a message.
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_inbound_group">
+	<BR>
+	<B>Drop Transfer Group -</B> If Drop Action is set to IN_GROUP, the call will be sent to this inbound group if it reaches Drop Call Seconds.
+
+	<BR>
+	<A NAME="vicidial_campaigns-no_hopper_leads_logins">
+	<BR>
+	<B>Allow No-Hopper-Leads Logins -</B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N.
+
+	<BR>
+	<A NAME="vicidial_campaigns-list_order_mix">
+	<BR>
+	<B>List Order Mix -</B> Overrides the Lead Order and Dial Status fields. Will use the List and status parameters for the selected List Mix entry in the List Mix sub section instead. Default is DISABLED.
+
+	<BR>
+	<A NAME="vicidial_campaigns-vcl_id">
+	<BR>
+	<B>List Mix ID -</B> ID of the list mix. Must be from 2-20 characters in length with no spaces or other special punctuation.
+
+	<BR>
+	<A NAME="vicidial_campaigns-vcl_name">
+	<BR>
+	<B>List Mix Name -</B> Descriptive name of the list mix. Must be from 2-50 characters in length.
+
+	<BR>
+	<A NAME="vicidial_campaigns-list_mix_container">
+	<BR>
+	<B>List Mix Detail -</B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated.
+
+	<BR>
+	<A NAME="vicidial_campaigns-mix_method">
+	<BR>
+	<B>List Mix Method -</B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.
+
+	<BR>
+	<A NAME="vicidial_campaigns-agent_extended_alt_dial">
+	<BR>
+	<B>Agent Screen Extended Alt Dial -</B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_first_audio_file">
+	<BR>
+	<B>Survey First Audio File -</B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_dtmf_digits">
+	<BR>
+	<B>Survey DTMF Digits -</B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are 0123456789*#
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_digit">
+	<BR>
+	<B>Survey Not Interested Digit -</B> This field is where you define the customer digit pressed that will show they are Not Interested.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_status">
+	<BR>
+	<B>Survey Not Interested Status -</B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list and possibly the campaign-specific DNC list.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_opt_in_audio_file">
+	<BR>
+	<B>Survey Opt-in Audio File -</B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_audio_file">
+	<BR>
+	<B>Survey Not Interested Audio File -</B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_method">
+	<BR>
+	<B>Survey Method -</B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_no_response_action">
+	<BR>
+	<B>Survey No-Response Action -</B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_response_digit_map">
+	<BR>
+	<B>Survey Response Digit Map -</B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_xfer_exten">
+	<BR>
+	<B>Survey Xfer Extension -</B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_camp_record_dir">
+	<BR>
+	<B>Survey Campaign Recording Directory -</B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.
+
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_campaigns-next_agent_call">
@@ -2819,11 +3016,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Local Call Time -</B> This is where you set during which hours you would like to dial, as determined by the local time in the are in which you are calling. This is controlled by area code and is adjusted for Daylight Savings time if applicable. General Guidelines in the USA for Business to Business is 9am to 5pm and Business to Consumer calls is 9am to 9pm.
 
 <BR>
-<A NAME="vicidial_campaigns-dial_timeout">
-<BR>
-<B>Dial Timeout -</B> If defined, calls that would normally hang up after the timeout defined in extensions.conf would instead timeout at this amount of seconds if it is less than the extensions.conf timeout. This allows for quickly changing dial timeouts from server to server and limiting the effects to a single campaign. If you are having a lot of Answering Machine or Voicemail calls you may want to try changing this value to between 21-26 and see if results improve.
-
-<BR>
 <A NAME="vicidial_campaigns-dial_prefix">
 <BR>
 <B>Dial Prefix -</B> This field allows for more easily changing a path of dialing to go out through a different method without doing a reload in Asterisk. Default is 9 based upon a 91NXXNXXXXXX in the dial plan - extensions.conf.
@@ -2837,11 +3029,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-campaign_cid">
 <BR>
 <B>Campaign CallerID -</B> This field allows for the sending of a custom callerid number on the outbound calls. This is the number that would show up on the callerid of the person you are calling. The default is UNKNOWN. If you are using T1 or E1s to dial out this option is only available if you are using PRIs - ISDN T1s or E1s - that have the custom callerid feature turned on, this will not work with Robbed-bit service -RBS- circuits. This will also work through most VOIP -SIP or IAX trunks- providers that allow dynamic outbound callerID. The custom callerID only applies to calls placed for the VICIDIAL campaign directly, any 3rd party calls or transfers will not send the custom callerID. NOTE: Sometimes putting UNKNOWN or PRIVATE in the field will yield the sending of your default callerID number by your carrier with the calls. You may want to test this and put 0000000000 in the callerid field instead if you do not want to send you CallerID.
-
-<BR>
-<A NAME="vicidial_campaigns-campaign_vdad_exten">
-<BR>
-<B>Campaign VDAD extension -</B> This field allows for a custom VDAD transfer extension. This allows you to use different VDADtransfer...agi scripts depending upon your campaign. The default transfer AGI - exten 8365 agi-VDADtransfer.agi - just immediately sends the calls on to agents as soon as they are picked up. An additional sample political survey AGI is also now included - 8366 agi-VDADtransferSURVEY.agi - that plays a message to the called person and allows them to make a choice by pressing buttons - effectively pre-screening the lead - . Please note that except for surveys, political calls and charities this form of calling is illegal in the United States.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_exten">
@@ -2874,54 +3061,14 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Get Call Launch -</B> This menu allows you to choose whether you want to auto-launch the web-form page in a separate window, auto-switch to the SCRIPT tab or do nothing when a call is sent to the agent for this campaign. 
 
 <BR>
-<A NAME="vicidial_campaigns-am_message_exten">
-<BR>
-<B>Answering Machine Message -</B> This field is for entering in an extension to blind transfer calls to when the agent gets an answering machine and clicks on the Answering Machine Message button in the transfer conference frame. You must set this exten up in the dial plan - extensions.conf - and make sure it plays an audio file then hangs up. 
-
-<BR>
-<A NAME="vicidial_campaigns-amd_send_to_vmx">
-<BR>
-<B>AMD send to vm exten -</B> This menu allows you to define whether a message is left on an answering machine when it is detected. the call will be immediately forwarded to the Answering-Machine-Message extension if AMD is active and it is determined that the call is an answering machine.
-
-<BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
 <B>Xfer-Conf DTMF -</B> These four fields allow for you to have two sets of Transfer Conference and DTMF presets. When the call or campaign is loaded, the vicidial.php script will show two buttons on the transfer-conference frame and auto-populate the number-to-dial and the send-dtmf fields when pressed. If you want to allow Consultative Transfers, a fronter to a closer, you can place CXFER as one of the number-to-dial presets and the proper dial string will be sent to do a Local Consultative Transfer, then the agent can just LEAVE-3WAY-CALL and move on to their next call. If you want to allow Blind transfers of customers to a VICIDIAL AGI script for logging or an IVR, then place AXFER in the number-to-dial field. You can also specify an custom extension after the AXFER or CXFER, for instance if you want to do Internal Consultative transfers instead of Local you would put CXFER90009 in the number-to-dial field.
 
 <BR>
-<A NAME="vicidial_campaigns-alt_number_dialing">
-<BR>
-<B>Agent Alt Num Dialing -</B> This option allows an agent to manually dial the alternate phone number or address3 field after the main number has been called.
-
-<BR>
 <A NAME="vicidial_campaigns-scheduled_callbacks">
 <BR>
 <B>Scheduled Callbacks -</B> This option allows an agent to disposition a call as CALLBK and choose the data and time at which the lead will be re-activated.
-
-<BR>
-<A NAME="vicidial_campaigns-drop_call_seconds">
-<BR>
-<B>Drop Call Seconds -</B> The number of seconds from the time the customer line is picked up until the call is considered a DROP, only applies to outbound calls.
-
-<BR>
-<A NAME="vicidial_campaigns-drop_action">
-<BR>
-<B>Drop Action -</B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below||
-
-<BR>
-<A NAME="vicidial_campaigns-safe_harbor_exten">
-<BR>
-<B>Safe Harbor Exten -</B> This is the dial plan extension that the desired Safe Harbor audio file is located at on your server.
-
-<BR>
-<A NAME="vicidial_campaigns-voicemail_ext">
-<BR>
-<B>Voicemail -</B> If defined, calls that would normally DROP would instead be directed to this voicemail box to hear and leave a message.
-
-<BR>
-<A NAME="vicidial_campaigns-drop_inbound_group">
-<BR>
-<B>Drop Transfer Group -</B> If Drop Action is set to IN_GROUP, the call will be sent to this inbound group if it reaches Drop Call Seconds.
 
 <BR>
 <A NAME="vicidial_campaigns-wrapup_seconds">
@@ -2964,39 +3111,9 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Disable Alter Customer Phone -</B> If set to Y, does not change the customer phone number when an agent dispositions the call. Default is Y.
 
 <BR>
-<A NAME="vicidial_campaigns-no_hopper_leads_logins">
-<BR>
-<B>Allow No-Hopper-Leads Logins -</B> If set to Y, allows agents to login to the campaign even if there are no leads loaded into the hopper for that campaign. This function is not needed in CLOSER-type campaigns. Default is N.
-
-<BR>
 <A NAME="vicidial_campaigns-display_queue_count">
 <BR>
 <B>Agent Display Queue Count -</B> If set to Y, when a customer is waiting for an agent, the Queue Calls display at the top of the agent screen will turn red and show the number of waiting calls. Default is Y.
-
-<BR>
-<A NAME="vicidial_campaigns-list_order_mix">
-<BR>
-<B>List Order Mix -</B> Overrides the Lead Order and Dial Status fields. Will use the List and status parameters for the selected List Mix entry in the List Mix sub section instead. Default is DISABLED.
-
-<BR>
-<A NAME="vicidial_campaigns-vcl_id">
-<BR>
-<B>List Mix ID -</B> ID of the list mix. Must be from 2-20 characters in length with no spaces or other special punctuation.
-
-<BR>
-<A NAME="vicidial_campaigns-vcl_name">
-<BR>
-<B>List Mix Name -</B> Descriptive name of the list mix. Must be from 2-50 characters in length.
-
-<BR>
-<A NAME="vicidial_campaigns-list_mix_container">
-<BR>
-<B>List Mix Detail -</B> The composition of the List Mix entry. Contains the List ID, mix order, percentages and statuses that make up this List Mix. The percentages always have to add up to 100, and the lists all have to be active and set to the campaign for the order mix entry to be Activated.
-
-<BR>
-<A NAME="vicidial_campaigns-mix_method">
-<BR>
-<B>List Mix Method -</B> The method of mixing all of the parts of the List Mix Detail together. EVEN_MIX will mix leads from each part interleaved with the other parts, like this 1,2,3,1,2,3,1,2,3. IN_ORDER will put the leads in the order in which they are listed in the List Mix Detail screen 1,1,1,2,2,2,3,3,3. RANDOM will put them in RANDOM order 1,3,2,1,1,3,2,1,3. Default is IN_ORDER.
 
 <BR>
 <A NAME="vicidial_campaigns-manual_dial_list_id">
@@ -3014,11 +3131,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Agent Screen Clipboard Copy -</B> THIS FEATURE IS CURRENTLY ONLY ENABLED FOR INTERNET EXPLORER. This feature allows you to select a field that will be copied to the computer clipboard of the agent computer upon a call being sent to an agent. Common uses for this are to allow for easy pasting of account numbers or phone numbers into legacy client applications on the agent computer.
 
 <BR>
-<A NAME="vicidial_campaigns-agent_extended_alt_dial">
-<BR>
-<B>Agent Screen Extended Alt Dial -</B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information.
-
-<BR>
 <A NAME="vicidial_campaigns-three_way_call_cid">
 <BR>
 <B>3-Way Call Outbound CallerID -</B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into.
@@ -3028,95 +3140,47 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>3-Way Call Dial Prefix -</B> This defines what is used as the dial prefix for 3-way calls, default is empty so the campaign dial prefix is used, passthru so you can hear ringing is 88.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_enabled">
-<BR>
-<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_campaigns-qc_enabled">
+	<BR>
+	<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_statuses">
-<BR>
-<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
+	<BR>
+	<A NAME="vicidial_campaigns-qc_statuses">
+	<BR>
+	<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
 
-<BR>
-<A NAME="vicidial_campaigns-qc_shift_id">
-<BR>
-<B>QC Shift -</B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions.
+	<BR>
+	<A NAME="vicidial_campaigns-qc_shift_id">
+	<BR>
+	<B>QC Shift -</B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_get_record_launch">
-<BR>
-<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
+	<BR>
+	<A NAME="vicidial_campaigns-qc_get_record_launch">
+	<BR>
+	<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_show_recording">
-<BR>
-<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
+	<BR>
+	<A NAME="vicidial_campaigns-qc_show_recording">
+	<BR>
+	<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_web_form_address">
-<BR>
-<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
+	<BR>
+	<A NAME="vicidial_campaigns-qc_web_form_address">
+	<BR>
+	<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
 
-<BR>
-<A NAME="vicidial_campaigns-qc_script">
-<BR>
-<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_first_audio_file">
-<BR>
-<B>Survey First Audio File -</B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_dtmf_digits">
-<BR>
-<B>Survey DTMF Digits -</B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are 0123456789*#
-
-<BR>
-<A NAME="vicidial_campaigns-survey_ni_digit">
-<BR>
-<B>Survey Not Interested Digit -</B> This field is where you define the customer digit pressed that will show they are Not Interested.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_ni_status">
-<BR>
-<B>Survey Not Interested Status -</B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list and possibly the campaign-specific DNC list.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_opt_in_audio_file">
-<BR>
-<B>Survey Opt-in Audio File -</B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_ni_audio_file">
-<BR>
-<B>Survey Not Interested Audio File -</B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_method">
-<BR>
-<B>Survey Method -</B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_no_response_action">
-<BR>
-<B>Survey No-Response Action -</B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_response_digit_map">
-<BR>
-<B>Survey Response Digit Map -</B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_xfer_exten">
-<BR>
-<B>Survey Xfer Extension -</B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension.
-
-<BR>
-<A NAME="vicidial_campaigns-survey_camp_record_dir">
-<BR>
-<B>Survey Campaign Recording Directory -</B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.
+	<BR>
+	<A NAME="vicidial_campaigns-qc_script">
+	<BR>
+	<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_campaigns-vtiger_search_category">
@@ -3137,6 +3201,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-vtiger_screen_login">
 <BR>
 <B>Vtiger Screen Login -</B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y.
+
 
 
 
@@ -3406,40 +3471,47 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>In-Group Recording Filename -</B> This field will override the Campaign Recording Filenaming Scheme unless it is set to NONE. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max. Default is NONE.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_enabled">
-<BR>
-<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_enabled">
+	<BR>
+	<B>QC Enabled -</B> Setting this field to Y allows for the agent Quality Control features to work. Default is N.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_statuses">
-<BR>
-<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_statuses">
+	<BR>
+	<B>QC Statuses -</B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review. 
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_shift_id">
-<BR>
-<B>QC Shift -</B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions.
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_shift_id">
+	<BR>
+	<B>QC Shift -</B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_get_record_launch">
-<BR>
-<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_get_record_launch">
+	<BR>
+	<B>QC Get Record Launch-</B> This allows one of the following actions to be triggered upon a QC agent receiving a new record.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_show_recording">
-<BR>
-<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_show_recording">
+	<BR>
+	<B>QC Show Recording -</B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_web_form_address">
-<BR>
-<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_web_form_address">
+	<BR>
+	<B>QC WebForm Address -</B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen.
 
-<BR>
-<A NAME="vicidial_inbound_groups-qc_script">
-<BR>
-<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_script">
+	<BR>
+	<B>QC Script -</B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_inbound_groups-hold_recall_xfer_group">
@@ -3610,36 +3682,42 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_CAMPAIGN_HOTKEYS TABLE</FONT></B><BR><BR>
-<A NAME="vicidial_campaign_hotkeys">
-<BR>
-<B>Through the use of custom campaign hot keys, agents that use the vicidial web-client can hang up and disposition calls just by pressing a single key on their keyboard.</B> There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead. 
-
-
-
-
-
-<BR><BR><BR><BR>
-
-<B><FONT SIZE=3>VICIDIAL_LEAD_RECYCLE TABLE</FONT></B><BR><BR>
-<A NAME="vicidial_lead_recycle">
-<BR>
-<B>Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links.</B>
+	<B><FONT SIZE=3>VICIDIAL_CAMPAIGN_HOTKEYS TABLE</FONT></B><BR><BR>
+	<A NAME="vicidial_campaign_hotkeys">
+	<BR>
+	<B>Through the use of custom campaign hot keys, agents that use the vicidial web-client can hang up and disposition calls just by pressing a single key on their keyboard.</B> There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead. 
 
 
 
 
 
-<BR><BR><BR><BR>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL AUTO ALT DIAL STATUSES</FONT></B><BR><BR>
-<A NAME="vicidial_auto_alt_dial_statuses">
-<BR>
-<B>If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set.</B>
+	<B><FONT SIZE=3>VICIDIAL_LEAD_RECYCLE TABLE</FONT></B><BR><BR>
+	<A NAME="vicidial_lead_recycle">
+	<BR>
+	<B>Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links.</B>
 
 
+
+
+
+	<BR><BR><BR><BR>
+
+	<B><FONT SIZE=3>VICIDIAL AUTO ALT DIAL STATUSES</FONT></B><BR><BR>
+	<A NAME="vicidial_auto_alt_dial_statuses">
+	<BR>
+	<B>If the Auto Alt-Number Dialing field is set, then the leads that are dispositioned under these auto alt dial statuses will have their alt_phone and-or address3 fields dialed after any of these no-answer statuses are set.</B>
+
+	<?
+	}
+?>
 
 
 
@@ -3681,16 +3759,22 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Allowed Campaigns -</B> This is a selectable list of Campaigns to which members of this user group can log in to. The ALL-CAMPAIGNS option allows the users in this group to see and log in to any campaign on the system.
 
-<BR>
-<A NAME="vicidial_user_groups-qc_allowed_campaigns">
-<BR>
-<B>QC Allowed Campaigns -</B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system.
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_user_groups-qc_allowed_campaigns">
+	<BR>
+	<B>QC Allowed Campaigns -</B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system.
 
-<BR>
-<A NAME="vicidial_user_groups-qc_allowed_inbound_groups">
-<BR>
-<B>QC Allowed Inbound Groups -</B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system.
-
+	<BR>
+	<A NAME="vicidial_user_groups-qc_allowed_inbound_groups">
+	<BR>
+	<B>QC Allowed Inbound Groups -</B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system.
+	<?
+	}
+?>
 
 
 
@@ -3728,25 +3812,31 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_LEAD_FILTERS TABLE</FONT></B><BR><BR>
-<A NAME="vicidial_lead_filters-lead_filter_id">
-<BR>
-<B>Filter ID -</B> This is the short name of a Vicidial Lead Filter. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters.
+	<B><FONT SIZE=3>VICIDIAL_LEAD_FILTERS TABLE</FONT></B><BR><BR>
+	<A NAME="vicidial_lead_filters-lead_filter_id">
+	<BR>
+	<B>Filter ID -</B> This is the short name of a Vicidial Lead Filter. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 10 characters, minimum of 2 characters.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_name">
-<B>Filter Name -</B> This is a more descriptive name of the Filter. This is a short summary of the filter. max 30 characters, minimum of 2 characters.
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_name">
+	<B>Filter Name -</B> This is a more descriptive name of the Filter. This is a short summary of the filter. max 30 characters, minimum of 2 characters.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_comments">
-<B>Filter Comments -</B> This is where you can place comments for a Vicidial Filter such as -calls all California leads-.  max 255 characters, minimum of 2 characters.
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_comments">
+	<B>Filter Comments -</B> This is where you can place comments for a Vicidial Filter such as -calls all California leads-.  max 255 characters, minimum of 2 characters.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_sql">
-<B>Filter SQL -</B> This is where you place the SQL query fragment that you want to filter by. do not begin or end with an AND, that will be added by the hopper cron script automatically. an example SQL query that would work here is- called_count > 4 and called_count < 8 -.
-
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_sql">
+	<B>Filter SQL -</B> This is where you place the SQL query fragment that you want to filter by. do not begin or end with an AND, that will be added by the hopper cron script automatically. an example SQL query that would work here is- called_count > 4 and called_count < 8 -.
+	<?
+	}
+?>
 
 
 
@@ -3810,46 +3900,52 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
 
-<BR><BR><BR><BR>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL LIST LOADER FUNCTIONALITY</FONT></B><BR><BR>
-<A NAME="vicidial_list_loader">
-<BR>
-The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. The lead loader allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation, but it does allow you to check for duplicates in itself, within the campaign or within the entire system. Also, make sure that you have created the list that these leads are to be under so that you can use them. Here is a list of the fields in their proper order for the lead files:
-	<OL>
-	<LI>Vendor Lead Code - shows up in the Vendor ID field of the GUI
-	<LI>Source Code - internal use only for admins and DBAs
-	<LI>List ID - the list number that these leads will show up under
-	<LI>Phone Code - the prefix for the phone number - 1 for US, 01144 for UK, 01161 for AUS, etc
-	<LI>Phone Number - must be at least 8 digits long
-	<LI>Title - title of the customer - Mr. Ms. Mrs, etc...
-	<LI>First Name
-	<LI>Middle Initial
-	<LI>Last Name
-	<LI>Address Line 1
-	<LI>Address Line 2
-	<LI>Address Line 3
-	<LI>City
-	<LI>State - limited to 2 characters
-	<LI>Province
-	<LI>Postal Code
-	<LI>Country
-	<LI>Gender
-	<LI>Date of Birth
-	<LI>Alternate Phone Number
-	<LI>Email Address
-	<LI>Security Phrase
-	<LI>Comments
-	</OL>
+	<B><FONT SIZE=3>VICIDIAL LIST LOADER FUNCTIONALITY</FONT></B><BR><BR>
+	<A NAME="vicidial_list_loader">
+	<BR>
+	The VICIDIAL basic web-based lead loader is designed simply to take a lead file - up to 8MB in size - that is either tab or pipe delimited and load it into the vicidial_list table. The lead loader allows for field choosing and TXT- Plain Text, CSV- Comma Separated Values and XLS- Excel file formats. The lead loader does not do data validation, but it does allow you to check for duplicates in itself, within the campaign or within the entire system. Also, make sure that you have created the list that these leads are to be under so that you can use them. Here is a list of the fields in their proper order for the lead files:
+		<OL>
+		<LI>Vendor Lead Code - shows up in the Vendor ID field of the GUI
+		<LI>Source Code - internal use only for admins and DBAs
+		<LI>List ID - the list number that these leads will show up under
+		<LI>Phone Code - the prefix for the phone number - 1 for US, 01144 for UK, 01161 for AUS, etc
+		<LI>Phone Number - must be at least 8 digits long
+		<LI>Title - title of the customer - Mr. Ms. Mrs, etc...
+		<LI>First Name
+		<LI>Middle Initial
+		<LI>Last Name
+		<LI>Address Line 1
+		<LI>Address Line 2
+		<LI>Address Line 3
+		<LI>City
+		<LI>State - limited to 2 characters
+		<LI>Province
+		<LI>Postal Code
+		<LI>Country
+		<LI>Gender
+		<LI>Date of Birth
+		<LI>Alternate Phone Number
+		<LI>Email Address
+		<LI>Security Phrase
+		<LI>Comments
+		</OL>
 
-<BR>NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /etc/astguiclient.conf file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file. Also, for duplication checks against gampaign lists, the list that has new leads going into it does need to be created in the system before you start to load the leads.
-
-
+	<BR>NOTES: The Excel Lead loader functionality is enabled by a series of perl scripts and needs to have a properly configured /etc/astguiclient.conf file in place on the web server. Also, a couple perl modules must be loaded for it to work as well - OLE-Storage_Lite and Spreadsheet-ParseExcel. You can check for runtime errors in these by looking at your apache error_log file. Also, for duplication checks against gampaign lists, the list that has new leads going into it does need to be created in the system before you start to load the leads.
 
 
-<BR><BR><BR><BR>
 
+
+	<BR><BR><BR><BR>
+	<?
+	}
+?>
 
 
 
@@ -4352,13 +4448,19 @@ The VICIDIAL basic web-based lead loader is designed simply to take a lead file 
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_SERVER_TRUNKS TABLE</FONT></B><BR><BR>
-<A NAME="vicidial_server_trunks">
-<BR>
-<B>VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting.</B>
-
+	<B><FONT SIZE=3>VICIDIAL_SERVER_TRUNKS TABLE</FONT></B><BR><BR>
+	<A NAME="vicidial_server_trunks">
+	<BR>
+	<B>VICIDIAL Server Trunks allows you to restrict the outgoing lines that are used on this server for campaign dialing on a per-campaign basis. You have the option to reserve a specific number of lines to be used by only one campaign as well as allowing that campaign to run over its reserved lines into whatever lines remain open, as long at the total lines used by vicidial on this server is less than the Max VICIDIAL Trunks setting. Not having any of these records will allow the campaign that dials the line first to have as many lines as it can get under the Max VICIDIAL Trunks setting.</B>
+	<?
+	}
+?>
 
 
 
@@ -4452,6 +4554,13 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <BR>
 <B>Agent interface API Access Active -</B> This option allows you to enable or disable the agent interface API. Default is 0.
 
+<A NAME="settings-qc_features_active">
+<BR>
+<B>QC Features Active -</B> This option allows you to enable or disable the QC or Quality Control features. Default is 0 for inactive.
+
+<A NAME="settings-outbound_autodial_active">
+<BR>
+<B>Outbound Auto-Dial Active -</B> This option allows you to enable or disable outbound auto-dialing within VICIDIAL, setting this field to 0 will remove the LISTS and FILTERS sections and many fields from the Campaign Modification screens. Manual entry dialing will still be allowable from within the agent screen, but no list dialing will be possible. Default is 1 for active.
 
 <BR>
 <A NAME="settings-enable_queuemetrics_logging">
@@ -4494,7 +4603,7 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <B>QueueMetrics EnterQueue Prepend -</B> This field is used to allow for prepending of one of the vicidial_list data fields in front of the phone number of the customer for customized QueueMetrics reports. Default is NONE to not populate anything.
 
 <BR>
-<A NAME="settings-enable_vtiger_logging">
+<A NAME="settings-enable_vtiger_integration">
 <BR>
 <B>Enable Vtiger Integration -</B> This setting allows you to enable Vtiger integration with VICIDIAL. Currently links to Vtiger admin and search as well as user replication are the only integration features available. Default is 0.
 
@@ -4540,13 +4649,19 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <B>Through the use of system status categories, you can group together statuses to allow for statistical analysis on a group of statuses. The Category ID must be 2-20 characters in length with no spaces, the name must be 2-50 characters in length, the description is optional and TimeonVDAD Display defines whether that status will be one of the upto 4 statuses that can be calculated and displayed on the Time On VDAD Real-Time report.</B> The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL QC STATUS CODES</FONT></B><BR><BR>
-<A NAME="vicidial_qc_status_codes">
-<BR>
-<B>The Quality Control-QC system within VICIDIAL has its own set of status codes separate from those within the call handling functions of VICIDIAL. QC statuse codes must be between 2 and 8 characters in length and contain no special characters like a space or colon. The QC status code description must be between 2 and 30 characters in length.</B>
-
+	<B><FONT SIZE=3>VICIDIAL QC STATUS CODES</FONT></B><BR><BR>
+	<A NAME="vicidial_qc_status_codes">
+	<BR>
+	<B>The Quality Control-QC system within VICIDIAL has its own set of status codes separate from those within the call handling functions of VICIDIAL. QC statuse codes must be between 2 and 8 characters in length and contain no special characters like a space or colon. The QC status code description must be between 2 and 30 characters in length.</B>
+	<?
+	}
+?>
 
 
 
@@ -4802,9 +4917,12 @@ if ($hh=='users')
 if ($hh=='campaigns') 
 	{$campaigns_hh="bgcolor=\"$campaigns_color\""; $campaigns_fc="$campaigns_font"; $campaigns_bold="$header_selected_bold";}
 	else {$campaigns_hh=''; $campaigns_fc='WHITE'; $campaigns_bold="$header_nonselected_bold";}
-if ($hh=='lists') 
-	{$lists_hh="bgcolor=\"$lists_color\""; $lists_fc="$lists_font"; $lists_bold="$header_selected_bold";}
-	else {$lists_hh=''; $lists_fc='WHITE'; $lists_bold="$header_nonselected_bold";}
+if ($SSoutbound_autodial_active > 0)
+	{
+	if ($hh=='lists') 
+		{$lists_hh="bgcolor=\"$lists_color\""; $lists_fc="$lists_font"; $lists_bold="$header_selected_bold";}
+		else {$lists_hh=''; $lists_fc='WHITE'; $lists_bold="$header_nonselected_bold";}
+	}
 if ($hh=='ingroups') 
 	{$ingroups_hh="bgcolor=\"$ingroups_color\""; $ingroups_fc="$ingroups_font"; $ingroups_bold="$header_selected_bold";}
 	else {$ingroups_hh=''; $ingroups_fc='WHITE'; $ingroups_bold="$header_nonselected_bold";}
@@ -4817,9 +4935,12 @@ if ($hh=='usergroups')
 if ($hh=='scripts') 
 	{$scripts_hh="bgcolor=\"$scripts_color\""; $scripts_fc="$scripts_font"; $scripts_bold="$header_selected_bold";}
 	else {$scripts_hh=''; $scripts_fc='WHITE'; $scripts_bold="$header_nonselected_bold";}
-if ($hh=='filters') 
-	{$filters_hh="bgcolor=\"$filters_color\""; $filters_fc="$filters_font"; $filters_bold="$header_selected_bold";}
-	else {$filters_hh=''; $filters_fc='WHITE'; $filters_bold="$header_nonselected_bold";}
+if ($SSoutbound_autodial_active > 0)
+	{
+	if ($hh=='filters') 
+		{$filters_hh="bgcolor=\"$filters_color\""; $filters_fc="$filters_font"; $filters_bold="$header_selected_bold";}
+		else {$filters_hh=''; $filters_fc='WHITE'; $filters_bold="$header_nonselected_bold";}
+	}
 if ($hh=='admin') 
 	{$admin_hh="bgcolor=\"$admin_color\""; $admin_fc="$admin_font"; $admin_bold="$header_selected_bold";}
 	else {$admin_hh=''; $admin_fc='WHITE'; $admin_bold="$header_nonselected_bold";}
@@ -5079,9 +5200,27 @@ $admin_home_url_LU =	$row[0];
 <TR BGCOLOR=#015B91>
 <TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Users </a></TD>
 <TD ALIGN=CENTER <?=$campaigns_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc ?> SIZE=<?=$header_font_size ?>><?=$campaigns_bold ?> Campaigns </a></TD>
-<TD ALIGN=CENTER <?=$lists_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?> Lists </a></TD>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<TD ALIGN=CENTER <?=$lists_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?> Lists </a></TD>
+	<?
+	}
+else
+	{echo "<TD></TD>";}
+?>
 <TD ALIGN=CENTER <?=$scripts_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$scripts_fc ?> SIZE=<?=$header_font_size ?>><?=$scripts_bold ?> Scripts </a></TD>
-<TD ALIGN=CENTER <?=$filters_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc ?> SIZE=<?=$header_font_size ?>><?=$filters_bold ?> Filters </a></TD>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<TD ALIGN=CENTER <?=$filters_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc ?> SIZE=<?=$header_font_size ?>><?=$filters_bold ?> Filters </a></TD>
+	<?
+	}
+else
+	{echo "<TD></TD>";}
+?>
 <TD ALIGN=CENTER <?=$ingroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$ingroups_fc ?> SIZE=<?=$header_font_size ?>><?=$ingroups_bold ?> In-Groups </a></TD>
 <TD ALIGN=CENTER <?=$usergroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc ?> SIZE=<?=$header_font_size ?>><?=$usergroups_bold ?> User Groups </a></TD>
 <TD ALIGN=CENTER <?=$remoteagent_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc ?> SIZE=<?=$header_font_size ?>><?=$remoteagent_bold ?> Remote Agents </a></TD>
@@ -5127,10 +5266,25 @@ if (strlen($campaigns_hh) > 1)
 <TD ALIGN=CENTER <?=$list_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$list_fc ?> SIZE=<?=$subcamp_font_size ?>> Campaigns Main </a></TD>
 <TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=32"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$subcamp_font_size ?>> Statuses </a></TD>
 <TD ALIGN=LEFT <?=$hotkey_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=33"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$hotkey_fc ?> SIZE=<?=$subcamp_font_size ?>> HotKeys </a></TD>
-<TD ALIGN=LEFT <?=$recycle_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>> Lead Recycle </a></TD>
-<TD ALIGN=LEFT <?=$autoalt_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>> Auto-Alt Dial </a></TD>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<TD ALIGN=LEFT <?=$recycle_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>> Lead Recycle </a></TD>
+	<TD ALIGN=LEFT <?=$autoalt_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>> Auto-Alt Dial </a></TD>
+	<TD ALIGN=LEFT <?=$listmix_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>> List Mix </a></TD>
+	<?
+	}
+else
+	{echo "<TD></TD>";}
+?>
 <TD ALIGN=LEFT <?=$pause_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=37"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$pause_fc ?> SIZE=<?=$subcamp_font_size ?>> Pause Codes </a></TD>
-<TD ALIGN=LEFT <?=$listmix_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>> List Mix </a></TD>
+<?
+if ($SSoutbound_autodial_active < 1)
+	{
+	echo "<TD></TD><TD></TD><TD COLSPAN=2></TD>\n";
+	}
+?>	
 </TR>
 	<?
 	if (strlen($list_sh) > 1) { 
@@ -5368,14 +5522,20 @@ if ($ADD==11)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Park Filename: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+		}
 	echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Local Call Time: </td><td align=left><select size=1 name=local_call_time>";
 	echo "$call_times_list";
 	echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+		}
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script: </td><td align=left><select size=1 name=script_id>\n";
 	echo "$scripts_list";
 	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
@@ -6626,7 +6786,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -7859,6 +8019,12 @@ if ($ADD=="4A")
 		}
 	 else
 		{
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$closer_default_blended =	'0';
+			$delete_filters =			'0';
+			$load_leads =				'0';
+			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
 		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active' where user='$user';";
@@ -8000,6 +8166,12 @@ if ($ADD=="4B")
 		}
 	 else
 		{
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$closer_default_blended =	'0';
+			$delete_filters =			'0';
+			$load_leads =				'0';
+			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
 		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active' where user='$user';";
@@ -8268,7 +8440,7 @@ $ADD=3;		# go to user modification below
 }
 
 ######################
-# ADD=41 submit campaign modifications to the system
+# ADD=41 submit campaign modifications to the system - DETAIL
 ######################
 
 if ($ADD==41)
@@ -8277,6 +8449,51 @@ if ($ADD==41)
 		{
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$adaptive_dl_diff_target =		'0';
+			$adaptive_dropped_percentage =	'99';
+			$adaptive_intensity =			'0';
+			$adaptive_latest_server_time =	'2359';
+			$adaptive_maximum_level =		'1.0';
+			$agent_extended_alt_dial =		'N';
+			$alt_number_dialing =			'N';
+			$am_message_exten =				'8300';
+			$amd_send_to_vmx =				'N';
+			$auto_alt_dial =				'N';
+			$auto_dial_level =				'1.0';
+			$available_only_ratio_tally =	'Y';
+			$campaign_allow_inbound =		'Y';
+			$campaign_vdad_exten =			'8368';
+			$concurrent_transfers =			'AUTO';
+			$dial_method =					'RATIO';
+			$dial_status =					'';
+			$dial_timeout =					'60';
+			$drop_action =					'HANGUP';
+			$drop_call_seconds =			'5';
+			$drop_inbound_group =			'---NONE---';
+			$force_reset_hopper =			'N';
+			$hopper_level =					'5';
+			$lead_filter_id =				'NONE';
+			$lead_order =					'DOWN';
+			$list_order_mix =				'DISABLED';
+			$no_hopper_leads_logins =		'Y';
+			$queue_priority =				'50';
+			$safe_harbor_exten =			'8300';
+			$survey_camp_record_dir =		'/home/survey';
+			$survey_dtmf_digits =			'1238';
+			$survey_first_audio_file =		'US_pol_survey_hello';
+			$survey_method =				'AGENT_XFER';
+			$survey_ni_audio_file =			'';
+			$survey_ni_digit =				'8';
+			$survey_ni_status =				'NI';
+			$survey_no_response_action =	'OPTIN';
+			$survey_opt_in_audio_file =		'US_pol_survey_transfer';
+			$survey_response_digit_map =	'1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|';
+			$survey_xfer_exten =			'8300';
+			$voicemail_ext =				'';
+			$cpd_amd_action =				'DISABLED';
+			}
 		if (ereg('list_activation',$stage))
 			{
 			$p=0;
@@ -8347,7 +8564,7 @@ if ($ADD==41)
 				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
 					{$hopper_level='100';}
 
-				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login' where campaign_id='$campaign_id';";
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action' where campaign_id='$campaign_id';";
 				$rslt=mysql_query($stmtA, $link);
 
 				if ($reset_hopper == 'Y')
@@ -8499,6 +8716,39 @@ if ($ADD==44)
 		{
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$adaptive_dl_diff_target =		'0';
+			$adaptive_dropped_percentage =	'99';
+			$adaptive_intensity =			'0';
+			$adaptive_latest_server_time =	'2359';
+			$adaptive_maximum_level =		'1.0';
+			$agent_extended_alt_dial =		'N';
+			$alt_number_dialing =			'N';
+			$am_message_exten =				'8300';
+			$amd_send_to_vmx =				'N';
+			$auto_alt_dial =				'N';
+			$auto_dial_level =				'1.0';
+			$available_only_ratio_tally =	'Y';
+			$campaign_allow_inbound =		'Y';
+			$campaign_vdad_exten =			'8368';
+			$concurrent_transfers =			'AUTO';
+			$dial_method =					'RATIO';
+			$dial_status =					'';
+			$dial_timeout =					'60';
+			$drop_action =					'HANGUP';
+			$drop_call_seconds =			'5';
+			$drop_inbound_group =			'---NONE---';
+			$force_reset_hopper =			'N';
+			$hopper_level =					'5';
+			$lead_filter_id =				'NONE';
+			$lead_order =					'DOWN';
+			$list_order_mix =				'DISABLED';
+			$no_hopper_leads_logins =		'Y';
+			$queue_priority =				'50';
+			$safe_harbor_exten =			'8300';
+			$voicemail_ext =				'';
+			}
 		if (ereg('list_activation',$stage))
 			{
 			$p=0;
@@ -8686,10 +8936,9 @@ $ADD=31;	# go to campaign modification form below
 ######################
 # ADD=48 modify campaign QC settings in the system
 ######################
-
 if ($ADD==48)
 {
-	if ($LOGmodify_campaigns==1)
+	if ( ($LOGmodify_campaigns==1) and ($SSqc_features_active) )
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -9823,7 +10072,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url',qc_features_active='$qc_features_active',outbound_autodial_active='$outbound_autodial_active';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -9988,7 +10237,7 @@ $ADD=331111111111111;	# go to system settings modification form below
 
 if ($ADD==441111111111111)
 {
-	if ($LOGmodify_servers==1)
+	if ( ($LOGmodify_servers==1) and ($SSqc_features_active > 0) )
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -11587,7 +11836,10 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Call Manual: </td><td align=left><select size=1 name=agentcall_manual><option>0</option><option>1</option><option SELECTED>$agentcall_manual</option></select>$NWB#vicidial_users-agentcall_manual$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vicidial Recording: </td><td align=left><select size=1 name=vicidial_recording><option>0</option><option>1</option><option SELECTED>$vicidial_recording</option></select>$NWB#vicidial_users-vicidial_recording$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vicidial Transfers: </td><td align=left><select size=1 name=vicidial_transfers><option>0</option><option>1</option><option SELECTED>$vicidial_transfers</option></select>$NWB#vicidial_users-vicidial_transfers$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Closer Default Blended: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
+			if ($SSoutbound_autodial_active > 0)
+				{
+				echo "<tr bgcolor=#B6D3FC><td align=right>Closer Default Blended: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
+				}
 			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Recording Override: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Customer Data Override: </td><td align=left><select size=1 name=alter_custdata_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custdata_override</option></select>$NWB#vicidial_users-alter_custdata_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Customer Phone Override: </td><td align=left><select size=1 name=alter_custphone_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custphone_override</option></select>$NWB#vicidial_users-alter_custphone_override$NWE</td></tr>\n";
@@ -11603,11 +11855,14 @@ if ($ADD==3)
 			echo "$RANKgroups_list";
 			echo "</table>\n";
 			echo "</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td align=left><select size=1 name=qc_enabled><option>0</option><option>1</option><option SELECTED>$qc_enabled</option></select>$NWB#vicidial_users-qc_enabled$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>QC User Level: </td><td align=left><select size=1 name=qc_user_level><option value=1>1 - Modify Nothing</option><option value=2>2 - Modify Nothing Except Status</option><option value=3>3 - Modify All Fields</option><option value=4>4 - Verify First Round of QC</option><option value=5>5 - View QC Statistics</option><option value=6>6 - Ability to Modify FINISHed records</option><option value=7>7 - Manager Level</option><option SELECTED>$qc_user_level</option></select>$NWB#vicidial_users-qc_user_level$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>QC Pass: </td><td align=left><select size=1 name=qc_pass><option>0</option><option>1</option><option SELECTED>$qc_pass</option></select>$NWB#vicidial_users-qc_pass$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>QC Finish: </td><td align=left><select size=1 name=qc_finish><option>0</option><option>1</option><option SELECTED>$qc_finish</option></select>$NWB#vicidial_users-qc_finish$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>QC Commit: </td><td align=left><select size=1 name=qc_commit><option>0</option><option>1</option><option SELECTED>$qc_commit</option></select>$NWB#vicidial_users-qc_commit$NWE</td></tr>\n";
+			if ($SSqc_features_active > 0)
+				{
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td align=left><select size=1 name=qc_enabled><option>0</option><option>1</option><option SELECTED>$qc_enabled</option></select>$NWB#vicidial_users-qc_enabled$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC User Level: </td><td align=left><select size=1 name=qc_user_level><option value=1>1 - Modify Nothing</option><option value=2>2 - Modify Nothing Except Status</option><option value=3>3 - Modify All Fields</option><option value=4>4 - Verify First Round of QC</option><option value=5>5 - View QC Statistics</option><option value=6>6 - Ability to Modify FINISHed records</option><option value=7>7 - Manager Level</option><option SELECTED>$qc_user_level</option></select>$NWB#vicidial_users-qc_user_level$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Pass: </td><td align=left><select size=1 name=qc_pass><option>0</option><option>1</option><option SELECTED>$qc_pass</option></select>$NWB#vicidial_users-qc_pass$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Finish: </td><td align=left><select size=1 name=qc_finish><option>0</option><option>1</option><option SELECTED>$qc_finish</option></select>$NWB#vicidial_users-qc_finish$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Commit: </td><td align=left><select size=1 name=qc_commit><option>0</option><option>1</option><option SELECTED>$qc_commit</option></select>$NWB#vicidial_users-qc_commit$NWE</td></tr>\n";
+				}
 			}
 		if ($LOGuser_level > 8)
 			{
@@ -11645,9 +11900,11 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B9CBFD><td align=right>Modify Scripts: </td><td align=left><select size=1 name=modify_scripts><option>0</option><option>1</option><option SELECTED>$modify_scripts</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Delete Scripts: </td><td align=left><select size=1 name=delete_scripts><option>0</option><option>1</option><option SELECTED>$delete_scripts</option></select>$NWB#vicidial_users-delete_scripts$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#9BB9FB><td align=right>Modify Filters: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>Delete Filters: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
-
+			if ($SSoutbound_autodial_active > 0)
+				{
+				echo "<tr bgcolor=#9BB9FB><td align=right>Modify Filters: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>Delete Filters: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
+				}
 			echo "<tr bgcolor=#B9CBFD><td align=right>AGC Admin Access: </td><td align=left><select size=1 name=ast_admin_access><option>0</option><option>1</option><option SELECTED>$ast_admin_access</option></select>$NWB#vicidial_users-ast_admin_access$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>AGC Delete Phones: </td><td align=left><select size=1 name=ast_delete_phones><option>0</option><option>1</option><option SELECTED>$ast_delete_phones</option></select>$NWB#vicidial_users-ast_delete_phones$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Modify Call Times: </td><td align=left><select size=1 name=modify_call_times><option>0</option><option>1</option><option SELECTED>$modify_call_times</option></select>$NWB#vicidial_users-modify_call_times$NWE</td></tr>\n";
@@ -11812,6 +12069,7 @@ if ($ADD==31)
 		$vtiger_create_call_record = $row[100];
 		$vtiger_create_lead_record = $row[101];
 		$vtiger_screen_login = $row[102];
+		$cpd_amd_action = $row[103];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -12007,12 +12265,23 @@ if ($ADD==31)
 	echo "<TD BGCOLOR=\"$camp_detail_color\"> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Detail </font></a> </TD>";
 	echo "<TD BGCOLOR=\"$camp_statuses_color\"><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Statuses</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_hotkeys_color\"><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">HotKeys</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Auto Alt Dial</font></a></TD>";
+
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Auto Alt Dial</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_survey_color\"><a href=\"$PHP_SELF?ADD=31&SUB=20A&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Survey</font></a></TD>";
+		}
 	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Pause Codes</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_qc_color\"><a href=\"$PHP_SELF?ADD=31&SUB=28&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">QC</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_survey_color\"><a href=\"$PHP_SELF?ADD=31&SUB=20A&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Survey</font></a></TD>";
+	if ($SSqc_features_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_qc_color\"><a href=\"$PHP_SELF?ADD=31&SUB=28&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">QC</font></a></TD>";
+		}
+	if ($SSoutbound_autodial_active < 1)
+		{
+		echo "<TD></TD><TD></TD><TD></TD><TD></TD>\n";
+		}
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
 
@@ -12037,124 +12306,128 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form Target: </td><td align=left><input type=text name=web_form_target size=25 maxlength=255 value=\"$web_form_target\">$NWB#vicidial_campaigns-web_form_target$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$allow_closers</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-		$o=0;
-		while ($Ds_to_print > $o) 
+		if ($SSoutbound_autodial_active > 0)
 			{
-			$o++;
-			$Dstatus = $Dstatuses[$o];
+			echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
-
-			if ($DEFstatusDISABLED > 0)
+			$o=0;
+			while ($Ds_to_print > $o) 
 				{
-				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "REMOVE</DEL></td></tr>\n";
+				$o++;
+				$Dstatus = $Dstatuses[$o];
+
+				echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
+
+				if ($DEFstatusDISABLED > 0)
+					{
+					echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "REMOVE</DEL></td></tr>\n";
+					}
+				else
+					{
+					echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+					}
 				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+			echo "<option value=\"\"> - NONE - </option>\n";
+
+			echo "$dial_statuses_list";
+			echo "</select> &nbsp; \n";
+			echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+			echo "$mixes_list";
+			if (ereg("DISABLED",$list_order_mix))
+				{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
 			else
+				{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+			echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+			echo "$filters_list";
+			echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+			echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>INBOUND_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ADAPT OVERRIDE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Drop Percentage Limit: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
+			$n=100;
+			while ($n>=1)
 				{
-				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+				echo "<option>$n</option>\n";
+				$n--;
 				}
+			echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Latest Server Time: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 digits only</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+			$n=40;
+			while ($n>=-40)
+				{
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Less Intense';}
+				if ($n>0) {$dtl = 'More Intense';}
+				if ($n == $adaptive_intensity) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
+
+
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
+			$n=40;
+			while ($n>=-40)
+				{
+				$nabs = abs($n);
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Agents Waiting for Calls';}
+				if ($n>0) {$dtl = 'Calls Waiting for Agents';}
+				if ($n == $adaptive_dl_diff_target) 
+					{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Concurrent Transfers: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Queue Priority: </td><td align=left><select size=1 name=queue_priority>\n";
+			$n=99;
+			while ($n>=-99)
+				{
+				$dtl = 'Even';
+				if ($n<0) {$dtl = 'Lower';}
+				if ($n>0) {$dtl = 'Higher';}
+				if ($n == $queue_priority) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-queue_priority$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Auto Alt-Number Dialing: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3</option><option>ALT_AND_EXTENDED</option><option>ALT_AND_ADDR3_AND_EXTENDED</option><option>EXTENDED_ONLY</option><option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
 			}
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
-		echo "<option value=\"\"> - NONE - </option>\n";
-
-		echo "$dial_statuses_list";
-		echo "</select> &nbsp; \n";
-		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
-		echo "$mixes_list";
-		if (ereg("DISABLED",$list_order_mix))
-			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
-		else
-			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
-		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-		echo "$filters_list";
-		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>INBOUND_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ADAPT OVERRIDE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Available Only Tally: </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Drop Percentage Limit: </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
-		$n=100;
-		while ($n>=1)
-			{
-			echo "<option>$n</option>\n";
-			$n--;
-			}
-		echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Maximum Adapt Dial Level: </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Latest Server Time: </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 digits only</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Less Intense';}
-			if ($n>0) {$dtl = 'More Intense';}
-			if ($n == $adaptive_intensity) 
-				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-			$n--;
-			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
-
-
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Dial Level Difference Target: </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$nabs = abs($n);
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Agents Waiting for Calls';}
-			if ($n>0) {$dtl = 'Calls Waiting for Agents';}
-			if ($n == $adaptive_dl_diff_target) 
-				{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
-			$n--;
-			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Concurrent Transfers: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Queue Priority: </td><td align=left><select size=1 name=queue_priority>\n";
-		$n=99;
-		while ($n>=-99)
-			{
-			$dtl = 'Even';
-			if ($n<0) {$dtl = 'Lower';}
-			if ($n>0) {$dtl = 'Higher';}
-			if ($n == $queue_priority) 
-				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-			$n--;
-			}
-		echo "</select> $NWB#vicidial_campaigns-queue_priority$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Auto Alt-Number Dialing: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3</option><option>ALT_AND_EXTENDED</option><option>ALT_AND_ADDR3_AND_EXTENDED</option><option>EXTENDED_ONLY</option><option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 
@@ -12163,16 +12436,20 @@ if ($ADD==31)
 		echo "<option selected value=\"$local_call_time\">$local_call_time - $call_timename_list[$local_call_time]</option>\n";
 		echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Dial Timeout: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Dial Timeout: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Dial Prefix: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Omit Phone Code: </td><td align=left><select size=1 name=omit_phone_code><option>Y</option><option>N</option><option SELECTED>$omit_phone_code</option></select>$NWB#vicidial_campaigns-omit_phone_code$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign CallerID: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign VDAD exten: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Campaign VDAD exten: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Rec exten: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Recording: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
@@ -12190,8 +12467,12 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Answering Machine Message: </td><td align=left><input type=text name=am_message_exten size=10 maxlength=20 value=\"$am_message_exten\">$NWB#vicidial_campaigns-am_message_exten$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>AMD Send to VM exten: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>AMD Send to VM exten: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
 
+			echo "<tr bgcolor=#B6D3FC><td align=right>CPD AMD Action: </td><td align=left><select size=1 name=cpd_amd_action><option>DISABLED</option><option>DISPO</option><option>MESSAGE</option><option SELECTED>$cpd_amd_action</option></select>$NWB#vicidial_campaigns-cpd_amd_action$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Transfer-Conf DTMF 1: </td><td align=left><input type=text name=xferconf_a_dtmf size=20 maxlength=50 value=\"$xferconf_a_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Transfer-Conf Number 1: </td><td align=left><input type=text name=xferconf_a_number size=20 maxlength=50 value=\"$xferconf_a_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
@@ -12200,22 +12481,26 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Transfer-Conf Number 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Alt Number Dialing: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Alt Number Dialing: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Scheduled Callbacks: </td><td align=left><select size=1 name=scheduled_callbacks><option>Y</option><option>N</option><option SELECTED>$scheduled_callbacks</option></select>$NWB#vicidial_campaigns-scheduled_callbacks$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Drop Call Seconds: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Drop Call Seconds: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Drop Action: </td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_campaigns-drop_action$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Drop Action: </td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_campaigns-drop_action$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Safe Harbor Exten: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Safe Harbor Exten: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Drop Transfer Group: </td><td align=left><select size=1 name=drop_inbound_group>";
-		echo "$Dgroups_menu";
-		echo "</select>$NWB#vicidial_campaigns-drop_inbound_group$NWE</td></tr>\n";
-
+			echo "<tr bgcolor=#B6D3FC><td align=right>Drop Transfer Group: </td><td align=left><select size=1 name=drop_inbound_group>";
+			echo "$Dgroups_menu";
+			echo "</select>$NWB#vicidial_campaigns-drop_inbound_group$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Wrap Up Seconds: </td><td align=left><input type=text name=wrapup_seconds size=5 maxlength=3 value=\"$wrapup_seconds\">$NWB#vicidial_campaigns-wrapup_seconds$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Wrap Up Message: </td><td align=left><input type=text name=wrapup_message size=40 maxlength=255 value=\"$wrapup_message\">$NWB#vicidial_campaigns-wrapup_message$NWE</td></tr>\n";
@@ -12231,8 +12516,10 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Disable Alter Customer Data: </td><td align=left><select size=1 name=disable_alter_custdata><option>Y</option><option>N</option><option SELECTED>$disable_alter_custdata</option></select>$NWB#vicidial_campaigns-disable_alter_custdata$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Disable Alter Customer Phone: </td><td align=left><select size=1 name=disable_alter_custphone><option>Y</option><option>N</option><option SELECTED>$disable_alter_custphone</option></select>$NWB#vicidial_campaigns-disable_alter_custphone$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Allow No-Hopper-Leads Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Allow No-Hopper-Leads Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Display Queue Count: </td><td align=left><select size=1 name=display_queue_count><option>Y</option><option>N</option><option SELECTED>$display_queue_count</option></select>$NWB#vicidial_campaigns-display_queue_count$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Manual Dial List ID: </td><td align=left><input type=text name=manual_dial_list_id size=15 maxlength=12 value=\"$manual_dial_list_id\">$NWB#vicidial_campaigns-manual_dial_list_id$NWE</td></tr>\n";
@@ -12241,13 +12528,15 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Clipboard Copy: </td><td align=left><select size=1 name=agent_clipboard_copy><option>NONE</option><option>lead_id</option><option>list_id</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>phone_code</option><option>phone_number</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>alt_phone</option><option>comments</option><option>date_of_birth</option><option>email</option><option>gender</option><option>gmt_offset_now</option><option>security_phrase</option><option>vendor_lead_code</option><option SELECTED>$agent_clipboard_copy</option></select>$NWB#vicidial_campaigns-agent_clipboard_copy$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Extended Alt Dial: </td><td align=left><select size=1 name=agent_extended_alt_dial><option>Y</option><option>N</option><option SELECTED>$agent_extended_alt_dial</option></select>$NWB#vicidial_campaigns-agent_extended_alt_dial$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Extended Alt Dial: </td><td align=left><select size=1 name=agent_extended_alt_dial><option>Y</option><option>N</option><option SELECTED>$agent_extended_alt_dial</option></select>$NWB#vicidial_campaigns-agent_extended_alt_dial$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Outbound CallerID: </td><td align=left><select size=1 name=three_way_call_cid><option>CAMPAIGN</option><option>CUSTOMER</option><option>AGENT_PHONE</option><option SELECTED>$three_way_call_cid</option></select>$NWB#vicidial_campaigns-three_way_call_cid$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Dial Prefix: </td><td align=left><input type=text name=three_way_dial_prefix size=15 maxlength=20 value=\"$three_way_dial_prefix\">$NWB#vicidial_campaigns-three_way_dial_prefix$NWE</td></tr>\n";
 
-		if ($enable_vtiger_integration_LU > 0)
+		if ($SSenable_vtiger_integration > 0)
 			{
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Search Category: </td><td align=left><select size=1 name=vtiger_search_category><option>LEAD</option><option>ACCOUNT</option><option>VENDOR</option><option>LEAD_ACCOUNT</option><option>LEAD_ACCOUNT_VENDOR</option><option>ACCTID</option><option>ACCTID_ACCOUNT</option><option>ACCTID_ACCOUNT_LEAD_VENDOR</option><option SELECTED>$vtiger_search_category</option></select>$NWB#vicidial_campaigns-vtiger_search_category$NWE</td></tr>\n";
 
@@ -12295,106 +12584,105 @@ if ($ADD==31)
 	echo "<input type=hidden name=DB value=$DB>\n";
 	echo "<input type=hidden name=stage value=list_activation>\n";
 	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
 
-	echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
 
-	$LISTlink='stage=LISTIDDOWN';
-	$TALLYlink='stage=TALLYDOWN';
-	$ACTIVElink='stage=ACTIVEDOWN';
-	$CAMPAIGNlink='stage=CAMPAIGNDOWN';
-	$CALLDATElink='stage=CALLDATEDOWN';
-	$SQLorder='order by list_id';
-	if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
-	if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
-	if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
-	if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
-	if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
-	if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
-	if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
-	if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
-	if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
-	if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
-		$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
-		$rslt=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rslt);
+		echo "<TABLE><TR><TD>\n";
+			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-		echo "<TR BGCOLOR=BLACK>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
-		echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
-		echo "</TR>\n";
+		$LISTlink='stage=LISTIDDOWN';
+		$TALLYlink='stage=TALLYDOWN';
+		$ACTIVElink='stage=ACTIVEDOWN';
+		$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+		$CALLDATElink='stage=CALLDATEDOWN';
+		$SQLorder='order by list_id';
+		if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+		if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+		if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+		if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+		if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+		if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+		if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+		if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+		if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+		if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+			$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
+			$rslt=mysql_query($stmt, $link);
+			$lists_to_print = mysql_num_rows($rslt);
 
-		$o=0;
-		while ($lists_to_print > $o)
+			echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+			echo "<TR BGCOLOR=BLACK>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+			echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
+			echo "</TR>\n";
+
+			$o=0;
+			while ($lists_to_print > $o)
+				{
+				$row=mysql_fetch_row($rslt);
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+				echo "<td><font size=1> $row[1]</td>";
+				echo "<td><font size=1> $row[2]</td>";
+				echo "<td><font size=1> $row[3]</td>";
+				echo "<td><font size=1> $row[4]</td>";
+				echo "<td>";
+
+				if (ereg('Y',$row[4]))
+					{
+					$active_lists++;
+					$camp_lists .= "'$row[0]',";
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+					}
+				else
+					{
+					$inactive_lists++;
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+					}
+
+				echo "</td>";
+				echo "<td><font size=1> $row[5]</td>";
+				echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
+
+				$o++;
+				}
+
+			echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
+			echo "</TABLE></center><BR></FORM>\n";
+
+		echo "<center><b>\n";
+
+		$filterSQL = $filtersql_list[$lead_filter_id];
+		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
+		if (strlen($filterSQL)>4)
+			{$fSQL = "and $filterSQL";}
+		else
+			{$fSQL = '';}
+
+			$camp_lists = eregi_replace(".$","",$camp_lists);
+		echo "This campaign has $active_lists active lists and $inactive_lists inactive lists<br><br>\n";
+
+		if ($display_dialable_count == 'Y')
 			{
-			$row=mysql_fetch_row($rslt);
-			if (eregi("1$|3$|5$|7$|9$", $o))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
-			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
-			echo "<td><font size=1> $row[1]</td>";
-			echo "<td><font size=1> $row[2]</td>";
-			echo "<td><font size=1> $row[3]</td>";
-			echo "<td><font size=1> $row[4]</td>";
-			echo "<td>";
-
-			if (ereg('Y',$row[4]))
-				{
-				$active_lists++;
-				$camp_lists .= "'$row[0]',";
-				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
-				}
-			else
-				{
-				$inactive_lists++;
-				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
-				}
-
-			echo "</td>";
-			echo "<td><font size=1> $row[5]</td>";
-			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
-
-			$o++;
+			### call function to calculate and print dialable leads
+			dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
 			}
-
-		echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
-		echo "</TABLE></center><BR></FORM>\n";
-
-	echo "<center><b>\n";
-
-	$filterSQL = $filtersql_list[$lead_filter_id];
-	$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
-	if (strlen($filterSQL)>4)
-		{$fSQL = "and $filterSQL";}
-	else
-		{$fSQL = '';}
-
-		$camp_lists = eregi_replace(".$","",$camp_lists);
-	echo "This campaign has $active_lists active lists and $inactive_lists inactive lists<br><br>\n";
-
-	if ($display_dialable_count == 'Y')
-		{
-		### call function to calculate and print dialable leads
-		dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
-		}
-	else
-		{
-		echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
-		echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">SHOW</a></font><BR><BR>";
-		}
-
-
-
-
+		else
+			{
+			echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
+			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">SHOW</a></font><BR><BR>";
+			}
 
 		$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
 		if ($DB) {echo "$stmt\n";}
@@ -12404,10 +12692,11 @@ if ($ADD==31)
 
 		echo "This campaign has $hopper_leads leads in the dial hopper<br><br>\n";
 		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Click here to see what leads are in the hopper right now</a><br><br>\n";
-		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Click here to see all CallBack Holds in this campaign</a><BR><BR>\n";
 		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
-		echo "</b></center>\n";
 		}
+	echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Click here to see all CallBack Holds in this campaign</a><BR><BR>\n";
+	echo "</b></center>\n";
+	}
 
 
 	##### CAMPAIGN CUSTOM STATUSES #####
@@ -12720,7 +13009,7 @@ if ($ADD==31)
 		}
 
 	##### CAMPAIGN QC SETTINGS #####
-	if ($SUB==28)
+	if ( ($SUB==28) and ($SSqc_features_active > 0) )
 		{
 		$stmt="SELECT list_id,list_name,active from vicidial_lists where campaign_id='$campaign_id'";
 		$rslt=mysql_query($stmt, $link);
@@ -12993,9 +13282,16 @@ if ($ADD==34)
 	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
 	echo "<TD BGCOLOR=\"$camp_detail_color\"><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Basic View </font></a></TD>";
 	echo "<TD> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Detail View</font></a> </TD>";
-	echo "<TD BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a> </TD>";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a> </TD>";
+		}
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time Screen</font></a></TD>\n";
 	echo "<TD WIDTH=300><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> &nbsp; </font></TD>\n";
+	if ($SSoutbound_autodial_active < 1)
+		{
+		echo "<TD></TD>";
+		}
 	echo "</TR></TABLE>\n";
 
 	if ($SUB < 1)
@@ -13017,72 +13313,74 @@ if ($ADD==34)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Default Transfer Group: </td><td align=left>$default_xfer_group $NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
-
-		$o=0;
-		while ($Ds_to_print > $o) 
+		if ($SSoutbound_autodial_active > 0)
 			{
-			$o++;
-			$Dstatus = $Dstatuses[$o];
+			echo "<tr bgcolor=#B6D3FC><td align=right>Allow Inbound and Blended: </td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
-			if ($DEFstatusDISABLED > 0)
+			$o=0;
+			while ($Ds_to_print > $o) 
 				{
-				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "REMOVE</DEL></td></tr>\n";
+				$o++;
+				$Dstatus = $Dstatuses[$o];
+
+				echo "<tr bgcolor=#B6D3FC><td align=right>Dial Status $o: </td><td align=left> \n";
+				if ($DEFstatusDISABLED > 0)
+					{
+					echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "REMOVE</DEL></td></tr>\n";
+					}
+				else
+					{
+					echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+					}
 				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+			echo "<option value=\"\"> - NONE - </option>\n";
+
+			echo "$dial_statuses_list";
+			echo "</select> &nbsp; \n";
+			echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+			echo "$mixes_list";
+			if (ereg("DISABLED",$list_order_mix))
+				{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
 			else
+				{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+			echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+			echo "$filters_list";
+			echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+			echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>INBOUND_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
+			$n=40;
+			while ($n>=-40)
 				{
-				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">REMOVE</a></td></tr>\n";
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Less Intense';}
+				if ($n>0) {$dtl = 'More Intense';}
+				if ($n == $adaptive_intensity) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
 				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 			}
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Status: </td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
-		echo "<option value=\"\"> - NONE - </option>\n";
-
-		echo "$dial_statuses_list";
-		echo "</select> &nbsp; \n";
-		echo "<input type=submit name=submit value=ADD> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>List Order: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
-		echo "$mixes_list";
-		if (ereg("DISABLED",$list_order_mix))
-			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
-		else
-			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
-		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Lead Filter</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-		echo "$filters_list";
-		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Force Reset of Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Dial Method: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>INBOUND_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Adapt Intensity Modifier: </td><td align=left><select size=1 name=adaptive_intensity>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Less Intense';}
-			if ($n>0) {$dtl = 'More Intense';}
-			if ($n == $adaptive_intensity) 
-				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-			$n--;
-			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
-
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left>$script_id</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left>$get_call_launch</td></tr>\n";
@@ -13092,120 +13390,123 @@ if ($ADD==34)
 
 		echo "<center>\n";
 
-	echo "<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=44>\n";
-	echo "<input type=hidden name=DB value=$DB>\n";
-	echo "<input type=hidden name=stage value=list_activation>\n";
-	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
-	echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=44>\n";
+		echo "<input type=hidden name=DB value=$DB>\n";
+		echo "<input type=hidden name=stage value=list_activation>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "<br><b>LISTS WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
 
-	echo "<TABLE><TR><TD>\n";
-		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		echo "<TABLE><TR><TD>\n";
+			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$LISTlink='stage=LISTIDDOWN';
-	$TALLYlink='stage=TALLYDOWN';
-	$ACTIVElink='stage=ACTIVEDOWN';
-	$CAMPAIGNlink='stage=CAMPAIGNDOWN';
-	$CALLDATElink='stage=CALLDATEDOWN';
-	$SQLorder='order by list_id';
-	if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
-	if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
-	if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
-	if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
-	if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
-	if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
-	if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
-	if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
-	if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
-	if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
-		$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
-		$rslt=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rslt);
-
-		echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-		echo "<TR BGCOLOR=BLACK>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
-		echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
-		echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
-		echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
-		echo "</TR>\n";
-
-		$o=0;
-		while ($lists_to_print > $o)
-			{
-			$row=mysql_fetch_row($rslt);
-			if (eregi("1$|3$|5$|7$|9$", $o))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
-			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
-			echo "<td><font size=1> $row[1]</td>";
-			echo "<td><font size=1> $row[2]</td>";
-			echo "<td><font size=1> $row[3]</td>";
-			echo "<td><font size=1> $row[4]</td>";
-			echo "<td>";
-
-			if (ereg('Y',$row[4]))
-				{
-				$active_lists++;
-				$camp_lists .= "'$row[0]',";
-				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
-				}
-			else
-				{
-				$inactive_lists++;
-				echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
-				}
-
-			echo "</td>";
-			echo "<td><font size=1> $row[5]</td>";
-			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
-
-			$o++;
-			}
-
-		echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
-		echo "</TABLE></center><BR></FORM>\n";
-		echo "<center><b>\n";
-
-		$filterSQL = $filtersql_list[$lead_filter_id];
-		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
-		if (strlen($filterSQL)>4)
-			{$fSQL = "and $filterSQL";}
-		else
-			{$fSQL = '';}
-
-			$camp_lists = eregi_replace(".$","",$camp_lists);
-		echo "This campaign has $active_lists active lists and $inactive_lists inactive lists<br><br>\n";
-
-
-		if ($display_dialable_count == 'Y')
-			{
-			### call function to calculate and print dialable leads
-			dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
-			echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
-			}
-		else
-			{
-			echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
-			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">SHOW</a></font><BR><BR>";
-			}
-
-
-
-			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
-			if ($DB) {echo "$stmt\n";}
+		$LISTlink='stage=LISTIDDOWN';
+		$TALLYlink='stage=TALLYDOWN';
+		$ACTIVElink='stage=ACTIVEDOWN';
+		$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+		$CALLDATElink='stage=CALLDATEDOWN';
+		$SQLorder='order by list_id';
+		if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+		if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+		if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+		if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+		if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+		if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+		if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+		if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+		if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+		if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+			$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
 			$rslt=mysql_query($stmt, $link);
-			$rowx=mysql_fetch_row($rslt);
-			$hopper_leads = "$rowx[0]";
+			$lists_to_print = mysql_num_rows($rslt);
 
-		echo "This campaign has $hopper_leads leads in the dial hopper<br><br>\n";
-		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Click here to see what leads are in the hopper right now</a><br><br>\n";
+			echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+			echo "<TR BGCOLOR=BLACK>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST ID</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LIST NAME</B></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DESCRIPTION</B></TD>\n";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+			echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ACTIVE</B></a></TD>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LAST CALL DATE</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>MODIFY</TD>\n";
+			echo "</TR>\n";
+
+			$o=0;
+			while ($lists_to_print > $o)
+				{
+				$row=mysql_fetch_row($rslt);
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+				echo "<td><font size=1> $row[1]</td>";
+				echo "<td><font size=1> $row[2]</td>";
+				echo "<td><font size=1> $row[3]</td>";
+				echo "<td><font size=1> $row[4]</td>";
+				echo "<td>";
+
+				if (ereg('Y',$row[4]))
+					{
+					$active_lists++;
+					$camp_lists .= "'$row[0]',";
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+					}
+				else
+					{
+					$inactive_lists++;
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+					}
+
+				echo "</td>";
+				echo "<td><font size=1> $row[5]</td>";
+				echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">MODIFY</a></td></tr>\n";
+
+				$o++;
+				}
+
+			echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"SUBMIT ACTIVE LIST CHANGES\"></TD></TR>\n";
+			echo "</TABLE></center><BR></FORM>\n";
+			echo "<center><b>\n";
+
+			$filterSQL = $filtersql_list[$lead_filter_id];
+			$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
+			if (strlen($filterSQL)>4)
+				{$fSQL = "and $filterSQL";}
+			else
+				{$fSQL = '';}
+
+				$camp_lists = eregi_replace(".$","",$camp_lists);
+			echo "This campaign has $active_lists active lists and $inactive_lists inactive lists<br><br>\n";
+
+
+			if ($display_dialable_count == 'Y')
+				{
+				### call function to calculate and print dialable leads
+				dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
+				echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">HIDE</a></font><BR><BR>";
+				}
+			else
+				{
+				echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
+				echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">SHOW</a></font><BR><BR>";
+				}
+
+
+
+				$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rslt);
+				$hopper_leads = "$rowx[0]";
+
+			echo "This campaign has $hopper_leads leads in the dial hopper<br><br>\n";
+			echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Click here to see what leads are in the hopper right now</a><br><br>\n";
+			echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
+		}
 		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Click here to see all CallBack Holds in this campaign</a><BR><BR>\n";
-		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
 		echo "</b></center>\n";
 
 		echo "<br>\n";
@@ -14478,47 +14779,24 @@ if ($ADD==3111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> &nbsp; </td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> Inbound Group QC Settings: </td></tr>\n";
-
-	##### get status listings for dynamic pulldown
-	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
-	$QCstatuses = explode(" ", $qc_statuses);
-	$QCs_to_print = (count($QCstatuses) -0);
-	$stmt="SELECT * from vicidial_statuses where status NOT IN('QUEUE','INCALL') order by status";
-	$rslt=mysql_query($stmt, $link);
-	$statuses_to_print = mysql_num_rows($rslt);
-	$qc_statuses_list='';
-
-	$o=0;
-	while ($statuses_to_print > $o) 
+	if ($SSqc_features_active > 0)
 		{
-		$rowx=mysql_fetch_row($rslt);
-		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
-		$p=0;
-		while ($p < $QCs_to_print)
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> &nbsp; </td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> Inbound Group QC Settings: </td></tr>\n";
+
+		##### get status listings for dynamic pulldown
+		$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+		$QCstatuses = explode(" ", $qc_statuses);
+		$QCs_to_print = (count($QCstatuses) -0);
+		$stmt="SELECT * from vicidial_statuses where status NOT IN('QUEUE','INCALL') order by status";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$qc_statuses_list='';
+
+		$o=0;
+		while ($statuses_to_print > $o) 
 			{
-			if ($rowx[0] == $QCstatuses[$p]) 
-				{
-				$qc_statuses_list .= " CHECKED";
-				}
-			$p++;
-			}
-		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
-
-		$o++;
-		}
-
-	$stmt="SELECT distinct(status),status_name from vicidial_campaign_statuses order by status";
-	$rslt=mysql_query($stmt, $link);
-	$Cstatuses_to_print = mysql_num_rows($rslt);
-
-	$o=0;
-	while ($Cstatuses_to_print > $o) 
-		{
-		$rowx=mysql_fetch_row($rslt);
-		if (!ereg("\"$rowx[0]\"",$qc_statuses_list))
-			{
+			$rowx=mysql_fetch_row($rslt);
 			$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
 			$p=0;
 			while ($p < $QCs_to_print)
@@ -14530,55 +14808,81 @@ if ($ADD==3111)
 				$p++;
 				}
 			$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
+			$o++;
 			}
-		$o++;
+
+		$stmt="SELECT distinct(status),status_name from vicidial_campaign_statuses order by status";
+		$rslt=mysql_query($stmt, $link);
+		$Cstatuses_to_print = mysql_num_rows($rslt);
+
+		$o=0;
+		while ($Cstatuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			if (!ereg("\"$rowx[0]\"",$qc_statuses_list))
+				{
+				$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+				$p=0;
+				while ($p < $QCs_to_print)
+					{
+					if ($rowx[0] == $QCstatuses[$p]) 
+						{
+						$qc_statuses_list .= " CHECKED";
+						}
+					$p++;
+					}
+				$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+				}
+			$o++;
+			}
+
+		##### get scripts listings for pulldown
+		$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
+		$rslt=mysql_query($stmt, $link);
+		$scripts_to_print = mysql_num_rows($rslt);
+		$QCscripts_list="";
+		$o=0;
+		while ($scripts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$scriptname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+		##### get shifts listings for pulldown
+		$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+		$rslt=mysql_query($stmt, $link);
+		$shifts_to_print = mysql_num_rows($rslt);
+		$QCshifts_list="";
+		$o=0;
+		while ($shifts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$shiftname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_inbound_groups-qc_enabled$NWE</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC Statuses: <BR> $NWB#vicidial_inbound_groups-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=70 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_inbound_groups-qc_web_form_address$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
+		echo "$QCscripts_list";
+		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
+		echo "</select>$NWB#vicidial_inbound_groups-qc_script$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
+		echo "$QCshifts_list";
+		echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
+		echo "</select>$NWB#vicidial_inbound_groups-qc_shift_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_inbound_groups-qc_get_record_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Show Recording: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_inbound_groups-qc_show_recording$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
 		}
 
-	##### get scripts listings for pulldown
-	$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
-	$rslt=mysql_query($stmt, $link);
-	$scripts_to_print = mysql_num_rows($rslt);
-	$QCscripts_list="";
-	$o=0;
-	while ($scripts_to_print > $o)
-		{
-		$rowx=mysql_fetch_row($rslt);
-		$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$scriptname_list["$rowx[0]"] = "$rowx[1]";
-		$o++;
-		}
-	##### get shifts listings for pulldown
-	$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
-	$rslt=mysql_query($stmt, $link);
-	$shifts_to_print = mysql_num_rows($rslt);
-	$QCshifts_list="";
-	$o=0;
-	while ($shifts_to_print > $o)
-		{
-		$rowx=mysql_fetch_row($rslt);
-		$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-		$shiftname_list["$rowx[0]"] = "$rowx[1]";
-		$o++;
-		}
-
-	echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled: </td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_inbound_groups-qc_enabled$NWE</td></tr>\n";
-	echo "<tr bgcolor=#9BB9FB><td align=right>QC Statuses: <BR> $NWB#vicidial_inbound_groups-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
-	echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm: </td><td align=left><input type=text name=qc_web_form_address size=70 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_inbound_groups-qc_web_form_address$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
-	echo "$QCscripts_list";
-	echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
-	echo "</select>$NWB#vicidial_inbound_groups-qc_script$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
-	echo "$QCshifts_list";
-	echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
-	echo "</select>$NWB#vicidial_inbound_groups-qc_shift_id$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_inbound_groups-qc_get_record_launch$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B9CBFD><td align=right>QC Show Recording: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_inbound_groups-qc_show_recording$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=SUBMIT></td></tr>\n";
 	echo "</table>\n";
 	echo "<BR></center></FORM><br>\n";
 
@@ -14896,12 +15200,15 @@ if ($ADD==311111)
 		}
 	echo " <BR>&nbsp;</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Campaigns: <BR>$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td><td align=left>\n";
-	echo "$qc_campaigns_list";
-	echo " <BR>&nbsp;</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Inbound Groups: <BR>$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td><td align=left>\n";
-	echo "$qc_groups_list";
-	echo " <BR>&nbsp;</td></tr>\n";
+	if ($SSqc_features_active > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Campaigns: <BR>$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td><td align=left>\n";
+		echo "$qc_campaigns_list";
+		echo " <BR>&nbsp;</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>QC Allowed Inbound Groups: <BR>$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td><td align=left>\n";
+		echo "$qc_groups_list";
+		echo " <BR>&nbsp;</td></tr>\n";
+		}
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
@@ -15991,7 +16298,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -16025,6 +16332,8 @@ if ($ADD==311111111111111)
 	$vtiger_login = 				$row[28];
 	$vtiger_pass = 					$row[29];
 	$vtiger_url = 					$row[30];
+	$qc_features_active =			$row[31];
+	$outbound_autodial_active =		$row[32];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -16081,7 +16390,8 @@ if ($ADD==311111111111111)
 	echo "<option selected value=\"$vdc_header_phone_format\">$vdc_header_phone_format</option>\n";
 	echo "</select>$NWB#settings-vdc_header_phone_format$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent API Active: </td><td align=left><select size=1 name=vdc_agent_api_active><option>1</option><option>0</option><option selected>$vdc_agent_api_active</option></select>$NWB#settings-vdc_agent_api_active$NWE</td></tr>\n";
-
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Features Active: </td><td align=left><select size=1 name=qc_features_active><option>1</option><option>0</option><option selected>$qc_features_active</option></select>$NWB#settings-qc_features_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Outbound Auto-Dial Active: </td><td align=left><select size=1 name=outbound_autodial_active><option>1</option><option>0</option><option selected>$outbound_autodial_active</option></select>$NWB#settings-outbound_autodial_active$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#99FFCC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
 	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
@@ -16343,7 +16653,7 @@ if ($ADD==331111111111111)
 
 if ($ADD==341111111111111)
 {
-	if ($LOGmodify_servers==1)
+	if ( ($LOGmodify_servers==1) and ($SSqc_features_active > 0) )
 	{
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
@@ -16769,10 +17079,13 @@ if ($ADD==10)
 	echo "<td><font size=1 color=white align=left><B>CAMPAIGN ID</B></td>";
 	echo "<td><font size=1 color=white><CENTER><B>NAME</B></CENTER></td>";
 	echo "<td><font size=1 color=white><B>ACTIVE &nbsp; </B></td>";
-	echo "<td><font size=1 color=white><B>DIAL METHOD &nbsp; </B></td>";
-	echo "<td><font size=1 color=white><B> LEVEL &nbsp; </B></td>";
-	echo "<td><font size=1 color=white><B>LEAD ORDER &nbsp; </B></td>";
-	echo "<td><font size=1 color=white><B>DIAL STATUSES &nbsp; </B></td>";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<td><font size=1 color=white><B>DIAL METHOD &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B> LEVEL &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B>LEAD ORDER &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B>DIAL STATUSES &nbsp; </B></td>";
+		}
 	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;
@@ -16786,10 +17099,13 @@ if ($ADD==10)
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\">$row[0]</a> &nbsp; </td>";
 		echo "<td><font size=1>$row[1] &nbsp; </td>";
 		echo "<td><font size=1>$row[2] &nbsp; </td>";
-		echo "<td><font size=1>$row[3] &nbsp; </td>";
-		echo "<td><font size=1>$row[4] &nbsp; </td>";
-		echo "<td><font size=1>$row[5] &nbsp; </td>";
-		echo "<td><font size=1>$row[6]</td>";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<td><font size=1>$row[3] &nbsp; </td>";
+			echo "<td><font size=1>$row[4] &nbsp; </td>";
+			echo "<td><font size=1>$row[5] &nbsp; </td>";
+			echo "<td><font size=1>$row[6]</td>";
+			}
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 		}
@@ -17513,13 +17829,11 @@ if ($ADD==999999)
 		$i++;
 		}
 
-	$stmt="SELECT enable_queuemetrics_logging,queuemetrics_url,enable_vtiger_integration,vtiger_url from system_settings;";
+	$stmt="SELECT queuemetrics_url,vtiger_url from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$enable_queuemetrics_logging_LU =	$row[0];
-	$queuemetrics_url_LU =				$row[1];
-	$enable_vtiger_integration_LU =		$row[2];
-	$vtiger_url_LU =					$row[3];
+	$queuemetrics_url_LU =				$row[0];
+	$vtiger_url_LU =					$row[1];
 
 	?>
 
@@ -17541,11 +17855,11 @@ if ($ADD==999999)
 	    <a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER GROUP TIMECLOCK STATUS REPORT</a></FONT>
 	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
 <?
-	if ($enable_queuemetrics_logging_LU > 0)
+	if ($SSenable_queuemetrics_logging > 0)
 		{
 		echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS REPORTS</a></FONT>\n";
 		}
-	if ($enable_vtiger_integration_LU > 0)
+	if ($SSenable_vtiger_integration > 0)
 		{
 		echo "<LI><a href=\"$vtiger_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>VTIGER HOME</a></FONT>\n";
 		}

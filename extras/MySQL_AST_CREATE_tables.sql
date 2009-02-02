@@ -609,7 +609,8 @@ web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
 vtiger_search_category VARCHAR(100) default 'LEAD',
 vtiger_create_call_record ENUM('Y','N') default 'Y',
 vtiger_create_lead_record ENUM('Y','N') default 'Y',
-vtiger_screen_login ENUM('Y','N') default 'Y'
+vtiger_screen_login ENUM('Y','N') default 'Y',
+cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED'
 );
 
 CREATE TABLE vicidial_lists (
@@ -1046,7 +1047,9 @@ vtiger_server_ip VARCHAR(15),
 vtiger_dbname VARCHAR(50),
 vtiger_login VARCHAR(50),
 vtiger_pass VARCHAR(50),
-vtiger_url VARCHAR(255)
+vtiger_url VARCHAR(255),
+qc_features_active ENUM('1','0') default '0',
+outbound_autodial_active ENUM('1','0') default '1'
 );
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -1349,6 +1352,21 @@ longitude VARCHAR(17)
 
 CREATE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
 
+CREATE TABLE vicidial_cpd_log (
+cpd_id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+channel VARCHAR(100) NOT NULL,
+uniqueid VARCHAR(20),
+callerid VARCHAR(20),
+server_ip VARCHAR(15) NOT NULL,
+lead_id INT(9) UNSIGNED,
+event_date DATETIME,
+result VARCHAR(20),
+status ENUM('NEW','PROCESSED') default 'NEW',
+cpd_seconds DECIMAL(7,2) default '0',
+index(uniqueid),
+index(callerid),
+index(lead_id)
+);
 
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
@@ -1437,7 +1455,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1127';
+UPDATE system_settings SET db_schema_version='1128';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

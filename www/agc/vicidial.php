@@ -216,10 +216,11 @@
 # 90120-1719 - Added API pause/resume and number dial functionality
 # 90126-2302 - Added Vtiger login option and agent alert option
 # 90128-0230 - Added vendor_lead_code to API dial and manuald dial with lookup
+# 90202-0148 - Added option to disable BLENDED checkbox
 #
 
-$version = '2.0.5-195';
-$build = '90128-0230';
+$version = '2.0.5-196';
+$build = '90202-0148';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -294,7 +295,7 @@ $random = (rand(1000000, 9999999) + 10000000);
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration FROM system_settings;";
+$stmt = "SELECT use_non_latin,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,webroot_writable,timeclock_end_of_day,vtiger_url,enable_vtiger_integration,outbound_autodial_active FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01001',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 if ($DB) {echo "$stmt\n";}
@@ -311,6 +312,7 @@ while ($i < $qm_conf_ct)
 	$timeclock_end_of_day =			$row[5];
 	$vtiger_url =					$row[6];
 	$enable_vtiger_integration =	$row[7];
+	$outbound_autodial_active =		$row[8];
 
 	$i++;
 	}
@@ -346,6 +348,7 @@ $LogouTKicKAlL			= '1';	# set to 1 to hangup all calls in session upon agent log
 $PhoneSComPIP			= '1';	# set to 1 to log computer IP to phone if blank, set to 2 to force log each login
 $DefaulTAlTDiaL			= '0';	# set to 1 to enable ALT DIAL by default if enabled for the campaign
 $AgentAlert_allowed		= '1';	# set to 1 to allow Agent alert option
+$disable_blended_checkbox='0';	# set to 1 to disable the BLENDED checkbox from the in-group chooser screen
 
 $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
@@ -964,7 +967,7 @@ $VDloginDISPLAY=0;
 				}
 			if ($display_queue_count=='N')
 				{$callholdstatus='0';}
-			if ($dial_method == 'INBOUND_MAN')
+			if ( ($dial_method == 'INBOUND_MAN') or ($outbound_autodial_active < 1) )
 				{$VU_closer_default_blended=0;}
 
 			$closer_campaigns = preg_replace("/^ | -$/","",$closer_campaigns);
@@ -7935,7 +7938,14 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
     <table border=1 bgcolor="#CCFFCC" width=<?=$CAwidth ?> height=460><TR><TD align=center VALIGN=top> CLOSER INBOUND GROUP SELECTION <BR>
 	<span id="CloserSelectContent"> Closer Inbound Group Selection </span>
 	<input type=hidden name=CloserSelectList><BR>
-	<input type=checkbox name=CloserSelectBlended size=1 value="0"> BLENDED CALLING(outbound activated) <BR>
+	<?
+	if ( ($outbound_autodial_active > 0) and ($disable_blended_checkbox < 1) )
+		{
+		?>
+		<input type=checkbox name=CloserSelectBlended size=1 value="0"> BLENDED CALLING(outbound activated) <BR>
+		<?
+		}
+	?>
 	<a href="#" onclick="CloserSelectContent_create();return false;">RESET</a> | 
 	<a href="#" onclick="CloserSelect_submit();return false;">SUBMIT</a>
 	<BR><BR><BR><BR> &nbsp; 
@@ -7949,6 +7959,8 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 	<?
 	if (!$agentonly_callbacks)
 		{echo "<input type=checkbox name=CallBackOnlyMe size=1 value=\"0\"> MY CALLBACK ONLY <BR>";}
+	if ( ($outbound_autodial_active < 1) or ($disable_blended_checkbox > 0) )
+		{echo "<input type=checkbox name=CloserSelectBlended size=1 value=\"0\"> BLENDED CALLING<BR>";}
 	?>
 </span>
 

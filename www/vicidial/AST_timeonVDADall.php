@@ -8,7 +8,7 @@
 # STOP=4000, SLOW=40, GO=4 seconds refresh interval
 # 
 # CHANGELOG:
-# 50406-0920 - Added Paused agents < 1 min (Chris Doyle)
+# 50406-0920 - Added Paused agents < 1 min
 # 51130-1218 - Modified layout and info to show all servers in a vicidial system
 # 60421-1043 - check GET/POST vars lines with isset to not trigger PHP NOTICES
 # 60511-1343 - Added leads and drop info at the top of the screen
@@ -43,7 +43,11 @@
 # 81029-1706 - Added pause code display if enabled per campaign
 # 81108-2337 - Added inbound-only section
 # 90105-1153 - Changed monitor links to use 0 prefix instead of 6
+# 90202-0108 - Changed options to pop-out frame, added outbound_autodial_active option
 #
+
+$version = '2.0.5-35';
+$build = '90202-0108';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -95,7 +99,7 @@ if (isset($_GET["with_inbound"]))			{$with_inbound=$_GET["with_inbound"];}
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
-$stmt = "SELECT use_non_latin FROM system_settings;";
+$stmt = "SELECT use_non_latin,outbound_autodial_active FROM system_settings;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $qm_conf_ct = mysql_num_rows($rslt);
@@ -104,6 +108,7 @@ while ($i < $qm_conf_ct)
 	{
 	$row=mysql_fetch_row($rslt);
 	$non_latin =					$row[0];
+	$outbound_autodial_active =		$row[1];
 	$i++;
 	}
 ##### END SETTINGS LOOKUP #####
@@ -119,8 +124,14 @@ if (!isset($SERVdisplay))	{$SERVdisplay=1;}	# 0=no, 1=yes
 if (!isset($CALLSdisplay))	{$CALLSdisplay=1;}	# 0=no, 1=yes
 if (!isset($PHONEdisplay))	{$PHONEdisplay=0;}	# 0=no, 1=yes
 if (!isset($CUSTPHONEdisplay))	{$CUSTPHONEdisplay=0;}	# 0=no, 1=yes
-if (!isset($with_inbound))	{$with_inbound='N';}  # N=no, Y=yes, O=only
 if (!isset($PAUSEcodes))	{$PAUSEcodes='N';}  # 0=no, 1=yes
+if (!isset($with_inbound))	
+	{
+	if ($outbound_autodial_active > 0)
+		{$with_inbound='N';}  # N=no, Y=yes, O=only
+	else
+		{$with_inbound='O';}  # N=no, Y=yes, O=only
+	}
 $ingroup_detail='';
 
 if (strlen($group)>1) {$groups[0] = $group;  $RR=40;}
@@ -229,8 +240,8 @@ else
 #	$group_SQL = "group_id IN($group_SQL)";
 	}
 
-if ( (eregi('ALL-ACTIVE',$group_string)) and ($with_inbound=='O') )
-	{$with_inbound='N';}
+#if ( (eregi('ALL-ACTIVE',$group_string)) and ($with_inbound=='O') and ($outbound_autodial_active > 0) )
+#	{$with_inbound='N';}
 
 $stmt="select * from vicidial_user_groups;";
 $rslt=mysql_query($stmt, $link);
@@ -251,7 +262,7 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE WIDTH=200 CELLPADDING=5 BGCOLOR=\"#FFFF99\"><TR><TD>Select Campaigns:<BR>";
+$select_list = "<TABLE WIDTH=200 CELLPADDING=5 BGCOLOR=\"#FFFF99\"><TR><TD>Select Campaigns: <BR>";
 $select_list .= "<SELECT SIZE=10 NAME=groups[] multiple>";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -263,11 +274,13 @@ $select_list .= "<SELECT SIZE=10 NAME=groups[] multiple>";
 		$o++;
 	}
 $select_list .= "</SELECT>";
-$select_list .= "<BR><a href=\"#\" onclick=\"closeDiv(\'campaign_select_list\');\">CLOSE PANEL</a>";
-$select_list .= "</TD><TD>";
+$select_list .= "<BR><font size=1>(To select more than 1 campaign, hold down the Ctrl key and click)<font>";
+$select_list .= "</TD><TD VALIGN=TOP ALIGN=CENTER>";
+$select_list .= "<a href=\"#\" onclick=\"closeDiv(\'campaign_select_list\');\">Close Panel</a><BR><BR>";
 
 if ($UGdisplay > 0)
 	{
+	$select_list .= "Select User Group:<BR>";
 	$select_list .= "<SELECT SIZE=1 NAME=usergroup>";
 	$select_list .= "<option value=\"\">ALL USER GROUPS</option>";
 		$o=0;
@@ -279,24 +292,29 @@ if ($UGdisplay > 0)
 		}
 	$select_list .= "</SELECT><BR><BR>";
 	}
-if (!eregi('ALL-ACTIVE',$group_string))
-	{
-	$select_list .= " &nbsp; Inbound: <SELECT SIZE=1 NAME=with_inbound>";
-	$select_list .= "<option value=\"N\"";
-		if ($with_inbound=='N') {$select_list .= " selected";} 
-	$select_list .= ">No</option>";
-	$select_list .= "<option value=\"Y\"";
-		if ($with_inbound=='Y') {$select_list .= " selected";} 
-	$select_list .= ">Yes</option>";
-	$select_list .= "<option value=\"O\"";
-		if ($with_inbound=='O') {$select_list .= " selected";} 
-	$select_list .= ">Only</option>";
-	$select_list .= "</SELECT><BR><BR>";
-	}
+
+$select_list .= " &nbsp; Inbound: <SELECT SIZE=1 NAME=with_inbound>";
+$select_list .= "<option value=\"N\"";
+	if ($with_inbound=='N') {$select_list .= " selected";} 
+$select_list .= ">No</option>";
+$select_list .= "<option value=\"Y\"";
+	if ($with_inbound=='Y') {$select_list .= " selected";} 
+$select_list .= ">Yes</option>";
+$select_list .= "<option value=\"O\"";
+	if ($with_inbound=='O') {$select_list .= " selected";} 
+$select_list .= ">Only</option>";
+$select_list .= "</SELECT><BR><BR>";
+
 $select_list .= "<INPUT type=submit NAME=SUBMIT VALUE=SUBMIT><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; ";
+$select_list .= "</TD></TR>";
+$select_list .= "<TR><TD ALIGN=CENTER>";
+$select_list .= "<font size=1> &nbsp; </font>";
+$select_list .= "</TD>";
+$select_list .= "<TD NOWRAP>";
+$select_list .= "<font size=1>VERSION: $version &nbsp; BUILD: $build</font>";
 $select_list .= "</TD></TR></TABLE>";
 
-$open_list = "<TABLE WIDTH=335 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER><a href=\"#\" onclick=\"openDiv(\'campaign_select_list\');\">Choose Real-Time Display Options</a></TD></TR></TABLE>";
+$open_list = "<TABLE WIDTH=250 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER><a href=\"#\" onclick=\"openDiv(\'campaign_select_list\');\">Choose Report Display Options</a></TD></TR></TABLE>";
 
 ?>
 
@@ -385,10 +403,10 @@ echo "<INPUT TYPE=HIDDEN NAME=SERVdisplay VALUE=\"$SERVdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=CALLSdisplay VALUE=\"$CALLSdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=PHONEdisplay VALUE=\"$PHONEdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=CUSTPHONEdisplay VALUE=\"$CUSTPHONEdisplay\">\n";
-echo "VICIDIAL &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<span style=\"position:absolute;left:80px;top:4px;z-index:19;\"  id=campaign_select_list>\n";
-echo "<TABLE WIDTH=400 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER>\n";
-echo "<a href=\"#\" onclick=\"openDiv('campaign_select_list');\">Choose Real-Time Display Options</a>";
+echo "VICIDIAL Real-Time&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
+echo "<span style=\"position:absolute;left:160px;top:3px;z-index:19;\"  id=campaign_select_list>\n";
+echo "<TABLE WIDTH=250 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER>\n";
+echo "<a href=\"#\" onclick=\"openDiv('campaign_select_list');\">Choose Report Display Options</a>";
 echo "</TD></TR></TABLE>\n";
 echo "</span>\n";
 echo "<a href=\"$PHP_SELF?RR=4000$groupQS&DB=$DB&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\">STOP</a> | ";
@@ -548,6 +566,11 @@ if (ereg('O',$with_inbound))
 
 	$stmtB="select sum(calls_today),sum(drops_today),sum(answers_today),max(status_category_1),sum(status_category_count_1),max(status_category_2),sum(status_category_count_2),max(status_category_3),sum(status_category_count_3),max(status_category_4),sum(status_category_count_4),sum(hold_sec_stat_one),sum(hold_sec_stat_two),sum(hold_sec_answer_calls),sum(hold_sec_drop_calls),sum(hold_sec_queue_calls) from vicidial_campaign_stats where campaign_id IN ($closer_campaignsSQL);";
 
+	if (eregi('ALL-ACTIVE',$group_string))
+		{
+		$stmtB="select sum(calls_today),sum(drops_today),sum(answers_today),max(status_category_1),sum(status_category_count_1),max(status_category_2),sum(status_category_count_2),max(status_category_3),sum(status_category_count_3),max(status_category_4),sum(status_category_count_4),sum(hold_sec_stat_one),sum(hold_sec_stat_two),sum(hold_sec_answer_calls),sum(hold_sec_drop_calls),sum(hold_sec_queue_calls) from vicidial_campaign_stats;";
+		}
+
 	$stmtC="select agent_non_pause_sec from vicidial_campaign_stats where campaign_id IN($group_SQL);";
 
 
@@ -700,9 +723,9 @@ else
 			}
 		else
 			{
-			$stmt="select avg(auto_dial_level),dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,max(hopper_level),dial_method,max(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),available_only_ratio_tally,max(adaptive_latest_server_time),local_call_time,max(dial_timeout),dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id IN($group_SQL);";
+			$stmt="select avg(auto_dial_level),max(dial_status_a),max(dial_status_b),max(dial_status_c),max(dial_status_d),max(dial_status_e),max(lead_order),max(lead_filter_id),max(hopper_level),max(dial_method),max(adaptive_maximum_level),avg(adaptive_dropped_percentage),avg(adaptive_dl_diff_target),avg(adaptive_intensity),max(available_only_ratio_tally),max(adaptive_latest_server_time),max(local_call_time),max(dial_timeout),max(dial_statuses),max(agent_pause_codes_active) from vicidial_campaigns where campaign_id IN($group_SQL);";
 
-			$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),status_category_1,sum(status_category_count_1),status_category_2,sum(status_category_count_2),status_category_3,sum(status_category_count_3),status_category_4,sum(status_category_count_4) from vicidial_campaign_stats where campaign_id IN($group_SQL);";
+			$stmtB="select sum(dialable_leads),sum(calls_today),sum(drops_today),avg(drops_answers_today_pct),avg(differential_onemin),avg(agents_average_onemin),sum(balance_trunk_fill),sum(answers_today),max(status_category_1),sum(status_category_count_1),max(status_category_2),sum(status_category_count_2),max(status_category_3),sum(status_category_count_3),max(status_category_4),sum(status_category_count_4) from vicidial_campaign_stats where campaign_id IN($group_SQL);";
 			}
 		}
 	if ($DB > 0) {echo "\n|$stmt|$stmtB|\n";}

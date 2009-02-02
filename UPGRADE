@@ -237,6 +237,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
    more accurate time zone encoding. The data is NOT included but can be 
    purchased from the VICIDIAL Group.
 
+54. Added System Settings option to disable auto-dialing(list dialing) from the
+   system to simplify administration for inbound-only call centers
+
+55. Added patch and configuration options to allow VICIDIAL to work with Sangoma
+   ParaXip CPD(Call Progress Detection)
+
 
 
 

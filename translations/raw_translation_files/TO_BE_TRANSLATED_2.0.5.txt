@@ -377,6 +377,16 @@ Vtiger Screen Login -<\/B> If Vtiger integration is enabled in the system settin
 Vtiger Screen Login:||
 Alert Enabled -<\/B> This field shows whether the agent has web browser alerts enabled for when calls come into their vicidial.php session. Default is 0 for NO||
 Alert Enabled:||
+QC Features Active -<\/B> This option allows you to enable or disable the QC or Quality Control features. Default is 0 for inactive||
+Outbound Auto-Dial Active -<\/B> This option allows you to enable or disable outbound auto-dialing within VICIDIAL, setting this field to 0 will remove the LISTS and FILTERS sections and many fields from the Campaign Modification screens. Manual entry dialing will still be allowable from within the agent screen, but no list dialing will be possible. Default is 1 for active||
+QC Features Active:||
+Outbound Auto-Dial Active:||
+Close Panel||
+Choose Report Display Options||
+To select more than 1 campaign, hold down the Ctrl key and click||
+CPD AMD Action -<\/B> If you are using the Sangoma ParaXip Call Progress Detection software then you will want to enable this setting either setting it to DISPO which will disposition the call as AA and hang it up if the call is being processed and has not been sent to an agent yet or MESSAGE which will send the call to the defined Answering Machine Message for this campaign. Default is DISABLED||
+CPD AMD Action:||
+
 
 ############################################################ CLIENT
 

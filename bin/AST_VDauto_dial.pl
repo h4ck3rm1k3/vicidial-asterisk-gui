@@ -73,6 +73,7 @@
 # 81013-2216 - Fixed improper deletion of auto_calls records
 # 81020-0125 - Bug fixes from changes to auto_calls deletion changes
 # 90124-0721 - Added parameter to ensure no auto-dial calls are placed for MANUAL campaigns
+# 90202-0203 - Added outbound_autodial_active option to halt all dialing
 #
 
 
@@ -229,21 +230,22 @@ $sthA->finish();
 
 #############################################
 ##### START QUEUEMETRICS LOGGING LOOKUP #####
-$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,outbound_autodial_active FROM system_settings;";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
 $rec_count=0;
 while ($sthArows > $rec_count)
 	{
-	 @aryA = $sthA->fetchrow_array;
-		$enable_queuemetrics_logging =	"$aryA[0]";
-		$queuemetrics_server_ip	=		"$aryA[1]";
-		$queuemetrics_dbname =			"$aryA[2]";
-		$queuemetrics_login=			"$aryA[3]";
-		$queuemetrics_pass =			"$aryA[4]";
-		$queuemetrics_log_id =			"$aryA[5]";
-	 $rec_count++;
+	@aryA = $sthA->fetchrow_array;
+	$enable_queuemetrics_logging =	"$aryA[0]";
+	$queuemetrics_server_ip	=		"$aryA[1]";
+	$queuemetrics_dbname =			"$aryA[2]";
+	$queuemetrics_login=			"$aryA[3]";
+	$queuemetrics_pass =			"$aryA[4]";
+	$queuemetrics_log_id =			"$aryA[5]";
+	$outbound_autodial_active =		"$aryA[6]";
+	$rec_count++;
 	}
 $sthA->finish();
 ##### END QUEUEMETRICS LOGGING LOOKUP #####
@@ -310,6 +312,19 @@ while($one_day_interval > 0)
 		$LUcount=0;
 		$campaigns_update = '';
 		$CPcount=0;
+
+		#############################################
+		##### Check if auto-dialing is enabled
+		$stmtA = "SELECT outbound_autodial_active FROM system_settings;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$outbound_autodial_active =		"$aryA[0]";
+			}
+		$sthA->finish();
 
 		##### Get a listing of the users that are active and ready to take calls
 		##### Also get a listing of the campaigns and campaigns/serverIP that will be used
@@ -699,7 +714,7 @@ while($one_day_interval > 0)
 		$user_CIPct = 0;
 		foreach(@DBIPcampaign)
 			{
-			if ($DBIPdial_method[$user_CIPct] =~ /MANUAL|INBOUND_MAN/)
+			if ( ($DBIPdial_method[$user_CIPct] =~ /MANUAL|INBOUND_MAN/) || ($outbound_autodial_active < 1) )
 				{
 				$event_string="$DBIPcampaign[$user_CIPct] $DBIPaddress[$user_CIPct]: MANUAL DIAL CAMPAIGN, NO DIALING";
 				&event_logger;

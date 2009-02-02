@@ -308,7 +308,7 @@ while($one_day_interval > 0)
 					}
 
 				##### parse through all other important events #####
-				if ( ($input_lines[$ILcount] =~ /State: Ringing|State: Up|State: Dialing|Event: Newstate|Event: Hangup|Event: Newcallerid|Event: Shutdown/) && ($input_lines[$ILcount] !~ /ZOMBIE/) )
+				if ( ($input_lines[$ILcount] =~ /State: Ringing|State: Up|State: Dialing|Event: Newstate|Event: Hangup|Event: Newcallerid|Event: Shutdown|Event: CPD-Result/) && ($input_lines[$ILcount] !~ /ZOMBIE/) )
 					{
 					$input_lines[$ILcount] =~ s/^\n|^\n\n//gi;
 					@command_line=split(/\n/, $input_lines[$ILcount]);
@@ -552,7 +552,39 @@ while($one_day_interval > 0)
 					#			}
 					#		}
 						}
-		
+					if ($input_lines[$ILcount] =~ /Event: CPD-Result/)
+						{
+						#	Event: CPD-Result
+						#	Privilege: system,all
+						#	ChannelDriver: SIP
+						#	Channel: SIP/paraxip-out-08291448
+						#	CallerIDName: V0202034729000030735
+						#	Uniqueid: 1233564450.141
+						#	Result: Answering-Machine
+						if ( ($command_line[3] =~ /^Channel: /i) && ($command_line[5] =~ /^Uniqueid: /i) ) 
+							{
+								&get_time_now;
+
+							$channel = $command_line[3];
+							$channel =~ s/Channel: |\s*$//gi;
+							$callid = $command_line[4];
+							$callid =~ s/CallerIDName: |\s*$//gi;
+							$uniqueid = $command_line[5];
+							$uniqueid =~ s/Uniqueid: |\s*$//gi;
+							$result = $command_line[6];
+							$result =~ s/Result: |\s*$//gi;
+							if (length($result)>0)
+								{
+								$lead_id = substr($callid, 11, 9);
+								$lead_id = ($lead_id + 0);
+								$stmtA = "INSERT INTO vicidial_cpd_log set channel='$channel', uniqueid='$uniqueid', callerid='$callid', server_ip='$server_ip', lead_id='$lead_id', event_date='$now_date', result='$result';";
+								print STDERR "|$stmtA|\n";
+								my $affected_rows = $dbhA->do($stmtA);
+								if($DB){print "|$affected_rows CPD_log inserted|\n";}
+								}
+							}
+						}
+
 					}
 				$ILcount++;
 				}
