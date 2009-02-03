@@ -488,6 +488,31 @@ if ($affected_rows > 0)
 ##### PLAY REMINDER MESSAGE #####
 if ($call_handle_method =~ /REMIND/)
 	{
+	$AGI->stream_file('sip-silence');
+
+	############# BEGIN CPD AMD SECTION ############################
+	if ($cpd_amd_action =~ /DISPO|MESSAGE/)
+		{
+		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+			$dbhP=$dbhA;   $mysql_count='01054';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$cpd_amd		= "$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($cpd_amd > 0)
+			{
+				&cpd_end_call;
+			}
+		}
+	############# END CPD AMD SECTION ############################
+
 	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate',stage='REMIND-0' where callerid='$callerid' order by call_time desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
 		$dbhP=$dbhA;   $mysql_count='01013';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -505,6 +530,29 @@ if ($call_handle_method =~ /REMIND/)
 if ($call_handle_method =~ /SURVEY/)
 	{
 	$AGI->stream_file('sip-silence');
+
+	############# BEGIN CPD AMD SECTION ############################
+	if ($cpd_amd_action =~ /DISPO|MESSAGE/)
+		{
+		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+			$dbhP=$dbhA;   $mysql_count='01054';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$cpd_amd		= "$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($cpd_amd > 0)
+			{
+				&cpd_end_call;
+			}
+		}
+	############# END CPD AMD SECTION ############################
 
 	$stmtA = "UPDATE vicidial_auto_calls set last_update_time='$FDtsSQLdate',stage='SURVEY-0' where callerid='$callerid' order by call_time desc limit 1;";
 	$affected_rows = $dbhA->do($stmtA);
@@ -897,107 +945,8 @@ if ($channel_status < 1)
 
 		if ($cpd_amd > 0)
 			{
-			if ($AGILOG) {$agi_string = "CALL CPD AMD Detected $channel $callerid|$drop_timer";   &agi_output;}
-
-			($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-			$year = ($year + 1900);
-			$mon++;
-			if ($mon < 10) {$mon = "0$mon";}
-			if ($mday < 10) {$mday = "0$mday";}
-			if ($hour < 10) {$Fhour = "0$hour";}
-			if ($min < 10) {$min = "0$min";}
-			if ($sec < 10) {$sec = "0$sec";}
-
-			$now_date_epoch = time();
-			$now_date = "$year-$mon-$mday $hour:$min:$sec";
-				$CIDdate = "$mon$mday$hour$min$sec";
-				$tsSQLdate = "$year$mon$mday$hour$min$sec";
-				$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
-
-			if ($enable_queuemetrics_logging > 0)
-				{
-				$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
-				 or die "Couldn't connect to database: " . DBI->errstr;
-
-				if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
-
-				$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='EXITWITHTIMEOUT',data1='1',serverid='$queuemetrics_log_id';";
-				$Baffected_rows = $dbhB->do($stmtB);
-					$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01048';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
-
-				$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='CALLSTATUS',data1='AA',serverid='$queuemetrics_log_id';";
-				$Baffected_rows = $dbhB->do($stmtB);
-					$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01049';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
-
-				$dbhB->disconnect();
-				}
-
-			if ($drop_seconds < 1) 
-				{
-				$drop_seconds = $DROP_TIME;
-				}
-
-			if ($cpd_amd_action =~ /MESSAGE/)
-				{
-				if (length($am_message_exten)>0)
-					{$DROPexten = "$am_message_exten";}
-				}
-
-				$Euniqueid=$uniqueid;
-				$Euniqueid =~ s/\.\d+//gi;
-			$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='AA',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='AGENT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
-				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-			$affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='01050';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-			if ($AGILOG) {$agi_string = "--    VDAD CPD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}
-
-			$stmtA = "UPDATE vicidial_list set status='AA' where lead_id = '$CIDlead_id';";
-				if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
-			$affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='01051';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-			if ($AGILOG) {$agi_string = "--    VDAD CPD vicidial_list update: |$affected_rows|$CIDlead_id";   &agi_output;}
-
-			$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
-			$affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='01052';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-			if ($AGILOG) {$agi_string = "--    VDAD CPD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
-
-			$stmtA = "UPDATE vicidial_cpd_log SET status='PROCESSED',cpd_seconds='$drop_timer' where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
-			$affected_rows = $dbhA->do($stmtA);
-				$dbhP=$dbhA;   $mysql_count='01055';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-
-
-			### use STDOUT to send call to proper DROP location
-			$VHqueryCID = "VH$CIDdate$VDADconf_exten";
-
-			if (length($DROPexten)>0)
-				{	### if DROP extension is defined then send the dropped call there instead of hangup
-
-					$AGI->stream_file('ding'); # stop music-on-hold process
-
-					sleep(1);
-
-				if ($AGILOG) {$agi_string = "exiting the VDAD app, CPD transferring call to $DROPexten";   &agi_output;}
-				print "SET CONTEXT $ext_context\n";
-					checkresult($result);
-				print "SET EXTENSION $DROPexten\n";
-					checkresult($result);
-				print "SET PRIORITY 1\n";
-					checkresult($result);
-				}
-			else
-				{
-				### insert a NEW record to the vicidial_manager table to be processed
-				$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
-				$affected_rows = $dbhA->do($stmtA);  
-					$dbhP=$dbhA;   $mysql_count='01053';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
-				if ($AGILOG) {$agi_string = "--    VDCL call_hungup CPD timout: |$CIDlead_id|$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
-
-				$AGI->hangup();
-				}
-
+				&cpd_end_call;
 			}
-
 		}
 	############# END CPD AMD SECTION ############################
 
@@ -1660,6 +1609,116 @@ sub mysql_error_logging
 			}
 		}
 	$one_mysql_log=0;
+}
+
+
+
+##### CPD call progress AMD end call process #####
+sub cpd_end_call
+{
+if ($AGILOG) {$agi_string = "CALL CPD AMD Detected $channel $callerid|$drop_timer";   &agi_output;}
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+$mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";}
+if ($min < 10) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday $hour:$min:$sec";
+	$CIDdate = "$mon$mday$hour$min$sec";
+	$tsSQLdate = "$year$mon$mday$hour$min$sec";
+	$SQLdate = "$year-$mon-$mday $hour:$min:$sec";
+
+if ($enable_queuemetrics_logging > 0)
+	{
+	$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+	 or die "Couldn't connect to database: " . DBI->errstr;
+
+	if ($DBX) {print "CONNECTED TO DATABASE:  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='EXITWITHTIMEOUT',data1='1',serverid='$queuemetrics_log_id';";
+	$Baffected_rows = $dbhB->do($stmtB);
+		$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01048';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='CALLSTATUS',data1='AA',serverid='$queuemetrics_log_id';";
+	$Baffected_rows = $dbhB->do($stmtB);
+		$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01049';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
+
+	$dbhB->disconnect();
+	}
+
+if ($drop_seconds < 1) 
+	{
+	$drop_seconds = $DROP_TIME;
+	}
+
+if ($cpd_amd_action =~ /MESSAGE/)
+	{
+	if (length($am_message_exten)>0)
+		{$DROPexten = "$am_message_exten";}
+	}
+
+	$Euniqueid=$uniqueid;
+	$Euniqueid =~ s/\.\d+//gi;
+$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='AA',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='AGENT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$affected_rows = $dbhA->do($stmtA);
+	$dbhP=$dbhA;   $mysql_count='01050';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+if ($AGILOG) {$agi_string = "--    VDAD CPD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}
+
+$stmtA = "UPDATE vicidial_list set status='AA' where lead_id = '$CIDlead_id';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$affected_rows = $dbhA->do($stmtA);
+	$dbhP=$dbhA;   $mysql_count='01051';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+if ($AGILOG) {$agi_string = "--    VDAD CPD vicidial_list update: |$affected_rows|$CIDlead_id";   &agi_output;}
+
+$stmtA = "DELETE FROM vicidial_auto_calls where callerid='$callerid' order by call_time desc limit 1;";
+$affected_rows = $dbhA->do($stmtA);
+	$dbhP=$dbhA;   $mysql_count='01052';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+if ($AGILOG) {$agi_string = "--    VDAD CPD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
+
+$stmtA = "UPDATE vicidial_cpd_log SET status='PROCESSED',cpd_seconds='$drop_timer' where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+$affected_rows = $dbhA->do($stmtA);
+	$dbhP=$dbhA;   $mysql_count='01055';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+
+
+### use STDOUT to send call to proper DROP location
+$VHqueryCID = "VH$CIDdate$VDADconf_exten";
+
+if (length($DROPexten)>0)
+	{	### if DROP extension is defined then send the dropped call there instead of hangup
+
+		$AGI->stream_file('ding'); # stop music-on-hold process
+
+		sleep(1);
+
+	if ($AGILOG) {$agi_string = "exiting the VDAD app, CPD transferring call to $DROPexten";   &agi_output;}
+	print "SET CONTEXT $ext_context\n";
+		checkresult($result);
+	print "SET EXTENSION $DROPexten\n";
+		checkresult($result);
+	print "SET PRIORITY 1\n";
+		checkresult($result);
+
+	exit;
+	}
+else
+	{
+	### insert a NEW record to the vicidial_manager table to be processed
+	$stmtA = "INSERT INTO vicidial_manager values('','','$SQLdate','NEW','N','$VARserver_ip','','Hangup','$VHqueryCID','Channel: $channel','','','','','','','','','')";
+	$affected_rows = $dbhA->do($stmtA);  
+		$dbhP=$dbhA;   $mysql_count='01053';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
+	if ($AGILOG) {$agi_string = "--    VDCL call_hungup CPD timout: |$CIDlead_id|$VHqueryCID|$VDADconf_exten|$channel|insert to vicidial_manager";   &agi_output;}
+
+	$AGI->hangup();
+
+	exit;
+	}
+
 }
 
 

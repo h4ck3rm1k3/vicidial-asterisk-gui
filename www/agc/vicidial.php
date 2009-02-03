@@ -6967,7 +6967,7 @@ else
 				}
 			if ( (VtigeRLogiNScripT == 'Y') && (VtigeREnableD > 0) )
 				{
-				document.getElementById("ScriptContents").innerHTML = "<iframe src=\"" + VtigeRurl + "?index.php?module=Users&action=Authenticate&return_module=Users&return_action=Login&user_name=" + user + "&user_password=" + pass + "&login_theme=softed&login_language=en_us\" style=\"width:580;height:290;background-color:transparent;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"popupFrame\" name=\"popupFrame\" width=\"460\" height=\"290\" STYLE=\"z-index:17\"> </iframe> ";
+				document.getElementById("ScriptContents").innerHTML = "<iframe src=\"" + VtigeRurl + "index.php?module=Users&action=Authenticate&return_module=Users&return_action=Login&user_name=" + user + "&user_password=" + pass + "&login_theme=softed&login_language=en_us\" style=\"width:580;height:290;background-color:transparent;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"popupFrame\" name=\"popupFrame\" width=\"460\" height=\"290\" STYLE=\"z-index:17\"> </iframe> ";
 
 				}
 			VICIDiaL_closer_login_checked = 1;
