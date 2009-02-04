@@ -15,6 +15,7 @@
 # 80416-1017 - Added download of phone codes from remote host
 # 90129-0932 - Added optional NANP prefix/time date import "--load-NANPA-prefix" flag
 # 90131-0933 - Added purge-table option to clear out old records before adding new ones
+# 90204-0806 - Added duplicate check to nanpa list loading
 #
 
 
@@ -175,7 +176,7 @@ if ($nanpa_load > 0)
 				if($DB){print STDERR "\n|$stmtA|\n";}
 		$affected_rows = $dbhA->do($stmtA);
 		}
-	$pc=0;   $full_file=0;
+	$pc=0;   $full_file=0;   $dup_count=0;   $ins_count=0;   $dup_list='';
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
 	foreach (@prefixfile) 
 		{
@@ -186,6 +187,8 @@ if ($nanpa_load > 0)
 			$prefixfile[$pc] =~ s/\r|\n|\t| $//gi;
 			@row=split(/,/, $prefixfile[$pc]);
 			$pc++;
+			$temp_insert='';
+			$dup_check=0;
 			if ($full_file > 0)
 				{
 				if ($row[14] !~ /XX/)
@@ -201,18 +204,45 @@ if ($nanpa_load > 0)
 					$row[14] =~ s/AS/-11.00/gi;
 					$row[14] =~ s/CH/10.00/gi;
 					$row[15] =~ s/X/N/gi;
-					$ins_stmt.="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]'), ";
+					$temp_insert="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]'), ";
 					}
 				}
 			else
-				{$ins_stmt.="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]'), ";}
+				{$temp_insert="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]'), ";}
+
+			$stmtA = "SELECT count(*) FROM vicidial_nanpa_prefix_codes where areacode='$row[0]' and prefix='$row[1]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+				if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$dup_check	= "$aryA[0]";
+				}
+			$sthA->finish();
+
+			if ($dup_check < 1) 
+				{
+				if ($dup_list =~ /$row[0]$row[1]\|/)
+					{$dup_count++;}
+				else 
+					{
+					$dup_list .= "$row[0]$row[1]|";
+					$ins_stmt .= "$temp_insert";
+					$ins_count++;
+					}
+				}
+			else
+				{$dup_count++;}
+
 			if ($pc =~ /000$/) 
 				{
 				chop($ins_stmt);
 				chop($ins_stmt);
 				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
 				$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
-				print STDERR "$pc\n";
+				print STDERR "$pc Lines     $ins_count Inserted     $dup_count Duplicates\r";
+				$dup_list='';
 				}
 			}
 		else 
@@ -223,7 +253,7 @@ if ($nanpa_load > 0)
 	chop($ins_stmt);
 	$affected_rows = $dbhA->do($ins_stmt);
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
-	print STDERR "$pc\n";
+	print STDERR "$pc Lines     $ins_count Inserted     $dup_count Duplicates\n";
 	#### END vicidial_nanpa_prefix_codes population ####
 
 	}
@@ -286,7 +316,7 @@ else
 				chop($ins_stmt);
 				$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
 				$ins_stmt="insert into vicidial_phone_codes VALUES ";
-				print STDERR "$pc\n";
+				print STDERR "$pc\r";
 				}
 			}
 		else {$pc++;}
@@ -334,7 +364,7 @@ else
 			chop($ins_stmt);
 			$affected_rows = $dbhA->do($ins_stmt) || die "can't execute query: |$ins_stmt| $!\n";
 			$ins_stmt="insert into vicidial_postal_codes VALUES ";
-			print STDERR "$pc\n";
+			print STDERR "$pc\r";
 			}
 		}
 
