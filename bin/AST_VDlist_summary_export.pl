@@ -357,6 +357,65 @@ $Ealert .= "\n";
 $Ealert .= "-------------------------------------------------------------------------------------\n";
 $Ealert .= "LIST REPORT FOR $timestamp: $outfile\n";
 $Ealert .= "TOTAL LEADS IN SYSTEM: $TOTAL_LEADS\n";
+$Ealert .= "\n";
+$Ealert .= "TOTAL LEADS IN SYSTEM BY STATUS:\n";
+
+### gather status subtotals
+$stmtA = "select count(*),status from vicidial_list where list_id>99 group by status order by status;";
+if ($DB) {print "|$stmtA|\n";}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+$i=0;
+while ($sthArows > $i)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$Tcount[$i] =	$aryA[0];
+	$Tstatus[$i] =	$aryA[1];
+	$i++;
+	}
+$sthA->finish();
+
+$i=0;
+$k=0;
+$m=0;
+foreach(@Tstatus)
+	{
+	$stmtA = "select status_name from vicidial_statuses where status='$Tstatus[$i]';";
+	if ($DB) {print "|$stmtA|\n";}
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$Tstatus_name[$i] =	$aryA[0];
+		}
+	$sthA->finish();
+	if (length($Tstatus_name[$i])<1)
+		{
+		$stmtA = "select status_name from vicidial_campaign_statuses where status='$Tstatus[$i]';";
+		if ($DB) {print "|$stmtA|\n";}
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$Tstatus_name[$i] =	$aryA[0];
+			}
+		$sthA->finish();
+		}
+
+	$Tstatus[$i] = sprintf("%-7s", $Tstatus[$i]);
+	$Tstatus_name[$i] = sprintf("%-20s", $Tstatus_name[$i]);   while (length($Tstatus_name[$i])>20) {$Tstatus_name[$i] =~ s/.$//gi;}
+	$Tcount[$i] = sprintf("%7s", $Tcount[$i]);
+
+	$Ealert .= "$Tstatus[$i] - $Tstatus_name[$i]: $Tcount[$i]\n";
+
+	$i++;
+	}
+
 print "script execution time in seconds: $secZ     minutes: $secZm\n";
 
 print out "$Ealert";

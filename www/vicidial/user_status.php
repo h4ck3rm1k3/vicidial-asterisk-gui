@@ -1,13 +1,14 @@
 <?
 # user_status.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 60619-1738 - Added variable filtering to eliminate SQL injection attack threat
 # 80603-1452 - Added manager timeclock force login/logout of user
 # 81118-1034 - Disabled change campaign because it does not work
+# 90208-0511 - Added link to user multi-day status report
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -169,7 +170,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -442,9 +443,13 @@ if ($modify_timeclock_log > 0)
 	}
 
 
+$REPORTdate = date("Y-m-d");
+echo "<center>\n";
 echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
-echo " - <a href=\"./user_stats.php?user=$user\">User Stats</a>\n";
-echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
+echo " | <a href=\"./user_stats.php?user=$user\">User Stats</a>\n";
+echo " | <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
+echo " | <a href=\"./AST_agent_days_detail.php?user=$user&query_date=$REPORTdate&end_date=$REPORTdate&group[]=--ALL--&shift=ALL\">User multiple day status detail report</a>";
+echo "</center>\n";
 
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";

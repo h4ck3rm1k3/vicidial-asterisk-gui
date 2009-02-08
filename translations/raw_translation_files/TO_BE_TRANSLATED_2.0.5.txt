@@ -386,6 +386,7 @@ Choose Report Display Options||
 To select more than 1 campaign, hold down the Ctrl key and click||
 CPD AMD Action -<\/B> If you are using the Sangoma ParaXip Call Progress Detection software then you will want to enable this setting either setting it to DISPO which will disposition the call as AA and hang it up if the call is being processed and has not been sent to an agent yet or MESSAGE which will send the call to the defined Answering Machine Message for this campaign. Default is DISABLED||
 CPD AMD Action:||
+Click here for user multiple day status detail report||
 
 
 ############################################################ CLIENT

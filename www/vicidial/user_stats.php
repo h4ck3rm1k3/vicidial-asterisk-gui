@@ -1,7 +1,7 @@
 <?
 # user_stats.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -14,6 +14,7 @@
 # 80523-2012 - Added vicidial timeclock records display
 # 80617-1402 - Fixed timeclock total logged-in time
 # 81210-1634 - Added server recording display options
+# 90208-0504 - Added link to multi-day report and fixed call status summary section
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -119,20 +120,18 @@ echo "<input type=text name=end_date value=\"$end_date\" size=10 maxsize=10> &nb
 echo "<input type=submit name=submit value=submit>\n";
 
 
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name\n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name<BR><BR>\n";
 
-echo " - <a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
-echo " - <a href=\"./user_status.php?user=$user\">User Status</a>\n";
-echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
+echo "<center>\n";
+echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo " | <a href=\"./user_status.php?user=$user\">User Status</a>\n";
+echo " | <a href=\"./admin.php?ADD=3&user=$user\">Modify User</a>\n";
+echo " | <a href=\"./AST_agent_days_detail.php?user=$user&query_date=$begin_date&end_date=$end_date&group[]=--ALL--&shift=ALL\">User multiple day status detail report</a>";
+echo "</center>\n";
 
 
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
-
-
-	$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
-	$rslt=mysql_query($stmt, $link);
-	$statuses_to_print = mysql_num_rows($rslt);
 
 echo "<br><center>\n";
 
@@ -143,38 +142,61 @@ echo "<B>VICIDIAL TALK TIME AND STATUS:</B>\n";
 echo "<center><TABLE width=300 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td align=right><font size=2>HOURS:MINUTES</td></tr>\n";
 
-	$total_calls=0;
-	$o=0;
-	while ($statuses_to_print > $o) {
-		$row=mysql_fetch_row($rslt);
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-
-		$call_seconds = $row[2];
-		$call_hours = ($call_seconds / 3600);
-		$call_hours_int = round($call_hours, 2);
-		$call_hours_int = intval("$call_hours_int");
-		$call_minutes = ($call_hours - $call_hours_int);
-		$call_minutes = ($call_minutes * 60);
-		$call_minutes_int = round($call_minutes, 0);
-		if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
-
-		echo "<tr $bgcolor><td><font size=2>$row[1]</td>";
-		echo "<td align=right><font size=2> $row[0]</td>\n";
-		echo "<td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
-		$total_calls = ($total_calls + $row[0]);
-
-		$call_seconds=0;
-		$o++;
+$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
+$rslt=mysql_query($stmt, $link);
+$VLstatuses_to_print = mysql_num_rows($rslt);
+$total_calls=0;
+$o=0;   $p=0;
+while ($VLstatuses_to_print > $o) 
+	{
+	$row=mysql_fetch_row($rslt);
+	$counts[$p] =		$row[0];
+	$status[$p] =		$row[1];
+	$call_sec[$p] =		$row[2];
+	$p++;
+	$o++;
 	}
 
-	$stmt="SELECT sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59'";
-	$rslt=mysql_query($stmt, $link);
-	$counts_to_print = mysql_num_rows($rslt);
-		$row=mysql_fetch_row($rslt);
-	$call_seconds = $row[0];
+$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_closer_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
+$rslt=mysql_query($stmt, $link);
+$VCLstatuses_to_print = mysql_num_rows($rslt);
+$o=0;
+while ($VCLstatuses_to_print > $o) 
+	{
+	$status_match=0;
+	$r=0;
+	$row=mysql_fetch_row($rslt);
+	while ($VLstatuses_to_print > $r) 
+		{
+		if ($status[$r] == $row[1])
+			{
+			$counts[$r] = ($counts[$r] + $row[0]);
+			$call_sec[$r] = ($call_sec[$r] + $row[2]);
+			$status_match++;
+			}
+		$r++;
+		}
+	if ($status_match < 1)
+		{
+		$counts[$p] =		$row[0];
+		$status[$p] =		$row[1];
+		$call_sec[$p] =		$row[2];
+		$VLstatuses_to_print++;
+		$p++;
+		}
+	$o++;
+	}
+
+$o=0;
+$total_sec=0;
+while ($o < $p)
+	{
+	if (eregi("1$|3$|5$|7$|9$", $o))
+		{$bgcolor='bgcolor="#B9CBFD"';} 
+	else
+		{$bgcolor='bgcolor="#9BB9FB"';}
+
+	$call_seconds = $call_sec[$o];
 	$call_hours = ($call_seconds / 3600);
 	$call_hours_int = round($call_hours, 2);
 	$call_hours_int = intval("$call_hours_int");
@@ -182,6 +204,24 @@ echo "<tr><td><font size=2>STATUS</td><td align=right><font size=2>COUNT</td><td
 	$call_minutes = ($call_minutes * 60);
 	$call_minutes_int = round($call_minutes, 0);
 	if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
+
+	echo "<tr $bgcolor><td><font size=2>$status[$o]</td>";
+	echo "<td align=right><font size=2> $counts[$o]</td>\n";
+	echo "<td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
+	$total_calls = ($total_calls + $counts[$o]);
+	$total_sec = ($total_sec + $call_sec[$o]);
+	$call_seconds=0;
+	$o++;
+	}
+
+$call_seconds = $total_sec;
+$call_hours = ($call_seconds / 3600);
+$call_hours_int = round($call_hours, 2);
+$call_hours_int = intval("$call_hours_int");
+$call_minutes = ($call_hours - $call_hours_int);
+$call_minutes = ($call_minutes * 60);
+$call_minutes_int = round($call_minutes, 0);
+if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
 
 echo "<tr><td><font size=2>TOTAL CALLS </td><td align=right><font size=2> $total_calls</td><td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
 echo "</TABLE></center>\n";

@@ -1549,6 +1549,7 @@ $build = '90202-0444';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
+$REPORTdate = date("Y-m-d");
 $MT[0]='';
 $US='_';
 $active_lists=0;
@@ -11926,6 +11927,7 @@ if ($ADD==3)
 		echo "<br><br><a href=\"./AST_agent_time_sheet.php?agent=$row[1]\">Click here for user time sheet</a>\n";
 		echo "<br><br><a href=\"./user_status.php?user=$row[1]\">Click here for user status</a>\n";
 		echo "<br><br><a href=\"./user_stats.php?user=$row[1]\">Click here for user stats</a>\n";
+		echo "<br><br><a href=\"./AST_agent_days_detail.php?user=$row[1]&query_date=$REPORTdate&end_date=$REPORTdate&group[]=--ALL--&shift=ALL\">Click here for user multiple day status detail report</a>\n";
 		echo "<br><br><a href=\"$PHP_SELF?ADD=8&user=$row[1]\">Click here for user CallBack Holds</a>\n";
 		}
 	}
@@ -17845,14 +17847,19 @@ if ($ADD==999999)
 	<FONT SIZE=4><B>VICIDIAL: Server Stats and Reports</B></font><BR><BR>
 	<UL>
 	<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
-	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD REPORT</a></FONT>
+
+	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD CAMPAIGN OUTBOUND REPORT</a></FONT>
 	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER REPORT</a></FONT>
 	<LI><a href="AST_CLOSER_service_level.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER SERVICE_LEVEL REPORT</a></FONT>
-	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>
+	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>  &nbsp; &nbsp; 
+		<a href="AST_agent_status_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT STATUS DETAIL</a></FONT>  &nbsp; &nbsp; 
+		<a href="AST_agent_days_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SINGLE AGENT DAILY</a></FONT>
+
 	<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - CLOSER REPORT</a></FONT>
 	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT SPREADSHEET PERFORMANCE</a></FONT>
 	<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>  &nbsp; &nbsp; 
 	    <a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER GROUP TIMECLOCK STATUS REPORT</a></FONT>
+
 	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
 <?
 	if ($SSenable_queuemetrics_logging > 0)
