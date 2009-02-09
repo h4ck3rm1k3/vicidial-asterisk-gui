@@ -479,7 +479,8 @@ vdc_agent_api_access ENUM('0','1') default '0',
 modify_inbound_dids ENUM('1','0') default '0',
 delete_inbound_dids ENUM('1','0') default '0',
 active ENUM('Y','N') default 'Y',
-alert_enabled ENUM('1','0') default '0'
+alert_enabled ENUM('1','0') default '0',
+download_lists ENUM('1','0') default '0'
 );
 
 
@@ -1455,7 +1456,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1128';
+UPDATE system_settings SET db_schema_version='1129';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

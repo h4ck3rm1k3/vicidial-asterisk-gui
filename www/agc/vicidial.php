@@ -1,7 +1,7 @@
 <?
 # vicidial.php - the web-based version of the astVICIDIAL client application
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Other scripts that this application depends on:
 # - vdc_db_query.php: Updates information in the database
@@ -217,10 +217,11 @@
 # 90126-2302 - Added Vtiger login option and agent alert option
 # 90128-0230 - Added vendor_lead_code to API dial and manuald dial with lookup
 # 90202-0148 - Added option to disable BLENDED checkbox
+# 90209-0132 - Changed tab images and color scheme
 #
 
-$version = '2.0.5-196';
-$build = '90202-0148';
+$version = '2.0.5-197';
+$build = '90209-0132';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;
@@ -354,7 +355,8 @@ $TEST_all_statuses		= '0';	# TEST variable allows all statuses in dispo screen
 
 $BROWSER_HEIGHT			= 500;	# set to the minimum browser height, default=500
 $BROWSER_WIDTH			= 770;	# set to the minimum browser width, default=770
-
+$MAIN_COLOR				= '#CCCCCC';	# old default is E0C2D6
+$SCRIPT_COLOR			= '#E6E6E6';	# old default is FFE7D0
 
 # options now set in DB:
 #$alt_phone_dialing		= '1';	# allow agents to call alt phone numbers
@@ -547,7 +549,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
 echo "<FORM NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Re-Login </TD>";
 echo "</TR>\n";
@@ -588,7 +590,7 @@ if ($user_login_first == 1)
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	#echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 	echo "<CENTER><BR><B>User Login</B><BR><BR>";
-	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Campaign Login </TD>";
 	echo "</TR>\n";
@@ -629,7 +631,7 @@ if ($user_login_first == 1)
 		echo "</TR></TABLE>\n";
 		echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 		echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-		echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+		echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 		echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 		echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login </TD>";
 		echo "</TR>\n";
@@ -668,7 +670,7 @@ echo "<!-- INTERNATIONALIZATION-LINKS-PLACEHOLDER-VICIDIAL -->\n";
 echo "</TR></TABLE>\n";
 echo "<FORM  NAME=vicidial_form ID=vicidial_form ACTION=\"$agcPAGE\" METHOD=POST>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Phone Login </TD>";
 echo "</TR>\n";
@@ -1086,7 +1088,7 @@ $VDloginDISPLAY=0;
 	echo "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
 	echo "<CENTER><BR><B>$VDdisplayMESSAGE</B><BR><BR>";
-	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Campaign Login </TD>";
 	echo "</TR>\n";
@@ -1174,7 +1176,7 @@ if (!$authphone)
 	echo "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
 	echo "<INPUT TYPE=HIDDEN NAME=VD_campaign VALUE=\"$VD_campaign\">\n";
-	echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#E0C2D6\"><TR BGCOLOR=WHITE>";
+	echo "<BR><BR><BR><CENTER><TABLE WIDTH=460 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"$MAIN_COLOR\"><TR BGCOLOR=WHITE>";
 	echo "<TD ALIGN=LEFT VALIGN=BOTTOM><IMG SRC=\"./images/vdc_tab_vicidial.gif\" BORDER=0></TD>";
 	echo "<TD ALIGN=CENTER VALIGN=MIDDLE> Login Error</TD>";
 	echo "</TR>\n";
@@ -2008,7 +2010,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var VDIC_web_form_address = '<? echo $VICIDiaL_web_form_address ?>';
 	var CalL_ScripT_id = '';
 	var CalL_AutO_LauncH = '';
-	var panel_bgcolor = '#E0C2D6';
+	var panel_bgcolor = '<? echo $MAIN_COLOR ?>';
 	var CusTCB_bgcolor = '#FFFF66';
 	var auto_dial_level = '<? echo $auto_dial_level ?>';
 	var starting_dial_level = '<? echo $auto_dial_level ?>';
@@ -7493,8 +7495,8 @@ else
 
 	function MainPanelToFront(resumevar)
 		{
-		document.getElementById("MainTable").style.backgroundColor="#E0C2D6";
-		document.getElementById("MaiNfooter").style.backgroundColor="#E0C2D6";
+		document.getElementById("MainTable").style.backgroundColor="<? echo $MAIN_COLOR ?>";
+		document.getElementById("MaiNfooter").style.backgroundColor="<? echo $MAIN_COLOR ?>";
 		hideDiv('ScriptPanel');
 		showDiv('MainPanel');
 		if (resumevar != 'NO')
@@ -7532,16 +7534,16 @@ else
 					}
 				}
 			}
-		panel_bgcolor='#E0C2D6';
+		panel_bgcolor='<? echo $MAIN_COLOR ?>';
 		document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
 		}
 
 	function ScriptPanelToFront()
 		{
 		showDiv('ScriptPanel');
-		document.getElementById("MainTable").style.backgroundColor="#FFE7D0";
-		document.getElementById("MaiNfooter").style.backgroundColor="#FFE7D0";
-		panel_bgcolor='#FFE7D0';
+		document.getElementById("MainTable").style.backgroundColor="<? echo $SCRIPT_COLOR ?>";
+		document.getElementById("MaiNfooter").style.backgroundColor="<? echo $SCRIPT_COLOR ?>";
+		panel_bgcolor='<? echo $SCRIPT_COLOR ?>';
 		document.getElementById("MainStatuSSpan").style.background = panel_bgcolor;
 		}
 
@@ -7966,7 +7968,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 
 <span style="position:absolute;left:154px;top:65px;z-index:17;" id="ScriptPanel">
-    <table border=0 bgcolor="#FFE7D0" width=<?=$SSwidth ?> height=<?=$SSheight ?>><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
+    <table border=0 bgcolor="<? echo $SCRIPT_COLOR ?>" width=<?=$SSwidth ?> height=<?=$SSheight ?>><TR><TD align=left valign=top><font class="sb_text"><div class="scroll_script" id="ScriptContents">VICIDIAL SCRIPT</div></font></TD></TR></TABLE>
 </span>
 
 
@@ -7976,7 +7978,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 
 
 <span style="position:absolute;left:0px;top:<?=$HKheight ?>px;z-index:15;" id="MaiNfooterspan">
-<table BGCOLOR="#E0C2D6" id="MaiNfooter" width=<?=$MNwidth ?>><tr height=32><td height=32><font face="Arial,Helvetica" size=1>VICIDIAL web-client version: <? echo $version ?> &nbsp; &nbsp; BUILD: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
+<table BGCOLOR="<? echo $MAIN_COLOR ?>" id="MaiNfooter" width=<?=$MNwidth ?>><tr height=32><td height=32><font face="Arial,Helvetica" size=1>VICIDIAL web-client version: <? echo $version ?> &nbsp; &nbsp; BUILD: <? echo $build ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Server: <? echo $server_ip ?>  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</font><BR>
 <font class="body_small"><span id="busycallsdisplay"><a href="#"  onclick="conf_channels_detail('SHOW');">Show conference call channel information</a><BR><BR>&nbsp;</span></font></td><td align=right height=32>
 </td></tr>
 <tr><td colspan=3><span id="outboundcallsspan"></span></td></tr>
@@ -8000,7 +8002,7 @@ else
 
 <!-- BEGIN *********   Here is the main VICIDIAL display panel -->
 <span style="position:absolute;left:0px;top:46px;z-index:10;" id="MainPanel">
-<TABLE border=0 BGCOLOR="#E0C2D6" width=<?=$MNwidth ?> id="MainTable">
+<TABLE border=0 BGCOLOR="<? echo $MAIN_COLOR ?>" width=<?=$MNwidth ?> id="MainTable">
 <TR><TD colspan=3><font class="body_text"> STATUS: <span id="MainStatuSSpan"></span></font></TD></TR>
 <tr><td colspan=3><span id="busycallsdebug"></span></td></tr>
 <tr><td width=150 align=left valign=top>
@@ -8051,24 +8053,38 @@ RECORD ID: <font class="body_small"><span id="RecorDID"></span></font><BR>
 <div class="text_input" id="MainPanelCustInfo">
 <table><tr>
 <td align=right></td>
-<td align=left><font class="body_text">&nbsp; Cust Time: <input type=text size=27 name=custdatetime class="cust_form" value=""> &nbsp; Channel: <input type=text size=20 name=callchannel class="cust_form" value=""></td>
+<td align=left><font class="body_text">&nbsp; Customer Time: <input type=text size=27 name=custdatetime class="cust_form" value=""> &nbsp; Channel: <input type=text size=27 name=callchannel class="cust_form" value=""></td>
 </tr><tr>
 <td colspan=2 align=center> Customer Information: <span id="CusTInfOSpaN"></span></td>
 </tr><tr>
+<td align=left colspan=2>
+
+
+<table width=550><tr>
 <td align=right><font class="body_text"> Title: </td>
-<td align=left><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=23 name=last_name maxlength=30 class="cust_form" value=""></td>
+<td align=left colspan=5><font class="body_text"><input type=text size=4 name=title maxlength=4 class="cust_form" value="">&nbsp; First: <input type=text size=17 name=first_name maxlength=30 class="cust_form" value="">&nbsp; MI: <input type=text size=1 name=middle_initial maxlength=1 class="cust_form" value="">&nbsp; Last: <input type=text size=23 name=last_name maxlength=30 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Address1: </td>
-<td align=left><font class="body_text"><input type=text size=50 name=address1 maxlength=100 class="cust_form" value=""></td>
+<td align=left colspan=5><font class="body_text"><input type=text size=85 name=address1 maxlength=100 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Address2: </td>
-<td align=left><font class="body_text"><input type=text size=17 name=address2 maxlength=100 class="cust_form" value="">&nbsp; Address3: <input type=text size=25 name=address3 maxlength=100 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=address2 maxlength=100 class="cust_form" value=""></td>
+<td align=right><font class="body_text">Address3: </td>
+<td align=left colspan=3><font class="body_text"><input type=text size=45 name=address3 maxlength=100 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> City: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value="">&nbsp; State: <input type=text size=2 name=state maxlength=2 class="cust_form" value="">&nbsp; PostCode: <input type=text size=9 name=postal_code maxlength=10 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=city maxlength=50 class="cust_form" value=""></td>
+<td align=right><font class="body_text">State: </td>
+<td align=left><font class="body_text"><input type=text size=4 name=state maxlength=2 class="cust_form" value=""></td>
+<td align=right><font class="body_text">PostCode: </td>
+<td align=left><font class="body_text"><input type=text size=14 name=postal_code maxlength=10 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Province: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value="">&nbsp; Vendor ID: <input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value="">&nbsp; Gender: <span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span></td>
+<td align=left><font class="body_text"><input type=text size=20 name=province maxlength=50 class="cust_form" value=""></td>
+<td align=right><font class="body_text">Vendor ID: </td>
+<td align=left><font class="body_text"><input type=text size=15 name=vendor_lead_code maxlength=20 class="cust_form" value=""></td>
+<td align=right><font class="body_text">Gender: </td>
+<td align=left><font class="body_text"><span id="GENDERhideFORie"><select size=1 name=gender_list class="cust_form" id=gender_list><option value="U">U - Undefined</option><option value="M">M - Male</option><option value="F">F - Female</option></select></span></td>
 </tr><tr>
 <td align=right><font class="body_text"> Phone: </td>
 <td align=left><font class="body_text">
@@ -8080,27 +8096,35 @@ if ($disable_alter_custphone=='Y')
 	}
 else
 	{
-	echo "<input type=text size=11 name=phone_number maxlength=12 class=\"cust_form\" value=\"\">";
+	echo "<input type=text size=20 name=phone_number maxlength=16 class=\"cust_form\" value=\"\">";
 	}
 ?>
 
-
-&nbsp; DialCode: <input type=text size=4 name=phone_code maxlength=10 class="cust_form" value="">&nbsp; Alt. Phone: <input type=text size=11 name=alt_phone maxlength=12 class="cust_form" value=""></td>
+</td>
+<td align=right><font class="body_text">DialCode: </td>
+<td align=left><font class="body_text"><input type=text size=4 name=phone_code maxlength=10 class="cust_form" value=""></td>
+<td align=right><font class="body_text">Alt. Phone: </td>
+<td align=left><font class="body_text"><input type=text size=14 name=alt_phone maxlength=16 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right><font class="body_text"> Show: </td>
-<td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value="">&nbsp; Email: <input type=text size=25 name=email maxlength=70 class="cust_form" value=""></td>
+<td align=left><font class="body_text"><input type=text size=20 name=security_phrase maxlength=100 class="cust_form" value=""></td>
+<td align=right><font class="body_text">Email: </td>
+<td align=left colspan=3><font class="body_text"><input type=text size=45 name=email maxlength=70 class="cust_form" value=""></td>
 </tr><tr>
 <td align=right valign=top><font class="body_text"> Comments: </td>
-<td align=left>
+<td align=left colspan=5>
 <font class="body_text">
 <?
 if ( ($multi_line_comments) )
-	{echo "<TEXTAREA NAME=comments ROWS=2 COLS=65 class=\"cust_form_text\" value=\"\"></TEXTAREA>\n";}
+	{echo "<TEXTAREA NAME=comments ROWS=2 COLS=85 class=\"cust_form_text\" value=\"\"></TEXTAREA>\n";}
 else
 	{echo "<input type=text size=65 name=comments maxlength=255 class=\"cust_form\" value=\"\">\n";}
 ?>
 </font>
 </td>
+
+
+</tr></table></td>
 </tr></table>
 </div>
 </font>

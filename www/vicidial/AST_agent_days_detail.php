@@ -210,7 +210,7 @@ $datesARY[0]='';
 $date_namesARY[0]='';
 $k=0;
 
-$stmt="select date_format(event_time, '%Y-%m-%d') as date,count(*) as calls,status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and vicidial_agent_log.user=$user $group_SQL $user_group_SQL group by date,status order by date,status desc limit 500000;";
+$stmt="select date_format(event_time, '%Y-%m-%d') as date,count(*) as calls,status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and vicidial_agent_log.user='$user' $group_SQL $user_group_SQL group by date,status order by date,status desc limit 500000;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);

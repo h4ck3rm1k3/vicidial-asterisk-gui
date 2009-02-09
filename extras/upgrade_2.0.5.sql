@@ -682,3 +682,7 @@ index(lead_id)
 ALTER TABLE vicidial_campaigns ADD cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED';
 
 UPDATE system_settings SET db_schema_version='1128';
+
+ALTER TABLE vicidial_users ADD download_lists ENUM('1','0') default '0';
+
+UPDATE system_settings SET db_schema_version='1129';
