@@ -10248,7 +10248,7 @@ if ($ADD==411111111111)
 				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active',balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip',active_asterisk_server='$active_asterisk_server',generate_vicidial_conf='$generate_vicidial_conf',rebuild_conf_files='$rebuild_conf_files' where server_id='$old_server_id';";
 				$rslt=mysql_query($stmt, $link);
 
-				$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+				$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
@@ -18574,7 +18574,7 @@ if ($ADD==130000000000)
 	}
 
 ######################
-# ADD=140000000000 display all conf templates
+# ADD=140000000000 display all carriers
 ######################
 if ($ADD==140000000000)
 	{
@@ -18585,11 +18585,11 @@ if ($ADD==140000000000)
 	$rslt=mysql_query($stmt, $link);
 	$carriers_to_print = mysql_num_rows($rslt);
 
-	echo "<br>CONF TEMPLATE LISTINGS:\n";
+	echo "<br>CARRIER LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<tr bgcolor=black>";
-	echo "<td><font size=1 color=white align=left><B>Template ID</B></td>";
-	echo "<td><font size=1 color=white><B>Template Name</B></td>";
+	echo "<td><font size=1 color=white align=left><B>Carrier ID</B></td>";
+	echo "<td><font size=1 color=white><B>Carrier Name</B></td>";
 	echo "<td><font size=1 color=white><B>Server IP</B></td>";
 	echo "<td><font size=1 color=white><B>Protocol</B></td>";
 	echo "<td><font size=1 color=white><B>Registration</B></td>";
