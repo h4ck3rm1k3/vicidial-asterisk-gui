@@ -537,7 +537,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	$sthA->finish();
 
 	##### Get the server_ips and server_ids of all VICIDIAL servers on the network #####
-	$stmtA = "SELECT server_ip,server_id FROM servers where server_ip!='$server_ip' and active_asterisk_server='1';";
+	$stmtA = "SELECT server_ip,server_id FROM servers where server_ip!='$server_ip' and active_asterisk_server='Y';";
 	#	print "$stmtA\n";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
