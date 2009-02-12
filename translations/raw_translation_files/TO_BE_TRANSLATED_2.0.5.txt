@@ -389,6 +389,76 @@ CPD AMD Action:||
 Click here for user multiple day status detail report||
 Click here to download this list||
 Download Lists:||
+Active Asterisk Server -<\/B> If Asterisk is not running on this server, or if VICIDIAL should not be using this server, or if are only using this server for other scripts like the hopper loading script you would want to set this to N. Default is Y||
+Generate conf files -<\/B> If you would like the system to auto-generate asterisk conf files based upon the phones entries, carrier entries and load balancing setup within VICIDIAL then set this to Y. Default is Y||
+Rebuild conf files -<\/B> If you want to force a rebuilding of the Asterisk conf files or if any of the phones or carrier entries have changed then this should be set to Y. After the conf files have been generated and Asterisk has been reloaded then this will be changed to N. Default is Y||
+Active Asterisk Server:||
+Generate conf files:||
+Rebuild conf files:||
+Show Templates||
+Add A New Template||
+ADD NEW CONF TEMPLATE||
+ADD NEW CARRIER||
+ADDING NEW CONF TEMPLATE||
+ADDING NEW CARRIER||
+MODIFY CONF TEMPLATE||
+MODIFY CARRIER||
+DELETE CONF TEMPLATE||
+DELETE CARRIER||
+CONF TEMPLATE LIST||
+CARRIER LIST||
+Template ID:||
+Template Name:||
+Template Contents:||
+Carrier ID:||
+Carrier Name:||
+Registration String:||
+Account Entry:||
+Protocol:||
+Globals String:||
+Dialplan Entry:||
+CONF TEMPLATE NOT ADDED||
+there is already a template in the system with this ID||
+CONF TEMPLATE ADDED||
+CARRIER NOT ADDED||
+there is already a carrier in the system with this ID||
+CONF TEMPLATE NOT MODIFIED||
+CARRIER NOT MODIFIED||
+CARRIER MODIFIED||
+CONF TEMPLATE NOT DELETED||
+Template ID be at least 2 characters in length||
+CONF TEMPLATE DELETION CONFIRMATION||
+Click here to delete conf template||
+CARRIER NOT DELETED||
+Carrier ID be at least 2 characters in length||
+CARRIER DELETION CONFIRMATION||
+Click here to delete carrier||
+CONF TEMPLATE DELETION COMPLETED||
+CARRIER DELETION COMPLETED||
+MODIFY A CONF TEMPLATE RECORD||
+DELETE THIS CONF TEMPLATE||
+MODIFY A CARRIER RECORD||
+DELETE THIS CARRIER||
+CARRIERS WITHIN THIS SERVER||
+CONF TEMPLATE LISTINGS||
+PHONES USING THIS CONF TEMPLATE||
+CARRIERS USING THIS CONF TEMPLATE||
+Conf Override:||
+Template ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the conf template throughout the system||
+Template Name -<\/B> This is the descriptive name of the conf file template entry||
+Template Contents -<\/B> This field is where you can enter in the specific settings to be used by all phones and-or carriers that are set to use this conf template. Fields that should NOT be included in this box are: secret, accountcode, account, username and mailbox||
+Carrier ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the carrier for this specific entry throughout the system||
+Carrier Name -<\/B> This is the descriptive name of the carrier entry||
+Registration String -<\/B> This field is where you can enter in the exact string needed in the IAX or SIP configuration file to register to the provider. Optional but highly recommended if your carrier allows registration||
+Template ID -<\/B> This optional field allows you to choose a conf file template for this carrier entry||
+Account Entry -<\/B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier||
+Protocol -<\/B> This field allows you to define the protocol to use for the carrier entry. Currently only IAX and SIP are supported||
+Globals String -<\/B> This optional field allows you to define a global variable to use for the carrier in the dialplan||
+Dialplan Entry -<\/B> This optional field allows you to define a set of dialplan entries to use for this carrier||
+Server IP -<\/B> This is the server that this specific carrier record is associated with||
+Active -<\/B> This defines whether the carrier will be included in the auto-generated conf files or not||
+Conf Override Settings -<\/B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated||
+Template ID -<\/B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--||
 
 
 ############################################################ CLIENT

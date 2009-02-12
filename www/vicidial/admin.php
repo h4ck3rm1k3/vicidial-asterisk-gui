@@ -889,6 +889,32 @@ if (isset($_GET["cpd_amd_action"]))				{$cpd_amd_action=$_GET["cpd_amd_action"];
 	elseif (isset($_POST["cpd_amd_action"]))	{$cpd_amd_action=$_POST["cpd_amd_action"];}
 if (isset($_GET["download_lists"]))				{$download_lists=$_GET["download_lists"];}
 	elseif (isset($_POST["download_lists"]))	{$download_lists=$_POST["download_lists"];}
+if (isset($_GET["active_asterisk_server"]))				{$active_asterisk_server=$_GET["active_asterisk_server"];}
+	elseif (isset($_POST["active_asterisk_server"]))	{$active_asterisk_server=$_POST["active_asterisk_server"];}
+if (isset($_GET["generate_vicidial_conf"]))				{$generate_vicidial_conf=$_GET["generate_vicidial_conf"];}
+	elseif (isset($_POST["generate_vicidial_conf"]))	{$generate_vicidial_conf=$_POST["generate_vicidial_conf"];}
+if (isset($_GET["rebuild_conf_files"]))				{$rebuild_conf_files=$_GET["rebuild_conf_files"];}
+	elseif (isset($_POST["rebuild_conf_files"]))	{$rebuild_conf_files=$_POST["rebuild_conf_files"];}
+if (isset($_GET["template_id"]))			{$template_id=$_GET["template_id"];}
+	elseif (isset($_POST["template_id"]))	{$template_id=$_POST["template_id"];}
+if (isset($_GET["conf_override"]))			{$conf_override=$_GET["conf_override"];}
+	elseif (isset($_POST["conf_override"]))	{$conf_override=$_POST["conf_override"];}
+if (isset($_GET["template_name"]))			{$template_name=$_GET["template_name"];}
+	elseif (isset($_POST["template_name"]))	{$template_name=$_POST["template_name"];}
+if (isset($_GET["template_contents"]))			{$template_contents=$_GET["template_contents"];}
+	elseif (isset($_POST["template_contents"]))	{$template_contents=$_POST["template_contents"];}
+if (isset($_GET["carrier_id"]))			{$carrier_id=$_GET["carrier_id"];}
+	elseif (isset($_POST["carrier_id"]))	{$carrier_id=$_POST["carrier_id"];}
+if (isset($_GET["carrier_name"]))			{$carrier_name=$_GET["carrier_name"];}
+	elseif (isset($_POST["carrier_name"]))	{$carrier_name=$_POST["carrier_name"];}
+if (isset($_GET["registration_string"]))			{$registration_string=$_GET["registration_string"];}
+	elseif (isset($_POST["registration_string"]))	{$registration_string=$_POST["registration_string"];}
+if (isset($_GET["account_entry"]))			{$account_entry=$_GET["account_entry"];}
+	elseif (isset($_POST["account_entry"]))	{$account_entry=$_POST["account_entry"];}
+if (isset($_GET["globals_string"]))				{$globals_string=$_GET["globals_string"];}
+	elseif (isset($_POST["globals_string"]))	{$globals_string=$_POST["globals_string"];}
+if (isset($_GET["dialplan_entry"]))				{$dialplan_entry=$_GET["dialplan_entry"];}
+	elseif (isset($_POST["dialplan_entry"]))	{$dialplan_entry=$_POST["dialplan_entry"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1116,6 +1142,9 @@ $play_place_in_line  = ereg_replace("[^NY]","",$play_place_in_line);
 $play_estimate_hold_time  = ereg_replace("[^NY]","",$play_estimate_hold_time);
 $no_delay_call_route  = ereg_replace("[^NY]","",$no_delay_call_route);
 $did_active  = ereg_replace("[^NY]","",$did_active);
+$active_asterisk_server = ereg_replace("[^NY]","",$active_asterisk_server);
+$generate_vicidial_conf = ereg_replace("[^NY]","",$generate_vicidial_conf);
+$rebuild_conf_files = ereg_replace("[^NY]","",$rebuild_conf_files);
 
 $qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
 
@@ -1267,6 +1296,8 @@ $vtiger_create_call_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_ca
 $vtiger_create_lead_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_lead_record);
 $vtiger_screen_login = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_screen_login);
 $cpd_amd_action = ereg_replace("[^-\_0-9a-zA-Z]","",$cpd_amd_action);
+$template_id = ereg_replace("[^-\_0-9a-zA-Z]","",$template_id);
+$carrier_id = ereg_replace("[^-\_0-9a-zA-Z]","",$carrier_id);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1320,6 +1351,8 @@ $alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alias_name);
 $shift_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$shift_name);
 $did_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$did_description);
 $alt_server_ip = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alt_server_ip);
+$template_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$template_name);
+$carrier_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$carrier_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1354,6 +1387,12 @@ $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 $list_mix_container = ereg_replace(";","",$list_mix_container);
 $survey_response_digit_map = ereg_replace(";","",$survey_response_digit_map);
 $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
+$conf_override = ereg_replace(";","",$conf_override);
+$template_contents = ereg_replace(";","",$template_contents);
+$registration_string = ereg_replace(";","",$registration_string);
+$account_entry = ereg_replace(";","",$account_entry);
+$globals_string = ereg_replace(";","",$globals_string);
+$dialplan_entry = ereg_replace(";","",$dialplan_entry);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
@@ -1545,11 +1584,12 @@ $survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
 # 90202-0112 - Added option to disable outbound autodialing(or list dialing)
 # 90202-0444 - Added cpd_amd_action option for processing of AMD messages
 # 90209-1339 - Added download_lists option to allow downloading of lists
+# 90210-1042 - Added options for auto-generation of asterisk conf files
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-163';
-$build = '90209-1339';
+$admin_version = '2.0.5-164';
+$build = '90210-1042';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1709,6 +1749,8 @@ if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Add New State Call Time";
 if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
 if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE ALIAS";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
+if ($ADD==131111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW CONF TEMPLATE";}
+if ($ADD==141111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW CARRIER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
 if ($ADD=='2')			{$hh='users';		echo "New User Addition";}
@@ -1738,6 +1780,8 @@ if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE";}
 if ($ADD==22111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE ALIAS";}
 if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==231111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW CONF TEMPLATE";}
+if ($ADD==241111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW CARRIER";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
@@ -1790,6 +1834,8 @@ if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==32111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
 if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
+if ($ADD==331111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CONF TEMPLATE";}
+if ($ADD==341111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CARRIER";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
@@ -1822,6 +1868,8 @@ if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==42111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
 if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==431111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CONF TEMPLATE";}
+if ($ADD==441111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CARRIER";}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
@@ -1845,6 +1893,8 @@ if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
 if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
+if ($ADD==531111111111)	{$hh='admin';	$sh='server';	echo "DELETE CONF TEMPLATE";}
+if ($ADD==541111111111)	{$hh='admin';	$sh='server';	echo "DELETE CARRIER";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
@@ -1870,6 +1920,8 @@ if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
 if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE CONF TEMPLATE";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE CARRIER";}
 if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==61111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==73)			{$hh='campaigns';	echo "Dialable Lead Count";}
@@ -1893,6 +1945,8 @@ if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "State Call Times";}
 if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "PHONE LIST";}
 if ($ADD==12000000000)	{$hh='admin';	$sh='phones';	echo "PHONE ALIAS LIST";}
 if ($ADD==100000000000)	{$hh='admin';	$sh='server';	echo "SERVER LIST";}
+if ($ADD==130000000000)	{$hh='admin';	$sh='server';	echo "CONF TEMPLATE LIST";}
+if ($ADD==140000000000)	{$hh='admin';	$sh='server';	echo "CARRIER LIST";}
 if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo "CONFERENCE LIST";}
 if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo "VICIDIAL CONFERENCE LIST";}
 if ($ADD==550)			{$hh='users';		echo "Search Form";}
@@ -2075,7 +2129,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 
 	##### BEGIN get inbound groups listing for checkboxes #####
 	$xfer_groupsSQL='';
-	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
+	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) or ( ($ADD==41) and (eregi('list_activation', $stage))) )
 	{
 	$stmt="SELECT closer_campaigns,xfer_groups from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -4311,6 +4365,18 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <B>Phones Email -</B> The email address associated with this phone entry. This is used for voicemail settings.
 
+<BR>
+<A NAME="phones-template_id">
+<BR>
+<B>Template ID -</B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--.
+
+<BR>
+<A NAME="phones-conf_override">
+<BR>
+<B>Conf Override Settings -</B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated.
+
+
+
 
 
 <BR><BR><BR><BR>
@@ -4434,6 +4500,99 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="servers-alt_server_ip">
 <BR>
 <B>Alternate Recording Server IP -</B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty.
+
+<BR>
+<A NAME="servers-active_asterisk_server">
+<BR>
+<B>Active Asterisk Server -</B> If Asterisk is not running on this server, or if VICIDIAL should not be using this server, or if are only using this server for other scripts like the hopper loading script you would want to set this to N. Default is Y.
+
+<BR>
+<A NAME="servers-generate_vicidial_conf">
+<BR>
+<B>Generate conf files -</B> If you would like the system to auto-generate asterisk conf files based upon the phones entries, carrier entries and load balancing setup within VICIDIAL then set this to Y. Default is Y.
+
+<BR>
+<A NAME="servers-rebuild_conf_files">
+<BR>
+<B>Rebuild conf files -</B> If you want to force a rebuilding of the Asterisk conf files or if any of the phones or carrier entries have changed then this should be set to Y. After the conf files have been generated and Asterisk has been reloaded then this will be changed to N. Default is Y.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>vicidial_conf_templates TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_conf_templates-template_id">
+<BR>
+<B>Template ID -</B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the conf template throughout the system.
+
+<BR>
+<A NAME="vicidial_conf_templates-template_name">
+<BR>
+<B>Template Name -</B> This is the descriptive name of the conf file template entry.
+
+<BR>
+<A NAME="vicidial_conf_templates-template_contents">
+<BR>
+<B>Template Contents -</B> This field is where you can enter in the specific settings to be used by all phones and-or carriers that are set to use this conf template. Fields that should NOT be included in this box are: secret, accountcode, account, username and mailbox.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>vicidial_server_carriers TABLE</FONT></B><BR><BR>
+<A NAME="vicidial_server_carriers-carrier_id">
+<BR>
+<B>Carrier ID -</B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the carrier for this specific entry throughout the system.
+
+<BR>
+<A NAME="vicidial_server_carriers-carrier_name">
+<BR>
+<B>Carrier Name -</B> This is the descriptive name of the carrier entry.
+
+<BR>
+<A NAME="vicidial_server_carriers-registration_string">
+<BR>
+<B>Registration String -</B> This field is where you can enter in the exact string needed in the IAX or SIP configuration file to register to the provider. Optional but highly recommended if your carrier allows registration.
+
+<BR>
+<A NAME="vicidial_server_carriers-template_id">
+<BR>
+<B>Template ID -</B> This optional field allows you to choose a conf file template for this carrier entry.
+
+<BR>
+<A NAME="vicidial_server_carriers-account_entry">
+<BR>
+<B>Account Entry -</B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier.
+
+<BR>
+<A NAME="vicidial_server_carriers-protocol">
+<BR>
+<B>Protocol -</B> This field allows you to define the protocol to use for the carrier entry. Currently only IAX and SIP are supported.
+
+<BR>
+<A NAME="vicidial_server_carriers-globals_string">
+<BR>
+<B>Globals String -</B> This optional field allows you to define a global variable to use for the carrier in the dialplan.
+
+<BR>
+<A NAME="vicidial_server_carriers-dialplan_entry">
+<BR>
+<B>Dialplan Entry -</B> This optional field allows you to define a set of dialplan entries to use for this carrier.
+
+<BR>
+<A NAME="vicidial_server_carriers-server_ip">
+<BR>
+<B>Server IP -</B> This is the server that this specific carrier record is associated with.
+
+<BR>
+<A NAME="vicidial_server_carriers-active">
+<BR>
+<B>Active -</B> This defines whether the carrier will be included in the auto-generated conf files or not.
+
 
 
 
@@ -5361,7 +5520,7 @@ if (strlen($admin_hh) > 1) {
 		<? }
 	if (strlen($server_sh) > 1) { 
 		?>
-	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Servers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Server </a></TD></TR>
+	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Servers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Server </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=130000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Templates </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=131111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Template </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=140000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Carriers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=141111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Carrier </a></TD></TR>
 	<?}
 	if (strlen($settings_sh) > 1) { 
 		?>
@@ -5408,28 +5567,28 @@ if (strlen($reports_hh) > 1) {
 ######################
 
 if ($ADD=="1")
-{
-	if ($LOGmodify_users==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	echo "<br>ADD A NEW USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
-	echo "<input type=hidden name=ADD value=2>\n";
-	echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Level: </td><td align=left><select size=1 name=user_level>";
-	$h=1;
-	while ($h<=$LOGuser_level)
+	if ($LOGmodify_users==1)
 		{
-		echo "<option>$h</option>";
-		$h++;
-		}
-	echo "</select>$NWB#vicidial_users-user_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Group: </td><td align=left><select size=1 name=user_group>\n";
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD A NEW USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
+		echo "<input type=hidden name=ADD value=2>\n";
+		echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User Level: </td><td align=left><select size=1 name=user_level>";
+		$h=1;
+		while ($h<=$LOGuser_level)
+			{
+			echo "<option>$h</option>";
+			$h++;
+			}
+		echo "</select>$NWB#vicidial_users-user_level$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User Group: </td><td align=left><select size=1 name=user_group>\n";
 
 		$stmt="SELECT user_group,group_name from vicidial_user_groups order by user_group";
 		$rslt=mysql_query($stmt, $link);
@@ -5437,25 +5596,26 @@ if ($ADD=="1")
 		$Ugroups_list='';
 
 		$o=0;
-		while ($Ugroups_to_print > $o) {
+		while ($Ugroups_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$Ugroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$Ugroups_list";
+		echo "<option SELECTED>$user_group</option>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
+		echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$Ugroups_list";
-	echo "<option SELECTED>$user_group</option>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
-	echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5463,24 +5623,24 @@ if ($ADD=="1")
 ######################
 
 if ($ADD=="1A")
-{
-	if ($LOGmodify_users==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_users==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>COPY USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
-	echo "<input type=hidden name=ADD value=2A>\n";
-	echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+		echo "<br>COPY USER<form action=$PHP_SELF method=POST name=userform id=userform>\n";
+		echo "<input type=hidden name=ADD value=2A>\n";
+		echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User Number: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
 
-	if ($LOGuser_level==9) {$levelMAX=10;}
-	else {$levelMAX=$LOGuser_level;}
+		if ($LOGuser_level==9) {$levelMAX=10;}
+		else {$levelMAX=$LOGuser_level;}
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source User: </td><td align=left><select size=1 name=source_user_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source User: </td><td align=left><select size=1 name=source_user_id>\n";
 
 		$stmt="SELECT user,full_name from vicidial_users where user_level < $levelMAX order by full_name;";
 		$rslt=mysql_query($stmt, $link);
@@ -5488,22 +5648,23 @@ if ($ADD=="1A")
 		$Uusers_list='';
 
 		$o=0;
-		while ($Uusers_to_print > $o) {
+		while ($Uusers_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$Uusers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$Uusers_list";
+		echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$Uusers_list";
-	echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=SUBMIT value=SUBMIT onClick=\"user_submit()\"></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5511,49 +5672,49 @@ if ($ADD=="1A")
 ######################
 
 if ($ADD==11)
-{
+	{
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW CAMPAIGN<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_description size=30 maxlength=255>$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Park Filename: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-	if ($SSoutbound_autodial_active > 0)
-		{
-		echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+		echo "<br>ADD A NEW CAMPAIGN<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Description: </td><td align=left><input type=text name=campaign_description size=30 maxlength=255>$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Park Extension: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Park Filename: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Allow Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Hopper Level: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Auto Dial Level: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Local Call Time: </td><td align=left><select size=1 name=local_call_time>";
+		echo "$call_times_list";
+		echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Local Call Time: </td><td align=left><select size=1 name=local_call_time>";
-	echo "$call_times_list";
-	echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
-	if ($SSoutbound_autodial_active > 0)
-		{
-		echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
-		}
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script: </td><td align=left><select size=1 name=script_id>\n";
-	echo "$scripts_list";
-	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5561,64 +5722,19 @@ if ($ADD==11)
 ######################
 
 if ($ADD==12)
-{
+	{
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>COPY A CAMPAIGN<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=20>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<br>COPY A CAMPAIGN<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=20>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign ID: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign Name: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source Campaign: </td><td align=left><select size=1 name=source_campaign_id>\n";
-
-		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
-		$rslt=mysql_query($stmt, $link);
-		$campaigns_to_print = mysql_num_rows($rslt);
-		$campaigns_list='';
-
-		$o=0;
-		while ($campaigns_to_print > $o) {
-			$rowx=mysql_fetch_row($rslt);
-			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-			$o++;
-		}
-	echo "$campaigns_list";
-	echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign.</td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
-	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
-	}
-}
-
-
-######################
-# ADD=111 display the ADD NEW LIST FORM SCREEN
-######################
-
-if ($ADD==111)
-{
-	if ($LOGmodify_lists==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	echo "<br>ADD A NEW LIST<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (digits only)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>List Description: </td><td align=left><input type=text name=list_description size=30 maxlength=255>$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source Campaign: </td><td align=left><select size=1 name=source_campaign_id>\n";
 
 		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 		$rslt=mysql_query($stmt, $link);
@@ -5632,19 +5748,65 @@ if ($ADD==111)
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
 			}
-	echo "$campaigns_list";
-	echo "<option SELECTED>$campaign_id</option>\n";
-	echo "</select>$NWB#vicidial_lists-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$campaigns_list";
+		echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign.</td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=111 display the ADD NEW LIST FORM SCREEN
+######################
+
+if ($ADD==111)
+	{
+	if ($LOGmodify_lists==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD A NEW LIST<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>List ID: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (digits only)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>List Name: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>List Description: </td><td align=left><input type=text name=list_description size=30 maxlength=255>$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
+
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+		$rslt=mysql_query($stmt, $link);
+		$campaigns_to_print = mysql_num_rows($rslt);
+		$campaigns_list='';
+
+		$o=0;
+		while ($campaigns_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+		echo "$campaigns_list";
+		echo "<option SELECTED>$campaign_id</option>\n";
+		echo "</select>$NWB#vicidial_lists-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -5652,84 +5814,83 @@ if ($ADD==111)
 ######################
 
 if ($ADD==121)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-$campaigns_list = "<option SELECTED value=\"SYSTEM_INTERNAL\">SYSTEM_INTERNAL - INTERNAL VICIDIAL DNC LIST</option>\n";
-
-$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where use_campaign_dnc='Y' order by campaign_id";
-$rslt=mysql_query($stmt, $link);
-$campaigns_to_print = mysql_num_rows($rslt);
-
-$o=0;
-while ($campaigns_to_print > $o) 
 	{
-	$rowx=mysql_fetch_row($rslt);
-	$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-	$o++;
-	}
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-if (strlen($phone_numbers) > 2)
-	{
-	$PN = explode("\n",$phone_numbers);
-	$PNct = count($PN);
-	$p=0;
-	while ($p < $PNct)
+	$campaigns_list = "<option SELECTED value=\"SYSTEM_INTERNAL\">SYSTEM_INTERNAL - INTERNAL VICIDIAL DNC LIST</option>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where use_campaign_dnc='Y' order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
 		{
-		if (ereg('SYSTEM_INTERNAL',$campaign_id))
-			{
-			$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-			if ($row[0] > 0)
-				{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p]\n";}
-			else
-				{
-				$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
-				$rslt=mysql_query($stmt, $link);
-
-				echo "<br><B>DNC ADDED: $PN[$p]</B>\n";
-				}
-			}
-		else
-			{
-			$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-			if ($row[0] > 0)
-				{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p] $campaign_id\n";}
-			else
-				{
-				$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$campaign_id');";
-				$rslt=mysql_query($stmt, $link);
-
-				echo "<br><B>DNC ADDED: $PN[$p] $campaign_id</B>\n";
-				}
-			}
-		$p++;
+		$rowx=mysql_fetch_row($rslt);
+		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
 		}
 
-	### LOG INSERTION TO LOG FILE ###
-	if ($WeBRooTWritablE > 0)
+	if (strlen($phone_numbers) > 2)
 		{
-		$fp = fopen ("./admin_changes_log.txt", "a");
-		fwrite ($fp, "$date|ADD A NEW DNC NUMBER|$PHP_AUTH_USER|$ip|'$phone_number','$campaign_id'|\n");
-		fclose($fp);
+		$PN = explode("\n",$phone_numbers);
+		$PNct = count($PN);
+		$p=0;
+		while ($p < $PNct)
+			{
+			if (ereg('SYSTEM_INTERNAL',$campaign_id))
+				{
+				$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				if ($row[0] > 0)
+					{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p]\n";}
+				else
+					{
+					$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
+					$rslt=mysql_query($stmt, $link);
+
+					echo "<br><B>DNC ADDED: $PN[$p]</B>\n";
+					}
+				}
+			else
+				{
+				$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				if ($row[0] > 0)
+					{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p] $campaign_id\n";}
+				else
+					{
+					$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$campaign_id');";
+					$rslt=mysql_query($stmt, $link);
+
+					echo "<br><B>DNC ADDED: $PN[$p] $campaign_id</B>\n";
+					}
+				}
+			$p++;
+			}
+
+		### LOG INSERTION TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|ADD A NEW DNC NUMBER|$PHP_AUTH_USER|$ip|'$phone_number','$campaign_id'|\n");
+			fclose($fp);
+			}
 		}
+
+	echo "<br>ADD NUMBERS TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=121>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List: </td><td align=left><select size=1 name=campaign_id>\n";
+	echo "$campaigns_list";
+	echo "</select></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Numbers: <BR><BR> (one phone number per line only)<BR>$NWB#vicidial_list-dnc$NWE</td><td align=left><TEXTAREA name=phone_numbers ROWS=20 COLS=20></TEXTAREA></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
 	}
-
-echo "<br>ADD NUMBERS TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=ADD value=121>\n";
-echo "<center><TABLE width=$section_width cellspacing=3>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>List: </td><td align=left><select size=1 name=campaign_id>\n";
-echo "$campaigns_list";
-echo "</select></td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Phone Numbers: <BR><BR> (one phone number per line only)<BR>$NWB#vicidial_list-dnc$NWE</td><td align=left><TEXTAREA name=phone_numbers ROWS=20 COLS=20></TEXTAREA></td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-echo "</TABLE></center>\n";
-
-}
 
 
 ######################
@@ -5737,36 +5898,36 @@ echo "</TABLE></center>\n";
 ######################
 
 if ($ADD==1111)
-{
+	{
 	if ($LOGmodify_ingroups==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group Color: </td><td align=left id=\"group_color_td\"><input type=text name=group_color size=7 maxlength=7>$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Fronter Display: </td><td align=left><select size=1 name=fronter_display><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script: </td><td align=left><select size=1 name=script_id>\n";
-	echo "$scripts_list";
-	echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD A NEW INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Color: </td><td align=left id=\"group_color_td\"><input type=text name=group_color size=7 maxlength=7>$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Web Form: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Next Agent Call: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Fronter Display: </td><td align=left><select size=1 name=fronter_display><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Get Call Launch: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5774,44 +5935,44 @@ if ($ADD==1111)
 ######################
 
 if ($ADD==1211)
-{
-	if ($LOGmodify_ingroups==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_ingroups==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>COPY INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2011>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+		echo "<br>COPY INBOUND GROUP<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2011>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group ID: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Name: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source Group ID: </td><td align=left><select size=1 name=source_group_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source Group ID: </td><td align=left><select size=1 name=source_group_id>\n";
 
 		$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
-	#	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
 		$rslt=mysql_query($stmt, $link);
 		$groups_to_print = mysql_num_rows($rslt);
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) {
+		while ($groups_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
-		}
-	echo "$groups_list";
-	echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+			}
+		echo "$groups_list";
+		echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5819,7 +5980,7 @@ if ($ADD==1211)
 ######################
 
 if ($ADD==1311)
-{
+	{
 	if ($LOGmodify_dids==1)
 		{
 		echo "<TABLE><TR><TD>\n";
@@ -5838,7 +5999,7 @@ if ($ADD==1311)
 		echo "You do not have permission to view this page\n";
 		exit;
 		}
-}
+	}
 
 
 ######################
@@ -5846,19 +6007,19 @@ if ($ADD==1311)
 ######################
 
 if ($ADD==1411)
-{
-	if ($LOGmodify_dids==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_dids==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>COPY DID<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2411>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>DID Extension: </td><td align=left><input type=text name=did_pattern size=20 maxlength=50> (no spaces or dashes)$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>DID Description: </td><td align=left><input type=text name=did_description size=40 maxlength=50>$NWB#vicidial_inbound_dids-did_description$NWE</td></tr>\n";
+		echo "<br>COPY DID<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2411>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Extension: </td><td align=left><input type=text name=did_pattern size=20 maxlength=50> (no spaces or dashes)$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Description: </td><td align=left><input type=text name=did_description size=40 maxlength=50>$NWB#vicidial_inbound_dids-did_description$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source DID: </td><td align=left><select size=1 name=source_did>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source DID: </td><td align=left><select size=1 name=source_did>\n";
 
 		$stmt="SELECT did_id,did_pattern,did_description from vicidial_inbound_dids order by did_pattern";
 		$rslt=mysql_query($stmt, $link);
@@ -5866,23 +6027,24 @@ if ($ADD==1411)
 		$dids_list='';
 
 		$o=0;
-		while ($dids_to_print > $o) {
+		while ($dids_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$dids_list .= "<option value=\"$rowx[0]\">$rowx[1] - $rowx[2]</option>\n";
 			$o++;
-		}
-	echo "$dids_list";
-	echo "</select>$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+			}
+		echo "$dids_list";
+		echo "</select>$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5890,38 +6052,38 @@ if ($ADD==1411)
 ######################
 
 if ($ADD==11111)
-{
+	{
 	if ($LOGmodify_remoteagents==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW REMOTE AGENTS<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>User ID Start: </td><td align=left><input type=text name=user_start size=6 maxlength=6> (numbers only, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Number of Lines: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3> (numbers only)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
-	echo "$servers_list";
-	echo "</select>$NWB#vicidial_remote_agents-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>External Extension: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20> (dial plan number dialed to reach agents)$NWB#vicidial_remote_agents-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option>ACTIVE</option><option SELECTED>INACTIVE</option></select>$NWB#vicidial_remote_agents-status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
-	echo "$campaigns_list";
-	echo "</select>$NWB#vicidial_remote_agents-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Inbound Groups: </td><td align=left>\n";
-	echo "$groups_list";
-	echo "$NWB#vicidial_remote_agents-closer_campaigns$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	echo "NOTE: It can take up to 30 seconds for changes submitted on this screen to go live\n";
-	}
+		echo "<br>ADD NEW REMOTE AGENTS<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User ID Start: </td><td align=left><input type=text name=user_start size=6 maxlength=6> (numbers only, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Number of Lines: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3> (numbers only)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "$servers_list";
+		echo "</select>$NWB#vicidial_remote_agents-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>External Extension: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20> (dial plan number dialed to reach agents)$NWB#vicidial_remote_agents-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option>ACTIVE</option><option SELECTED>INACTIVE</option></select>$NWB#vicidial_remote_agents-status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Campaign: </td><td align=left><select size=1 name=campaign_id>\n";
+		echo "$campaigns_list";
+		echo "</select>$NWB#vicidial_remote_agents-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Inbound Groups: </td><td align=left>\n";
+		echo "$groups_list";
+		echo "$NWB#vicidial_remote_agents-closer_campaigns$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		echo "NOTE: It can take up to 30 seconds for changes submitted on this screen to go live\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5929,26 +6091,26 @@ if ($ADD==11111)
 ######################
 
 if ($ADD==111111)
-{
+	{
 	if ($LOGmodify_usergroups==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW USERS GROUP<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD NEW USERS GROUP<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group: </td><td align=left><input type=text name=user_group size=15 maxlength=20> (no spaces or punctuation)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -5956,72 +6118,72 @@ if ($ADD==111111)
 ######################
 
 if ($ADD==1111111)
-{
+	{
 	if ($LOGmodify_scripts==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script Comments: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: </td><td align=left>";
-	# BEGIN Insert Field
-	echo "<select id=\"selectedField\" name=\"selectedField\">";
-	echo "<option>vendor_lead_code</option>";
-	echo "<option>source_id</option>";
-	echo "<option>list_id</option>";
-	echo "<option>gmt_offset_now</option>";
-	echo "<option>called_since_last_reset</option>";
-	echo "<option>phone_code</option>";
-	echo "<option>phone_number</option>";
-	echo "<option>title</option>";
-	echo "<option>first_name</option>";
-	echo "<option>middle_initial</option>";
-	echo "<option>last_name</option>";
-	echo "<option>address1</option>";
-	echo "<option>address2</option>";
-	echo "<option>address3</option>";
-	echo "<option>city</option>";
-	echo "<option>state</option>";
-	echo "<option>province</option>";
-	echo "<option>postal_code</option>";
-	echo "<option>country_code</option>";
-	echo "<option>gender</option>";
-	echo "<option>date_of_birth</option>";
-	echo "<option>alt_phone</option>";
-	echo "<option>email</option>";
-	echo "<option>security_phrase</option>";
-	echo "<option>comments</option>";
-	echo "<option>lead_id</option>";
-	echo "<option>campaign</option>";
-	echo "<option>phone_login</option>";
-	echo "<option>group</option>";
-	echo "<option>channel_group</option>";
-	echo "<option>SQLdate</option>";
-	echo "<option>epoch</option>";
-	echo "<option>uniqueid</option>";
-	echo "<option>customer_zap_channel</option>";
-	echo "<option>server_ip</option>";
-	echo "<option>SIPexten</option>";
-	echo "<option>session_id</option>";
-	echo "</select>";
-	echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
-	# END Insert Field
-	echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script Comments: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Script Text: </td><td align=left>";
+		# BEGIN Insert Field
+		echo "<select id=\"selectedField\" name=\"selectedField\">";
+		echo "<option>vendor_lead_code</option>";
+		echo "<option>source_id</option>";
+		echo "<option>list_id</option>";
+		echo "<option>gmt_offset_now</option>";
+		echo "<option>called_since_last_reset</option>";
+		echo "<option>phone_code</option>";
+		echo "<option>phone_number</option>";
+		echo "<option>title</option>";
+		echo "<option>first_name</option>";
+		echo "<option>middle_initial</option>";
+		echo "<option>last_name</option>";
+		echo "<option>address1</option>";
+		echo "<option>address2</option>";
+		echo "<option>address3</option>";
+		echo "<option>city</option>";
+		echo "<option>state</option>";
+		echo "<option>province</option>";
+		echo "<option>postal_code</option>";
+		echo "<option>country_code</option>";
+		echo "<option>gender</option>";
+		echo "<option>date_of_birth</option>";
+		echo "<option>alt_phone</option>";
+		echo "<option>email</option>";
+		echo "<option>security_phrase</option>";
+		echo "<option>comments</option>";
+		echo "<option>lead_id</option>";
+		echo "<option>campaign</option>";
+		echo "<option>phone_login</option>";
+		echo "<option>group</option>";
+		echo "<option>channel_group</option>";
+		echo "<option>SQLdate</option>";
+		echo "<option>epoch</option>";
+		echo "<option>uniqueid</option>";
+		echo "<option>customer_zap_channel</option>";
+		echo "<option>server_ip</option>";
+		echo "<option>SIPexten</option>";
+		echo "<option>session_id</option>";
+		echo "</select>";
+		echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
+		# END Insert Field
+		echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6029,28 +6191,28 @@ if ($ADD==1111111)
 ######################
 
 if ($ADD==11111111)
-{
+	{
 	if ($LOGmodify_filters==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW FILTER<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Filter ID: </td><td align=left><input type=text name=lead_filter_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Filter Name: </td><td align=left><input type=text name=lead_filter_name size=30 maxlength=30> (short description of the filter)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Filter Comments: </td><td align=left><input type=text name=lead_filter_comments size=50 maxlength=255> $NWB#vicidial_lead_filters-lead_filter_comments$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Filter SQL: </td><td align=left><TEXTAREA NAME=lead_filter_sql ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_lead_filters-lead_filter_sql$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD NEW FILTER<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Filter ID: </td><td align=left><input type=text name=lead_filter_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Filter Name: </td><td align=left><input type=text name=lead_filter_name size=30 maxlength=30> (short description of the filter)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Filter Comments: </td><td align=left><input type=text name=lead_filter_comments size=50 maxlength=255> $NWB#vicidial_lead_filters-lead_filter_comments$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Filter SQL: </td><td align=left><TEXTAREA NAME=lead_filter_sql ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_lead_filters-lead_filter_sql$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6058,29 +6220,29 @@ if ($ADD==11111111)
 ######################
 
 if ($ADD==111111111)
-{
+	{
 	if ($LOGmodify_call_times==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW CALL TIME<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Comments: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
+		echo "<br>ADD NEW CALL TIME<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Comments: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Day and time options will appear once you have created the Call Time Definition</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Day and time options will appear once you have created the Call Time Definition</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6088,30 +6250,30 @@ if ($ADD==111111111)
 ######################
 
 if ($ADD==1111111111)
-{
+	{
 	if ($LOGmodify_call_times==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW STATE CALL TIME<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left><input type=text name=state_call_time_state size=4 maxlength=2> (no spaces or punctuation)$NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time Comments: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
+		echo "<br>ADD NEW STATE CALL TIME<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time ID: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left><input type=text name=state_call_time_state size=4 maxlength=2> (no spaces or punctuation)$NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time Name: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time Comments: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Day and time options will appear once you have created the Call Time Definition</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Day and time options will appear once you have created the Call Time Definition</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6119,39 +6281,39 @@ if ($ADD==1111111111)
 ######################
 
 if ($ADD==131111111)
-{
+	{
 	if ($LOGmodify_call_times==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW SHIFT<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=231111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID: </td><td align=left><input type=text name=shift_id size=22 maxlength=20> (no spaces or punctuation)$NWB#vicidial_shifts-shift_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Name: </td><td align=left><input type=text name=shift_name size=50 maxlength=50> (short description of the shift)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Start Time: </td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time>\n";
-	echo " &nbsp; Shift End Time: <input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time>\n";
-	echo "<input type=button name=shift_calc value=\"Calculate Shift Length\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Length: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Weekdays: <BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\">Sunday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\">Monday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\">Tuesday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\">Wednesday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\">Thursday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\">Friday<BR>\n";
-	echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\">Saturday<BR>\n";
-	echo "</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD NEW SHIFT<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=231111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID: </td><td align=left><input type=text name=shift_id size=22 maxlength=20> (no spaces or punctuation)$NWB#vicidial_shifts-shift_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Name: </td><td align=left><input type=text name=shift_name size=50 maxlength=50> (short description of the shift)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Start Time: </td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time>\n";
+		echo " &nbsp; Shift End Time: <input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time>\n";
+		echo "<input type=button name=shift_calc value=\"Calculate Shift Length\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Length: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Weekdays: <BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\">Sunday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\">Monday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\">Tuesday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\">Wednesday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\">Thursday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\">Friday<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\">Saturday<BR>\n";
+		echo "</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6159,47 +6321,47 @@ if ($ADD==131111111)
 ######################
 
 if ($ADD==11111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW PHONE<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<br>ADD A NEW PHONE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone extension: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Dial Plan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Outbound CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20> (digits only)$NWB#phones-outbound_cid$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone IP address: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Computer IP address: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone extension: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Dial Plan Number: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20> (digits only)$NWB#phones-dialplan_number$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Voicemail Box: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10> (digits only)$NWB#phones-voicemail_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Outbound CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20> (digits only)$NWB#phones-outbound_cid$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone IP address: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Computer IP address: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$row[5]</option>\n";
-	echo "</select>$NWB#phones-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Login: </td><td align=left><input type=text name=login size=10 maxlength=10>$NWB#phones-login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=10 maxlength=10>$NWB#phones-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option SELECTED>ACTIVE</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option></select>$NWB#phones-status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active Account: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#phones-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Type: </td><td align=left><input type=text name=phone_type size=20 maxlength=50>$NWB#phones-phone_type$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=fullname size=20 maxlength=50>$NWB#phones-fullname$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Company: </td><td align=left><input type=text name=company size=10 maxlength=10>$NWB#phones-company$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Picture: </td><td align=left><input type=text name=picture size=20 maxlength=19>$NWB#phones-picture$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Client Protocol: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option SELECTED>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> (Do NOT Adjust for DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$row[5]</option>\n";
+		echo "</select>$NWB#phones-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Login: </td><td align=left><input type=text name=login size=10 maxlength=10>$NWB#phones-login$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Password: </td><td align=left><input type=text name=pass size=10 maxlength=10>$NWB#phones-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Status: </td><td align=left><select size=1 name=status><option SELECTED>ACTIVE</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option></select>$NWB#phones-status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active Account: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#phones-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Type: </td><td align=left><input type=text name=phone_type size=20 maxlength=50>$NWB#phones-phone_type$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Full Name: </td><td align=left><input type=text name=fullname size=20 maxlength=50>$NWB#phones-fullname$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Company: </td><td align=left><input type=text name=company size=10 maxlength=10>$NWB#phones-company$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Picture: </td><td align=left><input type=text name=picture size=20 maxlength=19>$NWB#phones-picture$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Client Protocol: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option SELECTED>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> (Do NOT Adjust for DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6207,30 +6369,30 @@ if ($ADD==11111111111)
 ######################
 
 if ($ADD==12111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW PHONE ALIAS<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=22111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<br>ADD A NEW PHONE ALIAS<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=22111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Alias ID: </td><td align=left><input type=text name=alias_id size=20 maxlength=20 value=\"\">$NWB#phones-alias_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Alias Name: </td><td align=left><input type=text name=alias_name size=30 maxlength=50> $NWB#phones-alias_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Logins List: </td><td align=left><input type=text name=logins_list size=50 maxlength=255> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Alias ID: </td><td align=left><input type=text name=alias_id size=20 maxlength=20 value=\"\">$NWB#phones-alias_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Alias Name: </td><td align=left><input type=text name=alias_name size=30 maxlength=50> $NWB#phones-alias_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Logins List: </td><td align=left><input type=text name=logins_list size=50 maxlength=255> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6238,29 +6400,127 @@ if ($ADD==12111111111)
 ######################
 
 if ($ADD==111111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW SERVER<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10>$NWB#servers-server_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255>$NWB#servers-server_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15>$NWB#servers-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#servers-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Asterisk Version: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20>$NWB#servers-asterisk_version$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD A NEW SERVER<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10>$NWB#servers-server_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255>$NWB#servers-server_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15>$NWB#servers-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#servers-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Asterisk Version: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20>$NWB#servers-asterisk_version$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=131111111111 display the ADD NEW CONF TEMPLATE SCREEN
+######################
+
+if ($ADD==131111111111)
+	{
+	if ($LOGmodify_servers==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD NEW CONF TEMPLATE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=231111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Template ID: </td><td align=left><input type=text name=template_id size=15 maxlength=15>$NWB#vicidial_conf_templates-template_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Template Name: </td><td align=left><input type=text name=template_name size=40 maxlength=50>$NWB#vicidial_conf_templates-template_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Template Contents: </td><td align=left><TEXTAREA NAME=template_contents ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_conf_templates-template_contents$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
+	}
+
+
+######################
+# ADD=141111111111 display the ADD NEW CARRIER SCREEN
+######################
+
+if ($ADD==141111111111)
+	{
+	if ($LOGmodify_servers==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD NEW CARRIER<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=241111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Carrier ID: </td><td align=left><input type=text name=carrier_id size=15 maxlength=15>$NWB#vicidial_server_carriers-carrier_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Carrier Name: </td><td align=left><input type=text name=carrier_name size=40 maxlength=50>$NWB#vicidial_server_carriers-carrier_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Registration String: </td><td align=left><input type=text name=registration_string size=50 maxlength=255>$NWB#vicidial_server_carriers-registration_string$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Template ID: </td><td align=left><select size=1 name=template_id>\n";
+		$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+		$rslt=mysql_query($stmt, $link);
+		$templates_to_print = mysql_num_rows($rslt);
+		$templates_list='<option SELECTED>--NONE--</option>';
+		$o=0;
+		while ($templates_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+		echo "$templates_list";
+		echo "</select>$NWB#vicidial_server_carriers-template_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Account Entry: </td><td align=left><TEXTAREA NAME=account_entry ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_server_carriers-account_entry$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Protocol: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#vicidial_server_carriers-protocol$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Globals String: </td><td align=left><input type=text name=globals_string size=50 maxlength=255>$NWB#vicidial_server_carriers-globals_string$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Entry: </td><td align=left><TEXTAREA NAME=dialplan_entry ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_server_carriers-dialplan_entry$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+		##### get server listing for dynamic pulldown
+		$stmt="SELECT server_ip,server_description from servers order by server_ip";
+		$rsltx=mysql_query($stmt, $link);
+		$servers_to_print = mysql_num_rows($rsltx);
+		$servers_list='';
+
+		$o=0;
+		while ($servers_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rsltx);
+			$servers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+
+		echo "$servers_list";
+		echo "</select>$NWB#vicidial_server_carriers-server_ip$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -6268,30 +6528,30 @@ if ($ADD==111111111111)
 ######################
 
 if ($ADD==1111111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW CONFERENCE<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<br>ADD A NEW CONFERENCE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$server_ip</option>\n";
-	echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$server_ip</option>\n";
+		echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -6299,30 +6559,30 @@ if ($ADD==1111111111111)
 ######################
 
 if ($ADD==11111111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW VICIDIAL CONFERENCE<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<br>ADD A NEW VICIDIAL CONFERENCE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Conference Number: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (digits only)$NWB#conferences-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$server_ip</option>\n";
-	echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$server_ip</option>\n";
+		echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 
@@ -7796,6 +8056,80 @@ if ($ADD==221111111111)
 			}
 		}
 $ADD=311111111111;
+}
+
+
+######################
+# ADD=231111111111 adds new conf template to the system
+######################
+
+if ($ADD==231111111111)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_conf_templates where template_id='$template_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>CONF TEMPLATE NOT ADDED - there is already a template in the system with this ID\n";}
+	else
+		{
+		 if (strlen($template_id) < 2)
+			{echo "<br>CONF TEMPLATE NOT ADDED - Please go back and look at the data you entered\n";}
+		 else
+			{
+			echo "<br>CONF TEMPLATE ADDED\n";
+
+			$stmt="INSERT INTO vicidial_conf_templates (template_id,template_name,template_contents) values('$template_id','$template_name','$template_contents');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW CONF TEMPLATE        |$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=331111111111;
+}
+
+
+######################
+# ADD=241111111111 adds new server carrier to the system
+######################
+
+if ($ADD==241111111111)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_server_carriers where carrier_id='$carrier_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>CARRIER NOT ADDED - there is already a carrier in the system with this ID\n";}
+	else
+		{
+		 if ( (strlen($carrier_id) < 2) or (strlen($server_ip) < 7) )
+			{echo "<br>CARRIER NOT ADDED - Please go back and look at the data you entered\n";}
+		 else
+			{
+			echo "<br>CARRIER ADDED\n";
+
+			$stmt="INSERT INTO vicidial_server_carriers (carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active) values('$carrier_id','$carrier_name','$registration_string','$template_id','$account_entry','$protocol','$globals_string','$dialplan_entry','$server_ip','N');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG CHANGES TO LOG FILE ###
+			if ($WeBRooTWritablE > 0)
+				{
+				$fp = fopen ("./admin_changes_log.txt", "a");
+				fwrite ($fp, "$date|ADD A NEW CARRIER              |$stmt|\n");
+				fclose($fp);
+				}
+			}
+		}
+$ADD=341111111111;
 }
 
 
@@ -9816,7 +10150,10 @@ if ($ADD==41111111111)
 			{
 			echo "<br>PHONE MODIFIED: $extension\n";
 
-			$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysql_real_escape_string($local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysql_real_escape_string($VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages', email='$email' where extension='$old_extension' and server_ip='$old_server_ip';";
+			$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysql_real_escape_string($local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysql_real_escape_string($VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages', email='$email', template_id='$template_id', conf_override='$conf_override' where extension='$old_extension' and server_ip='$old_server_ip';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG CHANGES TO LOG FILE ###
@@ -9908,7 +10245,10 @@ if ($ADD==411111111111)
 				{
 				echo "<br>SERVER MODIFIED: $server_ip\n";
 
-				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active', balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip' where server_id='$old_server_id';";
+				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active',balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip',active_asterisk_server='$active_asterisk_server',generate_vicidial_conf='$generate_vicidial_conf',rebuild_conf_files='$rebuild_conf_files' where server_id='$old_server_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG CHANGES TO LOG FILE ###
@@ -9986,6 +10326,86 @@ if ($ADD==421111111111)
 	exit;
 	}
 $ADD=311111111111;	# go to server modification form below
+}
+
+
+######################
+# ADD=431111111111 modify conf template record in the system
+###################### '$template_id','$template_name','$template_contents'
+
+if ($ADD==431111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($template_name) < 1)
+		{echo "<br>CONF TEMPLATE NOT MODIFIED - Please go back and look at the data you entered\n";}
+	 else
+		{
+		echo "<br>CONF TEMPLATE MODIFIED: $template_id\n";
+
+		$stmt="UPDATE vicidial_conf_templates set template_name='$template_name',template_contents='$template_contents' where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY CONF TEMPLATE  |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=331111111111;	# go to conf template modification form below
+}
+
+
+######################
+# ADD=441111111111 modify carrier record in the system
+######################
+
+if ($ADD==441111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($carrier_id) < 1) or (strlen($server_ip) < 7) or (strlen($protocol) < 1) or (strlen($dialplan_entry) < 1) )
+		{echo "<br>CARRIER NOT MODIFIED - Please go back and look at the data you entered\n";}
+	 else
+		{
+		echo "<br>CARRIER MODIFIED: $carrier_id\n";
+
+		$stmt="UPDATE vicidial_server_carriers set carrier_name='$carrier_name',registration_string='$registration_string',template_id='$template_id',account_entry='$account_entry',protocol='$protocol',globals_string='$globals_string',dialplan_entry='$dialplan_entry',server_ip='$server_ip',active='$active' where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY CARRIER        |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=341111111111;	# go to carrier modification form below
 }
 
 
@@ -10692,6 +11112,50 @@ if ($ADD==511111111111)
 		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111111&server_id=$server_id&server_ip=$server_ip&CoNfIrM=YES\">Click here to delete phone $server_id - $server_ip</a><br><br><br>\n";
 		}
 $ADD='311111111111';		# go to server modification below
+}
+
+
+######################
+# ADD=531111111111 confirmation before deletion of conf template record
+######################
+
+if ($ADD==531111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($template_id) < 2)
+		{
+		 echo "<br>CONF TEMPLATE NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Template ID be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>CONF TEMPLATE DELETION CONFIRMATION: $template_id - $template_name</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=631111111111&template_id=$template_id&server_ip=$server_ip&CoNfIrM=YES\">Click here to delete conf template $template_id - $template_name</a><br><br><br>\n";
+		}
+$ADD='331111111111';		# go to conf template modification below
+}
+
+
+######################
+# ADD=541111111111 confirmation before deletion of carrier record
+######################
+
+if ($ADD==541111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($carrier_id) < 2)
+		{
+		 echo "<br>CARRIER NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Carrier ID be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>CARRIER DELETION CONFIRMATION: $carrier_id - $carrier_name</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=641111111111&carrier_id=$carrier_id&CoNfIrM=YES\">Click here to delete carrier $carrier_id - $carrier_name</a><br><br><br>\n";
+		}
+$ADD='341111111111';		# go to carrier modification below
 }
 
 
@@ -11631,6 +12095,87 @@ if ($ADD==621111111111)
 	exit;
 	}
 $ADD=311111111111;	# go to server modification form below
+}
+
+
+######################
+# ADD=631111111111 delete conf template record
+######################
+
+if ($ADD==631111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($template_id) < 2) or ($CoNfIrM != 'YES') )
+		{
+		 echo "<br>CONF TEMPLATE NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Template ID be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="UPDATE phones SET template_id='' where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+		
+		$stmt="UPDATE vicidial_server_carriers SET template_id='' where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_conf_templates where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|!DELETING conf temp!|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		echo "<br><B>CONF TEMPLATE DELETION COMPLETED: $server_id - $server_ip</B>\n";
+		echo "<br><br>\n";
+		}
+$ADD='130000000000';		# go to conf template list
+}
+
+
+######################
+# ADD=641111111111 delete carrier record
+######################
+
+if ($ADD==641111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($carrier_id) < 2) or ($CoNfIrM != 'YES') )
+		{
+		 echo "<br>CARRIER NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Carrier ID be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="SELECT server_ip from vicidial_server_carriers where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$CARRIERserver_ip =	$row[0];
+
+		$stmt="DELETE from vicidial_server_carriers where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$CARRIERserver_ip';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|!!DELETING CARRIER!!|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		echo "<br><B>CARRIER DELETION COMPLETED: $carrier_id</B>\n";
+		echo "<br><br>\n";
+		}
+$ADD='140000000000';		# go to carrier list
 }
 
 
@@ -15909,6 +16454,25 @@ if ($ADD==31111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY User: </td><td align=left><input type=text name=DBY_user size=15 maxlength=15 value=\"$row[62]\"> (Secondary DB Login)$NWB#phones-DBY_user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY Pass: </td><td align=left><input type=text name=DBY_pass size=15 maxlength=15 value=\"$row[63]\"> (Secondary DB Secret)$NWB#phones-DBY_pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY Port: </td><td align=left><input type=text name=DBY_port size=6 maxlength=6 value=\"$row[64]\"> (Secondary DB Port)$NWB#phones-DBY_port$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[68]\">Template ID</a>: </td><td align=left><select size=1 name=template_id>\n";
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+	$templates_list='<option SELECTED>--NONE--</option>';
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "$templates_list";
+	echo "<option SELECTED>$row[68]</option>\n";
+	echo "</select>$NWB#phones-template_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Conf Override: </td><td align=left><TEXTAREA NAME=conf_override ROWS=10 COLS=70>$row[69]</TEXTAREA> $NWB#phones-conf_override$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 
@@ -16047,6 +16611,11 @@ if ($ADD==311111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>AGI Output: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$row[19]</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Recording Web Link: </td><td align=left><select size=1 name=recording_web_link><option>SERVER_IP</option><option>ALT_IP</option><option selected>$row[22]</option></select>$NWB#servers-recording_web_link$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Alternate Recording Server IP: </td><td align=left><input type=text name=alt_server_ip size=30 maxlength=100 value=\"$row[23]\">$NWB#servers-alt_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active Asterisk Server: </td><td align=left><select size=1 name=active_asterisk_server><option>Y</option><option>N</option><option selected>$row[24]</option></select>$NWB#servers-active_asterisk_server$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Generate conf files: </td><td align=left><select size=1 name=generate_vicidial_conf><option>Y</option><option>N</option><option selected>$row[25]</option></select>$NWB#servers-generate_vicidial_conf$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Rebuild conf files: </td><td align=left><select size=1 name=rebuild_conf_files><option>Y</option><option>N</option><option selected>$row[26]</option></select>$NWB#servers-rebuild_conf_files$NWE</td></tr>\n";
+
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
 	echo "</TABLE></center></form>\n";
 
@@ -16094,23 +16663,56 @@ if ($ADD==311111111111)
 	echo "</center></FORM><br>\n";
 
 
+	### list of carriers on this server
+	echo "<center>\n";
+	echo "<br><b>CARRIERS WITHIN THIS SERVER:</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>CARRIER ID</td><td>NAME</td><td>REGISTRATION</td><td>ACTIVE</td></tr>\n";
+
+	$active_carriers = 0;
+	$inactive_carriers = 0;
+	$stmt="SELECT carrier_id,carrier_name,registration_string,active from vicidial_server_carriers where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$carriers_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($carriers_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[3])) {$active_carriers++;}
+		if (ereg("N", $rowx[3])) {$inactive_carriers++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+
 	### list of phones on this server
 	echo "<center>\n";
 	echo "<br><b>PHONES WITHIN THIS SERVER:</b><br>\n";
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>EXTENSION</td><td>NAME</td><td>ACTIVE</td></tr>\n";
 
-		$active_phones = 0;
-		$inactive_phones = 0;
-		$stmt="SELECT extension,active,fullname from phones where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT extension,active,fullname from phones where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
 		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
 		if (ereg("N", $rowx[1])) {$inactive_phones++;}
 
@@ -16131,17 +16733,18 @@ if ($ADD==311111111111)
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>CONFERENCE</td><td>EXTENSION</td></tr>\n";
 
-		$active_confs = 0;
-		$stmt="SELECT conf_exten,extension from conferences where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_confs = 0;
+	$stmt="SELECT conf_exten,extension from conferences where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
-			$active_confs++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		$active_confs++;
 
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16160,17 +16763,18 @@ if ($ADD==311111111111)
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>VD CONFERENCE</td><td>EXTENSION</td></tr>\n";
 
-		$active_vdconfs = 0;
-		$stmt="SELECT conf_exten,extension from vicidial_conferences where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_vdconfs = 0;
+	$stmt="SELECT conf_exten,extension from vicidial_conferences where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
-			$active_vdconfs++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		$active_vdconfs++;
 
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -16186,6 +16790,7 @@ if ($ADD==311111111111)
 	echo "<center><b>\n";
 
 		$camp_lists = eregi_replace(".$","",$camp_lists);
+	echo "This server has $active_carriers active carriers and $inactive_carriers inactive carriers<br><br>\n";
 	echo "This server has $active_phones active phones and $inactive_phones inactive phones<br><br>\n";
 	echo "This server has $active_confs active conferences<br><br>\n";
 	echo "This server has $active_vdconfs active vicidial conferences<br><br>\n";
@@ -16193,6 +16798,206 @@ if ($ADD==311111111111)
 	if ($LOGast_delete_phones > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=511111111111&server_id=$server_id&server_ip=$server_ip\">DELETE THIS SERVER</a>\n";
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=331111111111 modify conf template record in the system
+######################
+
+if ($ADD==331111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT template_id,template_name,template_contents from vicidial_conf_templates where template_id='$template_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$template_id =			$row[0];
+	$template_name =		$row[1];
+	$template_contents =	$row[2];
+
+	echo "<br>MODIFY A CONF TEMPLATE RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=431111111111>\n";
+	echo "<input type=hidden name=template_id value=\"$template_id\">\n";
+
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Template ID: </td><td align=left><B>$template_id</B></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Template Name: </td><td align=left><input type=text name=template_name size=40 maxlength=50 value=\"$template_name\">$NWB#vicidial_conf_templates-template_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Template Contents: </td><td align=left><TEXTAREA NAME=template_contents ROWS=10 COLS=70>$template_contents</TEXTAREA> $NWB#vicidial_conf_templates-template_contents$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+	echo "<center><b>\n";
+
+	### list of phones using this conf template
+	echo "<center>\n";
+	echo "<br><b>PHONES USING THIS CONF TEMPLATE:</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>EXTENSION</td><td>NAME</td><td>SERVER</td><td>ACTIVE</td></tr>\n";
+
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT extension,active,fullname,server_ip from phones where template_id='$template_id'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
+		if (ereg("N", $rowx[1])) {$inactive_phones++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$rowx[0]&server_ip=$rowx[3]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[1]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+	### list of carriers using this conf template
+	echo "<center>\n";
+	echo "<br><b>CARRIERS USING THIS CONF TEMPLATE:</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>CARRIER</td><td>NAME</td><td>SERVER</td><td>ACTIVE</td></tr>\n";
+
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT carrier_id,active,carrier_name,server_ip from vicidial_server_carriers where template_id='$template_id'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
+		if (ereg("N", $rowx[1])) {$inactive_phones++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[1]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+
+
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=531111111111&template_id=$template_id&template_name=$template_name\">DELETE THIS CONF TEMPLATE</a>\n";
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=341111111111 modify carrier record in the system
+######################
+
+if ($ADD==341111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active from vicidial_server_carriers where carrier_id='$carrier_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$carrier_id =			$row[0];
+	$carrier_name =			$row[1];
+	$registration_string =	$row[2];
+	$template_id =			$row[3];
+	$account_entry =		$row[4];
+	$protocol =				$row[5];
+	$globals_string =		$row[6];
+	$dialplan_entry =		$row[7];
+	$server_ip =			$row[8];
+	$active =				$row[9];
+
+	echo "<br>MODIFY A CARRIER RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=441111111111>\n";
+	echo "<input type=hidden name=carrier_id value=\"$carrier_id\">\n";
+
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Carrier ID: </td><td align=left><B>$carrier_id</B></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Carrier Name: </td><td align=left><input type=text name=carrier_name size=40 maxlength=50 value=\"$carrier_name\">$NWB#vicidial_server_carriers-carrier_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Registration String: </td><td align=left><input type=text name=registration_string size=50 maxlength=255 value=\"$registration_string\">$NWB#vicidial_server_carriers-registration_string$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=331111111111&template_id=$template_id\">Template ID</a>: </td><td align=left><select size=1 name=template_id>\n";
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+	$templates_list='<option SELECTED>--NONE--</option>';
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "$templates_list";
+	echo "<option SELECTED>$template_id</option>\n";
+	echo "</select>$NWB#vicidial_server_carriers-template_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Account Entry: </td><td align=left><TEXTAREA NAME=account_entry ROWS=10 COLS=70>$account_entry</TEXTAREA> $NWB#vicidial_server_carriers-account_entry$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Protocol: </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option><option SELECTED>$protocol</option></select>$NWB#vicidial_server_carriers-protocol$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Globals String: </td><td align=left><input type=text name=globals_string size=50 maxlength=255 value=\"$globals_string\">$NWB#vicidial_server_carriers-globals_string$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Entry: </td><td align=left><TEXTAREA NAME=dialplan_entry ROWS=10 COLS=70>$dialplan_entry</TEXTAREA> $NWB#vicidial_server_carriers-dialplan_entry$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP: </td><td align=left><select size=1 name=server_ip>\n";
+	##### get server listing for dynamic pulldown
+	$stmt="SELECT server_ip,server_description from servers order by server_ip";
+	$rsltx=mysql_query($stmt, $link);
+	$servers_to_print = mysql_num_rows($rsltx);
+	$servers_list='';
+
+	$o=0;
+	while ($servers_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$servers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+
+	echo "$servers_list";
+	echo "<option SELECTED>$server_ip</option>\n";
+	echo "</select>$NWB#vicidial_server_carriers-server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_server_carriers-active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+	echo "<center><b>\n";
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=541111111111&carrier_id=$carrier_id&carrier_name=$carrier_name\">DELETE THIS CARRIER</a>\n";
 		}
 	}
 	else
@@ -17726,6 +18531,86 @@ if ($ADD==100000000000)
 		echo "<td><font size=1>$row[5]</td>";
 		echo "<td><font size=1>$row[6]</td>";
 		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+######################
+# ADD=130000000000 display all conf templates
+######################
+if ($ADD==130000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+
+	echo "<br>CONF TEMPLATE LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>Template ID</B></td>";
+	echo "<td><font size=1 color=white><B>Template Name</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+######################
+# ADD=140000000000 display all conf templates
+######################
+if ($ADD==140000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT carrier_id,carrier_name,server_ip,protocol,registration_string,active from vicidial_server_carriers order by carrier_id";
+	$rslt=mysql_query($stmt, $link);
+	$carriers_to_print = mysql_num_rows($rslt);
+
+	echo "<br>CONF TEMPLATE LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>Template ID</B></td>";
+	echo "<td><font size=1 color=white><B>Template Name</B></td>";
+	echo "<td><font size=1 color=white><B>Server IP</B></td>";
+	echo "<td><font size=1 color=white><B>Protocol</B></td>";
+	echo "<td><font size=1 color=white><B>Registration</B></td>";
+	echo "<td><font size=1 color=white><B>Active</B></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+
+	$o=0;
+	while ($carriers_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1>$row[5]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$row[0]\">MODIFY</a></td></tr>\n";
 		$o++;
 		}
 

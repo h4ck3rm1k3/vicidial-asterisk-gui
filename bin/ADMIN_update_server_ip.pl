@@ -6,12 +6,12 @@
 # astguiclient.conf file to reflect a change in IP address. The script will 
 # automatically default to the first eth address in the ifconfig output.
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG
-# 71205-2144 - added display of extensions.conf example for call routing
-# 80321-0220 - updated for new settings
-#
+# 71205-2144 - Added display of extensions.conf example for call routing
+# 80321-0220 - Updated for new settings
+# 90211-1247 - Added asterisk version
 #
 # default path to astguiclient configuration file:
 $PATHconf =		'/etc/astguiclient.conf';
@@ -158,6 +158,8 @@ if (-e "$PATHconf")
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
 			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
+		if ( ($line =~ /^VARasterisk_version/) && ($CLIasterisk_version < 1) )
+			{$VARasterisk_version = $line;   $VARasterisk_version =~ s/.*=//gi;}
 		if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
 			{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
 		if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
@@ -339,6 +341,9 @@ print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "#  9 - Timeclock auto logout\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
 print conf "\n";
+print conf "# Asterisk version VICIDIAL is installed for\n";
+print conf "VARasterisk_version => $VARasterisk_version\n";
+print conf "\n";
 print conf "# FTP recording archive connection information\n";
 print conf "VARFTP_host => $VARFTP_host\n";
 print conf "VARFTP_user => $VARFTP_user\n";
@@ -423,6 +428,22 @@ $stmtA = "UPDATE vicidial_server_trunks SET server_ip='$VARserver_ip' where serv
 $affected_rows = $dbhA->do($stmtA);
 if ($DB) {print "     |$affected_rows|$stmtA|\n";}
 
+print "  Updating vicidial_server_carriers table...\n";
+$stmtA = "UPDATE vicidial_server_carriers SET server_ip='$VARserver_ip' where server_ip='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Updating vicidial_inbound_dids table...\n";
+$stmtA = "UPDATE vicidial_inbound_dids SET server_ip='$VARserver_ip' where server_ip='$VARold_server_ip';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+print "  Setting servers to rebuild conf files...\n";
+$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+$affected_rows = $dbhA->do($stmtA);
+if ($DB) {print "     |$affected_rows|$stmtA|\n";}
+
+
 $dbhA->disconnect();
 
 ### format the new server_ip dialstring for example to use with extensions.conf
@@ -436,8 +457,11 @@ if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 	$VARremDIALstr = "$a$S$b$S$c$S$d";
 	}
 
-print "\nSERVER IP ADDRESS CHANGE FOR VICIDIAL FINISHED!\n";
-print "\nPlease remember to change your extensions.conf entries for the new IP address:\n";
+print "\n";
+print "SERVER IP ADDRESS CHANGE FOR VICIDIAL FINISHED!\n";
+print "\n";
+print "If you are not having VICIDIAL auto-generate your conf files, please\n";
+print "remember to change your extensions.conf entries for the new IP address:\n";
 print "exten => _$VARremDIALstr*.,1,Goto(default,${EXTEN:16},1)\n";
 print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";

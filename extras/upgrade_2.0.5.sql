@@ -686,3 +686,42 @@ UPDATE system_settings SET db_schema_version='1128';
 ALTER TABLE vicidial_users ADD download_lists ENUM('1','0') default '0';
 
 UPDATE system_settings SET db_schema_version='1129';
+
+ALTER TABLE servers ADD active_asterisk_server ENUM('Y','N') default 'Y';
+ALTER TABLE servers ADD generate_vicidial_conf ENUM('Y','N') default 'Y';
+ALTER TABLE servers ADD rebuild_conf_files ENUM('Y','N') default 'Y';
+
+CREATE TABLE vicidial_conf_templates (
+template_id VARCHAR(15) NOT NULL,
+template_name VARCHAR(50) NOT NULL,
+template_contents TEXT,
+unique index (template_id)
+);
+
+CREATE TABLE vicidial_server_carriers (
+carrier_id VARCHAR(15) NOT NULL,
+carrier_name VARCHAR(50) NOT NULL,
+registration_string VARCHAR(255),
+template_id VARCHAR(15) NOT NULL,
+account_entry TEXT,
+protocol ENUM('SIP','Zap','IAX2','EXTERNAL') default 'SIP',
+globals_string VARCHAR(255),
+dialplan_entry TEXT,
+server_ip VARCHAR(15) NOT NULL,
+active ENUM('Y','N') default 'Y',
+unique index(carrier_id),
+index (server_ip)
+);
+
+ALTER TABLE phones ADD template_id VARCHAR(15) NOT NULL;
+ALTER TABLE phones ADD conf_override TEXT;
+
+INSERT INTO vicidial_conf_templates SET template_id='SIP_generic',template_name='SIP phone generic',template_contents="type=friend\nhost=dynamic\ncanreinvite=no\ncontext=default";
+INSERT INTO vicidial_conf_templates SET template_id='IAX_generic',template_name='IAX phone generic',template_contents="type=friend\nhost=dynamic\nmaxauthreq=10\nauth=md5,plaintext,rsa\ncontext=default";
+
+INSERT INTO vicidial_server_carriers SET carrier_id='PARAXIP', carrier_name='TEST ParaXip CPD example',registration_string='', template_id='--NONE--', account_entry="[paraxip]\ndisallow=all\nallow=ulaw\ntype=peer\nusername=paraxip\nfromuser=paraxip\nsecret=test\nfromdomain=10.10.10.16\nhost=10.10.10.15\ninsecure=port,invite\noutboundproxy=10.0.0.7", protocol='SIP', globals_string='TESTSIPTRUNKP = SIP/paraxip', dialplan_entry="exten => _5591999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)\nexten => _5591999NXXXXXX,2,Dial(${TESTSIPTRUNKP}/${EXTEN:4},,tTor)\nexten => _5591999NXXXXXX,3,Hangup", server_ip='10.10.10.15', active='N';
+INSERT INTO vicidial_server_carriers SET carrier_id='SIPEXAMPLE', carrier_name='TEST SIP carrier example',registration_string='register => testcarrier:test@10.10.10.15:5060', template_id='--NONE--', account_entry="[testcarrier]\ndisallow=all\nallow=ulaw\ntype=friend\nusername=testcarrier\nsecret=test\nhost=dynamic\ndtmfmode=rfc2833\n", protocol='SIP', globals_string='TESTSIPTRUNK = SIP/testcarrier', dialplan_entry="exten => _91999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)\nexten => _91999NXXXXXX,2,Dial(${TESTSIPTRUNK}/${EXTEN:2},,tTor)\nexten => _91999NXXXXXX,3,Hangup\n", server_ip='10.10.10.15', active='N';
+INSERT INTO vicidial_server_carriers SET carrier_id='IAXEXAMPLE', carrier_name='TEST IAX carrier example',registration_string='register => testcarrier:test@10.10.10.15:4569', template_id='--NONE--', account_entry="[testcarrier]\ndisallow=all\nallow=ulaw\ntype=friend\naccountcode=testcarrier\nsecret=test\nhost=dynamic\n", protocol='IAX2', globals_string='TESTIAXTRUNK = IAX2/testcarrier', dialplan_entry="exten => _71999NXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)\nexten => _71999NXXXXXX,2,Dial(${TESTIAXTRUNK}/${EXTEN:2},,tTor)\nexten => _71999NXXXXXX,3,Hangup\n", server_ip='10.10.10.15', active='N';
+
+UPDATE system_settings SET db_schema_version='1130';
+

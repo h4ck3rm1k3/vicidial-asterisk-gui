@@ -2,6 +2,8 @@
 static=yes
 writeprotect=no
 
+#include extensions-vicidial.conf
+
 [globals]
 CONSOLE=Console/dsp                             ; Console interface for demo
 TRUNK=Zap/g1                                    ; Trunk interface
@@ -28,18 +30,16 @@ exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG---
 
 
 [default]
+include => vicidial-auto
+
 ; VICI-GROUP DIRECT SUPPORT LINE (VICIHELP[84244357])
 exten => _84244XXX,1,Dial(IAX2/vicihelp/${EXTEN:5})
 
-; BE SURE TO CHANGE THIS LINE FOR YOUR IP ADDRESS!
-exten => _010*010*010*015*.,1,Goto(default,${EXTEN:16},1)
+; Local agent alert extensions
 exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)
 ; Local blind monitoring
 exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,To)
-
-; ### server 2 exten:
-; exten => _010*010*010*016*.,1,Dial(${TRUNKIAX1}/${EXTEN:16},55,o)
 
 
 ;;;;;;;;;; BEGIN Voicemail and Prompts Section ;;;;;;;;;;;;;;;;;;;;;;;

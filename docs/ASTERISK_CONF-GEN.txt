@@ -1,0 +1,26 @@
+ASTERISK CONF FILE GENERATION					2009-02-11
+
+This file details the process for how the system automatically generates Asterisk conf files purely from VICIDIAL settings.
+
+The conf files that are generated are:
+	/etc/asterisk/extensions-vicidial.conf
+	/etc/asterisk/iax-vicidial.conf
+	/etc/asterisk/sip-vicidial.conf
+	/etc/asterisk/voicemail-vicidial.conf
+
+All of the above files are included in their respective conf files by #include links that you can see if you look at the sample conf files in the docs directory.
+
+IMPORTANT!!! - Files will only be generated for SIP and IAX phones and carriers that are listed as active=Y in the VICIDIAL administration web interface.
+             - Files will only be generated on servers where the server record is set to active_asterisk_server='Y' and generate_vicidial_conf='Y'
+	     - The automatic reloading of new conf files by the system is only possible if you started Asterisk with the start_asterisk_boot.pl script, or if Asterisk is running in a screen session named 'asterisk'.
+
+After any phone, server or carrier entry is edited in the admin interface, a flag(rebuild_conf_files='Y') will be set to have the ADMIN_keepalive_ALL.pl script(that should be running once a minute in the crontab) run and generate new conf files and reload Asterisk.
+
+Phones are defined in the admin.php -> Admin -> Show Phones
+Carriers are defined in the admin.php -> Admin -> Servers -> Show Carriers
+
+If you have special settings that you want to use for phones such as codecs you can use either a Template(admin.php -> Admin -> Servers -> Show Templates) or enter in the full account record(not including the "[extension]") into the "Conf Override" field.
+
+If you are using a SIP carrier, then you may need to manually set "externip=XXX.XXX.XXX.XXX" in the /etc/asterisk/sip.conf file where XXX.XXX.XXX.XXX is the external IP address of your server as the outside world(or your carrier) sees it.
+
+

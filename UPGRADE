@@ -249,6 +249,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 
 57. Small redesign of the agent interface to use grey backgrounds and new tabs
 
+58. Added Asterisk version prompt to the install.pl script to allow for the
+   copying of the proper conf files for the installed Asterisk version
+
+59. Added auto-generation of SIP and IAX phones and carriers into the Asterisk 
+   conf files so that you can fully configure them using only the admin.php
+   web interface. See the ASTERISK_CONF-GEN.txt file for more information
 
 
 

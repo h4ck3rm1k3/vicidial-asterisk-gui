@@ -15,6 +15,7 @@
 # 80227-1536 - Added ip_relay to keepalive list
 # 80316-2208 - Added $PATHlogs/archive for backups
 # 80526-1345 - Added Timeclock auto-logout option 9
+# 90210-0319 - Added option to prompt for Asterisk version
 #
 
 ############################################
@@ -48,6 +49,8 @@ $VARDB_pass =	'1234';
 $VARDB_port =	'3306';
 # default keepalive processes: 
 $VARactive_keepalives =		'1234568';
+# default Asterisk version: 
+$VARasterisk_version =		'1.2';
 # default recording FTP archive variables:
 $VARFTP_host = '10.0.0.4';
 $VARFTP_user = 'cron';
@@ -85,6 +88,7 @@ $CLIDB_user=0;
 $CLIDB_pass=0;
 $CLIDB_port=0;
 $CLIVARactive_keepalives=0;
+$CLIVARasterisk_version=0;
 $CLIFTP_host=0;
 $CLIFTP_user=0;
 $CLIFTP_pass=0;
@@ -165,6 +169,7 @@ if (length($ARGV[0])>1)
 	print "     7 - AST_VDauto_dial_FILL (only for multi-server, this must only be on one server)\n";
 	print "     8 - ip_relay (used for blind agent monitoring)\n";
 	print "     9 - Timeclock auto-logout\n";
+	print "  [--asterisk_version] = set the asterisk version you want to install for\n";
 	print "  [--copy_sample_conf_files] = copies the sample conf files to /etc/asterisk/\n";
 	print "  [--FTP_host=192.168.0.2] = define recording archive server IP address at runtime\n";
 	print "  [--FTP_user=cron] = define archive server name at runtime\n";
@@ -378,6 +383,18 @@ if (length($ARGV[0])>1)
 			$VARactive_keepalives =~ s/ |\r|\n|\t//gi;
 			$CLIactive_keepalives=1;
 			print "  CLI active keepalive procs: $VARactive_keepalives\n";
+			}
+		}
+		if ($args =~ /--asterisk_version=/i) # CLI defined asterisk version
+		{
+		@CLIastversionARY = split(/--asterisk_version=/,$args);
+		@CLIastversionARX = split(/ /,$CLIastversionARY[1]);
+		if (length($CLIastversionARX[0])>1)
+			{
+			$VARasterisk_version = $CLIastversionARX[0];
+			$VARasterisk_version =~ s/ |\r|\n|\t//gi;
+			$CLIasterisk_version=1;
+			print "  CLI asterisk version: $VARasterisk_version\n";
 			}
 		}
 		if ($args =~ /--FTP_host=/i) # CLI defined archive server address
@@ -942,6 +959,8 @@ if (-e "$PATHconf")
 			{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
 		if ( ($line =~ /^VARactive_keepalives/) && ($CLIactive_keepalives < 1) )
 			{$VARactive_keepalives = $line;   $VARactive_keepalives =~ s/.*=//gi;}
+		if ( ($line =~ /^VARasterisk_version/) && ($CLIasterisk_version < 1) )
+			{$VARasterisk_version = $line;   $VARasterisk_version =~ s/.*=//gi;}
 		if ( ($line =~ /^VARFTP_host/) && ($CLIFTP_host < 1) )
 			{$VARFTP_host = $line;   $VARFTP_host =~ s/.*=//gi;}
 		if ( ($line =~ /^VARFTP_user/) && ($CLIFTP_user < 1) )
@@ -1579,6 +1598,30 @@ else
 			}
 		##### END active_keepalives prompting and check  #####
 
+		##### BEGIN asterisk_version prompting and check #####
+		$continue='NO';
+		while ($continue =~/NO/)
+			{
+			print "\nEnter the Asterisk version that you are installing VICIDIAL for\n";
+			print "(value should be listing of characters with no spaces: 123456)\n";
+			print " 1.2\n";
+			print " 1.4\n";
+			print "Enter asterisk version or press enter for default: [$VARasterisk_version] ";
+			$PROMPTasterisk_version = <STDIN>;
+			chomp($PROMPTasterisk_version);
+			if (length($PROMPTasterisk_version)>0)
+				{
+				$PROMPTasterisk_version =~ s/ |\n|\r|\t|\/$//gi;
+				$VARasterisk_version=$PROMPTasterisk_version;
+				$continue='YES';
+				}
+			else
+				{
+				$continue='YES';
+				}
+			}
+		##### END asterisk_version prompting and check  #####
+
 		##### BEGIN copy asterisk sample conf files prompt #####
 		$continue='NO';
 		while ($continue =~/NO/)
@@ -2001,7 +2044,8 @@ else
 		print "  defined DB_user:          $VARDB_user\n";
 		print "  defined DB_pass:          $VARDB_pass\n";
 		print "  defined DB_port:          $VARDB_port\n";
-		print "  defined active_keepalives      $VARactive_keepalives\n";
+		print "  defined active_keepalives:     $VARactive_keepalives\n";
+		print "  defined asterisk_version:      $VARasterisk_version\n";
 		print "  defined copying conf files:    $PROMPTcopy_conf_files\n";
 		print "  defined FTP_host:         $VARFTP_host\n";
 		print "  defined FTP_user:         $VARFTP_user\n";
@@ -2072,6 +2116,9 @@ print conf "#  7 - AST_VDauto_dial_FILL (only for multi-server, this must only b
 print conf "#  8 - ip_relay (used for blind agent monitoring)\n";
 print conf "#  9 - Timeclock auto logout\n";
 print conf "VARactive_keepalives => $VARactive_keepalives\n";
+print conf "\n";
+print conf "# Asterisk version VICIDIAL is installed for\n";
+print conf "VARasterisk_version => $VARasterisk_version\n";
 print conf "\n";
 print conf "# FTP recording archive connection information\n";
 print conf "VARFTP_host => $VARFTP_host\n";
@@ -2193,17 +2240,32 @@ if ($NOWEB < 1)
 if ($PROMPTcopy_conf_files =~ /y/i)
 	{
 	print "Copying sample conf files to /etc/asterisk/...\n";
-	`cp -f ./docs/conf_examples/extensions.conf.sample /etc/asterisk/extensions.conf`;
+	if ($VARasterisk_version =~ /^1.2/)
+		{
+		`cp -f ./docs/conf_examples/extensions.conf.sample /etc/asterisk/extensions.conf`;
+		`cp -f ./docs/conf_examples/iax.conf.sample /etc/asterisk/iax.conf`;
+		`cp -f ./docs/conf_examples/sip.conf.sample /etc/asterisk/sip.conf`;
+		}
+	else
+		{
+		`cp -f ./docs/conf_examples/extensions.conf.sample-1.4 /etc/asterisk/extensions.conf`;
+		`cp -f ./docs/conf_examples/iax.conf.sample-1.4 /etc/asterisk/iax.conf`;
+		`cp -f ./docs/conf_examples/sip.conf.sample-1.4 /etc/asterisk/sip.conf`;
+		}
 	`cp -f ./docs/conf_examples/meetme.conf.sample /etc/asterisk/meetme.conf`;
 	`cp -f ./docs/conf_examples/manager.conf.sample /etc/asterisk/manager.conf`;
 	`cp -f ./docs/conf_examples/musiconhold.conf.sample /etc/asterisk/musiconhold.conf`;
 	`cp -f ./docs/conf_examples/voicemail.conf.sample /etc/asterisk/voicemail.conf`;
-	`cp -f ./docs/conf_examples/sip.conf.sample /etc/asterisk/sip.conf`;
 	`cp -f ./docs/conf_examples/logger.conf.sample /etc/asterisk/logger.conf`;
-	`cp -f ./docs/conf_examples/iax.conf.sample /etc/asterisk/iax.conf`;
 	`cp -f ./docs/conf_examples/dnsmgr.conf.sample /etc/asterisk/dnsmgr.conf`;
 	`cp -f ./docs/conf_examples/features.conf.sample /etc/asterisk/features.conf`;
 	}
+
+print "Creating auto-generated placeholder conf files in /etc/asterisk/...\n";
+`echo "[vicidial-auto] ;placeholder for auto-generated extensions conf" > /etc/asterisk/extensions-vicidial.conf`;
+`echo "[vicidial-auto] ;placeholder for auto-generated iax conf" > /etc/asterisk/iax-vicidial.conf`;
+`echo "[vicidial-auto] ;placeholder for auto-generated sip conf" > /etc/asterisk/sip-vicidial.conf`;
+`echo "[vicidial-auto] ;placeholder for auto-generated voicemail conf" > /etc/asterisk/voicemail-vicidial.conf`;
 
 
 ### format the new server_ip dialstring for example to use with extensions.conf
@@ -2217,11 +2279,11 @@ if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
 	$VARremDIALstr = "$a$S$b$S$c$S$d";
 	}
 
-print "\nIMPORTANT NOTE!\n";
-print "\nPlease remember to put these lines in your extensions.conf file:\n";
-print "exten => _$VARremDIALstr*.,1,Goto(default,\${EXTEN:16},1)\n";
-print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
-print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+#	print "\nIMPORTANT NOTE!\n";
+#	print "\nPlease remember to put these lines in your extensions.conf file:\n";
+#	print "exten => _$VARremDIALstr*.,1,Goto(default,\${EXTEN:16},1)\n";
+#	print "exten => _8600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
+#	print "exten => _78600XXX*.,1,AGI(agi-VDADfixCXFER.agi)\n";
 
 print "\nASTGUICLIENT INSTALLATION FINISHED!     ENJOY!\n";
 

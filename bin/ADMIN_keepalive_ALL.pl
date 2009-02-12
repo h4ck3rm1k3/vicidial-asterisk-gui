@@ -6,13 +6,14 @@
 # Replaces all other ADMIN_keepalive scripts
 # Uses /etc/astguiclient.conf file to know which processes to keepalive
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
-# 61011-1348 - first build
-# 61120-2011 - added option 7 for AST_VDauto_dial_FILL.pl
-# 80227-1526 - added option 8 for ip_relay
-# 80526-1350 - added option 9 for timeclock auto-logout
+# 61011-1348 - First build
+# 61120-2011 - Added option 7 for AST_VDauto_dial_FILL.pl
+# 80227-1526 - Added option 8 for ip_relay
+# 80526-1350 - Added option 9 for timeclock auto-logout
+# 90211-1236 - Added auto-generation of conf files functions
 #
 
 $DB=0; # Debug flag
@@ -435,6 +436,473 @@ if ($timeclock_auto_logout > 0)
 	}
 
 
+
+
+
+
+
+
+################################################################################
+#####  START Creation of auto-generated conf files
+################################################################################
+
+# default path to astguiclient configuration file:
+$PATHconf =		'/etc/astguiclient.conf';
+
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+	{
+	$line = $conf[$i];
+	$line =~ s/ |>|\n|\r|\t|\#.*|;.*//gi;
+	if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+		{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+	if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+		{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+		{$VARDB_server = $line;   $VARDB_server =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_database/) && ($CLIDB_database < 1) )
+		{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+		{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+		{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+	if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+		{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+	$i++;
+	}
+
+# Customized Variables
+$server_ip = $VARserver_ip;		# Asterisk server IP
+if (!$VARDB_port) {$VARDB_port='3306';}
+
+use DBI;	  
+
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+ or die "Couldn't connect to database: " . DBI->errstr;
+
+##### Get the settings for this server's server_ip #####
+$stmtA = "SELECT active_asterisk_server,generate_vicidial_conf,rebuild_conf_files FROM servers where server_ip='$server_ip';";
+#	print "$stmtA\n";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$active_asterisk_server	=	"$aryA[0]";
+	$generate_vicidial_conf	=	"$aryA[1]";
+	$rebuild_conf_files	=		"$aryA[2]";
+	$i++;
+	}
+$sthA->finish();
+
+
+if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($rebuild_conf_files =~ /Y/) ) 
+	{
+	if ($DB) {print "generating new auto-gen conf files\n";}
+
+	$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
+	$affected_rows = $dbhA->do($stmtA);
+
+	### format the new server_ip dialstring for example to use with extensions.conf
+	$S='*';
+	if( $VARserver_ip =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+		{
+		$a = leading_zero($1); 
+		$b = leading_zero($2); 
+		$c = leading_zero($3); 
+		$d = leading_zero($4);
+		$VARremDIALstr = "$a$S$b$S$c$S$d";
+		}
+
+	$Lext  = "\n";
+	$Lext .= "; Local Server: $server_ip\n";
+	$Lext .= "exten => _$VARremDIALstr*.,1,Goto(default,\${EXTEN:16},1)\n";
+
+	##### Get the server_id for this server's server_ip #####
+	$stmtA = "SELECT server_id FROM servers where server_ip='$server_ip';";
+	#	print "$stmtA\n";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$server_id	=	"$aryA[0]";
+		$i++;
+		}
+	$sthA->finish();
+
+	##### Get the server_ips and server_ids of all VICIDIAL servers on the network #####
+	$stmtA = "SELECT server_ip,server_id FROM servers where server_ip!='$server_ip' and active_asterisk_server='1';";
+	#	print "$stmtA\n";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$server_ip[$i]	=	"$aryA[0]";
+		$server_id[$i]	=	"$aryA[1]";
+
+		if( $server_ip[$i] =~ m/(\S+)\.(\S+)\.(\S+)\.(\S+)/ )
+			{
+			$a = leading_zero($1); 
+			$b = leading_zero($2); 
+			$c = leading_zero($3); 
+			$d = leading_zero($4);
+			$VARremDIALstr = "$a$S$b$S$c$S$d";
+			}
+		$ext  .= "TRUNK$server_id[$i] = IAX2/$server_id:test\@$server_ip[$i]:4569\n";
+
+		$iax  .= "register => $server_id:test\@$server_ip[$i]:4569\n";
+
+		$Lext .= "; Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
+		$Lext .= "exten => _$VARremDIALstr*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+
+		$Liax .= "\n";
+		$Liax .= "[$server_id[$i]]\n";
+		$Liax .= "accountcode=IAX$server_id[$i]\n";
+		$Liax .= "secret=test\n";
+		$Liax .= "type=friend\n";
+		$Liax .= "context=default\n";
+		$Liax .= "auth=plaintext\n";
+		$Liax .= "host=dynamic\n";
+		$Liax .= "permit=0.0.0.0/0.0.0.0\n";
+		$Liax .= "disallow=all\n";
+		$Liax .= "allow=ulaw\n";
+		$Liax .= "qualify=yes\n";
+
+		$i++;
+		}
+	$sthA->finish();
+
+
+	##### Get the IAX carriers for this server_ip #####
+	$stmtA = "SELECT carrier_id,carrier_name,registration_string,template_id,account_entry,globals_string,dialplan_entry FROM vicidial_server_carriers where server_ip='$server_ip' and active='Y' and protocol='IAX2';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$carrier_id[$i]	=			"$aryA[0]";
+		$carrier_name[$i]	=		"$aryA[1]";
+		$registration_string[$i] =	"$aryA[2]";
+		$template_id[$i] =			"$aryA[3]";
+		$account_entry[$i] =		"$aryA[4]";
+		$globals_string[$i] =		"$aryA[5]";
+		$dialplan_entry[$i] =		"$aryA[6]";
+		$i++;
+		}
+	$sthA->finish();
+
+	$i=0;
+	while ($sthArows > $i)
+		{
+		$template_contents[$i]='';
+		if ( (length($template_id[$i]) > 1) && ($template_id[$i] !~ /--NONE--/) ) 
+			{
+			$stmtA = "SELECT template_contents FROM vicidial_conf_templates where template_id='$template_id';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthBrows=$sthA->rows;
+			if ($sthBrows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$template_contents[$i]	=	"$aryA[0]";
+				}
+			$sthA->finish();
+			}
+		$ext  .= "$globals_string[$i]\n";
+
+		$iax  .= "$registration_string[$i]\n";
+
+		$Lext .= "; VICIDIAL Carrier: $carrier_id[$i] - $carrier_name[$i]\n";
+		$Lext .= "$dialplan_entry[$i]\n";
+
+		$Liax .= "; VICIDIAL Carrier: $carrier_id[$i] - $carrier_name[$i]\n";
+		$Liax .= "$account_entry[$i]\n";
+		$Liax .= "$template_contents[$i]\n";
+
+		$i++;
+		}
+
+
+
+	##### Get the SIP carriers for this server_ip #####
+	$stmtA = "SELECT carrier_id,carrier_name,registration_string,template_id,account_entry,globals_string,dialplan_entry FROM vicidial_server_carriers where server_ip='$server_ip' and active='Y' and protocol='SIP';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$carrier_id[$i]	=			"$aryA[0]";
+		$carrier_name[$i]	=		"$aryA[1]";
+		$registration_string[$i] =	"$aryA[2]";
+		$template_id[$i] =			"$aryA[3]";
+		$account_entry[$i] =		"$aryA[4]";
+		$globals_string[$i] =		"$aryA[5]";
+		$dialplan_entry[$i] =		"$aryA[6]";
+		$i++;
+		}
+	$sthA->finish();
+
+	$i=0;
+	while ($sthArows > $i)
+		{
+		$template_contents[$i]='';
+		if ( (length($template_id[$i]) > 1) && ($template_id[$i] !~ /--NONE--/) ) 
+			{
+			$stmtA = "SELECT template_contents FROM vicidial_conf_templates where template_id='$template_id';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthBrows=$sthA->rows;
+			if ($sthBrows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$template_contents[$i]	=	"$aryA[0]";
+				}
+			$sthA->finish();
+			}
+		$ext  .= "$globals_string[$i]\n";
+
+		$sip  .= "$registration_string[$i]\n";
+
+		$Lext .= "; VICIDIAL Carrier: $carrier_id[$i] - $carrier_name[$i]\n";
+		$Lext .= "$dialplan_entry[$i]\n";
+
+		$Lsip .= "; VICIDIAL Carrier: $carrier_id[$i] - $carrier_name[$i]\n";
+		$Lsip .= "$account_entry[$i]\n";
+		$Lsip .= "$template_contents[$i]\n";
+
+		$i++;
+		}
+
+
+
+	##### Get the IAX phone entries #####
+	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override FROM phones where server_ip='$server_ip' and protocol='IAX2' and active='Y';";
+	#	print "$stmtA\n";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$extension[$i] =	"$aryA[0]";
+		$dialplan[$i] =		"$aryA[1]";
+		$voicemail[$i] =	"$aryA[2]";
+		$pass[$i] =			"$aryA[3]";
+		$template_id[$i] =	"$aryA[4]";
+		$conf_override[$i] ="$aryA[5]";
+		$email[$i] =		"$aryA[6]";
+		$template_id[$i] =	"$aryA[7]";
+		$conf_override[$i] ="$aryA[8]";
+		$i++;
+		}
+	$sthA->finish();
+
+	$i=0;
+	while ($sthArows > $i)
+		{
+		$conf_entry_written=0;
+		$template_contents[$i]='';
+		if ( (length($template_id[$i]) > 1) && ($template_id[$i] !~ /--NONE--/) ) 
+			{
+			$stmtA = "SELECT template_contents FROM vicidial_conf_templates where template_id='$template_id[$i]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthBrows=$sthA->rows;
+			if ($sthBrows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$template_contents[$i]	=	"$aryA[0]";
+
+				$Piax .= "\n\[$extension[$i]\]\n";
+				$Piax .= "username=$extension[$i]\n";
+				$Piax .= "secret=$pass[$i]\n";
+				$Piax .= "mailbox=$voicemail[$i]\n";
+				$Piax .= "$template_contents[$i]\n";
+				
+				$conf_entry_written++;
+				}
+			$sthA->finish();
+			}
+		if (length($conf_override[$i]) > 10)
+			{
+			$Piax .= "\n\[$extension[$i]\]\n";
+			$Piax .= "$conf_override[$i]\n";
+			$conf_entry_written++;
+			}
+		if ($conf_entry_written < 1)
+			{
+			$Piax .= "\n\[$extension[$i]\]\n";
+			$Piax .= "username=$extension[$i]\n";
+			$Piax .= "secret=$pass[$i]\n";
+			$Piax .= "mailbox=$voicemail[$i]\n";
+			$Piax .= "context=default\n";
+			$Piax .= "type=friend\n";
+			$Piax .= "auth=md5\n";
+			$Piax .= "host=dynamic\n";
+			}
+		$Pext .= "exten => $dialplan[$i],1,Dial(IAX2/$extension[$i])\n";
+		$Pext .= "exten => $dialplan[$i],2,Voicemail,u$voicemail[$i]\n";
+
+		$vm  .= "$voicemail[$i] => $voicemail[$i],$extension[$i] Mailbox,$email[$i]\n";
+
+		$i++;
+		}
+
+
+	##### Get the SIP phone entries #####
+	$stmtA = "SELECT extension,dialplan_number,voicemail_id,pass,template_id,conf_override,email,template_id,conf_override FROM phones where server_ip='$server_ip' and protocol='SIP' and active='Y';";
+	#	print "$stmtA\n";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	$i=0;
+	while ($sthArows > $i)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$extension[$i] =	"$aryA[0]";
+		$dialplan[$i] =		"$aryA[1]";
+		$voicemail[$i] =	"$aryA[2]";
+		$pass[$i] =			"$aryA[3]";
+		$template_id[$i] =	"$aryA[4]";
+		$conf_override[$i] ="$aryA[5]";
+		$email[$i] =		"$aryA[6]";
+		$template_id[$i] =	"$aryA[7]";
+		$conf_override[$i] ="$aryA[8]";
+		$i++;
+		}
+	$sthA->finish();
+
+	$i=0;
+	while ($sthArows > $i)
+		{
+		$conf_entry_written=0;
+		$template_contents[$i]='';
+		if ( (length($template_id[$i]) > 1) && ($template_id[$i] !~ /--NONE--/) ) 
+			{
+			$stmtA = "SELECT template_contents FROM vicidial_conf_templates where template_id='$template_id[$i]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthBrows=$sthA->rows;
+			if ($sthBrows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$template_contents[$i]	=	"$aryA[0]";
+
+				$Psip .= "\n\[$extension[$i]\]\n";
+				$Psip .= "username=$extension[$i]\n";
+				$Psip .= "secret=$pass[$i]\n";
+				$Psip .= "mailbox=$voicemail[$i]\n";
+				$Psip .= "$template_contents[$i]\n";
+				
+				$conf_entry_written++;
+				}
+			$sthA->finish();
+			}
+		if (length($conf_override[$i]) > 10)
+			{
+			$Psip .= "\n\[$extension[$i]\]\n";
+			$Psip .= "$conf_override[$i]\n";
+			$conf_entry_written++;
+			}
+		if ($conf_entry_written < 1)
+			{
+			$Psip .= "\n\[$extension[$i]\]\n";
+			$Psip .= "username=$extension[$i]\n";
+			$Psip .= "secret=$pass[$i]\n";
+			$Psip .= "mailbox=$voicemail[$i]\n";
+			$Psip .= "context=default\n";
+			$Psip .= "type=friend\n";
+			$Psip .= "host=dynamic\n";
+			}
+		$Pext .= "exten => $dialplan[$i],1,Dial(SIP/$extension[$i])\n";
+		$Pext .= "exten => $dialplan[$i],2,Voicemail,u$voicemail[$i]\n";
+
+		$vm  .= "$voicemail[$i] => $voicemail[$i],$extension[$i] Mailbox,$email[$i]\n";
+
+		$i++;
+		}
+
+
+	if ($DB) {print "writing auto-gen conf files\n";}
+
+	open(ext, ">/etc/asterisk/extensions-vicidial.conf") || die "can't open /etc/asterisk/extensions-vicidial.conf: $!\n";
+	open(iax, ">/etc/asterisk/iax-vicidial.conf") || die "can't open /etc/asterisk/iax-vicidial.conf: $!\n";
+	open(sip, ">/etc/asterisk/sip-vicidial.conf") || die "can't open /etc/asterisk/sip-vicidial.conf: $!\n";
+	open(vm, ">/etc/asterisk/voicemail-vicidial.conf") || die "can't open /etc/asterisk/voicemail-vicidial.conf: $!\n";
+
+	print ext "[globals]\n";
+	print ext "$ext\n";
+	print ext "[vicidial-auto]\n";
+	print ext "exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})\n";
+	print ext "$Lext\n";
+	print ext "$Pext\n";
+
+	print iax "$iax\n";
+	print iax "$Liax\n";
+	print iax "$Piax\n";
+
+	print sip "$sip\n";
+	print sip "$Lsip\n";
+	print sip "$Psip\n";
+
+	print vm "[vicidial-auto]\n";
+	print vm "$vm\n";
+
+	close(ext);
+	close(iax);
+	close(sip);
+	close(vm);
+
+
+	sleep(1);
+
+	### reload Asterisk
+	if ($DB) {print "reloading asterisk\n";}
+	`echo reload > /root/asterisk_command_reload`;
+	`screen -XS asterisk readbuf /root/asterisk_command_reload`;
+	`screen -XS asterisk paste .`;
+
+	}
+
+
+
+
+
+
+
+
+################################################################################
+#####  END Creation of auto-generated conf files
+################################################################################
+
+
+
+
+
 if ($DB) {print "DONE\n";}
 
 exit;
+
+
+
+sub leading_zero($) 
+{
+    $_ = $_[0];
+    s/^(\d)$/0$1/;
+    s/^(\d\d)$/0$1/;
+    return $_;
+} # End of the leading_zero() routine.
