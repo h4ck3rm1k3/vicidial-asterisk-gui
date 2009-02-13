@@ -10339,7 +10339,7 @@ if ($ADD==431111111111)
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if (strlen($template_name) < 1)
+	 if ( (strlen($template_id) < 1) or (strlen($template_name) < 1) )
 		{echo "<br>CONF TEMPLATE NOT MODIFIED - Please go back and look at the data you entered\n";}
 	 else
 		{
@@ -10379,7 +10379,7 @@ if ($ADD==441111111111)
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($carrier_id) < 1) or (strlen($server_ip) < 7) or (strlen($protocol) < 1) or (strlen($dialplan_entry) < 1) )
+	 if ( (strlen($carrier_id) < 1) or (strlen($server_ip) < 7) or (strlen($protocol) < 1) )
 		{echo "<br>CARRIER NOT MODIFIED - Please go back and look at the data you entered\n";}
 	 else
 		{

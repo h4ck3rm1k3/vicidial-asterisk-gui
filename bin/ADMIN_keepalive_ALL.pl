@@ -878,8 +878,12 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	if ($DB) {print "reloading asterisk\n";}
 	`echo reload > /root/asterisk_command_reload`;
 	`screen -XS asterisk readbuf /root/asterisk_command_reload`;
+
+	sleep(2);
+
 	`screen -XS asterisk paste .`;
 
+	sleep(10);
 	}
 
 
