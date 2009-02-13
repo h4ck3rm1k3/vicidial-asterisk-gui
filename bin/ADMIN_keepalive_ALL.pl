@@ -14,6 +14,7 @@
 # 80227-1526 - Added option 8 for ip_relay
 # 80526-1350 - Added option 9 for timeclock auto-logout
 # 90211-1236 - Added auto-generation of conf files functions
+# 90213-0625 - Separated the reloading of Asterisk into 4 separate steps
 #
 
 $DB=0; # Debug flag
@@ -484,7 +485,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
  or die "Couldn't connect to database: " . DBI->errstr;
 
 ##### Get the settings for this server's server_ip #####
-$stmtA = "SELECT active_asterisk_server,generate_vicidial_conf,rebuild_conf_files FROM servers where server_ip='$server_ip';";
+$stmtA = "SELECT active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,asterisk_version FROM servers where server_ip='$server_ip';";
 #	print "$stmtA\n";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -495,6 +496,7 @@ if ($sthArows > 0)
 	$active_asterisk_server	=	"$aryA[0]";
 	$generate_vicidial_conf	=	"$aryA[1]";
 	$rebuild_conf_files	=		"$aryA[2]";
+	$asterisk_version	=		"$aryA[3]";
 	$i++;
 	}
 $sthA->finish();
@@ -876,18 +878,37 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 
 	### reload Asterisk
 	if ($DB) {print "reloading asterisk\n";}
-	`echo reload > /root/asterisk_command_reload`;
-	`screen -XS asterisk readbuf /root/asterisk_command_reload`;
-
-	sleep(2);
-
+	if ($asterisk_version =~ /^1.2/)
+		{
+		`echo iax2\ reload > /root/asterisk_command_reload_iax2`;
+		`echo sip\ reload > /root/asterisk_command_reload_sip`;
+		`echo extensions\ reload > /root/asterisk_command_reload_extensions`;
+		`echo reload\ app_voicemail.so > /root/asterisk_command_reload_voicemail`;
+		}
+	else
+		{
+		`echo iax2\ reload > /root/asterisk_command_reload_iax2`;
+		`echo sip\ reload > /root/asterisk_command_reload_sip`;
+		`echo dialplan\ reload > /root/asterisk_command_reload_extensions`;
+		`echo reload\ app_voicemail.so > /root/asterisk_command_reload_voicemail`;
+		}
+	`screen -XS asterisk readbuf /root/asterisk_command_reload_iax2`;
+	sleep(1);
 	`screen -XS asterisk paste .`;
-
+	sleep(3);
+	`screen -XS asterisk readbuf /root/asterisk_command_reload_sip`;
+	sleep(1);
+	`screen -XS asterisk paste .`;
+	sleep(3);
+	`screen -XS asterisk readbuf /root/asterisk_command_reload_extensions`;
+	sleep(1);
+	`screen -XS asterisk paste .`;
+	sleep(3);
+	`screen -XS asterisk readbuf /root/asterisk_command_reload_voicemail`;
+	sleep(1);
+	`screen -XS asterisk paste .`;
 	sleep(10);
 	}
-
-
-
 
 
 
