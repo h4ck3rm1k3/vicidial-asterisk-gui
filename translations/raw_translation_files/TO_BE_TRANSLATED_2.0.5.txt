@@ -460,6 +460,8 @@ Server IP -<\/B> This is the server that this specific carrier record is associa
 Active -<\/B> This defines whether the carrier will be included in the auto-generated conf files or not||
 Conf Override Settings -<\/B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated||
 Template ID -<\/B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--||
+If you will be taking in inbound calls from this carrier trunk you might want to set the context=trunkinbound within this field so that you can use the DID handling process within VICIDIAL||
+There is a reserved default DID that you can use which is just the word -default- without the dashes, that will allos you to send any call that does not match any other existing patterns to the default DID||
 
 
 ############################################################ CLIENT

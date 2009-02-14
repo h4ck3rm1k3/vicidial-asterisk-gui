@@ -16,6 +16,7 @@
 # 81007-0324 - First Build
 # 90115-0645 - Activated AGENT call routing
 # 90117-0756 - Added vicidial_did_log logging to database
+# 90214-0217 - Added 'default' did option, to send all non-matching calls to, enforced did_active setting
 #
 
 $script = 'agi-DID_route.agi';
@@ -150,7 +151,7 @@ if ( (!$callerid) or ($callerid =~ /unknown/) )
 
 
 ### Grab DID values from the database
-$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup FROM vicidial_inbound_dids where did_pattern = '$extension';";
+$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup FROM vicidial_inbound_dids where did_pattern = '$extension' and did_active='Y';";
 $sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 $sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 $sthArows=$sthA->rows;
@@ -182,8 +183,35 @@ if ($AGILOG) {$did_string = "$SQLdate|$uniqueid|$channel|$extension|$callerid|$c
 
 if ($sthArows < 1)
 	{
-	### nothing found, so exit script
-	exit;
+	### Grab DID values from the database for a default DID pattern if there is one
+	$stmtA = "SELECT did_id,did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup FROM vicidial_inbound_dids where did_pattern = 'default' and did_active='Y';";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$did_id =						$aryA[0];
+		$did_pattern =					$aryA[1];
+		$did_description =				$aryA[2];
+		$did_active =					$aryA[3];
+		$did_route =					$aryA[4];
+		$did_extension =				$aryA[5];
+		$exten_context =				$aryA[6];
+		$voicemail_ext =				$aryA[7];
+		$phone =						$aryA[8];
+		$did_server_ip =				$aryA[9];
+		$user =							$aryA[10];
+		$user_unavailable_action =		$aryA[11];
+		$user_route_settings_ingroup =	$aryA[12];
+		}
+	$sthA->finish();
+
+	if ($sthArows < 1)
+		{
+		### if nothing found, exit script
+		exit;
+		}
 	}
 
 ### Grab Server values from the database

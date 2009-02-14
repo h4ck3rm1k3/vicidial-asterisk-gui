@@ -3596,7 +3596,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_inbound_dids-did_pattern">
 <BR>
-<B>DID Extension -</B> This is the number, extension or DID that will trigger this entry and that you will route within the system using this function.
+<B>DID Extension -</B> This is the number, extension or DID that will trigger this entry and that you will route within the system using this function. There is a reserved default DID that you can use which is just the word -default- without the dashes, that will allos you to send any call that does not match any other existing patterns to the default DID.
 
 <BR>
 <A NAME="vicidial_inbound_dids-did_description">
@@ -4566,7 +4566,7 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="vicidial_server_carriers-account_entry">
 <BR>
-<B>Account Entry -</B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier.
+<B>Account Entry -</B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier. If you will be taking in inbound calls from this carrier trunk you might want to set the context=trunkinbound within this field so that you can use the DID handling process within VICIDIAL.
 
 <BR>
 <A NAME="vicidial_server_carriers-protocol">
