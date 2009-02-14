@@ -10,6 +10,7 @@ A - Answering Machine - Agent-defined Answering Machine
 AA - Answering Machine Auto - Dialer-defined Answering Machine
 AM - Answering Machine Sent to Mesg - AMD(Answering Machine Detection) call sent to a message to be played
 AL - Answering Machine Msg Played - AMD(Answering Machine Detection) call sent to a message and message has been played
+AFAX - Fax Machine Auto - Dialer-defined Fax Machine
 B - Busy - Carrier-received Busy signal, or agent-defined Busy if allowed
 DC - Disconnected Number - Disconnected number
 DEC - Declined Sale - Agent-defined status

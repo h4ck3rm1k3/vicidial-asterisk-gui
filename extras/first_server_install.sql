@@ -327,6 +327,7 @@ INSERT INTO vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED'
 INSERT INTO vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('AL','Answering Machine Msg Played','N','N','UNDEFINED');
+INSERT INTO vicidial_statuses values('AFAX','Fax Machine Auto','N','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
 INSERT INTO vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');

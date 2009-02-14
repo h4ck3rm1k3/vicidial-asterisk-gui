@@ -59,12 +59,13 @@
 # 81104-0255 - Changed code to alter callerIDnumber for remote agents to the number of the caller
 # 81105-0424 - Added MySQL error logging
 # 90202-0505 - Added CPD AMD detection and routing options
+# 90214-0831 - Added CPD Fax detection option
 #
 
 $script = 'agi-VDAD_ALL_outbound.agi';
 $AGILOG = '0';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=55;
+$mysql_log_count=56;
 $one_mysql_log=0;
 
 
@@ -493,7 +494,7 @@ if ($call_handle_method =~ /REMIND/)
 	############# BEGIN CPD AMD SECTION ############################
 	if ($cpd_amd_action =~ /DISPO|MESSAGE/)
 		{
-		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result IN('Answering-Machine','Fax') and status='NEW';";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -534,7 +535,7 @@ if ($call_handle_method =~ /SURVEY/)
 	############# BEGIN CPD AMD SECTION ############################
 	if ($cpd_amd_action =~ /DISPO|MESSAGE/)
 		{
-		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result IN('Answering-Machine','Fax') and status='NEW';";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -930,7 +931,7 @@ if ($channel_status < 1)
 	############# BEGIN CPD AMD SECTION ############################
 	if ($cpd_amd_action =~ /DISPO|MESSAGE/)
 		{
-		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+		$stmtA = "SELECT count(*) FROM vicidial_cpd_log where callerid='$callerid' and result IN('Answering-Machine','Fax') and status='NEW';";
 			if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -1616,7 +1617,24 @@ sub mysql_error_logging
 ##### CPD call progress AMD end call process #####
 sub cpd_end_call
 {
-if ($AGILOG) {$agi_string = "CALL CPD AMD Detected $channel $callerid|$drop_timer";   &agi_output;}
+$stmtA = "SELECT result FROM vicidial_cpd_log where callerid='$callerid';";
+	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+	$dbhP=$dbhA;   $mysql_count='01056';   $MEL_aff_rows=$sthArows;   &mysql_error_logging;
+if ($sthArows > 0)
+	{
+	@aryA = $sthA->fetchrow_array;
+	$cpd_result		= "$aryA[0]";
+	}
+$sthA->finish();
+if ($cpd_result =~ /Fax/i)
+	{$vdad_result='AFAX';}
+else
+	{$vdad_result='AA';}
+
+if ($AGILOG) {$agi_string = "CALL CPD AMD Detected $channel $callerid|$drop_timer|$cpd_result";   &agi_output;}
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -1644,7 +1662,7 @@ if ($enable_queuemetrics_logging > 0)
 	$Baffected_rows = $dbhB->do($stmtB);
 		$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01048';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
 
-	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='CALLSTATUS',data1='AA',serverid='$queuemetrics_log_id';";
+	$stmtB = "INSERT INTO queue_log SET partition='P01',time_id='$now_date_epoch',call_id='$callerid',queue='$VDADcampaign',agent='NONE',verb='CALLSTATUS',data1='$vdad_result',serverid='$queuemetrics_log_id';";
 	$Baffected_rows = $dbhB->do($stmtB);
 		$dbhP=$dbhB;   $stmtA=$stmtB;   $mysql_count='01049';   $MEL_aff_rows=$Baffected_rows;   &mysql_error_logging;
 
@@ -1656,7 +1674,7 @@ if ($drop_seconds < 1)
 	$drop_seconds = $DROP_TIME;
 	}
 
-if ($cpd_amd_action =~ /MESSAGE/)
+if ( ($cpd_amd_action =~ /MESSAGE/) && ($cpd_result !~ /Fax/i) )
 	{
 	if (length($am_message_exten)>0)
 		{$DROPexten = "$am_message_exten";}
@@ -1664,13 +1682,13 @@ if ($cpd_amd_action =~ /MESSAGE/)
 
 	$Euniqueid=$uniqueid;
 	$Euniqueid =~ s/\.\d+//gi;
-$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='AA',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='AGENT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
+$stmtA = "UPDATE vicidial_log FORCE INDEX(lead_id) set status='$vdad_result',end_epoch='$now_date_epoch',length_in_sec='$drop_seconds',term_reason='AGENT' where lead_id = '$CIDlead_id' and uniqueid LIKE \"$Euniqueid%\";";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='01050';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 if ($AGILOG) {$agi_string = "--    VDAD CPD vicidial_log update: |$affected_rows|$uniqueid";   &agi_output;}
 
-$stmtA = "UPDATE vicidial_list set status='AA' where lead_id = '$CIDlead_id';";
+$stmtA = "UPDATE vicidial_list set status='$vdad_result' where lead_id = '$CIDlead_id';";
 	if ($AGILOG) {$agi_string = "|$stmtA|";   &agi_output;}
 $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='01051';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
@@ -1681,7 +1699,7 @@ $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='01052';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 if ($AGILOG) {$agi_string = "--    VDAD CPD vac record deleted: |$affected_rows|$VDADcampaign|";   &agi_output;}
 
-$stmtA = "UPDATE vicidial_cpd_log SET status='PROCESSED',cpd_seconds='$drop_timer' where callerid='$callerid' and result='Answering-Machine' and status='NEW';";
+$stmtA = "UPDATE vicidial_cpd_log SET status='PROCESSED',cpd_seconds='$drop_timer' where callerid='$callerid' and result IN('Answering-Machine','Fax') and status='NEW';";
 $affected_rows = $dbhA->do($stmtA);
 	$dbhP=$dbhA;   $mysql_count='01055';   $MEL_aff_rows=$affected_rows;   &mysql_error_logging;
 
