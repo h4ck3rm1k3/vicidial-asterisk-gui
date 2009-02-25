@@ -2917,7 +2917,14 @@ if ($SSoutbound_autodial_active > 0)
 	<BR>
 	<A NAME="vicidial_campaigns-campaign_vdad_exten">
 	<BR>
-	<B>Campaign VDAD extension -</B> This field allows for a custom VDAD transfer extension. This allows you to use different VDADtransfer...agi scripts depending upon your campaign. The default transfer AGI - exten 8365 agi-VDADtransfer.agi - just immediately sends the calls on to agents as soon as they are picked up. An additional sample political survey AGI is also now included - 8366 agi-VDADtransferSURVEY.agi - that plays a message to the called person and allows them to make a choice by pressing buttons - effectively pre-screening the lead - . Please note that except for surveys, political calls and charities this form of calling is illegal in the United States.
+	<B>Campaign VDAD extension -</B> This field allows for a custom VDAD transfer extension. This allows you to use different call handling methods depending upon your campaign. 
+  - 8364 - same as 8368
+  - 8365 - Will send the call only to an agent on the same server as the call is on
+  - 8366 - Used for press-1 and survey campaigns
+  - 8367 - Will try to first send the call to an agent on the local server, then it will look on other servers
+  - 8368 - DEFAULT – Will send the call to the next available agent no matter what server they are on
+  - 8369 - Used for Answering Machine Detection after that, same behavior as 8368
+  - 8373 - Used for Answering Machine Detection after that same behavior as 8366
 
 	<BR>
 	<A NAME="vicidial_campaigns-am_message_exten">
@@ -2947,7 +2954,7 @@ if ($SSoutbound_autodial_active > 0)
 	<BR>
 	<A NAME="vicidial_campaigns-drop_action">
 	<BR>
-	<B>Drop Action -</B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below||
+	<B>Drop Action -</B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below
 
 	<BR>
 	<A NAME="vicidial_campaigns-safe_harbor_exten">

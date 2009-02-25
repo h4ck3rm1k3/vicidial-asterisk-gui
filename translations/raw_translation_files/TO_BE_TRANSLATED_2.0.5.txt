@@ -462,6 +462,15 @@ Conf Override Settings -<\/B> If populated, and the Template ID is set to --NONE
 Template ID -<\/B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--||
 If you will be taking in inbound calls from this carrier trunk you might want to set the context=trunkinbound within this field so that you can use the DID handling process within VICIDIAL||
 There is a reserved default DID that you can use which is just the word -default- without the dashes, that will allos you to send any call that does not match any other existing patterns to the default DID||
+Campaign VDAD extension||
+This field allows for a custom VDAD transfer extension. This allows you to use different call handling methods depending upon your campaign.||
+  - 8364 - same as 8368||
+  - 8365 - Will send the call only to an agent on the same server as the call is on||
+  - 8366 - Used for press-1 and survey campaigns||
+  - 8367 - Will try to first send the call to an agent on the local server, then it will look on other servers||
+  - 8368 - DEFAULT – Will send the call to the next available agent no matter what server they are on||
+  - 8369 - Used for Answering Machine Detection after that, same behavior as 8368||
+  - 8373 - Used for Answering Machine Detection after that same behavior as 8366||
 
 
 ############################################################ CLIENT

@@ -6,6 +6,7 @@
 # CHANGES
 #
 # 90206-2202 - First build
+# 90225-1051 - Added CSV download option
 #
 
 
@@ -26,6 +27,8 @@ if (isset($_GET["shift"]))					{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))			{$shift=$_POST["shift"];}
 if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
 	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
+if (isset($_GET["file_download"]))			{$file_download=$_GET["file_download"];}
+	elseif (isset($_POST["file_download"]))	{$file_download=$_POST["file_download"];}
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
@@ -138,308 +141,371 @@ if (strlen($customer_interactive_statuses)>0)
 
 $LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&shift=$shift&DB=$DB&user=$user$groupQS";
 
-?>
+if ($file_download < 1)
+	{
+	?>
 
-<HTML>
-<HEAD>
-<STYLE type="text/css">
-<!--
-   .yellow {color: white; background-color: yellow}
-   .red {color: white; background-color: red}
-   .blue {color: white; background-color: blue}
-   .purple {color: white; background-color: purple}
--->
- </STYLE>
+	<HTML>
+	<HEAD>
+	<STYLE type="text/css">
+	<!--
+	   .yellow {color: white; background-color: yellow}
+	   .red {color: white; background-color: red}
+	   .blue {color: white; background-color: blue}
+	   .purple {color: white; background-color: purple}
+	-->
+	 </STYLE>
 
-<?
-echo "<span style=\"position:absolute;left:3px;top:3px;z-index:19;\"  id=agent_status_stats>\n";
-echo "<PRE><FONT SIZE=2>\n";
-
+	<?
+	echo "<span style=\"position:absolute;left:3px;top:3px;z-index:19;\"  id=agent_status_stats>\n";
+	echo "<PRE><FONT SIZE=2>\n";
+	}
 
 if (strlen($group[0]) < 1)
-{
-echo "\n";
-echo "PLEASE SELECT A USER AND DATE-TIME ABOVE AND CLICK SUBMIT\n";
-echo " NOTE: stats taken from shift specified\n";
-}
+	{
+	echo "\n";
+	echo "PLEASE SELECT A USER AND DATE-TIME ABOVE AND CLICK SUBMIT\n";
+	echo " NOTE: stats taken from shift specified\n";
+	}
 
 else
-{
-if ($shift == 'AM') 
 	{
-	$time_BEGIN=$AM_shift_BEGIN;
-	$time_END=$AM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
-	if (strlen($time_END) < 6) {$time_END = "15:15:00";}
-	}
-if ($shift == 'PM') 
-	{
-	$time_BEGIN=$PM_shift_BEGIN;
-	$time_END=$PM_shift_END;
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
-	if (strlen($time_END) < 6) {$time_END = "23:15:00";}
-	}
-if ($shift == 'ALL') 
-	{
-	if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
-	if (strlen($time_END) < 6) {$time_END = "23:59:59";}
-	}
-$query_date_BEGIN = "$query_date $time_BEGIN";   
-$query_date_END = "$end_date $time_END";
-
-if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
-else {$ugSQL='';}
-
-echo "VICIDIAL: Agent Status Detail: $user                     $NOW_TIME\n";
-
-echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
-echo "---------- AGENT Details -------------\n\n";
-
-
-
-
-
-$statuses='-';
-$statusesTXT='';
-$statusesHEAD='';
-$statusesHTML='';
-$statusesARY[0]='';
-$j=0;
-$dates='-';
-$datesARY[0]='';
-$date_namesARY[0]='';
-$k=0;
-
-$stmt="select date_format(event_time, '%Y-%m-%d') as date,count(*) as calls,status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and vicidial_agent_log.user='$user' $group_SQL $user_group_SQL group by date,status order by date,status desc limit 500000;";
-$rslt=mysql_query($stmt, $link);
-if ($DB) {echo "$stmt\n";}
-$rows_to_print = mysql_num_rows($rslt);
-$i=0;
-while ($i < $rows_to_print)
-	{
-	$row=mysql_fetch_row($rslt);
-
-	if ( ($row[1] > 0) and (strlen($row[2]) > 0) )
+	if ($shift == 'AM') 
 		{
-		$date[$i] =			$row[0];
-		$calls[$i] =		$row[1];
-		$status[$i] =		$row[2];
-		if ( (!eregi("-$status[$i]-", $statuses)) and (strlen($status[$i])>0) )
+		$time_BEGIN=$AM_shift_BEGIN;
+		$time_END=$AM_shift_END;
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "03:45:00";}   
+		if (strlen($time_END) < 6) {$time_END = "15:15:00";}
+		}
+	if ($shift == 'PM') 
+		{
+		$time_BEGIN=$PM_shift_BEGIN;
+		$time_END=$PM_shift_END;
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "15:15:00";}
+		if (strlen($time_END) < 6) {$time_END = "23:15:00";}
+		}
+	if ($shift == 'ALL') 
+		{
+		if (strlen($time_BEGIN) < 6) {$time_BEGIN = "00:00:00";}
+		if (strlen($time_END) < 6) {$time_END = "23:59:59";}
+		}
+	$query_date_BEGIN = "$query_date $time_BEGIN";   
+	$query_date_END = "$end_date $time_END";
+
+	if (strlen($user_group)>0) {$ugSQL="and vicidial_agent_log.user_group='$user_group'";}
+	else {$ugSQL='';}
+
+	if ($file_download < 1)
+		{
+		echo "VICIDIAL: Agent Days Detail: $user                     $NOW_TIME\n";
+
+		echo "Time range: $query_date_BEGIN to $query_date_END\n\n";
+		echo "---------- AGENT Details -------------\n\n";
+		}
+	else
+		{
+		$file_output .= "VICIDIAL: Agent Days Detail: $user                     $NOW_TIME\n";
+		$file_output .= "Time range: $query_date_BEGIN to $query_date_END\n\n";
+		}
+
+	$statuses='-';
+	$statusesTXT='';
+	$statusesHEAD='';
+	$statusesHTML='';
+	$statusesFILE='';
+	$statusesARY[0]='';
+	$j=0;
+	$dates='-';
+	$datesARY[0]='';
+	$date_namesARY[0]='';
+	$k=0;
+
+	$stmt="select date_format(event_time, '%Y-%m-%d') as date,count(*) as calls,status from vicidial_users,vicidial_agent_log where event_time <= '$query_date_END' and event_time >= '$query_date_BEGIN' and vicidial_users.user=vicidial_agent_log.user and vicidial_agent_log.user='$user' $group_SQL $user_group_SQL group by date,status order by date,status desc limit 500000;";
+	$rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
+	$rows_to_print = mysql_num_rows($rslt);
+	$i=0;
+	while ($i < $rows_to_print)
+		{
+		$row=mysql_fetch_row($rslt);
+
+		if ( ($row[1] > 0) and (strlen($row[2]) > 0) )
 			{
-			$statusesTXT = sprintf("%8s", $status[$i]);
-			$statusesHEAD .= "----------+";
-			$statusesHTML .= " $statusesTXT |";
-			$statuses .= "$status[$i]-";
-			$statusesARY[$j] = $status[$i];
-			$j++;
+			$date[$i] =			$row[0];
+			$calls[$i] =		$row[1];
+			$status[$i] =		$row[2];
+			if ( (!eregi("-$status[$i]-", $statuses)) and (strlen($status[$i])>0) )
+				{
+				$statusesTXT = sprintf("%8s", $status[$i]);
+				$statusesHEAD .= "----------+";
+				$statusesHTML .= " $statusesTXT |";
+				$statusesFILE .= "$statusesTXT,";
+				$statuses .= "$status[$i]-";
+				$statusesARY[$j] = $status[$i];
+				$j++;
+				}
+			if (!eregi("-$date[$i]-", $dates))
+				{
+				$dates .= "$date[$i]-";
+				$datesARY[$k] = $date[$i];
+				$k++;
+				}
 			}
-		if (!eregi("-$date[$i]-", $dates))
+		$i++;
+		}
+
+	if ($file_download < 1)
+		{
+		echo "CALL STATS BREAKDOWN:\n";
+		echo "+------------+--------+--------+--------+$statusesHEAD\n";
+		echo "| <a href=\"$LINKbase\">DATE</a>       | <a href=\"$LINKbase&stage=CALLS\">CALLS</a>  | <a href=\"$LINKbase&stage=CI\">CIcalls</a>| <a href=\"$LINKbase&stage=DNCCI\">DNC/CI%</a>|$statusesHTML\n";
+		echo "+------------+--------+--------+--------+$statusesHEAD\n";
+		}
+	else
+		{
+		$file_output .= "DATE,CALLS,CIcalls,DNC-CI%,$statusesFILE\n";
+		}
+
+	### BEGIN loop through each user ###
+	$m=0;
+	$CIScountTOT=0;
+	$DNCcountTOT=0;
+	while ($m < $k)
+		{
+		$Sdate=$datesARY[$m];
+		$Scalls=$calls[$m];
+		$SstatusesHTML='';
+		$SstatusesFILE='';
+		$CIScount=0;
+		$DNCcount=0;
+
+		### BEGIN loop through each status ###
+		$n=0;
+		while ($n < $j)
 			{
-			$dates .= "$date[$i]-";
-			$datesARY[$k] = $date[$i];
-			$k++;
+			$Sstatus=$statusesARY[$n];
+			$SstatusTXT='';
+			### BEGIN loop through each stat line ###
+			$i=0; $status_found=0;
+			while ($i < $rows_to_print)
+				{
+	#			if ( (eregi("$date[$i]", $Sdate)) and ($Sstatus=="$status[$i]") )
+				if ( ($Sdate=="$date[$i]") and ($Sstatus=="$status[$i]") )
+					{
+					$Scalls =		($Scalls + $calls[$i]);
+					if (eregi("\|$status[$i]\|",$customer_interactive_statuses))
+						{
+						$CIScount =	($CIScount + $calls[$i]);
+						$CIScountTOT =	($CIScountTOT + $calls[$i]);
+						}
+					if (eregi("DNC", $status[$i]))
+						{
+						$DNCcount =	($DNCcount + $calls[$i]);
+						$DNCcountTOT =	($DNCcountTOT + $calls[$i]);
+						}
+					$SstatusTXT = sprintf("%8s", $calls[$i]);
+					$SstatusesHTML .= " $SstatusTXT |";
+					$SstatusesFILE .= "$SstatusTXT,";
+					$status_found++;
+					}
+				$i++;
+				}
+			if ($status_found < 1)
+				{
+				$SstatusesHTML .= "        0 |";
+				}
+			### END loop through each stat line ###
+			$n++;
+			}
+		### END loop through each status ###
+		$TOTcalls=($TOTcalls + $Scalls);
+
+		$RAWdate = $Sdate;
+		$RAWcalls = $Scalls;
+		$RAWcis = $CIScount;
+		$Scalls =	sprintf("%6s", $Scalls);
+		$CIScount =	sprintf("%6s", $CIScount);
+
+		$Sdate =		sprintf("%-10s", $Sdate);
+			while(strlen($Suser)>10) {$Suser = substr("$Sdate", 0, -1);}
+
+		if ( ($DNCcount < 1) or ($CIScount < 1) )
+			{$DNCcountPCTs=0;}
+		else
+			{
+			$DNCcountPCTs = ( ($DNCcount / $CIScount) * 100);
+			}
+		$RAWdncPCT = $DNCcountPCTs;
+	#	$DNCcountPCTs = round($DNCcountPCTs,2);
+		$DNCcountPCTs = round($DNCcountPCTs);
+		$rawDNCcountPCTs = $DNCcountPCTs;
+	#	$DNCcountPCTs = sprintf("%3.2f", $DNCcountPCTs);
+		$DNCcountPCTs = sprintf("%6s", $DNCcountPCTs);
+
+		if ($file_download < 1)
+			{
+			$Toutput = "| <a href=\"./user_stats.php?user=$user&start_date=$RAWdate\">$Sdate</a> | $Scalls | $CIScount | $DNCcountPCTs%|$SstatusesHTML\n";
+			}
+		else
+			{
+			$fileToutput = "$RAWdate,$RAWcalls,$RAWcis,$rawDNCcountPCTs%,$SstatusesFILE\n";
+			}
+
+		$TOPsorted_output[$m] = $Toutput;
+		$TOPsorted_outputFILE[$m] = $fileToutput;
+
+		if ($stage == 'ID')
+			{
+			$TOPsort[$m] =	'' . sprintf("%08s", $RAWdate) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
+			$TOPsortTALLY[$m]=$RAWcalls;
+			}
+		if ($stage == 'CALLS')
+			{
+			$TOPsort[$m] =	'' . sprintf("%08s", $RAWcalls) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
+			$TOPsortTALLY[$m]=$RAWcalls;
+			}
+		if ($stage == 'TIME')
+			{
+			$TOPsort[$m] =	'' . sprintf("%08s", $Stime) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
+			$TOPsortTALLY[$m]=$Stime;
+			}
+		if ($stage == 'CI')
+			{
+			$TOPsort[$m] =	'' . sprintf("%08s", $RAWcis) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
+			$TOPsortTALLY[$m]=$RAWcis;
+			}
+		if ($stage == 'DNCCI')
+			{
+			$TOPsort[$m] =	'' . sprintf("%08s", $RAWdncPCT) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
+			$TOPsortTALLY[$m]=$RAWdncPCT;
+			}
+		if (!ereg("ID|TIME|CALLS|CI|DNCCI",$stage))
+			{
+			if ($file_download < 1)
+				{echo "$Toutput";}
+			else
+				{$file_output .= "$fileToutput";}
+			}
+
+		if ($TOPsortMAX < $TOPsortTALLY[$m]) {$TOPsortMAX = $TOPsortTALLY[$m];}
+
+		$m++;
+		}
+	### END loop through each user ###
+
+	$TOT_AGENTS = sprintf("%4s", $m);
+
+
+	### BEGIN sort through output to display properly ###
+	if (ereg("ID|TIME|CALLS|CI|DNCCI",$stage))
+		{
+		if (ereg("ID",$stage))
+			{sort($TOPsort, SORT_NUMERIC);}
+		if (ereg("TIME|CALLS|CI|DNCCI",$stage))
+			{rsort($TOPsort, SORT_NUMERIC);}
+
+		$m=0;
+		while ($m < $k)
+			{
+			$sort_split = explode("-----",$TOPsort[$m]);
+			$i = $sort_split[1];
+			$sort_order[$m] = "$i";
+			if ($file_download < 1)
+				{echo "$TOPsorted_output[$i]";}
+			else
+				{$file_output .= "$TOPsorted_outputFILE[$i]";}
+			$m++;
 			}
 		}
-	$i++;
-	}
-
-echo "CALL STATS BREAKDOWN:\n";
-echo "+------------+--------+--------+--------+$statusesHEAD\n";
-echo "| <a href=\"$LINKbase\">DATE</a>       | <a href=\"$LINKbase&stage=CALLS\">CALLS</a>  | <a href=\"$LINKbase&stage=CI\">CIcalls</a>| <a href=\"$LINKbase&stage=DNCCI\">DNC/CI%</a>|$statusesHTML\n";
-echo "+------------+--------+--------+--------+$statusesHEAD\n";
+	### END sort through output to display properly ###
 
 
-### BEGIN loop through each user ###
-$m=0;
-$CIScountTOT=0;
-$DNCcountTOT=0;
-while ($m < $k)
-	{
-	$Sdate=$datesARY[$m];
-	$Scalls=$calls[$m];
-	$SstatusesHTML='';
-	$CIScount=0;
-	$DNCcount=0;
 
+	###### LAST LINE FORMATTING ##########
 	### BEGIN loop through each status ###
+	$SUMstatusesHTML='';
 	$n=0;
 	while ($n < $j)
 		{
+		$Scalls=0;
 		$Sstatus=$statusesARY[$n];
-		$SstatusTXT='';
+		$SUMstatusTXT='';
 		### BEGIN loop through each stat line ###
 		$i=0; $status_found=0;
 		while ($i < $rows_to_print)
 			{
-#			if ( (eregi("$date[$i]", $Sdate)) and ($Sstatus=="$status[$i]") )
-			if ( ($Sdate=="$date[$i]") and ($Sstatus=="$status[$i]") )
+			if ($Sstatus=="$status[$i]")
 				{
 				$Scalls =		($Scalls + $calls[$i]);
-				if (eregi("\|$status[$i]\|",$customer_interactive_statuses))
-					{
-					$CIScount =	($CIScount + $calls[$i]);
-					$CIScountTOT =	($CIScountTOT + $calls[$i]);
-					}
-				if (eregi("DNC", $status[$i]))
-					{
-					$DNCcount =	($DNCcount + $calls[$i]);
-					$DNCcountTOT =	($DNCcountTOT + $calls[$i]);
-					}
-				$SstatusTXT = sprintf("%8s", $calls[$i]);
-				$SstatusesHTML .= " $SstatusTXT |";
 				$status_found++;
 				}
 			$i++;
 			}
+		### END loop through each stat line ###
 		if ($status_found < 1)
 			{
-			$SstatusesHTML .= "        0 |";
+			$SUMstatusesHTML .= "        0 |";
 			}
-		### END loop through each stat line ###
+		else
+			{
+			$SUMstatusTXT = sprintf("%8s", $Scalls);
+			$SUMstatusesHTML .= " $SUMstatusTXT |";
+			$SUMstatusesFILE .= "$SUMstatusTXT,";
+			}
 		$n++;
 		}
 	### END loop through each status ###
-	$TOTcalls=($TOTcalls + $Scalls);
 
-	$RAWdate = $Sdate;
-	$RAWcalls = $Scalls;
-	$RAWcis = $CIScount;
-	$Scalls =	sprintf("%6s", $Scalls);
-	$CIScount =	sprintf("%6s", $CIScount);
-
-	$Sdate =		sprintf("%-10s", $Sdate);
-		while(strlen($Suser)>10) {$Suser = substr("$Sdate", 0, -1);}
-
-	if ( ($DNCcount < 1) or ($CIScount < 1) )
-		{$DNCcountPCTs=0;}
+	$TOTcalls = sprintf("%7s", $TOTcalls);
+	$CIScountTOT = sprintf("%7s", $CIScountTOT);
+	if ( ($DNCcountTOT < 1) or ($CIScountTOT < 1) )
+		{$DNCcountPCT=0;}
 	else
 		{
-		$DNCcountPCTs = ( ($DNCcount / $CIScount) * 100);
+		$DNCcountPCT = ( ($DNCcountTOT / $CIScountTOT) * 100);
 		}
-	$RAWdncPCT = $DNCcountPCTs;
-#	$DNCcountPCTs = round($DNCcountPCTs,2);
-	$DNCcountPCTs = round($DNCcountPCTs);
-#	$DNCcountPCTs = sprintf("%3.2f", $DNCcountPCTs);
-	$DNCcountPCTs = sprintf("%6s", $DNCcountPCTs);
+	#$DNCcountPCT = round($DNCcountPCT,2);
+	$DNCcountPCT = round($DNCcountPCT);
+	#$DNCcountPCT = sprintf("%3.2f", $DNCcountPCT);
+	$DNCcountPCT = sprintf("%6s", $DNCcountPCT);
 
-	$Toutput = "| <a href=\"./user_stats.php?user=$user&start_date=$RAWdate\">$Sdate</a> | $Scalls | $CIScount | $DNCcountPCTs%|$SstatusesHTML\n";
 
-	$TOPsorted_output[$m] = $Toutput;
-
-	if ($stage == 'ID')
+	if ($file_download < 1)
 		{
-		$TOPsort[$m] =	'' . sprintf("%08s", $RAWdate) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
-		$TOPsortTALLY[$m]=$RAWcalls;
-		}
-	if ($stage == 'CALLS')
-		{
-		$TOPsort[$m] =	'' . sprintf("%08s", $RAWcalls) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
-		$TOPsortTALLY[$m]=$RAWcalls;
-		}
-	if ($stage == 'TIME')
-		{
-		$TOPsort[$m] =	'' . sprintf("%08s", $Stime) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
-		$TOPsortTALLY[$m]=$Stime;
-		}
-	if ($stage == 'CI')
-		{
-		$TOPsort[$m] =	'' . sprintf("%08s", $RAWcis) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
-		$TOPsortTALLY[$m]=$RAWcis;
-		}
-	if ($stage == 'DNCCI')
-		{
-		$TOPsort[$m] =	'' . sprintf("%08s", $RAWdncPCT) . '-----' . $m . '-----' . sprintf("%020s", $RAWdate);
-		$TOPsortTALLY[$m]=$RAWdncPCT;
-		}
-	if (!ereg("ID|TIME|CALLS|CI|DNCCI",$stage))
-		{echo "$Toutput";}
+		echo "+------------+--------+--------+--------+$statusesHEAD\n";
+		echo "| TOTALS     | $TOTcalls| $CIScountTOT| $DNCcountPCT%|$SUMstatusesHTML\n";
+		echo "+------------+--------+--------+--------+$statusesHEAD\n";
 
-	if ($TOPsortMAX < $TOPsortTALLY[$m]) {$TOPsortMAX = $TOPsortTALLY[$m];}
-
-	$m++;
-	}
-### END loop through each user ###
-
-$TOT_AGENTS = sprintf("%4s", $m);
-
-
-### BEGIN sort through output to display properly ###
-if (ereg("ID|TIME|CALLS|CI|DNCCI",$stage))
-	{
-	if (ereg("ID",$stage))
-		{sort($TOPsort, SORT_NUMERIC);}
-	if (ereg("TIME|CALLS|CI|DNCCI",$stage))
-		{rsort($TOPsort, SORT_NUMERIC);}
-
-	$m=0;
-	while ($m < $k)
-		{
-		$sort_split = explode("-----",$TOPsort[$m]);
-		$i = $sort_split[1];
-		$sort_order[$m] = "$i";
-		echo "$TOPsorted_output[$i]";
-		$m++;
-		}
-	}
-### END sort through output to display properly ###
-
-
-
-###### LAST LINE FORMATTING ##########
-### BEGIN loop through each status ###
-$SUMstatusesHTML='';
-$n=0;
-while ($n < $j)
-	{
-	$Scalls=0;
-	$Sstatus=$statusesARY[$n];
-	$SUMstatusTXT='';
-	### BEGIN loop through each stat line ###
-	$i=0; $status_found=0;
-	while ($i < $rows_to_print)
-		{
-		if ($Sstatus=="$status[$i]")
-			{
-			$Scalls =		($Scalls + $calls[$i]);
-			$status_found++;
-			}
-		$i++;
-		}
-	### END loop through each stat line ###
-	if ($status_found < 1)
-		{
-		$SUMstatusesHTML .= "        0 |";
+		echo "\n\n</PRE>";
 		}
 	else
 		{
-		$SUMstatusTXT = sprintf("%8s", $Scalls);
-		$SUMstatusesHTML .= " $SUMstatusTXT |";
+		$file_output .= "TOTALS,$TOTcalls,$CIScountTOT,$DNCcountPCT%,$SUMstatusesFILE\n";
 		}
-	$n++;
 	}
-### END loop through each status ###
 
-$TOTcalls = sprintf("%7s", $TOTcalls);
-$CIScountTOT = sprintf("%7s", $CIScountTOT);
-if ( ($DNCcountTOT < 1) or ($CIScountTOT < 1) )
-	{$DNCcountPCT=0;}
-else
+
+if ($file_download > 0)
 	{
-	$DNCcountPCT = ( ($DNCcountTOT / $CIScountTOT) * 100);
+	$US='_';
+	$FILE_TIME = date("Ymd-His");
+	$CSVfilename = "AGENT_DAYS_$user$US$FILE_TIME.csv";
+
+	// We'll be outputting a TXT file
+	header('Content-type: application/octet-stream');
+
+	// It will be called LIST_101_20090209-121212.txt
+	header("Content-Disposition: attachment; filename=\"$CSVfilename\"");
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+	header('Pragma: public');
+	ob_clean();
+	flush();
+
+	echo "$file_output";
+
+	exit;
 	}
-#$DNCcountPCT = round($DNCcountPCT,2);
-$DNCcountPCT = round($DNCcountPCT);
-#$DNCcountPCT = sprintf("%3.2f", $DNCcountPCT);
-$DNCcountPCT = sprintf("%6s", $DNCcountPCT);
-
-
-echo "+------------+--------+--------+--------+$statusesHEAD\n";
-echo "| TOTALS     | $TOTcalls| $CIScountTOT| $DNCcountPCT%|$SUMstatusesHTML\n";
-echo "+------------+--------+--------+--------+$statusesHEAD\n";
-
-echo "\n\n</PRE>";
-
-}
 
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
@@ -478,6 +544,7 @@ echo "</TD><TD VALIGN=TOP> &nbsp; &nbsp; &nbsp; &nbsp; ";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 if (strlen($user) > 1)
 	{
+	echo " <a href=\"$LINKbase&stage=$stage&file_download=1\">DOWNLOAD</a> | \n";
 	echo " <a href=\"./admin.php?ADD=3&user=$user\">USER</a> | \n";
 	echo " <a href=\"./user_stats.php?user=$user&begin_date=$query_date&end_date=$end_date\">USER STATS</a> | \n";
 	}
