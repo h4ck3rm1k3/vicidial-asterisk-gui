@@ -1042,6 +1042,21 @@ $parked_to_print = mysql_num_rows($rslt);
 		$i++;
 		}
 
+	##### MIDI alert audio file test #####
+	#	$test_midi=1;
+	#	if ($test_midi > 0)
+	#		{
+	#	#	echo "<bgsound src=\"../vicidial/up_down.mid\" loop=\"-1\">";
+	#	#	echo "<embed src=\"../vicidial/up_down.mid\" loop=\"-1\">";
+	#		echo "<object type=\"audio/x-midi\" data=\"../vicidial/up_down.mid\" width=200 height=20>";
+	#		echo "  <param name=\"src\" value=\"../vicidial/up_down.mid\">";
+	#		echo "  <param name=\"autoplay\" value=\"true\">";
+	#		echo "  <param name=\"autoStart\" value=\"1\">";
+	#		echo "  <param name=\"loop\" value=\"1\">";
+	#		echo "	alt : <a href=\"../vicidial/up_down.mid\">test.mid</a>";
+	#		echo "</object>";
+	#		}
+
 		if ($out_live > 0) {$F='<FONT class="r1">'; $FG='</FONT>';}
 		if ($out_live > 4) {$F='<FONT class="r2">'; $FG='</FONT>';}
 		if ($out_live > 9) {$F='<FONT class="r3">'; $FG='</FONT>';}

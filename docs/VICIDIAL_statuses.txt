@@ -16,6 +16,7 @@ DC - Disconnected Number - Disconnected number
 DEC - Declined Sale - Agent-defined status
 DNC - DO NOT CALL - If defined, lead will also go int he VICIDIAL DNC list
 DNCL - DO NOT CALL Hopper Match - status of a lead that matches the phone number of a lead that has been placed in the VICIDIAL DNC list
+DNCC - DO NOT CALL Hopper Match Campaign- status of a lead that matches the phone number of a lead that has been placed in the VICIDIAL Campaign-specific DNC list for this Campaign
 SALE - Sale Made - Agent-defined status
 N - No Answer - Agent-defined status
 NI - Not Interested - Agent-defined status

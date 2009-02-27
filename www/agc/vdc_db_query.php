@@ -188,7 +188,7 @@
 $version = '2.0.5-100';
 $build = '90128-0231';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=185;
+$mysql_log_count=186;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -1363,7 +1363,7 @@ if (strlen($MDnextCID)<18)
 else
 	{
 	##### look for the channel in the UPDATED vicidial_manager record of the call initiation
-	$stmt="SELECT uniqueid,channel FROM vicidial_manager where callerid='$MDnextCID' and server_ip='$server_ip' and status='UPDATED' LIMIT 1;";
+	$stmt="SELECT uniqueid,channel FROM vicidial_manager where callerid='$MDnextCID' and server_ip='$server_ip' and status IN('UPDATED','DEAD') LIMIT 1;";
 	$rslt=mysql_query($stmt, $link);
 		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00052',$user,$server_ip,$session_name,$one_mysql_log);}
 	if ($DB) {echo "$stmt\n";}
@@ -1420,6 +1420,10 @@ if ($stage == "start")
 	{
 	if ( (strlen($uniqueid)<1) || (strlen($lead_id)<1) || (strlen($list_id)<1) || (strlen($phone_number)<1) || (strlen($campaign)<1) )
 		{
+		$fp = fopen ("./vicidial_debug.txt", "a");
+		fwrite ($fp, "$NOW_TIME|VL_LOG_0|$uniqueid|$lead_id|$user|$list_id|$campaign|$start_epoch|$phone_number|$agent_log_id|\n");
+		fclose($fp);
+
 		echo "LOG NOT ENTERED\n";
 		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign is not valid\n";
 		exit;
@@ -2037,6 +2041,36 @@ if ($stage == "end")
 				else
 					{
 					$SQLterm = "term_reason='AGENT',";
+					}
+				}
+
+			### check to see if the vicidial_log record exists, if not, insert it
+			$stmt="SELECT count(*) from vicidial_log where uniqueid='$uniqueid' and lead_id='$lead_id';";
+			$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00186',$user,$server_ip,$session_name,$one_mysql_log);}
+			$VAC_vld_ct = mysql_num_rows($rslt);
+			if ($VAC_vld_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$VLD_count	= $row[0];
+				if ($VLD_count < 1)
+					{
+					##### insert log into vicidial_log for manual VICIDiaL call
+					$stmt="INSERT INTO vicidial_log (uniqueid,lead_id,list_id,campaign_id,call_date,start_epoch,status,phone_code,phone_number,user,comments,processed,user_group,alt_dial) values('$uniqueid','$lead_id','$list_id','$campaign','$NOW_TIME','$StarTtime','DONEM','$phone_code','$phone_number','$user','MANUAL','N','$user_group','$alt_dial');";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00057',$user,$server_ip,$session_name,$one_mysql_log);}
+					$affected_rows = mysql_affected_rows($link);
+
+					if ($affected_rows > 0)
+						{
+						echo "VICIDiaL_LOG Inserted: $uniqueid|$channel|$NOW_TIME\n";
+						echo "$StarTtime\n";
+						}
+					else
+						{
+						echo "LOG NOT ENTERED\n";
+						}
 					}
 				}
 
