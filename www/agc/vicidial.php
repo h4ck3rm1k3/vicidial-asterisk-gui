@@ -218,10 +218,11 @@
 # 90128-0230 - Added vendor_lead_code to API dial and manuald dial with lookup
 # 90202-0148 - Added option to disable BLENDED checkbox
 # 90209-0132 - Changed tab images and color scheme
+# 90303-1145 - Fixed rare manual dial live hangup bug
 #
 
-$version = '2.0.5-197';
-$build = '90209-0132';
+$version = '2.0.5-198';
+$build = '90303-1145';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=53;
 $one_mysql_log=0;

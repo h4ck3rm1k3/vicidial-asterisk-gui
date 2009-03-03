@@ -1,7 +1,7 @@
 <?
 # manager_send.php    version 2.0.5
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to insert records into the vicidial_manager table to signal Actions to an asterisk server
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -78,10 +78,11 @@
 # 81011-1404 - Fixed bugs in leave3way when transferring a manual dial call
 # 81020-1459 - Fixed bugs in queue_log logging
 # 81104-0203 - Added mysql error logging capability
+# 90303-1144 - Fixed manual dial live hangup bug
 #
 
-$version = '2.0.5-35';
-$build = '81104-0203';
+$version = '2.0.5-36';
+$build = '90303-1144';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=83;
 $one_mysql_log=0;
