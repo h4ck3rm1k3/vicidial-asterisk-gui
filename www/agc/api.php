@@ -18,6 +18,8 @@
 #  - $notes
 #  - $phone_code
 #  - $search
+#  - $group_alias
+#  - $dial_prefix
 #  - $source - ('vtiger','webform','adminweb')
 #  - $format - ('text','debug')
 
@@ -26,10 +28,11 @@
 # 90116-1229 - Added external_pause and external_dial functions
 # 90118-1051 - Added logging of API functions
 # 90128-0229 - Added vendor_id to dial function
+# 90303-0723 - Added group alias and dial prefix
 #
 
-$version = '2.0.5-4';
-$build = '90128-0229';
+$version = '2.0.5-5';
+$build = '90303-0723';
 
 require("dbconnect.php");
 
@@ -56,11 +59,17 @@ if (isset($_GET["phone_code"]))					{$phone_code=$_GET["phone_code"];}
 	elseif (isset($_POST["phone_code"]))		{$phone_code=$_POST["phone_code"];}
 if (isset($_GET["search"]))						{$search=$_GET["search"];}
 	elseif (isset($_POST["search"]))			{$search=$_POST["search"];}
+if (isset($_GET["group_alias"]))				{$group_alias=$_GET["group_alias"];}
+	elseif (isset($_POST["group_alias"]))		{$group_alias=$_POST["group_alias"];}
+if (isset($_GET["dial_prefix"]))				{$dial_prefix=$_GET["dial_prefix"];}
+	elseif (isset($_POST["dial_prefix"]))		{$dial_prefix=$_POST["dial_prefix"];}
 if (isset($_GET["source"]))						{$source=$_GET["source"];}
 	elseif (isset($_POST["source"]))			{$source=$_POST["source"];}
 if (isset($_GET["format"]))						{$format=$_GET["format"];}
 	elseif (isset($_POST["format"]))			{$format=$_POST["format"];}
 
+$group_alias = ereg_replace("[^0-9a-zA-Z]","",$group_alias);
+$dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$dial_prefix);
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -96,6 +105,8 @@ $preview = ereg_replace("[^-\_0-9a-zA-Z]","",$preview);
 $notes = ereg_replace("[^ -\_0-9a-zA-Z]","",$notes);
 $phone_code = ereg_replace("[^0-9X]","",$phone_code);
 $search = ereg_replace("[^-\_0-9a-zA-Z]","",$search);
+$group_alias = ereg_replace("[^0-9a-zA-Z]","",$group_alias);
+$dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$dial_prefix);
 $source = ereg_replace("[^0-9a-zA-Z]","",$source);
 $format = ereg_replace("[^0-9a-zA-Z]","",$format);
 }
@@ -398,12 +409,12 @@ if ($function == 'external_dial')
 			$row=mysql_fetch_row($rslt);
 			if ($row[0] > 0)
 				{
-				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch' where user='$agent_user';";
+				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias' where user='$agent_user';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$result = 'SUCCESS';
 				$result_reason = "external_dial function set";
-				$data = "$phone_code|$search|$preview|$focus|$vendor_id|$epoch";
+				$data = "$phone_code|$search|$preview|$focus|$vendor_id|$epoch|$dial_prefix|$group_alias";
 				echo "$result: $result_reason - $value|$agent_user|$data\n";
 				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 				}

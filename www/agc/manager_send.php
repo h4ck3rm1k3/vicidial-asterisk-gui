@@ -83,7 +83,7 @@
 $version = '2.0.5-35';
 $build = '81104-0203';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=82;
+$mysql_log_count=83;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -482,6 +482,29 @@ $rslt=mysql_query($stmt, $link);
 					{
 					echo "$stmt\n";
 					}
+				}
+			}
+		if ( ($auto_dial_level < 1) and (strlen($stage)>2) and (strlen($channel)>2) and (strlen($exten)>2) )
+			{
+			$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension NOT LIKE \"%$exten%\";";
+				if ($format=='debug') {echo "\n<!-- $stmt -->";}
+			$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02083',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{
+				$channel_live=0;
+				echo "Channel $channel in use by another agent on $call_server_ip, Hangup command not inserted $rowx[0]\n$stmt\n";
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./vicidial_debug.txt", "a");
+					fwrite ($fp, "$NOW_TIME|MDCHU|$user|$channel|$call_server_ip|$exten|\n");
+					fclose($fp);
+					}
+				}
+			else
+				{
+				echo "$stmt\n";
 				}
 			}
 
