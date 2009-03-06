@@ -609,14 +609,16 @@ manual_dial_filter VARCHAR(50) default 'NONE',
 agent_clipboard_copy VARCHAR(50) default 'NONE',
 agent_extended_alt_dial ENUM('Y','N') default 'N',
 use_campaign_dnc ENUM('Y','N') default 'N',
-three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE') default 'CAMPAIGN',
+three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE','AGENT_CHOOSE') default 'CAMPAIGN',
 three_way_dial_prefix VARCHAR(20) default '',
 web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
 vtiger_search_category VARCHAR(100) default 'LEAD',
 vtiger_create_call_record ENUM('Y','N') default 'Y',
 vtiger_create_lead_record ENUM('Y','N') default 'Y',
 vtiger_screen_login ENUM('Y','N') default 'Y',
-cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED'
+cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED',
+agent_allow_group_alias ENUM('Y','N') default 'N',
+default_group_alias VARCHAR(30) default ''
 );
 
 CREATE TABLE vicidial_lists (
@@ -732,7 +734,8 @@ hold_recall_xfer_group VARCHAR(20) default '---NONE---',
 no_delay_call_route ENUM('Y','N') default 'N',
 play_welcome_message ENUM('ALWAYS','NEVER','IF_WAIT_ONLY','YES_UNLESS_NODELAY') default 'ALWAYS',
 answer_sec_pct_rt_stat_one SMALLINT(5) UNSIGNED default '20',
-answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30'
+answer_sec_pct_rt_stat_two SMALLINT(5) UNSIGNED default '30',
+default_group_alias VARCHAR(30) default ''
 );
 
 CREATE TABLE vicidial_stations (
@@ -1142,6 +1145,7 @@ group_id VARCHAR(20),
 group_rank TINYINT(1) default '0',
 group_weight TINYINT(1) default '0',
 calls_today SMALLINT(5) UNSIGNED default '0',
+group_web_vars VARCHAR(255) default '',
 index (group_id),
 index (user)
 );
@@ -1163,6 +1167,7 @@ campaign_id VARCHAR(20),
 campaign_rank TINYINT(1) default '0',
 campaign_weight TINYINT(1) default '0',
 calls_today SMALLINT(5) UNSIGNED default '0',
+group_web_vars VARCHAR(255) default '',
 index (campaign_id),
 index (user)
 );
@@ -1396,6 +1401,30 @@ unique index(carrier_id),
 index (server_ip)
 );
 
+CREATE TABLE groups_alias (
+group_alias_id VARCHAR(30) NOT NULL UNIQUE PRIMARY KEY,
+group_alias_name VARCHAR(50),
+caller_id_number VARCHAR(20),
+caller_id_name VARCHAR(20),
+active ENUM('Y','N') default 'N'
+);
+
+CREATE TABLE user_call_log (
+user_call_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20),
+call_date DATETIME,
+call_type VARCHAR(20),
+server_ip VARCHAR(15) NOT NULL,
+phone_number VARCHAR(20),
+number_dialed VARCHAR(30),
+lead_id INT(9) UNSIGNED,
+callerid VARCHAR(20),
+group_alias_id VARCHAR(30),
+index (user),
+index (call_date)
+);
+
+
 ALTER TABLE vicidial_campaign_server_stats ENGINE=HEAP;
 
 ALTER TABLE live_channels ENGINE=HEAP;
@@ -1491,7 +1520,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1131';
+UPDATE system_settings SET db_schema_version='1132';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

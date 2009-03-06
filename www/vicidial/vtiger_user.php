@@ -1,94 +1,14 @@
 <?
-### vtiger web api for user administration
-
-/**
-         * @return -- returns a list of all users in the system.
-        function verify_data()
-        {
-                $usr_name = $this->column_fields["user_name"];
-                global $mod_strings;
-
-                $query = "SELECT user_name from vtiger_users where user_name=? AND id<>? AND deleted=0";
-                $result =$this->db->pquery($query, array($usr_name, $this->id), true, "Error selecting possible duplicate users: ");
-                $dup_users = $this->db->fetchByAssoc($result);
-
-                $query = "SELECT user_name from vtiger_users where is_admin = 'on' AND deleted=0";
-                $result =$this->db->pquery($query, array(), true, "Error selecting possible duplicate vtiger_users: ");
-                $last_admin = $this->db->fetchByAssoc($result);
-
-                $this->log->debug("last admin length: ".count($last_admin));
-                $this->log->debug($last_admin['user_name']." == ".$usr_name);
-
-                $verified = true;
-                if($dup_users != null)
-                {
-                        $this->error_string .= $mod_strings['ERR_USER_NAME_EXISTS_1'].$usr_name.''.$mod_strings['ERR_USER_NAME_EXISTS_2'];
-                        $verified = false;
-                }
-                if(!isset($_REQUEST['is_admin']) &&
-                                count($last_admin) == 1 &&
-                                $last_admin['user_name'] == $usr_name) {
-                        $this->log->debug("last admin length: ".count($last_admin));
-
-                        $this->error_string .= $mod_strings['ERR_LAST_ADMIN_1'].$usr_name.$mod_strings['ERR_LAST_ADMIN_2'];
-                        $verified = false;
-                }
-
-                return $verified;
-        }
-*/
-
-
-# require("../vtigercrm/modules/Calendar/Activity.php");
-
-# $verified = verify_data();
-
-
-/*
-
-         * @return string encrypted password for storage in DB and comparison against DB password.
-         * @param string $user_name - Must be non null and at least 2 characters
-         * @param string $user_password - Must be non null and at least 1 character.
-         * @desc Take an unencrypted username and password and return the encrypted password
-         * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc..
-         * All Rights Reserved..
-         * Contributor(s): ______________________________________..
-        function encrypt_password($user_password, $crypt_type='')
-        {
-                // encrypt the password.
-                $salt = substr($this->column_fields["user_name"], 0, 2);
-
-                // Fix for: http://trac.vtiger.com/cgi-bin/trac.cgi/ticket/4923
-                if($crypt_type == '') {
-                        // Try to get the crypt_type which is in database for the user
-                        $crypt_type = $this->get_user_crypt_type();
-                }
-
-                // For more details on salt format look at: http://in.php.net/crypt
-                if($crypt_type == 'MD5') {
-                        $salt = '$1$' . $salt . '$';
-                } else if($crypt_type == 'BLOWFISH') {
-                        $salt = '$2$' . $salt . '$';
-                }
-
-                $encrypted_password = crypt($user_password, $salt);
-
-                return $encrypted_password;
-
-        }
-*/
-
-
-
-
-
-##### vtiger_user.php - script used to synchronize the users from the VICIDIAL
-#####                   vicidial_users table into the Vtiger system
-
+# vtiger_user.php - script used to synchronize the users from the VICIDIAL
+#                   vicidial_users table into the Vtiger system as well as
+#                   the groups from VICIDIAL to Vtiger
+#
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 # 81231-1307 - First build
+# 90228-2152 - Added Groups support
 #
-
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -138,8 +58,22 @@ if ($enable_vtiger_integration < 1)
 	exit;
 	}
 
+##### grab the existing user_groups in the vicidial_user_groups table
+$stmt="SELECT user_group,group_name FROM vicidial_user_groups;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$VD_groups_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $VD_groups_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$UGid[$i] =		$row[0];
+	$UGname[$i] =	$row[1];
+	$i++;
+	}
+
 ##### grab the existing users in the vicidial_users table
-$stmt="SELECT user,pass,full_name,user_level,active FROM vicidial_users;";
+$stmt="SELECT user,pass,full_name,user_level,active,user_group FROM vicidial_users;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $VD_users_ct = mysql_num_rows($rslt);
@@ -152,6 +86,7 @@ while ($i < $VD_users_ct)
 	$full_name[$i] =	$row[2];   while (strlen($full_name[$i])>30) {$full_name[$i] = eregi_replace(".$",'',$full_name[$i]);}
 	$user_level[$i] =	$row[3];
 	$active[$i] =		$row[4];
+	$user_group[$i] =	$row[5];
 	$i++;
 	}
 
@@ -159,21 +94,96 @@ while ($i < $VD_users_ct)
 ### connect to your vtiger database
 $linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
 if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
-echo 'Connected successfully';
+echo "Connected successfully\n<BR>\n";
 mysql_select_db("$vtiger_dbname", $linkV);
 
 
+##########################
+### BEGIN Group export
+$i=0;
+while ($i < $VD_groups_ct)
+	{
+	$VTgroup_name =			$UGid[$i];
+	$VTgroup_description =	$UGname[$i];
+
+	$stmt="SELECT count(*) from vtiger_groups where groupname='$VTgroup_name';";
+	$rslt=mysql_query($stmt, $linkV);
+	if ($DB) {echo "$stmt\n";}
+	if (!$rslt) {die('Could not execute: ' . mysql_error());}
+	$row=mysql_fetch_row($rslt);
+	$group_found_count = $row[0];
+
+	### group exists in vtiger, grab groupid, update description
+	if ($group_found_count > 0)
+		{
+		$stmt="SELECT groupid from vtiger_groups where groupname='$VTgroup_name';";
+		$rslt=mysql_query($stmt, $linkV);
+		if ($DB) {echo "$stmt\n";}
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$row=mysql_fetch_row($rslt);
+		$groupid = $row[0];
+		$VTugID[$i] = $groupid;
+
+		$stmtA = "UPDATE vtiger_groups SET description='$VTgroup_description' where groupid='$groupid';";
+		if ($DB) {echo "|$stmtA|\n";}
+		$rslt=mysql_query($stmtA, $linkV);
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+		echo "GROUP- $VTgroup_name: $groupid<BR>\n";
+		echo "<BR>\n";
+		}
+
+	### group doesn't exist in vtiger, insert it
+	else
+		{
+		#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+
+		# Get next available id from vtiger_groups_seq to use as groupid
+		$stmt="SELECT id from vtiger_groups_seq;";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $linkV);
+		$row=mysql_fetch_row($rslt);
+		$groupid = ($row[0] + 1);
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$VTugID[$i] = $groupid;
+
+		# Increase next available groupid with 1 so next record gets proper id
+		$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $linkV);
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+		$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$VTgroup_name',description='$VTgroup_description';";
+		if ($DB) {echo "|$stmtA|\n";}
+		$rslt=mysql_query($stmtA, $linkV);
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+		echo "GROUP- $VTgroup_name: $groupid<BR>\n";
+		echo "<BR>\n";
+		#### END CREATE NEW GROUP RECORD IN VTIGER
+		}
+	$i++;
+	}
+### END Group export
+##########################
+
+
+
+##########################
+### BEGIN User export
 $i=0;
 while ($i < $VD_users_ct)
 	{
 	$user_name =		$user[$i];
+	$VUgroup =			$user_group[$i];
 	$user_password =	$pass[$i];
 	$last_name =		$full_name[$i];
 	$is_admin =			'off';
 	$roleid =			'H5';
 	$status =			'Active';
 	$groupid =			'1';
-		if ($user_level[$i] >= 8) {$roleid = 'H4';}
+		if ($user_level[$i] >= 7) {$roleid = 'H4';}
+		if ($user_level[$i] >= 8) {$roleid = 'H3';}
 		if ($user_level[$i] >= 9) {$roleid = 'H2';}
 		if ($user_level[$i] >= 9) {$is_admin = 'on';}
 		if (ereg('N',$active[$i])) {$status = 'Inactive';}
@@ -181,6 +191,22 @@ while ($i < $VD_users_ct)
 	$salt = '$1$' . $salt . '$';
 	$encrypted_password = crypt($user_password, $salt);
 	$i++;
+
+	$j=0;
+	$all_VICIDIAL_groups_SQL='';
+	while ($j < $VD_groups_ct)
+		{
+		if ( (eregi("$UGid[$j]",$VUgroup)) and ( (strlen($UGid[$j]))==(strlen($VUgroup)) ) )
+			{
+			$groupid =				$VTugID[$j];
+			$VTgroup_name =			$UGid[$j];
+			$VTgroup_description =	$UGname[$j];
+			}
+		else
+			{$all_VICIDIAL_groups_SQL .= "'$VTugID[$j]',";}
+		$j++;
+		}
+	$all_VICIDIAL_groups_SQL = preg_replace("/.$/",'',$all_VICIDIAL_groups_SQL);
 
 	$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 	$rslt=mysql_query($stmt, $linkV);
@@ -199,6 +225,13 @@ while ($i < $VD_users_ct)
 		$row=mysql_fetch_row($rslt);
 		$userid = $row[0];
 
+		$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+		$rslt=mysql_query($stmt, $linkV);
+		if ($DB) {echo "$stmt\n";}
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$row=mysql_fetch_row($rslt);
+		$usergroupcount = $row[0];
+
 		$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 		if ($DB) {echo "|$stmtA|\n";}
 		$rslt=mysql_query($stmtA, $linkV);
@@ -209,9 +242,26 @@ while ($i < $VD_users_ct)
 		$rslt=mysql_query($stmtB, $linkV);
 		if (!$rslt) {die('Could not execute: ' . mysql_error());}
 
+		if ($usergroupcount < 1)
+			{
+			$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN($all_VICIDIAL_groups_SQL);";
+			if ($DB) {echo "|$stmtC|\n";}
+			$rslt=mysql_query($stmtC, $linkV);
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+			$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+			if ($DB) {echo "|$stmtC|\n";}
+			$rslt=mysql_query($stmtD, $linkV);
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			}
+		else
+			{$stmtC='';}
+
 		echo "$user_name: $userid<BR>\n";
 		echo "$stmtA<BR>\n";
 		echo "$stmtB<BR>\n";
+		echo "$stmtC<BR>\n";
+		echo "$stmtD<BR>\n";
 		echo "<BR>\n";
 
 		}
@@ -252,6 +302,8 @@ while ($i < $VD_users_ct)
 
 
 	}
+### END User export
+##########################
 
 
 

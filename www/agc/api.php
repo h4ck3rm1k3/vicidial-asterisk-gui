@@ -409,12 +409,42 @@ if ($function == 'external_dial')
 			$row=mysql_fetch_row($rslt);
 			if ($row[0] > 0)
 				{
-				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias' where user='$agent_user';";
+				if (strlen($group_alias)>1)
+					{
+					$stmt = "select caller_id_number from groups_alias where group_alias_id='$group_alias';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $link);
+					$VDIG_cidnum_ct = mysql_num_rows($rslt);
+					if ($VDIG_cidnum_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$caller_id_number	= $row[0];
+						if ($caller_id_number < 4)
+							{
+							$result = 'ERROR';
+							$result_reason = "caller_id_number from group_alias is not valid";
+							$data = "$group_alias|$caller_id_number";
+							echo "$result: $result_reason - $agent_user|$data\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						}
+					else
+						{
+						$result = 'ERROR';
+						$result_reason = "group_alias is not valid";
+						$data = "$group_alias";
+						echo "$result: $result_reason - $agent_user|$data\n";
+						api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+						exit;
+						}
+					}
+				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number' where user='$agent_user';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$result = 'SUCCESS';
 				$result_reason = "external_dial function set";
-				$data = "$phone_code|$search|$preview|$focus|$vendor_id|$epoch|$dial_prefix|$group_alias";
+				$data = "$phone_code|$search|$preview|$focus|$vendor_id|$epoch|$dial_prefix|$group_alias|$caller_id_number";
 				echo "$result: $result_reason - $value|$agent_user|$data\n";
 				api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
 				}

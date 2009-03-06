@@ -36,6 +36,7 @@ http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&functi
 http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_pause&value=PAUSE
 http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_pause&value=RESUME
 http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES&preview=NO&focus=YES
+http://server/agc/api.php?source=test&user=6666&pass=1234&agent_user=1000&function=external_dial&value=7275551212&phone_code=1&search=YES&preview=NO&focus=YES&dial_prefix=88&group_alias=DEFAULT
 
 
 To hangup the call, disposition it and then pause the agent, do the following in order:
@@ -136,11 +137,17 @@ focus -
  NO  - do not change focus
 vendor_id -
  Any valid Vendor lead code
+dial_prefix -
+ OPTIONAL, any dial prefix that you want to add to the beginning of the dial string for this call
+group_alias - 
+ OPTIONAL, the outbound callerID(from an existing group-alias) that you want to use for this call
 
 RESPONSES:
 ERROR: external_dial not valid - 7275551212|1|YES|6666
 ERROR: agent_user is not allowed to place manual dial calls - 6666
 ERROR: agent_user is not logged in - 6666
+ERROR: caller_id_number from group_alias is not valid - 6666|TESTING|123
+ERROR: group_alias is not valid - 6666|TESTING
 SUCCESS: external_dial function set - 7275551212|1|YES|1232020456|6666
 
 

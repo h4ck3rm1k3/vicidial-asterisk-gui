@@ -5,6 +5,7 @@ Current VICIDIAL integration with Vtiger is for the 5.0.4 release version of Vti
 Current integration features:
 - vicidial.php WEBFORM search for lead/account/vendor
 - User synchronization of VICIDIAL users to Vtiger user database
+- User Group synchronization of VICIDIAL user groups to Vtiger Groups
 - Added activity event option(call logging in Vtiger) when going from VICIDIAL to Vtiger
 - Ability to click-to-dial a phone number from a record in Vtiger screen to the vicidial.php screen
 - Optional script to bulk load leads into Vtiger from a CSV file since Vtiger only seems to want to load 500 at a time: 
@@ -38,6 +39,12 @@ Here are the procedures to load leads into Vtiger, then output them from Vtiger 
 
 Then to keep the two systems in sync you would run the last two steps every day or at some other interval.
 
+
+For VICIDIAL users that are synchronized to Vtiger, the following user_level to roles repationships are used:
+- user_level 9 - H2, CEO
+- user_level 8 - H3, Vice President
+- user_level 7 - H4, Sales Manager
+- user_level 6 and lower - H5, Sales Man
 
 
 Here are the SQL queries used by the vtiger_search.php script to find records in the vtiger system:

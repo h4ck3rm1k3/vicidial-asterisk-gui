@@ -13,7 +13,7 @@ require("dbconnect.php");
 ######################################################################################################
 
 $page_width='770';
-$section_width='720';
+$section_width='750';
 $header_font_size='3';
 $subheader_font_size='2';
 $subcamp_font_size='2';
@@ -29,22 +29,16 @@ $scripts_color =	'#99FFCC';
 $filters_color =	'#CCCCCC';
 $admin_color =		'#FF99FF';
 $reports_color =	'#99FF33';
-#$users_color =		'#FFFF99';
-#$campaigns_color =	'#FFFF99';
-#$lists_color =		'#FFFF99';
-#$ingroups_color =	'#FFFF99';
-#$remoteagent_color ='#FFFF99';
-#$usergroups_color =	'#FFFF99';
-#$scripts_color =	'#FFFF99';
-#$filters_color =	'#FFFF99';
-#$admin_color =		'#FFFF99';
-#$reports_color =	'#FFFF99';
 	$times_color =		'#FF33FF';
+	$shifts_color =		'#FF33FF';
 	$phones_color =		'#FF33FF';
 	$conference_color =	'#FF33FF';
 	$server_color =		'#FF33FF';
+	$templates_color =	'#FF33FF';
+	$carriers_color =	'#FF33FF';
 	$settings_color = 	'#FF33FF';
 	$status_color = 	'#FF33FF';
+$subcamp_color =	'#FF9933';
 $users_font =		'BLACK';
 $campaigns_font =	'BLACK';
 $lists_font =		'BLACK';
@@ -61,8 +55,31 @@ $reports_font =		'BLACK';
 	$server_font =		'BLACK';
 	$settings_font = 	'BLACK';
 	$status_font = 	'BLACK';
-$subcamp_color =	'#FF9933';
 $subcamp_font =		'BLACK';
+
+### comment this section out for colorful section headings
+$users_color =		'#E6E6E6';
+$campaigns_color =	'#E6E6E6';
+$lists_color =		'#E6E6E6';
+$ingroups_color =	'#E6E6E6';
+$remoteagent_color ='#E6E6E6';
+$usergroups_color =	'#E6E6E6';
+$scripts_color =	'#E6E6E6';
+$filters_color =	'#E6E6E6';
+$admin_color =		'#E6E6E6';
+$reports_color =	'#E6E6E6';
+	$times_color =		'#C6C6C6';
+	$shifts_color =		'#C6C6C6';
+	$phones_color =		'#C6C6C6';
+	$conference_color =	'#C6C6C6';
+	$server_color =		'#C6C6C6';
+	$templates_color =	'#C6C6C6';
+	$carriers_color =	'#C6C6C6';
+	$settings_color = 	'#C6C6C6';
+	$status_color = 	'#C6C6C6';
+$subcamp_color =	'#C6C6C6';
+###
+
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -915,6 +932,18 @@ if (isset($_GET["globals_string"]))				{$globals_string=$_GET["globals_string"];
 	elseif (isset($_POST["globals_string"]))	{$globals_string=$_POST["globals_string"];}
 if (isset($_GET["dialplan_entry"]))				{$dialplan_entry=$_GET["dialplan_entry"];}
 	elseif (isset($_POST["dialplan_entry"]))	{$dialplan_entry=$_POST["dialplan_entry"];}
+if (isset($_GET["group_alias_id"]))				{$group_alias_id=$_GET["group_alias_id"];}
+	elseif (isset($_POST["group_alias_id"]))	{$group_alias_id=$_POST["group_alias_id"];}
+if (isset($_GET["group_alias_name"]))				{$group_alias_name=$_GET["group_alias_name"];}
+	elseif (isset($_POST["group_alias_name"]))	{$group_alias_name=$_POST["group_alias_name"];}
+if (isset($_GET["caller_id_number"]))				{$caller_id_number=$_GET["caller_id_number"];}
+	elseif (isset($_POST["caller_id_number"]))	{$caller_id_number=$_POST["caller_id_number"];}
+if (isset($_GET["caller_id_name"]))				{$caller_id_name=$_GET["caller_id_name"];}
+	elseif (isset($_POST["caller_id_name"]))	{$caller_id_name=$_POST["caller_id_name"];}
+if (isset($_GET["agent_allow_group_alias"]))			{$agent_allow_group_alias=$_GET["agent_allow_group_alias"];}
+	elseif (isset($_POST["agent_allow_group_alias"]))	{$agent_allow_group_alias=$_POST["agent_allow_group_alias"];}
+if (isset($_GET["default_group_alias"]))				{$default_group_alias=$_GET["default_group_alias"];}
+	elseif (isset($_POST["default_group_alias"]))		{$default_group_alias=$_POST["default_group_alias"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1094,6 +1123,7 @@ $enable_vtiger_integration = ereg_replace("[^0-9]","",$enable_vtiger_integration
 $qc_features_active = ereg_replace("[^0-9]","",$qc_features_active);
 $outbound_autodial_active = ereg_replace("[^0-9]","",$outbound_autodial_active);
 $download_lists = ereg_replace("[^0-9]","",$download_lists);
+$caller_id_number = ereg_replace("[^0-9]","",$caller_id_number);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -1145,6 +1175,7 @@ $did_active  = ereg_replace("[^NY]","",$did_active);
 $active_asterisk_server = ereg_replace("[^NY]","",$active_asterisk_server);
 $generate_vicidial_conf = ereg_replace("[^NY]","",$generate_vicidial_conf);
 $rebuild_conf_files = ereg_replace("[^NY]","",$rebuild_conf_files);
+$agent_allow_group_alias = ereg_replace("[^NY]","",$agent_allow_group_alias);
 
 $qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
 
@@ -1298,6 +1329,8 @@ $vtiger_screen_login = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_screen_login);
 $cpd_amd_action = ereg_replace("[^-\_0-9a-zA-Z]","",$cpd_amd_action);
 $template_id = ereg_replace("[^-\_0-9a-zA-Z]","",$template_id);
 $carrier_id = ereg_replace("[^-\_0-9a-zA-Z]","",$carrier_id);
+$group_alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$group_alias_id);
+$default_group_alias = ereg_replace("[^-\_0-9a-zA-Z]","",$default_group_alias);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1353,6 +1386,8 @@ $did_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$did_description);
 $alt_server_ip = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alt_server_ip);
 $template_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$template_name);
 $carrier_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$carrier_name);
+$group_alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$group_alias_name);
+$caller_id_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$caller_id_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1585,11 +1620,15 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90202-0444 - Added cpd_amd_action option for processing of AMD messages
 # 90209-1339 - Added download_lists option to allow downloading of lists
 # 90210-1042 - Added options for auto-generation of asterisk conf files
+# 90301-2026 - Added Vtiger group synchronization
+# 90302-2046 - Changed Section heading to be on the left side of the screen
+# 90303-0631 - Added web vars to agent campaign and in-group settings
+# 90303-2047 - Added group aliases and default group aliases
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-164';
-$build = '90210-1042';
+$admin_version = '2.0.5-168';
+$build = '90303-2047';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1744,13 +1783,14 @@ if ($ADD==111111)		{$hh='usergroups';	echo "Add New Users Group";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Add New Script";}
 if ($ADD==11111111)		{$hh='filters';		echo "Add New Filter";}
 if ($ADD==111111111)	{$hh='admin';	$sh='times';	echo "Add New Call Time";}
-if ($ADD==131111111)	{$hh='admin';	$sh='times';	echo "Add New Shift";}
+if ($ADD==131111111)	{$hh='admin';	$sh='shifts';	echo "Add New Shift";}
 if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Add New State Call Time";}
 if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE";}
 if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW PHONE ALIAS";}
+if ($ADD==13111111111)	{$hh='admin';	$sh='phones';	echo "ADD NEW GROUP ALIAS";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW SERVER";}
-if ($ADD==131111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW CONF TEMPLATE";}
-if ($ADD==141111111111)	{$hh='admin';	$sh='server';	echo "ADD NEW CARRIER";}
+if ($ADD==131111111111)	{$hh='admin';	$sh='templates';	echo "ADD NEW CONF TEMPLATE";}
+if ($ADD==141111111111)	{$hh='admin';	$sh='carriers';	echo "ADD NEW CARRIER";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW CONFERENCE";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
 if ($ADD=='2')			{$hh='users';		echo "New User Addition";}
@@ -1774,14 +1814,15 @@ if ($ADD==211111)		{$hh='usergroups';	echo "New Users Group Addition";}
 if ($ADD==2111111)		{$hh='scripts';		echo "New Script Addition";}
 if ($ADD==21111111)		{$hh='filters';		echo "New Filter Addition";}
 if ($ADD==211111111)	{$hh='admin';	$sh='times';	echo "New Call Time Addition";}
-if ($ADD==231111111)	{$hh='admin';	$sh='times';	echo "New Shift Addition";}
+if ($ADD==231111111)	{$hh='admin';	$sh='shifts';	echo "New Shift Addition";}
 if ($ADD==2111111111)	{$hh='admin';	$sh='times';	echo "New State Call Time Addition";}
 if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE";}
 if ($ADD==22111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW PHONE ALIAS";}
+if ($ADD==23111111111)	{$hh='admin';	$sh='phones';	echo "ADDING NEW GROUP ALIAS";}
 if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==231111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW CONF TEMPLATE";}
-if ($ADD==241111111111)	{$hh='admin';	$sh='server';	echo "ADDING NEW CARRIER";}
+if ($ADD==231111111111)	{$hh='admin';	$sh='templates';	echo "ADDING NEW CONF TEMPLATE";}
+if ($ADD==241111111111)	{$hh='admin';	$sh='carriers';	echo "ADDING NEW CARRIER";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW CONFERENCE";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ADDING VICIDIAL SYSTEM STATUSES";}
@@ -1829,13 +1870,14 @@ if ($ADD==3111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==31111111)		{$hh='filters';		echo "Modify Filter";}
 if ($ADD==311111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
 if ($ADD==321111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time State Definitions List";}
-if ($ADD==331111111)	{$hh='admin';	$sh='times';	echo "Modify Shift";}
+if ($ADD==331111111)	{$hh='admin';	$sh='shifts';	echo "Modify Shift";}
 if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==32111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
+if ($ADD==33111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY GROUP ALIAS";}
 if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
-if ($ADD==331111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CONF TEMPLATE";}
-if ($ADD==341111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CARRIER";}
+if ($ADD==331111111111)	{$hh='admin';	$sh='templates';	echo "MODIFY CONF TEMPLATE";}
+if ($ADD==341111111111)	{$hh='admin';	$sh='carriers';	echo "MODIFY CARRIER";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
@@ -1862,14 +1904,15 @@ if ($ADD==411111)		{$hh='usergroups';	echo "Modify Users Groups";}
 if ($ADD==4111111)		{$hh='scripts';		echo "Modify Script";}
 if ($ADD==41111111)		{$hh='filters';		echo "Modify Filter";}
 if ($ADD==411111111)	{$hh='admin';	$sh='times';	echo "Modify Call Time";}
-if ($ADD==431111111)	{$hh='admin';	$sh='times';	echo "Modify Shift";}
+if ($ADD==431111111)	{$hh='admin';	$sh='shifts';	echo "Modify Shift";}
 if ($ADD==4111111111)	{$hh='admin';	$sh='times';	echo "Modify State Call Time";}
 if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE";}
 if ($ADD==42111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY PHONE ALIAS";}
+if ($ADD==43111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY GROUP ALIAS";}
 if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER";}
 if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "MODIFY SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==431111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CONF TEMPLATE";}
-if ($ADD==441111111111)	{$hh='admin';	$sh='server';	echo "MODIFY CARRIER";}
+if ($ADD==431111111111)	{$hh='admin';	$sh='templates';	echo "MODIFY CONF TEMPLATE";}
+if ($ADD==441111111111)	{$hh='admin';	$sh='carriers';	echo "MODIFY CARRIER";}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY CONFERENCE";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "MODIFY VICIDIAL SYSTEM SETTINGS";}
@@ -1888,13 +1931,14 @@ if ($ADD==511111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==5111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==51111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==511111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
-if ($ADD==531111111)	{$hh='admin';	$sh='times';	echo "Delete Shift";}
+if ($ADD==531111111)	{$hh='admin';	$sh='shifts';	echo "Delete Shift";}
 if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
+if ($ADD==53111111111)	{$hh='admin';	$sh='phones';	echo "DELETE GROUP ALIAS";}
 if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
-if ($ADD==531111111111)	{$hh='admin';	$sh='server';	echo "DELETE CONF TEMPLATE";}
-if ($ADD==541111111111)	{$hh='admin';	$sh='server';	echo "DELETE CARRIER";}
+if ($ADD==531111111111)	{$hh='admin';	$sh='templates';	echo "DELETE CONF TEMPLATE";}
+if ($ADD==541111111111)	{$hh='admin';	$sh='carriers';	echo "DELETE CARRIER";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==6)			{$hh='users';		echo "Delete User";}
@@ -1914,14 +1958,15 @@ if ($ADD==611111)		{$hh='usergroups';	echo "Delete Users Group";}
 if ($ADD==6111111)		{$hh='scripts';		echo "Delete Script";}
 if ($ADD==61111111)		{$hh='filters';		echo "Delete Filter";}
 if ($ADD==611111111)	{$hh='admin';	$sh='times';	echo "Delete Call Time";}
-if ($ADD==631111111)	{$hh='admin';	$sh='times';	echo "Delete Shift";}
+if ($ADD==631111111)	{$hh='admin';	$sh='shifts';	echo "Delete Shift";}
 if ($ADD==6111111111)	{$hh='admin';	$sh='times';	echo "Delete State Call Time";}
 if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
 if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
+if ($ADD==63111111111)	{$hh='admin';	$sh='phones';	echo "DELETE GROUP ALIAS";}
 if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER VICIDIAL TRUNK RECORD";}
-if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE CONF TEMPLATE";}
-if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "DELETE CARRIER";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='templates';	echo "DELETE CONF TEMPLATE";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='carriers';	echo "DELETE CARRIER";}
 if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==61111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==73)			{$hh='campaigns';	echo "Dialable Lead Count";}
@@ -1940,13 +1985,14 @@ if ($ADD==100000)		{$hh='usergroups';	echo "User Groups";}
 if ($ADD==1000000)		{$hh='scripts';		echo "Scripts";}
 if ($ADD==10000000)		{$hh='filters';		echo "Filters";}
 if ($ADD==100000000)	{$hh='admin';	$sh='times';	echo "Call Times";}
-if ($ADD==130000000)	{$hh='admin';	$sh='times';	echo "Shifts";}
+if ($ADD==130000000)	{$hh='admin';	$sh='shifts';	echo "Shifts";}
 if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "State Call Times";}
 if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "PHONE LIST";}
 if ($ADD==12000000000)	{$hh='admin';	$sh='phones';	echo "PHONE ALIAS LIST";}
+if ($ADD==13000000000)	{$hh='admin';	$sh='phones';	echo "GROUP ALIAS LIST";}
 if ($ADD==100000000000)	{$hh='admin';	$sh='server';	echo "SERVER LIST";}
-if ($ADD==130000000000)	{$hh='admin';	$sh='server';	echo "CONF TEMPLATE LIST";}
-if ($ADD==140000000000)	{$hh='admin';	$sh='server';	echo "CARRIER LIST";}
+if ($ADD==130000000000)	{$hh='admin';	$sh='templates';	echo "CONF TEMPLATE LIST";}
+if ($ADD==140000000000)	{$hh='admin';	$sh='carriers';	echo "CARRIER LIST";}
 if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo "CONFERENCE LIST";}
 if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo "VICIDIAL CONFERENCE LIST";}
 if ($ADD==550)			{$hh='users';		echo "Search Form";}
@@ -2027,7 +2073,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$campaigns_to_print = mysql_num_rows($rslt);
 	$campaigns_list='';
 	$campaigns_value='';
-	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
+	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td><td ALIGN=CENTER>WEB VARS</td></tr>\n";
 
 	$o=0;
 	while ($campaigns_to_print > $o)
@@ -2042,30 +2088,40 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$o=0;
 	while ($campaigns_to_print > $o)
 		{
-		$stmt="SELECT campaign_rank,calls_today from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
+		$group_web_vars='';
+		$campaign_web='';
+		$stmt="SELECT campaign_rank,calls_today,group_web_vars from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
 		$rslt=mysql_query($stmt, $link);
 		$ranks_to_print = mysql_num_rows($rslt);
 		if ($ranks_to_print > 0)
 			{
 			$row=mysql_fetch_row($rslt);
 			$SELECT_campaign_rank = $row[0];
-			$calls_today = $row[1];
+			$calls_today =			$row[1];
+			$group_web_vars =		$row[2];
 			}
 		else
-			{$calls_today=0;   $SELECT_campaign_rank=0;}
+			{$calls_today=0;   $SELECT_campaign_rank=0;   $group_web_vars='';}
 		if ( ($ADD=="4A") or ($ADD=="4B") )
 			{
 			if (isset($_GET["RANK_$campaign_id_values[$o]"]))			{$campaign_rank=$_GET["RANK_$campaign_id_values[$o]"];}
 				elseif (isset($_POST["RANK_$campaign_id_values[$o]"]))	{$campaign_rank=$_POST["RANK_$campaign_id_values[$o]"];}
+			if (isset($_GET["WEB_$campaign_id_values[$o]"]))			{$campaign_web=$_GET["WEB_$campaign_id_values[$o]"];}
+				elseif (isset($_POST["WEB_$campaign_id_values[$o]"]))	{$campaign_web=$_POST["WEB_$campaign_id_values[$o]"];}
+			if ($non_latin < 1)
+				{
+				$campaign_rank = ereg_replace("[^-\_0-9]","",$campaign_rank);
+				$campaign_web = preg_replace("/;|\"|\'/","",$campaign_web);
+				}
 
 			if ($ranks_to_print > 0)
 				{
-				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', group_web_vars='$campaign_web' where campaign_id='$campaign_id_values[$o]' and user='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
 			else
 				{
-				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user';";
+				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user', group_web_vars='$campaign_web';";
 				$rslt=mysql_query($stmt, $link);
 				}
 
@@ -2120,8 +2176,11 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			$RANKcampaigns_list .= ">$h</option>";
 			$h--;
 			}
+		if ( (strlen($campaign_web) < 1) and (strlen($group_web_vars) > 0) )
+			{$campaign_web=$group_web_vars;}
 		$RANKcampaigns_list .= "</select></td>\n";
-		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td>\n";
+		$RANKcampaigns_list .= "<td> &nbsp; &nbsp; <input type=text size=25 maxlength=255 name=WEB_$campaign_id_values[$o] value=\"$campaign_web\"></td></tr>\n";
 		$o++;
 		}
 	##### END get campaigns listing for rankings #####
@@ -2185,7 +2244,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$groups_list='';
 	$groups_value='';
 	$XFERgroups_list='';
-	$RANKgroups_list="<tr><td>INBOUND GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
+	$RANKgroups_list="<tr><td>INBOUND GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td><td ALIGN=CENTER>WEB VARS</td></tr>\n";
 
 	$o=0;
 	while ($groups_to_print > $o)
@@ -2199,14 +2258,17 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$o=0;
 	while ($groups_to_print > $o)
 		{
-		$stmt="SELECT group_rank,calls_today from vicidial_inbound_group_agents where user='$user' and group_id='$group_id_values[$o]'";
+		$group_web_vars='';
+		$group_web='';
+		$stmt="SELECT group_rank,calls_today,group_web_vars from vicidial_inbound_group_agents where user='$user' and group_id='$group_id_values[$o]'";
 		$rslt=mysql_query($stmt, $link);
 		$ranks_to_print = mysql_num_rows($rslt);
 		if ($ranks_to_print > 0)
 			{
 			$row=mysql_fetch_row($rslt);
-			$SELECT_group_rank = $row[0];
-			$calls_today = $row[1];
+			$SELECT_group_rank =	$row[0];
+			$calls_today =			$row[1];
+			$group_web_vars =		$row[2];
 			}
 		else
 			{$calls_today=0;   $SELECT_group_rank=0;}
@@ -2214,15 +2276,23 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			{
 			if (isset($_GET["RANK_$group_id_values[$o]"]))			{$group_rank=$_GET["RANK_$group_id_values[$o]"];}
 				elseif (isset($_POST["RANK_$group_id_values[$o]"]))	{$group_rank=$_POST["RANK_$group_id_values[$o]"];}
+			if (isset($_GET["WEB_$group_id_values[$o]"]))			{$group_web=$_GET["WEB_$group_id_values[$o]"];}
+				elseif (isset($_POST["WEB_$group_id_values[$o]"]))	{$group_web=$_POST["WEB_$group_id_values[$o]"];}
+
+			if ($non_latin < 1)
+				{
+				$group_rank = ereg_replace("[^-\_0-9]","",$group_rank);
+				$group_web = preg_replace("/;|\"|\'/","",$group_web);
+				}
 
 			if ($ranks_to_print > 0)
 				{
-				$stmt="UPDATE vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank' where group_id='$group_id_values[$o]' and user='$user';";
+				$stmt="UPDATE vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_web_vars='$group_web' where group_id='$group_id_values[$o]' and user='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
 			else
 				{
-				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user';";
+				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user', group_web_vars='$group_web';";
 				$rslt=mysql_query($stmt, $link);
 				}
 
@@ -2280,8 +2350,11 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			$RANKgroups_list .= ">$h</option>";
 			$h--;
 			}
+		if ( (strlen($group_web) < 1) and (strlen($group_web_vars) > 0) )
+			{$group_web=$group_web_vars;}
 		$RANKgroups_list .= "</select></td>\n";
-		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td>\n";
+		$RANKgroups_list .= "<td> &nbsp; &nbsp; <input type=text size=25 maxlength=255 name=WEB_$group_id_values[$o] value=\"$group_web\"></td></tr>\n";
 		$o++;
 		}
 	if (strlen($groups_value)>2) {$groups_value .= " -";}
@@ -2548,12 +2621,12 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="vicidial_users-vicidial_users-campaign_ranks">
 <BR>
-<B>Campaign Ranks -</B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank.
+<B>Campaign Ranks -</B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank. Also in this section are the WEB VARs for each campaign. These allow each agent to have a different variable string that can be added to the WEB FORM or SCRIPT tab URLs by simply putting --A--web_vars--B-- as you would put any other field.
 
 <BR>
 <A NAME="vicidial_users-closer_campaigns">
 <BR>
-<B>Inbound Groups -</B> Here is where you select the inbound groups you want to receive calls from if you have selected the CLOSER campaign. You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent. Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen.
+<B>Inbound Groups -</B> Here is where you select the inbound groups you want to receive calls from if you have selected the CLOSER campaign. You will also be able to set the rank, or skill level, in this section for each of the inbound groups as well as being able to see the number of calls received from each inbound group for this specific agent. Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen. Also in this section are the WEB VARs for each campaign. These allow each agent to have a different variable string that can be added to the WEB FORM or SCRIPT tab URLs by simply putting --A--web_vars--B-- as you would put any other field.
 
 <BR>
 <A NAME="vicidial_users-alter_custdata_override">
@@ -3199,7 +3272,7 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <A NAME="vicidial_campaigns-three_way_call_cid">
 <BR>
-<B>3-Way Call Outbound CallerID -</B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into.
+<B>3-Way Call Outbound CallerID -</B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into. AGENT_CHOOSE allows the agent to choose which callerID to use for 3-way calls from a list of choices.
 
 <BR>
 <A NAME="vicidial_campaigns-three_way_dial_prefix">
@@ -3268,6 +3341,15 @@ if ($SSqc_features_active > 0)
 <BR>
 <B>Vtiger Screen Login -</B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y.
 
+<BR>
+<A NAME="vicidial_campaigns-agent_allow_group_alias">
+<BR>
+<B>Group Alias Allowed -</B> If you want to allow your agents to use group aliases then you need to set this to Y. Group Aliases are explained more in the Admin section, they allow agents to select different callerIDs for outbound manual calls that they may place. Default is N.
+
+<BR>
+<A NAME="vicidial_campaigns-default_group_alias">
+<BR>
+<B>Default Group Alias -</B> If you have allowed Group Aliases then this is the group alias that is selected first by default when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty.
 
 
 
@@ -3593,6 +3675,12 @@ if ($SSqc_features_active > 0)
 <A NAME="vicidial_inbound_groups-answer_sec_pct_rt_stat_one">
 <BR>
 <B>Stats Percent of Calls Answered Within X seconds -</B> This field allows you to set the number of hold seconds that the realtime stats display will use to calculate the percentage of answered calls that were answered within X number of seconds on hold.
+
+<BR>
+<A NAME="vicidial_inbound_groups-default_group_alias">
+<BR>
+<B>Default Group Alias -</B> If you have allowed Group Aliases for the campaign that the agent is logged into then this is the group alias that is selected first by default on a call coming in from this inbound group when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty.
+
 
 
 
@@ -4382,6 +4470,25 @@ if ($SSoutbound_autodial_active > 0)
 <BR>
 <B>Conf Override Settings -</B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated.
 
+<BR>
+<A NAME="phones-group_alias_id">
+<BR>
+<B>Group Alias ID -</B> The ID of the group alias used by agents to dial out calls from the VICIDIAL agent interface with different Caller IDs. no spaces or other special characters allowed. Must be between 2 and 20 characters in length.
+
+<BR>
+<A NAME="phones-group_alias_name">
+<BR>
+<B>Group Alias Name -</B> The name used to describe a group alias, Must be between 2 and 50 characters in length.
+
+<BR>
+<A NAME="phones-caller_id_number">
+<BR>
+<B>Caller ID Number -</B> The Caller ID number used in this Group Alias. Must be digits only.
+
+<BR>
+<A NAME="phones-caller_id_name">
+<BR>
+<B>Caller ID Name -</B> The Caller ID name that can be sent out with this Group Alias. As far as we know this will only work in Canada on PRI circuits and using an IAX loop trunk through Asterisk.
 
 
 
@@ -5366,9 +5473,8 @@ $admin_home_url_LU =	$row[0];
 
 ?>
 <CENTER>
-<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <A HREF="../agc/timeclock.php?referrer=admin"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1> Timeclock</A> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
+<!--<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <A HREF="../agc/timeclock.php?referrer=admin"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1> Timeclock</A> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
 
-<TR BGCOLOR=#015B91>
 <TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Users </a></TD>
 <TD ALIGN=CENTER <?=$campaigns_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc ?> SIZE=<?=$header_font_size ?>><?=$campaigns_bold ?> Campaigns </a></TD>
 <?
@@ -5555,6 +5661,327 @@ if (strlen($reports_hh) > 1) {
 
 <TR><TD ALIGN=LEFT COLSPAN=10 HEIGHT=2 BGCOLOR=#015B91></TD></TR>
 <TR><TD ALIGN=LEFT COLSPAN=10>
+-->
+
+<TABLE BGCOLOR=white cellpadding=0 cellspacing=0>
+<!-- BEGIN SIDEBAR NAVIGATION -->
+<TR><TD VALIGN=TOP WIDTH=170 BGCOLOR=#015B91 ALIGN=CENTER>
+<IMG SRC="../vicidial/vicidial_admin_web_logo.gif" WIDTH=170 HEIGHT=45 ALT="VICIDIAL logo">
+<B><FONT FACE="ARIAL,HELVETICA" COLOR=white>ADMINISTRATION</FONT></B><BR>
+	<TABLE CELLPADDING=2 CELLSPACING=0 BGCOLOR=#015B91 WIDTH=160>
+	<!-- USERS NAVIGATION -->
+	<TR WIDTH=160><TD <?=$users_hh ?> WIDTH=160>
+	<a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?>Users</a>
+	</TD></TR>
+	<? if (strlen($users_hh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Show Users </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Add A New User </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Copy User </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Search For A User </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="./user_stats.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>User Stats </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="./user_status.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>User Status </a>
+	</TR><TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT>
+	 &nbsp; <a href="./AST_agent_time_sheet.php?agent=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Time Sheet </a> </TD></TR>
+	<? } 
+	?>
+	<!-- CAMPAIGNS NAVIGATION -->
+	<TR><TD <?=$campaigns_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc ?> SIZE=<?=$header_font_size ?>><?=$campaigns_bold ?>Campaigns</a>
+	</TD></TR>
+	<?
+	if (strlen($campaigns_hh) > 1) 
+		{ 
+		if ($sh=='basic') {$sh='list';}
+		if ($sh=='detail') {$sh='list';}
+		if ($sh=='dialstat') {$sh='list';}
+
+		if ($sh=='list') {$list_sh="bgcolor=\"$subcamp_color\""; $list_fc="$subcamp_font";}
+			else {$list_sh=''; $list_fc='BLACK';}
+		if ($sh=='status') {$status_sh="bgcolor=\"$subcamp_color\""; $status_fc="$subcamp_font";}
+			else {$status_sh=''; $status_fc='BLACK';}
+		if ($sh=='hotkey') {$hotkey_sh="bgcolor=\"$subcamp_color\""; $hotkey_fc="$subcamp_font";}
+			else {$hotkey_sh=''; $hotkey_fc='BLACK';}
+		if ($sh=='recycle') {$recycle_sh="bgcolor=\"$subcamp_color\""; $recycle_fc="$subcamp_font";}
+			else {$recycle_sh=''; $recycle_fc='BLACK';}
+		if ($sh=='autoalt') {$autoalt_sh="bgcolor=\"$subcamp_color\""; $autoalt_fc="$subcamp_font";}
+			else {$autoalt_sh=''; $autoalt_fc='BLACK';}
+		if ($sh=='pause') {$pause_sh="bgcolor=\"$subcamp_color\""; $pause_fc="$subcamp_font";}
+			else {$pause_sh=''; $pause_fc='BLACK';}
+		if ($sh=='listmix') {$listmix_sh="bgcolor=\"$subcamp_color\""; $listmix_fc="$subcamp_font";}
+			else {$listmix_sh=''; $listmix_fc='BLACK';}
+
+		?>
+		<TR BGCOLOR=<?=$campaigns_color ?>>
+		<TD ALIGN=LEFT <?=$list_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$list_fc ?> SIZE=<?=$subcamp_font_size ?>>Campaigns Main</a></TD>
+		</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+		<TD ALIGN=LEFT <?=$status_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=32"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$subcamp_font_size ?>>Statuses</a></TD>
+		</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+		<TD ALIGN=LEFT <?=$hotkey_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=33"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$hotkey_fc ?> SIZE=<?=$subcamp_font_size ?>>HotKeys</a></TD>
+		<?
+		if ($SSoutbound_autodial_active > 0)
+			{
+			?>
+			</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+			<TD ALIGN=LEFT <?=$recycle_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>>Lead Recycle</a></TD>
+			</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+			<TD ALIGN=LEFT <?=$autoalt_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>>Auto-Alt Dial</a></TD>
+			</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+			<TD ALIGN=LEFT <?=$listmix_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>>List Mix</a></TD>
+			<?
+			}
+		?>
+		</TR><TR BGCOLOR=<?=$campaigns_color ?>>
+		<TD ALIGN=LEFT <?=$pause_sh ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=37"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$pause_fc ?> SIZE=<?=$subcamp_font_size ?>>Pause Codes</a></TD>
+	<? } 
+	?>
+	<!-- LISTS NAVIGATION -->
+	<?
+	if ($SSoutbound_autodial_active > 0)
+		{
+		?>
+		<TR><TD ALIGN=LEFT <?=$lists_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?>Lists</a></TD></TR>
+		<?
+		if (strlen($lists_hh) > 1) { 
+			?>
+		<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Lists </a>
+		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New List </a>
+		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A Lead </a>
+		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Number To DNC </a>
+		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="./new_listloader_superL.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Load New Leads </a>
+		</TD></TR>
+		<? } 
+		}
+	?>
+	<!-- SCRIPTS NAVIGATION -->
+	<TR><TD <?=$scripts_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$scripts_fc ?> SIZE=<?=$header_font_size ?>><?=$scripts_bold ?> Scripts </a>
+	</TD></TR>
+	<?
+	if (strlen($scripts_hh) > 1) 
+		{ 
+		?>
+		<TR BGCOLOR=<?=$scripts_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Scripts </a>
+		</TR><TR BGCOLOR=<?=$scripts_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Script </a>
+		</TD></TR>
+		<? } 
+	?>
+	<!-- FILTERS NAVIGATION -->
+	<?
+	if ($SSoutbound_autodial_active > 0)
+		{
+		?>
+		<TR><TD ALIGN=LEFT <?=$filters_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc ?> SIZE=<?=$header_font_size ?>><?=$filters_bold ?> Filters </a></TD></TR>
+		<?
+		if (strlen($filters_hh) > 1) 
+			{ 
+			?>
+		<TR BGCOLOR=<?=$filters_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Filters </a>
+		</TR><TR BGCOLOR=<?=$filters_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=11111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Filter </a>
+		</TD></TR>
+		<? } 
+		}
+	?>
+	<!-- INGROUPS NAVIGATION -->
+	<TR><TD <?=$ingroups_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$ingroups_fc ?> SIZE=<?=$header_font_size ?>><?=$ingroups_bold ?> In-Groups </a>
+	</TD></TR>
+	<?
+	if (strlen($ingroups_hh) > 1) 
+		{ 
+		?>
+		<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show In-Groups </a>
+		</TR><TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New In-Group </a>
+		</TR><TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1211"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy In-Group </a>
+		</TR><TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1300"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show DIDs </a>
+		</TR><TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1311"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New DID </a>
+		</TR><TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1411"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Copy DID </a>
+		</TD></TR>
+		<? } 
+		?>
+	<!-- USERGROUPS NAVIGATION -->
+	<TR><TD <?=$usergroups_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc ?> SIZE=<?=$header_font_size ?>><?=$usergroups_bold ?> User Groups </a>
+	</TD></TR>
+	<?
+	if (strlen($usergroups_hh) > 1)
+		{ 
+		?>
+		<TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show User Groups </a>
+		</TR><TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New User Group </a>
+		</TR><TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Group Hourly Report </a>
+		</TR><TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="user_group_bulk_change.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Bulk Group Change </a>
+		</TD></TR>
+		<? } 
+	?>
+	<!-- REMOTEAGENTS NAVIGATION -->
+	<TR><TD <?=$remoteagent_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc ?> SIZE=<?=$header_font_size ?>><?=$remoteagent_bold ?> Remote Agents </a>
+	</TD></TR>
+	<?
+	if (strlen($remoteagent_hh) > 1) 
+		{ 
+		?>
+		<TR BGCOLOR=<?=$remoteagent_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Remote Agents </a>
+		</TR><TR BGCOLOR=<?=$remoteagent_color ?>><TD ALIGN=LEFT> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=11111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add New Remote Agents </a>
+		</TD></TR>
+	<? } 
+	?>
+	<!-- ADMIN NAVIGATION -->
+	<TR><TD <?=$admin_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$admin_fc ?> SIZE=<?=$header_font_size ?>><?=$admin_bold ?> Admin </a>
+	</TD></TR>
+	<?
+	if (strlen($admin_hh) > 1) 
+		{ 
+		if ($sh=='times') {$times_sh="bgcolor=\"$times_color\""; $times_fc="$times_font";} # pink
+			else {$times_sh=''; $times_fc='BLACK';}
+		if ($sh=='shifts') {$shifts_sh="bgcolor=\"$shifts_color\""; $shifts_fc="$shifts_font";} # pink
+			else {$shifts_sh=''; $shifts_fc='BLACK';}
+		if ($sh=='templates') {$templates_sh="bgcolor=\"$templates_color\""; $templates_fc="$templates_font";} # pink
+			else {$templates_sh=''; $templates_fc='BLACK';}
+		if ($sh=='carriers') {$carriers_sh="bgcolor=\"$carriers_color\""; $carriers_fc="$carriers_font";} # pink
+			else {$carriers_sh=''; $carriers_fc='BLACK';}
+		if ($sh=='phones') {$phones_sh="bgcolor=\"$server_color\""; $phones_fc="$phones_font";} # pink
+			else {$phones_sh=''; $phones_fc='BLACK';}
+		if ($sh=='server') {$server_sh="bgcolor=\"$server_color\""; $server_fc="$server_font";} # pink
+			else {$server_sh=''; $server_fc='BLACK';}
+		if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
+			else {$conference_sh=''; $conference_fc='BLACK';}
+		if ($sh=='settings') {$settings_sh="bgcolor=\"$settings_color\""; $settings_fc="$settings_font";} # pink
+			else {$settings_sh=''; $settings_fc='BLACK';}
+		if ($sh=='status') {$status_sh="bgcolor=\"$status_color\""; $status_fc="$status_font";} # pink
+			else {$status_sh=''; $status_fc='BLACK';}
+
+		?>
+		<TR BGCOLOR=<?=$admin_color ?>>
+		<TD ALIGN=LEFT <?=$times_sh ?> COLSPAN=2> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$times_fc ?> SIZE=<?=$header_font_size ?>> Call Times </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$shifts_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=130000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$shifts_fc ?> SIZE=<?=$header_font_size ?>> Shifts </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$phones_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Phones </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$templates_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=130000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$templates_fc ?> SIZE=<?=$header_font_size ?>> Templates </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$carriers_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=140000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$carriers_fc ?> SIZE=<?=$header_font_size ?>> Carriers </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$server_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Servers </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$conference_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Conferences </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$settings_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> System Settings </a></TD>
+		</TR><TR BGCOLOR=<?=$admin_color ?>><TD ALIGN=LEFT <?=$status_sh ?>> &nbsp; 
+		<a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$header_font_size ?>> System Statuses </a></TD>
+		</TR>
+		<? }
+	?>
+	<!-- REPORTS NAVIGATION -->
+	<TR><TD <?=$reports_hh ?>>
+	<a href="<? echo $PHP_SELF ?>?ADD=999999"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$reports_fc ?> SIZE=<?=$header_font_size ?>><?=$reports_bold ?> Reports </a>
+	</TD></TR>
+	</TABLE>
+</TD><TD VALIGN=TOP WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE>
+<!-- END SIDEBAR NAVIGATION -->
+
+<TABLE BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0 WIDTH=<?=$page_width ?> HEIGHT=15>
+<TR BGCOLOR=#015B91><TD ALIGN=LEFT BGCOLOR=#015B91><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>HOME</a> | <A HREF="../agc/timeclock.php?referrer=admin"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1> Timeclock</A> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Logout</a></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
+
+<TR BGCOLOR=#015B91>
+
+
+
+
+
+
+
+</TR>
+	<?
+	if (strlen($list_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=2><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Show Campaigns </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Add A New Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Copy Campaign </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Real-Time Campaigns Summary </a></TD></TR>
+		<? } 
+
+	if (strlen($times_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$times_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Call Times </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Call Time </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show State Call Times </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New State Call Time </a></TD></TR>
+		<? } 
+	if (strlen($shifts_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$shifts_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=130000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Shifts </a> &nbsp;| <a href="<? echo $PHP_SELF ?>?ADD=131111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Shift </a></TD></TR>
+		<? } 
+	if (strlen($phones_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$phones_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Phones </a>&nbsp;|&nbsp;<a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Phone </a>&nbsp;|&nbsp;<a href="<? echo $PHP_SELF ?>?ADD=12000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Phone Alias List </a>&nbsp;|&nbsp;<a href="<? echo $PHP_SELF ?>?ADD=12111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Phone Alias </a>&nbsp;|&nbsp;<a href="<? echo $PHP_SELF ?>?ADD=13000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Group Alias List </a>&nbsp;|&nbsp;<a href="<? echo $PHP_SELF ?>?ADD=13111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Group Alias </a></TD></TR>
+		<? }
+	if (strlen($conference_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$conference_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Conferences </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Conference </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show VICIDIAL Conferences </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New VICIDIAL Conference </a></TD></TR>
+		<? }
+	if ( (strlen($server_sh) > 1) and (strlen($admin_hh) > 1) ) { 
+		?>
+	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Servers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Server </a></TD></TR>
+	<?}
+	if ( (strlen($templates_sh) > 1) and (strlen($admin_hh) > 1) ) { 
+		?>
+	<TR BGCOLOR=<?=$templates_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=130000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Templates </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=131111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Template </a></TD></TR>
+	<?}
+	if ( (strlen($carriers_sh) > 1) and (strlen($admin_hh) > 1) ) { 
+		?>
+	<TR BGCOLOR=<?=$carriers_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=140000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Carriers </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=141111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add A New Carrier </a></TD></TR>
+	<?}
+	if (strlen($settings_sh) > 1) { 
+		?>
+	<TR BGCOLOR=<?=$settings_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Settings </a></TD></TR>
+	<?}
+	if ( (strlen($status_sh) > 1) and (!eregi('campaign',$hh) ) ) { 
+		?>
+	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> System Statuses </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Status Categories </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=341111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> QC Status Codes </a></TD></TR>
+	<?}
+
+### Do nothing if admin has no permissions
+if($LOGast_admin_access < 1) 
+	{
+	$ADD='99999999999999999999';
+	echo "</TABLE></center>\n";
+	echo "You are not authorized to view this page. Please go back.\n";
+	}
+
+if (strlen($reports_hh) > 1) { 
+	?>
+<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=2><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </B></TD></TR>
+<? } ?>
+
+
+<TR><TD ALIGN=LEFT COLSPAN=2 HEIGHT=2 BGCOLOR=#015B91></TD></TR>
+<TR><TD ALIGN=LEFT COLSPAN=2>
 <? 
 ######################### HTML HEADER BEGIN #######################################
 
@@ -6403,6 +6830,39 @@ if ($ADD==12111111111)
 
 
 ######################
+# ADD=13111111111 display the ADD NEW GROUP ALIAS SCREEN
+######################
+
+if ($ADD==13111111111)
+	{
+	if ($LOGast_admin_access==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD A NEW GROUP ALIAS<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=23111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Alias ID: </td><td align=left><input type=text name=group_alias_id size=30 maxlength=30 value=\"\">$NWB#phones-group_alias_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Alias Name: </td><td align=left><input type=text name=group_alias_name size=30 maxlength=50> $NWB#phones-group_alias_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Number: </td><td align=left><input type=text name=caller_id_number size=20 maxlength=20> $NWB#phones-caller_id_number$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Name: </td><td align=left><input type=text name=caller_id_name size=20 maxlength=20> $NWB#phones-caller_id_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option selected>N</option></select></td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
+	}
+
+
+######################
 # ADD=111111111111 display the ADD NEW SERVER SCREEN
 ######################
 
@@ -6605,7 +7065,7 @@ if ($ADD==11111111111111)
 ######################
 
 if ($ADD=="2")
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
 	$rslt=mysql_query($stmt, $link);
@@ -6702,6 +7162,7 @@ if ($ADD=="2")
 				$roleid =			'H5';
 				$status =			'Active';
 				$groupid =			'1';
+					if ($user_level >= 7) {$roleid = 'H3';}
 					if ($user_level >= 8) {$roleid = 'H4';}
 					if ($user_level >= 9) {$roleid = 'H2';}
 					if ($user_level >= 9) {$is_admin = 'on';}
@@ -6709,6 +7170,56 @@ if ($ADD=="2")
 				$salt = '$1$' . $salt . '$';
 				$encrypted_password = crypt($user_password, $salt);
 
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
+
+				######################################
+				##### BEGIN Add/Update user info in Vtiger
 				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 				$rslt=mysql_query($stmt, $linkV);
 				if ($DB) {echo "$stmt\n";}
@@ -6726,6 +7237,13 @@ if ($ADD=="2")
 					$row=mysql_fetch_row($rslt);
 					$userid = $row[0];
 
+					$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$usergroupcount = $row[0];
+
 					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 					if ($DB) {echo "|$stmtA|\n";}
 					$rslt=mysql_query($stmtA, $linkV);
@@ -6735,6 +7253,33 @@ if ($ADD=="2")
 					if ($DB) {echo "|$stmtB|\n";}
 					$rslt=mysql_query($stmtB, $linkV);
 					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					if ($usergroupcount < 1)
+						{
+						$stmt="SELECT user_group FROM vicidial_user_groups;";
+						$rslt=mysql_query($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$VD_groups_ct = mysql_num_rows($rslt);
+						$k=0;
+						$VD_groups_list='';
+						while ($k < $VD_groups_ct)
+							{
+							$row=mysql_fetch_row($rslt);
+							$VD_groups_list .= "'$row[0]',";
+							$k++;
+							}
+						$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+						$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+						if ($DB) {echo "|$stmtC|\n";}
+						$rslt=mysql_query($stmtC, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+						$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+						if ($DB) {echo "|$stmtD|\n";}
+						$rslt=mysql_query($stmtD, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+						}
 					}
 
 				### user doesn't exist in vtiger, insert it
@@ -6764,7 +7309,8 @@ if ($ADD=="2")
 
 					#### END CREATE NEW USER RECORD IN VTIGER
 					}
-
+				##### END Add/Update user info in Vtiger
+				######################################
 				}
 			### END vtiger integration
 
@@ -6778,15 +7324,15 @@ if ($ADD=="2")
 			}
 		}
 
-$ADD=3;
-}
+	$ADD=3;
+	}
 
 ######################
 # ADD=2A adds the copied new user to the system
 ######################
 
 if ($ADD=="2A")
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
 	$rslt=mysql_query($stmt, $link);
@@ -6872,17 +7418,6 @@ if ($ADD=="2A")
 
 			if ($enable_vtiger_integration > 0)
 				{
-				$stmt = "SELECT user_level,active FROM vicidial_users where user='$user';";
-				$rslt=mysql_query($stmt, $link);
-				if ($DB) {echo "$stmt\n";}
-				$vuul_conf_ct = mysql_num_rows($rslt);
-				if ($vuul_conf_ct > 0)
-					{
-					$row=mysql_fetch_row($rslt);
-					$user_level =	$row[0];
-					$active	=		$row[1];
-					}
-
 				### connect to your vtiger database
 				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
 				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
@@ -6896,14 +7431,64 @@ if ($ADD=="2A")
 				$roleid =			'H5';
 				$status =			'Active';
 				$groupid =			'1';
+					if ($user_level >= 7) {$roleid = 'H3';}
 					if ($user_level >= 8) {$roleid = 'H4';}
 					if ($user_level >= 9) {$roleid = 'H2';}
 					if ($user_level >= 9) {$is_admin = 'on';}
-				if (ereg('N',$active)) {$status = 'Inactive';}
 				$salt = substr($user_name, 0, 2);
 				$salt = '$1$' . $salt . '$';
 				$encrypted_password = crypt($user_password, $salt);
 
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
+
+				######################################
+				##### BEGIN Add/Update user info in Vtiger
 				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 				$rslt=mysql_query($stmt, $linkV);
 				if ($DB) {echo "$stmt\n";}
@@ -6921,6 +7506,13 @@ if ($ADD=="2A")
 					$row=mysql_fetch_row($rslt);
 					$userid = $row[0];
 
+					$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$usergroupcount = $row[0];
+
 					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 					if ($DB) {echo "|$stmtA|\n";}
 					$rslt=mysql_query($stmtA, $linkV);
@@ -6930,6 +7522,33 @@ if ($ADD=="2A")
 					if ($DB) {echo "|$stmtB|\n";}
 					$rslt=mysql_query($stmtB, $linkV);
 					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					if ($usergroupcount < 1)
+						{
+						$stmt="SELECT user_group FROM vicidial_user_groups;";
+						$rslt=mysql_query($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$VD_groups_ct = mysql_num_rows($rslt);
+						$k=0;
+						$VD_groups_list='';
+						while ($k < $VD_groups_ct)
+							{
+							$row=mysql_fetch_row($rslt);
+							$VD_groups_list .= "'$row[0]',";
+							$k++;
+							}
+						$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+						$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+						if ($DB) {echo "|$stmtC|\n";}
+						$rslt=mysql_query($stmtC, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+						$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+						if ($DB) {echo "|$stmtD|\n";}
+						$rslt=mysql_query($stmtD, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+						}
 					}
 
 				### user doesn't exist in vtiger, insert it
@@ -6959,7 +7578,8 @@ if ($ADD=="2A")
 
 					#### END CREATE NEW USER RECORD IN VTIGER
 					}
-
+				##### END Add/Update user info in Vtiger
+				######################################
 				}
 			### END vtiger integration
 
@@ -6977,16 +7597,15 @@ if ($ADD=="2A")
 				}
 			}
 		}
-exit;
-}
+	exit;
+	}
 
 ######################
 # ADD=21 adds the new campaign to the system
 ######################
 
 if ($ADD==21)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7030,16 +7649,15 @@ if ($ADD==21)
 				}
 			}
 		}
-$ADD=31;
-}
+	$ADD=31;
+	}
 
 ######################
 # ADD=20 adds copied new campaign to the system
 ######################
 
 if ($ADD==20)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7058,7 +7676,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -7087,16 +7705,15 @@ if ($ADD==20)
 
 			}
 		}
-$ADD=31;
-}
+	$ADD=31;
+	}
 
 ######################
 # ADD=22 adds the new campaign status to the system
 ######################
 
 if ($ADD==22)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
 	$rslt=mysql_query($stmt, $link);
@@ -7135,9 +7752,9 @@ if ($ADD==22)
 				}
 			}
 		}
-$SUB=22;
-$ADD=31;
-}
+	$SUB=22;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7145,7 +7762,7 @@ $ADD=31;
 ######################
 
 if ($ADD==23)
-{
+	{
 	$HKstatus_data = explode('-----',$HKstatus);
 	$status = $HKstatus_data[0];
 	$status_name = $HKstatus_data[1];
@@ -7180,9 +7797,9 @@ if ($ADD==23)
 				}
 			}
 		}
-$SUB=23;
-$ADD=31;
-}
+	$SUB=23;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7190,7 +7807,7 @@ $ADD=31;
 ######################
 
 if ($ADD==25)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lead_recycle where campaign_id='$campaign_id' and status='$status';";
@@ -7223,9 +7840,9 @@ if ($ADD==25)
 				}
 			}
 		}
-$SUB=25;
-$ADD=31;
-}
+	$SUB=25;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7233,7 +7850,7 @@ $ADD=31;
 ######################
 
 if ($ADD==26)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
@@ -7270,9 +7887,9 @@ if ($ADD==26)
 				}
 			}
 		}
-$SUB=26;
-$ADD=31;
-}
+	$SUB=26;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7280,7 +7897,7 @@ $ADD=31;
 ######################
 
 if ($ADD==27)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
 	$rslt=mysql_query($stmt, $link);
@@ -7311,9 +7928,9 @@ if ($ADD==27)
 				}
 			}
 		}
-$SUB=27;
-$ADD=31;
-}
+	$SUB=27;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7321,7 +7938,7 @@ $ADD=31;
 ######################
 
 if ($ADD==28)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
@@ -7358,9 +7975,9 @@ if ($ADD==28)
 				}
 			}
 		}
-#$SUB=28;
-$ADD=31;
-}
+	#$SUB=28;
+	$ADD=31;
+	}
 
 
 ######################
@@ -7368,7 +7985,7 @@ $ADD=31;
 ######################
 
 if ($ADD==211)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lists where list_id='$list_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7400,8 +8017,8 @@ if ($ADD==211)
 				}
 			}
 		}
-$ADD=311;
-}
+	$ADD=311;
+	}
 
 
 
@@ -7410,7 +8027,7 @@ $ADD=311;
 ######################
 
 if ($ADD==2111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7452,8 +8069,8 @@ if ($ADD==2111)
 				}
 			}
 		}
-$ADD=3111;
-}
+	$ADD=3111;
+	}
 
 
 ######################
@@ -7461,7 +8078,7 @@ $ADD=3111;
 ######################
 
 if ($ADD==2011)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7478,7 +8095,7 @@ if ($ADD==2011)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>GROUP ADDED: $group_id</B>\n";
@@ -7492,8 +8109,8 @@ if ($ADD==2011)
 				}
 			}
 		}
-$ADD=3111;
-}
+	$ADD=3111;
+	}
 
 
 ######################
@@ -7501,7 +8118,7 @@ $ADD=3111;
 ######################
 
 if ($ADD==2311)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
 	$rslt=mysql_query($stmt, $link);
@@ -7544,8 +8161,8 @@ if ($ADD==2311)
 				}
 			}
 		}
-$ADD=3311;
-}
+	$ADD=3311;
+	}
 
 
 ######################
@@ -7553,7 +8170,7 @@ $ADD=3311;
 ######################
 
 if ($ADD==2411)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
 	$rslt=mysql_query($stmt, $link);
@@ -7588,8 +8205,8 @@ if ($ADD==2411)
 				}
 			}
 		}
-$ADD=3311;
-}
+	$ADD=3311;
+	}
 
 
 ######################
@@ -7597,7 +8214,7 @@ $ADD=3311;
 ######################
 
 if ($ADD==21111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_remote_agents where server_ip='$server_ip' and user_start='$user_start';";
 	$rslt=mysql_query($stmt, $link);
@@ -7627,15 +8244,15 @@ if ($ADD==21111)
 				}
 			}
 		}
-$ADD=10000;
-}
+	$ADD=10000;
+	}
 
 ######################
 # ADD=211111 adds new user group to the system
 ######################
 
 if ($ADD==211111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_user_groups where user_group='$user_group';";
 	$rslt=mysql_query($stmt, $link);
@@ -7663,17 +8280,93 @@ if ($ADD==211111)
 				fwrite ($fp, "$date|ADD A NEW USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|$stmt|\n");
 				fclose($fp);
 				}
+
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
+				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='$group_name';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
+				}
 			}
 		}
-$ADD=100000;
-}
+	$ADD=100000;
+	}
 
 ######################
 # ADD=2111111 adds new script to the system
 ######################
 
 if ($ADD==2111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_scripts where script_id='$script_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7703,8 +8396,8 @@ if ($ADD==2111111)
 				}
 			}
 		}
-$ADD=1000000;
-}
+	$ADD=1000000;
+	}
 
 
 ######################
@@ -7712,7 +8405,7 @@ $ADD=1000000;
 ######################
 
 if ($ADD==21111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lead_filters where lead_filter_id='$lead_filter_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7742,8 +8435,8 @@ if ($ADD==21111111)
 				}
 			}
 		}
-$ADD=10000000;
-}
+	$ADD=10000000;
+	}
 
 
 ######################
@@ -7751,7 +8444,7 @@ $ADD=10000000;
 ######################
 
 if ($ADD==211111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_call_times where call_time_id='$call_time_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7781,8 +8474,8 @@ if ($ADD==211111111)
 				}
 			}
 		}
-$ADD=311111111;
-}
+	$ADD=311111111;
+	}
 
 
 ######################
@@ -7790,7 +8483,7 @@ $ADD=311111111;
 ######################
 
 if ($ADD==2111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_state_call_times where state_call_time_id='$call_time_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7820,8 +8513,8 @@ if ($ADD==2111111111)
 				}
 			}
 		}
-$ADD=3111111111;
-}
+	$ADD=3111111111;
+	}
 
 
 ######################
@@ -7829,7 +8522,7 @@ $ADD=3111111111;
 ######################
 
 if ($ADD==231111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_shifts where shift_id='$shift_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7869,8 +8562,8 @@ if ($ADD==231111111)
 				}
 			}
 		}
-$ADD=331111111;
-}
+	$ADD=331111111;
+	}
 
 
 ######################
@@ -7878,8 +8571,7 @@ $ADD=331111111;
 ######################
 
 if ($ADD==21111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from phones where extension='$extension' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -7922,8 +8614,8 @@ echo "<TABLE><TR><TD>\n";
 				}
 			}
 		}
-$ADD=31111111111;
-}
+	$ADD=31111111111;
+	}
 
 
 ######################
@@ -7931,8 +8623,7 @@ $ADD=31111111111;
 ######################
 
 if ($ADD==22111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from phones_alias where alias_id='$alias_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -7967,8 +8658,49 @@ echo "<TABLE><TR><TD>\n";
 				}
 			}
 		}
-$ADD=32111111111;
-}
+	$ADD=32111111111;
+	}
+
+
+######################
+# ADD=23111111111 adds new group alias to the system
+######################
+
+if ($ADD==23111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>GROUP ALIAS NOT ADDED - there is already a Phone Alias in the system with this ID\n";}
+	else
+		{
+		if (preg_match("/AGENT_PHONE|CUSTOMER|CAMPAIGN|NONE/",'',$group_alias_id))
+			{echo "<br>GROUP ALIAS NOT ADDED - you cannot use reserved words in group aliases\n";}
+		else
+			{
+			 if ( (strlen($group_alias_id) < 1) or (strlen($group_alias_name) < 2) )
+				{echo "<br>GROUP ALIAS NOT ADDED - Please go back and look at the data you entered\n";}
+			 else
+				{
+				echo "<br>GROUP ALIAS ADDED\n";
+
+				$stmt="INSERT INTO groups_alias (group_alias_id,group_alias_name,caller_id_number,caller_id_name,active) values('$group_alias_id','$group_alias_name','$caller_id_number','$caller_id_name','$active');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG CHANGES TO LOG FILE ###
+				if ($WeBRooTWritablE > 0)
+					{
+					$fp = fopen ("./admin_changes_log.txt", "a");
+					fwrite ($fp, "$date|ADD A NEW GROUP ALIAS          |$stmt|\n");
+					fclose($fp);
+					}
+				}
+			}
+		}
+	$ADD=33111111111;
+	}
 
 
 ######################
@@ -7976,8 +8708,7 @@ $ADD=32111111111;
 ######################
 
 if ($ADD==211111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from servers where server_id='$server_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -8004,8 +8735,8 @@ echo "<TABLE><TR><TD>\n";
 				}
 			}
 		}
-$ADD=311111111111;
-}
+	$ADD=311111111111;
+	}
 
 
 ######################
@@ -8013,7 +8744,7 @@ $ADD=311111111111;
 ######################
 
 if ($ADD==221111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT max_vicidial_trunks from servers where server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -8062,8 +8793,8 @@ if ($ADD==221111111111)
 				}
 			}
 		}
-$ADD=311111111111;
-}
+	$ADD=311111111111;
+	}
 
 
 ######################
@@ -8071,8 +8802,7 @@ $ADD=311111111111;
 ######################
 
 if ($ADD==231111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_conf_templates where template_id='$template_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -8099,8 +8829,8 @@ echo "<TABLE><TR><TD>\n";
 				}
 			}
 		}
-$ADD=331111111111;
-}
+	$ADD=331111111111;
+	}
 
 
 ######################
@@ -8108,8 +8838,7 @@ $ADD=331111111111;
 ######################
 
 if ($ADD==241111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_server_carriers where carrier_id='$carrier_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -8136,8 +8865,8 @@ echo "<TABLE><TR><TD>\n";
 				}
 			}
 		}
-$ADD=341111111111;
-}
+	$ADD=341111111111;
+	}
 
 
 ######################
@@ -8145,8 +8874,7 @@ $ADD=341111111111;
 ######################
 
 if ($ADD==2111111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from conferences where conf_exten='$conf_exten' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -8165,8 +8893,8 @@ echo "<TABLE><TR><TD>\n";
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=3111111111111;
-}
+	$ADD=3111111111111;
+	}
 
 
 ######################
@@ -8174,8 +8902,7 @@ $ADD=3111111111111;
 ######################
 
 if ($ADD==21111111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_conferences where conf_exten='$conf_exten' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -8194,8 +8921,8 @@ echo "<TABLE><TR><TD>\n";
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=31111111111111;
-}
+	$ADD=31111111111111;
+	}
 
 
 ######################
@@ -8203,8 +8930,7 @@ $ADD=31111111111111;
 ######################
 
 if ($ADD==221111111111111)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaign_statuses where status='$status';";
 	$rslt=mysql_query($stmt, $link);
@@ -8243,8 +8969,8 @@ if ($ADD==221111111111111)
 				}
 			}
 		}
-$ADD=321111111111111;
-}
+	$ADD=321111111111111;
+	}
 
 
 ######################
@@ -8252,8 +8978,7 @@ $ADD=321111111111111;
 ######################
 
 if ($ADD==231111111111111)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_status_categories where vsc_id='$vsc_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -8293,8 +9018,8 @@ if ($ADD==231111111111111)
 				}
 			}
 		}
-$ADD=331111111111111;
-}
+	$ADD=331111111111111;
+	}
 
 
 
@@ -8303,8 +9028,7 @@ $ADD=331111111111111;
 ######################
 
 if ($ADD==241111111111111)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_qc_codes where code='$code';";
 	$rslt=mysql_query($stmt, $link);
@@ -8335,8 +9059,8 @@ if ($ADD==241111111111111)
 				}
 			}
 		}
-$ADD=341111111111111;
-}
+	$ADD=341111111111111;
+	}
 
 
 
@@ -8376,6 +9100,7 @@ if ($ADD=="4A")
 		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
+
 		###############################################################
 		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
 		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
@@ -8410,14 +9135,64 @@ if ($ADD=="4A")
 			$roleid =			'H5';
 			$status =			'Active';
 			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
 				if ($user_level >= 8) {$roleid = 'H4';}
 				if ($user_level >= 9) {$roleid = 'H2';}
 				if ($user_level >= 9) {$is_admin = 'on';}
-			if (ereg('N',$active)) {$status = 'Inactive';}
 			$salt = substr($user_name, 0, 2);
 			$salt = '$1$' . $salt . '$';
 			$encrypted_password = crypt($user_password, $salt);
 
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
 			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 			$rslt=mysql_query($stmt, $linkV);
 			if ($DB) {echo "$stmt\n";}
@@ -8435,6 +9210,13 @@ if ($ADD=="4A")
 				$row=mysql_fetch_row($rslt);
 				$userid = $row[0];
 
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
 				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 				if ($DB) {echo "|$stmtA|\n";}
 				$rslt=mysql_query($stmtA, $linkV);
@@ -8444,6 +9226,33 @@ if ($ADD=="4A")
 				if ($DB) {echo "|$stmtB|\n";}
 				$rslt=mysql_query($stmtB, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
 				}
 
 			### user doesn't exist in vtiger, insert it
@@ -8473,7 +9282,8 @@ if ($ADD=="4A")
 
 				#### END CREATE NEW USER RECORD IN VTIGER
 				}
-
+			##### END Add/Update user info in Vtiger
+			######################################
 			}
 		### END vtiger integration
 
@@ -8558,14 +9368,64 @@ if ($ADD=="4B")
 			$roleid =			'H5';
 			$status =			'Active';
 			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
 				if ($user_level >= 8) {$roleid = 'H4';}
 				if ($user_level >= 9) {$roleid = 'H2';}
 				if ($user_level >= 9) {$is_admin = 'on';}
-			if (ereg('N',$active)) {$status = 'Inactive';}
 			$salt = substr($user_name, 0, 2);
 			$salt = '$1$' . $salt . '$';
 			$encrypted_password = crypt($user_password, $salt);
 
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
 			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 			$rslt=mysql_query($stmt, $linkV);
 			if ($DB) {echo "$stmt\n";}
@@ -8583,6 +9443,13 @@ if ($ADD=="4B")
 				$row=mysql_fetch_row($rslt);
 				$userid = $row[0];
 
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
 				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 				if ($DB) {echo "|$stmtA|\n";}
 				$rslt=mysql_query($stmtA, $linkV);
@@ -8592,6 +9459,33 @@ if ($ADD=="4B")
 				if ($DB) {echo "|$stmtB|\n";}
 				$rslt=mysql_query($stmtB, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
 				}
 
 			### user doesn't exist in vtiger, insert it
@@ -8621,7 +9515,8 @@ if ($ADD=="4B")
 
 				#### END CREATE NEW USER RECORD IN VTIGER
 				}
-
+			##### END Add/Update user info in Vtiger
+			######################################
 			}
 		### END vtiger integration
 
@@ -8666,7 +9561,6 @@ if ($ADD==4)
 		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',active='$active' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
-
 		###############################################################
 		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
 		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
@@ -8701,14 +9595,64 @@ if ($ADD==4)
 			$roleid =			'H5';
 			$status =			'Active';
 			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
 				if ($user_level >= 8) {$roleid = 'H4';}
 				if ($user_level >= 9) {$roleid = 'H2';}
 				if ($user_level >= 9) {$is_admin = 'on';}
-			if (ereg('N',$active)) {$status = 'Inactive';}
 			$salt = substr($user_name, 0, 2);
 			$salt = '$1$' . $salt . '$';
 			$encrypted_password = crypt($user_password, $salt);
 
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
 			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
 			$rslt=mysql_query($stmt, $linkV);
 			if ($DB) {echo "$stmt\n";}
@@ -8726,6 +9670,13 @@ if ($ADD==4)
 				$row=mysql_fetch_row($rslt);
 				$userid = $row[0];
 
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
 				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
 				if ($DB) {echo "|$stmtA|\n";}
 				$rslt=mysql_query($stmtA, $linkV);
@@ -8735,6 +9686,33 @@ if ($ADD==4)
 				if ($DB) {echo "|$stmtB|\n";}
 				$rslt=mysql_query($stmtB, $linkV);
 				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
 				}
 
 			### user doesn't exist in vtiger, insert it
@@ -8764,7 +9742,8 @@ if ($ADD==4)
 
 				#### END CREATE NEW USER RECORD IN VTIGER
 				}
-
+			##### END Add/Update user info in Vtiger
+			######################################
 			}
 		### END vtiger integration
 
@@ -8910,7 +9889,7 @@ if ($ADD==41)
 				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
 					{$hopper_level='100';}
 
-				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action' where campaign_id='$campaign_id';";
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias' where campaign_id='$campaign_id';";
 				$rslt=mysql_query($stmtA, $link);
 
 				if ($reset_hopper == 'Y')
@@ -9738,7 +10717,7 @@ if ($ADD==4111)
 
 		echo "<br><B>GROUP MODIFIED: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group',qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_shift_id='$qc_shift_id',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script',play_place_in_line='$play_place_in_line',play_estimate_hold_time='$play_estimate_hold_time',hold_time_option='$hold_time_option',hold_time_option_seconds='$hold_time_option_seconds',hold_time_option_exten='$hold_time_option_exten',hold_time_option_voicemail='$hold_time_option_voicemail',hold_time_option_xfer_group='$hold_time_option_xfer_group',hold_time_option_callback_filename='$hold_time_option_callback_filename',hold_time_option_callback_list_id='$hold_time_option_callback_list_id',hold_recall_xfer_group='$hold_recall_xfer_group',no_delay_call_route='$no_delay_call_route',play_welcome_message='$play_welcome_message',answer_sec_pct_rt_stat_one='$answer_sec_pct_rt_stat_one',answer_sec_pct_rt_stat_two='$answer_sec_pct_rt_stat_two' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group',qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_shift_id='$qc_shift_id',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script',play_place_in_line='$play_place_in_line',play_estimate_hold_time='$play_estimate_hold_time',hold_time_option='$hold_time_option',hold_time_option_seconds='$hold_time_option_seconds',hold_time_option_exten='$hold_time_option_exten',hold_time_option_voicemail='$hold_time_option_voicemail',hold_time_option_xfer_group='$hold_time_option_xfer_group',hold_time_option_callback_filename='$hold_time_option_callback_filename',hold_time_option_callback_list_id='$hold_time_option_callback_list_id',hold_recall_xfer_group='$hold_recall_xfer_group',no_delay_call_route='$no_delay_call_route',play_welcome_message='$play_welcome_message',answer_sec_pct_rt_stat_one='$answer_sec_pct_rt_stat_one',answer_sec_pct_rt_stat_two='$answer_sec_pct_rt_stat_two',default_group_alias='$default_group_alias' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG CHANGES TO LOG FILE ###
@@ -9871,6 +10850,87 @@ if ($ADD==411111)
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
+			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+
+				$stmtA = "UPDATE vtiger_groups SET description='$group_name' where groupid='$groupid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='$group_name';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+			}
 
 		### LOG CHANGES TO LOG FILE ###
 		if ($WeBRooTWritablE > 0)
@@ -10219,6 +11279,46 @@ if ($ADD==42111111111)
 	exit;
 	}
 $ADD=32111111111;	# go to phone alias modification form below
+}
+
+
+######################
+# ADD=43111111111 modify group alias record in the system
+######################
+
+if ($ADD==43111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT count(*) from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+		 if ( (strlen($group_alias_id) < 1) or (strlen($group_alias_name) < 2) )
+		{echo "<br>GROUP ALIAS NOT MODIFIED - Please go back and look at the data you entered\n";}
+		 else
+		{
+		echo "<br>GROUP ALIAS MODIFIED: $alias_id\n";
+
+		$stmt="UPDATE groups_alias set group_alias_name='$group_alias_name', caller_id_number='$caller_id_number', caller_id_name='$caller_id_name', active='$active' where group_alias_id='$group_alias_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|MODIFY GROUPS ALIAS   |$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+$ADD=33111111111;	# go to group alias modification form below
 }
 
 
@@ -11096,6 +12196,28 @@ if ($ADD==52111111111)
 		echo "<br><br><a href=\"$PHP_SELF?ADD=62111111111&alias_id=$alias_id&CoNfIrM=YES\">Click here to delete phone alias $alias_id</a><br><br><br>\n";
 		}
 $ADD='32111111111';		# go to phone alias modification below
+}
+
+
+######################
+# ADD=53111111111 confirmation before deletion of group alias record
+######################
+
+if ($ADD==53111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($group_alias_id) < 1) or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>GROUP ALIAS NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Group Alias ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>GROUP ALIAS DELETION CONFIRMATION: $group_alias_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=63111111111&group_alias_id=$group_alias_id&CoNfIrM=YES\">Click here to delete group alias $group_alias_id</a><br><br><br>\n";
+		}
+$ADD='33111111111';		# go to group alias modification below
 }
 
 
@@ -12032,6 +13154,38 @@ $ADD='12000000000';		# go to phone alias list
 
 
 ######################
+# ADD=63111111111 delete group alias record
+######################
+
+if ($ADD==63111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($group_alias_id) < 2) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>GROUP ALIAS NOT DELETED - Please go back and look at the data you entered\n";
+		 echo "<br>Group Alias ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		$stmt="DELETE from groups_alias where group_alias_id='$group_alias_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG CHANGES TO LOG FILE ###
+		if ($WeBRooTWritablE > 0)
+			{
+			$fp = fopen ("./admin_changes_log.txt", "a");
+			fwrite ($fp, "$date|!DELETE GROUP ALIAS!|$PHP_AUTH_USER|$ip|$stmt|\n");
+			fclose($fp);
+			}
+		echo "<br><B>GROUP ALIAS DELETION COMPLETED: $group_alias_id</B>\n";
+		echo "<br><br>\n";
+		}
+$ADD='13000000000';		# go to group alias list
+}
+
+
+######################
 # ADD=611111111111 delete server record
 ######################
 
@@ -12630,6 +13784,8 @@ if ($ADD==31)
 		$vtiger_create_lead_record = $row[101];
 		$vtiger_screen_login = $row[102];
 		$cpd_amd_action = $row[103];
+		$agent_allow_group_alias = $row[104];
+		$default_group_alias = $row[105];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -13092,9 +14248,39 @@ if ($ADD==31)
 			{
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Extended Alt Dial: </td><td align=left><select size=1 name=agent_extended_alt_dial><option>Y</option><option>N</option><option SELECTED>$agent_extended_alt_dial</option></select>$NWB#vicidial_campaigns-agent_extended_alt_dial$NWE</td></tr>\n";
 			}
-		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Outbound CallerID: </td><td align=left><select size=1 name=three_way_call_cid><option>CAMPAIGN</option><option>CUSTOMER</option><option>AGENT_PHONE</option><option SELECTED>$three_way_call_cid</option></select>$NWB#vicidial_campaigns-three_way_call_cid$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Outbound CallerID: </td><td align=left><select size=1 name=three_way_call_cid><option>CAMPAIGN</option><option>CUSTOMER</option><option>AGENT_PHONE</option><option>AGENT_CHOOSE</option><option SELECTED>$three_way_call_cid</option></select>$NWB#vicidial_campaigns-three_way_call_cid$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Dial Prefix: </td><td align=left><input type=text name=three_way_dial_prefix size=15 maxlength=20 value=\"$three_way_dial_prefix\">$NWB#vicidial_campaigns-three_way_dial_prefix$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Group Alias Allowed: </td><td align=left><select size=1 name=agent_allow_group_alias><option>Y</option><option>N</option><option SELECTED>$agent_allow_group_alias</option></select>$NWB#vicidial_campaigns-agent_allow_group_alias$NWE</td></tr>\n";
+
+		if ($agent_allow_group_alias == 'Y')
+			{
+			##### get groups_alias listings for dynamic default group alias pulldown list menu
+			$stmt="SELECT group_alias_id,group_alias_name from groups_alias where active='Y' order by group_alias_id";
+			$rslt=mysql_query($stmt, $link);
+			$group_alias_to_print = mysql_num_rows($rslt);
+			$group_alias_menu='';
+			$group_alias_selected=0;
+			$o=0;
+			while ($group_alias_to_print > $o) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$group_alias_menu .= "<option ";
+				if ($default_group_alias == "$rowx[0]") 
+					{
+					$group_alias_menu .= "SELECTED ";
+					$group_alias_selected++;
+					}
+				$group_alias_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				$o++;
+				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Default Group Alias: </td><td align=left><select size=1 name=default_group_alias>";
+			echo "<option value=\"\">NONE</option>";
+			echo "$group_alias_menu";
+			echo "</select>$NWB#vicidial_campaigns-default_group_alias$NWE</td></tr>\n";
+			}
 
 		if ($SSenable_vtiger_integration > 0)
 			{
@@ -15134,6 +16320,8 @@ if ($ADD==3111)
 	$play_welcome_message = 	$row[52];
 	$answer_sec_pct_rt_stat_one =	$row[53];
 	$answer_sec_pct_rt_stat_two =	$row[54];
+	$default_group_alias =		$row[55];
+
 
 	##### get in-groups listings for dynamic pulldown
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
@@ -15323,6 +16511,31 @@ if ($ADD==3111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Default Transfer Group: </td><td align=left><select size=1 name=default_xfer_group>";
 	echo "$Xgroups_menu";
 	echo "</select>$NWB#vicidial_inbound_groups-default_xfer_group$NWE</td></tr>\n";
+
+	##### get groups_alias listings for dynamic default group alias pulldown list menu
+	$stmt="SELECT group_alias_id,group_alias_name from groups_alias where active='Y' order by group_alias_id";
+	$rslt=mysql_query($stmt, $link);
+	$group_alias_to_print = mysql_num_rows($rslt);
+	$group_alias_menu='';
+	$group_alias_selected=0;
+	$o=0;
+	while ($group_alias_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$group_alias_menu .= "<option ";
+		if ($default_group_alias == "$rowx[0]") 
+			{
+			$group_alias_menu .= "SELECTED ";
+			$group_alias_selected++;
+			}
+		$group_alias_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Default Group Alias: </td><td align=left><select size=1 name=default_group_alias>";
+	echo "<option value=\"\">NONE</option>";
+	echo "$group_alias_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-default_group_alias$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Hold Recall Transfer In-Group: </td><td align=left><select size=1 name=hold_recall_xfer_group>";
 	echo "$Hgroups_menu";
@@ -16552,16 +17765,50 @@ if ($ADD==32111111111)
 
 	echo "</table></center><br>\n";
 
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=52111111111&alias_id=$row[0]\">DELETE THIS PHONE ALIAS</a>\n";
+		}
+	}
+	else
+	{
+	echo "You do not have permission to view this page\n";
+	exit;
+	}
+}
 
 
+######################
+# ADD=33111111111 modify group alias record in the system
+######################
 
+if ($ADD==33111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
+	$stmt="SELECT group_alias_id,group_alias_name,caller_id_number,caller_id_name,active from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
 
+	echo "<br>MODIFY A GROUP ALIAS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=43111111111>\n";
+	echo "<input type=hidden name=group_alias_id value=\"$row[0]\">\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Group Alias ID: </td><td align=left><B>$row[0]</B> $NWB#phones-group_alias_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Group Alias Name: </td><td align=left><input type=text name=group_alias_name size=30 maxlength=50 value=\"$row[1]\"> $NWB#phones-group_alias_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Number: </td><td align=left><input type=text name=caller_id_number size=20 maxlength=20 value=\"$row[2]\"> $NWB#phones-caller_id_number$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Name: </td><td align=left><input type=text name=caller_id_name size=20 maxlength=20 value=\"$row[3]\"> $NWB#phones-caller_id_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[4]</option></select></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
+	echo "</TABLE></center>\n";
 
 
 	if ($LOGast_delete_phones > 0)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=52111111111&alias_id=$row[0]\">DELETE THIS PHONE ALIAS</a>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=53111111111&group_alias_id=$row[0]\">DELETE THIS GROUP ALIAS</a>\n";
 		}
 	}
 	else
@@ -18499,6 +19746,48 @@ if ($ADD==12000000000)
 	}
 
 ######################
+# ADD=13000000000 display all group alias
+######################
+if ($ADD==13000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT group_alias_id,group_alias_name,caller_id_number,caller_id_name,active from groups_alias order by group_alias_id;";
+	$rslt=mysql_query($stmt, $link);
+	$phonealias_to_print = mysql_num_rows($rslt);
+
+	echo "<br>GROUP ALIAS LISTINGS:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white><B>GROUP ALIAS ID</B></a></td>";
+	echo "<td><font size=1 color=white><B>GROUP ALIAS NAME</B></a></td>";
+	echo "<td><font size=1 color=white><B>CID NUMBER</B></a></td>";
+	echo "<td><font size=1 color=white><B>CID NAME</B></a></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE</B></a></td>";
+	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
+
+	$o=0;
+	while ($phonealias_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]\">MODIFY</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+######################
 # ADD=100000000000 display all servers
 ######################
 if ($ADD==100000000000)
@@ -18804,22 +20093,21 @@ if ($ADD==999999)
 
 
 echo "</TD></TR></TABLE></center>\n";
+echo "</TD></TR></TABLE></center>\n";
 
 $ENDtime = date("U");
 
 $RUNtime = ($ENDtime - $STARTtime);
 
-echo "\n\n\n<br><br><br>\n<center>\n";
-
-
-echo "<font size=0>\n\n\n<br><br><br>\nscript runtime: $RUNtime seconds";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; VERSION: $admin_version";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; BUILD: $build</font>\n";
-
+echo "</TD></TR>\n";
+echo "<TR><TD BGCOLOR=#015B91 ALIGN=CENTER>\n";
+echo "<font size=0 color=white><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
+echo "VERSION: $admin_version<BR>";
+echo "BUILD: $build</font>\n";
 
 ?>
 
-
+</TD><TD BGCOLOR=#D9E6FE>
 </TD></TR><TABLE>
 </body>
 </html>

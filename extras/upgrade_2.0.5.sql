@@ -728,3 +728,38 @@ UPDATE system_settings SET db_schema_version='1130';
 INSERT INTO vicidial_inbound_dids SET did_pattern='default', did_description='Default DID', did_active='Y', did_route='EXTEN', extension='9998811112', exten_context='default';
 
 UPDATE system_settings SET db_schema_version='1131';
+
+ALTER TABLE vicidial_campaign_agents ADD group_web_vars VARCHAR(255) default '';
+
+ALTER TABLE vicidial_inbound_group_agents ADD group_web_vars VARCHAR(255) default '';
+
+CREATE TABLE groups_alias (
+group_alias_id VARCHAR(30) NOT NULL UNIQUE PRIMARY KEY,
+group_alias_name VARCHAR(50),
+caller_id_number VARCHAR(20),
+caller_id_name VARCHAR(20),
+active ENUM('Y','N') default 'N'
+);
+
+CREATE TABLE user_call_log (
+user_call_log_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
+user VARCHAR(20),
+call_date DATETIME,
+call_type VARCHAR(20),
+server_ip VARCHAR(15) NOT NULL,
+phone_number VARCHAR(20),
+number_dialed VARCHAR(30),
+lead_id INT(9) UNSIGNED,
+callerid VARCHAR(20),
+group_alias_id VARCHAR(30),
+index (user),
+index (call_date)
+);
+
+ALTER TABLE vicidial_campaigns ADD agent_allow_group_alias ENUM('Y','N') default 'N';
+ALTER TABLE vicidial_campaigns ADD default_group_alias VARCHAR(30) default '';
+ALTER TABLE vicidial_campaigns MODIFY three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE','AGENT_CHOOSE') default 'CAMPAIGN';
+
+ALTER TABLE vicidial_inbound_groups ADD default_group_alias VARCHAR(30) default '';
+
+UPDATE system_settings SET db_schema_version='1132';

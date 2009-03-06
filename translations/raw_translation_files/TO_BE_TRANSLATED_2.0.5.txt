@@ -471,6 +471,42 @@ This field allows for a custom VDAD transfer extension. This allows you to use d
   - 8368 - DEFAULT – Will send the call to the next available agent no matter what server they are on||
   - 8369 - Used for Answering Machine Detection after that, same behavior as 8368||
   - 8373 - Used for Answering Machine Detection after that same behavior as 8366||
+Also in this section are the WEB VARs for each campaign. These allow each agent to have a different variable string that can be added to the WEB FORM or SCRIPT tab URLs by simply putting --A--web_vars--B-- as you would put any other field.||
+Group Alias List||
+Add A New Group Alias||
+ADD NEW GROUP ALIAS||
+ADDING NEW GROUP ALIAS||
+MODIFY GROUP ALIAS||
+DELETE GROUP ALIAS||
+GROUP ALIAS LIST||
+GROUP ALIAS LISTINGS||
+MODIFY A GROUP ALIAS RECORD||
+Group Alias ID||
+Group Alias Name||
+CallerID Number||
+CallerID Name||
+DELETE THIS GROUP ALIAS||
+GROUP ALIAS NOT MODIFIED||
+GROUP ALIAS MODIFIED||
+ADD A NEW GROUP ALIAS||
+MODIFY A GROUP ALIAS RECORD||
+GROUP ALIAS NOT ADDED||
+GROUP ALIAS ADDED||
+GROUP ALIAS NOT DELETED||
+GROUP ALIAS DELETION CONFIRMATION||
+Click here to delete group alias||
+GROUP ALIAS DELETION COMPLETED||
+Group Alias ID -<\/B> The ID of the group alias used by agents to dial out calls from the VICIDIAL agent interface with different Caller IDs. no spaces or other special characters allowed. Must be between 2 and 20 characters in length||
+Group Alias Name -<\/B> The name used to describe a group alias, Must be between 2 and 50 characters in length||
+Caller ID Number -<\/B> The Caller ID number used in this Group Alias. Must be digits only||
+Caller ID Name -<\/B> The Caller ID name that can be sent out with this Group Alias. As far as we know this will only work in Canada on PRI circuits and using an IAX loop trunk through Asterisk||
+Group Alias Allowed -<\/B> If you want to allow your agents to use group aliases then you need to set this to Y. Group Aliases are explained more in the Admin section, they allow agents to select different callerIDs for outbound manual calls that they may place. Default is N||
+Default Group Alias -<\/B> If you have allowed Group Aliases then this is the group alias that is selected first by default when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty||
+Default Group Alias -<\/B> If you have allowed Group Aliases for the campaign that the agent is logged into then this is the group alias that is selected first by default on a call coming in from this inbound group when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty||
+Group Alias Allowed||
+Default Group Alias||
+AGENT_CHOOSE allows the agent to choose which callerID to use for 3-way calls from a list of choices.||
+you cannot use reserved words in group aliases||
 
 
 ############################################################ CLIENT
@@ -510,6 +546,10 @@ Change this phone number to ACTIVE||
 YOU MUST LOG IN TO THE TIMECLOCK FIRST||
 There is a time synchronization problem with your system, please tell your system administrator||
 Preview Call||
+SELECT A GROUP ALIAS||
+Group Alias Selection||
+Click Here to Choose a Group Alias||
+Group Alias||
 
 
 ############################################################  MANAGER Manual

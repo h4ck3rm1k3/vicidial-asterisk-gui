@@ -15,6 +15,7 @@
 # 80617-1402 - Fixed timeclock total logged-in time
 # 81210-1634 - Added server recording display options
 # 90208-0504 - Added link to multi-day report and fixed call status summary section
+# 90305-1226 - Added user_call_log manual dial logs
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -103,7 +104,7 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 </head>
 <BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=680 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=770 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
 
 
 
@@ -590,7 +591,45 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 		}
 
 
-echo "</TABLE></center>\n";
+echo "</TABLE><BR><BR>\n";
+
+
+##### vicidial agent outbound user manual calls for this time period #####
+
+echo "<B>MANUAL OUTBOUND CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2> CALL TYPE</td><td align=left><font size=2> SERVER</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> DIALED</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> CALLERID</td><td align=right><font size=2> ALIAS</td></tr>\n";
+
+	$stmt="select call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id from user_call_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	while ($logs_to_print > $u) {
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td><font size=2>$row[0]</td>";
+			echo "<td align=left><font size=2> $row[1]</td>\n";
+			echo "<td align=left><font size=2> $row[2]</td>\n";
+			echo "<td align=left><font size=2> $row[3] </td>\n";
+			echo "<td align=right><font size=2> $row[4] </td>\n";
+			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[5]\" target=\"_blank\">$row[5]</A> </td>\n";
+			echo "<td align=right><font size=2> $row[6] </td>\n";
+			echo "<td align=right><font size=2> $row[7] </td></tr>\n";
+
+	}
+
+
+echo "</TABLE><BR><BR>\n";
+
+
 
 $ENDtime = date("U");
 

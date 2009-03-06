@@ -78,6 +78,10 @@
 #  - $conf_dialed = ('0','1')
 #  - $leaving_threeway = ('0','1')
 #  - $blind_transfer = ('0','1')
+#  - $usegroupalias - ('0','1')
+#  - $account - ('DEFAULT',...)
+#  - $agent_dialed_number - ('1','')
+#  - $agent_dialed_type - ('MANUAL_OVERRIDE','MANUAL_DIALNOW','MANUAL_PREVIEW',...)
 #
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -182,13 +186,15 @@
 # 81211-0420 - Fixed Manual dial agent_log bug
 # 90120-1718 - Added external pause and dial option
 # 90126-1759 - Fixed QM section that wasn't qualified and added agent alert option
-# 90128-0231 - Aded vendor_lead_code to manual dial lead lookup
+# 90128-0231 - Added vendor_lead_code to manual dial lead lookup
+# 90304-1335 - Added support for group aliases and agent-specific variables for campaigns and in-groups
+# 90305-1041 - Added agent_dialed_number and type for user_call_log feature
 #
 
-$version = '2.0.5-100';
-$build = '90128-0231';
+$version = '2.0.5-102';
+$build = '90305-1041';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=186;
+$mysql_log_count=192;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -344,6 +350,14 @@ if (isset($_GET["hangup_all_non_reserved"]))			{$hangup_all_non_reserved=$_GET["
 	elseif (isset($_POST["hangup_all_non_reserved"]))	{$hangup_all_non_reserved=$_POST["hangup_all_non_reserved"];}
 if (isset($_GET["blind_transfer"]))				{$blind_transfer=$_GET["blind_transfer"];}
 	elseif (isset($_POST["blind_transfer"]))	{$blind_transfer=$_POST["blind_transfer"];}
+if (isset($_GET["usegroupalias"]))			{$usegroupalias=$_GET["usegroupalias"];}
+	elseif (isset($_POST["usegroupalias"]))	{$usegroupalias=$_POST["usegroupalias"];}
+if (isset($_GET["account"]))				{$account=$_GET["account"];}
+	elseif (isset($_POST["account"]))		{$account=$_POST["account"];}
+if (isset($_GET["agent_dialed_number"]))			{$agent_dialed_number=$_GET["agent_dialed_number"];}
+	elseif (isset($_POST["agent_dialed_number"]))	{$agent_dialed_number=$_POST["agent_dialed_number"];}
+if (isset($_GET["agent_dialed_type"]))				{$agent_dialed_type=$_GET["agent_dialed_type"];}
+	elseif (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -986,9 +1000,19 @@ if ($ACTION == 'manDiaLnextCaLL')
 					{$Ndialstring = "$Local_out_prefix$phone_number";}
 				else
 					{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
+
+				if ( ($usegroupalias > 0) and (strlen($account)>1) )
+					{
+					$RAWaccount = $account;
+					$account = "Account: $account";
+					$variable = "Variable: usegroupalias=1";
+					}
+				else
+					{$account='';   $variable='';}
+
 				### insert the call action into the vicidial_manager table to initiate the call
 				#	$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $conf_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
-				$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
+				$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','$account','$variable','','');";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00033',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1009,6 +1033,14 @@ if ($ACTION == 'manDiaLnextCaLL')
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00036',$user,$server_ip,$session_name,$one_mysql_log);}
+
+				if ($agent_dialed_number > 0)
+					{
+					$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id) values('$user','$NOW_TIME','$agent_dialed_type','$server_ip','$phone_number','$Ndialstring','$lead_id','$CCID','$RAWaccount')";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00191',$user,$server_ip,$session_name,$one_mysql_log);}
+					}
 
 				#############################################
 				##### START QUEUEMETRICS LOGGING LOOKUP #####
@@ -1253,6 +1285,15 @@ if ($ACTION == 'manDiaLonly')
 		if ($CCID_on) {$CIDstring = "\"$MqueryCID\" <$CCID>";}
 		else {$CIDstring = "$MqueryCID";}
 
+		if ( ($usegroupalias > 0) and (strlen($account)>1) )
+			{
+			$RAWaccount = $account;
+			$account = "Account: $account";
+			$variable = "Variable: usegroupalias=1";
+			}
+		else
+			{$account='';   $variable='';}
+
 		### whether to omit phone_code or not
 		if (eregi('Y',$omit_phone_code)) 
 			{$Ndialstring = "$Local_out_prefix$phone_number";}
@@ -1260,7 +1301,7 @@ if ($ACTION == 'manDiaLonly')
 			{$Ndialstring = "$Local_out_prefix$phone_code$phone_number";}
 		### insert the call action into the vicidial_manager table to initiate the call
 		#	$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $conf_exten','Context: $ext_context','Channel: $local_DEF$Local_out_prefix$phone_code$phone_number$local_AMP$ext_context','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
-		$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','','','','');";
+		$stmt = "INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$MqueryCID','Exten: $Ndialstring','Context: $ext_context','Channel: $local_DEF$conf_exten$local_AMP$ext_context$Local_persist','Priority: 1','Callerid: $CIDstring','Timeout: $Local_dial_timeout','$account','$variable','','');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00044',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1291,6 +1332,15 @@ if ($ACTION == 'manDiaLonly')
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00047',$user,$server_ip,$session_name,$one_mysql_log);}
 
 		echo "$MqueryCID\n";
+
+		if ($agent_dialed_number > 0)
+			{
+			$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id) values('$user','$NOW_TIME','$agent_dialed_type','$server_ip','$phone_number','$Ndialstring','$lead_id','$CCID','$RAWaccount')";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00192',$user,$server_ip,$session_name,$one_mysql_log);}
+			}
+
 
 		#############################################
 		##### START QUEUEMETRICS LOGGING LOOKUP #####
@@ -2696,7 +2746,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_front_VDlog	=$row[0];
 				}
 
-			$stmt = "select group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename from vicidial_inbound_groups where group_id='$VDADchannel_group';";
+			$stmt = "select group_name,group_color,web_form_address,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_xfer_group,ingroup_recording_override,ingroup_rec_filename,default_group_alias from vicidial_inbound_groups where group_id='$VDADchannel_group';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00119',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2717,9 +2767,10 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_default_xfer_group =			$row[10];
 				$VDCL_ingroup_recording_override =	$row[11];
 				$VDCL_ingroup_rec_filename =		$row[12];
+				$VDCL_default_group_alias =			$row[13];
 
 
-				$stmt = "select campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number from vicidial_campaigns where campaign_id='$campaign';";
+				$stmt = "select campaign_script,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias from vicidial_campaigns where campaign_id='$campaign';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00181',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2737,6 +2788,33 @@ if ($ACTION == 'VDADcheckINCOMING')
 						{$VDCL_xferconf_b_dtmf =	$row[3];}
 					if (strlen($VDCL_xferconf_b_number) < 1)
 						{$VDCL_xferconf_b_number =	$row[4];}
+					if (strlen($VDCL_default_group_alias) < 1)
+						{$VDCL_default_group_alias =	$row[5];}
+					}
+
+				$stmt = "select group_web_vars from vicidial_inbound_group_agents where group_id='$VDADchannel_group' and user='$user';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00188',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_cidgwv_ct = mysql_num_rows($rslt);
+				if ($VDIG_cidgwv_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VDCL_group_web_vars =	$row[0];
+					}
+
+				if (strlen($VDCL_group_web_vars) < 1)
+					{
+					$stmt = "select group_web_vars from vicidial_campaign_agents where campaign_id='$campaign' and user='$user';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00189',$user,$server_ip,$session_name,$one_mysql_log);}
+					$VDIG_cidogwv = mysql_num_rows($rslt);
+					if ($VDIG_cidogwv > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VDCL_group_web_vars =	$row[0];
+						}
 					}
 
 				### update the comments in vicidial_live_agents record
@@ -2749,7 +2827,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				}
 			else
 				{
-				$stmt = "select campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number from vicidial_campaigns where campaign_id='$VDADchannel_group';";
+				$stmt = "select campaign_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,default_group_alias from vicidial_campaigns where campaign_id='$VDADchannel_group';";
 				if ($DB) {echo "$stmt\n";}
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00121',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2763,12 +2841,39 @@ if ($ACTION == 'VDADcheckINCOMING')
 					$VDCL_xferconf_a_number	= $row[3];
 					$VDCL_xferconf_b_dtmf	= $row[4];
 					$VDCL_xferconf_b_number	= $row[5];
+					$VDCL_default_group_alias = $row[6];
+					}
+
+				$stmt = "select group_web_vars from vicidial_campaign_agents where campaign_id='$VDADchannel_group' and user='$user';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00190',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_cidogwv = mysql_num_rows($rslt);
+				if ($VDIG_cidogwv > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VDCL_group_web_vars =	$row[0];
+					}
+				}
+
+			$VDCL_caller_id_number='';
+			if (strlen($VDCL_default_group_alias)>1)
+				{
+				$stmt = "select caller_id_number from groups_alias where group_alias_id='$VDCL_default_group_alias';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00187',$user,$server_ip,$session_name,$one_mysql_log);}
+				$VDIG_cidnum_ct = mysql_num_rows($rslt);
+				if ($VDIG_cidnum_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$VDCL_caller_id_number	= $row[0];
 					}
 				}
 
 			### if web form is set then send on to vicidial.php for override of WEB_FORM address
-			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
-			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|\n";}
+			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|\n";}
+			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|\n";}
 
 			$stmt = "SELECT full_name from vicidial_users where user='$tsr';";
 			if ($DB) {echo "$stmt\n";}

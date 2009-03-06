@@ -107,7 +107,7 @@ while ($sthArows > $rec_count)
 	$AGILOG = '0';
 	 @aryA = $sthA->fetchrow_array;
 		$DBagi_output =		"$aryA[0]";
-		$local_gmt =		"$aryA[0]";
+		$local_gmt =		"$aryA[1]";
 		if ($DBagi_output =~ /STDERR/)	{$AGILOG = '1';}
 		if ($DBagi_output =~ /FILE/)	{$AGILOG = '2';}
 		if ($DBagi_output =~ /BOTH/)	{$AGILOG = '3';}

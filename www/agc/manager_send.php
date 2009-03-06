@@ -36,7 +36,11 @@
 #  - $session_id - ('8600051')
 #  - $FROMvdc - ('YES','NO')
 #  - $agentchannel - ('SIP/cc101-g7yr','Zap/1-1',...)
-
+#  - $usegroupalias - ('0','1')
+#  - $account - ('DEFAULT',...)
+#  - $agent_dialed_number - ('1','')
+#  - $agent_dialed_type - ('MANUAL_OVERRIDE','MANUAL_DIALNOW','MANUAL_PREVIEW',...)
+#
 # CHANGELOG:
 # 50401-1002 - First build of script, Hangup function only
 # 50404-1045 - Redirect basic function enabled
@@ -79,10 +83,12 @@
 # 81020-1459 - Fixed bugs in queue_log logging
 # 81104-0203 - Added mysql error logging capability
 # 90303-1144 - Fixed manual dial live hangup bug
+# 90304-1334 - Added account and usegroupalias and user campaign/in-group specific variables
+# 90305-1040 - Added agent_dialed_number and type for user_call_log feature
 #
 
-$version = '2.0.5-36';
-$build = '90303-1144';
+$version = '2.0.5-38';
+$build = '90305-1040';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=83;
 $one_mysql_log=0;
@@ -160,6 +166,15 @@ if (isset($_GET["FROMvdc"]))				{$FROMvdc=$_GET["FROMvdc"];}
 	elseif (isset($_POST["FROMvdc"]))		{$FROMvdc=$_POST["FROMvdc"];}
 if (isset($_GET["agentchannel"]))			{$agentchannel=$_GET["agentchannel"];}
 	elseif (isset($_POST["agentchannel"]))	{$agentchannel=$_POST["agentchannel"];}
+if (isset($_GET["usegroupalias"]))			{$usegroupalias=$_GET["usegroupalias"];}
+	elseif (isset($_POST["usegroupalias"]))	{$usegroupalias=$_POST["usegroupalias"];}
+if (isset($_GET["account"]))				{$account=$_GET["account"];}
+	elseif (isset($_POST["account"]))		{$account=$_POST["account"];}
+if (isset($_GET["agent_dialed_number"]))			{$agent_dialed_number=$_GET["agent_dialed_number"];}
+	elseif (isset($_POST["agent_dialed_number"]))	{$agent_dialed_number=$_POST["agent_dialed_number"];}
+if (isset($_GET["agent_dialed_type"]))				{$agent_dialed_type=$_GET["agent_dialed_type"];}
+	elseif (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
+
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -372,11 +387,27 @@ if ($ACTION=="Originate")
 		{$outCID = "\"$queryCID\" <$outbound_cid>";}
 	else
 		{$outCID = "$queryCID";}
-	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','','','','','');";
+	if ( ($usegroupalias > 0) and (strlen($account)>1) )
+		{
+		$RAWaccount = $account;
+		$account = "Account: $account";
+		$variable = "Variable: usegroupalias=1";
+		}
+	else
+		{$account='';   $variable='';}
+	$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$queryCID','Channel: $channel','Context: $ext_context','Exten: $exten','Priority: $ext_priority','Callerid: $outCID','$account','$variable','','','');";
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02007',$user,$server_ip,$session_name,$one_mysql_log);}
-	echo "Originate command sent for Exten $exten Channel $channel on $server_ip\n";
+	echo "Originate command sent for Exten $exten Channel $channel on $server_ip |$account|$variable|\n";
+
+	if ($agent_dialed_number > 0)
+		{
+		$stmt = "INSERT INTO user_call_log (user,call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id) values('$user','$NOW_TIME','$agent_dialed_type','$server_ip','$exten','$channel','0','$outbound_cid','$RAWaccount')";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00192',$user,$server_ip,$session_name,$one_mysql_log);}
+		}
 	}
 }
 
