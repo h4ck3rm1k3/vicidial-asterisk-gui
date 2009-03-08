@@ -12,7 +12,7 @@
 #
 # Should only be run on one server in a multi-server Asterisk/VICIDIAL cluster
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGELOG:
 # 61115-1246 - First build, framework setup, non-functional
@@ -24,6 +24,7 @@
 # 80713-0624 - Added vicidial_list_last_local_call_time field
 # 80831-0400 - Added new alt-dial options
 # 81210-1938 - Fixed callerIDnumber bug
+# 90306-1844 - Added configurable calls-per-second option
 #
 
 
@@ -265,9 +266,28 @@ while($one_day_interval > 0)
 			}
 		$sthA->finish();
 
-		$event_string="SERVERS WITH TRUNK BALANCE: $balance_servers\n";
+		##### Get maximum calls per second that this process can send out
+		$stmtA = "SELECT outbound_calls_per_second FROM system_settings;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$outbound_calls_per_second =	"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ( ($outbound_calls_per_second > 0) && ($outbound_calls_per_second < 201) )
+			{$per_call_delay = (1000 / $outbound_calls_per_second);}
+		else
+			{$per_call_delay = '25';}
+
+		$event_string ="SERVER CALLS PER SECOND MAXIMUM SET TO: $outbound_calls_per_second |$per_call_delay|\n";
+		$event_string.="SERVERS WITH TRUNK BALANCE: $balance_servers\n";
 		$event_string.="CAMPAIGNS WITH TRUNK SHORTAGE: $camp_counter| TOTAL SHORTAGE: $total_shortage";
 		&event_logger;
+
 
 
 		##################################################################################
@@ -744,8 +764,8 @@ while($one_day_interval > 0)
 													$affected_rows = $dbhA->do($stmtA);
 
 												### sleep for 2.5 hundredths of a second to not flood the server with new calls
-												usleep(1*25*1000);
-
+											#	usleep(1*25*1000);
+												usleep(1*$per_call_delay*1000);
 												}
 											}
 										$call_CMPIPct++;

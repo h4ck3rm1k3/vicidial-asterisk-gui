@@ -99,7 +99,12 @@ recording_web_link ENUM('SERVER_IP','ALT_IP') default 'SERVER_IP',
 alt_server_ip VARCHAR(100) default '',
 active_asterisk_server ENUM('Y','N') default 'Y',
 generate_vicidial_conf ENUM('Y','N') default 'Y',
-rebuild_conf_files ENUM('Y','N') default 'Y'
+rebuild_conf_files ENUM('Y','N') default 'Y',
+outbound_calls_per_second SMALLINT(3) UNSIGNED default '20',
+sysload INT(6) NOT NULL default '0',
+channels_total SMALLINT(4) UNSIGNED NOT NULL default '0',
+cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0',
+disk_usage VARCHAR(255) default '1'
 );
 
 CREATE UNIQUE INDEX server_id on servers (server_id);
@@ -485,7 +490,10 @@ modify_inbound_dids ENUM('1','0') default '0',
 delete_inbound_dids ENUM('1','0') default '0',
 active ENUM('Y','N') default 'Y',
 alert_enabled ENUM('1','0') default '0',
-download_lists ENUM('1','0') default '0'
+download_lists ENUM('1','0') default '0',
+agent_shift_enforcement_override ENUM('DISABLED','OFF','START','ALL') default 'DISABLED',
+manager_shift_enforcement_override ENUM('0','1') default '0',
+shift_override_flag ENUM('0','1') default '0'
 );
 
 
@@ -509,7 +517,8 @@ allowed_campaigns TEXT,
 qc_allowed_campaigns TEXT,
 qc_allowed_inbound_groups TEXT,
 group_shifts TEXT,
-forced_timeclock_login ENUM('Y','N','ADMIN_EXEMPT') default 'N'
+forced_timeclock_login ENUM('Y','N','ADMIN_EXEMPT') default 'N',
+shift_enforcement ENUM('OFF','START','ALL') default 'OFF'
 );
 
 CREATE TABLE vicidial_campaigns (
@@ -1058,7 +1067,8 @@ vtiger_login VARCHAR(50),
 vtiger_pass VARCHAR(50),
 vtiger_url VARCHAR(255),
 qc_features_active ENUM('1','0') default '0',
-outbound_autodial_active ENUM('1','0') default '1'
+outbound_autodial_active ENUM('1','0') default '1',
+outbound_calls_per_second SMALLINT(3) UNSIGNED default '40'
 );
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -1268,7 +1278,7 @@ event_date DATETIME NOT NULL,
 user VARCHAR(20) NOT NULL,
 ip_address VARCHAR(15) NOT NULL,
 event_section VARCHAR(30) NOT NULL,
-event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OTHER') default 'OTHER',
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','OTHER') default 'OTHER',
 record_id VARCHAR(50) NOT NULL,
 event_code VARCHAR(255) NOT NULL,
 event_sql TEXT,
@@ -1520,7 +1530,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1132';
+UPDATE system_settings SET db_schema_version='1133';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

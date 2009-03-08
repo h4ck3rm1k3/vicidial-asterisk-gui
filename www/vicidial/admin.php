@@ -944,6 +944,14 @@ if (isset($_GET["agent_allow_group_alias"]))			{$agent_allow_group_alias=$_GET["
 	elseif (isset($_POST["agent_allow_group_alias"]))	{$agent_allow_group_alias=$_POST["agent_allow_group_alias"];}
 if (isset($_GET["default_group_alias"]))				{$default_group_alias=$_GET["default_group_alias"];}
 	elseif (isset($_POST["default_group_alias"]))		{$default_group_alias=$_POST["default_group_alias"];}
+if (isset($_GET["outbound_calls_per_second"]))				{$outbound_calls_per_second=$_GET["outbound_calls_per_second"];}
+	elseif (isset($_POST["outbound_calls_per_second"]))		{$outbound_calls_per_second=$_POST["outbound_calls_per_second"];}
+if (isset($_GET["shift_enforcement"]))				{$shift_enforcement=$_GET["shift_enforcement"];}
+	elseif (isset($_POST["shift_enforcement"]))		{$shift_enforcement=$_POST["shift_enforcement"];}
+if (isset($_GET["agent_shift_enforcement_override"]))			{$agent_shift_enforcement_override=$_GET["agent_shift_enforcement_override"];}
+	elseif (isset($_POST["agent_shift_enforcement_override"]))	{$agent_shift_enforcement_override=$_POST["agent_shift_enforcement_override"];}
+if (isset($_GET["manager_shift_enforcement_override"]))				{$manager_shift_enforcement_override=$_GET["manager_shift_enforcement_override"];}
+	elseif (isset($_POST["manager_shift_enforcement_override"]))	{$manager_shift_enforcement_override=$_POST["manager_shift_enforcement_override"];}
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
 	if (isset($lead_filter_id)) {$lead_filter_id = strtoupper($lead_filter_id);}
@@ -1124,6 +1132,8 @@ $qc_features_active = ereg_replace("[^0-9]","",$qc_features_active);
 $outbound_autodial_active = ereg_replace("[^0-9]","",$outbound_autodial_active);
 $download_lists = ereg_replace("[^0-9]","",$download_lists);
 $caller_id_number = ereg_replace("[^0-9]","",$caller_id_number);
+$outbound_calls_per_second = ereg_replace("[^0-9]","",$outbound_calls_per_second);
+$manager_shift_enforcement_override = ereg_replace("[^0-9]","",$manager_shift_enforcement_override);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -1207,6 +1217,8 @@ $survey_ni_status = ereg_replace("[^0-9a-zA-Z]","",$survey_ni_status);
 $qc_get_record_launch = ereg_replace("[^0-9a-zA-Z]","",$qc_get_record_launch);
 $agent_pause_codes_active = ereg_replace("[^0-9a-zA-Z]","",$agent_pause_codes_active);
 $three_way_dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$three_way_dial_prefix);
+$shift_enforcement = ereg_replace("[^0-9a-zA-Z]","",$shift_enforcement);
+$agent_shift_enforcement_override = ereg_replace("[^0-9a-zA-Z]","",$agent_shift_enforcement_override);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -1624,11 +1636,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90302-2046 - Changed Section heading to be on the left side of the screen
 # 90303-0631 - Added web vars to agent campaign and in-group settings
 # 90303-2047 - Added group aliases and default group aliases
+# 90306-1214 - Added shift enforcement and server/system calls per second options
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-168';
-$build = '90303-2047';
+$admin_version = '2.0.5-169';
+$build = '90306-1214';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1731,6 +1744,7 @@ $browser = getenv("HTTP_USER_AGENT");
 			$LOGview_reports			=$row[43];
 			$LOGmodify_dids				=$row[56];
 			$LOGdelete_dids				=$row[57];
+			$LOGmanager_shift_enforcement_override=$row[61];
 
 			$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
 			$rslt=mysql_query($stmt, $link);
@@ -2614,6 +2628,11 @@ if ($SSoutbound_autodial_active > 0)
 <B>VICIDIAL Recording Override -</B> This option will override whatever the option is in the campaign for recording. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording. For ALLCALLS and ALLFORCE there is an option to use the Recording Delay to cut down on very short recordings and recude system load.
 
 <BR>
+<A NAME="vicidial_users-agent_shift_enforcement_override">
+<BR>
+<B>Agent Shift Enforcement Override -</B> This setting will override whatever the users user group has set for Shift Enforcement. DISABLED will use the user group setting. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is DISABLED.
+
+<BR>
 <A NAME="vicidial_users-alert_enabled">
 <BR>
 <B>Alert Enabled -</B> This field shows whether the agent has web browser alerts enabled for when calls come into their vicidial.php session. Default is 0 for NO.
@@ -2805,6 +2824,13 @@ if ($SSqc_features_active > 0)
 <A NAME="vicidial_users-vdc_agent_api_access">
 <BR>
 <B>Agent API Access -</B> This option allows the account to be used with the vicidial agent API commands.
+
+<BR>
+<A NAME="vicidial_users-manager_shift_enforcement_override">
+<BR>
+<B>Manager Shift Enforcement Override -</B> This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0.
+
+
 
 
 
@@ -3904,6 +3930,11 @@ if ($SSoutbound_autodial_active > 0)
 <B>Force Timeclock Login -</B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9.
 
 <BR>
+<A NAME="vicidial_user_groups-shift_enforcement">
+<BR>
+<B>Shift Enforcement -</B> This setting allows you to restrict agent logins based upon the shifts that are selected below. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is OFF.
+
+<BR>
 <A NAME="vicidial_user_groups-group_shifts">
 <BR>
 <B>Group Shifts -</B> This is a selectable list of shifts that can restrict the agents login time on the system.
@@ -4516,6 +4547,21 @@ if ($SSoutbound_autodial_active > 0)
 <B>Active -</B> Set whether the Asterisk server is active or inactive.
 
 <BR>
+<A NAME="servers-sysload">
+<BR>
+<B>System Load -</B> These two statistics show the loadavg of a system times 100 and the CPU usage percentage of the server and is updated every minute. The loadavg should on average be below 100 multiplied by the number of CPU cores your system has, for optimal performance. The CPU usage percentage should stay below 50 for optimal performance.
+
+<BR>
+<A NAME="servers-channels_total">
+<BR>
+<B>Live Channels -</B> This field shows the current number of Asterisk channels that are live on the system right now. It is important to note that the number of Asterisk channels is usually much higher than the number of actual calls on a system. This field is updated once every minute.
+
+<BR>
+<A NAME="servers-disk_usage">
+<BR>
+<B>Disk Usage -</B> This field will show the disk usage for every partition on this server. This field is updated once every minute.
+
+<BR>
 <A NAME="servers-asterisk_version">
 <BR>
 <B>Asterisk Version -</B> Set the version of Asterisk that you have installed on this server. Examples: '1.2', '1.0.8', '1.0.7', 'CVS_HEAD', 'REALLY OLD', etc... This is used because versions 1.0.8 and 1.0.9 have a different method of dealing with Local/ channels, a bug that has been fixed in CVS v1.0, and need to be treated differently when handling their Local/ channels. Also, current CVS_HEAD and the 1.2 release tree uses different manager and command output so it must be treated differently as well.
@@ -4524,6 +4570,11 @@ if ($SSoutbound_autodial_active > 0)
 <A NAME="servers-max_vicidial_trunks">
 <BR>
 <B>Max VICIDIAL Trunks -</B> This field will determine the maximum number of lines that the VICIDIAL auto-dialer will attempt to call on this server. If you want to dedicate two full PRI T1s to VICIDIALing on a server then you would set this to 46. Default is 96.
+
+<BR>
+<A NAME="servers-outbound_calls_per_second">
+<BR>
+<B>Max Calls per Second -</B> This setting determines the maximum number of calls that can be placed by the outbound auto-dialing script on this server per second. Must be from 1 to 100. Default is 20.
 
 <BR>
 <A NAME="servers-telnet_host">
@@ -4828,17 +4879,25 @@ AU_SPAC 000 000 000 - Australia space separated phone number<BR>
 IT_DASH 0000-000-000 - Italy dash separated phone number<BR>
 FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 
+<BR>
 <A NAME="settings-vdc_agent_api_active">
 <BR>
 <B>Agent interface API Access Active -</B> This option allows you to enable or disable the agent interface API. Default is 0.
 
+<BR>
 <A NAME="settings-qc_features_active">
 <BR>
 <B>QC Features Active -</B> This option allows you to enable or disable the QC or Quality Control features. Default is 0 for inactive.
 
+<BR>
 <A NAME="settings-outbound_autodial_active">
 <BR>
 <B>Outbound Auto-Dial Active -</B> This option allows you to enable or disable outbound auto-dialing within VICIDIAL, setting this field to 0 will remove the LISTS and FILTERS sections and many fields from the Campaign Modification screens. Manual entry dialing will still be allowable from within the agent screen, but no list dialing will be possible. Default is 1 for active.
+
+<BR>
+<A NAME="settings-outbound_calls_per_second">
+<BR>
+<B>Max FILL Calls per Second -</B> This setting determines the maximum number of calls that can be placed by the auto-FILL outbound auto-dialing script on for all servers, per second. Must be from 1 to 200. Default is 40.
 
 <BR>
 <A NAME="settings-enable_queuemetrics_logging">
@@ -5402,7 +5461,7 @@ function user_submit()
 }
 
 ### Javascript for shift end-time calculation and display
-if ( ($ADD==131111111) or ($ADD==331111111) )
+if ( ($ADD==131111111) or ($ADD==331111111) or ($ADD==431111111) )
 {
 ?>
 function shift_time()
@@ -5410,6 +5469,21 @@ function shift_time()
 	var start_time = document.getElementById("shift_start_time");
 	var end_time = document.getElementById("shift_end_time");
 	var length = document.getElementById("shift_length");
+
+	var st_value = start_time.value;
+	var et_value = end_time.value;
+	while (st_value.length < 4) {st_value = "0" + st_value;}
+	while (et_value.length < 4) {et_value = "0" + et_value;}
+	var st_hour=st_value.substring(0,2);
+	var st_min=st_value.substring(2,4);
+	var et_hour=et_value.substring(0,2);
+	var et_min=et_value.substring(2,4);
+	if (st_hour > 23) {st_hour = 23;}
+	if (et_hour > 23) {et_hour = 23;}
+	if (st_min > 59) {st_min = 59;}
+	if (et_min > 59) {et_min = 59;}
+	start_time.value = st_hour + "" + st_min;
+	end_time.value = et_hour + "" + et_min;
 
 	var start_time_hour=start_time.value.substring(0,2);
 	var start_time_min=start_time.value.substring(2,4);
@@ -7387,8 +7461,7 @@ if ($ADD=="2A")
 				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
-
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -9097,7 +9170,7 @@ if ($ADD=="4A")
 			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 
@@ -9330,7 +9403,7 @@ if ($ADD=="4B")
 			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active',agent_shift_enforcement_override='$agent_shift_enforcement_override' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 
@@ -10846,7 +10919,7 @@ if ($ADD==411111)
 			$GROUP_shifts .= "$group_shifts[$p] ";
 			$p++;
 			}
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login' where user_group='$OLDuser_group';";
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login',shift_enforcement='$shift_enforcement' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>USER GROUP MODIFIED</B>\n";
@@ -11352,7 +11425,7 @@ if ($ADD==411111111111)
 				{
 				echo "<br>SERVER MODIFIED: $server_ip\n";
 
-				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active',balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip',active_asterisk_server='$active_asterisk_server',generate_vicidial_conf='$generate_vicidial_conf',rebuild_conf_files='$rebuild_conf_files' where server_id='$old_server_id';";
+				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active',balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip',active_asterisk_server='$active_asterisk_server',generate_vicidial_conf='$generate_vicidial_conf',rebuild_conf_files='$rebuild_conf_files',outbound_calls_per_second='$outbound_calls_per_second' where server_id='$old_server_id';";
 				$rslt=mysql_query($stmt, $link);
 
 				$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
@@ -11604,7 +11677,7 @@ if ($ADD==411111111111111)
 
 	echo "<br>VICIDIAL SYSTEM SETTINGS MODIFIED\n";
 
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url',qc_features_active='$qc_features_active',outbound_autodial_active='$outbound_autodial_active';";
+	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url',qc_features_active='$qc_features_active',outbound_autodial_active='$outbound_autodial_active',outbound_calls_per_second='$outbound_calls_per_second';";
 	$rslt=mysql_query($stmt, $link);
 
 	### LOG CHANGES TO LOG FILE ###
@@ -13488,6 +13561,8 @@ if ($ADD==3)
 	$active =				$row[58];
 	$alert_enabled =		$row[59];
 	$download_lists =		$row[60];
+	$agent_shift_enforcement_override =	$row[61];
+	$manager_shift_enforcement_override =	$row[62];
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -13555,6 +13630,9 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Recording Override: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Customer Data Override: </td><td align=left><select size=1 name=alter_custdata_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custdata_override</option></select>$NWB#vicidial_users-alter_custdata_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Customer Phone Override: </td><td align=left><select size=1 name=alter_custphone_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custphone_override</option></select>$NWB#vicidial_users-alter_custphone_override$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Shift Enforcement Override: </td><td align=left><select size=1 name=agent_shift_enforcement_override><option>DISABLED</option><option>OFF</option><option>START</option><option>ALL</option><option SELECTED>$agent_shift_enforcement_override</option></select>$NWB#vicidial_users-agent_shift_enforcement_override$NWE</td></tr>\n";
+
 			echo "<tr bgcolor=#B6D3FC><td align=right>Alert Enabled: </td><td align=left>$alert_enabled $NWB#vicidial_users-alert_enabled$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Campaign Ranks: $NWB#vicidial_users-campaign_ranks$NWE<BR>\n";
@@ -13628,6 +13706,9 @@ if ($ADD==3)
 			echo "<tr bgcolor=#9BB9FB><td align=right>Add Timeclock Log Record: </td><td align=left><select size=1 name=add_timeclock_log><option>0</option><option>1</option><option SELECTED>$add_timeclock_log</option></select>$NWB#vicidial_users-add_timeclock_log$NWE</td></tr>\n";
 			echo "<tr bgcolor=#9BB9FB><td align=right>Modify Timeclock Log Record: </td><td align=left><select size=1 name=modify_timeclock_log><option>0</option><option>1</option><option SELECTED>$modify_timeclock_log</option></select>$NWB#vicidial_users-modify_timeclock_log$NWE</td></tr>\n";
 			echo "<tr bgcolor=#9BB9FB><td align=right>Delete Timeclock Log Record: </td><td align=left><select size=1 name=delete_timeclock_log><option>0</option><option>1</option><option SELECTED>$delete_timeclock_log</option></select>$NWB#vicidial_users-delete_timeclock_log$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Manager Shift Enforcement Override: </td><td align=left><select size=1 name=manager_shift_enforcement_override><option>0</option><option>1</option><option SELECTED>$manager_shift_enforcement_override</option></select>$NWB#vicidial_users-manager_shift_enforcement_override$NWE</td></tr>\n";
+
 			}
 		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 		echo "</TABLE></center>\n";
@@ -16933,6 +17014,8 @@ if ($ADD==311111)
 	$group_name =				$row[1];
 	$GROUP_shifts =				$row[5];
 	$forced_timeclock_login =	$row[6];
+	$shift_enforcement =		$row[7];
+
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br>MODIFY A USERS GROUP ENTRY<form action=$PHP_SELF method=POST>\n";
@@ -16943,6 +17026,8 @@ if ($ADD==311111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Description: </td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (description of group)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Force Timeclock Login: </td><td align=left><select size=1 name=forced_timeclock_login><option SELECTED>N</option><option>Y</option><option>ADMIN_EXEMPT</option><option SELECTED>$forced_timeclock_login</option></select>$NWB#vicidial_user_groups-forced_timeclock_login$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift Enforcement: </td><td align=left><select size=1 name=shift_enforcement><option SELECTED>OFF</option><option>START</option><option>ALL</option><option>ADMIN_EXEMPT</option><option SELECTED>$shift_enforcement</option></select>$NWB#vicidial_user_groups-shift_enforcement$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Allowed Campaigns: <BR>$NWB#vicidial_user_groups-allowed_campaigns$NWE</td><td align=left>\n";
 	echo "$campaigns_list <BR>&nbsp;";
@@ -17830,44 +17915,84 @@ if ($ADD==311111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from servers where server_id='$server_id' or server_ip='$server_ip';";
+	$stmt="SELECT server_id,server_description,server_ip,active,asterisk_version,max_vicidial_trunks,telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,local_gmt,voicemail_dump_exten,answer_transfer_agent,ext_context,sys_perf_log,vd_server_logs,agi_output,vicidial_balance_active,balance_trunks_offlimits,recording_web_link,alt_server_ip,active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,outbound_calls_per_second,sysload,channels_total,cpu_idle_percent,disk_usage from servers where server_id='$server_id' or server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$server_id = $row[0];
-	$server_ip = $row[2];
+	$server_id =					$row[0];
+	$server_description =			$row[1];
+	$server_ip =					$row[2];
+	$active =						$row[3];
+	$asterisk_version =				$row[4];
+	$max_vicidial_trunks =			$row[5];
+	$telnet_host =					$row[6];
+	$telnet_port =					$row[7];
+	$ASTmgrUSERNAME =				$row[8];
+	$ASTmgrSECRET =					$row[9];
+	$ASTmgrUSERNAMEupdate =			$row[10];
+	$ASTmgrUSERNAMElisten =			$row[11];
+	$ASTmgrUSERNAMEsend =			$row[12];
+	$local_gmt =					$row[13];
+	$voicemail_dump_exten =			$row[14];
+	$answer_transfer_agent =		$row[15];
+	$ext_context =					$row[16];
+	$sys_perf_log =					$row[17];
+	$vd_server_logs =				$row[18];
+	$agi_output =					$row[19];
+	$vicidial_balance_active =		$row[20];
+	$balance_trunks_offlimits =		$row[21];
+	$recording_web_link =			$row[22];
+	$alt_server_ip =				$row[23];
+	$active_asterisk_server =		$row[24];
+	$generate_vicidial_conf =		$row[25];
+	$rebuild_conf_files =			$row[26];
+	$outbound_calls_per_second =	$row[27];
+	$sysload =						$row[28];
+	$channels_total =				$row[29];
+	$cpu_idle_percent =				$row[30];
+	$disk_usage =					$row[31];
+
+	$cpu = (100 - $cpu_idle_percent);
+	$disk_usage = preg_replace("/ /"," - ",$disk_usage);
+	$disk_usage = preg_replace("/\|/","% &nbsp; &nbsp; ",$disk_usage);
 
 	echo "<br>MODIFY A SERVER RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111>\n";
 	echo "<input type=hidden name=old_server_id value=\"$server_id\">\n";
-	echo "<input type=hidden name=old_server_ip value=\"$row[2]\">\n";
+	echo "<input type=hidden name=old_server_ip value=\"$server_id\">\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10 value=\"$row[0]\">$NWB#servers-server_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255 value=\"$row[1]\">$NWB#servers-server_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15 value=\"$row[2]\">$NWB#servers-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[3]</option></select>$NWB#servers-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Asterisk Version: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20 value=\"$row[4]\">$NWB#servers-asterisk_version$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Max VICIDIAL Trunks: </td><td align=left><input type=text name=max_vicidial_trunks size=5 maxlength=4 value=\"$row[5]\">$NWB#servers-max_vicidial_trunks$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Balance Dialing: </td><td align=left><select size=1 name=vicidial_balance_active><option>Y</option><option>N</option><option selected>$row[20]</option></select>$NWB#servers-vicidial_balance_active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Balance Offlimits: </td><td align=left><input type=text name=balance_trunks_offlimits size=5 maxlength=4 value=\"$row[21]\">$NWB#servers-balance_trunks_offlimits$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Telnet Host: </td><td align=left><input type=text name=telnet_host size=20 maxlength=20 value=\"$row[6]\">$NWB#servers-telnet_host$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Telnet Port: </td><td align=left><input type=text name=telnet_port size=6 maxlength=5 value=\"$row[7]\">$NWB#servers-telnet_port$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Manager User: </td><td align=left><input type=text name=ASTmgrUSERNAME size=20 maxlength=20 value=\"$row[8]\">$NWB#servers-ASTmgrUSERNAME$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Secret: </td><td align=left><input type=text name=ASTmgrSECRET size=20 maxlength=20 value=\"$row[9]\">$NWB#servers-ASTmgrSECRET$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Update User: </td><td align=left><input type=text name=ASTmgrUSERNAMEupdate size=20 maxlength=20 value=\"$row[10]\">$NWB#servers-ASTmgrUSERNAMEupdate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Listen User: </td><td align=left><input type=text name=ASTmgrUSERNAMElisten size=20 maxlength=20 value=\"$row[11]\">$NWB#servers-ASTmgrUSERNAMElisten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Send User: </td><td align=left><input type=text name=ASTmgrUSERNAMEsend size=20 maxlength=20 value=\"$row[12]\">$NWB#servers-ASTmgrUSERNAMEsend$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$row[13]</option></select> (Do NOT Adjust for DST)$NWB#servers-local_gmt$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>VMail Dump Exten: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$row[14]\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL AD extension: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$row[15]\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Default Context: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$row[16]\">$NWB#servers-ext_context$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>System Performance: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$row[17]</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$row[18]</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>AGI Output: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$row[19]</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Recording Web Link: </td><td align=left><select size=1 name=recording_web_link><option>SERVER_IP</option><option>ALT_IP</option><option selected>$row[22]</option></select>$NWB#servers-recording_web_link$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Alternate Recording Server IP: </td><td align=left><input type=text name=alt_server_ip size=30 maxlength=100 value=\"$row[23]\">$NWB#servers-alt_server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Active Asterisk Server: </td><td align=left><select size=1 name=active_asterisk_server><option>Y</option><option>N</option><option selected>$row[24]</option></select>$NWB#servers-active_asterisk_server$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Generate conf files: </td><td align=left><select size=1 name=generate_vicidial_conf><option>Y</option><option>N</option><option selected>$row[25]</option></select>$NWB#servers-generate_vicidial_conf$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Rebuild conf files: </td><td align=left><select size=1 name=rebuild_conf_files><option>Y</option><option>N</option><option selected>$row[26]</option></select>$NWB#servers-rebuild_conf_files$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Server ID: </td><td align=left><input type=text name=server_id size=10 maxlength=10 value=\"$server_id\">$NWB#servers-server_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Server Description: </td><td align=left><input type=text name=server_description size=30 maxlength=255 value=\"$server_description\">$NWB#servers-server_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Server IP Address: </td><td align=left><input type=text name=server_ip size=20 maxlength=15 value=\"$server_ip\">$NWB#servers-server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$active</option></select>$NWB#servers-active$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>System Load: </td><td align=left>$sysload - $cpu% &nbsp; $NWB#servers-sysload$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Live Channels: </td><td align=left>$channels_total &nbsp; $NWB#servers-channels_total$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Disk Usage: </td><td align=left>$disk_usage &nbsp; $NWB#servers-disk_usage$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Asterisk Version: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20 value=\"$asterisk_version\">$NWB#servers-asterisk_version$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Max VICIDIAL Trunks: </td><td align=left><input type=text name=max_vicidial_trunks size=5 maxlength=4 value=\"$max_vicidial_trunks\">$NWB#servers-max_vicidial_trunks$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Max Calls per Second: </td><td align=left><input type=text name=outbound_calls_per_second size=5 maxlength=4 value=\"$outbound_calls_per_second\">$NWB#servers-outbound_calls_per_second$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Balance Dialing: </td><td align=left><select size=1 name=vicidial_balance_active><option>Y</option><option>N</option><option selected>$vicidial_balance_active</option></select>$NWB#servers-vicidial_balance_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL Balance Offlimits: </td><td align=left><input type=text name=balance_trunks_offlimits size=5 maxlength=4 value=\"$balance_trunks_offlimits\">$NWB#servers-balance_trunks_offlimits$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Telnet Host: </td><td align=left><input type=text name=telnet_host size=20 maxlength=20 value=\"$telnet_host\">$NWB#servers-telnet_host$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Telnet Port: </td><td align=left><input type=text name=telnet_port size=6 maxlength=5 value=\"$telnet_port\">$NWB#servers-telnet_port$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Manager User: </td><td align=left><input type=text name=ASTmgrUSERNAME size=20 maxlength=20 value=\"$ASTmgrUSERNAME\">$NWB#servers-ASTmgrUSERNAME$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Secret: </td><td align=left><input type=text name=ASTmgrSECRET size=20 maxlength=20 value=\"$ASTmgrSECRET\">$NWB#servers-ASTmgrSECRET$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Update User: </td><td align=left><input type=text name=ASTmgrUSERNAMEupdate size=20 maxlength=20 value=\"$ASTmgrUSERNAMEupdate\">$NWB#servers-ASTmgrUSERNAMEupdate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Listen User: </td><td align=left><input type=text name=ASTmgrUSERNAMElisten size=20 maxlength=20 value=\"$ASTmgrUSERNAMElisten\">$NWB#servers-ASTmgrUSERNAMElisten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Manager Send User: </td><td align=left><input type=text name=ASTmgrUSERNAMEsend size=20 maxlength=20 value=\"$ASTmgrUSERNAMEsend\">$NWB#servers-ASTmgrUSERNAMEsend$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Local GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$local_gmt</option></select> (Do NOT Adjust for DST)$NWB#servers-local_gmt$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>VMail Dump Exten: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$voicemail_dump_exten\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL AD extension: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$answer_transfer_agent\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Default Context: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$ext_context\">$NWB#servers-ext_context$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>System Performance: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$sys_perf_log</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Server Logs: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$vd_server_logs</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>AGI Output: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$agi_output</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Recording Web Link: </td><td align=left><select size=1 name=recording_web_link><option>SERVER_IP</option><option>ALT_IP</option><option selected>$recording_web_link</option></select>$NWB#servers-recording_web_link$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alternate Recording Server IP: </td><td align=left><input type=text name=alt_server_ip size=30 maxlength=100 value=\"$alt_server_ip\">$NWB#servers-alt_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Active Asterisk Server: </td><td align=left><select size=1 name=active_asterisk_server><option>Y</option><option>N</option><option selected>$active_asterisk_server</option></select>$NWB#servers-active_asterisk_server$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Generate conf files: </td><td align=left><select size=1 name=generate_vicidial_conf><option>Y</option><option>N</option><option selected>$generate_vicidial_conf</option></select>$NWB#servers-generate_vicidial_conf$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Rebuild conf files: </td><td align=left><select size=1 name=rebuild_conf_files><option>Y</option><option>N</option><option selected>$rebuild_conf_files</option></select>$NWB#servers-rebuild_conf_files$NWE</td></tr>\n";
 
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=SUBMIT></td></tr>\n";
@@ -18366,7 +18491,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -18402,6 +18527,7 @@ if ($ADD==311111111111111)
 	$vtiger_url = 					$row[30];
 	$qc_features_active =			$row[31];
 	$outbound_autodial_active =		$row[32];
+	$outbound_calls_per_second =	$row[33];
 
 	echo "<br>MODIFY VICIDIAL SYSTEM SETTINGS<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
@@ -18460,6 +18586,8 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Agent API Active: </td><td align=left><select size=1 name=vdc_agent_api_active><option>1</option><option>0</option><option selected>$vdc_agent_api_active</option></select>$NWB#settings-vdc_agent_api_active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>QC Features Active: </td><td align=left><select size=1 name=qc_features_active><option>1</option><option>0</option><option selected>$qc_features_active</option></select>$NWB#settings-qc_features_active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Outbound Auto-Dial Active: </td><td align=left><select size=1 name=outbound_autodial_active><option>1</option><option>0</option><option selected>$outbound_autodial_active</option></select>$NWB#settings-outbound_autodial_active$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Max FILL Calls per Second: </td><td align=left><input type=text name=outbound_calls_per_second size=4 maxlength=3 value=\"$outbound_calls_per_second\">$NWB#settings-outbound_calls_per_second$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#99FFCC><td align=right>Enable QueueMetrics Logging: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
 	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics Server IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
@@ -19998,95 +20126,117 @@ if ($ADD==10000000000000)
 # ADD=999999 display reports section
 ######################
 if ($ADD==999999)
-{
-	if ($LOGview_reports==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	$stmt="select * from servers;";
-	$rslt=mysql_query($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$servers_to_print = mysql_num_rows($rslt);
-	$i=0;
-	while ($i < $servers_to_print)
+	if ($LOGview_reports==1)
 		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		$stmt="select server_id,server_description,server_ip,active,sysload,channels_total,cpu_idle_percent,disk_usage from servers;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$servers_to_print = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $servers_to_print)
+			{
+			$row=mysql_fetch_row($rslt);
+			$server_id[$i] =			$row[0];
+			$server_description[$i] =	$row[1];
+			$server_ip[$i] =			$row[2];
+			$active[$i] =				$row[3];
+			$sysload[$i] =				$row[4];
+			$channels_total[$i] =		$row[5];
+			$cpu_idle_percent[$i] =		$row[6];
+			$disk_usage[$i] =			$row[7];
+			$i++;
+			}
+
+		$stmt="SELECT queuemetrics_url,vtiger_url from system_settings;";
+		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
-		$server_id[$i] =			$row[0];
-		$server_description[$i] =	$row[1];
-		$server_ip[$i] =			$row[2];
-		$active[$i] =				$row[3];
-		$i++;
-		}
+		$queuemetrics_url_LU =				$row[0];
+		$vtiger_url_LU =					$row[1];
 
-	$stmt="SELECT queuemetrics_url,vtiger_url from system_settings;";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$queuemetrics_url_LU =				$row[0];
-	$vtiger_url_LU =					$row[1];
+		?>
 
+		<HTML>
+		<HEAD>
+
+		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+		<TITLE>VICIDIAL: Server Stats and Reports</TITLE></HEAD><BODY BGCOLOR=WHITE>
+		<FONT SIZE=4><B>VICIDIAL: Server Stats and Reports</B></font><BR><BR>
+		<UL>
+		<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
+
+		<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD CAMPAIGN OUTBOUND REPORT</a></FONT>
+		<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER REPORT</a></FONT>
+		<LI><a href="AST_CLOSER_service_level.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER SERVICE_LEVEL REPORT</a></FONT>
+		<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>  &nbsp; &nbsp; 
+			<a href="AST_agent_status_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT STATUS DETAIL</a></FONT>  &nbsp; &nbsp; 
+			<a href="AST_agent_days_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SINGLE AGENT DAILY</a></FONT>
+
+		<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - CLOSER REPORT</a></FONT>
+		<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT SPREADSHEET PERFORMANCE</a></FONT>
+		<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>  &nbsp; &nbsp; 
+			<a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER GROUP TIMECLOCK STATUS REPORT</a></FONT>
+
+		<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
+	<?
+		if ($SSenable_queuemetrics_logging > 0)
+			{
+			echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS REPORTS</a></FONT>\n";
+			}
+		if ($SSenable_vtiger_integration > 0)
+			{
+			echo "<LI><a href=\"$vtiger_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>VTIGER HOME</a></FONT>\n";
+			}
 	?>
-
-	<HTML>
-	<HEAD>
-
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-	<TITLE>VICIDIAL: Server Stats and Reports</TITLE></HEAD><BODY BGCOLOR=WHITE>
-	<FONT SIZE=4><B>VICIDIAL: Server Stats and Reports</B></font><BR><BR>
-	<UL>
-	<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
-
-	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD CAMPAIGN OUTBOUND REPORT</a></FONT>
-	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER REPORT</a></FONT>
-	<LI><a href="AST_CLOSER_service_level.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>INBOUND/CLOSER SERVICE_LEVEL REPORT</a></FONT>
-	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT PERFORMANCE DETAIL</a></FONT>  &nbsp; &nbsp; 
-		<a href="AST_agent_status_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT STATUS DETAIL</a></FONT>  &nbsp; &nbsp; 
-		<a href="AST_agent_days_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SINGLE AGENT DAILY</a></FONT>
-
-	<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - CLOSER REPORT</a></FONT>
-	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>AGENT SPREADSHEET PERFORMANCE</a></FONT>
-	<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>  &nbsp; &nbsp; 
-	    <a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER GROUP TIMECLOCK STATUS REPORT</a></FONT>
-
-	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SERVER PERFORMANCE</a></FONT>
-<?
-	if ($SSenable_queuemetrics_logging > 0)
-		{
-		echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS REPORTS</a></FONT>\n";
-		}
-	if ($SSenable_vtiger_integration > 0)
-		{
-		echo "<LI><a href=\"$vtiger_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>VTIGER HOME</a></FONT>\n";
-		}
-?>
-	</UL>
-	<PRE><TABLE BORDER=1 CELLPADDING=0 cellspacing=0>
-	<TR><TD>SERVER</TD><TD>DESCRIPTION</TD><TD>IP ADDRESS</TD><TD>ACTIVE</TD><TD>VDAD time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
-	<? 
+		</UL>
+		<PRE><TABLE BORDER=1 CELLPADDING=2 cellspacing=0>
+		<TR><TD>SERVER</TD><TD>DESCRIPTION</TD><TD>IP</TD><TD>ACT</TD><TD>LOAD</TD><TD>CHAN</TD><TD>DISK</TD><TD>OUTBOUND</TD><TD>INBOUND</TD></TR>
+		<? 
 
 		$o=0;
 		while ($servers_to_print > $o)
-		{
-		echo "<TR>\n";
-		echo "<TD>$server_id[$o]</TD>\n";
-		echo "<TD>$server_description[$o]</TD>\n";
-		echo "<TD>$server_ip[$o]</TD>\n";
-		echo "<TD>$active[$o]</TD>\n";
-		echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
-		echo "<TD><a href=\"AST_timeonpark.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
-		echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
-		echo "</TR>\n";
-		$o++;
-		}
+			{
+			$cpu = (100 - $cpu_idle_percent[$o]);
+			$disk = '';
+			$disk_ary = explode('|',$disk_usage[$o]);
+			$disk_ary_ct = count($disk_ary);
+			$k=0;
+			while ($k < $disk_ary_ct)
+				{
+				$disk_ary[$k] = preg_replace("/^\d* /","",$disk_ary[$k]);
+				if ($k<1) {$disk = "$disk_ary[$k]";}
+				else
+					{
+					if ($disk_ary[$k] > $disk) {$disk = "$disk_ary[$k]";}
+					}
+				$k++;
+				}
+			$disk = "$disk%";
+			echo "<TR>\n";
+			echo "<TD>$server_id[$o]</TD>\n";
+			echo "<TD>$server_description[$o]</TD>\n";
+			echo "<TD>$server_ip[$o]</TD>\n";
+			echo "<TD>$active[$o]</TD>\n";
+			echo "<TD>$sysload[$o] - $cpu%</TD>\n";
+			echo "<TD>$channels_total[$o]</TD>\n";
+			echo "<TD ALIGN=RIGHT>$disk</TD>\n";
+			echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+			echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
+			echo "</TR>\n";
+			$o++;
+			}
 
-	echo "</TABLE>\n";
-	}
+		echo "</TABLE>\n";
+		}
 	else
-	{
-	echo "You do not have permission to view this page\n";
-	exit;
+		{
+		echo "You do not have permission to view this page\n";
+		exit;
+		}
 	}
-}
 
 
 

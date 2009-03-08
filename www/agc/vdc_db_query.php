@@ -189,12 +189,13 @@
 # 90128-0231 - Added vendor_lead_code to manual dial lead lookup
 # 90304-1335 - Added support for group aliases and agent-specific variables for campaigns and in-groups
 # 90305-1041 - Added agent_dialed_number and type for user_call_log feature
+# 90307-1735 - Added Shift enforcement and manager override features
 #
 
-$version = '2.0.5-102';
-$build = '90305-1041';
+$version = '2.0.5-103';
+$build = '90307-1735';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=192;
+$mysql_log_count=193;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -470,7 +471,7 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 ###                  specific agent on the login screen
 ################################################################################
 if ($ACTION == 'LogiNCamPaigns')
-{
+	{
 	if ( (strlen($user)<1) )
 		{
 		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
@@ -480,21 +481,27 @@ if ($ACTION == 'LogiNCamPaigns')
 		}
 	else
 		{
-		$stmt="SELECT user_group,user_level from vicidial_users where user='$user' and pass='$pass'";
+		$stmt="SELECT user_group,user_level,agent_shift_enforcement_override,shift_override_flag from vicidial_users where user='$user' and pass='$pass'";
 		if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00004',$user,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
-		$VU_user_group=$row[0];
-		$VU_user_level=$row[1];
+		$VU_user_group =						$row[0];
+		$VU_user_level =						$row[1];
+		$VU_agent_shift_enforcement_override =	$row[2];
+		$VU_shift_override_flag =				$row[3];
 
 		$LOGallowed_campaignsSQL='';
 
-		$stmt="SELECT allowed_campaigns,forced_timeclock_login from vicidial_user_groups where user_group='$VU_user_group';";
+		$stmt="SELECT allowed_campaigns,forced_timeclock_login,shift_enforcement,group_shifts from vicidial_user_groups where user_group='$VU_user_group';";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00005',$user,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
-		$forced_timeclock_login = $row[1];
+		$forced_timeclock_login =	$row[1];
+		$shift_enforcement =		$row[2];
+		$LOGgroup_shiftsSQL = eregi_replace('  ','',$row[3]);
+		$LOGgroup_shiftsSQL = eregi_replace(' ',"','",$LOGgroup_shiftsSQL);
+		$LOGgroup_shiftsSQL = "shift_id IN('$LOGgroup_shiftsSQL')";
 		if ( (!eregi("ALL-CAMPAIGNS",$row[0])) )
 			{
 			$LOGallowed_campaignsSQL = eregi_replace(' -','',$row[0]);
@@ -532,35 +539,115 @@ if ($ACTION == 'LogiNCamPaigns')
 			if ( (strlen($last_agent_event)<2) or (ereg('LOGOUT',$last_agent_event)) )
 				{$show_campaign_list=0;}
 			}
+		}
 
-		if ($show_campaign_list > 0)
+	### CHECK TO SEE IF AGENT IS WITHIN THEIR SHIFT IF RESTRICTED, IF NOT, OUTPUT ERROR
+	if ( ( (ereg("START|ALL",$shift_enforcement)) and (!ereg("OFF",$VU_agent_shift_enforcement_override)) ) or (ereg("START|ALL",$VU_agent_shift_enforcement_override)) )
+		{
+		$shift_ok=0;
+		if ( (strlen($LOGgroup_shiftsSQL) < 3) and ($VU_shift_override_flag < 1) )
 			{
-			$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
-			$rslt=mysql_query($stmt, $link);
-				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00006',$user,$server_ip,$session_name,$one_mysql_log);}
-			$camps_to_print = mysql_num_rows($rslt);
-
-			echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
-			echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
-
-			$o=0;
-			while ($camps_to_print > $o) 
-				{
-				$rowx=mysql_fetch_row($rslt);
-				echo "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
-				$o++;
-				}
-			echo "</select>\n";
+			$VDdisplayMESSAGE = "<B>ERROR: There are no Shifts enabled for your user group</B>\n";
+			$VDloginDISPLAY=1;
 			}
 		else
 			{
-			echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
-			echo "<option value=\"\">-- YOU MUST LOG IN TO THE TIMECLOCK FIRST --</option>\n";
-			echo "</select>\n";
+			$HHMM = date("Hi");
+			$wday = date("w");
+
+			$stmt="SELECT shift_id,shift_start_time,shift_length,shift_weekdays from vicidial_shifts where $LOGgroup_shiftsSQL order by shift_id";
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00193',$user,$server_ip,$session_name,$one_mysql_log);}
+			$shifts_to_print = mysql_num_rows($rslt);
+
+			$o=0;
+			while ( ($shifts_to_print > $o) and ($shift_ok < 1) )
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$shift_id =			$rowx[0];
+				$shift_start_time =	$rowx[1];
+				$shift_length =		$rowx[2];
+				$shift_weekdays =	$rowx[3];
+
+				if (eregi("$wday",$shift_weekdays))
+					{
+					$HHshift_length = substr($shift_length,0,2);
+					$MMshift_length = substr($shift_length,3,2);
+					$HHshift_start_time = substr($shift_start_time,0,2);
+					$MMshift_start_time = substr($shift_start_time,2,2);
+					$HHshift_end_time = ($HHshift_length + $HHshift_start_time);
+					$MMshift_end_time = ($MMshift_length + $MMshift_start_time);
+					if ($MMshift_end_time > 59)
+						{
+						$MMshift_end_time = ($MMshift_end_time - 60);
+						$HHshift_end_time++;
+						}
+					if ($HHshift_end_time > 23)
+						{$HHshift_end_time = ($HHshift_end_time - 24);}
+					$HHshift_end_time = sprintf("%02s", $HHshift_end_time);	
+					$MMshift_end_time = sprintf("%02s", $MMshift_end_time);	
+					$shift_end_time = "$HHshift_end_time$MMshift_end_time";
+
+					if ( 
+						( ($HHMM >= $shift_start_time) and ($HHMM < $shift_end_time) ) or
+						( ($HHMM < $shift_start_time) and ($HHMM < $shift_end_time) and ($shift_end_time <= $shift_start_time) ) or
+						( ($HHMM >= $shift_start_time) and ($HHMM >= $shift_end_time) and ($shift_end_time <= $shift_start_time) )
+					   )
+						{$shift_ok++;}
+					}
+				$o++;
+				}
+
+			if ( ($shift_ok < 1) and ($VU_shift_override_flag < 1) )
+				{
+				$VDdisplayMESSAGE = "<B>ERROR: You are not allowed to log in outside of your shift</B>\n";
+				$VDloginDISPLAY=1;
+				}
 			}
-		exit;
+		if ($VDloginDISPLAY > 0)
+			{
+			$loginDATE = date("Ymd");
+			$VDdisplayMESSAGE.= "<BR><BR>MANAGER OVERRIDE:<BR>\n";
+			$VDdisplayMESSAGE.= "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=MGR_override VALUE=\"1\">\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=relogin VALUE=\"YES\">\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$user\">\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$pass\">\n";
+			$VDdisplayMESSAGE.= "Manager Login: <INPUT TYPE=TEXT NAME=\"MGR_login$loginDATE\" SIZE=10 MAXLENGTH=20><br>\n";
+			$VDdisplayMESSAGE.= "Manager Password: <INPUT TYPE=PASSWORD NAME=\"MGR_pass$loginDATE\" SIZE=10 MAXLENGTH=20><br>\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></FORM><BR><BR><BR><BR>\n";
+			echo "$VDdisplayMESSAGE";
+			exit;
+			}
 		}
-}
+
+	if ($show_campaign_list > 0)
+		{
+		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00006',$user,$server_ip,$session_name,$one_mysql_log);}
+		$camps_to_print = mysql_num_rows($rslt);
+
+		echo "<select size=1 name=VD_campaign id=VD_campaign>\n";
+		echo "<option value=\"\">-- PLEASE SELECT A CAMPAIGN --</option>\n";
+
+		$o=0;
+		while ($camps_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			echo "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+		echo "</select>\n";
+		}
+	else
+		{
+		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
+		echo "<option value=\"\">-- YOU MUST LOG IN TO THE TIMECLOCK FIRST --</option>\n";
+		echo "</select>\n";
+		}
+	exit;
+	}
 
 
 

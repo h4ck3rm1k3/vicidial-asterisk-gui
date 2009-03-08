@@ -763,3 +763,21 @@ ALTER TABLE vicidial_campaigns MODIFY three_way_call_cid ENUM('CAMPAIGN','CUSTOM
 ALTER TABLE vicidial_inbound_groups ADD default_group_alias VARCHAR(30) default '';
 
 UPDATE system_settings SET db_schema_version='1132';
+
+ALTER TABLE servers ADD outbound_calls_per_second SMALLINT(3) UNSIGNED default '20';
+ALTER TABLE servers ADD sysload INT(6) NOT NULL default '0';
+ALTER TABLE servers ADD channels_total SMALLINT(4) UNSIGNED NOT NULL default '0';
+ALTER TABLE servers ADD cpu_idle_percent SMALLINT(3) UNSIGNED NOT NULL default '0';
+ALTER TABLE servers ADD disk_usage VARCHAR(255) default '1';
+
+ALTER TABLE system_settings ADD outbound_calls_per_second SMALLINT(3) UNSIGNED default '40';
+
+ALTER TABLE vicidial_user_groups ADD shift_enforcement ENUM('OFF','START','ALL') default 'OFF';
+
+ALTER TABLE vicidial_users ADD agent_shift_enforcement_override ENUM('DISABLED','OFF','START','ALL') default 'DISABLED';
+ALTER TABLE vicidial_users ADD manager_shift_enforcement_override ENUM('0','1') default '0';
+ALTER TABLE vicidial_users ADD shift_override_flag ENUM('0','1') default '0';
+
+ALTER TABLE vicidial_admin_log MODIFY event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','OTHER') default 'OTHER';
+
+UPDATE system_settings SET db_schema_version='1133';

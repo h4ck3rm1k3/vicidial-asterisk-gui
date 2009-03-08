@@ -74,6 +74,7 @@
 # 81020-0125 - Bug fixes from changes to auto_calls deletion changes
 # 90124-0721 - Added parameter to ensure no auto-dial calls are placed for MANUAL campaigns
 # 90202-0203 - Added outbound_autodial_active option to halt all dialing
+# 90306-1845 - Added configurable calls-per-second option
 #
 
 
@@ -312,6 +313,26 @@ while($one_day_interval > 0)
 		$LUcount=0;
 		$campaigns_update = '';
 		$CPcount=0;
+
+		##### Get maximum calls per second that this process can send out
+		$stmtA = "SELECT outbound_calls_per_second FROM servers where server_ip='$server_ip';";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$outbound_calls_per_second =	"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ( ($outbound_calls_per_second > 0) && ($outbound_calls_per_second < 201) )
+			{$per_call_delay = (1000 / $outbound_calls_per_second);}
+		else
+			{$per_call_delay = '25';}
+
+		$event_string="SERVER CALLS PER SECOND MAXIMUM SET TO: $outbound_calls_per_second |$per_call_delay|";
+		&event_logger;
 
 		#############################################
 		##### Check if auto-dialing is enabled
@@ -921,8 +942,8 @@ while($one_day_interval > 0)
 									$affected_rows = $dbhA->do($stmtA);
 
 								### sleep for a five hundredths of a second to not flood the server with new calls
-								usleep(1*50*1000);
-
+							#	usleep(1*50*1000);
+								usleep(1*$per_call_delay*1000);
 								}
 							}
 						$call_CMPIPct++;

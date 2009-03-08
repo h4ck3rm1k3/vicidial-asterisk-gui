@@ -221,12 +221,13 @@
 # 90303-1145 - Fixed rare manual dial live hangup bug
 # 90304-1333 - Added user-specific web vars option
 # 90305-0917 - Added prefix-choice and group-alias options for calls coming from API
+# 90307-1736 - Added Shift enforcement and manager override features
 #
 
-$version = '2.0.5-200';
-$build = '90305-0917';
+$version = '2.0.5-201';
+$build = '90307-1736';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=55;
+$mysql_log_count=60;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -245,6 +246,8 @@ if (isset($_GET["VD_campaign"]))                {$VD_campaign=$_GET["VD_campaign
         elseif (isset($_POST["VD_campaign"]))   {$VD_campaign=$_POST["VD_campaign"];}
 if (isset($_GET["relogin"]))					{$relogin=$_GET["relogin"];}
         elseif (isset($_POST["relogin"]))       {$relogin=$_POST["relogin"];}
+if (isset($_GET["MGR_override"]))				{$MGR_override=$_GET["MGR_override"];}
+        elseif (isset($_POST["MGR_override"]))  {$MGR_override=$_POST["MGR_override"];}
 	if (!isset($phone_login)) 
 		{
 		if (isset($_GET["pl"]))                {$phone_login=$_GET["pl"];}
@@ -288,6 +291,7 @@ $StarTtimE = date("U");
 $NOW_TIME = date("Y-m-d H:i:s");
 $tsNOW_TIME = date("YmdHis");
 $FILE_TIME = date("Ymd-His");
+$loginDATE = date("Ymd");
 $CIDdate = date("ymdHis");
 	$month_old = mktime(11, 0, 0, date("m"), date("d")-2,  date("Y"));
 	$past_month_date = date("Y-m-d H:i:s",$month_old);
@@ -444,6 +448,41 @@ if ($relogin == 'YES')
 		$LOGallowed_campaignsSQL = "and campaign_id IN('$LOGallowed_campaignsSQL')";
 		}
 }
+
+### code for manager override of shift restrictions
+if ($MGR_override > 0)
+	{
+	if (isset($_GET["MGR_login$loginDATE"]))				{$MGR_login=$_GET["MGR_login$loginDATE"];}
+			elseif (isset($_POST["MGR_login$loginDATE"]))	{$MGR_login=$_POST["MGR_login$loginDATE"];}
+	if (isset($_GET["MGR_pass$loginDATE"]))					{$MGR_pass=$_GET["MGR_pass$loginDATE"];}
+			elseif (isset($_POST["MGR_pass$loginDATE"]))	{$MGR_pass=$_POST["MGR_pass$loginDATE"];}
+
+	$stmt="SELECT count(*) from vicidial_users where user='$MGR_login' and pass='$MGR_pass' and manager_shift_enforcement_override='1' and active='Y';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01058',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+	$row=mysql_fetch_row($rslt);
+	$MGR_auth=$row[0];
+
+	if($MGR_auth>0)
+		{
+		$stmt="UPDATE vicidial_users SET shift_override_flag='1' where user='$VD_login' and pass='$VD_pass';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01059',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+		print "<!-- Shift Override entered for $VD_login by $MGR_login -->\n";
+
+		### Add a record to the vicidial_admin_log
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$MGR_login', ip_address='$ip', event_section='AGENT', event_type='OVERRIDE', record_id='$VD_login', event_code='MANAGER OVERRIDE OF AGENT SHIFT ENFORCEMENT', event_sql=\"$SQL_log\", event_notes='user: $VD_login';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01060',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+		}
+	}
+
 
 $stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
@@ -715,35 +754,42 @@ $VDloginDISPLAY=0;
 		$login=strtoupper($VD_login);
 		$password=strtoupper($VD_pass);
 		##### grab the full name of the agent
-		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override,alert_enabled from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+		$stmt="SELECT full_name,user_level,hotkeys_active,agent_choose_ingroups,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,closer_default_blended,user_group,vicidial_recording_override,alter_custphone_override,alert_enabled,agent_shift_enforcement_override,shift_override_flag from vicidial_users where user='$VD_login' and pass='$VD_pass'";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01007',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
-		$LOGfullname=$row[0];
-		$user_level=$row[1];
-		$VU_hotkeys_active=$row[2];
-		$VU_agent_choose_ingroups=$row[3];
-		$VU_scheduled_callbacks=$row[4];
-		$agentonly_callbacks=$row[5];
-		$agentcall_manual=$row[6];
-		$VU_vicidial_recording=$row[7];
-		$VU_vicidial_transfers=$row[8];
-		$VU_closer_default_blended=$row[9];
-		$VU_user_group=$row[10];
-		$VU_vicidial_recording_override=$row[11];
-		$VU_alter_custphone_override=$row[12];
-		$VU_alert_enabled=$row[13];
+		$LOGfullname =							$row[0];
+		$user_level =							$row[1];
+		$VU_hotkeys_active =					$row[2];
+		$VU_agent_choose_ingroups =				$row[3];
+		$VU_scheduled_callbacks =				$row[4];
+		$agentonly_callbacks =					$row[5];
+		$agentcall_manual =						$row[6];
+		$VU_vicidial_recording =				$row[7];
+		$VU_vicidial_transfers =				$row[8];
+		$VU_closer_default_blended =			$row[9];
+		$VU_user_group =						$row[10];
+		$VU_vicidial_recording_override =		$row[11];
+		$VU_alter_custphone_override =			$row[12];
+		$VU_alert_enabled =						$row[13];
+		$VU_agent_shift_enforcement_override =	$row[14];
+		$VU_shift_override_flag =				$row[15];
 
 		if ($VU_alert_enabled > 0) {$VU_alert_enabled = 'ON';}
 		else {$VU_alert_enabled = 'OFF';}
 
-		### BEGIN - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
-		$stmt="SELECT forced_timeclock_login from vicidial_user_groups where user_group='$VU_user_group';";
+		### Gather timeclock and shift enforcement restriction settings
+		$stmt="SELECT forced_timeclock_login,shift_enforcement,group_shifts from vicidial_user_groups where user_group='$VU_user_group';";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01052',$VD_login,$server_ip,$session_name,$one_mysql_log);}
 		$row=mysql_fetch_row($rslt);
-		$forced_timeclock_login = $row[0];
+		$forced_timeclock_login =	$row[0];
+		$shift_enforcement =		$row[1];
+		$LOGgroup_shiftsSQL = eregi_replace('  ','',$row[2]);
+		$LOGgroup_shiftsSQL = eregi_replace(' ',"','",$LOGgroup_shiftsSQL);
+		$LOGgroup_shiftsSQL = "shift_id IN('$LOGgroup_shiftsSQL')";
 
+		### BEGIN - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
 		if ( (ereg('Y',$forced_timeclock_login)) or ( (ereg('ADMIN_EXEMPT',$forced_timeclock_login)) and ($VU_user_level < 8) ) )
 			{
 			$last_agent_event='';
@@ -776,6 +822,92 @@ $VDloginDISPLAY=0;
 				}
 			}
 		### END - CHECK TO SEE IF AGENT IS LOGGED IN TO TIMECLOCK, IF NOT, OUTPUT ERROR
+
+		### BEGIN - CHECK TO SEE IF SHIFT ENFORCEMENT IS ENABLED AND AGENT IS OUTSIDE OF THEIR SHIFTS, IF SO, OUTPUT ERROR
+		if ( ( (ereg("START|ALL",$shift_enforcement)) and (!ereg("OFF",$VU_agent_shift_enforcement_override)) ) or (ereg("START|ALL",$VU_agent_shift_enforcement_override)) )
+			{
+			$shift_ok=0;
+			if ( (strlen($LOGgroup_shiftsSQL) < 3) and ($VU_shift_override_flag < 1) )
+				{
+				$VDloginDISPLAY=1;
+				$VDdisplayMESSAGE = "ERROR: There are no Shifts enabled for your user group<BR>";
+				}
+			else
+				{
+				$HHMM = date("Hi");
+				$wday = date("w");
+
+				$stmt="SELECT shift_id,shift_start_time,shift_length,shift_weekdays from vicidial_shifts where $LOGgroup_shiftsSQL order by shift_id";
+				$rslt=mysql_query($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01056',$user,$server_ip,$session_name,$one_mysql_log);}
+				$shifts_to_print = mysql_num_rows($rslt);
+
+				$o=0;
+				while ( ($shifts_to_print > $o) and ($shift_ok < 1) )
+					{
+					$rowx=mysql_fetch_row($rslt);
+					$shift_id =			$rowx[0];
+					$shift_start_time =	$rowx[1];
+					$shift_length =		$rowx[2];
+					$shift_weekdays =	$rowx[3];
+
+					if (eregi("$wday",$shift_weekdays))
+						{
+						$HHshift_length = substr($shift_length,0,2);
+						$MMshift_length = substr($shift_length,3,2);
+						$HHshift_start_time = substr($shift_start_time,0,2);
+						$MMshift_start_time = substr($shift_start_time,2,2);
+						$HHshift_end_time = ($HHshift_length + $HHshift_start_time);
+						$MMshift_end_time = ($MMshift_length + $MMshift_start_time);
+						if ($MMshift_end_time > 59)
+							{
+							$MMshift_end_time = ($MMshift_end_time - 60);
+							$HHshift_end_time++;
+							}
+						if ($HHshift_end_time > 23)
+							{$HHshift_end_time = ($HHshift_end_time - 24);}
+						$HHshift_end_time = sprintf("%02s", $HHshift_end_time);	
+						$MMshift_end_time = sprintf("%02s", $MMshift_end_time);	
+						$shift_end_time = "$HHshift_end_time$MMshift_end_time";
+
+						if ( 
+							( ($HHMM >= $shift_start_time) and ($HHMM < $shift_end_time) ) or
+							( ($HHMM < $shift_start_time) and ($HHMM < $shift_end_time) and ($shift_end_time <= $shift_start_time) ) or
+							( ($HHMM >= $shift_start_time) and ($HHMM >= $shift_end_time) and ($shift_end_time <= $shift_start_time) )
+						   )
+							{$shift_ok++;}
+						}
+					$o++;
+					}
+
+				if ( ($shift_ok < 1) and ($VU_shift_override_flag < 1) )
+					{
+					$VDloginDISPLAY=1;
+					$VDdisplayMESSAGE = "ERROR: You are not allowed to log in outside of your shift<BR>";
+					}
+				}
+			if ( ($shift_ok < 1) and ($VU_shift_override_flag < 1) and ($VDloginDISPLAY > 0) )
+				{
+				$VDdisplayMESSAGE.= "<BR><BR>MANAGER OVERRIDE:<BR>\n";
+				$VDdisplayMESSAGE.= "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=MGR_override VALUE=\"1\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=relogin VALUE=\"YES\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=phone_login VALUE=\"$phone_login\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=phone_pass VALUE=\"$phone_pass\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$VD_login\">\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$VD_pass\">\n";
+				$VDdisplayMESSAGE.= "Manager Login: <INPUT TYPE=TEXT NAME=\"MGR_login$loginDATE\" SIZE=10 MAXLENGTH=20><br>\n";
+				$VDdisplayMESSAGE.= "Manager Password: <INPUT TYPE=PASSWORD NAME=\"MGR_pass$loginDATE\" SIZE=10 MAXLENGTH=20><br>\n";
+				$VDdisplayMESSAGE.= "<INPUT TYPE=SUBMIT NAME=SUBMIT VALUE=SUBMIT></FORM>\n";
+				}
+			}
+			### END - CHECK TO SEE IF SHIFT ENFORCEMENT IS ENABLED AND AGENT IS OUTSIDE OF THEIR SHIFTS, IF SO, OUTPUT ERROR
+
+
+
+
+
 
 
 		if ($WeBRooTWritablE > 0)
@@ -1766,6 +1898,12 @@ else
 	$agent_log_id = mysql_insert_id($link);
 	print "<!-- vicidial_agent_log record inserted: |$affected_rows|$agent_log_id| -->\n";
 
+	$stmt="UPDATE vicidial_users SET shift_override_flag='0' where user='$VD_login' and shift_override_flag='1';";
+	if ($DB) {echo "$stmt\n";}
+	$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01057',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+	$VUaffected_rows = mysql_affected_rows($link);
+
 	$S='*';
 	$D_s_ip = explode('.', $server_ip);
 	if (strlen($D_s_ip[0])<2) {$D_s_ip[0] = "0$D_s_ip[0]";}
@@ -2245,6 +2383,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var VtigeRurl = '<? echo $vtiger_url ?>';
 	var VtigeREnableD = '<? echo $enable_vtiger_integration ?>';
 	var alert_enabled = '<? echo $VU_alert_enabled ?>'
+	var shift_logout_flag = 0;
 	var DiaLControl_auto_HTML = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADready');\"><IMG SRC=\"./images/vdc_LB_resume.gif\" border=0 alt=\"Resume\"></a>";
 	var DiaLControl_auto_HTML_ready = "<a href=\"#\" onclick=\"AutoDial_ReSume_PauSe('VDADpause');\"><IMG SRC=\"./images/vdc_LB_pause.gif\" border=0 alt=\" Pause \"></a><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
 	var DiaLControl_auto_HTML_OFF = "<IMG SRC=\"./images/vdc_LB_pause_OFF.gif\" border=0 alt=\" Pause \"><IMG SRC=\"./images/vdc_LB_resume_OFF.gif\" border=0 alt=\"Resume\">";
@@ -2837,6 +2976,10 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 							if ( (AGLogiN == 'TIME_SYNC') && (vicidial_agent_disable == 'ALL') )
 								{
 								showDiv('SysteMDisablEBoX');
+								}
+							if (AGLogiN == 'SHIFT_LOGOUT')
+								{
+								shift_logout_flag=1;
 								}
 							}
 						var VLAStatuS_array = check_time_array[4].split("Status: ");
@@ -6085,40 +6228,47 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 				AgentDispoing = 0;
 
-				if (wrapup_waiting == 0)
+				if (shift_logout_flag < 1)
 					{
-					if (document.vicidial_form.DispoSelectStop.checked==true)
+					if (wrapup_waiting == 0)
 						{
-						if (auto_dial_level != '0')
+						if (document.vicidial_form.DispoSelectStop.checked==true)
 							{
-							AutoDialWaiting = 0;
-							AutoDial_ReSume_PauSe("VDADpause");
-					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
-							}
-						VICIDiaL_pause_calling = 1;
-						if (dispo_check_all_pause != '1')
-							{
-							document.vicidial_form.DispoSelectStop.checked=false;
-							}
-						}
-					else
-						{
-						if (auto_dial_level != '0')
-							{
-							AutoDialWaiting = 1;
-							AutoDial_ReSume_PauSe("VDADready","NEW_ID");
-					//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
+							if (auto_dial_level != '0')
+								{
+								AutoDialWaiting = 0;
+								AutoDial_ReSume_PauSe("VDADpause");
+						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
+								}
+							VICIDiaL_pause_calling = 1;
+							if (dispo_check_all_pause != '1')
+								{
+								document.vicidial_form.DispoSelectStop.checked=false;
+								}
 							}
 						else
 							{
-							// trigger HotKeys manual dial automatically go to next lead
-							if (manual_auto_hotkey == '1')
+							if (auto_dial_level != '0')
 								{
-								manual_auto_hotkey = 0;
-								ManualDialNext('','','','','','0');
+								AutoDialWaiting = 1;
+								AutoDial_ReSume_PauSe("VDADready","NEW_ID");
+						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
+								}
+							else
+								{
+								// trigger HotKeys manual dial automatically go to next lead
+								if (manual_auto_hotkey == '1')
+									{
+									manual_auto_hotkey = 0;
+									ManualDialNext('','','','','','0');
+									}
 								}
 							}
 						}
+					}
+				else
+					{
+					LogouT('SHIFT');
 					}
 				}
 			}
@@ -6457,7 +6607,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 		{
 		if (logout_stop_timeouts < 1)
 			{
-			LogouT();
+			LogouT('CLOSE');
 			alert("PLEASE CLICK THE LOGOUT LINK TO LOG OUT NEXT TIME.\n");
 			}
 		}
@@ -6465,7 +6615,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Log the user out of the system, if active call or active dial is occuring, don't let them.
-	function LogouT()
+	function LogouT(tempreason)
 		{
 		if (MD_channel_look==1)
 			{alert("You cannot log out during a Dial attempt. \nWait 50 seconds for the dial to fail out if it is not answered");}
@@ -6514,8 +6664,11 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 				hideDiv('MainPanel');
 				showDiv('LogouTBox');
+				var logout_content='';
+				if (tempreason=='SHIFT')
+					{logout_content='Your Shift is over or has changed, you have been logged out of your session<BR><BR>';}
 
-				document.getElementById("LogouTBoxLink").innerHTML = "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">CLICK HERE TO LOG IN AGAIN</a>\n";
+				document.getElementById("LogouTBoxLink").innerHTML = logout_content + "<a href=\"" + agcPAGE + "?relogin=YES&session_epoch=" + epoch_sec + "&session_id=" + session_id + "&session_name=" + session_name + "&VD_login=" + user + "&VD_campaign=" + campaign + "&phone_login=" + phone_login + "&phone_pass=" + phone_pass + "&VD_pass=" + pass + "\">CLICK HERE TO LOG IN AGAIN</a>\n";
 
 				logout_stop_timeouts = 1;
 					
@@ -7853,7 +8006,7 @@ echo "</head>\n";
  &nbsp; &nbsp; <span id="agentchannelSPAN"></span>
 </TD><TD COLSPAN=3 VALIGN=TOP ALIGN=RIGHT><font class="body_text">
 <? if ($INgrpCT > 0) {echo "<a href=\"#\" onclick=\"OpeNGrouPSelectioN();return false;\">GROUPS</a> &nbsp; &nbsp; \n";} ?>
-<?	echo "<a href=\"#\" onclick=\"LogouT();return false;\">LOGOUT</a>\n"; ?>
+<?	echo "<a href=\"#\" onclick=\"LogouT('NORMAL');return false;\">LOGOUT</a>\n"; ?>
 </TD></TR></TABLE>
 </SPAN>
 
@@ -8097,7 +8250,7 @@ Your Status: <span id="AgentStatusStatus"></span> <BR>Calls Dialing: <span id="A
 </span>
 
 <span style="position:absolute;left:0px;top:0px;z-index:31;" id="AgenTDisablEBoX">
-    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT();return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
+    <table border=1 bgcolor="#FFFFFF" width=<?=$CAwidth ?> height=500><TR><TD align=center>Your session has been disabled<BR><a href="#" onclick="LogouT('DISABLED');return false;">LOGOUT</a><BR><BR><a href="#" onclick="hideDiv('AgenTDisablEBoX');return false;">Go Back</a>
 </TD></TR></TABLE>
 </span>
 

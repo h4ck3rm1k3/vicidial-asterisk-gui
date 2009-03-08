@@ -262,6 +262,12 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 61. Added options for custom web variables for each agent per in-group and
    camaign. This is definable in the user modification page
 
+62. Added Agent Shift enforcement options to restrict logins and vicidial 
+   agent activity 
+
+63. Added Server vital statistics(load/CPU/disk) to the reports screen and the
+   server modification screen
+
 
 
 

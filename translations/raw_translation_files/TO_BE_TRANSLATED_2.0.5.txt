@@ -507,6 +507,22 @@ Group Alias Allowed||
 Default Group Alias||
 AGENT_CHOOSE allows the agent to choose which callerID to use for 3-way calls from a list of choices.||
 you cannot use reserved words in group aliases||
+Agent Shift Enforcement Override||
+Manager Shift Enforcement Override||
+Shift Enforcement||
+Max Calls per Second||
+Max FILL Calls per Second||
+This setting will override whatever the users user group has set for Shift Enforcement. DISABLED will use the user group setting. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is DISABLED.||
+This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0.||
+This setting allows you to restrict agent logins based upon the shifts that are selected below. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is OFF.||
+This setting determines the maximum number of calls that can be placed by the outbound auto-dialing script on this server per second. Must be from 1 to 100. Default is 20.||
+This setting determines the maximum number of calls that can be placed by the auto-FILL outbound auto-dialing script on for all servers, per second. Must be from 1 to 200. Default is 40.||
+System Load||
+Live Channels||
+Disk Usage||
+These two statistics show the loadavg of a system times 100 and the CPU usage percentage of the server and is updated every minute. The loadavg should on average be below 100 multiplied by the number of CPU cores your system has, for optimal performance. The CPU usage percentage should stay below 50 for optimal performance.||
+This field shows the current number of Asterisk channels that are live on the system right now. It is important to note that the number of Asterisk channels is usually much higher than the number of actual calls on a system. This field is updated once every minute.||
+This field will show the disk usage for every partition on this server. This field is updated once every minute.||
 
 
 ############################################################ CLIENT
@@ -550,6 +566,10 @@ SELECT A GROUP ALIAS||
 Group Alias Selection||
 Click Here to Choose a Group Alias||
 Group Alias||
+ERROR: There are no Shifts enabled for your user group||
+ERROR: You are not allowed to log in outside of your shift||
+MANAGER OVERRIDE||
+Your Shift is over or has changed, you have been logged out of your session||
 
 
 ############################################################  MANAGER Manual
