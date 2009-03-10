@@ -523,6 +523,32 @@ Disk Usage||
 These two statistics show the loadavg of a system times 100 and the CPU usage percentage of the server and is updated every minute. The loadavg should on average be below 100 multiplied by the number of CPU cores your system has, for optimal performance. The CPU usage percentage should stay below 50 for optimal performance.||
 This field shows the current number of Asterisk channels that are live on the system right now. It is important to note that the number of Asterisk channels is usually much higher than the number of actual calls on a system. This field is updated once every minute.||
 This field will show the disk usage for every partition on this server. This field is updated once every minute.||
+ADMIN CHANGE LOG||
+USER ADMIN CHANGE LOG||
+SECTION ADMIN CHANGE LOG||
+DETAIL ADMIN CHANGE LOG||
+Last 10000 records||
+Changes made by||
+Record Detail||
+Section Records||
+Click here to see Admin chages to this record||
+Click here to see Admin chages to this campaign||
+Click here to see Admin chages to this list||
+Click here to see Admin chages to this In-Group||
+Click here to see Admin chages to this DID||
+Click here to see Admin chages to this remote agent||
+Click here to see Admin chages to this user group||
+Click here to see Admin chages to this script||
+Click here to see Admin chages to this filter||
+Click here to see Admin chages to this call time||
+Click here to see Admin chages to this shift||
+Click here to see Admin chages to this phone alias||
+Click here to see Admin chages to this group alias||
+Click here to see Admin chages to this server||
+Click here to see Admin chages to this conf template||
+Click here to see Admin chages to this carrier||
+Click here to see Admin chages to the system settings||
+
 
 
 ############################################################ CLIENT

@@ -2,11 +2,12 @@
 #
 # start_asterisk_boot.pl    version 2.0.5
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 60814-1658 - added option to start without logging through servers table setting
+# 90309-0905 - Added deleting of asterisk command files
 #
 
 # default path to astguiclient configuration file:
@@ -59,6 +60,31 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		 $rec_count++;
 		}
 	$sthA->finish();
+
+if (-e "/root/asterisk_command_reload_iax2")
+	{
+	### find the find binary
+	$findbin = '';
+	if ( -e ('/bin/find')) {$findbin = '/bin/find';}
+	else 
+		{
+		if ( -e ('/sbin/find')) {$findbin = '/sbin/find';}
+		else 
+			{
+			if ( -e ('/usr/bin/find')) {$findbin = '/usr/bin/find';}
+			else 
+				{
+				if ( -e ('/usr/local/bin/find')) {$findbin = '/usr/local/bin/find';}
+				else
+					{
+					print "Can't find find binary! Exiting...\n";
+					}
+				}
+			}
+		}
+
+	`$findbin /root/ -maxdepth 1 -name "asterisk_command*" -print | xargs rm -f`;
+	}
 
 if ($SYSLOG) 
 	{

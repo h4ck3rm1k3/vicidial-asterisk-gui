@@ -1,7 +1,7 @@
 <?
 # new_listloader_superL.php
 # 
-# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI lead loader from formatted file
 # 
@@ -23,11 +23,12 @@
 # 80514-1030 - removed filesize limit and raised number of errors to be displayed
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
 # 81011-2009 - a few bug fixes
+# 90309-1831 - Added admin_log logging
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.5-27';
-$build = '81011-2009';
+$version = '2.0.5-28';
+$build = '90309-1831';
 
 
 require("dbconnect.php");
@@ -793,6 +794,12 @@ function ParseFileName() {
 
 if ($leadfile) {
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
+
+		### LOG INSERTION Admin Log Table ###
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='LOAD', record_id='$list_id_override', event_code='ADMIN LOAD LIST', event_sql='', event_notes='File Name: $leadfile_name';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		if ($file_layout=="standard") {
 
 	print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";

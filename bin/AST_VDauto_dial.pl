@@ -717,7 +717,7 @@ while($one_day_interval > 0)
 					&event_logger;
 					$DBIPtrunk_shortage[$user_CIPct] = 0;
 					}
-				$stmtA = "UPDATE vicidial_campaign_server_stats SET local_trunk_shortage='$DBIPtrunk_shortage[$user_CIPct]' where server_ip='$server_ip' and campaign_id='$DBIPcampaign[$user_CIPct]';";
+				$stmtA = "UPDATE vicidial_campaign_server_stats SET local_trunk_shortage='$DBIPtrunk_shortage[$user_CIPct]',update_time='$now_date' where server_ip='$server_ip' and campaign_id='$DBIPcampaign[$user_CIPct]';";
 				$affected_rows = $dbhA->do($stmtA);
 				}
 

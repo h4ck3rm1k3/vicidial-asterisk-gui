@@ -506,8 +506,11 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	{
 	if ($DB) {print "generating new auto-gen conf files\n";}
 
-	$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
-	$affected_rows = $dbhA->do($stmtA);
+	if (-e "/root/asterisk_command_reload_iax2")
+		{
+		$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
+		$affected_rows = $dbhA->do($stmtA);
+		}
 
 	### format the new server_ip dialstring for example to use with extensions.conf
 	$S='*';

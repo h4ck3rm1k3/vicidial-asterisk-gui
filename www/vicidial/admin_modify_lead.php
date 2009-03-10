@@ -8,7 +8,7 @@
 # just needs to enter the leadID and then they can view and modify the 
 # information in the record for that lead
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -28,6 +28,7 @@
 # 80701-0832 - Changed to allow for altering of main phone number
 # 80805-2106 - Changed comments to TEXTAREA
 # 81210-1529 - Added server recording display options
+# 90309-1829 - Added admin_log logging
 #
 
 require("dbconnect.php");
@@ -223,6 +224,14 @@ if ($end_call > 0)
 		echo "information modified<BR><BR>\n";
 		echo "<form><input type=button value=\"Close This Window\" onClick=\"javascript:window.close();\"></form>\n";
 	
+	### LOG INSERTION Admin Log Table ###
+	$SQL_log = "$stmt|";
+	$SQL_log = ereg_replace(';','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+
 	if ( ($dispo != $status) and ($dispo == 'CBHOLD') )
 	{
 		### inactivate vicidial_callbacks record for this lead 

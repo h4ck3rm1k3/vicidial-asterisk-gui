@@ -16,6 +16,7 @@
 #            - Changed results to multi-record
 # 80710-0023 - Added searching by list, user, status
 # 90121-0500 - Added filter for phone to remove non-digits
+# 90309-1828 - Added admin_log logging
 #
 
 require("dbconnect.php");
@@ -220,6 +221,7 @@ else
 			{
 			$row=mysql_fetch_row($rslt);
 			$o++;
+			$search_lead = $row[0];
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
@@ -239,7 +241,15 @@ else
 			echo "</TR>\n";
 			}
 		echo "</TABLE>\n";
-		}		
+		}
+
+	### LOG INSERTION Admin Log Table ###
+	$SQL_log = "$stmt|";
+	$SQL_log = ereg_replace(';','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
 	}
 
 
