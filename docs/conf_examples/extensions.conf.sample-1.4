@@ -510,10 +510,10 @@ exten => _999XXXXXX2,2,Answer
 exten => _999XXXXXX2,3,Playback(demo-instruct)
 exten => _999XXXXXX2,4,Hangup
 
-exten => _999XXXXXX3,1,SetVar(PRI_CAUSE=1)
+exten => _999XXXXXX3,1,Set(PRI_CAUSE=1)
 exten => _999XXXXXX3,2,Hangup
 
-exten => _999XXXXXX4,1,SetVar(PRI_CAUSE=27)
+exten => _999XXXXXX4,1,Set(PRI_CAUSE=27)
 exten => _999XXXXXX4,2,Hangup
 
 exten => _999XXXXXX5,1,Wait(60)
@@ -529,7 +529,7 @@ exten => _999XXXXXX7,2,Answer
 exten => _999XXXXXX7,3,Playback(demo-enterkeywords)
 exten => _999XXXXXX7,4,Hangup
 
-exten => _999XXXXXX8,1,SetVar(PRI_CAUSE=17)
+exten => _999XXXXXX8,1,Set(PRI_CAUSE=17)
 exten => _999XXXXXX8,2,Hangup
 
 exten => _999XXXXXX9,1,Wait(6)

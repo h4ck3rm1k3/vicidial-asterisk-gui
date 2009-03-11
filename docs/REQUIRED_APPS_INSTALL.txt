@@ -528,7 +528,7 @@ make clean
 make
 make install
 cd ../asterisk-1.4.21.2
-wget http://downloads.vicidial.com/asterisk-patches/1.4-gsm-gcc4.2.patch
+wget http://download.vicidial.com/asterisk-patches/1.4-gsm-gcc4.2.patch
 patch -p1 ./codecs/gsm/Makefile 1.4-gsm-gcc4.2.patch
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h

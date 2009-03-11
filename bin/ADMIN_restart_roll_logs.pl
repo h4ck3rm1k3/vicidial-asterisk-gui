@@ -6,7 +6,10 @@
 #
 # have this run on the astersik server 
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# CHANGES:
+# 90311-0921 - Added /var/log/asterisk/screenlog log rolling
 #
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -37,6 +40,9 @@ print "rolling Asterisk screen log...\n";
 
 print "rolling Asterisk root screen log...\n";
 `mv -f /root/screenlog.0 /root/screenlog.0.$now_date`;
+
+print "rolling Asterisk var log screen log...\n";
+`mv -f /var/log/asterisk/screenlog.0 /var/log/asterisk/screenlog.0.$now_date`;
 
 
 print "FINISHED... EXITING\n";

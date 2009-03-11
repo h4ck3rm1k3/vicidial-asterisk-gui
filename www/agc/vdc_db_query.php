@@ -2769,7 +2769,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 				$VDCL_default_xfer_group =	$row[6];
 				if (strlen($VDCL_default_xfer_group)<2) {$VDCL_default_xfer_group='X';}
 				}
-			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|X|X|\n|\n";
+			echo "|||||$VDCL_campaign_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|X|X||||\n|\n";
 			
 			$stmt = "select phone_number,alt_dial from vicidial_auto_calls where callerid = '$callerid' order by call_time desc limit 1;";
 			if ($DB) {echo "$stmt\n";}
