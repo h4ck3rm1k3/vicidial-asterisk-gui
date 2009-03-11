@@ -17,6 +17,7 @@
 # 80710-0023 - Added searching by list, user, status
 # 90121-0500 - Added filter for phone to remove non-digits
 # 90309-1828 - Added admin_log logging
+# 90310-2146 - Added admin header
 #
 
 require("dbconnect.php");
@@ -105,13 +106,35 @@ $browser = getenv("HTTP_USER_AGENT");
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<title>VICIDIAL ADMIN: Lead Search</title>
-</head>
-<title>Lead Lookup</title>
-</head>
-<body bgcolor=white>
+<title>VICIDIAL ADMIN: Lead Search
 <? 
-echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search: $vendor_id $phone $lead_id $status $list_id $user<BR>\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'100';
+$hh =					'lists';
+$LOGast_admin_access =	'1';
+$SSoutbound_autodial_active = '1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$lists_color =		'#FFFF99';
+$lists_font =		'BLACK';
+$lists_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
+
+
+echo " Lead search: $vendor_id $phone $lead_id $status $list_id $user<BR>\n";
 
 
 if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) )) 

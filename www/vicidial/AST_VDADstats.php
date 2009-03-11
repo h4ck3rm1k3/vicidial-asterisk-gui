@@ -16,6 +16,7 @@
 # 80722-2049 - Added Status Category stats
 # 81109-2341 - Added Productivity Rating
 # 90225-1140 - Changed to multi-campaign capability
+# 90310-2034 - Admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -145,7 +146,14 @@ while ($i < $statcats_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: VDAD Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: VDAD Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+$short_header=1;
+
+require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<TABLE CELLSPACING=3><TR><TD VALIGN=TOP> Dates:<BR>";
 echo "<INPUT TYPE=HIDDEN NAME=agent_hours VALUE=\"$agent_hours\">\n";
@@ -998,5 +1006,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

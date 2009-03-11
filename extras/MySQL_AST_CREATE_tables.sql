@@ -493,7 +493,8 @@ alert_enabled ENUM('1','0') default '0',
 download_lists ENUM('1','0') default '0',
 agent_shift_enforcement_override ENUM('DISABLED','OFF','START','ALL') default 'DISABLED',
 manager_shift_enforcement_override ENUM('0','1') default '0',
-shift_override_flag ENUM('0','1') default '0'
+shift_override_flag ENUM('0','1') default '0',
+export_reports ENUM('1','0') default '0'
 );
 
 
@@ -1278,7 +1279,7 @@ event_date DATETIME NOT NULL,
 user VARCHAR(20) NOT NULL,
 ip_address VARCHAR(15) NOT NULL,
 event_section VARCHAR(30) NOT NULL,
-event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','OTHER') default 'OTHER',
+event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','EXPORT','OTHER') default 'OTHER',
 record_id VARCHAR(50) NOT NULL,
 event_code VARCHAR(255) NOT NULL,
 event_sql TEXT,
@@ -1530,7 +1531,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1133';
+UPDATE system_settings SET db_schema_version='1134';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

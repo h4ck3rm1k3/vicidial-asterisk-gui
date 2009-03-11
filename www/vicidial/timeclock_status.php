@@ -1,12 +1,13 @@
 <?
 # timeclock_status.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 80602-0201 - First Build
 # 80603-1500 - formatting changes
+# 90310-2103 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -139,20 +140,41 @@ if (strlen($user_group) > 0)
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: Timeclock Status</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: Timeclock Status
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'311111';
+$hh =					'usergroups';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$usergroups_color =		'#FFFF99';
+$usergroups_font =		'BLACK';
+$usergroups_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
 <TABLE WIDTH=750 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT>
+<FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B>Timeclock Status for <? echo $user_group ?></TD><TD ALIGN=RIGHT> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
 <? 
-echo "<a href=\"./admin.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2><B>VICIDIAL ADMIN</a> | ";
 echo "<a href=\"./timeclock_report.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2><B>TIMECLOCK REPORT</a> | ";
 echo "<a href=\"./admin.php?ADD=311111&user_group=$user_group\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=WHITE SIZE=2><B>USER GROUP</a>\n";
 ?>
-<BR>Timeclock Status for <? echo $user_group ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+</TD></TR>
 
 
 

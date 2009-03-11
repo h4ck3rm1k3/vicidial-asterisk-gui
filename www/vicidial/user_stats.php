@@ -16,6 +16,7 @@
 # 81210-1634 - Added server recording display options
 # 90208-0504 - Added link to multi-day report and fixed call status summary section
 # 90305-1226 - Added user_call_log manual dial logs
+# 90310-0734 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -75,6 +76,7 @@ $browser = getenv("HTTP_USER_AGENT");
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname=$row[0];
+
 		fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
 		fclose($fp);
 		}
@@ -82,6 +84,8 @@ $browser = getenv("HTTP_USER_AGENT");
 		{
 		fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
 		fclose($fp);
+		echo "Invalid Username/Password: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+		exit;
 		}
 
 	$stmt="SELECT full_name from vicidial_users where user='$user';";
@@ -97,14 +101,35 @@ $browser = getenv("HTTP_USER_AGENT");
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: User Stats</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: User Stats
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
-<CENTER>
-<TABLE WIDTH=770 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=770 BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2> &nbsp; </TD></TR>
 
 
 
@@ -114,10 +139,13 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><B> &nbsp; \n";
 
 echo "<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=user value=\"$user\">\n";
 echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=text name=begin_date value=\"$begin_date\" size=10 maxsize=10> to \n";
 echo "<input type=text name=end_date value=\"$end_date\" size=10 maxsize=10> &nbsp;\n";
+if (strlen($user)>1)
+	{echo "<input type=hidden name=user value=\"$user\">\n";}
+else
+	{echo "<input type=text name=user size=12 maxlength=10>\n";}
 echo "<input type=submit name=submit value=submit>\n";
 
 

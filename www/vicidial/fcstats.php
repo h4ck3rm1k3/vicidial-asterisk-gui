@@ -1,8 +1,8 @@
 <? 
-### fcstats.php
-### 
-### Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
-###
+# fcstats.php
+# 
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 70813-1526 - First Build
@@ -10,6 +10,7 @@
 # 71217-1128 - Changed method for calculating stats
 # 71228-1140 - added percentages, cross-day start/stop
 # 80328-1139 - adapted for basic fronter/closer stats
+# 90310-2132 - Added admin header
 #
 
 require("dbconnect.php");
@@ -81,7 +82,14 @@ while ($i < $groups_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: In-Group Fronter-Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: In-Group Fronter-Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
 echo "<SELECT SIZE=1 NAME=group>\n";
@@ -586,6 +594,7 @@ if ($DB) {echo "\nRun Time: $RUNtime seconds\n";}
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>
 

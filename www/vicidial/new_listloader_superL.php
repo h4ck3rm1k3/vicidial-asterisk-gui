@@ -24,11 +24,12 @@
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
 # 81011-2009 - a few bug fixes
 # 90309-1831 - Added admin_log logging
+# 90310-2128 - Added admin header
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.5-28';
-$build = '90309-1831';
+$version = '2.0.5-29';
+$build = '90310-2128';
 
 
 require("dbconnect.php");
@@ -318,7 +319,17 @@ function ParseFileName() {
 </script>
 <title>VICIDIAL ADMIN: Lead Loader</title>
 </head>
-<body>
+<BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
+<?
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+?>
+
+
 <form action=<?=$PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
 <input type=hidden name='leadfile_name' value="<?=$leadfile_name ?>">
 <? if ($file_layout!="custom") { ?>
@@ -2040,3 +2051,4 @@ return $gmt_offset;
 }
 
 ?>
+</TD></TR></TABLE>

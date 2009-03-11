@@ -3,9 +3,12 @@
 # vicidial_sales_viewer.php - VICIDIAL administration page
 # 
 # 
-# Copyright (C) 2008  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Joe Johnson,Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-
+# CHANGES
+# 80310-1500 - first build
+# 90310-2135 - Added admin header
+#
 
 if (isset($_GET["dcampaign"]))					{$dcampaign=$_GET["dcampaign"];}
 	elseif (isset($_POST["dcampaign"]))			{$dcampaign=$_POST["dcampaign"];}
@@ -49,7 +52,16 @@ function GatherListIDs() {
 		return true;
 }
 </script>
-<body>
+<body bgcolor=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
+<?
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+?>
+
 <form action="<?=$PHP_SELF ?>" method=post onSubmit="return GatherListIDs()">
 <input type="hidden" name="list_ids">
 <table border=0 cellpadding=5 cellspacing=0 align=center width=600>
@@ -216,6 +228,9 @@ if ($submit_report && $list_ids) {
 	print "</tr></table>";
 }
 ?>
+
+</TD></TR></TABLE>
+
 </body>
 </html>
 

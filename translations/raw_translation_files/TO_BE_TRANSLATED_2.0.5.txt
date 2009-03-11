@@ -548,7 +548,12 @@ Click here to see Admin chages to this server||
 Click here to see Admin chages to this conf template||
 Click here to see Admin chages to this carrier||
 Click here to see Admin chages to the system settings||
-
+Export Reports||
+This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0.||
+This setting if set to 1 will allow a manager to click on the download list link at the bottom of a list modification screen to export the entire contents of a list to a flat data file. Default is 0.||
+Export Calls Report||
+EXPORT CALLS REPORT||
+For the Export Calls Report, the following field order is used for exports||
 
 
 ############################################################ CLIENT

@@ -9,6 +9,7 @@
 # 80603-1452 - Added manager timeclock force login/logout of user
 # 81118-1034 - Disabled change campaign because it does not work
 # 90208-0511 - Added link to user multi-day status report
+# 90310-0741 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -104,6 +105,8 @@ $browser = getenv("HTTP_USER_AGENT");
 			{
 			fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
 			fclose($fp);
+			echo "Invalid Username/Password: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+			exit;
 			}
 		}
 
@@ -163,14 +166,35 @@ while ($i < $groups_to_print)
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: User Status</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: User Status
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
-<CENTER>
-<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<? echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
 
 
 

@@ -1,7 +1,7 @@
 <? 
 # AST_IVRstats.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -9,6 +9,7 @@
 # 81107-0341 - Added time range and option and 15-minute increment graph
 # 81107-1148 - Added average times and totals
 # 81108-0922 - Added no-callerID and unique caller counts
+# 90310-2056 - Admin header
 #
 
 require("dbconnect.php");
@@ -175,7 +176,14 @@ else
 	}
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: IVR Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: IVR Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 if ($DB > 0)
 	{
 	echo "<BR>\n";
@@ -671,5 +679,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

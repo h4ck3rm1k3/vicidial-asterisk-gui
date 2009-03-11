@@ -1,13 +1,14 @@
 <? 
 # timeclock_report.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 80529-0055 - First build
 # 80617-1416 - Fixed totals tally bug
 # 80707-0754 - Fixed groups bug, changed formatting
+# 90310-2059 - Added admin header
 #
 
 require("dbconnect.php");
@@ -133,11 +134,32 @@ while ($i < $user_groups_to_print)
 </style>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<TITLE>VICIDIAL: User Timeclock Report</TITLE>
-
-</HEAD><BODY BGCOLOR=WHITE>
+<TITLE>VICIDIAL: User Timeclock Report
 
 <?
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'311111';
+$hh =					'usergroups';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$usergroups_color =		'#FFFF99';
+$usergroups_font =		'BLACK';
+$usergroups_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 $user_group_ct = count($user_group);
 $user_group_string='|';
 

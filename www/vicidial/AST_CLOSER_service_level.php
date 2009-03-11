@@ -1,7 +1,7 @@
 <? 
 # AST_CLOSER_service_level.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -9,6 +9,7 @@
 # 80510-1500 - Added fixed scale hold time graph
 # 80519-0413 - rewrote time intervals code and stats gathering code
 # 80528-2320 - fixed small calculation bugs and display bugs, added more shifts
+# 90310-2117 - Added admin header
 #
 
 require("dbconnect.php");
@@ -98,7 +99,14 @@ while ($i < $groups_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: VDAD Closer Service Level Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: VDAD Closer Service Level Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
 echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=10 MAXLENGTH=10 VALUE=\"$end_date\">\n";
@@ -943,5 +951,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

@@ -1,7 +1,7 @@
 <? 
 # AST_timeonVDADallSUMMARY.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Summary for all campaigns live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -14,6 +14,7 @@
 # 70619-1339 - Added Status Category tally display
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
 # 80525-1040 - Added IVR status summary display for inbound calls
+# 90310-2119 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -105,7 +106,14 @@ if (!isset($RR))   {$RR=4;}
 <? 
 
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&adastats=$adastats\">\n";
-echo "<TITLE>VICIDIAL: Realtime All Campaigns Summary</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Realtime All Campaigns Summary</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<b>VICIDIAL: Realtime All Campaigns Summary</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
 echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats\">STOP</a> | ";
 echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">SLOW</a> | ";
@@ -443,5 +451,6 @@ $k++;
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

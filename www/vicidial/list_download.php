@@ -80,6 +80,7 @@ if ($leads_count < 1)
 
 $US='_';
 $MT[0]='';
+$ip = getenv("REMOTE_ADDR");
 $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $FILE_TIME = date("Ymd-His");
@@ -87,6 +88,14 @@ $STARTtime = date("U");
 if (!isset($group)) {$group = '';}
 if (!isset($query_date)) {$query_date = $NOW_DATE;}
 if (!isset($end_date)) {$end_date = $NOW_DATE;}
+
+### LOG INSERTION Admin Log Table ###
+$SQL_log = "$stmt|$stmtA|";
+$SQL_log = ereg_replace(';','',$SQL_log);
+$SQL_log = addslashes($SQL_log);
+$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='EXPORT', record_id='$list_id', event_code='ADMIN EXPORT LIST', event_sql=\"$SQL_log\", event_notes='';";
+if ($DB) {echo "|$stmt|\n";}
+$rslt=mysql_query($stmt, $link);
 
 
 $TXTfilename = "LIST_$list_id$US$FILE_TIME.txt";

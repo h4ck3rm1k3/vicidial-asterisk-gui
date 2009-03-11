@@ -19,6 +19,7 @@
 # 81105-2118 - Added Answered calls 15-minute breakdown
 # 81109-2340 - Added custom indicators section
 # 90116-1040 - Rewrite of the 15-minute sections to speed it up and allow multi-day calculations
+# 90310-2037 - Admin header
 #
 
 require("dbconnect.php");
@@ -162,7 +163,14 @@ while ($i < $statcats_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: VDAD Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: VDAD Closer Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+$short_header=1;
+
+require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 if ($DB > 0)
 	{
 	echo "<BR>\n";
@@ -1495,5 +1503,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

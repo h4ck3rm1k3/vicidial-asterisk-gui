@@ -286,7 +286,7 @@ while ($sthArows > $rec_countY)
 		@nanpafile=@MT;
 		while ($sthArows > $rec_countN)
 			{
-			if ($DST =~ /Y/) {$DST_method = 'SSM-FSN';}
+			if ($aryA[3] =~ /Y/) {$DST_method = 'SSM-FSN';}
 			else {$DST_method = '';}
 			@aryA = $sthA->fetchrow_array;
 			$nanpafile[$rec_countN] = "$aryA[0]\t$aryA[1]\t$aryA[2]\t$DST_method";

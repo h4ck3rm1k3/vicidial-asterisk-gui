@@ -781,3 +781,9 @@ ALTER TABLE vicidial_users ADD shift_override_flag ENUM('0','1') default '0';
 ALTER TABLE vicidial_admin_log MODIFY event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','OTHER') default 'OTHER';
 
 UPDATE system_settings SET db_schema_version='1133';
+
+ALTER TABLE vicidial_users ADD export_reports ENUM('1','0') default '0';
+
+ALTER TABLE vicidial_admin_log MODIFY event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','EXPORT','OTHER') default 'OTHER';
+
+UPDATE system_settings SET db_schema_version='1134';

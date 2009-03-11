@@ -44,10 +44,11 @@
 # 81108-2337 - Added inbound-only section
 # 90105-1153 - Changed monitor links to use 0 prefix instead of 6
 # 90202-0108 - Changed options to pop-out frame, added outbound_autodial_active option
+# 90310-0906 - Added admin header
 #
 
-$version = '2.0.5-35';
-$build = '90202-0108';
+$version = '2.0.5-36';
+$build = '90310-0906';
 
 header ("Content-type: text/html; charset=utf-8");
 
@@ -262,7 +263,7 @@ $NFB = '<b><font size=6 face="courier">';
 $NFE = '</font></b>';
 $F=''; $FG=''; $B=''; $BG='';
 
-$select_list = "<TABLE WIDTH=200 CELLPADDING=5 BGCOLOR=\"#FFFF99\"><TR><TD>Select Campaigns: <BR>";
+$select_list = "<TABLE WIDTH=200 CELLPADDING=5 BGCOLOR=\"#D9E6FE\"><TR><TD>Select Campaigns: <BR>";
 $select_list .= "<SELECT SIZE=10 NAME=groups[] multiple>";
 	$o=0;
 	while ($groups_to_print > $o)
@@ -314,7 +315,7 @@ $select_list .= "<TD NOWRAP>";
 $select_list .= "<font size=1>VERSION: $version &nbsp; BUILD: $build</font>";
 $select_list .= "</TD></TR></TABLE>";
 
-$open_list = "<TABLE WIDTH=250 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER><a href=\"#\" onclick=\"openDiv(\'campaign_select_list\');\">Choose Report Display Options</a></TD></TR></TABLE>";
+$open_list = "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><TR><TD ALIGN=CENTER><a href=\"#\" onclick=\"openDiv(\'campaign_select_list\');\"><font size=2>Choose Report Display Options</a></TD></TR></TABLE>";
 
 ?>
 
@@ -388,7 +389,14 @@ $rslt=mysql_query($stmt, $link);
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB$groupQS&adastats=$adastats&SIPmonitorLINK=$SIPmonitorLINK&IAXmonitorLINK=$IAXmonitorLINK&usergroup=$usergroup&UGdisplay=$UGdisplay&UidORname=$UidORname&orderby=$orderby&SERVdisplay=$SERVdisplay&CALLSdisplay=$CALLSdisplay&PHONEdisplay=$PHONEdisplay&CUSTPHONEdisplay=$CUSTPHONEdisplay&with_inbound=$with_inbound\">\n";
-echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Time On VDAD Campaign: $group</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=HIDDEN NAME=RR VALUE=\"$RR\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
@@ -404,8 +412,8 @@ echo "<INPUT TYPE=HIDDEN NAME=CALLSdisplay VALUE=\"$CALLSdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=PHONEdisplay VALUE=\"$PHONEdisplay\">\n";
 echo "<INPUT TYPE=HIDDEN NAME=CUSTPHONEdisplay VALUE=\"$CUSTPHONEdisplay\">\n";
 echo "VICIDIAL Real-Time&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
-echo "<span style=\"position:absolute;left:160px;top:3px;z-index:19;\"  id=campaign_select_list>\n";
-echo "<TABLE WIDTH=250 CELLPADDING=1 BGCOLOR=\"#FFFF99\"><TR><TD ALIGN=CENTER>\n";
+echo "<span style=\"position:absolute;left:160px;top:27px;z-index:19;\"  id=campaign_select_list>\n";
+echo "<TABLE WIDTH=250 CELLPADDING=0 CELLSPACING=0 BGCOLOR=\"#D9E6FE\"><TR><TD ALIGN=CENTER>\n";
 echo "<a href=\"#\" onclick=\"openDiv('campaign_select_list');\">Choose Report Display Options</a>";
 echo "</TD></TR></TABLE>\n";
 echo "</span>\n";
@@ -420,8 +428,7 @@ else
 	{
 	echo " &nbsp; &nbsp; &nbsp; <a href=\"./admin.php?ADD=34&campaign_id=$group\">MODIFY</a> | \n";
 	}
-echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\">SUMMARY</a> | \n";
-echo "<a href=\"./admin.php?ADD=999999\">REPORTS</a> </FONT>\n";
+echo "<a href=\"./AST_timeonVDADallSUMMARY.php?RR=$RR&DB=$DB&adastats=$adastats\">SUMMARY</a> </FONT>\n";
 echo "\n\n";
 
 
@@ -1650,5 +1657,6 @@ $calls_to_list = mysql_num_rows($rslt);
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

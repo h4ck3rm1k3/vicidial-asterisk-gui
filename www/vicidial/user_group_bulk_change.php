@@ -6,6 +6,7 @@
 # CHANGES
 # 81119-0918 - First build
 # 90309-1830 - Added admin_log logging
+# 90310-2144 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -119,14 +120,37 @@ while ($i < $groups_to_print)
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: User Group Bulk Change</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: User Group Bulk Change
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'311111';
+$hh =					'usergroups';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$usergroups_color =		'#FFFF99';
+$usergroups_font =		'BLACK';
+$usergroups_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php?ADD=100000\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Group Bulk Change</TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; User Group Bulk Change</TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; </TD></TR>
 
 
 

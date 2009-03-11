@@ -7,6 +7,7 @@
 #
 # 90206-2202 - First build
 # 90225-1051 - Added CSV download option
+# 90310-0752 - Added admin header
 #
 
 
@@ -157,6 +158,16 @@ if ($file_download < 1)
 	 </STYLE>
 
 	<?
+
+	echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+	echo "<TITLE>VICIDIAL: Agent Days Status</TITLE></HEAD><BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<span style=\"position:absolute;left:0px;top:0px;z-index:20;\"  id=admin_header>";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+	echo "</span>\n";
 	echo "<span style=\"position:absolute;left:3px;top:3px;z-index:19;\"  id=agent_status_stats>\n";
 	echo "<PRE><FONT SIZE=2>\n";
 	}
@@ -508,8 +519,8 @@ if ($file_download > 0)
 	}
 
 
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: Agent Status</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<TABLE CELLSPACING=3><TR><TD VALIGN=TOP> Dates:<BR>";
 echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";

@@ -1,12 +1,13 @@
 <?
 # timeclock_edit.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 80624-1342 - First build
 # 80701-1323 - functional beta version done
+# 90310-2109 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -213,89 +214,36 @@ $browser = getenv("HTTP_USER_AGENT");
 ?>
 <html>
 <head>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <title>VICIDIAL ADMIN: Timeclock Record Edit
 <?
-echo "</title>\n";
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<script language=\"Javascript\">\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$TCedit_javascript =	'1';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
 ?>
 
-function run_submit()
-	{
-	calculate_hours();
-	var go_submit = document.getElementById("go_submit");
-	if (go_submit.disabled == false)
-		{
-		document.edit_log.submit();
-		}
-	}
 
-// Calculate login time
-function calculate_hours() 
-	{
-	var now_epoch = '<? echo $StarTtimE ?>';
-	var i=0;
-	var total_percent=0;
-	var SPANlogin_time = document.getElementById("LOGINlogin_time");
-	var LI_date = document.getElementById("LOGINbegin_date");
-	var LO_date = document.getElementById("LOGOUTbegin_date");
-	var LI_datetime = LI_date.value;
-	var LO_datetime = LO_date.value;
-	var LI_datetime_array=LI_datetime.split(" ");
-	var LI_date_array=LI_datetime_array[0].split("-");
-	var LI_time_array=LI_datetime_array[1].split(":");
-	var LO_datetime_array=LO_datetime.split(" ");
-	var LO_date_array=LO_datetime_array[0].split("-");
-	var LO_time_array=LO_datetime_array[1].split(":");
-
-	// Calculate milliseconds since 1970 for each date string and find diff
-	var LI_sec = ( ( (LI_time_array[2] * 1) * 1000) );
-	var LI_min = ( ( ( (LI_time_array[1] * 1) * 1000) * 60 ) );
-	var LI_hour = ( ( ( (LI_time_array[0] * 1) * 1000) * 3600 ) );
-	var LI_date_epoch = Date.parse(LI_date_array[0] + '/' + LI_date_array[1] + '/' + LI_date_array[2]);
-	var LI_epoch = (LI_date_epoch + LI_sec + LI_min + LI_hour);
-	var LO_sec = ( ( (LO_time_array[2] * 1) * 1000) );
-	var LO_min = ( ( ( (LO_time_array[1] * 1) * 1000) * 60 ) );
-	var LO_hour = ( ( ( (LO_time_array[0] * 1) * 1000) * 3600 ) );
-	var LO_date_epoch = Date.parse(LO_date_array[0] + '/' + LO_date_array[1] + '/' + LO_date_array[2]);
-	var LO_epoch = (LO_date_epoch + LO_sec + LO_min + LO_hour);
-	var temp_LI_epoch = (LI_epoch / 1000 );
-	var temp_LO_epoch = (LO_epoch / 1000 );
-	var epoch_diff = ( (LO_epoch - LI_epoch) / 1000 );
-	var temp_diff = epoch_diff;
-
-	document.getElementById("login_time").innerHTML = "ERROR, Please check date fields";
-
-	var go_submit = document.getElementById("go_submit");
-	go_submit.disabled = true;
-	// length is a positive number and no more than 24 hours, datetime is earlier than right now
-	if ( (epoch_diff < 86401) && (epoch_diff > 0) && (temp_LI_epoch < now_epoch) && (temp_LO_epoch < now_epoch) )
-		{
-		go_submit.disabled = false;
-
-		hours = Math.floor(temp_diff / (60 * 60)); 
-		temp_diff -= hours * (60 * 60);
-
-		mins = Math.floor(temp_diff / 60); 
-		temp_diff -= mins * 60;
-
-		secs = Math.floor(temp_diff); 
-		temp_diff -= secs;
-
-		document.getElementById("login_time").innerHTML = hours + ":" + mins;
-
-		var form_LI_epoch = document.getElementById("LOGINepoch");
-		var form_LO_epoch = document.getElementById("LOGOUTepoch");
-		form_LI_epoch.value = (LI_epoch / 1000);
-		form_LO_epoch.value = (LO_epoch / 1000);
-		}
-	}
-
-</script>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 <CENTER>
-<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: Timeclock Record Edit for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=720 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B>Timeclock Record Edit for <? echo $user ?></TD><TD ALIGN=RIGHT> &nbsp; </TD></TR>
 
 <? 
 

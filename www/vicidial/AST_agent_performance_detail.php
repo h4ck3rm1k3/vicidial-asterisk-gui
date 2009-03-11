@@ -1,7 +1,7 @@
 <? 
 # AST_agent_performance_detail.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -15,6 +15,7 @@
 # 81030-1924 - Added total non-pause and total logged-in time to pause code section
 # 81108-0716 - fixed user same-name bug
 # 81110-0056 - fixed pause code display bug
+# 90310-2039 - Admin header
 #
 
 require("dbconnect.php");
@@ -125,7 +126,14 @@ while ($i < $user_groups_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
@@ -929,5 +937,7 @@ echo "\n\n";
 
 
 ?>
+
+</TD></TR></TABLE>
 
 </BODY></HTML>

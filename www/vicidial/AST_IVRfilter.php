@@ -1,11 +1,12 @@
 <? 
 # AST_IVRfilter.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 81030-0432 - First build
+# 90310-2054 - Admin header
 #
 
 require("dbconnect.php");
@@ -82,7 +83,14 @@ $i=0;
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: VDL IVR Filter Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: VDL IVR Filter Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<TABLE BORDER=0><TR><TD VALIGN=TOP>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
@@ -235,5 +243,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>
