@@ -16,6 +16,7 @@
 # 80316-2208 - Added $PATHlogs/archive for backups
 # 80526-1345 - Added Timeclock auto-logout option 9
 # 90210-0319 - Added option to prompt for Asterisk version
+# 90312-1256 - Added CLI flag for automatic configuration
 #
 
 ############################################
@@ -142,6 +143,7 @@ if (length($ARGV[0])>1)
 	print "  [--help] = this help screen\n";
 	print "  [--test] = test (will not copy files)\n";
 	print "  [--debug] = verbose debug messages\n";
+	print "  [--no-prompt] = do not ask questions, just install\n";
 	print "  [--web-only] = only copy files/directories for web server install\n";
 	print "  [--without-web] = do not copy web files/directories\n\n";
 	print "configuration options:\n";
@@ -196,27 +198,19 @@ if (length($ARGV[0])>1)
 	exit;
 	}
 	else
-	{
+		{
 		if ($args =~ /--debug/i) # Debug flag
-		{
-		$DB=1;
-		}
+			{$DB=1;}
 		if ($args =~ /--test/i) # test flag
-		{
-		$TEST=1;   $T=1;
-		}
+			{$TEST=1;   $T=1;}
 		if ($args =~ /--web-only/i) # web-only flag
-		{
-		$WEBONLY=1;
-		}
+			{$WEBONLY=1;		}
 		if ($args =~ /--without-web/i) # without web flag
-		{
-		$NOWEB=1;
-		}
+			{$NOWEB=1;}
 		else
-		{
-		$NOWEB=0;
-		}
+			{$NOWEB=0;}
+		if ($args =~ /--no-prompt/i) # do not ask questions
+			{$NOPROMPT=1;}
 		if ($args =~ /--home=/i) # CLI defined home path
 		{
 		@CLIhomeARY = split(/--home=/,$args);
@@ -1001,10 +995,13 @@ if (-e "$PATHconf")
 		}
 	}
 
-print("\nWould you like to use manual configuration and installation(y/n): [y] ");
-$manual = <STDIN>;
-chomp($manual);
-if ($manual =~ /n/i)
+if (!$NOPROMPT)
+	{
+	print("\nWould you like to use manual configuration and installation(y/n): [y] ");
+	$manual = <STDIN>;
+	chomp($manual);
+	}
+if ( ($manual =~ /n/i) || ($NOPROMPT > 0) )
 	{
 	$manual=0;
 	}
@@ -2237,9 +2234,10 @@ if ($NOWEB < 1)
 	`chmod 0777 $PATHweb/vicidial/server_reports/`;
 	}
 
-if ($PROMPTcopy_conf_files =~ /y/i)
+if ( ($PROMPTcopy_conf_files =~ /y/i) || ($CLIcopy_conf_files =~ /y/i) )
 	{
 	print "Copying sample conf files to /etc/asterisk/...\n";
+	`mkdir -p /etc/asterisk`;
 	if ($VARasterisk_version =~ /^1.2/)
 		{
 		`cp -f ./docs/conf_examples/extensions.conf.sample /etc/asterisk/extensions.conf`;

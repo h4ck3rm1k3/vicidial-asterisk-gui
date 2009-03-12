@@ -84,6 +84,9 @@ if (-e "/root/asterisk_command_reload_iax2")
 		}
 
 	`$findbin /root/ -maxdepth 1 -name "asterisk_command*" -print | xargs rm -f`;
+
+	`ulimit -n 65536`;
+
 	}
 
 if ($SYSLOG) 
