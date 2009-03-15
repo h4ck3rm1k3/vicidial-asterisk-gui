@@ -1,4 +1,4 @@
-Asterisk/astguiclient install from scratch.    v.2.0.5               2008-12-03
+Asterisk/astguiclient install from scratch.    v.2.2.0               2009-03-15
    By the VICIDIAL group                                      info@vicidial.com
 
 **** IMPORTANT - In order for vicidial/astguiclient to function correctly please
@@ -88,7 +88,7 @@ partitions:
    - press F3 to exit and let it do it's thing, this will take an hour or so.
 
 4.	Go to http://www.slackware.com/getslack/ to download Slackware linux. 
-The most recent release as of this writing is 12.0. This release fits on 3 CDs
+The most recent release we recommend is 11.0. This release fits on 3 CDs
 or 1 DVD. Download both installation disks from any close server listed on the
 download page and burn them both to CDs.
 
@@ -366,35 +366,45 @@ a more loaded system.
 
   Go to http://www.mysql.com/ and download the mysql package
    - to install this directly on the command line type:
-	- cd /usr/local
-	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-4.0/mysql-4.0.27.tar.gz
-		# http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.45.tar.gz
-	- gunzip mysql-4.0.27.tar.gz
-	- tar xvf mysql-4.0.27.tar
-	- cd mysql-4.0.27
+	- cd /usr/local/
+	- wget http://mirror.trouble-free.net/mysql_mirror/Downloads/MySQL-5.0/mysql-5.0.67.tar.gz
+	- gunzip mysql-5.0.67.tar.gz
+	- tar xvf mysql-5.0.67.tar
+	- cd mysql-5.0.67
 	- groupadd mysql
 	- useradd -g mysql mysql
-	- "./configure --prefix=/usr/local/mysql --enable-large-files --enable-shared=yes --with-readline"
+	- ./configure --prefix=/usr/local/mysql --enable-shared=yes --with-readline --enable-thread-safe-client --enable-large-files --enable-assembler --with-client-ldflags=-all-static --with-mysqld-ldflags=-all-static --with-big-tables
 	   **** If only MySQL client is needed for DBD::mysql then use this:
 		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline"
-	   **** If using version 5 tree MySQL client then use this:
-		- "./configure --prefix=/usr/local/mysql --without-server --enable-shared=yes --with-readline --enable-thread-safe-client"
 	- make
 	- make install
+	- PATH=$PATH:$HOME/bin:/usr/local/mysql/bin/
+	- export PATH
+	- PATH=$PATH:$HOME/bin:/usr/local/mysql/include/mysql/
+	- export PATH
+	- cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so /usr/lib/
+	- cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
+	- cd /usr/local/mysql-5.0.67
 	- scripts/mysql_install_db
 	- chown -R root  /usr/local/mysql
 	- chown -R mysql /usr/local/mysql/var
 	- chgrp -R mysql /usr/local/mysql
-	- cp support-files/my-medium.cnf /etc/my.cnf
+	- cp support-files/my-huge.cnf /etc/my.cnf
 	- /usr/local/mysql/bin/mysqld_safe --user=mysql --skip-name-resolve --skip-host-cache &
 	- ln -s /tmp/mysql.sock /var/run/mysql/mysql.sock
+	- vi /etc/my.cnf
+	 	# add this line below 'skip-locking'
+	 	skip-name-resolve
+	 	# comment out the line 'log-bin=mysql-bin'
+	 	max_connections = 200
+
 	   **** For some systems you may need to add the mysql/bin directory to your PATH:
 		- PATH=$PATH:$HOME/bin:/usr/local/mysql/bin/
 		- export PATH
 	   **** you may also want to add those two lines to your /root/.bash_profile file
 	   **** For Mysql 5 tree only, you also may need to copy the libmysqlclient.so file to libs
-		- cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so /usr/lib/
-		- cp /usr/local/mysql-5.0.45/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
+		- cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so /usr/lib/
+		- cp /usr/local/mysql-5.0.67/libmysql/.libs/libmysqlclient.so.15 /usr/lib/
    - you are done
 
    ** INSTALLATION NOTE **
@@ -464,7 +474,7 @@ following modules first:   (say YES if asked to install prerequisites)
    - install Spreadsheet::ParseExcel
 - then quit cpan, you are done
 5. Go to http://asterisk.gnuinter.net/ and download the asterisk-perl module
-(backup link: http://downloads.vicidial.com/packages/asterisk-perl-0.08.tar.gz)
+(backup link: http://download.vicidial.com/packages/asterisk-perl-0.08.tar.gz)
 NOTE: Do NOT use the 0.09 version, it does not work with VICIDIAL
    - to install this directly on the command line type:
 	- cd /usr/local
@@ -654,10 +664,10 @@ updated on your system, so we're going to install a new version now.
 	- make
 	- make install
 	- cd /usr/local
-        - wget http://ftp.openssh.zone-h.org/pub/OpenBSD/OpenSSH/portable/openssh-5.0p1.tar.gz
-	- gunzip openssh-5.0p1.tar.gz
-	- tar xvf openssh-5.0p1.tar
-	- cd openssh-5.0p1
+        - wget http://ftp.arcane-networks.fr/pub/OpenBSD/OpenSSH/portable/openssh-5.2p1.tar.gz
+	- gunzip openssh-5.2p1.tar.gz
+	- tar xvf openssh-5.2p1.tar
+	- cd openssh-5.2p1
 	- ./configure
 	- make
 	- make install
@@ -672,10 +682,10 @@ your locally installed copy of Apache web server)
 9. Go to http://www.openssl.org/ and download the linux source for openssl
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz
-	- gunzip openssl-0.9.8g.tar.gz
-	- tar xvf openssl-0.9.8g.tar
-	- cd openssl-0.9.8g
+	- wget http://www.openssl.org/source/openssl-0.9.8j.tar.gz
+	- gunzip openssl-0.9.8j.tar.gz
+	- tar xvf openssl-0.9.8j.tar
+	- cd openssl-0.9.8j
 	- ./config
 	- make
 	- make install
@@ -692,18 +702,17 @@ installation on another machine)
     Go to http://www.php.net/ and download the php unix source code
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://mirror.candidhosting.com/pub/apache/httpd/httpd-2.2.8.tar.gz
-	- gunzip httpd-2.2.8.tar.gz
-	- tar xvf httpd-2.2.8.tar
-	- wget http://us2.php.net/distributions/php-5.2.6.tar.gz
-		NOTE: PHP 5.1.1 has also been tested with this release
-	- gunzip php-5.2.6.tar.gz
-	- tar xvf php-5.2.6.tar
-	- cd httpd-2.2.8
+	- wget http://mirror.nyi.net/apache/httpd/httpd-2.2.11.tar.gz
+	- gunzip httpd-2.2.11.tar.gz
+	- tar xvf httpd-2.2.11.tar
+	- wget http://us2.php.net/distributions/php-5.2.9.tar.gz
+	- gunzip php-5.2.9.tar.gz
+	- tar xvf php-5.2.9.tar
+	- cd httpd-2.2.11
 	- ./configure --enable-so --with-apxs2
 	- make
 	- make install
-	- cd ../php-5.2.6
+	- cd ../php-5.2.9
 	- ./configure --with-apxs2=/usr/local/apache2/bin/apxs --with-mysql
 	- make
 	- make install
@@ -760,9 +769,9 @@ installation on another machine)
    system setups. 
    - Go to http://eaccelerator.net and download the most recent package
 	- cd /usr/local
-	- wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.zip
-	- unzip eaccelerator-0.9.5.zip
-	- cd eaccelerator-0.9.5
+	- wget http://bart.eaccelerator.net/source/0.9.5/eaccelerator-0.9.5.3.zip
+	- unzip eaccelerator-0.9.5.3.zip
+	- cd eaccelerator-0.9.5.3
 	- export PHP_PREFIX="/usr/local"
 	- $PHP_PREFIX/bin/phpize
 	- ./configure --enable-eaccelerator=shared --with-php-config=$PHP_PREFIX/bin/php-config
@@ -822,10 +831,10 @@ this loaded on your system.
 12. Go to http://subversion.tigris.org to download the most recent source version
    - to install this directly on the command line type:
 	- cd /usr/local
-	- wget http://subversion.tigris.org/downloads/subversion-1.3.2.tar.gz
-	- gunzip subversion-1.3.2.tar.gz
-	- tar xvf subversion-1.3.2.tar
-	- cd subversion-1.3.2
+	- wget http://subversion.tigris.org/downloads/subversion-1.5.2.tar.gz
+	- gunzip subversion-1.5.2.tar.gz
+	- tar xvf subversion-1.5.2.tar
+	- cd subversion-1.5.2
 	- ./configure
 	- make
 	- make install
@@ -898,9 +907,9 @@ with the following patch:
 	- mkdir /usr/src/asterisk
 	- cd /usr/src/asterisk
    A. if you want 1.2 release (reliable with new features):
-	- wget http://ftp.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
-	- wget http://ftp.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
-	- wget http://ftp.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
+	- wget http://downloads.digium.com/pub/asterisk/releases/asterisk-1.2.30.2.tar.gz
+	- wget http://downloads.digium.com/pub/zaptel/releases/zaptel-1.2.27.tar.gz
+	- wget http://downloads.digium.com/pub/libpri/releases/libpri-1.2.5.tar.gz
 	- gunzip asterisk-1.2.30.2.tar.gz
 	- tar xvf asterisk-1.2.30.2.tar
 	- gunzip zaptel-1.2.27.tar.gz
@@ -969,11 +978,11 @@ with the following patch:
 			- File to patch: cli.c
 		
 		-(gcc version 4.2) apply the gsm audio codec patch to fix gsm
-		- wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
+		- wget http://download.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
 		- patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
 		*OPTIONAL*(1.2.14 thru 1.2.30.2) rewrite of waitforsilence
-		- wget http://downloads.vicidial.com/asterisk-patches/app_waitforsilence.c
+		- wget http://download.vicidial.com/asterisk-patches/app_waitforsilence.c
 		- mv -f app_waitforsilence.c apps/app_waitforsilence.c
 
 		*OPTIONAL* shorter enter and leave sounds for meetme
@@ -1015,12 +1024,12 @@ them:
 	- If you have chosen a Sangoma T1/E1 or analog card, you will need to 
 	  follow their instructions for installation of their driver software
 	  LATEST Sangoma Wanpipe drivers: 
-	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.2.4.tgz
+	  ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.3.9.tgz
    - now your asterisk installation is built and loaded and it's time to 
 configure it.
 
 NOTES: If you want to install zttool diagnostics you may need the newt package installed:
-	- wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
+	- wget http://download.vicidial.com/packages/newt-0.51.6.tar.gz
 	- gunzip newt-0.51.6.tar.gz
 	- tar xvf newt-0.51.6.tar
 	- cd newt-0.51.6
@@ -1088,6 +1097,11 @@ musiconhold audio files to be converted to native formats like GSM, ULAW and ALA
 
 
 PHASE 5: CONFIGURING ASTERISK AND YOUR SIP PHONES
+
+As of release 2.0.5 it is now possible to configure SIP and IAX phones and 
+carrier trunks without editing conf files, just by using the web administration
+interface. For more information on this, please read the VICIDIAL Manager
+Manual available at www.eflo.net
 
 In this phase we will configure the telco lines, the SIP phones, the extensions, 
 meetme(conference calling) rooms, dialplan extensions and the voicemail boxes. 
@@ -1178,6 +1192,12 @@ Here's what we used(you can set echocancel=no if you are using PRIs):
 	channel => 25-47
 
 3. edit sip.conf
+
+As of release 2.0.5 it is now possible to configure SIP and IAX phones and 
+carrier trunks without editing conf files, just by using the web administration
+interface. For more information on this, please read the VICIDIAL Manager
+Manual available at www.eflo.net
+
 	- vi /etc/asterisk/sip.conf
 	   here is where we will edit the configuration of our SIP compatible 
 phone devices. As stated at the beginning, we will be setting up a 
@@ -1248,6 +1268,12 @@ with a pin number required for entry):
 	conf => 8600
 	conf => 8601,1234
 5.  edit iax.conf
+
+As of release 2.0.5 it is now possible to configure SIP and IAX phones and 
+carrier trunks without editing conf files, just by using the web administration
+interface. For more information on this, please read the VICIDIAL Manager
+Manual available at www.eflo.net
+
 	- vi /etc/asterisk/iax.conf
 	   This is the IAX configuration file, below is a very simple config for
 	   having two Asterisk servers connect natively to each other, if you 
@@ -1401,6 +1427,11 @@ files, so be warned:
 	messages => notice,warning,error,debug,verbose
 9.  edit extensions.conf
 	- vi /etc/asterisk/extensions.conf
+
+You should be using the sample extensions.conf that is included with the
+release of VICIDIAL that you installed, below is just an explanation of what
+most of those entries do and why they are there.
+
 	   This is known as the dialplan. Since we are installing a 
 Long-Distance T1 with one 800 number on it, we will need to put that 
 800 number in the plan, as well as how to dial out through the T1 
@@ -1653,7 +1684,7 @@ follow the steps below:
   - http://www.virbiage.com/firefly/download/firefly-thirdparty.exe
   MIRRORS:
   - http://mirror.isp.net.au/ftp/pub/firefly/firefly-thirdparty.exe
-  - http://downloads.vicidial.com/softphones/firefly-thirdparty.exe
+  - http://download.vicidial.com/softphones/firefly-thirdparty.exe
   IDEFISK:
   - http://www.asteriskguru.com/idefisk/
 	- Install the application
@@ -1694,25 +1725,33 @@ SUBPHASE 6.0: putting the files in place
 There are two methods for downloading astGUIclient/VICIDIAL, a release and SVN
 
 1. Go to http://astguiclient.sf.net/ and download the latest astguiclient 
-package(as of this writing it is 2.0.4.1)
+package(as of this writing it is 2.0.5)
    - for 2.0.X release:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
-	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.4.1.zip
-	- unzip astguiclient_2.0.4.1.zip
+	- wget http://internap.dl.sourceforge.net/sourceforge/astguiclient/astguiclient_2.0.5.zip
+	- unzip astguiclient_2.0.5.zip
 	- perl install.pl (make sure you are in the directory with the install.pl file)
-   - for SVN 2.0 trunk:
+   - for SVN 2.0.5 branch:
+	- mkdir /usr/src/astguiclient
+	- cd /usr/src/astguiclient
+	- svn checkout svn://svn.eflo.net:43690/agc_2-X/branches/agc_2.0.5
+	- cd agc_2.0.5
+	- perl install.pl
+   - for SVN 2.2 trunk:
 	- mkdir /usr/src/astguiclient
 	- cd /usr/src/astguiclient
 	- svn checkout svn://svn.eflo.net:43690/agc_2-X/trunk
 	- cd trunk
 	- perl install.pl
 	    select to do interactive setup and customize to your server
+	    NOTE: if this is a fresh install, it is strongly suggested that you
+	    select 'Y' to copy the sample conf files.
    - there is one more file you need that's not included with the download 
 package, it's the conf.gsm file(this is the half-hour music file that we use 
 to put people on hold). I have a free classical music file that is available 
 free for download at the following two sites:
-	http://downloads.vicidial.com/sounds/conf.gsm
+	http://download.vicidial.com/sounds/conf.gsm
 	http://astguiclient.sf.net/conf.gsm
    Once you have downloaded it, you will need to copy it to this folder:
 		/var/lib/asterisk/sounds/
@@ -1720,7 +1759,7 @@ free for download at the following two sites:
    'cp /var/lib/asterisk/sounds/conf.gsm /var/lib/asterisk/sounds/park.gsm'
   Here are the steps spelled out:
 	cd /var/lib/asterisk/sounds
-	wget http://downloads.vicidial.com/sounds/conf.gsm
+	wget http://download.vicidial.com/sounds/conf.gsm
 	cp conf.gsm park.gsm
 
    - you are done
@@ -1755,7 +1794,7 @@ GRANT RELOAD ON *.* TO cron@localhost;
 
 flush privileges;
 
-# NOTE: if using MySQL 4.1.12 or higher you may need to run this query too:
+# NOTE: if using MySQL 4.1.X or higher(not 5.X) you may need to run this query too:
 UPDATE mysql.user set password=OLD_PASSWORD('1234') where user='cron';
 
 # To make sure that new processes can connect to the Database under load we should 
@@ -1770,74 +1809,22 @@ use asterisk;
 
 \. /usr/src/astguiclient/trunk/extras/MySQL_AST_CREATE_tables.sql
 	or you may need to run this if you get an error:
-	\. /usr/src/astguiclient/agc_2.0.4/extras/MySQL_AST_CREATE_tables.sql
+	\. /usr/src/astguiclient/agc_2.0.5/extras/MySQL_AST_CREATE_tables.sql
 	\. /usr/src/astguiclient/astguiclient/MySQL_AST_CREATE_tables.sql
 
 ### to load in default IAX and SIP phone accounts run the following query
 
 \. /usr/src/astguiclient/trunk/extras/sip-iax_phones.sql
 	or you may need to run this if you get an error:
-	\. /usr/src/astguiclient/agc_2.0.4/extras/sip-iax_phones.sql
+	\. /usr/src/astguiclient/agc_2.0.5/extras/sip-iax_phones.sql
 	\. /usr/src/astguiclient/astguiclient/sip-iax_phones.sql
 
+### to load the initial server values for this first system install
 
-insert into servers (server_id,server_description,server_ip,active,asterisk_version)values('TESTasterisk','Test install of Asterisk server', '10.10.10.15','Y','1.2.30.2');
-
-insert into server_updater values('10.10.10.15','');
-
-insert into phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, picture, messages, old_messages, protocol) values('gs102','102','102','10.10.10.16','10.10.9.16','10.10.10.15','gs102','test', 'ADMIN','Y','Grandstream BT 102','Test Admin Phone','TEST','','0','0','SIP');
-
-insert into vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users) values('6666','1234','Admin','9','ADMIN','1','1','1','1');
-
-insert into conferences values('8600001','10.10.10.15','');
-insert into conferences values('8600002','10.10.10.15','');
-insert into conferences values('8600003','10.10.10.15','');
-insert into conferences values('8600004','10.10.10.15','');
-insert into conferences values('8600005','10.10.10.15','');
-insert into conferences values('8600006','10.10.10.15','');
-insert into conferences values('8600007','10.10.10.15','');
-insert into conferences values('8600008','10.10.10.15','');
-insert into conferences values('8600009','10.10.10.15','');
-insert into conferences values('8600010','10.10.10.15','');
-insert into conferences values('8600011','10.10.10.15','');
-insert into conferences values('8600012','10.10.10.15','');
-insert into conferences values('8600013','10.10.10.15','');
-insert into conferences values('8600014','10.10.10.15','');
-insert into conferences values('8600015','10.10.10.15','');
-insert into conferences values('8600016','10.10.10.15','');
-insert into conferences values('8600017','10.10.10.15','');
-insert into conferences values('8600018','10.10.10.15','');
-insert into conferences values('8600019','10.10.10.15','');
-insert into conferences values('8600020','10.10.10.15','');
-insert into conferences values('8600021','10.10.10.15','');
-insert into conferences values('8600022','10.10.10.15','');
-insert into conferences values('8600023','10.10.10.15','');
-insert into conferences values('8600024','10.10.10.15','');
-insert into conferences values('8600025','10.10.10.15','');
-insert into conferences values('8600026','10.10.10.15','');
-insert into conferences values('8600027','10.10.10.15','');
-insert into conferences values('8600028','10.10.10.15','');
-insert into conferences values('8600029','10.10.10.15','');
-insert into conferences values('8600030','10.10.10.15','');
-insert into conferences values('8600031','10.10.10.15','');
-insert into conferences values('8600032','10.10.10.15','');
-insert into conferences values('8600033','10.10.10.15','');
-insert into conferences values('8600034','10.10.10.15','');
-insert into conferences values('8600035','10.10.10.15','');
-insert into conferences values('8600036','10.10.10.15','');
-insert into conferences values('8600037','10.10.10.15','');
-insert into conferences values('8600038','10.10.10.15','');
-insert into conferences values('8600039','10.10.10.15','');
-insert into conferences values('8600040','10.10.10.15','');
-insert into conferences values('8600041','10.10.10.15','');
-insert into conferences values('8600042','10.10.10.15','');
-insert into conferences values('8600043','10.10.10.15','');
-insert into conferences values('8600044','10.10.10.15','');
-insert into conferences values('8600045','10.10.10.15','');
-insert into conferences values('8600046','10.10.10.15','');
-insert into conferences values('8600047','10.10.10.15','');
-insert into conferences values('8600048','10.10.10.15','');
-insert into conferences values('8600049','10.10.10.15','');
+\. /usr/src/astguiclient/trunk/extras/first_server_install.sql
+	or you may need to run this if you get an error:
+	\. /usr/src/astguiclient/agc_2.0.5/extras/first_server_install.sql
+	\. /usr/src/astguiclient/astguiclient/first_server_install.sql
 
 quit
 
@@ -1847,8 +1834,8 @@ quit
   to load the performance testing leads run these commands:
    - cp /usr/src/astguiclient/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
        or
-	   - cp /usr/src/astguiclient/agc_2.0.4/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
-	   - cp /usr/src/astguiclient_2.0.4.1/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+	   - cp /usr/src/astguiclient/agc_2.0.5/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
+	   - cp /usr/src/astguiclient_2.0.5/trunk/extras/performance_test_leads.txt /usr/share/astguiclient/LEADS_IN/
 
    - /usr/share/astguiclient/VICIDIAL_IN_new_leads_file.pl --forcelistid=107 --forcephonecode=1
 
@@ -1919,6 +1906,10 @@ SUBPHASE 6.2: making additions to your Asterisk conf files
 Now that the database is set up and our phones have entries in the system we can 
 make the additions to the running Asterisk system that will allow astguiclient 
 to work with it.
+
+Again, if you have selected to use the sample conf files during installation 
+then you do not have to add any of these lines to your conf files, they should 
+already be included.
 
 1. Add the call_log entries to all incoming/outgoing extensions entries:
    - here is how our sample dialplan changes for adding call_log entries(only 
@@ -2593,263 +2584,7 @@ applications
 We need to add a few initial values to the vicidial tables in the "asterisk" 
 database in order to start setting up the vicidial dialer system for use.
 
-1.  at the command prompt type this to go to the mysql client: 
-/usr/local/mysql/bin/mysql
-2.  type the following into the mysql client prompt:
-   (make sure you put your IP address in place of "10.10.10.15" in the queries below)
-######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
-
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600051','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600052','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600053','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600054','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600055','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600056','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600057','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600058','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600059','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600060','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600061','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600062','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600063','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600064','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600065','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600066','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600067','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600068','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600069','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600070','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600071','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600072','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600073','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600074','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600075','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600076','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600077','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600078','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600079','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600080','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600081','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600082','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600083','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600084','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600085','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600086','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600087','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600088','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600089','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600090','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600091','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600092','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600093','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600094','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600095','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600096','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600097','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600098','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600099','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600100','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600101','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600102','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600103','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600104','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600105','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600106','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600107','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600108','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600109','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600110','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600111','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600112','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600113','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600114','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600115','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600116','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600117','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600118','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600119','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600120','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600121','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600122','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600123','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600124','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600125','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600126','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600127','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600128','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600129','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600130','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600131','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600132','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600133','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600134','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600135','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600136','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600137','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600138','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600139','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600140','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600141','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600142','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600143','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600144','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600145','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600146','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600147','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600148','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600149','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600150','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600151','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600152','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600153','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600154','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600155','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600156','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600157','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600158','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600159','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600160','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600161','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600162','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600163','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600164','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600165','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600166','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600167','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600168','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600169','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600170','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600171','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600172','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600173','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600174','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600175','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600176','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600177','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600178','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600179','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600180','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600181','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600182','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600183','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600184','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600185','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600186','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600187','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600188','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600189','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600190','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600191','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600192','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600193','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600194','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600195','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600196','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600197','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600198','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600199','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600200','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600201','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600202','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600203','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600204','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600205','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600206','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600207','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600208','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600209','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600210','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600211','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600212','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600213','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600214','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600215','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600216','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600217','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600218','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600219','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600220','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600221','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600222','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600223','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600224','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600225','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600226','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600227','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600228','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600229','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600230','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600231','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600232','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600233','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600234','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600235','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600236','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600237','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600238','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600239','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600240','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600241','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600242','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600243','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600244','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600245','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600246','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600247','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600248','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600249','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600250','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600251','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600252','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600253','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600254','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600255','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600256','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600257','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600258','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600259','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600260','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600261','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600262','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600263','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600264','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600265','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600266','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600267','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600268','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600269','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600270','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600271','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600272','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600273','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600274','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600275','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600276','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600277','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600278','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600279','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600280','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600281','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600282','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600283','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600284','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600285','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600286','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600287','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600288','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600289','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600290','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600291','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600292','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600293','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600294','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600295','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600296','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600297','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600298','10.10.10.15');
-INSERT INTO vicidial_conferences(conf_exten,server_ip) values('8600299','10.10.10.15');
-
-######------ END Mysql data entry ------######
+#### REMOVED, not necessary if you run the first_server_install.sql file above
 
 
 
@@ -2942,7 +2677,7 @@ SUBPHASE 6.5: setting up astguiclient scripts for continuous running
 * * * * * /usr/share/astguiclient/AST_VDhopper.pl -q
 
 ### adjust the GMT offset for the leads in the vicidial_list table
-1 1,7 * * * /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl --debug --postal-code-gmt
+1 1,7 * * * /usr/share/astguiclient/ADMIN_adjust_GMTnow_on_leads.pl --debug
 
 ### reset several temporary-info tables in the database
 2 1 * * * /usr/share/astguiclient/AST_reset_mysql_vars.pl
@@ -3014,54 +2749,8 @@ queries are below:
 (Note: you may want to replace 7275551212 with a real number to test in these 
 records)
 
-1.  at the command prompt type go to the mysql client: 
-/usr/local/mysql/bin/mysql
-2.  type the following into the mysql client prompt:
-   (make sure you put your IP address in place of "10.10.10.15" in the queries 
-below)
-######------ BEGIN Mysql data entry(you can copy and paste this into terminal) #
+#### REMOVED, not necessary if you run the first_server_install.sql file above
 
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead01','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead02','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead03','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead04','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead05','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead06','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-INSERT INTO vicidial_list(status,list_id,phone_code,phone_number,first_name,last_name,address1,city,state,postal_code,country_code,gender,email) values('NEW','101','1','7275551212','Matt','lead07','1234 Fake St.','Clearwater','FL','33760','USA','M','test@test.com');
-
-### these first 5 must be in all VICIDIAL systems for it to work properly #
-INSERT INTO vicidial_statuses values('NEW','New Lead','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('QUEUE','Lead To Be Called','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('INCALL','Lead Being Called','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('DROP','Agent Not Available','N','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('XDROP','Agent Not Available IN','N','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('NA','No Answer AutoDial','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('CALLBK','Call Back','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('CBHOLD','Call Back Hold','N','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('A','Answering Machine','Y','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('AA','Answering Machine Auto','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('AM','Answering Machine Sent to Mesg','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('AL','Answering Machine Msg Played','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('B','Busy','Y','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('DC','Disconnected Number','Y','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('DEC','Declined Sale','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('DNC','DO NOT CALL','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('DNCL','DO NOT CALL Hopper Match','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('SALE','Sale Made','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('N','No Answer','Y','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('NI','Not Interested','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('NP','No Pitch No Price','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('PU','Call Picked Up','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('PM','Played Message','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('XFER','Call Transferred','Y','Y','UNDEFINED');
-INSERT INTO vicidial_statuses values('ERI','Agent Error','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('SVYEXT','Survey sent to Extension','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('SVYVM','Survey sent to Voicemail','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('SVYHU','Survey Hungup','N','N','UNDEFINED');
-INSERT INTO vicidial_statuses values('SVYREC','Survey sent to Record','N','N','UNDEFINED');
-
-quit
-######------ END Mysql data entry ------######
 
 Now that the sample leads and disposition codes have been entered, we can go 
 into the VICIDIAL administration website and set up our campaigns, lists and users.

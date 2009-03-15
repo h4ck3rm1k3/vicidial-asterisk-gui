@@ -1644,11 +1644,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90308-0956 - Added server statistics
 # 90309-0059 - Changed logging to admin_server_log
 # 90310-2203 - Added export_reports option for call activity report data exports
+# 90315-1010 - Changed revision for new trunk 2.2.0
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-172';
-$build = '90310-2203';
+$admin_version = '2.2.0-172';
+$build = '90315-1010';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");

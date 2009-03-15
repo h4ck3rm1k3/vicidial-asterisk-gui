@@ -1,9 +1,15 @@
 ################ UPGRADE
 
-NOTE: Upgrading from 2.0.3 to 2.0.4 is below the first section
-NOTE: Upgrading from 2.0.2 to 2.0.3 is below the second section
+NOTE: Upgrading from 2.0.4 to 2.0.5 is below the first section
+NOTE: Upgrading from 2.0.3 to 2.0.4 is below the second section
+NOTE: Upgrading from 2.0.2 to 2.0.3 is below the third section
 NOTE: Upgrading from 2.0.1 to 2.0.2 is in the next section
 NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
+
+########## UPGRADING FROM 2.0.5 TO 2.2.0 ##########
+
+Nothing yet, this was just branched
+
 
 ########## UPGRADING FROM 2.0.4 TO 2.0.5 ##########
 

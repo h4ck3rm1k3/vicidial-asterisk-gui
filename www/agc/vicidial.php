@@ -222,10 +222,11 @@
 # 90304-1333 - Added user-specific web vars option
 # 90305-0917 - Added prefix-choice and group-alias options for calls coming from API
 # 90307-1736 - Added Shift enforcement and manager override features
+# 90315-1009 - Changed revision for new trunk 2.2.0
 #
 
-$version = '2.0.5-201';
-$build = '90307-1736';
+$version = '2.2.0-201';
+$build = '90315-1009';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=60;
 $one_mysql_log=0;

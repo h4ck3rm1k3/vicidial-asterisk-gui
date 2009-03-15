@@ -1,4 +1,4 @@
-# Quick install of required apps    v.2.0.5               2008-XX-XX
+# Quick install of required apps    v.2.2.0               2009-03-15
 # This file is a supplement to the BASE_INSTALL document giving you simple copy/
 # paste installation shell commands for required and helper apps for VICIDIAL
 # might need:   echo '/* Linuxthreads */' >> /usr/include/pthread.h
@@ -152,9 +152,9 @@ cd zlib-1.2.3
 make
 make install
 cd /usr/local
-wget http://ftp.openssh.zone-h.org/pub/OpenBSD/OpenSSH/portable/openssh-5.1p1.tar.gz
-gunzip openssh-5.1p1.tar.gz
-tar xvf openssh-5.1p1.tar
+wget http://ftp.arcane-networks.fr/pub/OpenBSD/OpenSSH/portable/openssh-5.2p1.tar.gz
+gunzip openssh-5.2p1.tar.gz
+tar xvf openssh-5.2p1.tar
 cd openssh-5.1p1
 ./configure
 make
@@ -162,10 +162,10 @@ make install
 
 
 cd /usr/local
-wget http://www.openssl.org/source/openssl-0.9.8i.tar.gz
-gunzip openssl-0.9.8i.tar.gz
-tar xvf openssl-0.9.8i.tar
-cd openssl-0.9.8i
+wget http://www.openssl.org/source/openssl-0.9.8j.tar.gz
+gunzip openssl-0.9.8j.tar.gz
+tar xvf openssl-0.9.8j.tar
+cd openssl-0.9.8j
 ./config
 make
 make install
@@ -192,9 +192,9 @@ make install
 
 
 cd /usr/local
-wget http://us2.php.net/distributions/php-5.2.8.tar.gz
-gunzip php-5.2.8.tar.gz
-tar xvf php-5.2.8.tar
+wget http://us2.php.net/distributions/php-5.2.9.tar.gz
+gunzip php-5.2.9.tar.gz
+tar xvf php-5.2.9.tar
 wget http://mirror.nyi.net/apache/httpd/httpd-2.2.11.tar.gz
 gunzip httpd-2.2.11.tar.gz
 tar xvf httpd-2.2.11.tar
@@ -212,7 +212,7 @@ openssl req -new -x509 -days 1200 -keyout /usr/local/apache2/conf/ssl.key/server
 openssl rsa -in /usr/local/apache2/conf/ssl.key/server.key.cpy -out /usr/local/apache2/conf/ssl.key/server.key
 
 
-cd ../php-5.2.8
+cd ../php-5.2.9
 make clean
 ./configure --with-mysql=/usr/local/mysql --enable-inline-optimization --enable-memory-limit --enable-track-vars --enable-libgcc --enable-sysvsem --with-openssl --with-apxs2=/usr/local/apache2/bin/apxs --with-zlib
 make
@@ -349,7 +349,7 @@ tar xvf zaptel-1.2.27.tar
 gunzip libpri-1.2.8.tar.gz
 tar xvf libpri-1.2.8.tar
 cd ./zaptel-1.2.27
-wget http://downloads.vicidial.com/packages/newt-0.51.6.tar.gz
+wget http://download.vicidial.com/packages/newt-0.51.6.tar.gz
 gunzip newt-0.51.6.tar.gz
 tar xvf newt-0.51.6.tar
 cd newt-0.51.6
@@ -403,10 +403,10 @@ patch -p1 < ./cli_chan_concise_delimiter.patch
 	
 	- File to patch: cli.c
 
-wget http://downloads.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
+wget http://download.vicidial.com/asterisk-patches/1.2-gsm-gcc4.2.patch
 patch -p1 ./codecs/gsm/Makefile 1.2-gsm-gcc4.2.patch
 
-wget http://downloads.vicidial.com/asterisk-patches/app_waitforsilence.c
+wget http://download.vicidial.com/asterisk-patches/app_waitforsilence.c
 mv -f app_waitforsilence.c apps/app_waitforsilence.c
 wget http://www.eflo.net/files/enter.h
 wget http://www.eflo.net/files/leave.h
