@@ -787,3 +787,10 @@ ALTER TABLE vicidial_users ADD export_reports ENUM('1','0') default '0';
 ALTER TABLE vicidial_admin_log MODIFY event_type ENUM('ADD','COPY','LOAD','RESET','MODIFY','DELETE','SEARCH','LOGIN','LOGOUT','CLEAR','OVERRIDE','EXPORT','OTHER') default 'OTHER';
 
 UPDATE system_settings SET db_schema_version='1134';
+
+
+
+
+ALTER TABLE vicidial_campaigns DROP campaign_shift_start_time;
+ALTER TABLE vicidial_campaigns DROP campaign_shift_length;
+ALTER TABLE vicidial_campaigns DROP campaign_day_start_time;

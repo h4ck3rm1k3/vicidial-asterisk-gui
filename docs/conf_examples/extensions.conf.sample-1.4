@@ -102,11 +102,12 @@ exten => 2102,2,Voicemail,u2102          ; Send to voicemail...
 exten => 401,1,Dial((IAX2/firefly01@firefly01/s||t)
 exten => 401,2,Hangup
 
+; 100-350 phone extensions now auto-generated
 ; extensions for other SIP and IAX call center phones
 ;   cc100-cc150 SIP Phones
-exten => _1[0-5]X,1,Dial(sip/cc${EXTEN},20,to)
+;exten => _1[0-5]X,1,Dial(sip/cc${EXTEN},20,to)
 ;   cc300-cc350 IAX Phones
-exten => _3[0-5]X,1,Dial(IAX2/cc${EXTEN},20,to)
+;exten => _3[0-5]X,1,Dial(IAX2/cc${EXTEN},20,to)
 
 ; extensions if using a T1 channelbank
 exten => _19XX,1,Dial(Zap/${EXTEN:2},30,o)
@@ -401,6 +402,12 @@ exten => 8500998,2,Playback(silence)
 exten => 8500998,3,AGI(agi-dtmf.agi)
 exten => 8500998,4,Hangup
 
+; multi-remote-monitor entry extensions
+exten => 8162,1,Dial(${TRUNKblind}/34567890123456789,55,to)
+
+exten => 34567890123456789,1,Answer
+exten => 34567890123456789,2,Goto(monitor,s,1)
+
 ;#### VDAD STANDARD TRANSFER ENTRIES ####
 ; Below are the parameters needed for the agi-VDAD_ALL_outbound.agi script to be run properly
 ; 1. the method of call handling for the script:
@@ -556,3 +563,29 @@ exten => 99999999999,11,Playback(conf)
 exten => 99999999999,12,Playback(conf)
 exten => 99999999999,13,Playback(conf)
 exten => 99999999999,14,Hangup
+
+
+[monitor]
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+exten => s,1,Set(TIMEOUT(digit)=10)
+exten => s,n,Set(TIMEOUT(response)=10)
+exten => s,n,Set(MEETME_EXIT_CONTEXT=monitor_exit)
+exten => s,n,Background(vm-extension) ; need audio prompt.
+exten => s,n,WaitExten(10)
+
+exten => i,1,Goto(monitor_exit,s,1)
+exten => #,1,Goto(monitor_exit,s,1)
+exten => t,1,Goto(monitor_exit,s,1)
+
+exten => _8[0-2]XX,1,Meetme(8600${EXTEN:1},FmqX) ; Listen
+exten => _99[0-2]XX,1,Meetme(8600${EXTEN:2},FX)  ; Barge
+
+[monitor_exit]
+exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})
+
+exten => _X,1,Goto(monitor,s,1)
+
+exten => i,1,Goto(monitor,s,1)
+exten => #,1,Goto(monitor,s,1)
+exten => t,1,Goto(monitor,s,1)

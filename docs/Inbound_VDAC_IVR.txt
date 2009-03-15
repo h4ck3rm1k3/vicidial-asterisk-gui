@@ -8,7 +8,7 @@ A log of the calls going into this agi-VDAD_inbound_calltime_check.agi script is
 
 The agi-VDAD_inbound_calltime_check.agi script can also be used to log the progression of a call through an IVR if you place it at major points in your IVR dialplan. The third field that you can define allows you to set a note or comment that is placed into the database when the call goes through that step.
 
-Now included in the vicidial web directory is the AST_IVRstats.php report whish can show you the statistics on the progression of customers through an Asterisk dialplan-based IVR using tracking with this script.
+Now included in the vicidial web directory is the AST_IVRstats.php report which can show you the statistics on the progression of customers through an Asterisk dialplan-based IVR using tracking with this script.
 
 
 The example below shows how to do a very simple IVR before sending to a queue asking if the caller wants English, Spanish, French or German language service.
