@@ -4,11 +4,12 @@
 #
 # converts web pages to other language
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 60808-1029 - Changed to use /etc/astguiclient.conf for configs
 # 70402-1305 - Added error log generation for not found phrases
+# 90317-0127 - Changed internationalization link for admin
 #
 
 ############################################
@@ -333,7 +334,9 @@ foreach(@lang_list)
 												$lang_list_name = $lang_list_detail[1];
 												if ($lang_list_abb =~ /$lang_abb/) {$list_bgcolor = ' BGCOLOR=\"#CCFFCC\"';}
 												else {$list_bgcolor = '';}
-												$file[$LINESct] .= "echo \"<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP $list_bgcolor NOWRAP><a href=\\\"../$file_path$US$lang_list_abb/$file_name?relogin=YES&VD_login=\$VD_login&VD_campaign=\$VD_campaign&phone_login=\$phone_login&phone_pass=\$phone_pass&VD_pass=\$VD_pass\\\">$lang_list_name <img src=\\\"../agc/images/$lang_list_abb$gif\\\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\\n\";";
+												if ($file_name =~ /admin/) {$link_file_name = 'admin.php';}
+												else {$link_file_name = $file_name;}
+												$file[$LINESct] .= "echo \"<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP $list_bgcolor NOWRAP><a href=\\\"../$file_path$US$lang_list_abb/$link_file_name?relogin=YES&VD_login=\$VD_login&VD_campaign=\$VD_campaign&phone_login=\$phone_login&phone_pass=\$phone_pass&VD_pass=\$VD_pass\\\">$lang_list_name <img src=\\\"../agc/images/$lang_list_abb$gif\\\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\\n\";";
 												}
 											$e++;
 											}

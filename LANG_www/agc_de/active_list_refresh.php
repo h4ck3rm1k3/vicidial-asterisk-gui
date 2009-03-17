@@ -1,33 +1,33 @@
 <?
-### active_list_refresh.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to serve updates of the live data to the display scripts
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $ADD - ('1','2','3','4','5')
-###  - $order - ('asc','desc')
-###  - $format - ('text','table','menu','selectlist','textarea')
-###  - $bgcolor - ('#123456','white','black','etc...')
-###  - $txtcolor - ('#654321','black','white','etc...')
-###  - $txtsize - ('1','2','3','etc...')
-###  - $selectsize - ('2','3','4','etc...')
-###  - $selectfontsize - ('8','10','12','etc...')
-###  - $selectedext - ('cc100')
-###  - $selectedtrunk - ('Zap/25-1')
-###  - $selectedlocal - ('SIP/cc100')
-###  - $textareaheight - ('8','10','12','etc...')
-###  - $textareawidth - ('8','10','12','etc...')
-###  - $field_name - ('extension','busyext','extension_xfer','etc...')
-### 
-
+# active_list_refresh.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to serve updates of the live data to the display scripts
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $ADD - ('1','2','3','4','5')
+#  - $order - ('asc','desc')
+#  - $format - ('text','table','menu','selectlist','textarea')
+#  - $bgcolor - ('#123456','white','black','etc...')
+#  - $txtcolor - ('#654321','black','white','etc...')
+#  - $txtsize - ('1','2','3','etc...')
+#  - $selectsize - ('2','3','4','etc...')
+#  - $selectfontsize - ('8','10','12','etc...')
+#  - $selectedext - ('cc100')
+#  - $selectedtrunk - ('Zap/25-1')
+#  - $selectedlocal - ('SIP/cc100')
+#  - $textareaheight - ('8','10','12','etc...')
+#  - $textareawidth - ('8','10','12','etc...')
+#  - $field_name - ('extension','busyext','extension_xfer','etc...')
+# 
+#
 # changes
 # 50323-1147 - First build of script
 # 50401-1132 - small formatting changes
@@ -161,10 +161,10 @@ echo "<html>\n";
 echo "<head>\n";
 echo "<!-- VERSION: $version     BUILD: $build    ADD: $ADD   server_ip: $server_ip-->\n";
 echo "<title>Liste Display: ";
-if ($ADD==1)		{echo "Live Erweiterungen";}
-if ($ADD==2)		{echo "Besetzte Erweiterungen";}
+if ($ADD==1)		{echo "Live Nebenstellen";}
+if ($ADD==2)		{echo "Besetzte Nebenstellen";}
 if ($ADD==3)		{echo "Amtsleitungen";}
-if ($ADD==4)		{echo "Lokale Erweiterungen";}
+if ($ADD==4)		{echo "Lokale Nebenstellen";}
 if ($ADD==5)		{echo "Konferenzen";}
 if ($ADD==99999)	{echo "HILFE";}
 echo "</title>\n";

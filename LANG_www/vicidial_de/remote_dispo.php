@@ -1,10 +1,12 @@
 <?
-### remote_dispo.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-# this is the remote agent disposition screen for calls sent to remote agents. This allows the remote agent to modify customer information and disposition the call
-
+# remote_dispo.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# this is the remote agent disposition screen for calls sent to remote agents. 
+# This allows the remote agent to modify customer information and disposition 
+# the call
+#
 # CHANGES
 #
 # 60619-1626 - Added variable filtering to eliminate SQL injection attack threat
@@ -258,7 +260,7 @@ else
 		echo "<tr><td align=rightProvinz: </td><td align=left><input type=text name=province size=30 maxlength=30 value=\"$province\"></td></tr>\n";
 		echo "<tr><td align=rightLand: </td><td align=left><input type=text name=country_code size=3 maxlength=3 value=\"$country_code\"></td></tr>\n";
 		echo "<tr><td align=rightAlt Telefon: </td><td align=left><input type=text name=alt_phone size=10 maxlength=10 value=\"$alt_phone\"></td></tr>\n";
-		echo "<tr><td align=rightEmail: </td><td align=left><input type=text name=email size=30 maxlength=50 value=\"$email\"></td></tr>\n";
+		echo "<tr><td align=rightE-Mail:</td><td align=left><input type=text name=email size=30 maxlength=50 value=\"$email\"></td></tr>\n";
 		echo "<tr><td align=rightSicherheit: </td><td align=left><input type=text name=security size=30 maxlength=100 value=\"$security\"></td></tr>\n";
 		echo "<tr><td align=rightAnmerkungen: </td><td align=left><input type=text name=comments size=30 maxlength=255 value=\"$comments\"></td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=rightEinteilung: </td><td align=left><select size=1 name=status>\n";

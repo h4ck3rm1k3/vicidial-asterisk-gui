@@ -1,28 +1,28 @@
 <?
-### inbound_popup.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed to open up when a live_inbound call comes in giving the user
-###   options of what to do with the call or options to lookup the callerID on various web sites
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $uniqueid - ('1234567890.123456',...)
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $vmail_box - ('101','1234',...)
-###  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
-###  - $ext_context - ('default','demo',...)
-###  - $ext_priority - ('1','2',...)
-###  - $voicemail_dump_exten - ('85026666666666')
-###  - $local_web_callerID_URL_enc - ( rawurlencoded custom callerid lookup URL)
-### 
-
+# inbound_popup.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed to open up when a live_inbound call comes in giving the user
+#   options of what to do with the call or options to lookup the callerID on various web sites
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $uniqueid - ('1234567890.123456',...)
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $vmail_box - ('101','1234',...)
+#  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
+#  - $ext_context - ('default','demo',...)
+#  - $ext_priority - ('1','2',...)
+#  - $voicemail_dump_exten - ('85026666666666')
+#  - $local_web_callerID_URL_enc - ( rawurlencoded custom callerid lookup URL)
+# 
+#
 # changes
 # 50428-1500 - First build of script display only
 # 50429-1241 - some formatting, hangup and Vmail redirect, 30s timeout on actions, and CID web lookup links
@@ -318,11 +318,11 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 		echo "<a href=\"$local_web_callerID_URL$local_web_callerID_QUERY_STRING\" target=\"_blank\">ANGEPASST</a> - \n";
 
 		echo "</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Nummer Gewählt: </td><td align=left>$row[8]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Anmerkungen: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Gewählte Nummer: </td><td align=left>$row[8]</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Notizen: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
 		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">AUFLEGEN</a> - \n";
-		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">SENDE AN MEINE VOICEMAILBOX</a>\n";
+		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">AN MEINE VOICEMAILBOX SENDEN</a>\n";
 		echo "</span></td></tr>\n";
 		echo "</table>\n";
 

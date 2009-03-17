@@ -7965,7 +7965,7 @@ if ($ADD==23111111111)
 		{echo "<br>GROUP ALIAS NOT ADDED - there is already a Phone Alias in the system with this ID\n";}
 	else
 		{
-		if (preg_match("/AGENT_PHONE|CUSTOMER|CAMPAIGN|NONE/",'',$group_alias_id))
+		if (preg_match("/AGENT_PHONE|CUSTOMER|CAMPAIGN|NONE/",$group_alias_id))
 			{echo "<br>GROUP ALIAS NOT ADDED - you cannot use reserved words in group aliases\n";}
 		else
 			{
@@ -18942,8 +18942,8 @@ if ($ADD==10000000)
 	echo "<br>LEAD FILTER LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<tr bgcolor=black>";
-	echo "<td><font size=1 color=white align=left><B>SCRIPT ID</B></td>";
-	echo "<td><font size=1 color=white><B>SCRIPT NAME</B></td>";
+	echo "<td><font size=1 color=white align=left><B>FILTER ID</B></td>";
+	echo "<td><font size=1 color=white><B>FILTER NAME</B></td>";
 	echo "<td align=center><font size=1 color=white><B>MODIFY</B></td></tr>\n";
 
 	$o=0;

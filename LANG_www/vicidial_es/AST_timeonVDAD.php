@@ -1,8 +1,8 @@
 <? 
-### AST_timeonVDAD.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_timeonVDAD.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # live real-time stats for the VICIDIAL Auto-Dialer
 #
 # CHANGES
@@ -10,6 +10,9 @@
 # 60620-1037 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 61114-2004 - Changed to display CLOSER and DEFAULT, added trunk shortage
+# 80422-0305 - Added phone login to display, lower font size to 2
+# 81013-2227 - Fixed Remote Agent display bug
+# 90310-1945 - Admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -110,8 +113,15 @@ if ($closer_display>0)
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"4; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB&reset_counter=$reset_counter&closer_display=$closer_display\">\n";
-echo "<TITLE>VICIDIAL: Time On VDAD</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
-echo "<PRE><FONT SIZE=3>";
+echo "<TITLE>VICIDIAL: Time On VDAD</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+$short_header=1;
+
+require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
+echo "<PRE><FONT SIZE=2>";
 
 ###################################################################################
 ###### SERVER INFORMATION
@@ -137,15 +147,15 @@ echo "VICIDIAL: Agents Time On Calls           $NOW_TIME    <a href=\"$PHP_SELF?
 
 if ($closer_display>0)
 {
-echo "+------------|--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
-echo "| STATION    | USER   | SESSIONID | CHANNEL             | STATUS | CALLTIME | MINUTES | CAMPAIGN     | FRONT  |\n";
-echo "+------------|--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
+echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
+echo "| STATION    | PHONE      | USER   | SESSIONID | CHANNEL             | STATUS | CALLTIME | MINUTES | CAMPAIGN     | FRONT  |\n";
+echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
 }
 else
 {
-echo "+------------|--------+-----------+---------------------+--------+----------+---------+\n";
-echo "| STATION    | USER   | SESSIONID | CHANNEL             | STATUS | CALLTIME | MINUTES |\n";
-echo "+------------|--------+-----------+---------------------+--------+----------+---------+\n";
+echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+\n";
+echo "| STATION    | PHONE      | USER   | SESSIONID | CHANNEL             | STATUS | CALLTIME | MINUTES |\n";
+echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+\n";
 }
 
 $stmt="select extension,user,conf_exten,channel,status,last_call_time,UNIX_TIMESTAMP(last_call_time),UNIX_TIMESTAMP(last_call_finish),uniqueid,lead_id from vicidial_live_agents where status NOT IN('PAUSED') and server_ip='" . mysql_real_escape_string($server_ip) . "' order by extension;";
@@ -158,18 +168,77 @@ $talking_to_print = mysql_num_rows($rslt);
 	while ($i < $talking_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
-			if (eregi("READY|PAUSED|CLOSER",$row[4]))
+		$Sextension[$i] =		$row[0];
+		$Suser[$i] =			$row[1];
+		$Ssessionid[$i] =		$row[2];
+		$Schannel[$i] =			$row[3];
+		$Sstatus[$i] =			$row[4];
+		$Sstart_time[$i] =		$row[5];
+		$Scall_time[$i] =		$row[6];
+		$Sfinish_time[$i] =		$row[7];
+		$Suniqueid[$i] =		$row[8];
+		$Slead_id[$i] =			$row[9];
+		$i++;
+		}
+
+	$i=0;
+	while ($i < $talking_to_print)
+		{
+		$phone[$i]='          ';
+		if (eregi("R/",$Sextension[$i])) 
 			{
-			$row[3]='';
-			$row[5]='- WAIT -';
-			$row[6]=$row[7];
+			$protocol = 'EXTERNAL';
+			$dialplan = eregi_replace('R/',"",$Sextension[$i]);
+			$dialplan = eregi_replace("\@.*",'',$dialplan);
+			$exten = "dialplan_number='$dialplan'";
 			}
-		$extension[$i] = eregi_replace('Local/',"",$row[0]);
+		if (eregi("Local/",$Sextension[$i])) 
+			{
+			$protocol = 'EXTERNAL';
+			$dialplan = eregi_replace('Local/',"",$Sextension[$i]);
+			$dialplan = eregi_replace("\@.*",'',$dialplan);
+			$exten = "dialplan_number='$dialplan'";
+			}
+		if (eregi('SIP/',$Sextension[$i])) 
+			{
+			$protocol = 'SIP';
+			$dialplan = eregi_replace('SIP/',"",$Sextension[$i]);
+			$dialplan = eregi_replace("-.*",'',$dialplan);
+			$exten = "extension='$dialplan'";
+			}
+		if (eregi('IAX2/',$Sextension[$i])) 
+			{
+			$protocol = 'IAX2';
+			$dialplan = eregi_replace('IAX2/',"",$Sextension[$i]);
+			$dialplan = eregi_replace("-.*",'',$dialplan);
+			$exten = "extension='$dialplan'";
+			}
+		if (eregi('Zap/',$Sextension[$i])) 
+			{
+			$protocol = 'Zap';
+			$dialplan = eregi_replace('Zap/',"",$Sextension[$i]);
+			$exten = "extension='$dialplan'";
+			}
+
+		$stmt="select login from phones where server_ip='" . mysql_real_escape_string($server_ip) . "' and $exten and protocol='$protocol';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$login = $row[0];
+
+		$phone[$i] =			sprintf("%-10s", $login);
+
+		if (eregi("READY|PAUSED|CLOSER",$Sstatus[$i]))
+			{
+			$Schannel[$i]='';
+			$Sstart_time[$i]='- WAIT -';
+			$Scall_time[$i]=$Sfinish_time[$i];
+			}
+		$extension[$i] = eregi_replace('Local/',"",$Sextension[$i]);
 		$extension[$i] =		sprintf("%-10s", $extension[$i]);
 			while(strlen($extension[$i])>10) {$extension[$i] = substr("$extension[$i]", 0, -1);}
-		$user[$i] =				sprintf("%-6s", $row[1]);
-		$sessionid[$i] =		sprintf("%-9s", $row[2]);
-		$channel[$i] =			sprintf("%-19s", $row[3]);
+		$user[$i] =				sprintf("%-6s", $Suser[$i]);
+		$sessionid[$i] =		sprintf("%-9s", $Ssessionid[$i]);
+		$channel[$i] =			sprintf("%-19s", $Schannel[$i]);
 			$cc[$i]=0;
 		while ( (strlen($channel[$i]) > 19) and ($cc[$i] < 100) )
 			{
@@ -177,8 +246,8 @@ $talking_to_print = mysql_num_rows($rslt);
 			$cc[$i]++;
 			if (strlen($channel[$i]) <= 19) {$cc[$i]=101;}
 			}
-		$status[$i] =			sprintf("%-6s", $row[4]);
-		$start_time[$i] =		sprintf("%-8s", $row[5]);
+		$status[$i] =			sprintf("%-6s", $Sstatus[$i]);
+		$start_time[$i] =		sprintf("%-8s", $Sstart_time[$i]);
 			$cd[$i]=0;
 		while ( (strlen($start_time[$i]) > 8) and ($cd[$i] < 100) )
 			{
@@ -186,10 +255,10 @@ $talking_to_print = mysql_num_rows($rslt);
 			$cd[$i]++;
 			if (strlen($start_time[$i]) <= 8) {$cd[$i]=101;}
 			}
-		$uniqueid[$i] =			$row[8];
-		$lead_id[$i] =			$row[9];
-		$closer[$i] =			$row[1];
-		$call_time_S[$i] = ($STARTtime - $row[6]);
+		$uniqueid[$i] =			$Suniqueid[$i];
+		$lead_id[$i] =			$Slead_id[$i];
+		$closer[$i] =			$Suser[$i];
+		$call_time_S[$i] = ($STARTtime - $Scall_time[$i]);
 
 		$call_time_M[$i] = ($call_time_S[$i] / 60);
 		$call_time_M[$i] = round($call_time_M[$i], 2);
@@ -206,7 +275,7 @@ $talking_to_print = mysql_num_rows($rslt);
 			$G = '';		$EG = '';
 			if ($call_time_M_int[$i] >= 5) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
 			if ($call_time_M_int[$i] >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
-			if (eregi("PAUSED",$row[4])) 
+			if (eregi("PAUSED",$Sstatus[$i])) 
 				{
 				if ($call_time_M_int >= 1) 
 					{$i++; continue;} 
@@ -214,7 +283,7 @@ $talking_to_print = mysql_num_rows($rslt);
 					{$G='<SPAN class="yellow"><B>'; $EG='</B></SPAN>';}
 				}
 			$agentcount++;
-			echo "| $G$extension[$i]$EG | $G$user[$i]$EG | $G$sessionid[$i]$EG | $G$channel[$i]$EG | $G$status[$i]$EG | $G$start_time[$i]$EG | $G$call_time_MS[$i]$EG |\n";
+			echo "| $G$extension[$i]$EG | $G$phone[$i]$EG | $G$user[$i]$EG | $G$sessionid[$i]$EG | $G$channel[$i]$EG | $G$status[$i]$EG | $G$start_time[$i]$EG | $G$call_time_MS[$i]$EG |\n";
 			}
 		$i++;
 		}
@@ -259,18 +328,18 @@ $talking_to_print = mysql_num_rows($rslt);
 		#	if ($call_time_M_int[$i] >= 5) {$G='<SPAN class="blue"><B>'; $EG='</B></SPAN>';}
 		#	if ($call_time_M_int[$i] >= 10) {$G='<SPAN class="purple"><B>'; $EG='</B></SPAN>';}
 
-			echo "| $G$extension[$i]$EG | $G$user[$i]$EG | $G$sessionid[$i]$EG | $G$channel[$i]$EG | $G$status[$i]$EG | $G$start_time[$i]$EG | $G$call_time_MS[$i]$EG | $G$campaign$EG | $G$fronter$EG |\n";
+			echo "| $G$extension[$i]$EG | $G$phone[$i]$EG | $G$user[$i]$EG | $G$sessionid[$i]$EG | $G$channel[$i]$EG | $G$status[$i]$EG | $G$start_time[$i]$EG | $G$call_time_MS[$i]$EG | $G$campaign$EG | $G$fronter$EG |\n";
 
 			$i++;
 			}
-		echo "+------------|--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
+		echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+--------------+--------+\n";
 		echo "  $i agentes identificados en el servidor $server_ip\n\n";
 	#	echo "  <SPAN class=\"blue\"><B>          </SPAN> - Llamadas de 5 minutos o más</B>\n";
 	#	echo "  <SPAN class=\"purple\"><B>          </SPAN> - Sobre 10 minutos en llamada</B>\n";
 		}
 	else
 		{
-		echo "+------------|--------+-----------+---------------------+--------+----------+---------+\n";
+		echo "+------------+------------+--------+-----------+---------------------+--------+----------+---------+\n";
 		echo "  $agentcount agentes identificados en el servidor $server_ip\n\n";
 
 		echo "  <SPAN class=\"yellow\"><B>          </SPAN> - Agentes detenidos brevemente</B>\n";
@@ -370,5 +439,6 @@ $parked_to_print = mysql_num_rows($rslt);
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

@@ -1,17 +1,23 @@
 <?
-### admin_search_lead.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### AST GUI database administration search for lead info
-### admin_modify_lead.php
+# admin_search_lead.php
+# 
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
-# this is the administration lead information modifier screen, the administrator just needs to enter the leadID and then they can view and modify the information in the record for that lead
+# AST GUI database administration search for lead info
+# admin_modify_lead.php
+#
+# this is the administration lead information modifier screen, the administrator 
+# just needs to enter the leadID and then they can view and modify the information
+# in the record for that lead
 #
 # changes:
 # 60620-1055 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 #            - Changed results to multi-record
+# 80710-0023 - Added searching by list, user, status
+# 90121-0500 - Added filter for phone to remove non-digits
+# 90309-1828 - Added admin_log logging
+# 90310-2146 - Added admin header
 #
 
 require("dbconnect.php");
@@ -31,9 +37,16 @@ if (isset($_GET["ENVIAR"]))				{$ENVIAR=$_GET["ENVIAR"];}
 	elseif (isset($_POST["ENVIAR"]))	{$ENVIAR=$_POST["ENVIAR"];}
 if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
+if (isset($_GET["status"]))				{$status=$_GET["status"];}
+	elseif (isset($_POST["status"]))	{$status=$_POST["status"];}
+if (isset($_GET["user"]))				{$user=$_GET["user"];}
+	elseif (isset($_POST["user"]))		{$user=$_POST["user"];}
+if (isset($_GET["list_id"]))			{$list_id=$_GET["list_id"];}
+	elseif (isset($_POST["list_id"]))	{$list_id=$_POST["list_id"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
+$phone = ereg_replace("[^0-9]","",$phone);
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -93,24 +106,49 @@ $browser = getenv("HTTP_USER_AGENT");
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<title>VICIDIAL ADMIN: Buscar Lead</title>
-</head>
-<title>Operaciones de búsqueda del Lead</title>
-</head>
-<body bgcolor=white>
+<title>VICIDIAL ADMIN: Buscar Lead
 <? 
-echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search<BR>\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'100';
+$hh =					'lists';
+$LOGast_admin_access =	'1';
+$SSoutbound_autodial_active = '1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$lists_color =		'#FFFF99';
+$lists_font =		'BLACK';
+$lists_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
 
 
-if ( (!$vendor_id) and (!$phone)  and (!$lead_id) ) 
+
+
+
+echo " Lead search: $vendor_id $phone $lead_id $status $list_id $user<BR>\n";
+
+
+if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) )) 
 	{
 	echo date("l F j, Y G:i:s A");
 	echo "\n<br><br><center>\n";
 	echo "<form method=post name=search action=\"$PHP_SELF\">\n";
 	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<b>Por favor, Introduzca un:<br> Vendor ID(código del vendedor del Lead): <input type=text name=vendor_id size=10 maxlength=10> or \n";
-	echo "<br><b>un número de teléfono de casa: <input type=text name=phone size=10 maxlength=10> or\n";
-	echo "<br><b>ID del Lead: <input type=text name=lead_id size=10 maxlength=10> <br><br>\n";
+	echo "<br><b>un número de teléfono de casa: <input type=text name=phone size=20 maxlength=16> or\n";
+	echo "<br><b>ID del Lead: <input type=text name=lead_id size=10 maxlength=10> or\n";
+	echo "<br><b>status: <input type=text name=status size=7 maxlength=6> &nbsp; \n";
+	echo "<b>list ID: <input type=text name=list_id size=15 maxlength=14> &nbsp; \n";
+	echo "<b>user: <input type=text name=user size=15 maxlength=20> <br><br>\n";
 	echo "<input type=submit name=submit value=ENVIAR></b>\n";
 	echo "</form>\n</center>\n";
 	echo "</body></html>\n";
@@ -138,8 +176,32 @@ else
 				}
 			else
 				{
-				print "ERROR: you must search for something! Go back and search for something";
-				exit;
+				if ( (strlen($status)>0) or (strlen($list_id)>0) or (strlen($user)>0) )
+					{
+					$statusSQL = '';
+					$list_idSQL = '';
+					$userSQL = '';
+					if (strlen($status)>0)	
+						{
+						$statusSQL = "status='" . mysql_real_escape_string($status) . "'"; $SQLctA++;
+						}
+					if (strlen($list_id)>0) 
+						{
+						if ($SQLctA > 0) {$andA = 'and';}
+						$list_idSQL = "$andA list_id='" . mysql_real_escape_string($list_id) . "'"; $SQLctB++;
+						}
+					if (strlen($user)>0)	
+						{
+						if ( ($SQLctA > 0) or ($SQLctB > 0) ) {$andB = 'and';}
+						$userSQL = "$andB user='" . mysql_real_escape_string($user) . "'";
+						}
+					$stmt="SELECT * from vicidial_list where $statusSQL $list_idSQL $userSQL order by modify_date desc limit 1000";
+					}
+				else
+					{
+					print "ERROR: you must search for something! Go back and search for something";
+					exit;
+					}
 				}
 			}
 		}
@@ -182,13 +244,14 @@ else
 			{
 			$row=mysql_fetch_row($rslt);
 			$o++;
+			$search_lead = $row[0];
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 			echo "<TR $bgcolor>\n";
 			echo "<TD ALIGN=LEFT><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$o</FONT></TD>\n";
-			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"admin_modify_lead.php?lead_id=$row[0]\">$row[0]</a></FONT></TD>\n";
+			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1><a href=\"admin_modify_lead.php?lead_id=$row[0]\" target=\"_blank\">$row[0]</a></FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[3]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[5]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[4]</FONT></TD>\n";
@@ -197,11 +260,19 @@ else
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[13] $row[15]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[19]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[28]</FONT></TD>\n";
-			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[2]</FONT></TD>\n";
+			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[31]</FONT></TD>\n";
 			echo "</TR>\n";
 			}
 		echo "</TABLE>\n";
-		}		
+		}
+
+	### LOG INSERTION Admin Log Table ###
+	$SQL_log = "$stmt|";
+	$SQL_log = ereg_replace(';','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
 	}
 
 

@@ -319,7 +319,7 @@ echo "<B>$NOW_TIME</B><BR><BR>\n";
 
 		echo "</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td>Volané číslo: </td><td align=left>$row[8]</td></tr>\n";
-		echo "<tr bgcolor=\"#DDDDFF\"><td>Poznámka: </td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
+		echo "<tr bgcolor=\"#DDDDFF\"><td>Poznámky:</td><td align=left>$row[9]|$row[10]|$row[11]|$row[12]|$row[13]|</td></tr>\n";
 		echo "<tr bgcolor=\"#DDDDFF\"><td colspan=2 align=center>\n<span id=\"callactions\">";
 		echo "<a href=\"#\" onclick=\"livehangup_send_hangup('$row[1]');return false;\">POLOŹIŤ</a> - \n";
 		echo "<a href=\"#\" onclick=\"liveredirect_send_vmail('$row[1]','$vmail_box');return false;\">POSLAŤ DO MOJEJ HLASOVEJ SCHRÁNKY</a>\n";

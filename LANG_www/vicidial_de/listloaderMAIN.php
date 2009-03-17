@@ -1,7 +1,7 @@
 <?
 # listloaderMAIN.php
 # 
-# Copyright (C) 2006  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # this is the main frame page for the lead loading section. This is where you 
 # would upload a file and have it inserted into vicidial_list

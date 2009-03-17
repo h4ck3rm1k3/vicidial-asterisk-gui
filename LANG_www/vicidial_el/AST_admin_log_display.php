@@ -1,8 +1,8 @@
 <? 
-### AST_admin_log_display.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_admin_log_display.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 
 require("dbconnect.php");
 

@@ -1,12 +1,13 @@
 <?
-### group_hourly_stats.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# group_hourly_stats.php
+# 
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60620-1014 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
+# 90310-2138 - Added admin header
 #
 
 require("dbconnect.php");
@@ -104,14 +105,35 @@ $browser = getenv("HTTP_USER_AGENT");
 ?>
 <html>
 <head>
-<title>ΔΙΑΧΕΙΡΙΣΗ: Ομαδοποιημένα Ωριαία Στατιστικά</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>ΔΙΑΧΕΙΡΙΣΗ: Ομαδοποιημένα Ωριαία Στατιστικά
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'311111';
+$hh =					'usergroups';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$usergroups_color =		'#FFFF99';
+$usergroups_font =		'BLACK';
+$usergroups_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
+
 <CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php?ADD=100000\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ</a>: Ομαδοποιημένα Ωριαία Στατιστικά <? echo $group ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; Ομαδοποιημένα Ωριαία Στατιστικά <? echo $group ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; </TD></TR>
 
 
 
@@ -234,7 +256,7 @@ echo "<font size=0>\n\n\n<br><br><br>\nχρόνος εκτέλεσης διαδ�
 ?>
 
 
-</TD></TR><TABLE>
+</TD></TR></TABLE>
 </body>
 </html>
 

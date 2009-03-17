@@ -43,6 +43,27 @@ vicidial|AST_timeonVDADallSUMMARY.php|0
 vicidial|inbound_popup.php|0
 vicidial|AST_inboundEXTstats.php|0
 vicidial|welcome.php|0
+vicidial|admin_header.php|0
+vicidial|vicidial_sales_viewer.php|0
+vicidial|user_group_bulk_change.php|0
+vicidial|AST_agent_status_detail.php|0
+vicidial|AST_agent_days_detail.php|0
+vicidial|AST_CLOSER_service_level.php|0
+vicidial|AST_IVRfilter.php|0
+vicidial|AST_IVRstats.php|0
+vicidial|call_report_export.php|0
+vicidial|fcstats.php|0
+vicidial|list_download.php|0
+vicidial|non_agent_api.php|1
+vicidial|timeclock_edit.php|0
+vicidial|timeclock_report.php|0
+vicidial|timeclock_status.php|0
+vicidial|vtiger_search.php|1
+vicidial|vtiger_user.php|1
+vicidial|welcome_demo.php|1
+vicidial|welcome_languages.php|1
+vicidial|vicidial_admin_web_logo.gif|1
+vicidial|vicidial_admin_web_logo_small.gif|1
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|BORDER|
@@ -1422,3 +1443,661 @@ Allowed Transfer Groups: |Groupes Laissés De Transfert :|
 Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up|Groupes laissés de transfert - avec ces listes de checkbox vouspouvez choisir les groupes aux lesquels les agents dans cette campagnepeuvent transférer des appels. Permettez Closers doit être permispour que cette option révèle|
 Campaign Ranks -<\/B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank|La campagne se range - dans cette section vous pouvez définir le rangque un agent aura pour chaque campagne. Ces rangs peuvent êtreemployés pour tenir compte du cheminement préféré d'appel quand leprochain appel d'agent est placé au campaign_rank|
 Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen|En outre dans cette section est la capacité de donner à l'agent unrang pour chaque groupe d'arrivée. Ces rangs peuvent être employéspour le cheminement préféré d'appel quand cette option est choisiedans l'écran de dans-groupe|
+### START translations for 2.0.5 release ###
+QC Enabled -<\/B> This option allows the user to log in to the Quality Control agent screen|QC Activé - </B> Cette option permet à l'utilisateur de se connecter à l'agent de contrôle de la qualité d'écran|
+QC User Level -<\/B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section|QC User Level - </B> Ce paramètre définit ce que l'agent de contrôle de la qualité est au niveau utilisateur. Ce qui déterminera le niveau de fonctionnalité de l'agent dans la section QC|
+QC Record Pass -<\/B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record|Record QC Pass - </B> Cette option permet à l'agent de préciser que le dossier a franchi le premier tour de Québec, après avoir examiné le dossier|
+QC Record Finish -<\/B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record|Record QC Finish - </B> Cette option permet à l'agent de préciser que le dossier a terminé la deuxième ronde de Québec après avoir examiné le dossier transmis|
+QC Record Commit -<\/B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone|Record QC Commit - </B> Cette option permet à l'agent de préciser que le record a été commise dans QC. Il ne peut plus être modifié par n'importe qui|
+QC Allowed Campaigns -<\/B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system|QC permis Campagnes - </B> Il s'agit d'un choix de la liste des campagnes où les membres de ce groupe d'utilisateurs seront en mesure de QC. Le ALL-CAMPAGNES option permet aux utilisateurs de ce groupe de Québec une campagne sur le système|
+QC Allowed Inbound Groups -<\/B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system|QC permis l'arrivée des groupes - </B> Il s'agit d'un choix de la liste des groupes dont l'arrivée des membres de ce groupe d'utilisateurs seront en mesure de QC. Le ALL-GROUPES option permet aux utilisateurs dans ce groupe d'utilisateurs QC arrivée du groupe sur tout le système|
+QC Enabled: |QC Enabled:|
+QC User Level: |QC User Level:|
+QC Pass: |QC Pass:|
+QC Finish: |QC Finition:|
+QC Commit: |QC Comité:|
+Modify Nothing|Rien Modifier|
+Modify Nothing Except Status|Modifier Rien Sauf Etat|
+Modify All Fields|Modifier tous les Domaines|
+Verify First Round of QC|Vérifiez Premier Cycle de QC|
+View QC Statistics|Voir QC Statistiques|
+Ability to Modify FINISHed records|Possibilité de modifier fini records|
+Manager Level|Level Manager|
+USERS CAN VIEW ANY CAMPAIGN|Les utilisateurs peuvent visualiser n'importe quelle campagne|
+USERS CAN QC ANY CAMPAIGN|USERS CAN QC TOUTE LA CAMPAGNE|
+USERS CAN QC ANY INBOUND GROUP|USERS CAN QC ENTRANT TOUT GROUP|
+QC Allowed Campaigns: |QC permis Campagnes:|
+QC Allowed Inbound Groups: |QC permis l'arrivée des groupes:|
+Queue Priority -<\/B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode|File d'attente de priorité - </B> Ce paramètre est utilisé pour définir l'ordre dans lequel les appels sortants à partir de cette campagne devrait être répondu en ce qui concerne les appels entrants si cette campagne est en mode mixte|
+Queue Priority: |File d'attente de priorité:|
+Drop Action: |Drop d'action:|
+Drop Transfer Group: |Drop de transfert du Groupe:|
+Drop Action -<\/B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below|Drop Action - </B> Ce menu vous permet de choisir ce qui se passe à un appel quand il a attendu plus longtemps que ce qui est prévu dans le Drop Call Seconds domaine. Hangup simplement raccrocher l'appel, envoyer le message de l'appel Drop EXTEN que vous avez définies ci-après, à la messagerie vocale vous envoyer l'appel à la boîte vocale que vous avez définis ci-dessous et IN_GROUP envoie l'appel à la Inbound groupe qui est défini ci-dessous|
+Drop Exten -<\/B> If Drop Action is set to MESSAGE, this is the dial plan extension that the call will be sent to if it reaches Drop Call Seconds|Drop EXTEN - </B> Si l'action est goutte d'MESSAGE, c'est le cadran plan d'extension que l'appel sera envoyée si elle parvient à Drop Call Seconds|
+Drop Call Seconds -<\/B> The number of seconds a call will stay in queue before being considered a DROP|Drop Call Seconds - </B> Le nombre de secondes d'un appel restera dans la file d'attente avant d'être considéré comme un DROP|
+Drop Transfer Group -<\/B> If Drop Action is set to IN_GROUP, the call will be sent to this inbound group if it reaches Drop Call Seconds|Drop de transfert Group - </B> Si Drop action est fixée à IN_GROUP, l'appel sera envoyé à ce groupe d'arrivée si elle parvient Drop Call Seconds|
+QC SETTINGS FOR THIS CAMPAIGN|QC SETTINGS pour cette campagne|
+QC Enabled: |QC Enabled:|
+QC Statuses: |QC Statut:|
+Modify Campaign QC Settings|Modifier les paramètres de campagne QC|
+QC Enabled -<\/B> Setting this field to Y allows for the agent Quality Control features to work. Default is N|QC Activé - </B> Mise en ce domaine permet à Y pour l'agent de contrôle de la qualité caractéristiques au travail. La valeur par défaut est N|
+QC Statuses -<\/B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review|Statuts QC - </B> Cette zone est l'endroit où vous choisissez ce qui entraîne des statuts doit être dépassé par le système de QC. Placez un contrôle à côté de l'état que vous voulez examiner QC|
+QC SETTINGS NOT MODIFIED|QC SETTINGS PAS mise à jour|
+QC SETTINGS MODIFIED|QC SETTINGS mise à jour|
+QC WebForm Address -<\/B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen|QC WebForm Adresse - </B> Il s'agit de l'adresse du site web d'un agent QC pouvez aller à en cliquant sur le lien dans la WebForm QC écran|
+QC Script -<\/B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen|Script QC - </B> C'est le script qui peut être utilisé par les agents QC SCRIPT dans l'onglet de la QC écran|
+QC WebForm: |QC WebForm:|
+QC Script|QC Script|
+In-Group Recording Override -<\/B> This field allows for the overriding of the campaign call recording setting. This setting can be overridden by the vicidial_user recording override setting. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording|En groupe enregistrement Override - </B> Ce champ permet d'primordial de la campagne d'appel enregistrement. Ce réglage peut être modifié par l'enregistrement de l'emporter sur la mise en vicidial_user. HANDICAPES ne remplacent pas la campagne de l'enregistrement programmé. JAMAIS désactive l'enregistrement sur le client. OnDemand est l'option par défaut et permet à l'agent de début et de fin d'enregistrement en tant que de besoin. ALLCALLS va commencer l'enregistrement sur le client chaque fois qu'un appel est adressé à un agent. ALLFORCE va commencer l'enregistrement sur le client chaque fois qu'un appel est adressé à un agent qui l'agent aucune option pour arrêter l'enregistrement|
+In-Group Recording Filename -<\/B> This field will override the Campaign Recording Filenaming Scheme unless it is set to NONE. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max. Default is NONE|En groupe d'enregistrement du fichier - </B> Ce champ peut passer outre à la campagne d'enregistrement nommage des fichiers système, sauf si elle est définie à AUCUNE. Les variables sont autorisés CAMPAGNE CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. La valeur par défaut est FULLDATE_AGENT et se présente comme suit 20051020-103108_6666. Un autre exemple est CAMPAIGN_TINYDATE_CUSTPHONE qui se présente comme suit TESTCAMP_51020103108_3125551212. 50 char max. La valeur par défaut est NON|
+In-Group Recording Override: |En groupe enregistrement Override:|
+In-Group Recording Filename: |En groupe d'enregistrement du fichier:|
+ADDING VICIDIAL QC STATUS CODE|AJOUT VICIDIAL QC Code de statut|
+MODIFY VICIDIAL QC STATUS CODE|MODIFY VICIDIAL QC Code de statut|
+VICIDIAL QC STATUS CODES|VICIDIAL QC ÉTAT DES CODES|
+The Quality Control-QC system within VICIDIAL has its own set of status codes separate from those within the call handling functions of VICIDIAL. QC statuse codes must be between 2 and 8 characters in length and contain no special characters like a space or colon. The QC status code description must be between 2 and 30 characters in length.|Le contrôle de la qualité au sein du système-QC VICIDIAL a son propre ensemble de codes distincts de ceux dans le traitement des appels de fonctions VICIDIAL. QC statuse codes doit être comprise entre 2 et 8 caractères et ne contiennent pas de caractères spéciaux, comme un espace ou du côlon. Le code de statut QC description doit être comprise entre 2 et 30 caractères.|
+ QC Status Codes |Codes d'état QC|
+VICIDIAL QC STATUS CODES WITHIN THIS SYSTEM: |VICIDIAL QC ÉTAT DANS CE SYSTEME DE CODES:|
+ADD NEW QC STATUS CODE|ADD NEW QC Code de statut|
+QC STATUS CODE NOT DELETED|QC CODE ÉTAT PAS SUPPRIMÉ|
+QC STATUS CODE DELETED: |QC ÉTAT CODE DELETED:|
+QC STATUS CODE NOT MODIFIED |QC CODE ÉTAT PAS mise à jour|
+QC STATUS CODE MODIFIED: |QC ÉTAT CODE mise à jour:|
+the qc status code needs to be at least 1 characters in length|qc le code de statut doit être au moins de 1 caractères|
+the qc status code name needs to be at least 1 characters in length|qc le nom de code de statut doit être au moins de 1 caractères|
+QC STATUS CODE NOT ADDED |QC CODE ÉTAT PAS AJOUTÉS|
+there is already a qc status code in the system with this name:|il existe déjà un code de statut qc dans le système avec ce nom:|
+QC STATUS CODE ADDED: |QC ÉTAT CODE AJOUTEE:|
+code must be between 1 and 8 characters in length|code doit être compris entre 1 et 8 caractères|
+code name must be between 2 and 30 characters in length|nom de code doit être compris entre 2 et 30 caractères|
+CALL HANGUP REASON STATS|FAIT APPEL Hangup STATS|
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field, IN_GROUP will send the call to the inbound group selected in the After Hours Transfer Group select list. Default is MESSAGE|Après les heures d'ouverture d'action - </B> L'action à effectuer si c'est après les heures de travail tels que définis dans le temps de l'arrivée pour ce groupe. Hangup hangup immédiatement à l'appel, MESSASGE va jouer le fichier dans le message après les heures de Filenam domaine, EXTENSION envoie l'appel à la fois la durée d'extension de la dialplan et de la messagerie vocale vous envoyer l'appel à la boîte vocale figurant dans la boîte vocale après les heures de domaine , IN_GROUP enverra l'appel à l'arrivée du groupe sélectionné dans le groupe après les heures de sélectionner la liste de transfert. La valeur par défaut est MESSAGE|
+After Hours Transfer Group -<\/B> If After Hours Action is set to IN_GROUP, the call will be sent to this inbound group if it enters the in-group outside of the call time scheme defined for the in-group|Après les heures d'ouverture de transfert Group - </B> Si l'action Après les heures d'ouverture est fixée à IN_GROUP, l'appel sera envoyé à cette arrivée du groupe si celui-ci entre dans le groupe en dehors de l'appel de temps défini pour le régime de groupe|
+After Hours Transfer Group: |Après les heures d'ouverture de transfert de Groupe:|
+Total calls taken in to this In-Group:|Total des appels pris en Dans ce groupe:|
+CALL HOLD TIME BREAKDOWN IN SECONDS|CALL TIME HOLD RÉPARTITION EN SECONDES|
+Date Range:|Date Range:|
+ADDING NEW PHONE ALIAS|AJOUT DE NOUVEAU TÉLÉPHONE ALIAS|
+ADD NEW PHONE ALIAS|ADD NEW PHONE ALIAS|
+MODIFY PHONE ALIAS|MODIFY PHONE ALIAS|
+DELETE PHONE ALIAS|DELETE PHONE ALIAS|
+PHONE ALIAS LIST|TÉLÉPHONE LISTE ALIAS|
+Phone Alias List|Téléphone Alias Liste|
+Add A New Phone Alias|Ajouter un nouveau téléphone Alias|
+ADD A NEW PHONE ALIAS|Ajouter un nouveau téléphone ALIAS|
+Alias ID: |Alias ID:|
+Alias Name: |Alias Nom:|
+Phone Logins List: |Téléphone Connexions List:|
+PHONE ALIAS NOT ADDED|PAS DE TELEPHONE ALIAS AJOUTÉS|
+there is already a Phone Alias in the system with this ID|il existe déjà un numéro de téléphone Alias dans le système avec cette ID|
+there is already a Phone Login in the system with this ID|il existe déjà un numéro de téléphone dans le système Connectez-vous avec cette ID|
+PHONE ALIAS ADDED|PHONE ALIAS AJOUTÉS|
+PHONE ALIAS NOT MODIFIED|PHONE ALIAS PAS mise à jour|
+PHONE ALIAS MODIFIED|PHONE ALIAS mise à jour|
+PHONE ALIAS NOT DELETED|PHONE ALIAS pas supprimé|
+PHONE ALIAS DELETION CONFIRMATION|PHONE ALIAS DELETION CONFIRMATION|
+Click here to delete phone alias|Cliquez ici pour supprimer le téléphone alias|
+PHONE ALIAS DELETION COMPLETED|PHONE ALIAS DELETION ACCOMPLIES|
+PHONE ALIAS LISTINGS|PHONE ALIAS LISTAGES|
+there is already a Phone alias in the system with this login|il existe déjà un numéro de téléphone alias dans le système avec ce login|
+there is already a Phone in the system with this login|il existe déjà un numéro de téléphone dans le système avec ce login|
+DELETE THIS PHONE ALIAS|SUPPRIMER CETTE PHONE ALIAS|
+MODIFY A PHONE ALIAS RECORD|A MODIFIER TELEPHONE ALIAS RECORD|
+Alias ID -<\/B> The ID of the alias used to allow for phone load balanced logins. no spaces or other special characters allowed. Must be between 2 and 20 characters in length|Alias ID - </B> L'ID de l'alias utilisé pour permettre les connexions de téléphone à équilibrage de charge. pas d'espaces ou autres caractères spéciaux autorisés. Doit être compris entre 2 et 20 caractères de longueur|
+Alias Name -<\/B> The name used to describe a phones alias, Must be between 2 and 50 characters in length|Alias Nom - </B> Le nom utilisé pour désigner un téléphone alias, doit être compris entre 2 et 50 caractères de longueur|
+Phones Logins List -<\/B> The comma separated list of phone logins used when an agent logs in using phone load balanced logins. The Agent application will find the active server with the fewest agents logged into it and place a call from that server to the agent upon login|Téléphones Connexions List - </B> La virgule sépare la liste de téléphone de connexion utilisé lors d'un agent se connecte par téléphone pour équilibrer la charge de connexion. L'agent se trouve l'application serveur actif avec le moins d'agents et connecté à un appel à ce serveur à l'agent au moment de la connexion|
+PHONES WITHIN THIS PHONES ALIAS|TELEPHONES PORTABLES DANS CETTE ALIAS|
+Add New Shift|Ajouter un nouveau Shift|
+New Shift Addition|New Shift adjonction|
+Modify Shift|Modifier Shift|
+Delete Shift|Maj + Suppr|
+Shifts|Shifts|
+Shift ID -<\/B> This is the short name of a Vicidial Shift Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters|Shift ID - </B> Il s'agit du nom court d'un VICIDIAL Shift Définition. Cela doit être un identifiant unique. Ne pas utiliser les espaces ou la ponctuation dans ce champ. max 20 caractères, un minimum de 2 caractères|
+Shift Name -<\/B> This is a more descriptive name of the Shift Definition. This is a short summary of the Shift definition. max 50 characters, minimum of 2 characters|Nom Shift - </B> Il s'agit d'un nom descriptif de la Maj Définition. Ceci est un bref résumé de la définition Maj. max 50 caractères, un minimum de 2 caractères|
+Shift Start Time -<\/B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930 and 5:00 PM would be 1700|Start Time Shift - </B> Il est temps que la campagne commence à passer. Ne doivent être des chiffres, 9:30 AM serait 0930 et 5:00 PM serait 1700|
+Shift Length -<\/B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00 and 7 hours and 30 minutes would be 07:30|Longueur Shift - </B> Il est temps en heures et minutes que dure la campagne de changement. 8 heures seraient 08h00 et 7 heures et 30 minutes serait 07:30|
+Shift Weekdays -<\/B> In this section you should choose the days of the week that this shift is active|Shift Weekdays - </B> Dans cette section, vous devriez choisir le jour de la semaine que ce changement est active|
+Show Shifts|Voir les changements|
+Add A New Shift|Add A New Shift|
+Shift ID: |Shift ID:|
+Shift Name: |Shift Nom:|
+Shift Start Time: |Start Time Shift:|
+Shift End Time: |End Time Shift:|
+SHIFT DEFINITION NOT ADDED|MAJ définition pas AJOUTÉS|
+there is already a shift entry with this ID|il ya déjà un quart d'entrée avec cette ID|
+Shift ID and name must be at least 2 characters in length|Shift ID et le nom doit être d'au moins 2 caractères|
+Shift Start Time must be 4 digits in length and be a valid time|Start Time Shift 4 chiffres doit être de longueur et une heure valide|
+Shift Length must be 5 characters in length and be 24 hours or less|Shift Longueur doit être de 5 caractères de longueur et de 24 heures ou moins|
+SHIFT ADDED: |SHIFT AJOUTÉS:|
+MODIFY A SHIFT|MODIFIER UN DEPLACEMENT|
+USER GROUPS USING THIS SHIFT:|Groupes d'utilisateurs UTILISANT CE SHIFT:|
+DELETE THIS SHIFT DEFINITION|SUPPRIMER CETTE DEFINITION SHIFT|
+MODIFY A SHIFT|MODIFIER UN DEPLACEMENT|
+SHIFT NOT DELETED|MAJ pas supprimé|
+SHIFT DELETION CONFIRMATION: |SHIFT DELETION CONFIRMATION:|
+Click here to delete shift|Cliquez ici pour supprimer le passage|
+SHIFT DELETION COMPLETED:|SHIFT DELETION ACHEVES:|
+SHIFT MODIFIED|MAJ mise à jour|
+SHIFT LISTINGS:|SHIFT inscriptions:|
+Shift Weekdays: |Shift-Ven:|
+Sunday|Dimanche|
+Monday|Lundi|
+Tuesday|Mardi|
+Wednesday|Mercredi|
+Thursday|Jeudi|
+Friday|Vendredi|
+Saturday|Samedi|
+Group Shifts: |Groupe de changements:|
+Group Shifts -<\/B> This is a selectable list of shifts that can restrict the agents login time on the system|Groupe changements - </B> Il s'agit d'un choix de la liste des changements qui peuvent restreindre l'accès des agents à temps sur le système|
+ Timeclock|Timeclock|
+Timeclock End Of Day -<\/B> This setting defines when all users are to be auto logged out of the timeclock system. Only runs once a day. must be only 4 digits 2 digit hour and 2 digit minutes in 24 hour time. Default is 0000|Timeclock Fin de la journée - </B> Ce paramètre définit lorsque tous les utilisateurs sont automatiquement déconnecté du système timeclock. Fonctionne uniquement une fois par jour. ne doit être que 4 chiffres et 2 chiffres heures à 2 chiffres dans les minutes de 24 heures. La valeur par défaut est 0000|
+Timeclock Last Auto Logout -<\/B> This field displays the date of the last auto-logout|Dernière timeclock Auto Logout - </B> Ce champ affiche la date de la dernière auto-logout|
+Timeclock Last Auto Logout: |Dernière timeclock Auto Logout:|
+Timeclock End Of Day: |Timeclock Fin de la journée:|
+SURVEY SETTINGS FOR THIS CAMPAIGN:|SONDAGE SETTINGS pour cette campagne:|
+Modify Campaign Survey|Modifier Campagne Survey|
+Survey First Audio File -<\/B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.|Première Enquête Audio File - </B> Il s'agit du nom de fichier audio qui se joue dès que le client choisit le téléphone lors de l'exécution d'une étude campagne.|
+Survey DTMF Digits -<\/B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are |Enquête DTMF Digits - </B> Ce domaine est l'endroit où vous définissez les chiffres que le client peut presse comme une option sur une campagne de sondage. valable chiffres DTMF sont|
+Survey Not Interested Digit -<\/B> This field is where you define the customer digit pressed that will show they are Not Interested.|Enquête Non Intéressé Digit - </B> Ce domaine est l'endroit où vous définissez le client pressé chiffres qui montrent qu'ils ne sont pas intéressés.|
+Survey Not Interested Status -<\/B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list.|Enquête Non Intéressé Etat - </B> Ce domaine est l'endroit où vous choisissez le statut d'être utilisé pour pas intéressé. S'il est utilisé DNC et la campagne est défini pour utiliser DNC ensuite le numéro de téléphone sera automatiquement ajouté à la liste DNC VICIDIAL interne.|
+Survey Opt-in Audio File -<\/B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.|Enquête sur Opt-in Audio File - </B> Il s'agit du nom de fichier audio qui se joue lorsque le client a opté dans l'enquête, a choisi de ne pas-ou pas répondu si la non-réponse-action est fixé à optout. Après ce fichier audio est joué, le sondage de l'action ne soit prise.|
+Survey Not Interested Audio File -<\/B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up|Enquête Non Intéressé Audio File - </B> Il s'agit du nom de fichier audio qui se joue lorsque le client a choisi de l'enquête, a choisi de ne pas-ou pas répondu si la non-réponse-action est fixé à OptIn. Après ce fichier audio est joué, l'appel sera suspendu jusqu'à|
+Survey Method -<\/B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.|Enquête sur la méthode - </B> Cette option permet de définir ce qui se passe à un appel après que le client a opté en. AGENT_XFER enverra l'appel à la prochaine agent. MESSAGERIE VOCALE envoie l'appel à la boîte vocale qui est spécifié dans la boîte vocale domaine. EXTENSION envoie le client à l'extension définie dans le Survey Xfer Extension domaine. Hangup se raccrocher le client. CAMPREC_60_WAV enverra au client d'avoir un enregistrement réalisé avec leur réponse, cet enregistrement sera placé dans un dossier nommé comme la campagne de l'intérieur de l'Enquête sur la campagne d'enregistrement Directory.|
+Survey No-Response Action -<\/B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.|Etude de non-réponse de l'action - </B> C'est là que vous définissez ce qui se passera s'il n'y a pas de réponse à la question de sondage. OptIn ne envoyer l'appel à la méthode d'enquête, si le client en pressant une chiffres DTMF. OptOut envoie le client sur la méthode d'enquête, même si elles ne sont pas sur un chiffre DTMF.|
+Survey Response Digit Map -<\/B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.|Enquête Réponse Digit Map - </B> Il s'agit de la section où vous pouvez définir une description pour aller avec chaque option DTMF chiffres que le client mai sélectionner.|
+Survey Xfer Extension -<\/B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension|Enquête Xfer Extension - </B> Si la méthode d'enquête de l'extension est sélectionné, le client appel sera dirigé vers cette extension dialplan|
+Survey Campaign Recording Directory -<\/B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.|Enquête sur la campagne d'enregistrement - Annuaire </B> Si la méthode d'enquête de CAMPREC_60_WAV est sélectionné, le service à la clientèle sera enregistré et placé dans un répertoire nommé d'après la campagne de l'intérieur de ce répertoire.|
+SURVEY SETTINGS NOT MODIFIED|SONDAGE SETTINGS PAS mise à jour|
+SURVEY SETTINGS MODIFIED|SONDAGE SETTINGS mise à jour|
+Survey First Audio File|Enquête Premier fichier audio|
+Survey DTMF Digits|Enquête DTMF Digits|
+Survey Not Interested Digit|Enquête Non Intéressé Digit|
+Survey Not Interested Status|Enquête Non Intéressé Etat|
+Survey Opt-in Audio File|Enquête sur Opt-in audio de dossier|
+Survey Not Interested Audio File|Enquête Non Intéressé fichier audio|
+Survey Method|Enquête sur la méthode|
+Survey No-Response Action|Etude de non-réponse de l'action|
+Survey Response Digit Map|Enquête sur la carte réponse Digit|
+Survey Xfer Extension|Enquête Xfer Extension|
+Survey Campaign Recording Directory|Enquête sur la campagne d'enregistrement du répertoire|
+Add Timeclock Log Record -<\/B> This option allows the user to add records to the timeclock log|Ajouter Log timeclock Record - </B> Cette option permet à l'utilisateur d'ajouter des enregistrements à l'timeclock journal|
+Modify Timeclock Log Record -<\/B> This option allows the user to modify records in the timeclock log|Modifier timeclock Connexion Record - </B> Cette option permet à l'utilisateur de modifier des enregistrements dans le journal timeclock|
+Delete Timeclock Log Record -<\/B> This option allows the user to delete records in the timeclock log|Supprimer timeclock Connexion Record - </B> Cette option permet à l'utilisateur de supprimer des enregistrements dans les journaux timeclock|
+Add Timeclock Log Record|Ajouter Log timeclock Record|
+Modify Timeclock Log Record|Modifier timeclock journal Record|
+Delete Timeclock Log Record|Supprimer timeclock journal Record|
+USER GROUP TIMECLOCK STATUS REPORT|GROUPE D'UTILISATEURS timeclock STATUS REPORT|
+Click here to see the Timeclock Status for this user group|Cliquez ici pour voir le statut timeclock pour ce groupe d'utilisateurs|
+ADD NUMBERS TO THE DNC LIST|Ajouter des numéros dans DNC LISTE|
+Phone Numbers: |Numéros de téléphone:|
+one phone number per line only|un numéro de téléphone par ligne seulement|
+VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list|DNC VICIDIAL List - </B> Do Not Call Cette liste contient tous les conduire qui a été fixé à un statut de DCN dans le système. Dans les listes - ADD NOMBRE DE DNC page que vous êtes en mesure d'ajouter manuellement les numéros de cette liste afin de ne pas être appelé par des campagnes qui utilisent la liste interne DNC|
+ Time Sheet |Feuille de temps|
+Timeclock Record Edit|Timeclock Record Edit|
+Default date format with year month day|Par défaut avec le format de la date année mois jour|
+USA date format with month day year|Etats-Unis avec le format de la date mois jour année|
+European date format with day month year|Européen de format de date avec jour mois année|
+Text date format with abbreviated month day|Texte de format de date avec abrégée mois jour|
+followed by 24 hour time|suivie par 24 heures,|
+followed by 12 hour time|, suivies de 12 heures|
+Agent Screen Header Date Format -<\/B> This menu allows you to choose the format of the date that shows up at the top of the VICIDIAL agent screen. The options for this setting are: default is|Agent Header Screen Format Date - </B> Ce menu vous permet de choisir le format de la date qui apparaît en haut de l'écran VICIDIAL agent. Les options de ce paramètre sont les suivants: valeur par défaut est|
+Agent Screen Customer Date Format -<\/B> This menu allows you to choose the format of the customer time zone date that shows up at the top of the Customer Information section of the VICIDIAL agent screen. The options for this setting are: default is|Agent client Screen Format Date - </B> Ce menu vous permet de choisir le format de la date du fuseau horaire client qui apparaît en haut de la section d'information à la clientèle agent VICIDIAL de l'écran. Les options pour ce paramètre sont les suivants: valeur par défaut est|
+Agent Screen Customer Phone Format -<\/B> This menu allows you to choose the format of the customer phone number that shows up in the status section of the VICIDIAL agent screen. The options for this setting are: default is|Agent Client Téléphone Screen Format - </B> Ce menu vous permet de choisir le format du client le numéro de téléphone qui apparaît dans la section du statut de la VICIDIAL agent écran. Les options pour ce paramètre sont les suivants: valeur par défaut est|
+dash separated phone number|tableau de bord séparés numéro de téléphone|
+dash separated number with area code in parenthesis|Numéro de tableau de bord séparés avec le code régional entre parenthèses|
+No formatting|Pas de formatage|
+with space after city code|avec l'espace après le code de ville|
+space separated phone number|espace séparé numéro de téléphone|
+Agent Screen Header Date Format|Agent Header Screen Format Date|
+Agent Screen Customer Date Format|Agent client Screen Format Date|
+Agent Screen Customer Phone Format|Agent Client Téléphone Screen Format|
+ERROR- There is a problem with the data that you entered, please go back|ERREUR-Il ya un problème avec les données que vous avez entré, s'il vous plaît revenir|
+A timeclock session cannot overlap another timeclock session|A timeclock session ne peuvent pas se chevaucher un autre timeclock session|
+Disable Alter Customer Phone -<\/B> If set to Y, does not change the customer phone number when an agent dispositions the call. Default is Y|Désactiver Alter clientèle Téléphone - </B> Si la valeur de Y, ne modifie pas le client numéro de téléphone lors d'un agent dispositions de l'appel. La valeur par défaut est Y|
+Agent API Access -<\/B> This option allows the account to be used with the vicidial agent API commands|Agent API d'accès - </B> Cette option permet le compte à utiliser avec l'agent VICIDIAL commandes API|
+Agent Alter Customer Phone Override -<\/B> This option will override whatever the option is in the campaign for altering of customer phone number. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer phone number, no matter what the campaign setting is. Default is NOT_ACTIVE|Alter Agent Client Téléphone Override - </B> Cette option va remplacer ce que l'option est dans la campagne pour modifier le numéro de téléphone du client. NOT_ACTIVE va utiliser quel que soit l'établissement est présent pour la campagne. ALLOW_ALTER toujours de permettre à l'agent de modifier le numéro de téléphone des clients, quel que soit le réglage de la campagne. La valeur par défaut est NOT_ACTIVE|
+Agent API Active -<\/B> If set to 1, this will allow the Agent API interface to function. Default is 0|Agent API Active - </B> Si définie à 1, cela permet à l'agent d'interface API pour fonctionner. La valeur par défaut est 0|
+Agent Alter Customer Phone Override: |Alter Agent Client Téléphone Override:|
+Agent API Access: |Agent API d'accès:|
+Disable Alter Customer Phone: |Désactiver Alter clientèle Téléphone:|
+Agent API Active: |Agent API Active:|
+Agent Display Queue Count -<\/B> If set to Y, when a customer is waiting for an agent, the Queue Calls display at the top of the agent screen will turn red and show the number of waiting calls. Default is Y|Agent Display Queue Count - </B> Si la valeur de Y, lorsque le client est en attente d'un agent, la file d'attente de demande d'affichage en haut de l'agent de l'écran devient rouge et indique le nombre d'appels en attente. Le défaut est Y|
+Agent Display Queue Count: |Agent Chef de file d'attente d'affichage:|
+agents in dead calls|agents morts dans les appels|
+QC Last Pull Time: |Pull QC Dernière Heure:|
+and less than 43200 seconds or 12 hours|et moins de 43,200 secondes ou 12 heures|
+LEADS AT LIMIT|LIMITE AU FILS|
+Lead counts taken from active lists in the campaign only|Lead compte active des listes de prises dans la campagne ne|
+QC Get Record Launch-<\/B> This allows one of the following actions to be triggered upon a QC agent receiving a new record|Record QC Get lancement </B> Cela permet à l'une des actions suivantes peut être déclenché sur un agent QC recevoir un nouveau record|
+QC Show Recording -<\/B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen|QC Voir Recording - </B> qui permet un enregistrement qui mai être liée à la QC record à afficher dans le QC agent écran|
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions|QC Shift - </B> Il s'agit du changement de calendrier utilisé pour tirer QC pour une campagne. Les jours de la semaine sont ignorées pour ces fonctions|
+QC Get Record Launch|Get Lancement Record QC|
+QC Show Recording|QC Voir l'enregistrement|
+QC Shift|QC Shift|
+Inbound Group QC Settings|Inbound Groupe QC Paramètres|
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions|QC Shift - </B> Il s'agit du changement de calendrier servant à tirer d'un QC inbound_group. Les jours de la semaine sont ignorées pour ces fonctions|
+The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.|La vente et la catégorie Dead Lead Catégorie sont tous deux utilisés par le système de liste de suggestions lors de l'analyse de la liste des statistiques.|
+Sale Category: |Vente Catégorie:|
+Dead Lead Category: |Dead Lead Catégorie:|
+Manual Dial Filter -<\/B> This allows you to filter the calls that agents make in manual dial mode for this campaign by any combination of the following: DNC - to kick out, CAMPAIGNLISTS - the number must be within the lists for the campaign, NONE - no filter on manual dial or fast dial lists|Manuelle Filter - </B> Cela vous permet de filtrer les appels que les agents font en mode manuel composer pour cette campagne par une combinaison des éléments suivants: DNC - à coup sur, CAMPAIGNLISTS - le nombre doit être dans les listes pour la campagne, AUCUN - pas de filtre sur le cadran ou manuel rapide composer des listes|
+Manual Dial Filter: |Manuelle Filter:|
+Agent Screen Clipboard Copy -<\/B> THIS FEATURE IS CURRENTLY ONLY ENABLED FOR INTERNET EXPLORER. This feature allows you to select a field that will be copied to the computer clipboard of the agent computer upon a call being sent to an agent. Common uses for this are to allow for easy pasting of account numbers or phone numbers into legacy client applications on the agent computer|Agent de presse-papiers de copie d'écran - </B> Cette fonctionnalité est actuellement disponible que pour Internet Explorer. Cette fonctionnalité vous permet de sélectionner un domaine qui sera copiée dans le presse-papiers de l'ordinateur de l'agent sur l'ordinateur d'un appel d'être envoyées à un agent. Commune utilise pour cela sont pour faciliter le collage de numéros de compte ou des numéros de téléphone en héritage les applications client à l'agent d'ordinateur|
+Agent Screen Clipboard Copy|Agent de copie d'écran du Presse-papiers|
+EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.|EXTENDED suppléant nombres sont des nombres dans le système en dehors de la norme de l'écran principal de l'information. L'aide de vous pouvez avoir des centaines de numéros de téléphone pour un seul client record.|
+Agent Screen Extended Alt Dial -<\/B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information|Agent Screen Extended Alt Dial - </B> Cette fonction permet aux agents d'accéder à des numéros de téléphone suppléant étendue des pistes au-delà de l'Alt Address3 de téléphone et les champs qui peuvent être utilisés dans VICIDIAL de numéros de téléphone au-delà du numéro de téléphone principal. L'étendue des numéros de téléphone peut être composé automatiquement en utilisant la fonction Auto-Alt-Dial VICIDIAL dans les paramètres de campagne, mais l'activation de cette fonctionnalité, agent d'écran permettra également l'agent d'appeler ces numéros à partir de l'écran de leur mandataire, ainsi que de modifier leurs informations|
+Agent Screen Extended Alt Dial:|Agent Screen Extended Alt Dial:|
+Use Campaign DNC List -<\/B> This defines whether this campaign is to filter leads against a DNC list that is specific to that campaign only. If it is set to Y, the hopper will look for each phone number in the campaign-specific DNC list before placing it in the hopper. If it is in the campaign-specific DNC list then it will change that lead status to DNCC so it cannot be dialed. Default is N.|Utilisez Campagne DNC List - </B> Cela définit si cette campagne est de filtrer les mène à une liste DNC qui est spécifique à cette campagne seulement. Si elle est définie à Y, la trémie sera, pour chaque numéro de téléphone dans la campagne des DNC avant de le placer dans la trémie. Si elle est dans la campagne des DNC liste, il va changer le statut qui conduisent à DNCC il ne peut donc pas être composé. La valeur par défaut est N.|
+Use Campaign DNC List|Utilisez la liste de campagne DNC|
+and possibly the campaign-specific DNC list|et, éventuellement, la campagne de la liste des DNC|
+There is also the option to add leads to the campaign-specific DNC lists for those campaigns that have them|Il ya aussi la possibilité d'ajouter conduit à la campagne des listes DNC et pour les campagnes qui ont les|
+NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign|NOTE: Copie d'une campagne vous permettra de copier tous les paramètres de campagne, le capitaine que vous sélectionnez, mais il ne sera pas copier une campagne spécifique DNC liste s'il y en a un sur le maître, sélectionnez la campagne|
+Add New |Ajouter un nouveau|
+Copy |Copie|
+New DID Addition|A New Addition|
+New Copied DID Addition|Nouvelle adjonction Copied DID|
+Modify |Modifier|
+Delete |Supprimer|
+Play Place in Line -<\/B> This defines whether the caller will hear their place in line when they enter the queue as well as when they hear the announcemend. Default is N|Jouer en ligne Place - </B> Cela définit si l'appelant entendra leur place dans la ligne quand ils entrent dans la file d'attente, ainsi que quand ils entendent le announcemend. La valeur par défaut est N|
+Play Estimated Hold Time -<\/B> This defines whether the caller will hear the estimated hold time before they are transferred to an agent. Default is N|Hold estimée Play Time - </B> Cela définit si l'appelant entend tenir les prévisions de temps avant qu'ils ne soient transférés à un agent. La valeur par défaut est N|
+Hold Time Option -<\/B> This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE|Hold Time Option - </B> Cela vous permet de spécifier le routage de l'appel, si les prévisions de tenir le temps est sur le montant de la seconde précisés ci-dessous. La valeur par défaut est NON|
+Hold Time Option Seconds -<\/B> If Hold Time Option is set to anything but NONE, this is the number of seconds of estimated hold time that will trigger the hold time option. Default is 360 seconds|Hold Time Option secondes - </B> Si Hold Time Option est fixé à rien, mais AUCUNE, c'est le nombre de secondes de l'estimation du temps que vous maintenez le déclencheur tenir option. La valeur par défaut est 360 secondes|
+Hold Time Option Extension -<\/B> If Hold Time Option is set to EXTENSION, this is the dialplan extension that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Hold Time Option Extension - </B> Si Hold Time Option est fixé à l'extension, c'est l'extension dialplan que l'appel sera envoyé à tenir si l'estimation dépasse le temps Hold Time Option Seconds|
+Hold Time Option Voicemail -<\/B> If Hold Time Option is set to VOICEMAIL, this is the voicemail box that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Hold Time Option Voicemail - </B> Si Hold Time Option est fixé à la boîte vocale, il s'agit de la boîte vocale que l'appel sera envoyé à tenir si l'estimation dépasse le temps Hold Time Option Seconds|
+Hold Time Option Transfer In-Group -<\/B> If Hold Time Option is set to IN_GROUP, this is the inbound group that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Hold Time Option de transfert In-Group - </B> Si Hold Time Option est fixé à IN_GROUP, c'est l'arrivée du groupe que l'appel sera envoyé à tenir si l'estimation dépasse le temps Hold Time Option Seconds|
+Hold Time Option Callback Filename -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the filename prompt that is played before the call is logged as a new lead to the list ID specified below if the estimated hold time exceeds the Hold Time Option Seconds|Hold Time Option Callback Filename - </B> Si Hold Time Option est fixé à CALLERID_CALLBACK, cette invite est le nom du fichier qui se joue avant l'appel est enregistré comme un nouveau chef de file de la liste ID spécifiées ci-dessous si l'estimation est supérieure à la fois tenir Hold Time Option Seconds|
+Hold Time Option Callback List ID -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the estimated hold time exceeds the Hold Time Option Seconds|Hold Time Option Rappel Liste ID - </B> Si Hold Time Option est fixé à CALLERID_CALLBACK, il s'agit de la liste de ID de l'appel est ajouté à un nouveau chef de file, si les prévisions de tenir le temps dépasse le Hold Time Option Seconds|
+Hold Recall Transfer In-Group -<\/B> If a customer calls back to this in-group more than once and this is not set to NONE, then the call will automatically be sent on to the In-Group selected in this field. Default is NONE|Hold Recall transfert In-Group - </B> Si un client demande à ce groupe en plus d'une fois et cela n'est pas mis à AUCUNE, puis l'appel sera automatiquement envoyé à l'En-groupe sélectionné dans ce domaine . La valeur par défaut est NON|
+No Delay Call Route -<\/B> Setting this to Y will remove all wait times and audio prompts and attempt to send the call right to an agent. Does not override welcome message or on hold prompt settings. Default is N|Appel Route n ° Delay - </B> Mettre ce paramètre à Y va effacer tous les temps d'attente et audio et de tenter d'envoyer l'appel droit à un agent. T-elle pas sur le message d'accueil ou en attente rapide des paramètres. La valeur par défaut est N|
+Play Welcome Message -<\/B> These settings select when to play the defined welcome message, ALWAYS will play it every time, NEVER will never play it, IF_WAIT_ONLY will only play the welcome message if the call does not immediately go to an agent, and YES_UNLESS_NODELAY will always play the welcome message unless the NO_DELAY setting is enabled. Default is ALWAYS|Message de bienvenue Play - </B> Ces réglages choisir le moment de jouer le message de bienvenue défini, TOUJOURS jouera à chaque fois, JAMAIS il ne pourra jamais jouer, IF_WAIT_ONLY seulement jouer le message de bienvenue si l'appel n'est pas immédiatement à un agent , et YES_UNLESS_NODELAY toujours jouer le message de bienvenue NO_DELAY à moins que le paramètre est activé. La valeur par défaut est TOUJOURS|
+Play Place in Line: |Jouer en ligne Lieu:|
+Play Estimated Hold Time: |Hold estimée Play Time:|
+Hold Time Option: |Hold Time Option:|
+Hold Time Option Seconds: |Hold Time Option Seconds:|
+Hold Time Option Extension: |Hold Time Option Extension:|
+Hold Time Option Voicemail: |Hold Time Option de messagerie vocale:|
+Hold Time Option Transfer In-Group: |Hold Time Option de transfert en groupe:|
+Hold Time Option Callback Filename: |Hold Time Option Callback Filename:|
+Hold Time Option Callback List ID: |Hold Time Option Callback Liste ID:|
+Hold Recall Transfer In-Group: |Hold Recall transfert en groupe:|
+No Delay Call Route: |Pas de délai d'appel Route:|
+Play Welcome Message: |Play Message de bienvenue:|
+DID Extension -<\/B> This is the number, extension or DID that will trigger this entry and that you will route within the system using this function|DID Extension - </B> C'est le nombre, d'extension ou de DID qui déclenchent cette entrée et que vous la route à l'intérieur du système en utilisant cette fonction|
+DID Description -<\/B> This is the description of the DID routing entry|Description DID - </B> Il s'agit de la description de l'entrée de routage DID|
+DID Active -<\/B> This the field where you set the DID entry to active or not. Default is Y|DID Active - </B> C'est le domaine où vous définissez la DID à l'entrée active ou non. La valeur par défaut est Y|
+DID Route -<\/B> This the type of route that you set the DID to use. EXTEN will send calls to the extension entered below, VOICEMAIL will send calls directly to the voicemail box entered below, AGENT will send calls to a VICIDIAL agent if they are logged in, PHONE will send the call to a phones entry selected below, IN_GROUP will send calls directly to the specified inbound group. Default is EXTEN|Route DID - </B> Ce type de route que vous avez mis le DID à utiliser. EXTEN va envoyer des appels à l'extension en dessous, à la messagerie vocale vous envoyer des appels directement à la boîte vocale en dessous, AGENT envoie les appels vers un agent VICIDIAL s'ils sont identifiés, PHONE enverra l'appel d'un téléphone d'entrée, sélectionnez ci-dessous, vous IN_GROUP envoyer des appels directement à l'arrivée du groupe spécifié. La valeur par défaut est EXTEN|
+Extension -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan extension that calls will be sent to. Default is 9998811112, no-service|Extension - </B> Si EXTEN est sélectionné en tant que DID route, alors c'est le dialplan extension qui appelle sera envoyée. La valeur par défaut est 9998811112, pas de service|
+Extension Context -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan context that calls will be sent to. Default is default|Extension Contexte - </B> Si EXTEN est sélectionné en tant que DID route, alors c'est le contexte qui dialplan demande sera envoyée. Par défaut est la valeur par défaut|
+Voicemail Box -<\/B> If VOICEMAIL is selected as the DID Route, then this is the voicemail box that calls will be sent to. Default is empty|Voicemail Box - </B> Si messagerie vocale est sélectionné en tant que DID Route, c'est la boîte vocale qui demande sera envoyée. La valeur par défaut est vide|
+Phone Extension -<\/B> If PHONE is selected as the DID Route, then this is the phone extension that calls will be sent to.|Téléphone Extension - </B> si le téléphone est sélectionné comme DID Route, cette extension est le téléphone que les appels seront envoyées.|
+Phone Server IP -<\/B> If PHONE is selected as the DID Route, then this is the server IP for the phone extension that calls will be sent to|Téléphone IP du serveur - </B> si le téléphone est sélectionné comme DID route, alors c'est l'IP du serveur pour le téléphone d'extension que les appels seront envoyés à|
+User Agent -<\/B> If AGENT is selected as the DID Route, then this is the VICIDIAL Agent that calls will be sent to|User Agent - </B> si l'agent est sélectionné en tant que DID route, alors c'est le VICIDIAL l'agent qui demande sera envoyée à|
+User Unavailable Action -<\/B> If AGENT is selected as the DID Route, and the user is not logged in or available, then this is the route that the calls will take|User Unavailable Action - </B> si l'agent est sélectionné en tant que DID route, et l'utilisateur n'est pas connecté ou disponible, c'est la route que les appels se|
+User Route Settings In-Group -</B> If AGENT is selected as the DID Route, then this is the In-Group that will be used for the queue settings as the caller is waiting to be sent to the agent. Default is AGENTDIRECT|User Settings En Route-Group - </B> si l'agent est sélectionné en tant que DID route, alors c'est le groupe In-qui sera utilisé pour la file d'attente de paramètres que l'appelant est en attente d'être envoyé à l'agent. La valeur par défaut est AGENTDIRECT|
+In-Group ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the In-Group that calls will be sent to|In-Groupe ID - </B> Si IN_GROUP est sélectionné en tant que DID route, alors c'est le groupe qui en demande sera envoyée à|
+In-Group Call Handle Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the call handling method used for these calls. CID will add a new lead record with every call using the CallerID as the phone number, CIDLOOKUP will attempt to lookup the phone number by the CallerID in the entire system, CIDLOOKUPRL will attampt to lookup the phone number by the CallerID in only one specified list, CIDLOOKUPRC will attampt to lookup the phone number by the CallerID in all of the lists that belong to the specified campaign, CLOSER is specified for VICIDIAL Closer calls, ANI will add a new lead record with every call using the ANI as the phone number, ANILOOKUP will attempt to lookup the phone number by the ANI in the entire system, ANILOOKUPRL will attampt to lookup the phone number by the ANI in only one specified list, XDIGITID will prompt the caller for an X digit code before the call will be put into the queue. Default is CID|In-Call Groupe Handle Method - </B> Si IN_GROUP est sélectionné en tant que DID route, alors c'est la méthode de traitement des appels de ces appels. Base de données ajouter un nouveau record à conduire tous les appels à l'aide du CallerID comme le numéro de téléphone, CIDLOOKUP vais essayer de rechercher le numéro de téléphone par le CallerID dans l'ensemble du système, CIDLOOKUPRL sera attampt pour rechercher le numéro de téléphone par le CallerID précisé que dans une seule liste , CIDLOOKUPRC sera attampt de rechercher le numéro de téléphone par le CallerID dans l'ensemble des listes qui font partie de la campagne spécifié, plus proche est indiquée pour VICIDIAL Closer appels, ANI va ajouter un nouveau record à conduire tous les appels à l'aide du ANI que le numéro de téléphone, ANILOOKUP va tenter de rechercher le numéro de téléphone de l'ANI dans l'ensemble du système, ANILOOKUPRL sera attampt de rechercher le numéro de téléphone par l'ANI précisé que dans une seule liste, XDIGITID amènera l'appelant pour un X chiffres avant que l'appel sera mis en la file d'attente. La valeur par défaut est BDCE|
+In-Group Agent Search Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the agent search method to be used by the inbound group, LO is Load-Balanced-Overflow and will try to send the call to an agent on the local server before trying to send it to an agent on another server, LB is Load-Balanced and will try to send the call to the next agent no matter what server they are on, SO is Server-Only and will only try to send the calls to agents on the server that the call came in on. Default is LB|In-Groupe Agent Méthode de recherche - </B> Si IN_GROUP est sélectionné en tant que DID route, alors c'est l'agent de recherche à la méthode de l'arrivée du groupe, LO est à équilibrage de charge-débordement et d'essayer d'envoyer l'appel à un agent sur le serveur local avant d'essayer de l'envoyer à un agent sur un autre serveur, LB est à équilibrage de charge et de tenter d'envoyer l'appel à l'agent, quel que soit elles sont sur le serveur, le serveur SO est seulement et que d'essayer d'envoyer des appels vers les agents sur le serveur que l'appel est venu dans le. La valeur par défaut est LB|
+In-Group List ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the List ID that leads may be searched through and that leads will be inserted into if necessary|Dans la liste Groupe ID - </B> Si IN_GROUP est sélectionné en tant que DID Route, c'est la liste qui mène mai ID être recherchées à travers et que le conduit sera inséré dans le cas échéant|
+In-Group Campaign ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the Campaign ID that leads may be searched for in if the call handle method is CIDLOOKUPRC|En-groupe ID de la campagne - </B> Si IN_GROUP est sélectionné en tant que DID route, alors c'est le ID de la campagne que mène mai être recherchée dans le cas de la méthode est de faire appel CIDLOOKUPRC|
+In-Group Phone Code -<\/B> If IN_GROUP is selected as the DID Route, then this is the Phone Code used if a new lead is created|En-groupe Téléphone Code - </B> Si IN_GROUP est sélectionné en tant que DID route, alors ce téléphone est le code utilisé si un nouveau chef de file est créé|
+Phones Email -<\/B> The email address associated with this phone entry. This is used for voicemail settings|Téléphones Email - </B> L'adresse e-mail associée à ce téléphone d'entrée. Il est utilisé pour les paramètres de messagerie vocale|
+ADD A NEW DID|AJOUTER UN NOUVEAU NE|
+DID Extension: |DID Extension:|
+DID Description: |A Description:|
+COPY DID|COPY DID|
+Source DID: |Source DID:|
+DID NOT ADDED|NE PAS AJOUTER|
+there is already a DID in the system with this ID|il ya déjà un DID dans le système avec cette ID|
+there is already a DID in the system with this extension|il ya déjà un DID dans le système avec cette extension|
+DID NOT MODIFIED|NE MODIFIE PAS|
+DID MODIFIED|DID mise à jour|
+MODIFY A DID RECORD: |Modifier un DID RECORD:|
+DID Route: |Route de DID:|
+Extension: |Extension:|
+Extension Context: |Extension Contexte:|
+Voicemail Box: |Boîte vocale:|
+Phone Extension: |Téléphone Extension:|
+User Agent: |User Agent:|
+User Unavailable Action: |Unavailable Action utilisateur:|
+User Route Settings In-Group: |User Settings En Route-Group:|
+In-Group ID: |En-groupe ID:|
+In-Group Call Handle Method: |In-Call Groupe Handle Méthode:|
+In-Group Agent Search Method: |En groupe Agent Méthode de recherche:|
+In-Group List ID: |In-Liste du groupe ID:|
+In-Group Campaign ID: |En-groupe ID de la campagne:|
+In-Group Phone Code: |En-groupe Téléphone Code:|
+DELETE THIS DID|SUPPRIMER CETTE DID|
+Email: |Email:|
+DID NOT DELETED|NE PAS SUPPRIMER|
+DID DELETION CONFIRMATION|A DELETION CONFIRMATION|
+Click here to delete |Cliquez ici pour supprimer|
+DID DELETION COMPLETED|A DELETION ACCOMPLIES|
+Delete DIDs: |Supprimer DiDs:|
+Modify DIDs: |Modifier DiDs:|
+To disable the On Hold Prompt, set the interval to 0|Pour désactiver l'invite en attente, réglez l'intervalle de 0|
+3-Way Call Outbound CallerID -<\/B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into|3-Way Outbound Call CallerID - </B> Cela définit ce qui est envoyé en tant que sortant CallerID nombre de 3-way appels effectués par l'agent, la campagne utilise la campagne personnalisée CallerID, client utilise le numéro de client qui est actif sur les agents de l'écran et utilise les CallerID AGENT_PHONE le téléphone pour que l'agent est entré dans|
+3-Way Call Outbound CallerID:|3-Way Outbound Call CallerID:|
+INBOUND_MAN allows the agent to place manual dial calls from a campaign list while being able to take inbound calls between manual dial calls|INBOUND_MAN permet à l'agent de mise manuel composer des appels de la liste d'une campagne tout en étant en mesure de prendre des appels entrants entre le manuel de composer des appels|
+FORCE will force the agents to choose a PAUSE code if they click on the PAUSE button|Force va forcer les agents à choisir un code PAUSE si elles cliquez sur le bouton PAUSE|
+3-Way Call Dial Prefix -<\/B> This defines what is used as the dial prefix for 3-way calls, default is empty so the campaign dial prefix is used, passthru so you can hear ringing is 88|3-Way Call Dial Prefix - </B> Cela définit ce qui est utilisé comme préfixe pour les 3-way appels, par défaut est vide de sorte que la campagne de préfixe est utilisé, passthru afin que vous puissiez entendre sonner est de 88|
+3-Way Call Dial Prefix|3-Way Call Dial Prefix|
+Force Timeclock Login -<\/B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9|Force timeclock Login - </B> Cette option vous permet de ne pas laisser un agent vous connecter à l'interface agent VICIDIAL si elles ne sont pas enregistrés dans le timeclock. La valeur par défaut est N. Il est possible d'exonérer les utilisateurs admin, le niveau 8 et 9|
+Force Timeclock Login|Force timeclock Login|
+Stats Percent of Calls Answered Within X seconds -</B> This field allows you to set the number of hold seconds that the realtime stats display will use to calculate the percentage of answered calls that were answered within X number of seconds on hold|Stats Pourcentage des appels dans les X secondes - </B> Ce domaine vous permet de définir le nombre de secondes que le tenir en temps réel des statistiques d'affichage à utiliser pour calculer le pourcentage d'appels qui ont répondu ont répondu dans X le nombre de secondes en attente|
+Stats Percent of Calls Answered Within X seconds|Stats Pourcentage des appels dans les X secondes|
+Web Form Target-<\/B> This is where you can set the custom web page frame that the web form will be opened in when the user clicks on the WEB FORM button. Default is _blank.|Web Form Public-</B> C'est là que vous pouvez définir la page Web personnalisée cadre que le formulaire web sera ouverte lorsque l'utilisateur clique sur le bouton de formulaire Web. La valeur par défaut est _blank.|
+Web Form Target|Formulaire Web Public|
+To customize the query string after the web form, simply begin the web form with VAR and then the URL that you want to use, replacing the variables with the variable names that you want to use --A--phone_number--B-- just like in the SCRIPTS tab section|Pour personnaliser la chaîne de requête, après le formulaire Web, il suffit de commencer avec le formulaire web, VAR et puis l'URL que vous voulez utiliser, en remplaçant les variables avec les noms des variables que vous voulez utiliser - A - phone_number - B -- comme dans l'onglet SCRIPTS|
+Recording Web Link -<\/B> This setting allows you to override the default of the display of the recording link in the admin web pages. Default is SERVER_IP|Enregistrement Web Link - </B> Ce paramètre permet d'outrepasser les paramètres par défaut de l'affichage de l'enregistrement de lien dans l'admin des pages web. La valeur par défaut est SERVER_IP|
+Alternate Recording Server IP -<\/B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty|Autre enregistrement IP du serveur - </B> Ce paramètre est l'endroit où vous pouvez mettre une IP de serveur de nom de machine ou d'autres qui peuvent être utilisés à la place de la server_ip dans les liens d'enregistrements au sein de l'administration des pages Web. La valeur par défaut est vide|
+Recording Web Link|Enregistrement Web Link|
+Enable Vtiger Integration -<\/B> This setting allows you to enable Vtiger integration with VICIDIAL. Currently links to Vtiger admin and search as well as user replication are the only integration features available. Default is 0|Activer Vtiger Integration - </B> Ce paramètre vous permet d'activer l'intégration avec Vtiger VICIDIAL. Actuellement, des liens vers Vtiger admin et de recherche ainsi que l'utilisateur de réplication sont les seules fonctions d'intégration disponibles. La valeur par défaut est 0|
+Vtiger DB Server IP -<\/B> This is the IP address of the database for your Vtiger installation|Vtiger DB Server IP - </B> Il s'agit de l'adresse IP de la base de données de votre installation Vtiger|
+Vtiger Database Name -<\/B> This is the database name for your Vtiger database|Vtiger Database Name - </B> C'est le nom de base de données de votre base de données Vtiger|
+Vtiger Database Login -<\/B> This is the user name used to log in to your Vtiger database|Vtiger Database Login - </B> C'est le nom d'utilisateur utilisé pour vous connecter à votre base de données Vtiger|
+Vtiger Database Password -<\/B> This is the password used to log in to your Vtiger database|Vtiger Database Password - </B> Il s'agit du mot de passe utilisé pour vous connecter à votre base de données Vtiger|
+Vtiger URL -<\/B> This is the URL or web site address used to get to your Vtiger installation|Vtiger Web - </B> Il s'agit de l'URL ou adresse du site Web utilisé pour accéder à votre installation Vtiger|
+Enable Vtiger Integration:|Activer Vtiger Integration:|
+Vtiger DB Server IP|Vtiger DB Server IP|
+Vtiger Database Name|Vtiger Database Name|
+Vtiger Database Login|Vtiger Database Login|
+Vtiger Database Password|Vtiger Database Password|
+Vtiger URL|Vtiger Web|
+VTIGER HOME|VTIGER ACCUEIL|
+Active -<\/B> This field defines whether the user is active in the system and can use VICIDIAL resources. Default is Y|Active - </B> Ce champ détermine si l'utilisateur est actif dans le système et peuvent utiliser VICIDIAL ressources. La valeur par défaut est Y|
+show only active users|Afficher uniquement les utilisateurs actifs|
+show all users|Afficher tous les utilisateurs|
+Vtiger Search Category -<\/B> If Vtiger integration is enabled in the system settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: LEAD- This option will search through the Vtiger leads only, ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number, VENDOR- This option will only search through the Vtiger vendors, ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger account ID. If unsuccessful it will try any other methods listed that you have selected. Multiple options can be used for each search, but on large databases this is not recommended. Default is LEAD|Recherche Catégorie Vtiger - </B> Si Vtiger intégration est activé dans les paramètres du système puis de définir ce paramètre lorsque l'vtiger_search.php page de recherche pour le numéro de téléphone qui a été entré. Il ya 4 options qui peuvent être utilisés dans ce domaine: LEAD-Cette option de recherche par le biais du conduit Vtiger seulement, COMPTE-Cette option de recherche par le biais du Vtiger comptes et tous les contacts et les sous-contacts pour le numéro de téléphone, VENDOR-Cette option ne recherche que par l'intermédiaire du Vtiger fournisseurs, ACCTID-Cette option ne fonctionne que pour les comptes et il prendra les VICIDIAL vendor_lead_code terrain et essayer de chercher le numéro de compte Vtiger. En cas d'échec, il va essayer d'autres méthodes que la liste que vous avez sélectionné. Plusieurs options peuvent être utilisées pour chaque recherche, mais sur de grandes bases de données ce n'est pas recommandé. La valeur par défaut est LEAD|
+Vtiger Search Category:|Vtiger Recherche Catégorie:|
+ACTIVE LISTS CHANGED|LISTES D'ACTIFS MODIFIES|
+SUBMIT ACTIVE LIST CHANGES|SUBMIT ACTIVE LISTE DES CHANGEMENTS|
+LAST CALL DATE|LAST CALL DATE|
+User Group Bulk Change|Changement de groupe d'utilisateur en vrac|
+Bulk Group Change|Bulk Change Group|
+Vtiger Create Call Record -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether a new Vtiger activity record is created for the call when the agent goes to the vtiger_search page. Default is Y|Vtiger Créer Call Record - </B> Si Vtiger intégration est activé dans les paramètres du système puis de définir ce paramètre est de savoir si un nouveau record d'activité Vtiger est créé pour l'appel lorsque l'agent est à la vtiger_search page. La valeur par défaut est Y|
+Vtiger Create Call Record:|Vtiger Créer Enregistrement d'appel:|
+Vtiger Create Lead Record -<\/B> If Vtiger integration is enabled in the system settings and Vtiger Search Category includes LEAD then this setting will define whether a new Vtiger lead record is created when the agent goes to the vtiger_search page and no record is found to have the call phone number. Default is Y|Vtiger Créer Lead Record - </B> Si Vtiger intégration est activé dans les paramètres système et Vtiger LEAD Recherche Catégorie comprend alors ce paramètre est de déterminer si un nouveau record Vtiger plomb est créé lorsque l'agent est à la page vtiger_search et il n'est pas ont trouvé à l'appel le numéro de téléphone. La valeur par défaut est Y|
+Vtiger Create Lead Record:|Vtiger Créer Lead Enregistrement:|
+Vtiger Screen Login -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y|Vtiger Login Screen - </B> Si Vtiger intégration est activé dans les paramètres de ce système de réglage de définir si l'utilisateur est connecté à l'interface Vtiger automatiquement lors de leur connexion à VICIDIAL. Le défaut est Y|
+Vtiger Screen Login:|Vtiger Screen Login:|
+Alert Enabled -<\/B> This field shows whether the agent has web browser alerts enabled for when calls come into their vicidial.php session. Default is 0 for NO|Alerte Activé - </B> Ce champ indique si l'agent est le navigateur Web des alertes lorsque les appels ont permis de venir dans leur vicidial.php session. La valeur par défaut est 0 pour les NO|
+Alert Enabled:|Alerte Enabled:|
+QC Features Active -<\/B> This option allows you to enable or disable the QC or Quality Control features. Default is 0 for inactive|Caractéristiques QC Active - </B> Cette option vous permet d'activer ou désactiver le contrôle de la qualité ou QC fonctionnalités. La valeur par défaut est 0 pour les inactifs|
+Outbound Auto-Dial Active -<\/B> This option allows you to enable or disable outbound auto-dialing within VICIDIAL, setting this field to 0 will remove the LISTS and FILTERS sections and many fields from the Campaign Modification screens. Manual entry dialing will still be allowable from within the agent screen, but no list dialing will be possible. Default is 1 for active|Auto-Outbound Dial Active - </B> Cette option vous permet d'activer ou désactiver la numérotation automatique sortants dans VICIDIAL, la mise en ce domaine à 0 supprime les listes et FILTERS sections et de nombreux champs de la campagne Modification écrans. Manuel de l'entrée de numérotation sera encore autorisée au sein de l'agent de l'écran, mais pas de liste d'appel ne sera possible. La valeur par défaut est 1 pour les actifs|
+QC Features Active:|QC Active Caractéristiques:|
+Outbound Auto-Dial Active:|Auto Outbound Dial-Active:|
+Close Panel|Fermer le panneau|
+Choose Report Display Options|Rapport Choisissez Options d'affichage|
+To select more than 1 campaign, hold down the Ctrl key and click|Pour sélectionner plus de 1 campagne, maintenez la touche Ctrl enfoncée et cliquez sur|
+CPD AMD Action -<\/B> If you are using the Sangoma ParaXip Call Progress Detection software then you will want to enable this setting either setting it to DISPO which will disposition the call as AA and hang it up if the call is being processed and has not been sent to an agent yet or MESSAGE which will send the call to the defined Answering Machine Message for this campaign. Default is DISABLED|CPD AMD Action - </B> Si vous utilisez le Sangoma ParaXip Call Progress logiciel de détection, vous souhaitez activer ce paramètre, soit la mise à disposition DISPO qui l'appel comme AA et l'accrocher si l'appel est en cours de traitement et n'a pas été envoyée à un agent ou encore MESSAGE qui enverra l'appel à la définition Answering Machine Message pour cette campagne. La valeur par défaut est DISABLED|
+CPD AMD Action:|CPD AMD Action:|
+Click here for user multiple day status detail report|Cliquez ici pour l'utilisateur de plusieurs jours le statut de détails rapport|
+Click here to download this list|Cliquez ici pour télécharger la liste|
+Download Lists:|Listes de téléchargement:|
+Active Asterisk Server -<\/B> If Asterisk is not running on this server, or if VICIDIAL should not be using this server, or if are only using this server for other scripts like the hopper loading script you would want to set this to N. Default is Y|Asterisk Active Server - </B> Si Asterisk ne fonctionne pas sur ce serveur, ou si VICIDIAL ne devrait pas utiliser ce serveur, ou si seulement ce serveur en utilisant des scripts pour d'autres comme la trémie de chargement de script que vous souhaiteriez mettre à la N. La valeur par défaut est Y|
+Generate conf files -<\/B> If you would like the system to auto-generate asterisk conf files based upon the phones entries, carrier entries and load balancing setup within VICIDIAL then set this to Y. Default is Y|Générer des fichiers de conf - </B> Si vous souhaitez que le système d'auto-générer des fichiers de conf astérisque sur la base des entrées de téléphones, le transporteur et l'équilibrage de charge des entrées de configuration dans VICIDIAL puis mettre à la valeur par défaut est Y. Y|
+Rebuild conf files -<\/B> If you want to force a rebuilding of the Asterisk conf files or if any of the phones or carrier entries have changed then this should be set to Y. After the conf files have been generated and Asterisk has been reloaded then this will be changed to N. Default is Y|Reconstruire les fichiers conf - </B> Si vous voulez forcer une reconstruction de la conf Asterisk fichiers ou si l'une des entrées de porte ou les téléphones ont changé, alors ceci doit être réglé sur Y. Après la conf des fichiers ont été générés et Asterisk a été rechargée alors ce sera changée pour N. La valeur par défaut est Y|
+Active Asterisk Server:|Active Server Asterisk:|
+Generate conf files:|Générer des fichiers de conf:|
+Rebuild conf files:|Reconstruire les fichiers de configuration:|
+Show Templates|Afficher les modèles|
+Add A New Template|Ajouter un nouveau modèle|
+ADD NEW CONF TEMPLATE|ADD NEW CONF TEMPLATE|
+ADD NEW CARRIER|ADD NEW CARRIER|
+ADDING NEW CONF TEMPLATE|AJOUT DE NOUVEAUX CONF TEMPLATE|
+ADDING NEW CARRIER|AJOUT DE NOUVEAUX CARRIER|
+MODIFY CONF TEMPLATE|MODIFY CONF TEMPLATE|
+MODIFY CARRIER|MODIFY CARRIER|
+DELETE CONF TEMPLATE|DELETE CONF TEMPLATE|
+DELETE CARRIER|DELETE CARRIER|
+CONF TEMPLATE LIST|CONF TEMPLATE LISTE|
+CARRIER LIST|CARRIER LISTE|
+Template ID:|Template ID:|
+Template Name:|Nom du modèle:|
+Template Contents:|Template Sommaire:|
+Carrier ID:|Carrier ID:|
+Carrier Name:|Nom du transporteur:|
+Registration String:|Inscription à cordes:|
+Account Entry:|Entrée de compte:|
+Protocol:|Protocole:|
+Globals String:|Globals String:|
+Dialplan Entry:|Dialplan Entrée:|
+CONF TEMPLATE NOT ADDED|CONF TEMPLATE pas ajouté|
+there is already a template in the system with this ID|il existe déjà un modèle dans le système avec cette ID|
+CONF TEMPLATE ADDED|CONF TEMPLATE AJOUTÉS|
+CARRIER NOT ADDED|CARRIER pas ajouté|
+there is already a carrier in the system with this ID|il ya déjà un transporteur dans le système avec cette ID|
+CONF TEMPLATE NOT MODIFIED|CONF TEMPLATE PAS mise à jour|
+CARRIER NOT MODIFIED|CARRIER PAS mise à jour|
+CARRIER MODIFIED|CARRIER mise à jour|
+CONF TEMPLATE NOT DELETED|CONF TEMPLATE pas supprimé|
+Template ID be at least 2 characters in length|Template ID être d'au moins 2 caractères|
+CONF TEMPLATE DELETION CONFIRMATION|CONF TEMPLATE DELETION CONFIRMATION|
+Click here to delete conf template|Cliquez ici pour supprimer le modèle de conf|
+CARRIER NOT DELETED|CARRIER pas supprimé|
+Carrier ID be at least 2 characters in length|Carrier ID être d'au moins 2 caractères|
+CARRIER DELETION CONFIRMATION|SUPPRESSION DE SUPPORT DE CONFIRMATION|
+Click here to delete carrier|Cliquez ici pour supprimer le transporteur|
+CONF TEMPLATE DELETION COMPLETED|CONF TEMPLATE DELETION ACCOMPLIES|
+CARRIER DELETION COMPLETED|CARRIER SUPPRESSION ACCOMPLIES|
+MODIFY A CONF TEMPLATE RECORD|A MODIFIER CONF TEMPLATE RECORD|
+DELETE THIS CONF TEMPLATE|SUPPRIMER CETTE CONF TEMPLATE|
+MODIFY A CARRIER RECORD|MODIFIER UN SUPPORT D'ENREGISTREMENT|
+DELETE THIS CARRIER|SUPPRIMER CETTE CARRIER|
+CARRIERS WITHIN THIS SERVER|SUPPORTS DE CE SERVEUR|
+CONF TEMPLATE LISTINGS|CONF TEMPLATE LISTAGES|
+CARRIER LISTINGS|CARRIER LISTAGES|
+PHONES USING THIS CONF TEMPLATE|PHONES UTILISANT CE CONF TEMPLATE|
+CARRIERS USING THIS CONF TEMPLATE|SUPPORTS UTILISANT CE CONF TEMPLATE|
+Conf Override:|Conf Override:|
+Template ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the conf template throughout the system|Template ID - </B> Ce champ doit être d'au moins 2 caractères et pas plus de 15 caractères, sans espaces. C'est l'identifiant qui sera utilisé pour identifier le modèle de configuration à travers le système|
+Template Name -<\/B> This is the descriptive name of the conf file template entry|Nom du modèle - </B> C'est le nom descriptif du modèle de fichier de configuration d'entrée|
+Template Contents -<\/B> This field is where you can enter in the specific settings to be used by all phones and-or carriers that are set to use this conf template. Fields that should NOT be included in this box are: secret, accountcode, account, username and mailbox|Template Sommaire - </B> Ce domaine est l'endroit où vous pouvez entrer dans les paramètres spécifiques pour être utilisés par tous les téléphones et / ou les transporteurs qui sont mis à utiliser ce modèle de conf. Les champs qui ne doivent PAS être inclus dans cette zone sont: le secret, accountcode, compte, nom d'utilisateur et boîte aux lettres|
+Carrier ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the carrier for this specific entry throughout the system|Carrier ID - </B> Ce champ doit être d'au moins 2 caractères et pas plus de 15 caractères, sans espaces. C'est l'identifiant qui sera utilisé pour identifier le transporteur pour cette entrée spécifique dans l'ensemble du système|
+Carrier Name -<\/B> This is the descriptive name of the carrier entry|Nom du transporteur - </B> C'est le nom descriptif de la porte d'entrée|
+Registration String -<\/B> This field is where you can enter in the exact string needed in the IAX or SIP configuration file to register to the provider. Optional but highly recommended if your carrier allows registration|Inscription String - </B> Ce domaine est l'endroit où vous pouvez entrer dans la chaîne exacte nécessaire dans le IAX ou SIP pour enregistrer le fichier de configuration pour le fournisseur. Facultatif mais fortement recommandé si votre opérateur permet l'enregistrement|
+Template ID -<\/B> This optional field allows you to choose a conf file template for this carrier entry|Template ID - </B> Ce champ facultatif permet de choisir un modèle de fichier de conf de ce transporteur entrée|
+Account Entry -<\/B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier|Compte Entrée - </B> Ce champ est utilisé si vous n'avez pas choisi un modèle à utiliser, et c'est là où vous pouvez entrer dans les paramètres du compte à utiliser pour ce transporteur|
+Protocol -<\/B> This field allows you to define the protocol to use for the carrier entry. Currently only IAX and SIP are supported|Protocole - </B> Ce domaine vous permet de définir le protocole à utiliser pour le transporteur d'entrée. Actuellement, seuls SIP et IAX sont soutenus|
+Globals String -<\/B> This optional field allows you to define a global variable to use for the carrier in the dialplan|Globals String - </B> Ce champ facultatif permet de définir une variable globale à utiliser pour le transporteur de la dialplan|
+Dialplan Entry -<\/B> This optional field allows you to define a set of dialplan entries to use for this carrier|Entrée Dialplan - </B> Ce champ facultatif permet de définir un ensemble de dialplan entrées à utiliser pour ce transporteur|
+Server IP -<\/B> This is the server that this specific carrier record is associated with|Server IP - </B> Il s'agit du serveur que ce support est associé à enregistrer|
+Active -<\/B> This defines whether the carrier will be included in the auto-generated conf files or not|Active - </B> Cela définit si le transporteur sera inclus dans l'auto-générés ou non les fichiers conf|
+Conf Override Settings -<\/B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated|Conf Override Settings - </B> Si peuplée, et le modèle est fixé à ID - ABSENCE -, alors le contenu de ce champ sont utilisés comme des entrées de fichier de configuration pour ce téléphone. generate_vicidial_conf téléphones pour ce serveur doit être réglé sur Y pour que cela fonctionne. Ce champ ne doit pas contenir de l'[extension] en ligne, qui sera généré automatiquement|
+Template ID -<\/B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--|Template ID - </B> C'est le fichier de conf ID que ce modèle de téléphone utilisé pour la saisie des paramètres de son Asterisk. La valeur par défaut est - ABSENCE --|
+If you will be taking in inbound calls from this carrier trunk you might want to set the context=trunkinbound within this field so that you can use the DID handling process within VICIDIAL|Si vous prenez en appels entrants à partir de ce transporteur tronc, vous pouvez définir le contexte = trunkinbound dans ce domaine, de sorte que vous pouvez utiliser le processus de traitement des DID dans VICIDIAL|
+There is a reserved default DID that you can use which is just the word -default- without the dashes, that will allos you to send any call that does not match any other existing patterns to the default DID|Il est réservé par défaut DID que vous pouvez utiliser ce qui est juste le mot-par défaut, sans les tirets, qui allos d'envoyer tout appel qui ne correspond pas à tout les autres modèles de la valeur par défaut de DID|
+Campaign VDAD extension|Campagne VDAD extension|
+This field allows for a custom VDAD transfer extension. This allows you to use different call handling methods depending upon your campaign.|Ce champ permet une coutume VDAD transfert extension. Cela vous permet d'utiliser différentes méthodes de traitement des appels en fonction de votre campagne.|
+  - 8364 - same as 8368|- 8364 - même que 8368|
+  - 8365 - Will send the call only to an agent on the same server as the call is on|- 8365 - Will seulement envoyer l'appel à un agent sur le même serveur que l'appel est en|
+  - 8366 - Used for press-1 and survey campaigns|- 8366 - Occasions-1 pour la presse et campagnes de sondage|
+  - 8367 - Will try to first send the call to an agent on the local server, then it will look on other servers|- 8367 - Le premier à essayer d'envoyer l'appel à un agent sur le serveur local, il se penchera sur d'autres serveurs|
+  - 8368 - DEFAULT  Will send the call to the next available agent no matter what server they are on|- 8368 - DEFAULT? Envoie l'appel à la prochaine agent quel que soit le serveur, ils sont sur|
+  - 8369 - Used for Answering Machine Detection after that, same behavior as 8368|- 8369 - Occasions de Answering Machine de détection après que, même comportement que 8368|
+  - 8373 - Used for Answering Machine Detection after that same behavior as 8366|- 8373 - Occasions de Answering Machine de détection après cette même comportement que 8366|
+Also in this section are the WEB VARs for each campaign. These allow each agent to have a different variable string that can be added to the WEB FORM or SCRIPT tab URLs by simply putting --A--web_vars--B-- as you would put any other field.|Également dans cette section sont le WEB VAR pour chaque campagne. Il s'agit de permettre à chaque agent d'avoir une autre variable de chaîne qui peuvent être ajoutés à la fiche de Web ou SCRIPT onglet URL, simplement en mettant - A - web_vars - B - comme vous le mettre dans tout autre domaine.|
+Group Alias List|Groupe Alias Liste|
+Add A New Group Alias|Ajouter un nouveau groupe Alias|
+ADD NEW GROUP ALIAS|ADD NEW GROUP ALIAS|
+ADDING NEW GROUP ALIAS|AJOUT DE NOUVEAU GROUPE ALIAS|
+MODIFY GROUP ALIAS|Modifier un groupe ALIAS|
+DELETE GROUP ALIAS|DELETE GROUP ALIAS|
+GROUP ALIAS LIST|GROUPE ALIAS LISTE|
+GROUP ALIAS LISTINGS|GROUPE ALIAS LISTAGES|
+MODIFY A GROUP ALIAS RECORD|Modifier un groupe ALIAS RECORD|
+Group Alias ID|Alias Groupe ID|
+Group Alias Name|Nom du groupe Alias|
+CallerID Number|Nombre CallerID|
+CallerID Name|CallerID Nom|
+DELETE THIS GROUP ALIAS|Supprimer ce groupe ALIAS|
+GROUP ALIAS NOT MODIFIED|GROUPE ALIAS PAS mise à jour|
+GROUP ALIAS MODIFIED|GROUPE ALIAS mise à jour|
+ADD A NEW GROUP ALIAS|Ajouter un nouveau groupe ALIAS|
+MODIFY A GROUP ALIAS RECORD|Modifier un groupe ALIAS RECORD|
+GROUP ALIAS NOT ADDED|GROUPE ALIAS pas ajouté|
+GROUP ALIAS ADDED|GROUPE ALIAS AJOUTÉS|
+GROUP ALIAS NOT DELETED|GROUPE ALIAS pas supprimé|
+GROUP ALIAS DELETION CONFIRMATION|GROUPE ALIAS DELETION CONFIRMATION|
+Click here to delete group alias|Cliquez ici pour supprimer le groupe alias|
+GROUP ALIAS DELETION COMPLETED|GROUPE ALIAS DELETION ACCOMPLIES|
+Group Alias ID -<\/B> The ID of the group alias used by agents to dial out calls from the VICIDIAL agent interface with different Caller IDs. no spaces or other special characters allowed. Must be between 2 and 20 characters in length|Alias Groupe ID - </B> L'ID du groupe alias utilisés par les agents de composer les appels de l'agent VICIDIAL interface avec différents Caller ID. pas d'espaces ou autres caractères spéciaux autorisés. Doit être compris entre 2 et 20 caractères de longueur|
+Group Alias Name -<\/B> The name used to describe a group alias, Must be between 2 and 50 characters in length|Nom du groupe Alias - </B> Le nom utilisé pour décrire un groupe d'emprunt, doit être compris entre 2 et 50 caractères de longueur|
+Caller ID Number -<\/B> The Caller ID number used in this Group Alias. Must be digits only|Numéro d'identification de l'appelant - </B> Le numéro d'identification de l'appelant utilisée dans ce groupe Alias. Chiffres doivent être|
+Caller ID Name -<\/B> The Caller ID name that can be sent out with this Group Alias. As far as we know this will only work in Canada on PRI circuits and using an IAX loop trunk through Asterisk|Nom d'identification de l'appelant - </B> Le nom d'identification de l'appelant qui peut être envoyé à ce groupe Alias. Pour autant que nous sachions ce qui ne fera que travailler au Canada sur les circuits PRI et l'utilisation d'un tronc IAX boucle par Asterisk|
+Group Alias Allowed -<\/B> If you want to allow your agents to use group aliases then you need to set this to Y. Group Aliases are explained more in the Admin section, they allow agents to select different callerIDs for outbound manual calls that they may place. Default is N|Groupe Alias Admis - </B> Si vous souhaitez permettre à vos agents d'utiliser les alias de groupe, vous devez mettre à Y. alias Groupe sont expliqués plus en section administrative, ils permettent de sélectionner différents agents callerIDs manuel pour les appels sortants qu'ils mai place. La valeur par défaut est N|
+Default Group Alias -<\/B> If you have allowed Group Aliases then this is the group alias that is selected first by default when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty|Groupe par défaut Alias - </B> Si vous avez permis à ce groupe Alias est l'alias du groupe qui est sélectionné en premier par défaut lorsque l'agent choisit d'utiliser un alias pour un groupe émetteur manuel appel. La valeur par défaut est None ou vide|
+Default Group Alias -<\/B> If you have allowed Group Aliases for the campaign that the agent is logged into then this is the group alias that is selected first by default on a call coming in from this inbound group when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty|Groupe par défaut Alias - </B> Si vous avez permis à Groupe Alias pour la campagne que l'agent est entré dans ce groupe est l'alias qui est sélectionnée par défaut sur la première d'un appel provenant de l'arrivée de ce groupe quand l'agent choisit de utiliser un alias pour un groupe émetteur manuel appel. La valeur par défaut est None ou vide|
+Group Alias Allowed|Groupe Alias permis|
+Default Group Alias|Groupe par défaut Alias|
+AGENT_CHOOSE allows the agent to choose which callerID to use for 3-way calls from a list of choices.|AGENT_CHOOSE permet de choisir l'agent qui CallerID à utiliser pour les 3-way appels à partir d'une liste de choix.|
+you cannot use reserved words in group aliases|vous ne pouvez pas utiliser des mots réservés dans le groupe des alias|
+Agent Shift Enforcement Override|Agent de l'exécution Shift Override|
+Manager Shift Enforcement Override|Shift Manager exécution Override|
+Shift Enforcement|Shift exécution|
+Max Calls per Second|Max demande par seconde|
+Max FILL Calls per Second|Max REMPLISSAGE demande par seconde|
+This setting will override whatever the users user group has set for Shift Enforcement. DISABLED will use the user group setting. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is DISABLED.|Ce paramètre remplace les utilisateurs quel que soit le groupe d'utilisateurs a mis en application de la loi pour Maj. HANDICAPES utilise l'utilisateur groupe. OFF ne fera pas appliquer à tous les changements. START ne faire respecter les temps de connexion, mais n'aura pas d'incidence sur un agent qui est en cours d'exécution sur leurs heures de travail si elles sont déjà logged in ALL appliquent passer l'heure de début et se connecter à un agent, après, ils courent sur la fin de leur quart de temps. La valeur par défaut est désactivé.|
+This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0.|Ce paramètre, s'il est à 1 permettra d'entrer dans un gestionnaire d'utilisateur et leur mot de passe sur l'écran d'un agent pour l'emporter sur l'évolution des restrictions sur un agent de la session si l'agent essaie de se connecter à l'extérieur de leur quart de travail. La valeur par défaut est 0.|
+This setting allows you to restrict agent logins based upon the shifts that are selected below. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is OFF.|Ce paramètre vous permet de restreindre l'agent de connexion sur la base des changements qui ont été sélectionnés ci-dessous. OFF ne fera pas appliquer à tous les changements. START ne faire respecter les temps de connexion, mais n'aura pas d'incidence sur un agent qui est en cours d'exécution sur leurs heures de travail si elles sont déjà logged in ALL appliquent passer l'heure de début et se connecter à un agent, après, ils courent sur la fin de leur quart de temps. La valeur par défaut est OFF.|
+This setting determines the maximum number of calls that can be placed by the outbound auto-dialing script on this server per second. Must be from 1 to 100. Default is 20.|Ce paramètre détermine le nombre maximum d'appels qui peuvent être mis par la sortie d'auto-script d'appel sur ce serveur par seconde. Doit être de 1 à 100. La valeur par défaut est 20.|
+This setting determines the maximum number of calls that can be placed by the auto-FILL outbound auto-dialing script on for all servers, per second. Must be from 1 to 200. Default is 40.|Ce paramètre détermine le nombre maximum d'appels qui peuvent être placés par les auto-FILL sortie d'auto-script de numérotation pour tous les serveurs, par seconde. Doit être de 1 à 200. La valeur par défaut est 40.|
+System Load|Système de charge|
+Live Channels|Live Chaînes|
+Disk Usage|Disk Usage|
+These two statistics show the loadavg of a system times 100 and the CPU usage percentage of the server and is updated every minute. The loadavg should on average be below 100 multiplied by the number of CPU cores your system has, for optimal performance. The CPU usage percentage should stay below 50 for optimal performance.|Ces deux statistiques montrent loadavg la fois d'un système 100 et le pourcentage d'utilisation CPU du serveur et est mis à jour chaque minute. Le loadavg devrait être en moyenne inférieure à 100 multiplié par le nombre de noyaux de CPU de votre système a, pour des performances optimales. Le pourcentage d'utilisation CPU devrait rester en dessous de 50 pour une performance optimale.|
+This field shows the current number of Asterisk channels that are live on the system right now. It is important to note that the number of Asterisk channels is usually much higher than the number of actual calls on a system. This field is updated once every minute.|Ce champ indique le nombre actuel d'Asterisk canaux qui sont en direct sur le système dès maintenant. Il est important de noter que le nombre de canaux Asterisk est habituellement beaucoup plus élevé que le nombre d'appels sur un système. Ce champ est mis à jour une fois chaque minute.|
+This field will show the disk usage for every partition on this server. This field is updated once every minute.|Ce champ montre l'utilisation du disque pour chaque partition sur ce serveur. Ce champ est mis à jour une fois chaque minute.|
+ADMIN CHANGE LOG|ADMIN CHANGE LOG|
+USER ADMIN CHANGE LOG|UTILISATEUR ADMIN CHANGE LOG|
+SECTION ADMIN CHANGE LOG|SECTION ADMIN CHANGE LOG|
+DETAIL ADMIN CHANGE LOG|DETAIL ADMIN CHANGE LOG|
+Last 10000 records|Mise à 10.000 dossiers|
+Changes made by|Les modifications apportées par|
+Record Detail|Record Detail|
+Section Records|Section Records|
+Click here to see Admin chages to this record|Cliquez ici pour voir Admin chages à ce record|
+Click here to see Admin chages to this campaign|Cliquez ici pour voir Admin chages à cette campagne|
+Click here to see Admin chages to this list|Cliquez ici pour voir Admin chages à cette liste|
+Click here to see Admin chages to this In-Group|Cliquez ici pour voir Admin chages à ce groupe en|
+Click here to see Admin chages to this DID|Cliquez ici pour voir Admin chages à ce DID|
+Click here to see Admin chages to this remote agent|Cliquez ici pour voir Admin chages à cette télécommande agent|
+Click here to see Admin chages to this user group|Cliquez ici pour voir Admin chages à ce groupe d'utilisateurs|
+Click here to see Admin chages to this script|Cliquez ici pour voir Admin chages de ce script|
+Click here to see Admin chages to this filter|Cliquez ici pour voir Admin chages à ce filtre|
+Click here to see Admin chages to this call time|Cliquez ici pour voir Admin chages à ce temps de garde|
+Click here to see Admin chages to this shift|Cliquez ici pour voir Admin chages à ce changement|
+Click here to see Admin chages to this phone alias|Cliquez ici pour voir Admin chages à ce téléphone alias|
+Click here to see Admin chages to this group alias|Cliquez ici pour voir Admin chages à ce groupe alias|
+Click here to see Admin chages to this server|Cliquez ici pour voir Admin chages à ce serveur|
+Click here to see Admin chages to this conf template|Cliquez ici pour voir Admin chages à ce modèle de conf|
+Click here to see Admin chages to this carrier|Cliquez ici pour voir Admin chages à ce transporteur|
+Click here to see Admin chages to the system settings|Cliquez ici pour voir Admin chages pour les réglages du système|
+Export Reports|Rapports d'exportation|
+This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0.|Ce paramètre, s'il est à 1 permettra d'accéder à un gestionnaire de l'exportation des rapports sur l'appel RAPPORTS écran. La valeur par défaut est 0.|
+This setting if set to 1 will allow a manager to click on the download list link at the bottom of a list modification screen to export the entire contents of a list to a flat data file. Default is 0.|Ce paramètre, s'il est à 1 permet à un gestionnaire de téléchargement, cliquez sur le lien de la liste au bas de l'écran de modification d'une liste d'exporter la totalité du contenu d'une liste de données à un fichier plat. La valeur par défaut est 0.|
+Export Calls Report|Appels d'exportation Rapport|
+EXPORT CALLS REPORT|EXPORTATION DE RAPPORT ENGAGE|
+For the Export Calls Report, the following field order is used for exports|Pour le rapport invite l'exportation, l'ordre suivant est utilisé pour les exportations|
+Timeclock|Horloge en temps|
+Logout|Logout|
+Show Users|Voir les utilisateurs|
+Add A New User|Ajouter un nouvel utilisateur|
+Search For A User|Rechercher un utilisateur|
+User Stats|Statistiques utilisateur|
+User Status|User Status|
+Time Sheet|Feuille de temps|
+Days Status|Jours Etat|
+Campaigns Main|Campagnes principale|
+Statuses|Statuts|
+HotKeys|HotKeys|
+Lead Recycle|Recyclage Plomb|
+Auto Alt-Dial|Auto Alt-Dial|
+Auto Alt Dial|Auto Alt Dial|
+List Mix|Liste Mix|
+Pause Codes|Pause Codes|
+Basic|Basic|
+Detail|Détail|
+Survey|Sondage|
+Real-Time|Real-Time|
+CAMPAIGN ID|CAMPAIGN ID|
+DIAL PLAN|DIAL PLAN|
+DIAL METHOD|DIAL PROCEDE|
+LEADS COUNT|ABOUTIT COUNT|
+LEAD ORDER|RESPONSABLE DE COMMANDE|
+DIAL STATUSES|DIAL STATUTS|
+SCRIPT ID|SCRIPT ID|
+SCRIPT NAME|Nom du script|
+USER GROUP|GROUPE D'UTILISATEURS|
+GROUP NAME|GROUP NAME|
+PRIORITY|PRIORITÉ|
+FORCE TIMECLOCK|Force timeclock|
+CALLTIME ID|CALLTIME ID|
+CALLTIME NAME|CALLTIME NOM|
+DEFAULT START|Démarrage par défaut|
+DEFAULT STOP|DEFAULT STOP|
+SHIFT ID|SHIFT ID|
+SHIFT NAME|SHIFT NOM|
+SHIFT START|SHIFT START|
+SHIFT LENGTH|SHIFT LONGUEUR|
+WEEKDAYS|SEMAINE|
+Template ID|Template ID|
+Template Name|Nom du modèle|
+Carrier ID|Carrier ID|
+Carrier Name|Nom du transporteur|
+Registration|Inscription|
+Active|Active|
+USER ID|USER ID|
+FULL NAME|FULL NAME|
+LEVEL|NIVEAU|
+LINKS|LIENS|
+TRUNKS|Malles|
+HUMAN|L'HOMME|
+ANSWER|REPONSE|
+CATEGORY|CATÉGORIE|
+STATUSES IN THIS CATEGORY|STATUTS DE CETTE CATEGORIE|
+Display|Afficher|
+Dates|Dates|
+PLEASE SELECT A CAMPAIGN OR USER GROUP AND DATE-TIME ABOVE AND CLICK|S'IL VOUS PLAÎT Sélectionnez une campagne ou groupe d'utilisateurs-HEURE ET DATE ET CLIQUEZ CI-DESSUS|
+PLEASE SELECT A USER AND DATE-TIME ABOVE AND CLICK|S'IL VOUS PLAÎT CHOISIR UN UTILISATEUR ET DATE EN TEMPS ET CLIQUEZ CI-DESSUS|
+PLEASE SELECT A CAMPAIGN AND DATE-TIME ABOVE AND CLICK|S'IL VOUS PLAÎT CHOISIR UNE CAMPAGNE ET DATE EN TEMPS ET CLIQUEZ CI-DESSUS|
+PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT|S'IL VOUS PLAÎT CHOISIR UN GROUPE EN DATE ET-dessus et cliquez sur Soumettre|
+DOWNLOAD|TÉLÉCHARGER|
+Users|Utilisateurs|
+User|Utilisateur|
+Reports|Rapports|
+OUTBOUND|SORTANT|
+INBOUND|ENTRANT|
+Server Stats and Reports|Stats Reports Server et|
+Click here to see a VDAD report for this campaign|Cliquez ici pour voir une VDAD rapport de cette campagne|
+Show DIDs|Voir DiDs|
+Add A New DID|Ajouter une nouvelle DID|
+Templates|Modèles|
+Carriers|Carriers|
+Carrier Name|Nom du transporteur|
+Click here to see all CallBack Holds in this user group|Cliquez ici pour voir tous les CallBack Détient dans ce groupe d'utilisateurs|
+Click here to see all CallBack Holds in this list|Cliquez ici pour voir tous les CallBack Détient dans cette liste|
+Click here to see a report for this inbound group|Cliquez ici pour voir un rapport de ce groupe d'entrants|
+Click here to Synchronize users with Vtiger|Cliquez ici pour synchroniser les utilisateurs avec Vtiger|
+Alert Enabled|Alerte Enabled|
+Change Date|Changement Date|
+Login Date|Login Date|
+List Last Call Date|Liste Date Last Call|
+Phone Code Override|Téléphone Code Override|
+GROUP ALIAS ID|ALIAS ID GROUP|
+GROUP ALIAS NAME|GROUPE NOM ALIAS|
+CID NUMBER|CID NUMÉRO|
+CID NAME|CID NOM|
+PHONE ALIAS|PHONE ALIAS|
+ALIAS ID|ALIAS ID|
+ALIAS NAME|Alias|
+PHONE LOGINS LIST|TÉLÉPHONE LISTE Connexions|
+Shift Length|Longueur Shift|
+short description of the shift|brève description de l'évolution|
+DELETE THIS SERVER|SUPPRIMER CE SERVEUR|
+DELETE THIS CONFERENCE|SUPPRIMER CETTE CONFERENCE|
+DELETE THIS VICIDIAL CONFERENCE|SUPPRIMER CETTE CONFERENCE VICIDIAL|
+Install Date|Date d'installation|
+Human Answer|Réponse de l'homme|
+STATUS CATEGORIES|ÉTAT CATEGORIES|
+per campaign|par campagne|
+all campaigns|toutes les campagnes|

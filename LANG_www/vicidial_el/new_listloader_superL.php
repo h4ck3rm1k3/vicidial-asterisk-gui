@@ -1,7 +1,7 @@
 <?
 # new_listloader_superL.php
 # 
-# Copyright (C) 2007  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI lead loader from formatted file
 # 
@@ -19,11 +19,17 @@
 # 61128-1149 - added postal code GMT lookup and duplicate check options
 # 70417-1059 - Fixed default phone_code bug
 # 70510-1518 - Added campaign and system duplicate check and phonecode override
+# 80428-0417 - UTF8 changes
+# 80514-1030 - removed filesize limit and raised number of errors to be displayed
+# 80713-0023 - added last_local_call_time field default of 2008-01-01
+# 81011-2009 - a few bug fixes
+# 90309-1831 - Added admin_log logging
+# 90310-2128 - Added admin header
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.4';
-$build = '70510-1518';
+$version = '2.0.5-29';
+$build = '90310-2128';
 
 
 require("dbconnect.php");
@@ -47,6 +53,7 @@ if (isset($_GET["ΕΠΙΒΕΒΑΙΩΣΗ"]))				{$ΕΠΙΒΕΒΑΙΩΣΗ=$_GET["�
 	elseif (isset($_POST["ΕΠΙΒΕΒΑΙΩΣΗ"]))		{$ΕΠΙΒΕΒΑΙΩΣΗ=$_POST["ΕΠΙΒΕΒΑΙΩΣΗ"];}
 if (isset($_GET["leadfile_name"]))				{$leadfile_name=$_GET["leadfile_name"];}
 	elseif (isset($_POST["leadfile_name"]))		{$leadfile_name=$_POST["leadfile_name"];}
+if (isset($_FILES["leadfile"]))				{$leadfile_name=$_FILES["leadfile"]['name'];}
 if (isset($_GET["file_layout"]))				{$file_layout=$_GET["file_layout"];}
 	elseif (isset($_POST["file_layout"]))		{$file_layout=$_POST["file_layout"];}
 if (isset($_GET["OK_to_process"]))				{$OK_to_process=$_GET["OK_to_process"];}
@@ -113,10 +120,28 @@ if (isset($_GET["phone_code_override"]))			{$phone_code_override=$_GET["phone_co
 # $country_field=$_GET["country_field"];					if (!$country_field) {$country_field=$_POST["country_field"];}
 
 
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+if ($non_latin < 1)
+{
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 $list_id_override = ereg_replace("[^0-9]","",$list_id_override);
-
+}
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -125,6 +150,7 @@ $FILE_datetime = $STARTtime;
 
 $stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
 if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 $row=mysql_fetch_row($rslt);
 $auth=$row[0];
@@ -144,6 +170,9 @@ $browser = getenv("HTTP_USER_AGENT");
   else
 	{
 	header ("Content-type: text/html; charset=utf-8");
+	header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
+	header ("Pragma: no-cache");                          // HTTP/1.0
+
 	if($auth>0)
 		{
 		$office_no=strtoupper($PHP_AUTH_USER);
@@ -290,7 +319,17 @@ function ParseFileName() {
 </script>
 <title>ΔΙΑΧΕΙΡΙΣΗ: Lead Loader</title>
 </head>
-<body>
+<BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
+<?
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+?>
+
+
 <form action=<?=$PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
 <input type=hidden name='leadfile_name' value="<?=$leadfile_name ?>">
 <? if ($file_layout!="custom") { ?>
@@ -304,7 +343,7 @@ function ParseFileName() {
 	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$list_id_override ?>" name='list_id_override' size=10 maxlength=8> (μόνο αριθμοί or leave blank for values in the file)</td>
   </tr>
   <tr>
-	<td align=right width="25%"><font face="arial, helvetica" size=2>Phone Code Override: </font></td>
+	<td align=right width="25%"><font face="arial, helvetica" size=2>Μήκη Override: </font></td>
 	<td align=left width="75%"><font face="arial, helvetica" size=1><input type=text value="<?=$phone_code_override ?>" name='phone_code_override' size=8 maxlength=6> (μόνο αριθμοί or leave blank for values in the file)</td>
   </tr>
   <tr>
@@ -514,7 +553,7 @@ function ParseFileName() {
 
 							if ($multi_insert_counter > 8) {
 								### insert good deal into pending_transactions table ###
-								$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
+								$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00');";
 								$rslt=mysql_query($stmtZ, $link);
 								if ($WeBRooTWritablE > 0) 
 									{fwrite($stmt_file, $stmtZ."\r\n");}
@@ -522,13 +561,13 @@ function ParseFileName() {
 								$multi_insert_counter=0;
 
 							} else {
-								$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
+								$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00'),";
 								$multi_insert_counter++;
 							}
 
 							$good++;
 						} else {
-							if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead  $dup_lead_list</font><b>\n";}
+							if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead  $dup_lead_list</font><b>\n";}
 							$bad++;
 						}
 						$total++;
@@ -729,7 +768,7 @@ function ParseFileName() {
 
 					if ($multi_insert_counter > 8) {
 						### insert good deal into pending_transactions table ###
-						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
+						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00');";
 						$rslt=mysql_query($stmtZ, $link);
 						if ($WeBRooTWritablE > 0) 
 							{fwrite($stmt_file, $stmtZ."\r\n");}
@@ -737,13 +776,13 @@ function ParseFileName() {
 						$multi_insert_counter=0;
 
 					} else {
-						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
+						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00'),";
 						$multi_insert_counter++;
 					}
 
 					$good++;
 				} else {
-					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -764,8 +803,14 @@ function ParseFileName() {
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=false; document.forms[0].submit_file.disabled=false; document.forms[0].reload_page.disabled=false;</script>";
 	} 
 
-if ($leadfile && filesize($LF_path)<=8388608) {
+if ($leadfile) {
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
+
+		### LOG INSERTION Admin Log Table ###
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='LOAD', record_id='$list_id_override', event_code='ADMIN LOAD LIST', event_sql='', event_notes='File Name: $leadfile_name';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		if ($file_layout=="standard") {
 
 	print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
@@ -953,7 +998,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 						if ($multi_insert_counter > 8) {
 							### insert good deal into pending_transactions table ###
-							$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
+							$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00');";
 							$rslt=mysql_query($stmtZ, $link);
 							if ($WeBRooTWritablE > 0) 
 								{fwrite($stmt_file, $stmtZ."\r\n");}
@@ -961,13 +1006,13 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 							$multi_insert_counter=0;
 
 						} else {
-							$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
+							$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00'),";
 							$multi_insert_counter++;
 						}
 
 						$good++;
 					} else {
-						if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+						if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 						$bad++;
 					}
 					$total++;
@@ -1179,7 +1224,7 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 
 					if ($multi_insert_counter > 8) {
 						### insert good deal into pending_transactions table ###
-						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0);";
+						$stmtZ = "INSERT INTO vicidial_list values$multistmt('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00');";
 						$rslt=mysql_query($stmtZ, $link);
 						if ($WeBRooTWritablE > 0) 
 							{fwrite($stmt_file, $stmtZ."\r\n");}
@@ -1187,13 +1232,13 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 						$multi_insert_counter=0;
 
 					} else {
-						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0),";
+						$multistmt .= "('','$entry_date','$modify_date','$status','$user','$vendor_lead_code','$source_id','$list_id','$gmt_offset','$called_since_last_reset','$phone_code','$phone_number','$title','$first_name','$middle_initial','$last_name','$address1','$address2','$address3','$city','$state','$province','$postal_code','$country_code','$gender','$date_of_birth','$alt_phone','$email','$security_phrase','$comments',0,'2008-01-01 00:00:00'),";
 						$multi_insert_counter++;
 					}
 
 					$good++;
 				} else {
-					if ($bad < 10000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
+					if ($bad < 1000000) {print "<BR></b><font size=1 color=red>record $total BAD- PHONE: $phone_number ROW: |$row[0]| DUP: $dup_lead</font><b>\n";}
 					$bad++;
 				}
 				$total++;
@@ -1267,54 +1312,23 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				
 				for ($i=0; $i<mysql_num_fields($rslt); $i++) {
 
-					print "  <tr bgcolor=#D9E6FE>\r\n";
-					print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
-					print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
-					print "     <option value='-1'>(none)</option>\r\n";
-
-					for ($j=0; $j<count($row); $j++) {
-						eregi_replace("\"", "", $row[$j]);
-						print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+					if ( (mysql_field_name($rslt, $i)=="list_id" and $list_id_override!="") or (mysql_field_name($rslt, $i)=="phone_code" and $phone_code_override!="") ) {
+						print "<!-- skipping " . mysql_field_name($rslt, $i) . " -->\n";
+					} else {
+						print "  <tr bgcolor=#D9E6FE>\r\n";
+						print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
+						print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
+						print "     <option value='-1'>(none)</option>\r\n";
+	
+						for ($j=0; $j<count($row); $j++) {
+							eregi_replace("\"", "", $row[$j]);
+							print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						}
+	
+						print "    </select></td>\r\n";
+						print "  </tr>\r\n";
 					}
 
-					print "    </select></td>\r\n";
-					print "  </tr>\r\n";
-
-					#print "  <tr bgcolor=#D9E6FE>\r\n";
-					#print "    <td align=center><font class=standard>$row[$i]</font></td>\r\n";
-					#print "    <td align=center><select name=datafield$i>\r\n";
-					#print "     <option value=''>---------------------</option>\r\n";
-					#print "     <option value='entry_date'>Entry date</option>\r\n";
-					#print "     <option value='modify_date'>Modify date</option>\r\n";
-					#print "     <option value='status'>Status</option>\r\n";
-					#print "     <option value='user'>User</option>\r\n";
-					#print "     <option value='vendor_lead_code'>Vendor lead code</option>\r\n";
-					#print "     <option value='source_id'>Source ID</option>\r\n";
-					#print "     <option value='list_id'>ID Λίστας</option>\r\n";
-					#print "     <option value='gmt_offset'>ID Εκστρατείας</option>\r\n";
-					#print "     <option value='called_since_last_reset'>Called since last reset</option>\r\n";
-					#print "     <option value='phone_code'>Phone code</option>\r\n";
-					#print "     <option value='phone_number'>Phone number</option>\r\n";
-					#print "     <option value='title'>Title</option>\r\n";
-					#print "     <option value='first_name'>First name</option>\r\n";
-					#print "     <option value='middle_initial'>Middle initial</option>\r\n";
-					#print "     <option value='last_name'>Last name</option>\r\n";
-					#print "     <option value='address1'>Διεύθυνση 1</option>\r\n";
-					#print "     <option value='address2'>Διεύθυνση 2</option>\r\n";
-					#print "     <option value='address3'>Διεύθυνση 3</option>\r\n";
-					#print "     <option value='city'>Πόλη</option>\r\n";
-					#print "     <option value='state'>State</option>\r\n";
-					#print "     <option value='province'>Επαρχία</option>\r\n";
-					#print "     <option value='postal_code'>Postal code</option>\r\n";
-					#print "     <option value='country_code'>Χώρα    code</option>\r\n";
-					#print "     <option value='gender'>Φύλο</option>\r\n";
-					#print "     <option value='date_of_birth'>Date of birth</option>\r\n";
-					#print "     <option value='alt_phone'>Alt. phone</option>\r\n";
-					#print "     <option value='email'>E-mail</option>\r\n";
-					#print "     <option value='security_phrase'>Ασφάλεια phrase</option>\r\n";
-					#print "     <option value='comments'>Σχόλια</option>\r\n";
-					#print "    </td>\r\n";
-					#print "  </tr>\r\n";
 				}
 			} 
 			else if (!eregi(".csv", $leadfile_name)) 
@@ -1369,54 +1383,22 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 				$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
 				$row=fgetcsv($file, 1000, ",");
 				for ($i=0; $i<mysql_num_fields($rslt); $i++) {
-					print "  <tr bgcolor=#D9E6FE>\r\n";
-					print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
-					print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
-					print "     <option value='-1'>(none)</option>\r\n";
+					if ( (mysql_field_name($rslt, $i)=="list_id" and $list_id_override!="") or (mysql_field_name($rslt, $i)=="phone_code" and $phone_code_override!="") ) {
+						print "<!-- skipping " . mysql_field_name($rslt, $i) . " -->\n";
+					} else {
+						print "  <tr bgcolor=#D9E6FE>\r\n";
+						print "    <td align=right><font class=standard>".strtoupper(eregi_replace("_", " ", mysql_field_name($rslt, $i))).": </font></td>\r\n";
+						print "    <td align=center><select name='".mysql_field_name($rslt, $i)."_field'>\r\n";
+						print "     <option value='-1'>(none)</option>\r\n";
 
-					for ($j=0; $j<count($row); $j++) {
-						eregi_replace("\"", "", $row[$j]);
-						print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						for ($j=0; $j<count($row); $j++) {
+							eregi_replace("\"", "", $row[$j]);
+							print "     <option value='$j'>\"$row[$j]\"</option>\r\n";
+						}
+
+						print "    </select></td>\r\n";
+						print "  </tr>\r\n";
 					}
-
-					print "    </select></td>\r\n";
-					print "  </tr>\r\n";
-
-					#print "  <tr bgcolor=#D9E6FE>\r\n";
-					#print "    <td align=center><font class=standard>$row[$i]</font></td>\r\n";
-					#print "    <td align=center><select name=datafield$i>\r\n";
-					#print "     <option value=''>---------------------</option>\r\n";
-					#print "     <option value='entry_date'>Entry date</option>\r\n";
-					#print "     <option value='modify_date'>Modify date</option>\r\n";
-					#print "     <option value='status'>Status</option>\r\n";
-					#print "     <option value='user'>User</option>\r\n";
-					#print "     <option value='vendor_lead_code'>Vendor lead code</option>\r\n";
-					#print "     <option value='source_id'>Source ID</option>\r\n";
-					#print "     <option value='list_id'>ID Λίστας</option>\r\n";
-					#print "     <option value='gmt_offset'>ID Εκστρατείας</option>\r\n";
-					#print "     <option value='called_since_last_reset'>Called since last reset</option>\r\n";
-					#print "     <option value='phone_code'>Phone code</option>\r\n";
-					#print "     <option value='phone_number'>Phone number</option>\r\n";
-					#print "     <option value='title'>Title</option>\r\n";
-					#print "     <option value='first_name'>First name</option>\r\n";
-					#print "     <option value='middle_initial'>Middle initial</option>\r\n";
-					#print "     <option value='last_name'>Last name</option>\r\n";
-					#print "     <option value='address1'>Διεύθυνση 1</option>\r\n";
-					#print "     <option value='address2'>Διεύθυνση 2</option>\r\n";
-					#print "     <option value='address3'>Διεύθυνση 3</option>\r\n";
-					#print "     <option value='city'>Πόλη</option>\r\n";
-					#print "     <option value='state'>State</option>\r\n";
-					#print "     <option value='province'>Επαρχία</option>\r\n";
-					#print "     <option value='postal_code'>Postal code</option>\r\n";
-					#print "     <option value='country_code'>Χώρα    code</option>\r\n";
-					#print "     <option value='gender'>Φύλο</option>\r\n";
-					#print "     <option value='date_of_birth'>Date of birth</option>\r\n";
-					#print "     <option value='alt_phone'>Alt. phone</option>\r\n";
-					#print "     <option value='email'>E-mail</option>\r\n";
-					#print "     <option value='security_phrase'>Ασφάλεια phrase</option>\r\n";
-					#print "     <option value='comments'>Σχόλια</option>\r\n";
-					#print "    </td>\r\n";
-					#print "  </tr>\r\n";
 				}
 			}
 			print "  <tr bgcolor='#330099'>\r\n";
@@ -1431,8 +1413,8 @@ if ($leadfile && filesize($LF_path)<=8388608) {
 	# }
 		print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=false; document.forms[0].submit_file.disabled=false; document.forms[0].reload_page.disabled=false;</script>";
 	}
-} else if (filesize($leadfile)>8388608) {
-		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>Λάθος: Το αρχείο ξεπέρασε το όριο των 8ΜΒ.</B></font></center>";
+#} else if (filesize($leadfile)>8388608) {
+#		print "<center><font face='arial, helvetica' size=3 color='#990000'><B>ERROR: File exceeds the 8MB limit.</B></font></center>";
 }
 ?>
 </form>
@@ -1554,17 +1536,17 @@ $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 $AC_processed=0;
 if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	{
-	if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+	if ($DBX) {print "     Second Κυριακή March to First Κυριακή November\n";}
 	#**********************************************************************
 	# SSM-FSN
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on Second Sunday March to First Sunday November at 2 am.
+	#     Based on Second Κυριακή March to First Κυριακή November at 2 am.
 	#     INPUTS:
 	#       mm              INTEGER       Month.
 	#       dd              INTEGER       Day of the month.
 	#       ns              INTEGER       Seconds into the day.
-	#       dow             INTEGER       Day of week (0=Sunday, to 6=Saturday)
+	#       dow             INTEGER       Day of week (0=Κυριακή, to 6=Σάββατο)
 	#     OPTIONAL INPUT:
 	#       timezone        INTEGER       hour difference UTC - local standard time
 	#                                      (DEFAULT is blank)
@@ -1650,12 +1632,12 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 
 if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 	{
-	if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+	if ($DBX) {print "     First Κυριακή April to Last Κυριακή October\n";}
 	#**********************************************************************
 	# FSA-LSO
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in April and last Sunday in October at 2 am.
+	#     Based on first Κυριακή in April and last Κυριακή in October at 2 am.
 	#**********************************************************************
 		
 		$USA_DST=0;
@@ -1719,11 +1701,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 
 if ( (!$AC_processed) and ($dst_range == 'LSM-LSO') )
 	{
-	if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
+	if ($DBX) {print "     Last Κυριακή March to Last Κυριακή October\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on last Sunday in March and last Sunday in October at 1 am.
+	#     Based on last Κυριακή in March and last Κυριακή in October at 1 am.
 	#**********************************************************************
 		
 		$GBR_DST=0;
@@ -1787,11 +1769,11 @@ if ( (!$AC_processed) and ($dst_range == 'LSM-LSO') )
 	}
 if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 	{
-	if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
+	if ($DBX) {print "     Last Κυριακή October to Last Κυριακή March\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on last Sunday in October and last Sunday in March at 1 am.
+	#     Based on last Κυριακή in October and last Κυριακή in March at 1 am.
 	#**********************************************************************
 		
 		$AUS_DST=0;
@@ -1856,12 +1838,12 @@ if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 
 if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 	{
-	if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
+	if ($DBX) {print "     First Κυριακή October to Last Κυριακή March\n";}
 	#**********************************************************************
 	#   TASMANIA ONLY
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in October and last Sunday in March at 1 am.
+	#     Based on first Κυριακή in October and last Κυριακή in March at 1 am.
 	#**********************************************************************
 		
 		$AUST_DST=0;
@@ -1923,11 +1905,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 	}
 if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 	{
-	if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
+	if ($DBX) {print "     First Κυριακή October to Third Κυριακή March\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in October and third Sunday in March at 1 am.
+	#     Based on first Κυριακή in October and third Κυριακή in March at 1 am.
 	#**********************************************************************
 		
 		$NZL_DST=0;
@@ -1990,12 +1972,12 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 
 if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
 	{
-	if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+	if ($DBX) {print "     Third Κυριακή October to Last Κυριακή February\n";}
 	#**********************************************************************
 	# TSO-LSF
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect. Brazil
-	#     Based on Third Sunday October to Last Sunday February at 1 am.
+	#     Based on Third Κυριακή October to Last Κυριακή February at 1 am.
 	#**********************************************************************
 		
 		$BZL_DST=0;
@@ -2067,3 +2049,6 @@ if (!$AC_processed)
 
 return $gmt_offset;
 }
+
+?>
+</TD></TR></TABLE>

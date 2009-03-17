@@ -1,7 +1,7 @@
 <? 
 # AST_server_performance.php
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -9,6 +9,8 @@
 #            - Added required user/pass to gain access to this page
 # 70417-1106 - Changed time frame to be definable per time range on a single day
 #            - Fixed vertical scaling issues
+# 80118-1508 - Fixed horizontal scale marking issues
+# 90310-2151 - Added admin header
 #
 
 require("dbconnect.php");
@@ -16,8 +18,6 @@ require("dbconnect.php");
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
 $PHP_SELF=$_SERVER['PHP_SELF'];
-if (isset($_GET["query_date"]))				{$query_date=$_GET["query_date"];}
-	elseif (isset($_POST["query_date"]))	{$query_date=$_POST["query_date"];}
 if (isset($_GET["begin_query_time"]))			{$begin_query_time=$_GET["begin_query_time"];}
 	elseif (isset($_POST["begin_query_time"]))	{$begin_query_time=$_POST["begin_query_time"];}
 if (isset($_GET["end_query_time"]))				{$end_query_time=$_GET["end_query_time"];}
@@ -54,9 +54,8 @@ $NOW_DATE = date("Y-m-d");
 $NOW_TIME = date("Y-m-d H:i:s");
 $STARTtime = date("U");
 
-if (!isset($query_date)) {$query_date = $NOW_DATE;}
-if (!isset($begin_query_time)) {$begin_query_time = '09:00:00';}
-if (!isset($end_query_time)) {$end_query_time = '15:30:00';}
+if (!isset($begin_query_time)) {$begin_query_time = "$NOW_DATE 09:00:00";}
+if (!isset($end_query_time)) {$end_query_time = "$NOW_DATE 15:30:00";}
 if (!isset($group)) {$group = '';}
 
 $stmt="select server_ip from servers;";
@@ -85,11 +84,18 @@ while ($i < $servers_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: Server Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Server Performance</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "Date: <INPUT TYPE=TEXT NAME=query_date SIZE=12 MAXLENGTH=10 VALUE=\"$query_date\"> &nbsp; \n";
-echo "Time: <INPUT TYPE=TEXT NAME=begin_query_time SIZE=10 MAXLENGTH=8 VALUE=\"$begin_query_time\"> \n";
-echo "to <INPUT TYPE=TEXT NAME=end_query_time SIZE=10 MAXLENGTH=8 VALUE=\"$end_query_time\"> \n";
+echo "Date/Time Range: <INPUT TYPE=TEXT NAME=begin_query_time SIZE=22 MAXLENGTH=19 VALUE=\"$begin_query_time\"> \n";
+echo "to <INPUT TYPE=TEXT NAME=end_query_time SIZE=22 MAXLENGTH=19 VALUE=\"$end_query_time\"> \n";
 echo "Server: <SELECT SIZE=1 NAME=group>\n";
 	$o=0;
 	while ($servers_to_print > $o)
@@ -109,16 +115,15 @@ echo "<PRE><FONT SIZE=2>\n";
 if (!$group)
 {
 echo "\n";
-echo "PLEASE SELECT A SERVER, DATE AND TIME RANGE ABOVE AND CLICK ENVIAR\n";
+echo "PLEASE SELECT A SERVIDOR AND DATE/TIME RANGE ABOVE AND CLICK ENVIAR\n";
 }
 
 else
 {
 
-$query_date_BEGIN = "$query_date $begin_query_time";   
-$query_date_END = "$query_date $end_query_time";
-$time_BEGIN = "$begin_query_time";   
-$time_END = "$end_query_time";
+$query_date_BEGIN = $begin_query_time;   
+$query_date_END = $end_query_time;
+
 
 echo "VICIDIAL: Server Performance                             $NOW_TIME\n";
 
@@ -182,7 +187,7 @@ $PNGfile = "$group$query_date$shift$filedate$PNG";
 $HTMfp = fopen ("$DOCroot/$HTMfile", "a");
 $DATfp = fopen ("$DOCroot/$DATfile", "a");
 
-$stmt="select DATE_FORMAT(start_time,'%H:%i:%s') as timex,sysload,processes,channels_total,live_recordings,cpu_user_percent,cpu_system_percent from server_performance where server_ip='" . mysql_real_escape_string($group) . "' and start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' order by timex;";
+$stmt="select DATE_FORMAT(start_time,'%Y-%m-%d.%H:%i:%s') as timex,sysload,processes,channels_total,live_recordings,cpu_user_percent,cpu_system_percent from server_performance where server_ip='" . mysql_real_escape_string($group) . "' and start_time <= '" . mysql_real_escape_string($query_date_END) . "' and start_time >= '" . mysql_real_escape_string($query_date_BEGIN) . "' order by timex limit 99999;";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $rows_to_print = mysql_num_rows($rslt);
@@ -190,26 +195,56 @@ $i=0;
 while ($i < $rows_to_print)
 	{
 	$row=mysql_fetch_row($rslt);
+	if ($i<1) {$time_BEGIN = $row[0];}
+	$time_END = $row[0];
 	$row[5] = intval(($row[5] + $row[6]) * $HIGHmulti);
 	$row[6] = intval($row[6] * $HIGHmulti);
-	fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+	if ($rows_to_print > 9999)
+		{
+		if ($rows_to_print <= 19999)
+			{
+			if (preg_match("/0$|2$|4$|6$|8$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		if ( ($rows_to_print > 19999) and ($rows_to_print <= 49999) )
+			{
+			if (preg_match("/0$|5$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		if ( ($rows_to_print > 49999) and ($rows_to_print <= 99999) )
+			{
+			if (preg_match("/0$/",$i))
+				{
+				fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+				}
+			}
+		}
+	else
+		{
+		fwrite ($DATfp, "$row[5]\t$row[6]\t$row[0]\t$row[1]\t$row[2]\t$row[3]\n");
+		}
 	$i++;
 	}
 fclose($DATfp);
 
 $rows_to_max = ($rows_to_print + 100);
 
-#print "rows: $i\n";
-
 $time_scale_abb = '5 minutes';
 $time_scale_tick = '1 minute';
 if ($i > 1000) {$time_scale_abb = '10 minutes';   $time_scale_tick = '2 minutes';}
+if ($i > 1500) {$time_scale_abb = '15 minutes';   $time_scale_tick = '3 minutes';}
 if ($i > 2000) {$time_scale_abb = '20 minutes';   $time_scale_tick = '4 minutes';}
 if ($i > 3000) {$time_scale_abb = '30 minutes';   $time_scale_tick = '5 minutes';}
 if ($i > 4000) {$time_scale_abb = '40 minutes';   $time_scale_tick = '10 minutes';}
 if ($i > 5000) {$time_scale_abb = '60 minutes';   $time_scale_tick = '15 minutes';}
 if ($i > 6000) {$time_scale_abb = '90 minutes';   $time_scale_tick = '15 minutes';}
 if ($i > 7000) {$time_scale_abb = '120 minutes';   $time_scale_tick = '30 minutes';}
+
+print "rows: $i   tick: $time_scale_abb   scale: $time_scale_tick\n";
 
 $HTMcontent  = '';
 $HTMcontent .= "#proc page\n";
@@ -219,20 +254,20 @@ $HTMcontent .= "\n";
 $HTMcontent .= "#endif\n";
 $HTMcontent .= "#proc getdata\n";
 $HTMcontent .= "file: $DOCroot/$DATfile\n";
-$HTMcontent .= "fieldnames: userproc sysproc time load processes channels\n";
+$HTMcontent .= "fieldnames: userproc sysproc datetime load processes channels\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc areadef\n";
 $HTMcontent .= "title: Server $group   $query_date_BEGIN to $query_date_END\n";
 $HTMcontent .= "titledetails: size=14  align=C\n";
-$HTMcontent .= "rectangle: 1 1 14 7\n";
-$HTMcontent .= "xscaletype: time hh:mm:ss\n";
+$HTMcontent .= "rectangle: 1 1 12 7\n";
+$HTMcontent .= "xscaletype: datetime yyyy-mm-dd.hh:mm:ss\n";
 $HTMcontent .= "xrange: $time_BEGIN $time_END\n";
 $HTMcontent .= "yrange: 0 $HIGHlimit\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc xaxis\n";
 $HTMcontent .= "stubs: inc $time_scale_abb\n";
 $HTMcontent .= "minorticinc: $time_scale_tick\n";
-$HTMcontent .= "stubformat: hh:mm:ssa\n";
+$HTMcontent .= "stubformat: hh:mma\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc yaxis\n";
 $HTMcontent .= "stubs: inc 50\n";
@@ -241,7 +276,7 @@ $HTMcontent .= "gridskip: min\n";
 $HTMcontent .= "ticincrement: 100 1000\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc lineplot\n";
-$HTMcontent .= "xfield: time\n";
+$HTMcontent .= "xfield: datetime\n";
 $HTMcontent .= "yfield: userproc\n";
 $HTMcontent .= "linedetails: color=purple width=.5\n";
 $HTMcontent .= "fill: lavender\n";
@@ -249,7 +284,7 @@ $HTMcontent .= "legendlabel: user proc%\n";
 $HTMcontent .= "maxinpoints: $rows_to_max\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc lineplot\n";
-$HTMcontent .= "xfield: time\n";
+$HTMcontent .= "xfield: datetime\n";
 $HTMcontent .= "yfield: sysproc\n";
 $HTMcontent .= "linedetails: color=yelloworange width=.5\n";
 $HTMcontent .= "fill: dullyellow\n";
@@ -257,28 +292,28 @@ $HTMcontent .= "legendlabel: system proc%\n";
 $HTMcontent .= "maxinpoints: $rows_to_max\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc curvefit\n";
-$HTMcontent .= "xfield: time\n";
+$HTMcontent .= "xfield: datetime\n";
 $HTMcontent .= "yfield: load\n";
 $HTMcontent .= "linedetails: color=blue width=.5\n";
 $HTMcontent .= "legendlabel: load\n";
 $HTMcontent .= "maxinpoints: $rows_to_max\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc curvefit\n";
-$HTMcontent .= "xfield: time\n";
+$HTMcontent .= "xfield: datetime\n";
 $HTMcontent .= "yfield: processes\n";
 $HTMcontent .= "linedetails: color=red width=.5\n";
 $HTMcontent .= "legendlabel: processes\n";
 $HTMcontent .= "maxinpoints: $rows_to_max\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc curvefit\n";
-$HTMcontent .= "xfield: time\n";
+$HTMcontent .= "xfield: datetime\n";
 $HTMcontent .= "yfield: channels\n";
 $HTMcontent .= "linedetails: color=green width=.5\n";
 $HTMcontent .= "legendlabel: channels\n";
 $HTMcontent .= "maxinpoints: $rows_to_max\n";
 $HTMcontent .= "\n";
 $HTMcontent .= "#proc legend\n";
-$HTMcontent .= "location: max-2 max\n";
+$HTMcontent .= "location: max-1 max\n";
 $HTMcontent .= "seglen: 0.2\n";
 $HTMcontent .= "\n";
 
@@ -290,7 +325,7 @@ passthru("/usr/local/bin/pl -png $DOCroot/$HTMfile -o $DOCroot/$PNGfile");
 
 sleep(1);
 
-echo "</PRE>\n";
+echo "</PRE>";
 echo "\n";
 echo "<IMG SRC=\"/$PLOTroot/$PNGfile\">\n";
 
@@ -302,5 +337,7 @@ echo "<!-- /usr/local/bin/pl -png $DOCroot/$HTMfile -o $DOCroot/$PNGfile -->";
 
 
 ?>
+
+</TD></TR></TABLE>
 
 </BODY></HTML>

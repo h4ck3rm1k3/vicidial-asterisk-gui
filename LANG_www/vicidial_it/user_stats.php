@@ -1,7 +1,7 @@
 <?
 # user_stats.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -13,6 +13,10 @@
 # 80501-0506 - Added Hangup Reason to logs display
 # 80523-2012 - Added vicidial timeclock records display
 # 80617-1402 - Fixed timeclock total logged-in time
+# 81210-1634 - Added server recording display options
+# 90208-0504 - Added link to multi-day report and fixed call status summary section
+# 90305-1226 - Added user_call_log manual dial logs
+# 90310-0734 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -60,7 +64,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -72,6 +76,7 @@ $browser = getenv("HTTP_USER_AGENT");
 			$rslt=mysql_query($stmt, $link);
 			$row=mysql_fetch_row($rslt);
 			$LOGfullname=$row[0];
+
 		fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
 		fclose($fp);
 		}
@@ -79,6 +84,8 @@ $browser = getenv("HTTP_USER_AGENT");
 		{
 		fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
 		fclose($fp);
+		echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+		exit;
 		}
 
 	$stmt="SELECT full_name from vicidial_users where user='$user';";
@@ -94,14 +101,35 @@ $browser = getenv("HTTP_USER_AGENT");
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: User Stats</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: Statistiche utente
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
-<CENTER>
-<TABLE WIDTH=680 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Stats for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=770 BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; Statistiche utente for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2> &nbsp; </TD></TR>
 
 
 
@@ -111,27 +139,28 @@ echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n"
 echo "<TR BGCOLOR=\"#F0F5FE\"><TD ALIGN=LEFT COLSPAN=2><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2><B> &nbsp; \n";
 
 echo "<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=user value=\"$user\">\n";
 echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=text name=begin_date value=\"$begin_date\" size=10 maxsize=10> to \n";
 echo "<input type=text name=end_date value=\"$end_date\" size=10 maxsize=10> &nbsp;\n";
+if (strlen($user)>1)
+	{echo "<input type=hidden name=user value=\"$user\">\n";}
+else
+	{echo "<input type=text name=user size=12 maxlength=10>\n";}
 echo "<input type=submit name=submit value=submit>\n";
 
 
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name\n";
+echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; $user - $full_name<BR><BR>\n";
 
-echo " - <a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
-echo " - <a href=\"./user_status.php?user=$user\">User Status</a>\n";
-echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modifica Utente</a>\n";
+echo "<center>\n";
+echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
+echo " | <a href=\"./user_status.php?user=$user\">Status Utente</a>\n";
+echo " | <a href=\"./admin.php?ADD=3&user=$user\">Modifica Utente</a>\n";
+echo " | <a href=\"./AST_agent_days_detail.php?user=$user&query_date=$begin_date&end_date=$end_date&group[]=--ALL--&shift=ALL\">Utente multiple day status detail report</a>";
+echo "</center>\n";
 
 
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";
-
-
-	$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
-	$rslt=mysql_query($stmt, $link);
-	$statuses_to_print = mysql_num_rows($rslt);
 
 echo "<br><center>\n";
 
@@ -142,38 +171,61 @@ echo "<B>VICIDIAL TEMPO DI CHIAMATA E ESITO:</B>\n";
 echo "<center><TABLE width=300 cellspacing=0 cellpadding=1>\n";
 echo "<tr><td><font size=2>ESITO</td><td align=right><font size=2>CUENTA</td><td align=right><font size=2>ORE:MINUTI</td></tr>\n";
 
-	$total_calls=0;
-	$o=0;
-	while ($statuses_to_print > $o) {
-		$row=mysql_fetch_row($rslt);
-		if (eregi("1$|3$|5$|7$|9$", $o))
-			{$bgcolor='bgcolor="#B9CBFD"';} 
-		else
-			{$bgcolor='bgcolor="#9BB9FB"';}
-
-		$call_seconds = $row[2];
-		$call_hours = ($call_seconds / 3600);
-		$call_hours_int = round($call_hours, 2);
-		$call_hours_int = intval("$call_hours_int");
-		$call_minutes = ($call_hours - $call_hours_int);
-		$call_minutes = ($call_minutes * 60);
-		$call_minutes_int = round($call_minutes, 0);
-		if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
-
-		echo "<tr $bgcolor><td><font size=2>$row[1]</td>";
-		echo "<td align=right><font size=2> $row[0]</td>\n";
-		echo "<td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
-		$total_calls = ($total_calls + $row[0]);
-
-		$call_seconds=0;
-		$o++;
+$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
+$rslt=mysql_query($stmt, $link);
+$VLstatuses_to_print = mysql_num_rows($rslt);
+$total_calls=0;
+$o=0;   $p=0;
+while ($VLstatuses_to_print > $o) 
+	{
+	$row=mysql_fetch_row($rslt);
+	$counts[$p] =		$row[0];
+	$status[$p] =		$row[1];
+	$call_sec[$p] =		$row[2];
+	$p++;
+	$o++;
 	}
 
-	$stmt="SELECT sum(length_in_sec) from vicidial_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59'";
-	$rslt=mysql_query($stmt, $link);
-	$counts_to_print = mysql_num_rows($rslt);
-		$row=mysql_fetch_row($rslt);
-	$call_seconds = $row[0];
+$stmt="SELECT count(*),status, sum(length_in_sec) from vicidial_closer_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' group by status order by status";
+$rslt=mysql_query($stmt, $link);
+$VCLstatuses_to_print = mysql_num_rows($rslt);
+$o=0;
+while ($VCLstatuses_to_print > $o) 
+	{
+	$status_match=0;
+	$r=0;
+	$row=mysql_fetch_row($rslt);
+	while ($VLstatuses_to_print > $r) 
+		{
+		if ($status[$r] == $row[1])
+			{
+			$counts[$r] = ($counts[$r] + $row[0]);
+			$call_sec[$r] = ($call_sec[$r] + $row[2]);
+			$status_match++;
+			}
+		$r++;
+		}
+	if ($status_match < 1)
+		{
+		$counts[$p] =		$row[0];
+		$status[$p] =		$row[1];
+		$call_sec[$p] =		$row[2];
+		$VLstatuses_to_print++;
+		$p++;
+		}
+	$o++;
+	}
+
+$o=0;
+$total_sec=0;
+while ($o < $p)
+	{
+	if (eregi("1$|3$|5$|7$|9$", $o))
+		{$bgcolor='bgcolor="#B9CBFD"';} 
+	else
+		{$bgcolor='bgcolor="#9BB9FB"';}
+
+	$call_seconds = $call_sec[$o];
 	$call_hours = ($call_seconds / 3600);
 	$call_hours_int = round($call_hours, 2);
 	$call_hours_int = intval("$call_hours_int");
@@ -181,6 +233,24 @@ echo "<tr><td><font size=2>ESITO</td><td align=right><font size=2>CUENTA</td><td
 	$call_minutes = ($call_minutes * 60);
 	$call_minutes_int = round($call_minutes, 0);
 	if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
+
+	echo "<tr $bgcolor><td><font size=2>$status[$o]</td>";
+	echo "<td align=right><font size=2> $counts[$o]</td>\n";
+	echo "<td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
+	$total_calls = ($total_calls + $counts[$o]);
+	$total_sec = ($total_sec + $call_sec[$o]);
+	$call_seconds=0;
+	$o++;
+	}
+
+$call_seconds = $total_sec;
+$call_hours = ($call_seconds / 3600);
+$call_hours_int = round($call_hours, 2);
+$call_hours_int = intval("$call_hours_int");
+$call_minutes = ($call_hours - $call_hours_int);
+$call_minutes = ($call_minutes * 60);
+$call_minutes_int = round($call_minutes, 0);
+if ($call_minutes_int < 10) {$call_minutes_int = "0$call_minutes_int";}
 
 echo "<tr><td><font size=2>TOTALE CHIAMATE </td><td align=right><font size=2> $total_calls</td><td align=right><font size=2> $call_hours_int:$call_minutes_int</td></tr>\n";
 echo "</TABLE></center>\n";
@@ -503,6 +573,30 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
 		$location = $row[11];
+
+		if (strlen($location)>2)
+			{
+			$URLserver_ip = $location;
+			$URLserver_ip = eregi_replace('http://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace('https://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace("\/.*",'',$URLserver_ip);
+			$stmt="select count(*) from servers where server_ip='$URLserver_ip';";
+			$rsltx=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rsltx);
+			
+			if ($rowx[0] > 0)
+				{
+				$stmt="select recording_web_link,alt_server_ip from servers where server_ip='$URLserver_ip';";
+				$rsltx=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rsltx);
+				
+				if (eregi("ALT_IP",$rowx[0]))
+					{
+					$location = eregi_replace($URLserver_ip, $rowx[1], $location);
+					}
+				}
+			}
+
 		if (strlen($location)>30)
 			{$locat = substr($location,0,27);  $locat = "$locat...";}
 		else
@@ -525,7 +619,45 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 		}
 
 
-echo "</TABLE></center>\n";
+echo "</TABLE><BR><BR>\n";
+
+
+##### vicidial agent outbound user manual calls for this time period #####
+
+echo "<B>MANUAL OUTBOUND CALLS FOR THIS TIME PERIOD: (10000 record limit)</B>\n";
+echo "<TABLE width=750 cellspacing=0 cellpadding=1>\n";
+echo "<tr><td><font size=1># </td><td><font size=2>DATE/TIME </td><td align=left><font size=2> CALL TYPE</td><td align=left><font size=2> SERVER</td><td align=left><font size=2> PHONE</td><td align=right><font size=2> DIALED</td><td align=right><font size=2> LEAD</td><td align=right><font size=2> CALLERID</td><td align=right><font size=2> ALIAS</td></tr>\n";
+
+	$stmt="select call_date,call_type,server_ip,phone_number,number_dialed,lead_id,callerid,group_alias_id from user_call_log where user='" . mysql_real_escape_string($user) . "' and call_date >= '" . mysql_real_escape_string($begin_date) . " 0:00:01'  and call_date <= '" . mysql_real_escape_string($end_date) . " 23:59:59' order by call_date desc limit 10000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	$u=0;
+	while ($logs_to_print > $u) {
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $u))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+			$u++;
+			echo "<tr $bgcolor>";
+			echo "<td><font size=1>$u</td>";
+			echo "<td><font size=2>$row[0]</td>";
+			echo "<td align=left><font size=2> $row[1]</td>\n";
+			echo "<td align=left><font size=2> $row[2]</td>\n";
+			echo "<td align=left><font size=2> $row[3] </td>\n";
+			echo "<td align=right><font size=2> $row[4] </td>\n";
+			echo "<td align=right><font size=2> <A HREF=\"admin_modify_lead.php?lead_id=$row[5]\" target=\"_blank\">$row[5]</A> </td>\n";
+			echo "<td align=right><font size=2> $row[6] </td>\n";
+			echo "<td align=right><font size=2> $row[7] </td></tr>\n";
+
+	}
+
+
+echo "</TABLE><BR><BR>\n";
+
+
 
 $ENDtime = date("U");
 

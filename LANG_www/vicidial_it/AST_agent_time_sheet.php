@@ -1,13 +1,14 @@
 <? 
 # AST_agent_time_sheet.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 60619-1729 - Added variable filtering to eliminate SQL injection attack threat
 #            - Added required user/pass to gain access to this page
 # 80624-0132 - Added vicidial_timeclock entries
+# 90310-0745 - Added admin header
 #
 
 require("dbconnect.php");
@@ -26,6 +27,8 @@ if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 if (isset($_GET["INVIA"]))				{$INVIA=$_GET["INVIA"];}
 	elseif (isset($_POST["INVIA"]))	{$INVIA=$_POST["INVIA"];}
 
+$user=$agent;
+
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 
@@ -39,7 +42,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
 
@@ -63,15 +66,36 @@ if (!isset($query_date)) {$query_date = $NOW_DATE;}
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: Agent Time Sheet</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
-echo "<a href=\"./admin.php\">VICIDIAL ADMIN</a>: Agent Time Sheet\n";
-echo " - <a href=\"./user_stats.php?user=$agent\">User Stats</a>\n";
-echo " - <a href=\"./user_status.php?user=$agent\">User Status</a>\n";
-echo " - <a href=\"./admin.php?ADD=3&user=$agent\">Modifica Utente</a>\n";
+echo "<TITLE>VICIDIAL: Agent Time Sheet";
+
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+echo "<TABLE WIDTH=$page_width BGCOLOR=\"#F0F5FE\" cellpadding=2 cellspacing=0><TR BGCOLOR=\"#F0F5FE\"><TD>\n";
+
+echo "AgentTime Sheetfor: $user\n";
 echo "<BR>\n";
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET> &nbsp; \n";
 echo "Date: <INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date\">\n";
-echo "User ID: <INPUT TYPE=TEXT NAME=agent SIZE=10 MAXLENGTH=20 VALUE=\"$agent\">\n";
+echo "Utente ID: <INPUT TYPE=TEXT NAME=agent SIZE=10 MAXLENGTH=20 VALUE=\"$agent\">\n";
 echo "<INPUT TYPE=Submit NAME=INVIA VALUE=INVIA>\n";
 echo "</FORM>\n\n";
 
@@ -98,7 +122,7 @@ if ($DB) {echo "$stmt\n";}
 $row=mysql_fetch_row($rslt);
 $full_name = $row[0];
 
-echo "VICIDIAL: Agent Time Sheet                             $NOW_TIME\n";
+echo "VICIDIAL: AgentTime Sheet                            $NOW_TIME\n";
 
 echo "Intervallo Di Tempo: $query_date_BEGIN to $query_date_END\n\n";
 echo "---------- AGENT TIME SHEET: $agent - $full_name -------------\n\n";

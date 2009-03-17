@@ -1,7 +1,7 @@
 <?
 # astguiclient.php - the web-based version of the astGUIclient client application
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also you need to have the login
@@ -185,7 +185,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 			$LOGfullname=$row[0];
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIΚΛΗΣΗ|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIDIAL|GOOD|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
 			fclose($fp);
 			}
 		}
@@ -193,7 +193,7 @@ echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../agc_en/astguicli
 		{
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIΚΛΗΣΗ|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIDIAL|FAIL|$date|$user|$pass|$ip|$browser|$LOGfullname|\n");
 			fclose($fp);
 			}
 		}
@@ -490,9 +490,9 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 	var phone_pass = '<? echo $phone_pass ?>';
 	var session_name = '<? echo $session_name ?>';
 	var image_livecall_OFF = new Image();
-	image_livecall_OFF.src="../agc/images/agc_live_call_OFF_el.gif";
+	image_livecall_OFF.src="../agc/images/agc_live_call_OFF.gif";
 	var image_livecall_ON = new Image();
-	image_livecall_ON.src="../agc/images/agc_live_call_ON_el.gif";
+	image_livecall_ON.src="../agc/images/agc_live_call_ON.gif";
 	var image_voicemail_OFF = new Image();
 	image_voicemail_OFF.src="../agc/images/agc_check_voicemail_OFF_el.gif";
 	var image_voicemail_ON = new Image();
@@ -1545,7 +1545,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_out_datetime = call_array[1];
 							var call_out_number = call_array[2];
 							var call_out_length = call_array[3];
-							out_log_HTML = out_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_out_datetime + "</td><td><font class=\"log_text\">" + call_out_number + "</td><td align=right><font class=\"log_text\">" + call_out_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_out_number + "');return false;\">ΚΛΗΣΗ</a></td></tr>";
+							out_log_HTML = out_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_out_datetime + "</td><td><font class=\"log_text\">" + call_out_number + "</td><td align=right><font class=\"log_text\">" + call_out_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_out_number + "');return false;\">DIAL</a></td></tr>";
 					
 							}
 						out_log_HTML = out_log_HTML + "</table>";
@@ -1575,7 +1575,7 @@ if ($enable_fast_refresh < 1) {echo "var refresh_interval = 1000;\n";}
 							var call_in_idnum = call_array[3];
 							var call_in_idname = call_array[4];
 							var call_in_length = call_array[5];
-							in_log_HTML = in_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_in_datetime + "</td><td><font class=\"log_text\">" + call_in_number + "</td><td><font class=\"log_text\">" + call_in_idnum + "</td><td><font class=\"log_text\">" + call_in_idname + "</td><td align=right><font class=\"log_text\">" + call_in_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_in_idnum + "');return false;\">ΚΛΗΣΗ</a></td></tr>";
+							in_log_HTML = in_log_HTML + "<tr bgcolor=\"" + row_color + "\"><td><font class=\"log_text\">" + loop_ct + "</td><td><font class=\"log_text\">" + call_in_datetime + "</td><td><font class=\"log_text\">" + call_in_number + "</td><td><font class=\"log_text\">" + call_in_idnum + "</td><td><font class=\"log_text\">" + call_in_idname + "</td><td align=right><font class=\"log_text\">" + call_in_length + "&nbsp;</td><td><font class=\"log_text\"><a href=\"#\" onclick=\"basic_originate_call('" + call_in_idnum + "');return false;\">DIAL</a></td></tr>";
 					
 							}
 						in_log_HTML = in_log_HTML + "</table>";
@@ -2723,7 +2723,7 @@ echo "</head>\n";
 <TD><A HREF="#" onclick="ActiveLinesPanelToFront();"><IMG SRC="../agc/images/agc_tab_active_lines_el.gif" ALT="Πίνακας Ενεργών Γραμμών" WIDTH=139 HEIGHT=30 Border=0></A></TD>
 <TD><A HREF="#" onclick="ConfereNcesPanelToFront();"><IMG SRC="../agc/images/agc_tab_conferences_el.gif" ALT="Πίνακας διασκέψεων" WIDTH=139 HEIGHT=30 Border=0></A></TD>
 <TD><A HREF="#" onclick="SendCheckVoiceMail();"><IMG SRC="../agc/images/agc_check_voicemail_ON_el.gif" NAME=voicemail ALT="Ελεγχος Φωνητικού ταχυδρομείου" WIDTH=170 HEIGHT=30 Border=0></A></TD>
-<TD><IMG SRC="../agc/images/agc_live_call_OFF_el.gif" NAME=livecall ALT="Ενεργή κλήση" WIDTH=109 HEIGHT=30 Border=0></TD>
+<TD><IMG SRC="../agc/images/agc_live_call_OFF.gif" NAME=livecall ALT="Ενεργή κλήση" WIDTH=109 HEIGHT=30 Border=0></TD>
 </TR></TABLE>
 </SPAN>
 
@@ -2794,7 +2794,7 @@ echo "</head>\n";
 </TD></TR>
 <tr><td><span id="busycallsspan"></span></td></tr>
 <tr><td><span id="busycallsdebug"></span></td></tr>
-<tr><td align=center><font face="Arial,Helvetica"><B>ΦΩΝ.ΤΑΧ. &nbsp; &nbsp; </B></font> ΝΕΟ: <span id="new_vmail_span"></span> &nbsp; &nbsp; ΠΑΛΑΙΟ: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>ΧΕΙΡ.ΚΛΗΣΗ &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">ΚΛΗΣΗ</A></td></tr>
+<tr><td align=center><font face="Arial,Helvetica"><B>ΦΩΝ.ΤΑΧ. &nbsp; &nbsp; </B></font> ΝΕΟ: <span id="new_vmail_span"></span> &nbsp; &nbsp; ΠΑΛΑΙΟ: <span id="old_vmail_span"></span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <font face="Arial,Helvetica"><B>ΧΕΙΡ.ΚΛΗΣΗ &nbsp; &nbsp; &nbsp; </B></font><input TYPE=TEXT SIZE=20 NAME=manual_dial STYLE="font-family : sans-serif; font-size : 10px"> <A HREF="#" onclick="SendManualDial();">DIAL</A></td></tr>
 
 <tr><td align=center><a href="#" onclick="showParkDisplay('ParkDisplayBox');return false;"><font face="Arial,Helvetica"><B>ΣΤΑΘΜ.ΚΛΗΣΕΙΣ</B></a>:  <span id="parked_calls_count">0</span> &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="#" onclick="showLocalDial('LocalDialBox');return false;"><font face="Arial,Helvetica"><B>ΤΗΛ.ΣΥΝΔ. ΤΟΠΙΚΗΣ ΚΛΗΣΗΣ</a></td></tr>
 
@@ -2837,7 +2837,7 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:46px;z-index:20;" id="ActiveLinesPanel">
 <table border=0 BGCOLOR="#CDE0C2" width=640>
 <tr><td colspan=3>
-<a href="#" onclick="pause();return false;">ΠΑΥΣΗ</a> | <a href="#" onclick="start();return false;">ΕΝΑΡΞΗ</a> &nbsp; &nbsp; Ρυθμός ανανέωσης: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Γρηγορότερα</a> | <a href="#" onclick="slower();return false;">Πιό αργά</a></p>
+<a href="#" onclick="pause();return false;">ΣΤΑΣΗ</a> | <a href="#" onclick="start();return false;">ΕΝΑΡΞΗ</a> &nbsp; &nbsp; Ρυθμός ανανέωσης: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Γρηγορότερα</a> | <a href="#" onclick="slower();return false;">Πιό αργά</a></p>
 	<div id="status"><em>Αρχή..</em></div>
 </td></tr>
 <tr><td>Ενεργές τηλ. συνδέσεις <BR> 

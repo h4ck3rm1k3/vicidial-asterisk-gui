@@ -43,6 +43,27 @@ vicidial|AST_timeonVDADallSUMMARY.php|0
 vicidial|inbound_popup.php|0
 vicidial|AST_inboundEXTstats.php|0
 vicidial|welcome.php|0
+vicidial|admin_header.php|0
+vicidial|vicidial_sales_viewer.php|0
+vicidial|user_group_bulk_change.php|0
+vicidial|AST_agent_status_detail.php|0
+vicidial|AST_agent_days_detail.php|0
+vicidial|AST_CLOSER_service_level.php|0
+vicidial|AST_IVRfilter.php|0
+vicidial|AST_IVRstats.php|0
+vicidial|call_report_export.php|0
+vicidial|fcstats.php|0
+vicidial|list_download.php|0
+vicidial|non_agent_api.php|1
+vicidial|timeclock_edit.php|0
+vicidial|timeclock_report.php|0
+vicidial|timeclock_status.php|0
+vicidial|vtiger_search.php|1
+vicidial|vtiger_user.php|1
+vicidial|welcome_demo.php|1
+vicidial|welcome_languages.php|1
+vicidial|vicidial_admin_web_logo.gif|1
+vicidial|vicidial_admin_web_logo_small.gif|1
 ***TRANSLATIONS***||||
 ### special translations that should stay at the top of the file ###
 BORDER|Border|
@@ -1426,3 +1447,661 @@ Allowed Transfer Groups: |Ομάδες μεταφοράς:|
 Allowed Transfer Groups -<\/B> With these checkbox listings you can select the groups that agents in this campaign can transfer calls to. Allow Closers must be enabled for this option to show up|Ομάδες μεταφοράς - με αυτές τις λίστες τετραγωνιδίου μπορείτε ναεπιλέξετε τις ομάδες ότι οι πράκτορες σε αυτήν την εκστρατείαμπορούν να μεταφέρουν τις κλήσεις. Επιτρέψτε ότι Closersπρέπει να επιτραπεί για αυτήν την επιλογή να παρουσιάσει|
 Campaign Ranks -<\/B> In this section you can define the rank an agent will have for each campaign. These ranks can be used to allow for preferred call routing when Next Agent Call is set to campaign_rank|Τάξεις εκστρατείας - σε αυτό το τμήμα μπορείτε να καθορίσετε τηντάξη που ένας πράκτορας θα έχει για κάθε εκστρατεία. Αυτές οιτάξεις μπορούν να χρησιμοποιηθούν για να επιτρέψουν τηνπροτιμημένη κλήση καθοδηγώντας όταν τίθεται η επόμενη κλήσηπρακτόρων campaign_rank|
 Also in this section is the ability to give the agent a rank for each inbound group. These ranks can be used for preferred call routing when that option is selected in the in-group screen|Επίσης σε αυτό το τμήμα είναι η δυνατότητα να δοθεί στονπράκτορα μια τάξη για κάθε εισερχόμενη ομάδα. Αυτές οι τάξειςμπορούν να χρησιμοποιηθούν για την προτιμημένη κλήση καθοδηγώνταςόταν επιλέγεται εκείνη η επιλογή στην οθόνη-ΟΜΑΔΑΣ|
+### START translations for 2.0.5 release ###
+QC Enabled -<\/B> This option allows the user to log in to the Quality Control agent screen|QC Enabled - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να συνδεθείτε με το γραφείο ποιοτικού ελέγχου της οθόνης|
+QC User Level -<\/B> This setting defines what the agent Quality Control user level is. This will dictate the level of functionality for the agent in the QC section|QC επίπεδο χρήστη - </B> Αυτή η ρύθμιση ορίζει τι ο πράκτορας Ελέγχου Ποιότητας χρήστη επίπεδο. Αυτό θα υπαγορεύσει το επίπεδο λειτουργικότητας για τον αντιπρόσωπο στο τμήμα QC|
+QC Record Pass -<\/B> This option allows the agent to specify that a record has passed the first round of QC after reviewing the record|QC Εγγραφή Pass - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι μια εγγραφή έχει περάσει από τον πρώτο γύρο, QC, μετά την επανεξέταση των ρεκόρ|
+QC Record Finish -<\/B> This option allows the agent to specify that a record has finished the second round of QC after reviewing the passed record|QC Εγγραφή Finish - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι μια εγγραφή έχει τελειώσει ο δεύτερος γύρος των QC πέρασε μετά την επανεξέταση των ρεκόρ|
+QC Record Commit -<\/B> This option allows the agent to specify that a record has been committed in QC. It can no longer be modified by anyone|QC Αναλήψεις Record - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι ένα ρεκόρ το οποίο έχει δεσμευθεί στην QC. Αυτό δεν είναι πλέον δυνατό να τροποποιηθεί από κανέναν|
+QC Allowed Campaigns -<\/B> This is a selectable list of Campaigns which members of this user group will be able to QC. The ALL-CAMPAIGNS option allows the users in this group to QC any campaign on the system|QC Επιτρέπονται Καμπάνιες - </B> Αυτό είναι ένα επιλέξιμο κατάλογο των καμπάνιες που τα μέλη αυτής της ομάδας χρηστών θα είναι σε θέση να QC. Η ALL-CAMPAIGNS επιλογή επιτρέπει στους χρήστες αυτής της ομάδας να QC οποιαδήποτε εκστρατεία για το σύστημα|
+QC Allowed Inbound Groups -<\/B> This is a selectable list of Inbound Groups which members of this user group will be able to QC. The ALL-GROUPS option allows the users in this user group to QC any inbound group on the system|QC Επιτρέπονται Inbound Ομάδες - </B> Αυτό είναι ένα επιλέξιμο λίστα των εισερχόμενων ομάδες που τα μέλη αυτής της ομάδας χρηστών θα είναι σε θέση να QC. Η ALL-ΟΜΑΔΕΣ επιλογή επιτρέπει στους χρήστες σε αυτή την ομάδα χρηστών να QC οποιαδήποτε εισερχόμενα ομάδας για το σύστημα|
+QC Enabled: |QC Enabled:|
+QC User Level: |QC χρήστη Επίπεδο:|
+QC Pass: |QC Pass:|
+QC Finish: |QC Τελείωμα:|
+QC Commit: |Αναλήψεις QC:|
+Modify Nothing|Τίποτα δεν Modify|
+Modify Nothing Except Status|Τίποτα δεν Modify Εκτός Status|
+Modify All Fields|Τροποποιήστε Όλα τα πεδία|
+Verify First Round of QC|Βεβαιωθείτε πρώτου γύρου, QC|
+View QC Statistics|Δείτε QC Στατιστικά|
+Ability to Modify FINISHed records|Ικανότητα Modify ΕΤΟΙΜΑ αρχεία|
+Manager Level|Manager Επίπεδο|
+USERS CAN VIEW ANY CAMPAIGN|Χρήστες να μπορούν να δουν οποιαδήποτε καμπάνια|
+USERS CAN QC ANY CAMPAIGN|Οι χρήστες μπορούν να QC οποιαδήποτε καμπάνια|
+USERS CAN QC ANY INBOUND GROUP|Οι χρήστες μπορούν να ANY QC εισερχόμενα ΟΜΑΔΑ|
+QC Allowed Campaigns: |QC Επιτρέπονται Καμπάνιες:|
+QC Allowed Inbound Groups: |QC Επιτρέπονται Inbound Groups:|
+Queue Priority -<\/B> This setting is used to define the order in which the calls from this outbound campaign should be answered in relation to the inbound calls if this campaign is in blended mode|Κοτσίδας Προτεραιότητα - </B> Αυτή η ρύθμιση χρησιμοποιείται για να καθορίσει τη σειρά με την οποία οι εξερχόμενες κλήσεις από αυτή την εκστρατεία θα πρέπει να απαντηθούν σε σχέση με τις εισερχόμενες κλήσεις αν η συγκεκριμένη καμπάνια είναι αναμεμειγμένο σε λειτουργία|
+Queue Priority: |Κοτσίδας Προτεραιότητα:|
+Drop Action: |Drop δράσης:|
+Drop Transfer Group: |Drop Μεταφορά Ομάδα:|
+Drop Action -<\/B> This menu allows you to choose what happens to a call when it has been waiting for longer than what is set in the Drop Call Seconds field. HANGUP will simply hang up the call, MESSAGE will send the call the Drop Exten that you have defined below, VOICEMAIL will send the call to the voicemail box that you have defined below and IN_GROUP will send the call to the Inbound Group that is defined below|Drop δράσης - </B> Αυτό το μενού σας επιτρέπει να διαλέξετε ό, τι συμβαίνει σε μια κλήση όταν έχει να περιμένει περισσότερο από ό, τι έχει οριστεί στο Drop Call δευτερόλεπτα τομέα. HANGUP απλά θα κλείσεις την κλήση, το μήνυμα θα αποστείλει την πρόσκληση της Drop παράταση που έχετε ορίζονται κατωτέρω, τηλεφωνητή θα απευθύνει την πρόσκληση προς το τηλεφωνητή θέση που έχετε IN_GROUP ορίζονται κατωτέρω, και θα απευθύνει την πρόσκληση στην ομάδα Inbound που καθορίζονται κατωτέρω|
+Drop Exten -<\/B> If Drop Action is set to MESSAGE, this is the dial plan extension that the call will be sent to if it reaches Drop Call Seconds|Drop παράταση - </B> Αν Drop δράση που να είναι μήνυμα, αυτό είναι η κλήση σχέδιο επέκτασης ότι η πρόσκληση θα σταλεί στο εάν ανέρχεται Drop Call Δευτερόλεπτα|
+Drop Call Seconds -<\/B> The number of seconds a call will stay in queue before being considered a DROP|Drop Call δευτερόλεπτα - </B> Ο αριθμός των δευτερολέπτων σε μια κλήση θα παραμείνουν στην ουρά πριν να θεωρείται DROP|
+Drop Transfer Group -<\/B> If Drop Action is set to IN_GROUP, the call will be sent to this inbound group if it reaches Drop Call Seconds|Drop Μεταφορά Όμιλος - </B> Αν Drop Δράσης έχει οριστεί σε IN_GROUP, η πρόσκληση θα σταλεί σε αυτή την εισερχόμενη ομάδα εάν ανέρχεται Drop Call Δευτερόλεπτα|
+QC SETTINGS FOR THIS CAMPAIGN|QC SETTINGS για αυτή την καμπάνια|
+QC Enabled: |QC Enabled:|
+QC Statuses: |QC καθεστώτα:|
+Modify Campaign QC Settings|Τροποποίηση Ρυθμίσεων Καμπάνιας QC|
+QC Enabled -<\/B> Setting this field to Y allows for the agent Quality Control features to work. Default is N|QC Enabled - </B> Η ρύθμιση αυτού του τομέα να Y επιτρέπει τον παράγοντα Ποιοτικός Έλεγχος χαρακτηριστικά στην εργασία. Προεπιλεγμένο είναι Ν|
+QC Statuses -<\/B> This area is where you select which statuses of leads should be gone over by the QC system. Place a check next to the status that you want QC to review|QC καθεστώτων - </B> Η περιοχή αυτή είναι που θα επιλέξετε το οποίο οδηγεί των καθεστώτων θα πρέπει να φύγει πάνω από το σύστημα, QC. Τοποθετήστε ένα δίπλα στο ελέγξτε την κατάσταση που θέλετε, QC για την αναθεώρηση|
+QC SETTINGS NOT MODIFIED|QC SETTINGS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+QC SETTINGS MODIFIED|QC SETTINGS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+QC WebForm Address -<\/B> This is the website address that a QC agent can go to when clicking on the WEBFORM link in the QC screen|QC WebForm Διεύθυνση - </B> Αυτό είναι το ότι μια διεύθυνση ιστοσελίδας, QC, μπορεί να πάει στο γραφείο, όταν κάνετε κλικ στο σύνδεσμο WEBFORM στην οθόνη QC|
+QC Script -<\/B> This is the script that can be used by QC agents in the SCRIPT tab in the QC screen|QC Σενάριο - </B> Αυτό είναι το σενάριο που μπορεί να χρησιμοποιηθεί από τους πράκτορες, QC στην SCRIPT καρτέλα στην οθόνη, QC|
+QC WebForm: |QC WebForm:|
+QC Script|QC Script|
+In-Group Recording Override -<\/B> This field allows for the overriding of the campaign call recording setting. This setting can be overridden by the vicidial_user recording override setting. DISABLED will not override the campaign recording setting. NEVER will disable recording on the client. ONDEMAND is the default and allows the agent to start and stop recording as needed. ALLCALLS will start recording on the client whenever a call is sent to an agent. ALLFORCE will start recording on the client whenever a call is sent to an agent giving the agent no option to stop recording|-Στην ομάδα Καταγραφή Παράκαμψη - </B> Το πεδίο αυτό επιτρέπει την πρωταρχική της εκστρατείας πρόσκληση εγγραφής ρύθμιση. Η ρύθμιση αυτή μπορεί να παρακαμφθεί από την καταγραφή vicidial_user υπερισχύει ρύθμιση. DISABLED δεν θα υπερισχύσει του εκστρατεία καταγραφής ρύθμιση. ΠΟΤΕ θα απενεργοποιήσει την εγγραφή για τον πελάτη. ONDEMAND είναι η προεπιλεγμένη και επιτρέπει στον αντιπρόσωπο να ξεκινήσετε και να σταματήσετε την εγγραφή, όπως απαιτείται. ALLCALLS θα αρχίσει η εγγραφή του υπολογιστή-πελάτη κάθε φορά που μια κλήση στέλνεται σε έναν πράκτορα. ALLFORCE θα αρχίσει η εγγραφή του υπολογιστή-πελάτη κάθε φορά που μια κλήση στέλνεται σε έναν πράκτορα που ο πράκτορας δεν την επιλογή για να σταματήσει η εγγραφή|
+In-Group Recording Filename -<\/B> This field will override the Campaign Recording Filenaming Scheme unless it is set to NONE. The allowed variables are CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH AGENT. The default is FULLDATE_AGENT and would look like this 20051020-103108_6666. Another example is CAMPAIGN_TINYDATE_CUSTPHONE which would look like this TESTCAMP_51020103108_3125551212. 50 char max. Default is NONE|-Στην ομάδα αρχείου Καταγραφή - </B> Το πεδίο αυτό θα αντικαταστήσει το Campaign Καταγραφή Filenaming σύστημα εάν δεν έχει οριστεί σε ΚΑΝΕΝΑ. Οι μεταβλητές που επιτρέπονται είναι CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH ΠΡΑΚΤΟΡΑ. Η προεπιλογή είναι FULLDATE_AGENT και θα μοιάζει κάπως έτσι 20051020-103108_6666. Ένα άλλο παράδειγμα είναι CAMPAIGN_TINYDATE_CUSTPHONE που θα μοιάζει κάπως έτσι TESTCAMP_51020103108_3125551212. 50 char max. Προεπιλεγμένο είναι ΚΑΝΕΝΑ|
+In-Group Recording Override: |-Στην ομάδα Καταγραφή Override:|
+In-Group Recording Filename: |-Στην ομάδα Καταγραφή αρχείου:|
+ADDING VICIDIAL QC STATUS CODE|Adding VICIDIAL QC Κατάσταση ΚΩΔΙΚΟΣ|
+MODIFY VICIDIAL QC STATUS CODE|MODIFY VICIDIAL QC Κατάσταση ΚΩΔΙΚΟΣ|
+VICIDIAL QC STATUS CODES|QC VICIDIAL κωδικοί|
+The Quality Control-QC system within VICIDIAL has its own set of status codes separate from those within the call handling functions of VICIDIAL. QC statuse codes must be between 2 and 8 characters in length and contain no special characters like a space or colon. The QC status code description must be between 2 and 30 characters in length.|Ο Ποιοτικός Έλεγχος-QC σύστημα εντός VICIDIAL έχει τους δικούς της κωδικοί χωριστά από εκείνα που, κατά την κλήση των λειτουργιών χειρισμού VICIDIAL. QC statuse κωδικοί πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες και δεν περιέχουν ειδικούς χαρακτήρες όπως ένα χώρο ή παχέος εντέρου. Ο κωδικός QC περιγραφή πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες.|
+ QC Status Codes |QC κωδικοί|
+VICIDIAL QC STATUS CODES WITHIN THIS SYSTEM: |QC VICIDIAL κωδικοί στα πλαίσια αυτού του συστήματος:|
+ADD NEW QC STATUS CODE|Προσθήκη νέου QC Κατάσταση ΚΩΔΙΚΟΣ|
+QC STATUS CODE NOT DELETED|QC Κατάσταση ΚΩΔΙΚΟΣ δεν διαγράφονται|
+QC STATUS CODE DELETED: |QC Κατάσταση ΔΙΕΓΡΑΜΜΕΝΩΝ ΚΩΔΙΚΟΣ:|
+QC STATUS CODE NOT MODIFIED |QC Κατάσταση ΚΩΔΙΚΟΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+QC STATUS CODE MODIFIED: |QC Κατάσταση ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ ΚΩΔΙΚΟΣ:|
+the qc status code needs to be at least 1 characters in length|η qc κωδικός πρέπει να είναι τουλάχιστον 1 χαρακτήρες στο μήκος|
+the qc status code name needs to be at least 1 characters in length|qc το κωδικό όνομα πρέπει να είναι τουλάχιστον 1 χαρακτήρες στο μήκος|
+QC STATUS CODE NOT ADDED |QC Κατάσταση ΚΩΔΙΚΟΣ δεν προστίθενται|
+there is already a qc status code in the system with this name:|υπάρχει ήδη μια qc κωδικό στο σύστημα με αυτό το όνομα:|
+QC STATUS CODE ADDED: |QC Κατάσταση ΠΡΟΣΤΙΘΕΝΤΑΙ ΚΩΔΙΚΟΣ:|
+code must be between 1 and 8 characters in length|κωδικός πρέπει να είναι μεταξύ 1 και 8 χαρακτήρες|
+code name must be between 2 and 30 characters in length|κωδικό όνομα πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες|
+CALL HANGUP REASON STATS|CALL HANGUP REASON STATS|
+After Hours Action -<\/B> The action to perform if it is after hours as defined in the call time for this inbound group. HANGUP will immediately hangup the call, MESSASGE will play the file in the After Hours Message Filenam field, EXTENSION will send the call to the After Hours Extension in the dialplan and VOICEMAIL will send the call to the voicemail box listed in the After Hours Voicemail field, IN_GROUP will send the call to the inbound group selected in the After Hours Transfer Group select list. Default is MESSAGE|Μετά από ώρες δράσης - </B> Η δράση για την εκτέλεση, αν είναι μετά από ώρες, όπως ορίζεται στην πρόσκληση αυτή την φορά για τα εισερχόμενα ομάδα. HANGUP θα hangup αμέσως την πρόσκληση, MESSASGE θα παίξει το αρχείο στο Μετά από ώρες Μήνυμα Filenam τομέα, ΕΠΕΚΤΑΣΗ θα αποστείλει την πρόσκληση για την Μετά από ώρες Παράταση στο dialplan τηλεφωνητή και θα απευθύνει την πρόσκληση προς το τηλεφωνητή κουτί που απαριθμούνται στο Μετά Ώρες Τηλεφωνητής τομέα , IN_GROUP θα αποστείλει την πρόσκληση προς την εισερχόμενη ομάδα επιλεγμένων στο Μετά Ώρες Μεταφορά Ομάδα επιλέξτε λίστα. Προεπιλεγμένο είναι ΜΗΝΥΜΑ|
+After Hours Transfer Group -<\/B> If After Hours Action is set to IN_GROUP, the call will be sent to this inbound group if it enters the in-group outside of the call time scheme defined for the in-group|Μετά από ώρες Μεταφορά Όμιλος - </B> Εάν Μετά Ώρες Δράσης έχει οριστεί σε IN_GROUP, η πρόσκληση θα σταλεί σε αυτή την εισερχόμενη ομάδα, αν αυτή τεθεί σε-η ομάδα εκτός από τη διάρκεια των κλήσεων για το καθεστώς που ορίζεται στην ομάδα|
+After Hours Transfer Group: |Μετά από ώρες Μεταφορά Ομάδα:|
+Total calls taken in to this In-Group:|Σύνολο κλήσεις που λαμβάνονται σε αυτό το In-Group:|
+CALL HOLD TIME BREAKDOWN IN SECONDS|ΧΡΟΝΟΣ ΥΠΟΒΟΛΗΣ ΠΑΡΑΔΙΔΟΜΕΝΕΣ ΚΑΤΑΝΟΜΗ ΣΕ SECONDS|
+Date Range:|Χρονικό διάστημα:|
+ADDING NEW PHONE ALIAS|Την προσθήκη νέων PHONE ALIAS|
+ADD NEW PHONE ALIAS|Προσθήκη νέου PHONE ALIAS|
+MODIFY PHONE ALIAS|MODIFY PHONE ALIAS|
+DELETE PHONE ALIAS|DELETE PHONE ALIAS|
+PHONE ALIAS LIST|PHONE ALIAS ΚΑΤΑΛΟΓΟΣ|
+Phone Alias List|Τηλέφωνο Γνωστός Κατάλογος|
+Add A New Phone Alias|Προστίθεται ένα νέο τηλέφωνο Γνωστός|
+ADD A NEW PHONE ALIAS|ADD A NEW PHONE ALIAS|
+Alias ID: |Γνωστός ID:|
+Alias Name: |Ψευδώνυμο:|
+Phone Logins List: |Τηλέφωνο logins List:|
+PHONE ALIAS NOT ADDED|PHONE ALIAS δεν προστίθενται|
+there is already a Phone Alias in the system with this ID|υπάρχει ήδη ένα τηλέφωνο Γνωστός στο σύστημα με αυτό το ID|
+there is already a Phone Login in the system with this ID|υπάρχει ήδη μια Τηλέφωνο Σύνδεση στο σύστημα με αυτό το ID|
+PHONE ALIAS ADDED|PHONE ALIAS ΠΡΟΣΤΙΘΕΜΕΝΗ|
+PHONE ALIAS NOT MODIFIED|PHONE ALIAS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+PHONE ALIAS MODIFIED|PHONE ALIAS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+PHONE ALIAS NOT DELETED|PHONE ALIAS δεν διαγράφονται|
+PHONE ALIAS DELETION CONFIRMATION|PHONE ALIAS DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ|
+Click here to delete phone alias|Κάντε κλικ εδώ για να διαγράψετε τηλέφωνο άλλως|
+PHONE ALIAS DELETION COMPLETED|PHONE ALIAS DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ|
+PHONE ALIAS LISTINGS|PHONE ALIAS Καταχωρίσεις|
+there is already a Phone alias in the system with this login|υπάρχει ήδη ένα τηλέφωνο άλλως στο σύστημα με αυτή τη σύνδεση|
+there is already a Phone in the system with this login|υπάρχει ήδη ένα τηλέφωνο στο σύστημα με αυτή τη σύνδεση|
+DELETE THIS PHONE ALIAS|DELETE THIS PHONE ALIAS|
+MODIFY A PHONE ALIAS RECORD|MODIFY τηλεφώνου ALIAS RECORD|
+Alias ID -<\/B> The ID of the alias used to allow for phone load balanced logins. no spaces or other special characters allowed. Must be between 2 and 20 characters in length|Γνωστός ID - </B> Η ID του ψευδώνυμο που χρησιμοποιείται για να επιτρέψει συνδέσεις τηλεφώνου φορτίο ισορροπημένη. δεν κενά ή άλλους ειδικούς χαρακτήρες επιτρέπονται. Πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες|
+Alias Name -<\/B> The name used to describe a phones alias, Must be between 2 and 50 characters in length|Ψευδώνυμο - </B> Το όνομα που χρησιμοποιείται για την περιγραφή ενός τηλέφωνα άλλως, πρέπει να είναι μεταξύ 2 και 50 χαρακτήρες|
+Phones Logins List -<\/B> The comma separated list of phone logins used when an agent logs in using phone load balanced logins. The Agent application will find the active server with the fewest agents logged into it and place a call from that server to the agent upon login|Τηλέφωνα logins List - </B> Η comma separated κατάλογο τηλέφωνο συνδέσεις χρησιμοποιούνται όταν ένας πράκτορας συνδέεται στο τηλέφωνο χρησιμοποιώντας φορτίο ισορροπημένη συνδέσεις. Το γραφείο θα βρει εφαρμογή η ενεργός διακομιστής με τις λιγότερες παράγοντες συνδεθεί σε αυτήν και μια κλήση από το διακομιστή στον πράκτορα κατά login|
+PHONES WITHIN THIS PHONES ALIAS|Στο πλαίσιο του παρόντος PHONES ΤΗΛΕΦΩΝΑ ALIAS|
+Add New Shift|Προσθήκη νέου Shift|
+New Shift Addition|Νέα προσθήκη Shift|
+Modify Shift|Τροποποιήστε Shift|
+Delete Shift|Διαγραφή Shift|
+Shifts|Βάρδιες|
+Shift ID -<\/B> This is the short name of a Vicidial Shift Definition. This needs to be a unique identifier. Do not use any spaces or punctuation for this field. max 20 characters, minimum of 2 characters|ID Shift - </B> Αυτή είναι η σύντομη ονομασία της Vicidial Shift Ορισμός. Αυτό πρέπει να είναι ένα μοναδικό αναγνωριστικό. Μην χρησιμοποιείτε τυχόν διαστήματα ή σημεία στίξης για αυτόν τον τομέα. max 20 χαρακτήρες, τουλάχιστον 2 χαρακτήρες|
+Shift Name -<\/B> This is a more descriptive name of the Shift Definition. This is a short summary of the Shift definition. max 50 characters, minimum of 2 characters|Shift Όνομα - </B> Αυτό είναι ένα πιο περιγραφικό όνομα του Shift Ορισμός. Αυτή είναι μια σύντομη περίληψη του Shift ορισμό. το πολύ 50 χαρακτήρες, τουλάχιστον 2 χαρακτήρες|
+Shift Start Time -<\/B> This is the time that the campaign shift begins. Must only be numbers, 9:30 AM would be 0930 and 5:00 PM would be 1700|Start Time Shift - </B> Αυτή είναι η στιγμή που αρχίζει η εκστρατεία στροφή. Πρέπει να είναι μόνο αριθμοί, 9.30 π.μ. και 0930 θα είναι 5:00 μμ θα είναι 1.700|
+Shift Length -<\/B> This is the time in Hours and Minutes that the campaign shift lasts. 8 hours would be 08:00 and 7 hours and 30 minutes would be 07:30|Shift Μήκος - </B> Αυτό είναι το χρόνο σε ώρες και τα λεπτά που διαρκεί η εκστρατεία στροφή. 8 ώρα θα είναι 08:00 και 7 ώρες και 30 λεπτά θα είναι 07:30|
+Shift Weekdays -<\/B> In this section you should choose the days of the week that this shift is active|Shift Καθημερινά - </B> Στην ενότητα αυτή θα πρέπει να επιλέξετε τις μέρες την εβδομάδα ότι αυτή η στροφή είναι ενεργή|
+Show Shifts|Δείτε Βάρδιες|
+Add A New Shift|Προστίθεται ένα νέο Shift|
+Shift ID: |Shift ID:|
+Shift Name: |Shift Όνομα:|
+Shift Start Time: |Shift Ώρα έναρξης:|
+Shift End Time: |Shift End Time:|
+SHIFT DEFINITION NOT ADDED|SHIFT ΟΡΙΣΜΟΣ δεν προστίθενται|
+there is already a shift entry with this ID|υπάρχει ήδη μια μετατόπιση προς την παρούσα θέση ID|
+Shift ID and name must be at least 2 characters in length|ID Shift και το όνομα πρέπει να είναι τουλάχιστον 2 χαρακτήρες|
+Shift Start Time must be 4 digits in length and be a valid time|Shift ώρα έναρξης πρέπει να είναι 4 ψηφία στο μήκος και να είναι μια έγκυρη ώρα|
+Shift Length must be 5 characters in length and be 24 hours or less|Shift Μήκος 5 χαρακτήρες πρέπει να είναι σε μήκος και να είναι 24 ώρες ή λιγότερο|
+SHIFT ADDED: |SHIFT ΠΡΟΣΤΙΘΕΜΕΝΗ:|
+MODIFY A SHIFT|MODIFY της στροφής|
+USER GROUPS USING THIS SHIFT:|ΟΜΑΔΕΣ ΧΡΗΣΤΩΝ ΧΡΗΣΙΜΟΠΟΙΩΝΤΑΣ ΤΗΝ ΠΑΡΟΥΣΑ SHIFT:|
+DELETE THIS SHIFT DEFINITION|Διαγραφή αυτής της SHIFT ΟΡΙΣΜΟΣ|
+MODIFY A SHIFT|MODIFY της στροφής|
+SHIFT NOT DELETED|SHIFT δεν διαγράφονται|
+SHIFT DELETION CONFIRMATION: |SHIFT DELETION CONFIRMATION:|
+Click here to delete shift|Κάντε κλικ εδώ για να διαγράψετε στροφή|
+SHIFT DELETION COMPLETED:|SHIFT DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ:|
+SHIFT MODIFIED|SHIFT ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+SHIFT LISTINGS:|SHIFT Καταχωρίσεις:|
+Shift Weekdays: |Shift Καθημερινά:|
+Sunday|Κυριακή|
+Monday|Δευτέρα|
+Tuesday|Τρίτη|
+Wednesday|Τετάρτη|
+Thursday|Πέμπτη|
+Friday|Παρασκευή|
+Saturday|Σάββατο|
+Group Shifts: |Ομάδα Βάρδιες:|
+Group Shifts -<\/B> This is a selectable list of shifts that can restrict the agents login time on the system|Ομάδα Βάρδιες - </B> Αυτό είναι ένα επιλέξιμο λίστα των βαρδιών που μπορούν να περιορίσουν το χρόνο παράγοντες σύνδεσης, για το σύστημα|
+ Timeclock|Timeclock|
+Timeclock End Of Day -<\/B> This setting defines when all users are to be auto logged out of the timeclock system. Only runs once a day. must be only 4 digits 2 digit hour and 2 digit minutes in 24 hour time. Default is 0000|Timeclock Τέλος της ημέρας - </B> Αυτή η ρύθμιση καθορίζει, όταν όλοι οι χρήστες θα πρέπει να συνδεθεί αυτόματα από το σύστημα timeclock. Μόνο εκτελείται μία φορά την ημέρα. πρέπει να είναι μόνο 4 ψηφία ψηφίο 2 ώρες και 2 λεπτά ψηφίο στο 24ωρο διάστημα. Η προεπιλογή είναι 0000|
+Timeclock Last Auto Logout -<\/B> This field displays the date of the last auto-logout|Τελευταία Timeclock Auto Logout - </B> Αυτό το πεδίο εμφανίζει την ημερομηνία της τελευταίας αυτόματη αποσύνδεση|
+Timeclock Last Auto Logout: |Τελευταία Timeclock Αυτόματη Αποσύνδεση:|
+Timeclock End Of Day: |Timeclock Τέλος της ημέρας:|
+SURVEY SETTINGS FOR THIS CAMPAIGN:|ΕΡΕΥΝΑ SETTINGS για αυτήν την καμπάνια:|
+Modify Campaign Survey|Τροποποίηση Καμπάνιας Έρευνα|
+Survey First Audio File -<\/B> This is the audio filename that is played as soon as the customer picks up the phone when running a survey campaign.|Έρευνα Πρώτο αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται από τη στιγμή που ο πελάτης παραλαμβάνει το τηλέφωνο όταν τρέχει μια έρευνα καμπάνια.|
+Survey DTMF Digits -<\/B> This field is where you define the digits that a customer can press as an option on a survey campaign. valid dtmf digits are |Έρευνα DTMF Digits - </B> Αυτό το πεδίο όπου θα καθοριστούν οι θέσεις ότι ο πελάτης μπορεί να πατήσει ως επιλογή για μια έρευνα της καμπάνιας. ψηφία DTMF είναι έγκυρο|
+Survey Not Interested Digit -<\/B> This field is where you define the customer digit pressed that will show they are Not Interested.|Έρευνα δεν ενδιαφέρεται Digit - </B> Αυτό το πεδίο όπου θα καθορίσει ο πελάτης ψηφίο πιεστεί θα δείτε ότι δεν ενδιαφέρονται.|
+Survey Not Interested Status -<\/B> This field is where you select the status to be used for Not Interested. If DNC is used and the campaign is set to use DNC then the phone number will be automatically added to the VICIDIAL internal DNC list.|Έρευνα δεν ενδιαφέρεται Status - </B> Το πεδίο αυτό είναι που έχετε επιλέξει το καθεστώς που θα χρησιμοποιηθεί για δεν ενδιαφέρεται. DNC Εάν χρησιμοποιείται και η καμπάνια είναι ρυθμισμένη να χρησιμοποιεί DNC στη συνέχεια τον αριθμό τηλεφώνου, θα προστίθεται αυτόματα στο VICIDIAL εσωτερική DNC λίστα.|
+Survey Opt-in Audio File -<\/B> This is the audio filename that is played when the customer has opted-in to the survey, not opted-out or not responded if the no-response-action is set to OPTOUT. After this audio file is played, the Survey Method action is taken.|Έρευνα Opt-σε αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται όταν ο πελάτης έχει επιλέξει-in με την έρευνα, δεν επέλεξε-ή που δεν απάντησαν και αν η μη ανταπόκριση ενέργεια έχει οριστεί σε OptOut. Μετά από αυτό το αρχείο ήχου παίζεται, η μέθοδος έρευνας δράση.|
+Survey Not Interested Audio File -<\/B> This is the audio filename that is played when the customer has opted-out of the survey, not opted-in or not responded if the no-response-action is set to OPTIN. After this audio file is played, the call will be hung up|Έρευνα δεν ενδιαφέρεται αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται όταν ο πελάτης έχει επιλέξει-από την έρευνα, δεν επέλεξε-ή σε περίπτωση που δεν απαντήσει η μη ανταπόκριση ενέργεια έχει οριστεί σε OptIn. Μετά από αυτό το αρχείο ήχου παίζεται, η πρόσκληση θα είναι ανηρτημένα|
+Survey Method -<\/B> This option defines what happens to a call after the customer has opted-in. AGENT_XFER will send the call to the next available agent. VOICEMAIL will send the call to the voicemail box that is specified in the Voicemail field. EXTENSION will send the customer to the extension defined in the Survey Xfer Extension field. HANGUP will hang up the customer. CAMPREC_60_WAV will send the customer to have a recording made with their response, this recording will be placed in a folder named as the campaign inside of the Survey Campaign Recording Directory.|Μέθοδος Survey - </B> Αυτή η επιλογή καθορίζει τι θα συμβεί σε μια κλήση μετά ο πελάτης επέλεξε-in. AGENT_XFER θα αποστείλει την πρόσκληση για το επόμενο διαθέσιμο πράκτορα. Τηλεφωνητής θα αποστείλει την πρόσκληση προς το τηλεφωνητή θέση που καθορίζεται στο Τηλεφωνητής τομέα. ΕΠΕΚΤΑΣΗ θα στείλει ο πελάτης με την παράταση που ορίζεται στην έκθεση Xfer Επέκταση τομέα. HANGUP θα κλείσεις τον πελάτη. CAMPREC_60_WAV θα στείλει ο πελάτης να έχουμε μια καταγραφή που γίνεται με τους απάντηση, η καταγραφή αυτή θα πρέπει να τοποθετούνται σε ένα φάκελο με το όνομα, όπως η εκστρατεία στο εσωτερικό της καμπάνιας Έρευνα Καταγραφή Directory.|
+Survey No-Response Action -<\/B> This is where you define what will happen if there is no response to the survey question. OPTIN will only send the call on to the Survey Method if the customer presses a dtmf digit. OPTOUT will send the customer on to the Survey Method even if they do not press a dtmf digit.|Έρευνα της μη αντίδρασης Δράση - </B> Αυτό είναι που σας καθορίζουν τι θα συμβεί αν δεν υπάρχει απάντηση στο ερώτημα της έρευνας. OptIn θα στείλει την πρόσκληση για την Έρευνα για την μέθοδο και αν ο πελάτης θα πατήσει το ψηφίο DTMF. OptOut θα στείλει ο πελάτης για να μέθοδος έρευνας, ακόμα και εάν δεν πιέσετε ένα ψηφίο DTMF.|
+Survey Response Digit Map -<\/B> This is the section where you can define a description to go with each dtmf digit option that the customer may select.|Έρευνα Απάντηση Digit Map - </B> Αυτό είναι το σημείο όπου μπορείτε να ορίσετε μια περιγραφή για να πάνε με κάθε ψηφίο DTMF επιλογή που ο πελάτης μπορεί να επιλέξει.|
+Survey Xfer Extension -<\/B> If the Survey Method of EXTENSION is selected then the customer call would be directed to this dialplan extension|Έρευνα Xfer Επέκταση - </B>, εάν η έρευνα Μέθοδος ΕΠΕΚΤΑΣΗ είναι επιλεγμένο τότε ο πελάτης θα πρέπει να απευθύνεται έκκληση για την επέκταση αυτής της dialplan|
+Survey Campaign Recording Directory -<\/B> If the Survey Method of CAMPREC_60_WAV is selected then the customer response will be recorded and placed in a directory named after the campaign inside of this directory.|Έρευνα Καμπάνια Καταγραφή Directory - </B> Εάν η μέθοδος έρευνας της CAMPREC_60_WAV είναι επιλεγμένο, τότε η αντίδραση των πελατών θα πρέπει να καταχωρούνται και να τοποθετούνται σε έναν κατάλογο το όνομα του από την εκστρατεία στο εσωτερικό αυτού του καταλόγου.|
+SURVEY SETTINGS NOT MODIFIED|ΕΡΕΥΝΑ SETTINGS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+SURVEY SETTINGS MODIFIED|ΕΡΕΥΝΑ SETTINGS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+Survey First Audio File|Έρευνα Πρώτο αρχείο ήχου|
+Survey DTMF Digits|Έρευνα DTMF Digits|
+Survey Not Interested Digit|Έρευνα δεν ενδιαφέρεται Digit|
+Survey Not Interested Status|Έρευνα δεν ενδιαφέρεται Status|
+Survey Opt-in Audio File|Έρευνα Opt-σε αρχείο ήχου|
+Survey Not Interested Audio File|Έρευνα δεν ενδιαφέρεται αρχείο ήχου|
+Survey Method|Έρευνα Μέθοδος|
+Survey No-Response Action|Έρευνα της μη αντίδρασης δράσης|
+Survey Response Digit Map|Έρευνα Απάντηση Digit Χάρτης|
+Survey Xfer Extension|Έρευνα Xfer Παράταση|
+Survey Campaign Recording Directory|Έρευνα Καμπάνια Καταγραφή Directory|
+Add Timeclock Log Record -<\/B> This option allows the user to add records to the timeclock log|Προσθήκη Timeclock Εγγραφή Εγγραφή - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να προσθέσετε εγγραφές στο μητρώο timeclock|
+Modify Timeclock Log Record -<\/B> This option allows the user to modify records in the timeclock log|Τροποποιήστε Timeclock Εγγραφή Εγγραφή - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να τροποποιήσει τις εγγραφές του timeclock log|
+Delete Timeclock Log Record -<\/B> This option allows the user to delete records in the timeclock log|Εγγραφή Διαγραφή Timeclock Record - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να διαγράψει αρχεία στο timeclock log|
+Add Timeclock Log Record|Προσθήκη Timeclock Εγγραφή Εγγραφή|
+Modify Timeclock Log Record|Τροποποιήστε Timeclock Εγγραφή Εγγραφή|
+Delete Timeclock Log Record|Διαγραφή Timeclock Εγγραφή Εγγραφή|
+USER GROUP TIMECLOCK STATUS REPORT|Ομάδα χρηστών TIMECLOCK Κατάσταση ΕΚΘΕΣΗ|
+Click here to see the Timeclock Status for this user group|Κάντε κλικ εδώ για να δείτε την κατάσταση Timeclock ομάδα για αυτόν τον χρήστη|
+ADD NUMBERS TO THE DNC LIST|ADD αριθμούς στην DNC ΚΑΤΑΛΟΓΟΣ|
+Phone Numbers: |Τηλέφωνα:|
+one phone number per line only|έναν αριθμό τηλεφώνου σε κάθε γραμμή μόνο|
+VICIDIAL DNC List -<\/B> This Do Not Call list contains every lead that has been set to a status of DNC in the system. Through the LISTS - ADD NUMBER TO DNC page you are able to manually add numbers to this list so that they will not be called by campaigns that use the internal DNC list|Κατάλογος VICIDIAL DNC - </B> Αυτό δεν θέτουν κάθε λίστα περιέχει μόλυβδο που έχει τεθεί σε καθεστώς των DNC στο σύστημα. Μέσω του ΚΑΤΑΛΟΓΟΙ - ADD TO ΑΡΙΘΜΟΣ DNC σελίδα μπορείτε να προσθέσετε τους αριθμούς σε αυτόν τον κατάλογο, έτσι ώστε δεν θα ονομάζεται από καμπάνιες που χρησιμοποιούν την εσωτερική DNC λίστα|
+ Time Sheet |Ώρα Φύλλο|
+Timeclock Record Edit|Timeclock Εγγραφή Επεξεργασία|
+Default date format with year month day|Προκαθορισμένος ημερομηνία με τη μορφή έτος μήνας ημέρα|
+USA date format with month day year|ΗΠΑ με τη μορφή ημερομηνίας ημέρα του μήνα χρόνου|
+European date format with day month year|Ευρωπαϊκή ημέρα με μορφή Ημέρα Μήνας Έτος|
+Text date format with abbreviated month day|Κείμενο με συντετμημένη μορφή ημερομηνίας ημέρα του μήνα|
+followed by 24 hour time|ακολουθούμενη από 24 ώρες χρόνο|
+followed by 12 hour time|ακολουθούμενη από 12 ώρες χρόνο|
+Agent Screen Header Date Format -<\/B> This menu allows you to choose the format of the date that shows up at the top of the VICIDIAL agent screen. The options for this setting are: default is|Agent Screen Επικεφαλίδας Ημερομηνία Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή της ημερομηνίας που εμφανίζεται στο πάνω μέρος της οθόνης VICIDIAL πράκτορα. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι|
+Agent Screen Customer Date Format -<\/B> This menu allows you to choose the format of the customer time zone date that shows up at the top of the Customer Information section of the VICIDIAL agent screen. The options for this setting are: default is|Agent Screen Πελατών Ημερομηνία Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή των πελατών ζώνη ώρας ημερομηνία που εμφανίζεται στο πάνω μέρος της πληροφόρησης πελατών τμήμα του πράκτορα VICIDIAL οθόνη. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι|
+Agent Screen Customer Phone Format -<\/B> This menu allows you to choose the format of the customer phone number that shows up in the status section of the VICIDIAL agent screen. The options for this setting are: default is|Agent Screen Πελατών τηλέφωνο Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή του πελάτη τον αριθμό τηλεφώνου που εμφανίζεται στην κατάσταση τμήμα του πράκτορα VICIDIAL οθόνη. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι|
+dash separated phone number|παύλα διαχωρίζονται αριθμό τηλεφώνου|
+dash separated number with area code in parenthesis|παύλα αριθμός διαχωρίζονται με τον κωδικό περιοχής σε παρένθεση|
+No formatting|Δεν μορφοποίησης|
+with space after city code|με το διάστημα μετά την πόλη κωδικός|
+space separated phone number|χώρος χωρίζεται αριθμό τηλεφώνου|
+Agent Screen Header Date Format|Agent Screen Επικεφαλίδας Μορφή Ημερομηνίας|
+Agent Screen Customer Date Format|Agent Screen Πελατών Μορφή Ημερομηνίας|
+Agent Screen Customer Phone Format|Agent Screen Πελατών τηλέφωνο Μορφοποίηση|
+ERROR- There is a problem with the data that you entered, please go back|ERROR-Υπάρχει ένα πρόβλημα με τα δεδομένα που πληκτρολογήσατε, παρακαλώ πηγαίνετε πίσω|
+A timeclock session cannot overlap another timeclock session|Μια timeclock συνόδου δεν μπορεί να επικαλύπτονται άλλο timeclock συνόδου|
+Disable Alter Customer Phone -<\/B> If set to Y, does not change the customer phone number when an agent dispositions the call. Default is Y|Απενεργοποίηση Alter Πελατών τηλέφωνο - </B> Σε περίπτωση που σε Y, δεν αλλάζει ο πελάτης τον αριθμό τηλεφώνου όταν ένας πράκτορας διαθέσεις την κλήση. Προεπιλεγμένο είναι Y|
+Agent API Access -<\/B> This option allows the account to be used with the vicidial agent API commands|Agent API Πρόσβαση - </B> Η επιλογή αυτή επιτρέπει τον λογαριασμό που πρέπει να χρησιμοποιούνται με την vicidial πράκτορας API εντολές|
+Agent Alter Customer Phone Override -<\/B> This option will override whatever the option is in the campaign for altering of customer phone number. NOT_ACTIVE will use whatever setting is present for the campaign. ALLOW_ALTER will always allow for the agent to alter the customer phone number, no matter what the campaign setting is. Default is NOT_ACTIVE|Agent Alter Πελατών τηλέφωνο Παράκαμψη - </B> Η επιλογή αυτή θα υπερισχύσει του όποια κι αν είναι η επιλογή είναι στην εκστρατεία για την τροποποίηση του πελάτη τον αριθμό του τηλεφώνου. NOT_ACTIVE θα χρησιμοποιήσει όποια ρύθμιση είναι παρόντες κατά την εκστρατεία. ALLOW_ALTER θα επιτρέπει πάντα για τον πράκτορα να τροποποιήσει τον αριθμό τηλεφώνου του πελάτη, δεν το θέμα αυτό η εκστρατεία η ρύθμιση. Προεπιλεγμένο είναι NOT_ACTIVE|
+Agent API Active -<\/B> If set to 1, this will allow the Agent API interface to function. Default is 0|Agent API Active - </B> Αν οριστεί σε 1, αυτό θα επιτρέψει τη διασύνδεση API γραφείο να λειτουργεί. Η προεπιλογή είναι 0|
+Agent Alter Customer Phone Override: |Agent Alter Πελατών Παράκαμψη Τηλέφωνο:|
+Agent API Access: |Agent API Πρόσβαση:|
+Disable Alter Customer Phone: |Απενεργοποίηση Alter Πελατών Τηλέφωνο:|
+Agent API Active: |Agent API Active:|
+Agent Display Queue Count -<\/B> If set to Y, when a customer is waiting for an agent, the Queue Calls display at the top of the agent screen will turn red and show the number of waiting calls. Default is Y|Εμφάνιση Agent Queue Count - </B> Σε περίπτωση που σε Y, σε περίπτωση που ο πελάτης περιμένει για έναν πράκτορα, ο κοτσίδας ζητεί απεικόνιση στο πάνω μέρος της οθόνης πράκτορας θα γίνονται κόκκινα και δείχνουν τον αριθμό των αναμονής κλήσεων. Προεπιλεγμένο είναι Y|
+Agent Display Queue Count: |Εμφάνιση Agent Queue Count:|
+agents in dead calls|πράκτορες νεκροί σε κλήσεις|
+QC Last Pull Time: |QC Τελευταία Τραβήξτε Ώρα:|
+and less than 43200 seconds or 12 hours|και λιγότερο από 43.200 δευτερολέπτων ή 12 ωρών|
+LEADS AT LIMIT|LEADS ΣΕ ΟΡΙΑΚΗ|
+Lead counts taken from active lists in the campaign only|Μόλυβδος μετράει λαμβάνονται από καταλόγους που δραστηριοποιούνται στην εκστρατεία μόνο|
+QC Get Record Launch-<\/B> This allows one of the following actions to be triggered upon a QC agent receiving a new record|QC Get Record Launch-</B> Αυτό επιτρέπει σε μια από τις ακόλουθες δράσεις, το οποίο θα ενεργοποιείται σε ένα QC πράκτορας που λαμβάνει ένα νέο ρεκόρ|
+QC Show Recording -<\/B> This allows for a recording that may be linked with the QC record to be display in the QC agent screen|QC Δείτε Καταγραφή - </B> Αυτό επιτρέπει την καταγραφή που μπορεί να συνδέεται με την εγγραφή QC να εμφανίζονται στην οθόνη QC πράκτορα|
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for a campaign. The days of the week are ignored for these functions|QC Shift - </B> Αυτό είναι το χρονοδιάγραμμα μετάβασης που χρησιμοποιούνται για την έλξη, QC αρχεία για μια καμπάνια. Οι μέρες της εβδομάδας αγνοούνται για αυτές τις λειτουργίες|
+QC Get Record Launch|QC Get Record Launch|
+QC Show Recording|QC Δείτε Καταγραφή|
+QC Shift|QC Shift|
+Inbound Group QC Settings|Inbound Ομάδα QC Ρυθμίσεις|
+QC Shift -<\/B> This is the shift timeframe used to pull QC records for an inbound_group. The days of the week are ignored for these functions|QC Shift - </B> Αυτό είναι το χρονοδιάγραμμα μετάβασης που χρησιμοποιούνται για την έλξη, QC αρχεία για μια inbound_group. Οι μέρες της εβδομάδας αγνοούνται για αυτές τις λειτουργίες|
+The Sale Category and Dead Lead Category are both used by the List Suggestion system when analyzing list statistics.|Η Πώληση Κατηγορία και Dead επικεφαλής της κατηγορίας είναι και οι δύο που χρησιμοποιούνται από το σύστημα όταν Κατάλογος Πρόταση αναλύοντας κατάλογο στατιστικών.|
+Sale Category: |Πώληση Κατηγορία:|
+Dead Lead Category: |Νεκρά Μόλυβδος Κατηγορία:|
+Manual Dial Filter -<\/B> This allows you to filter the calls that agents make in manual dial mode for this campaign by any combination of the following: DNC - to kick out, CAMPAIGNLISTS - the number must be within the lists for the campaign, NONE - no filter on manual dial or fast dial lists|Εγχειρίδιο Dial Διηθείται - </B> Αυτό σας επιτρέπει να φιλτράρετε τις κλήσεις που πράκτορες να καλέσετε στο εγχειρίδιο λειτουργίας για την εκστρατεία αυτή με οποιονδήποτε συνδυασμό από τα ακόλουθα: DNC - προβλέπονται για την έναρξη, CAMPAIGNLISTS - ο αριθμός πρέπει να είναι εντός των καταλόγων για την εκστρατεία, ΚΑΝΕΝΑ - δεν υπάρχει φίλτρο για χειροκίνητη κλήση ή γρήγορα dial καταλόγους|
+Manual Dial Filter: |Εγχειρίδιο Dial Filter:|
+Agent Screen Clipboard Copy -<\/B> THIS FEATURE IS CURRENTLY ONLY ENABLED FOR INTERNET EXPLORER. This feature allows you to select a field that will be copied to the computer clipboard of the agent computer upon a call being sent to an agent. Common uses for this are to allow for easy pasting of account numbers or phone numbers into legacy client applications on the agent computer|Agent Screen Clipboard Αντιγραφή - </B> Αυτή η δυνατότητα είναι ενεργοποιημένη για το παρόν μόνο τον Internet Explorer. Η λειτουργία αυτή σας επιτρέπει να επιλέξετε ένα πεδίο που θα αντιγραφεί στον υπολογιστή πρόχειρο του παράγοντα υπολογιστή σε μια πρόσκληση που απηύθυνε σε έναν πράκτορα. Κοινές χρήσεις για αυτό είναι να καταστεί δυνατή η εύκολη επικόλληση του λογαριασμού αριθμούς ή αριθμούς τηλεφώνου κληρονομιά σε πελάτη σχετικά με τις εφαρμογές πράκτορα υπολογιστή|
+Agent Screen Clipboard Copy|Agent Screen Clipboard Αντιγραφή|
+EXTENDED alternate numbers are numbers loaded into the system outside of the standard lead information screen. Using EXTENDED you can have hundreds of phone numbers for a single customer record.|EXTENDED αναπληρωματικών αριθμοί είναι αριθμοί που φορτώνονται στο σύστημα εκτός του κανονικού οδηγήσει πληροφορίες οθόνης. Χρησιμοποιώντας EXTENDED σας μπορεί να έχει εκατοντάδες αριθμούς τηλεφώνου για ένα μόνο πελάτη ρεκόρ.|
+Agent Screen Extended Alt Dial -<\/B> This feature allows for agents to access extended alternate phone numbers for leads beyond the standard Alt Phone and Address3 fields that can be used in VICIDIAL for phone numbers beyond the main phone number. The Extended phone numbers can be dialed automatically using the Auto-Alt-Dial feature in VICIDIAL Campaign settings, but enabling this Agent Screen feature will also allow for the agent to call these numbers from their agent screen as well as edit their information|Agent Screen Εκτεταμένη Alt Dial - </B> Αυτό το χαρακτηριστικό επιτρέπει σε υπαλλήλους να επεκταθεί η πρόσβαση των αναπληρωματικών τους αριθμούς τηλεφώνου για οδηγεί πέρα από την κανονική Alt τηλέφωνο και Address3 τομείς που μπορούν να χρησιμοποιηθούν σε VICIDIAL για αριθμούς τηλεφώνου πέραν της κύριας αριθμό τηλεφώνου. Η παράταση μπορεί να είναι αριθμοί τηλεφώνου κλήσης αυτόματα χρησιμοποιώντας το πρόγραμμα Auto-Alt-Dial χαρακτηριστικό στο VICIDIAL ρυθμίσεις της καμπάνιας, αλλά αυτό που επιτρέπει Agent Screen χαρακτηριστικό θα επιτρέψει επίσης τον αντιπρόσωπο για να καλέσετε τους αριθμούς αυτούς από τους πράκτορα οθόνη, καθώς και να επεξεργαστούν τις πληροφορίες|
+Agent Screen Extended Alt Dial:|Agent Screen Εκτεταμένη Alt Dial:|
+Use Campaign DNC List -<\/B> This defines whether this campaign is to filter leads against a DNC list that is specific to that campaign only. If it is set to Y, the hopper will look for each phone number in the campaign-specific DNC list before placing it in the hopper. If it is in the campaign-specific DNC list then it will change that lead status to DNCC so it cannot be dialed. Default is N.|Χρησιμοποίησε Καμπάνια DNC List - </B> Αυτό καθορίζει αν αυτό είναι η εκστρατεία εναντίον ενός φίλτρου οδηγεί DNC λίστα που είναι ειδικά για τη συγκεκριμένη καμπάνια μόνο. Αν είναι να Y, η χοάνη θα εξετάσει, για κάθε αριθμό τηλεφώνου στον αγώνα-ειδικά DNC λίστα πριν από την τοποθέτησή του στην χοάνη. Αν είναι στην εκστρατεία ειδικά DNC λίστα τότε θα αλλάξει το καθεστώς που οδηγούν σε DNCC έτσι δεν μπορεί να εξερχόμενων. Προεπιλεγμένο είναι Ν.|
+Use Campaign DNC List|Χρησιμοποίησε Καμπάνια DNC Κατάλογος|
+and possibly the campaign-specific DNC list|και πιθανώς η εκστρατεία ειδικά DNC λίστα|
+There is also the option to add leads to the campaign-specific DNC lists for those campaigns that have them|Υπάρχει επίσης η δυνατότητα να προσθέσετε οδηγεί στην καμπάνια-DNC ειδικών καταλόγων για αυτές τις καμπάνιες που έχουν τους|
+NOTE: Copying a campaign will copy all settings from the master campaign you select, but it will not copy a campaign-specific DNC list if there was one on the selected master campaign|ΣΗΜΕΙΩΣΗ: Η αντιγραφή μιας εκστρατείας θα αντιγράψετε όλες τις ρυθμίσεις από τον πλοίαρχο καμπάνια που θα επιλέξετε, αλλά δεν θα αντιγράψετε μια καμπάνια ειδικά DNC λίστα αν υπήρχε ένα master με την επιλεγμένη καμπάνια|
+Add New |Προσθήκη νέου|
+Copy |Αντιγραφή|
+New DID Addition|Νέα προσθήκη DID|
+New Copied DID Addition|Νέα προσθήκη αντιγραφή DID|
+Modify |Modify|
+Delete |Διαγράφω|
+Play Place in Line -<\/B> This defines whether the caller will hear their place in line when they enter the queue as well as when they hear the announcemend. Default is N|Παίξτε στο Τόπος Γραμμή - </B> Αυτό καθορίζει αν ο καλών θα ακούσει τη θέση τους στη γραμμή όταν εισέλθουν στην ουρά, καθώς και όταν ακούν την announcemend. Προεπιλεγμένο είναι Ν|
+Play Estimated Hold Time -<\/B> This defines whether the caller will hear the estimated hold time before they are transferred to an agent. Default is N|Παίξτε Κρατήστε Εκτιμώμενη ώρα - </B> Αυτό καθορίζει αν ο καλών θα ακούσει τον εκτιμώμενο χρόνο κατέχουν προτού μεταφερθούν σε έναν πράκτορα. Προεπιλεγμένο είναι Ν|
+Hold Time Option -<\/B> This allows you to specify the routing of the call if the estimated hold time is over the amount of seconds specified below. Default is NONE|Κρατήστε Ώρα Επιλογή - </B> Αυτό σας επιτρέπει να καθορίσετε την δρομολόγηση των κλήσεων, εάν ο εκτιμώμενος χρόνος κατέχουν πάνω από το ποσό των δευτερολέπτων που καθορίζεται παρακάτω. Προεπιλεγμένο είναι ΚΑΝΕΝΑ|
+Hold Time Option Seconds -<\/B> If Hold Time Option is set to anything but NONE, this is the number of seconds of estimated hold time that will trigger the hold time option. Default is 360 seconds|Κρατήστε Ώρα Επιλογή δευτερόλεπτα - </B> Αν Κρατήστε Ώρα Επιλογή έχει οριστεί σε οτιδήποτε, αλλά ΚΑΝΕΝΑ, αυτό είναι ο αριθμός των δευτερολέπτων του χρόνου εκτιμάται ότι κατέχουν θα ενεργοποιήσει την αναμονή ώρα της επιλογής. Η προεπιλογή είναι 360 δευτερόλεπτα|
+Hold Time Option Extension -<\/B> If Hold Time Option is set to EXTENSION, this is the dialplan extension that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Κρατήστε Ώρα Επιλογή Επέκταση - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε ΕΠΕΚΤΑΣΗ, αυτή είναι η επέκταση dialplan ότι η πρόσκληση θα σταλεί στο εάν ο εκτιμώμενος χρόνος κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα|
+Hold Time Option Voicemail -<\/B> If Hold Time Option is set to VOICEMAIL, this is the voicemail box that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Κρατήστε Ώρα Επιλογή Τηλεφωνητής - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε τηλεφωνητή, αυτή είναι η θέση τηλεφωνητή ότι η πρόσκληση θα σταλεί στο εάν ο εκτιμώμενος χρόνος κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα|
+Hold Time Option Transfer In-Group -<\/B> If Hold Time Option is set to IN_GROUP, this is the inbound group that the call will be sent to if the estimated hold time exceeds the Hold Time Option Seconds|Κρατήστε Ώρα Επιλογή Μεταφορά σε ομάδα - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε IN_GROUP, αυτή είναι η ομάδα που την εισερχόμενη κλήση θα αποσταλεί στο εάν ο εκτιμώμενος χρόνος αναμονή υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα|
+Hold Time Option Callback Filename -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the filename prompt that is played before the call is logged as a new lead to the list ID specified below if the estimated hold time exceeds the Hold Time Option Seconds|Κρατήστε Ώρα Επιλογή αρχείου Callback - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε CALLERID_CALLBACK, αυτό είναι το όνομα του αρχείου εντολών που έπαιξε πριν από την κλήση καταγράφεται ως μια νέα πρωτοβουλία στον κατάλογο ID που καθορίζονται κατωτέρω, εάν η εκτιμώμενη κατέχει υπερβαίνει το χρόνο Κρατήστε Ώρα Επιλογή Δευτερόλεπτα|
+Hold Time Option Callback List ID -<\/B> If Hold Time Option is set to CALLERID_CALLBACK, this is the List ID the call is added to as a new lead if the estimated hold time exceeds the Hold Time Option Seconds|Κρατήστε Ώρα Επιλογή Callback Κατάλογος ID - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε CALLERID_CALLBACK, αυτός είναι ο Κατάλογος ID η κλήση προστίθεται ως μια νέα πρωτοβουλία, αν το εκτιμώμενο χρόνο κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα|
+Hold Recall Transfer In-Group -<\/B> If a customer calls back to this in-group more than once and this is not set to NONE, then the call will automatically be sent on to the In-Group selected in this field. Default is NONE|Κρατήστε Ανάκληση Μεταφορά σε ομάδα - </B> Σε περίπτωση που ο πελάτης ζητά πίσω σε αυτή την ομάδα-σε περισσότερες από μία φορές και αυτό δεν έχει οριστεί σε ΚΑΝΕΝΑ, τότε η κλήση θα αποστέλλονται αυτόματα στην επιλεγμένη ομάδα σε αυτό το πεδίο . Προεπιλεγμένο είναι ΚΑΝΕΝΑ|
+No Delay Call Route -<\/B> Setting this to Y will remove all wait times and audio prompts and attempt to send the call right to an agent. Does not override welcome message or on hold prompt settings. Default is N|Δεν Υστέρηση Call διαδρομή - </B> Η ρύθμιση αυτής να Y θα άρουν όλες τις φορές περιμένουμε και ήχου προτροπές και επιχειρείτε να στείλετε την πρόσκληση δικαίωμα ενός πράκτορα. Δεν υπερισχύει ευπρόσδεκτο μήνυμα ή σε αναμονή εντολών ρυθμίσεις. Προεπιλεγμένο είναι Ν|
+Play Welcome Message -<\/B> These settings select when to play the defined welcome message, ALWAYS will play it every time, NEVER will never play it, IF_WAIT_ONLY will only play the welcome message if the call does not immediately go to an agent, and YES_UNLESS_NODELAY will always play the welcome message unless the NO_DELAY setting is enabled. Default is ALWAYS|Παίξτε Καλωσόρισμα - </B> Οι ρυθμίσεις αυτές, όταν επιλέγουν να παίξουν το μήνυμα υποδοχής που ορίζεται, πάντα θα παίζει κάθε φορά, ΠΟΤΕ δεν πρόκειται ποτέ να παίξετε, IF_WAIT_ONLY μόνο θα παίξει το μήνυμα υποδοχής, αν η κλήση δεν πάνε αμέσως σε ένα παράγοντα , και YES_UNLESS_NODELAY θα είναι πάντα ευπρόσδεκτη παίξει το μήνυμα Αν δεν το NO_DELAY η ρύθμιση είναι ενεργοποιημένη. Προεπιλεγμένο είναι πάντα|
+Play Place in Line: |Παίξτε στο Line Τόπος:|
+Play Estimated Hold Time: |Παίξτε Κρατήστε Εκτιμώμενη Ώρα:|
+Hold Time Option: |Κρατήστε την επιλογή Ώρα:|
+Hold Time Option Seconds: |Κρατήστε την επιλογή Δευτερόλεπτα Ώρα:|
+Hold Time Option Extension: |Κρατήστε Ώρα Επιλογή Παράταση:|
+Hold Time Option Voicemail: |Κρατήστε Ώρα Επιλογή Τηλεφωνητής:|
+Hold Time Option Transfer In-Group: |Κρατήστε Ώρα Επιλογή Μεταφορά σε ομάδα:|
+Hold Time Option Callback Filename: |Κρατήστε Ώρα Επιλογή Callback αρχείου:|
+Hold Time Option Callback List ID: |Κρατήστε Ώρα Επιλογή Callback Κατάλογος ID:|
+Hold Recall Transfer In-Group: |Κρατήστε Ανάκληση Μεταφορά σε ομάδα:|
+No Delay Call Route: |Δεν Υστέρηση Call Διαδρομή:|
+Play Welcome Message: |Παίξτε Καλωσόρισμα:|
+DID Extension -<\/B> This is the number, extension or DID that will trigger this entry and that you will route within the system using this function|DID Επέκταση - </B> Αυτό είναι το πλήθος, την παράταση ή DID που θα ενεργοποιήσουν την παρούσα θέση και που θα σας διαδρομή, και εντός του συστήματος με τη βοήθεια αυτής της λειτουργίας|
+DID Description -<\/B> This is the description of the DID routing entry|DID Περιγραφή - </B> Αυτή είναι η περιγραφή της DID δρομολόγησης εισόδου|
+DID Active -<\/B> This the field where you set the DID entry to active or not. Default is Y|DID Active - </B> Αυτό το πεδίο όπου το σύνολο DID εισόδου σε ενεργό ή μη. Προεπιλεγμένο είναι Y|
+DID Route -<\/B> This the type of route that you set the DID to use. EXTEN will send calls to the extension entered below, VOICEMAIL will send calls directly to the voicemail box entered below, AGENT will send calls to a VICIDIAL agent if they are logged in, PHONE will send the call to a phones entry selected below, IN_GROUP will send calls directly to the specified inbound group. Default is EXTEN|DID Route - </B> Αυτό το είδος της διαδρομής που μπορείτε να ρυθμίσετε το DID χρήση. Παράταση θα αποστείλει τις κλήσεις προς την επέκταση τέθηκε κάτω, τηλεφωνητή θα αποστείλει κλήσεις απευθείας στον τηλεφωνητή τέθηκε κάτω από το πλαίσιο, ο πράκτορας θα αποστείλει κλήσεις σε VICIDIAL παράγοντα όταν είναι συνδεδεμένοι, τηλέφωνο θα στείλει την κλήση σε τηλέφωνα εισόδου επιλεγεί στη συνέχεια, θα IN_GROUP αποστέλλουν κλήσεις απευθείας από την καθορισμένη εισερχόμενα ομάδα. Προεπιλεγμένο είναι παράταση|
+Extension -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan extension that calls will be sent to. Default is 9998811112, no-service|Επέκταση - </B> Εάν είναι επιλεγμένο παράταση ως τις DID διαδρομή, τότε αυτή είναι η επέκταση dialplan που ζητά θα αποσταλεί στο. Προεπιλεγμένο είναι 9998811112, της μη παροχής υπηρεσιών|
+Extension Context -<\/B> If EXTEN is selected as the DID Route, then this is the dialplan context that calls will be sent to. Default is default|Παράταση Πλαίσιο - </B> Εάν είναι επιλεγμένο παράταση ως τις DID διαδρομή, τότε αυτό είναι το πλαίσιο dialplan ότι οι κλήσεις θα σταλούν σε. Προεπιλογή είναι προεπιλογή|
+Voicemail Box -<\/B> If VOICEMAIL is selected as the DID Route, then this is the voicemail box that calls will be sent to. Default is empty|Τηλεφωνητής Πλαίσιο - </B> Τηλεφωνητής Εάν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η θέση τηλεφωνητή ότι οι κλήσεις που θα αποσταλεί στο. Προεπιλεγμένο είναι άδειο|
+Phone Extension -<\/B> If PHONE is selected as the DID Route, then this is the phone extension that calls will be sent to.|Τηλέφωνο Επέκταση - </B> ΤΗΛΕΦΩΝΟΥ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το τηλέφωνο που καλεί επέκταση θα αποσταλεί στο.|
+Phone Server IP -<\/B> If PHONE is selected as the DID Route, then this is the server IP for the phone extension that calls will be sent to|Τηλέφωνο Server IP - </B> ΤΗΛΕΦΩΝΟΥ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το server IP για το τηλέφωνο που καλεί επέκταση θα σταλεί στο|
+User Agent -<\/B> If AGENT is selected as the DID Route, then this is the VICIDIAL Agent that calls will be sent to|User Agent - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το γραφείο που VICIDIAL κλήσεις θα σταλούν σε|
+User Unavailable Action -<\/B> If AGENT is selected as the DID Route, and the user is not logged in or available, then this is the route that the calls will take|Χρήστης Unavailable Δράση - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομής, και ο χρήστης είναι συνδεδεμένος ή δεν υπάρχουν, τότε αυτή είναι η διαδρομή που θα λάβουν τις προσκλήσεις|
+User Route Settings In-Group -</B> If AGENT is selected as the DID Route, then this is the In-Group that will be used for the queue settings as the caller is waiting to be sent to the agent. Default is AGENTDIRECT|Ρυθμίσεις χρήστη Οδός-Στην Ομάδα - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η ομάδα-Στο ότι θα πρέπει να χρησιμοποιείται για την ουρά ρυθμίσεις του καλούντος είναι σε αναμονή για αποστολή προς τον πράκτορα. Προεπιλεγμένο είναι AGENTDIRECT|
+In-Group ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the In-Group that calls will be sent to|Στην Ομάδα-ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η ομάδα-Στο ότι οι κλήσεις που θα σταλεί στο|
+In-Group Call Handle Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the call handling method used for these calls. CID will add a new lead record with every call using the CallerID as the phone number, CIDLOOKUP will attempt to lookup the phone number by the CallerID in the entire system, CIDLOOKUPRL will attampt to lookup the phone number by the CallerID in only one specified list, CIDLOOKUPRC will attampt to lookup the phone number by the CallerID in all of the lists that belong to the specified campaign, CLOSER is specified for VICIDIAL Closer calls, ANI will add a new lead record with every call using the ANI as the phone number, ANILOOKUP will attempt to lookup the phone number by the ANI in the entire system, ANILOOKUPRL will attampt to lookup the phone number by the ANI in only one specified list, XDIGITID will prompt the caller for an X digit code before the call will be put into the queue. Default is CID|Στην Ομάδα-Call Χειριστείτε Μέθοδος - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η πρόσκληση χειρισμό μέθοδος που χρησιμοποιείται για αυτές τις κλήσεις. CID θα προσθέσετε ένα νέο ρεκόρ οδηγήσει με κάθε κλήση χρησιμοποιώντας το CallerID όπως τον αριθμό τηλεφώνου, θα προσπαθήσει να CIDLOOKUP lookup τον αριθμό τηλεφώνου από το CallerID σε ολόκληρο το σύστημα, θα attampt να CIDLOOKUPRL lookup τον αριθμό τηλεφώνου από το CallerID ορίζεται σε ένα μόνο κατάλογο , CIDLOOKUPRC θα attampt να lookup τον αριθμό τηλεφώνου από το CallerID σε όλες τις λίστες που ανήκουν στην καθορίζονται εκστρατεία, ΣΤΕΝΟΤΕΡΗΣ καθορίζεται για VICIDIAL Στενότερος κλήσεις, ANI θα προσθέσει ένα νέο ρεκόρ οδηγήσει με κάθε κλήση χρησιμοποιώντας την ANI όπως ο αριθμός τηλεφώνου, ANILOOKUP θα προσπαθήσει να lookup τον αριθμό τηλεφώνου από το ANI σε ολόκληρο το σύστημα, ANILOOKUPRL θα attampt να lookup τον αριθμό τηλεφώνου από το ANI ορίζεται σε ένα μόνο κατάλογο, θα XDIGITID εντολών του καλούντος για μια Χ ψήφιο κωδικό πριν από την πρόσκληση θα τεθούν σε την ουρά. Προεπιλεγμένο είναι CID|
+In-Group Agent Search Method -<\/B> If IN_GROUP is selected as the DID Route, then this is the agent search method to be used by the inbound group, LO is Load-Balanced-Overflow and will try to send the call to an agent on the local server before trying to send it to an agent on another server, LB is Load-Balanced and will try to send the call to the next agent no matter what server they are on, SO is Server-Only and will only try to send the calls to agents on the server that the call came in on. Default is LB|Στην Ομάδα-Agent Search Μέθοδος - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η μέθοδος αναζήτησης παράγοντας που πρέπει να χρησιμοποιούνται από τα εισερχόμενα ομάδα, LO είναι Load-Balanced-Υπερχείλιση και θα προσπαθήσει να στείλει την πρόσκληση σε έναν πράκτορα για τον τοπικό διακομιστή πριν δοκιμάσετε να το στείλετε σε έναν πράκτορα σε άλλο διακομιστή, LB Load είναι ισορροπημένη και θα προσπαθήσει να στείλει την πρόσκληση για την επόμενη πράκτορα θέμα αυτό δεν είναι για server, SO-Server είναι το μόνο και θα μόνο να προσπαθήσουμε να στείλουμε τις κλήσεις σε παράγοντες σχετικά με το διακομιστή ότι η πρόσκληση ήταν για. Προεπιλεγμένο είναι LB|
+In-Group List ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the List ID that leads may be searched through and that leads will be inserted into if necessary|-Στην ομάδα Κατάλογος ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτός είναι ο Κατάλογος ID που οδηγεί μπορεί να ερευνάται και ότι οδηγεί θα προστεθούν στο αν χρειάζεται|
+In-Group Campaign ID -<\/B> If IN_GROUP is selected as the DID Route, then this is the Campaign ID that leads may be searched for in if the call handle method is CIDLOOKUPRC|-Στην ομάδα καμπάνιας ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το Campaign ID που οδηγεί μπορεί να αναζητήσει σε περίπτωση που η πρόσκληση χειριστεί μέθοδος CIDLOOKUPRC|
+In-Group Phone Code -<\/B> If IN_GROUP is selected as the DID Route, then this is the Phone Code used if a new lead is created|-Στην ομάδα Τηλέφωνο κώδικα - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το τηλέφωνο κώδικα που χρησιμοποιείται εάν μια νέα πρωτοβουλία δημιουργείται|
+Phones Email -<\/B> The email address associated with this phone entry. This is used for voicemail settings|Τηλέφωνα Email - </B> Η διεύθυνση ηλεκτρονικού ταχυδρομείου που σχετίζονται με αυτό το τηλέφωνο εισόδου. Αυτό χρησιμοποιείται για τηλεφωνητή ρυθμίσεις|
+ADD A NEW DID|ADD A NEW DID|
+DID Extension: |DID Επέκταση:|
+DID Description: |DID Περιγραφή:|
+COPY DID|ΑΝΤΙΤΥΠΟ DID|
+Source DID: |DID Πηγή:|
+DID NOT ADDED|Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ|
+there is already a DID in the system with this ID|υπάρχει ήδη μια DID στο σύστημα με αυτό το ID|
+there is already a DID in the system with this extension|υπάρχει ήδη μια DID στο σύστημα με την παράταση αυτή|
+DID NOT MODIFIED|Δέν ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+DID MODIFIED|DID ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+MODIFY A DID RECORD: |MODIFY A DID RECORD:|
+DID Route: |DID Οδός:|
+Extension: |Παράταση:|
+Extension Context: |Παράταση Πλαίσιο:|
+Voicemail Box: |Τηλεφωνητής Box:|
+Phone Extension: |Παράταση Τηλέφωνο:|
+User Agent: |User Agent:|
+User Unavailable Action: |Χρήστης Unavailable δράσης:|
+User Route Settings In-Group: |Ρυθμίσεις χρήστη Οδός-Στην ομάδα:|
+In-Group ID: |Στην Ομάδα-ID:|
+In-Group Call Handle Method: |Στην Ομάδα-Call Χειροκίνητος Τρόπος:|
+In-Group Agent Search Method: |Στην Ομάδα-Agent Search Μέθοδος:|
+In-Group List ID: |Στην ομάδα Κατάλογος-ID:|
+In-Group Campaign ID: |Στην ομάδα της εκστρατείας-ID:|
+In-Group Phone Code: |Στην Ομάδα-τηλέφωνο Κωδικός:|
+DELETE THIS DID|Διαγραφή αυτής της DID|
+Email: |Email:|
+DID NOT DELETED|ΔΕΝ ΚΑΤΑΡΓΗΘΗΚΕ|
+DID DELETION CONFIRMATION|DID DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ|
+Click here to delete |Κάντε κλικ εδώ για να διαγράψετε|
+DID DELETION COMPLETED|DID DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ|
+Delete DIDs: |Διαγραφή DIDs:|
+Modify DIDs: |Τροποποιήστε DIDs:|
+To disable the On Hold Prompt, set the interval to 0|Για να απενεργοποιήσετε την Προτροπή σε αναμονή, που το χρονικό διάστημα έως 0|
+3-Way Call Outbound CallerID -<\/B> This defines what is sent out as the outbound callerID number from 3-way calls placed by the agent, CAMPAIGN uses the custom campaign callerID, CUSTOMER uses the number of the customer that is active on the agents screen and AGENT_PHONE uses the callerID for the phone that the agent is logged into|3-Way Outbound Call CallerID - </B> Αυτό ορίζει τι έστειλε ως εξερχόμενο callerID σειρά από 3 δρόμων κλήσεις που διατίθενται από το γραφείο, η καμπάνια χρησιμοποιεί το έθιμο εκστρατεία callerID, ΠΕΛΑΤΗ χρησιμοποιεί τον αριθμό των πελατών που είναι ενεργή παράγοντες για την οθόνη και AGENT_PHONE χρησιμοποιεί το callerID για το τηλέφωνο ότι ο παράγοντας που είναι συνδεδεμένοι στο|
+3-Way Call Outbound CallerID:|3-Way Outbound Call CallerID:|
+INBOUND_MAN allows the agent to place manual dial calls from a campaign list while being able to take inbound calls between manual dial calls|INBOUND_MAN επιτρέπει στον αντιπρόσωπο να πραγματοποιηθεί χειροκίνητη κλήση κλήσεις από μια εκστρατεία λίστα, ενώ είναι σε θέση να λάβει εισερχόμενη κλήση κλήσεις μεταξύ εγχειρίδιο κλήσεις|
+FORCE will force the agents to choose a PAUSE code if they click on the PAUSE button|ΙΣΧΥΟΝΤΑ θα ισχύουν οι παράγοντες να επιλέγουν μια παύση κωδικό αν κάντε κλικ στο κουμπί PAUSE|
+3-Way Call Dial Prefix -<\/B> This defines what is used as the dial prefix for 3-way calls, default is empty so the campaign dial prefix is used, passthru so you can hear ringing is 88|3-Way Call Dial Prefix - </B> Αυτό ορίζει τι είναι χρησιμοποιείται ως πρόθεμα κλήσης για 3-way κλήσεις, προεπιλογή είναι άδειο, ώστε η εκστρατεία dial πρόθεμα χρησιμοποιείται, passthru έτσι ώστε να μπορείτε να ακούτε τους ήχους είναι 88|
+3-Way Call Dial Prefix|3-Way Call Dial Prefix|
+Force Timeclock Login -<\/B> This option allows you to not let an agent log in to the VICIDIAL agent interface if they have not logged into the timeclock. Default is N. There is an option to exempt admin users, levels 8 and 9|Δύναμη Timeclock Είσοδος - </B> Αυτή η επιλογή σας επιτρέπει να μην επιτρέπει να συνδεθείτε με έναν πράκτορα στην VICIDIAL διεπαφή πράκτορα, εάν δεν έχουν συνδεθεί στο timeclock. Προεπιλεγμένο είναι Ν. Υπάρχει η δυνατότητα να εξαιρούν admin χρήστες, 8 και 9 επίπεδα|
+Force Timeclock Login|Δύναμη Timeclock Σύνδεση|
+Stats Percent of Calls Answered Within X seconds -</B> This field allows you to set the number of hold seconds that the realtime stats display will use to calculate the percentage of answered calls that were answered within X number of seconds on hold|Στατιστικά Ποσοστό ζητεί απάντηση εντός Χ δευτερόλεπτα - </B> Αυτό το πεδίο σας επιτρέπει να ορίσετε τον αριθμό των δευτερολέπτων που κατέχουν την απεικόνιση σε πραγματικό χρόνο stats θα χρησιμοποιήσουν για να υπολογίσουν το ποσοστό των κλήσεων απαντά ότι απαντήθηκαν εντός Χ αριθμό των δευτερολέπτων σε αναμονή|
+Stats Percent of Calls Answered Within X seconds|Στατιστικά Ποσοστό ζητεί απάντηση εντός δευτερολέπτων X|
+Web Form Target-<\/B> This is where you can set the custom web page frame that the web form will be opened in when the user clicks on the WEB FORM button. Default is _blank.|Web Μορφή Target-</B> Αυτό είναι όπου μπορείτε να ρυθμίσετε το έθιμο ιστοσελίδα πλαίσιο ότι η ηλεκτρονική φόρμα θα ανοίξει όταν ο χρήστης κάνει κλικ στην ηλεκτρονική φόρμα κουμπί. Προεπιλεγμένο είναι _blank.|
+Web Form Target|Web Μορφή Target|
+To customize the query string after the web form, simply begin the web form with VAR and then the URL that you want to use, replacing the variables with the variable names that you want to use --A--phone_number--B-- just like in the SCRIPTS tab section|Για να προσαρμόσετε το ερώτημα string μετά την ηλεκτρονική φόρμα, απλά αρχίζει την ηλεκτρονική φόρμα με VAR και στη συνέχεια τη διεύθυνση URL που θέλετε να χρησιμοποιήσετε, σε αντικατάσταση των μεταβλητών με τις ονομασίες των μεταβλητών που θέλετε να χρησιμοποιήσετε - Α - phone_number - Β -- όπως ακριβώς και στην καρτέλα scripts τμήμα|
+Recording Web Link -<\/B> This setting allows you to override the default of the display of the recording link in the admin web pages. Default is SERVER_IP|Καταγραφή Σύνδεσμος - </B> Η ρύθμιση αυτή σας επιτρέπει να παρακάμπτουν την προεπιλογή της οθόνης του συνδέσμου εγγραφή στο admin ιστοσελίδες. Προεπιλεγμένο είναι SERVER_IP|
+Alternate Recording Server IP -<\/B> This setting is where you can put a server IP or other machine name that can be used in place of the server_ip in the links to recordings within the admin web pages. Default is empty|Αναπληρωματικό Καταγραφή Server IP - </B> Αυτή η ρύθμιση είναι όπου μπορείτε να βάλετε ένα διακομιστή IP ή άλλο μηχάνημα το όνομα που μπορεί να χρησιμοποιηθεί στη θέση του server_ip στις συνδέσεις με ηχογραφήσεις εντός του admin ιστοσελίδες. Προεπιλεγμένο είναι άδειο|
+Recording Web Link|Καταγραφή Σύνδεσμος|
+Enable Vtiger Integration -<\/B> This setting allows you to enable Vtiger integration with VICIDIAL. Currently links to Vtiger admin and search as well as user replication are the only integration features available. Default is 0|Ενεργοποίηση Vtiger Ένταξη - </B> Η ρύθμιση αυτή σας δίνει τη δυνατότητα να επιτρέψει την ένταξη Vtiger με VICIDIAL. Σήμερα Vtiger συνδέσμους προς admin και αναζήτησης του χρήστη, καθώς και την αντιγραφή είναι τα μόνα διαθέσιμα στοιχεία ολοκλήρωσης. Η προεπιλογή είναι 0|
+Vtiger DB Server IP -<\/B> This is the IP address of the database for your Vtiger installation|Vtiger ΣΠ Server IP - </B> Αυτή είναι η διεύθυνση IP της βάσης δεδομένων για την εγκατάσταση Vtiger|
+Vtiger Database Name -<\/B> This is the database name for your Vtiger database|Vtiger Database Name - </B> Αυτό είναι το όνομα της βάσης δεδομένων για την βάση δεδομένων σας Vtiger|
+Vtiger Database Login -<\/B> This is the user name used to log in to your Vtiger database|Σύνδεση Vtiger Database - </B> Αυτό είναι το όνομα χρήστη που χρησιμοποιείται για να συνδεθείτε στο λογαριασμό σας Vtiger βάση δεδομένων|
+Vtiger Database Password -<\/B> This is the password used to log in to your Vtiger database|Vtiger Database Password - </B> Αυτό είναι το κωδικό πρόσβασης που χρησιμοποιείται για να συνδεθείτε στο λογαριασμό σας Vtiger βάση δεδομένων|
+Vtiger URL -<\/B> This is the URL or web site address used to get to your Vtiger installation|Vtiger URL - </B> Αυτό είναι το URL ή διεύθυνση web site που χρησιμοποιείται για να σας Vtiger εγκατάσταση|
+Enable Vtiger Integration:|Ενεργοποίηση Vtiger Ένταξη:|
+Vtiger DB Server IP|Vtiger ΣΠ Server IP|
+Vtiger Database Name|Vtiger Database Name|
+Vtiger Database Login|Vtiger Database Σύνδεση|
+Vtiger Database Password|Vtiger Database Password|
+Vtiger URL|Vtiger URL|
+VTIGER HOME|VTIGER ΑΡΧΙΚΗ|
+Active -<\/B> This field defines whether the user is active in the system and can use VICIDIAL resources. Default is Y|Ενεργή - </B> Το πεδίο αυτό καθορίζει αν ο χρήστης είναι ενεργός στο σύστημα και μπορεί να χρησιμοποιήσει VICIDIAL πόρων. Προεπιλεγμένο είναι Y|
+show only active users|Εμφάνιση μόνο των ενεργών χρηστών|
+show all users|δείτε όλους τους χρήστες|
+Vtiger Search Category -<\/B> If Vtiger integration is enabled in the system settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: LEAD- This option will search through the Vtiger leads only, ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number, VENDOR- This option will only search through the Vtiger vendors, ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger account ID. If unsuccessful it will try any other methods listed that you have selected. Multiple options can be used for each search, but on large databases this is not recommended. Default is LEAD|Αναζήτηση Vtiger Κατηγορία - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεων στη συνέχεια τη ρύθμιση αυτή θα καθορίσει εάν η σελίδα vtiger_search.php θα αναζητήσετε τον αριθμό τηλεφώνου που είχε εγγραφεί. Υπάρχουν 4 επιλογές που μπορεί να χρησιμοποιηθεί στον τομέα αυτό: ΜΟΛΥΒΔΟΥ-Η επιλογή αυτή θα αναζητήσει μέσω του Vtiger οδηγεί μόνο, ΛΟΓΑΡΙΑΣΜΟΥ-Η επιλογή αυτή θα ψάξει μέσω των λογαριασμών Vtiger και όλες τις επαφές και επιμέρους επαφές για τον αριθμό τηλεφώνου, VENDOR-Αυτή η επιλογή μόνο μέσω της αναζήτησης Vtiger πωλητές, ACCTID-Η επιλογή αυτή λειτουργεί μόνο για τους λογαριασμούς και θα λάβει τα vicidial vendor_lead_code τομέα και προσπαθήστε να αναζητήσετε το αναγνωριστικό λογαριασμού Vtiger. Αν ανεπιτυχή θα προσπαθήσουμε τυχόν άλλες μεθόδους που αναφέρονται που έχετε επιλέξει. Πολλαπλές επιλογές μπορούν να χρησιμοποιηθούν για κάθε αναζήτηση, αλλά σε μεγάλες βάσεις δεδομένων που αυτό δεν συνιστάται. Προεπιλεγμένο είναι ΜΟΛΥΒΔΟΥ|
+Vtiger Search Category:|Αναζήτηση Vtiger Κατηγορία:|
+ACTIVE LISTS CHANGED|ΔΡΑΣΤΙΚΗΣ ΚΑΤΑΛΟΓΟΙ ΜΕΤΑΒΑΛΛΟΜΕΝΩΝ|
+SUBMIT ACTIVE LIST CHANGES|ΕΠΙΣΥΝΑΠΤΩ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΒΟΛΩΝ ΔΡΑΣΤΙΚΗΣ|
+LAST CALL DATE|ΤΕΛΕΥΤΑΙΑ ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ|
+User Group Bulk Change|User Group Μαζική Αλλαγή|
+Bulk Group Change|Μαζική Αλλαγή ομάδας|
+Vtiger Create Call Record -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether a new Vtiger activity record is created for the call when the agent goes to the vtiger_search page. Default is Y|Δημιουργία Vtiger Call Record - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεις τότε αυτή η ρύθμιση θα καθορίσει κατά πόσο ένα νέο ρεκόρ Vtiger δραστηριότητα δημιουργείται για την πρόσκληση, όταν ο αντιπρόσωπος πηγαίνει στο vtiger_search σελίδα. Προεπιλεγμένο είναι Y|
+Vtiger Create Call Record:|Δημιουργία Vtiger Call Record:|
+Vtiger Create Lead Record -<\/B> If Vtiger integration is enabled in the system settings and Vtiger Search Category includes LEAD then this setting will define whether a new Vtiger lead record is created when the agent goes to the vtiger_search page and no record is found to have the call phone number. Default is Y|Δημιουργία Vtiger Μόλυβδος Record - </B> Εάν είναι ενεργοποιημένη Vtiger ενσωμάτωση στο σύστημα και τις ρυθμίσεις Vtiger Αναζήτηση ΜΟΛΥΒΔΟ τότε η κατηγορία περιλαμβάνει τη ρύθμιση αυτή θα καθορίσει κατά πόσο ένα νέο ρεκόρ Vtiger οδηγήσει δημιουργείται όταν ο πράκτορας πηγαίνει στη σελίδα vtiger_search και δεν είναι βρέθηκαν να έχουν την κλήση του αριθμού τηλεφώνου. Προεπιλεγμένο είναι Y|
+Vtiger Create Lead Record:|Δημιουργία Vtiger Μόλυβδος Εγγραφή:|
+Vtiger Screen Login -<\/B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y|Vtiger Screen Είσοδος - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεις τότε αυτή η ρύθμιση θα καθορίσει κατά πόσο ο χρήστης είναι συνδεδεμένος στο Vtiger διεπαφής αυτόματα όταν συνδεθείτε στο VICIDIAL. Προεπιλεγμένο είναι Y|
+Vtiger Screen Login:|Vtiger Screen Είσοδος:|
+Alert Enabled -<\/B> This field shows whether the agent has web browser alerts enabled for when calls come into their vicidial.php session. Default is 0 for NO|Alert Enabled - </B> Το πεδίο αυτό δείχνει κατά πόσο ο μεσάζων έχει τη δυνατότητα web browser ειδοποιήσεις για κλήσεις όταν έρθουν σε vicidial.php συνόδου τους. Η προεπιλογή είναι 0 για τα NO|
+Alert Enabled:|Alert Enabled:|
+QC Features Active -<\/B> This option allows you to enable or disable the QC or Quality Control features. Default is 0 for inactive|QC Χαρακτηριστικά Active - </B> Αυτή η επιλογή σας επιτρέπει να ενεργοποιήσετε ή να απενεργοποιήσετε τη QC ή Ποιοτικός Έλεγχος χαρακτηριστικά. Η προεπιλογή είναι 0 για το ανενεργό|
+Outbound Auto-Dial Active -<\/B> This option allows you to enable or disable outbound auto-dialing within VICIDIAL, setting this field to 0 will remove the LISTS and FILTERS sections and many fields from the Campaign Modification screens. Manual entry dialing will still be allowable from within the agent screen, but no list dialing will be possible. Default is 1 for active|Εξερχόμενο Auto-Dial Active - </B> Αυτή η επιλογή σας επιτρέπει να ενεργοποιήσετε ή να απενεργοποιήσετε τον εξερχόμενο αυτόματης κλήσης εντός VICIDIAL, θέτοντας σε αυτόν τον τομέα θα 0 αφαίρεση των καταλόγων και ΦΙΛΤΡΑ πολλά τμήματα και τομείς από το Campaign Τροποποίηση οθόνες. Εγχειρίδιο εισόδου κλήσης θα εξακολουθεί να είναι εντός των επιτρεπομένων από τον αντιπρόσωπο της οθόνης, αλλά δεν κατάλογο κλήσης θα είναι δυνατή. Η προεπιλογή είναι 1 για ενεργή|
+QC Features Active:|QC Χαρακτηριστικά Active:|
+Outbound Auto-Dial Active:|Εξερχόμενο Auto-Dial Active:|
+Close Panel|Κλείστε Panel|
+Choose Report Display Options|Επιλογές εμφάνισης Επιλέξτε Έκθεση|
+To select more than 1 campaign, hold down the Ctrl key and click|Για να επιλέξετε περισσότερα από 1 εκστρατείας, κρατήστε πατημένο το πλήκτρο Ctrl και κάντε κλικ|
+CPD AMD Action -<\/B> If you are using the Sangoma ParaXip Call Progress Detection software then you will want to enable this setting either setting it to DISPO which will disposition the call as AA and hang it up if the call is being processed and has not been sent to an agent yet or MESSAGE which will send the call to the defined Answering Machine Message for this campaign. Default is DISABLED|CPD AMD Δράση - </B> Αν χρησιμοποιείτε τον Sangoma ParaXip Πρόσκληση πρόοδος Ανίχνευση λογισμικό και στη συνέχεια θα θέλετε να ενεργοποιήσετε αυτή τη ρύθμιση, είτε να DISPO που θα διαθέσεις την πρόσκληση ως AA και να κολλήσει το πάνω αν η πρόσκληση είναι υπό επεξεργασία και δεν έχει σταλεί σε έναν πράκτορα ή ακόμη μήνυμα που θα αποστείλει την πρόσκληση προς το τηλεφωνητή Μήνυμα ορίζεται για αυτή την καμπάνια. Προεπιλεγμένο είναι DISABLED|
+CPD AMD Action:|CPD AMD δράσης:|
+Click here for user multiple day status detail report|Κάντε κλικ εδώ για το χρήστη πολλαπλών ημέρες καθεστώς λεπτομερώς την έκθεση|
+Click here to download this list|Κάντε κλικ εδώ για να κατεβάσετε τον κατάλογο αυτό|
+Download Lists:|Κατεβάστε Λίστες:|
+Active Asterisk Server -<\/B> If Asterisk is not running on this server, or if VICIDIAL should not be using this server, or if are only using this server for other scripts like the hopper loading script you would want to set this to N. Default is Y|Asterisk Active Server - </B> Αν Asterisk δεν εκτελείται σε αυτόν το διακομιστή ή αν VICIDIAL δεν θα πρέπει να χρησιμοποιούν αυτό το διακομιστή ή αν είναι μόνο με τη χρήση αυτού του διακομιστή για άλλα σενάρια, όπως η χοάνη φόρτωσης script που θέλετε να ρυθμίσετε αυτή να Ν. Προεπιλ είναι Y|
+Generate conf files -<\/B> If you would like the system to auto-generate asterisk conf files based upon the phones entries, carrier entries and load balancing setup within VICIDIAL then set this to Y. Default is Y|Δημιουργήστε conf αρχεία - </B> Αν θα θέλατε το σύστημα auto-δημιουργούν αστερίσκο conf αρχεία με βάση τις ενδείξεις τηλεφώνων, την εξισορρόπηση φορτίου εγγραφές και εγκατάσταση εντός VICIDIAL τότε που αυτό να είναι Προεπιλ Y. Y|
+Rebuild conf files -<\/B> If you want to force a rebuilding of the Asterisk conf files or if any of the phones or carrier entries have changed then this should be set to Y. After the conf files have been generated and Asterisk has been reloaded then this will be changed to N. Default is Y|Αναδημιουργία conf αρχεία - </B> Αν θέλετε να αναγκάσετε μια ανακατασκευή του Asterisk conf αρχεία ή αν κάποιο από τα τηλέφωνα ή μεταφορέα εγγραφές έχουν αλλάξει, τότε αυτό θα πρέπει να ρυθμιστεί σε Υ. Μετά την conf αρχεία που έχουν δημιουργηθεί και έχει Asterisk φορτώθηκε στη συνέχεια, αυτό θα αλλάξει σε Ν. Προεπιλεγμένο είναι Y|
+Active Asterisk Server:|Asterisk Active Server:|
+Generate conf files:|Δημιουργήστε conf αρχεία:|
+Rebuild conf files:|Αναδημιουργία conf αρχεία:|
+Show Templates|Δείτε Templates|
+Add A New Template|Προσθέστε ένα νέο πρότυπο|
+ADD NEW CONF TEMPLATE|Προσθήκη νέου ΠΙΣΤ TEMPLATE|
+ADD NEW CARRIER|Προσθήκη νέου ΘΑΛΑΜΙΣΚΟ|
+ADDING NEW CONF TEMPLATE|Την προσθήκη νέων ΠΙΣΤ TEMPLATE|
+ADDING NEW CARRIER|Την προσθήκη νέων ΘΑΛΑΜΙΣΚΟ|
+MODIFY CONF TEMPLATE|MODIFY ΠΙΣΤ TEMPLATE|
+MODIFY CARRIER|MODIFY ΘΑΛΑΜΙΣΚΟ|
+DELETE CONF TEMPLATE|DELETE ΠΙΣΤ TEMPLATE|
+DELETE CARRIER|DELETE ΘΑΛΑΜΙΣΚΟ|
+CONF TEMPLATE LIST|ΠΙΣΤ TEMPLATE ΚΑΤΑΛΟΓΟΣ|
+CARRIER LIST|ΘΑΛΑΜΙΣΚΟ ΚΑΤΑΛΟΓΟΣ|
+Template ID:|Αναγνωριστικό:|
+Template Name:|Όνομα:|
+Template Contents:|Template Περιεχόμενα:|
+Carrier ID:|Θαλαμίσκος ID:|
+Carrier Name:|Φέρον Όνομα:|
+Registration String:|Εγγραφή String:|
+Account Entry:|Λογαριασμός Είσοδος:|
+Protocol:|Πρωτόκολλο:|
+Globals String:|Globals String:|
+Dialplan Entry:|Dialplan Είσοδος:|
+CONF TEMPLATE NOT ADDED|ΠΙΣΤ TEMPLATE δεν προστίθενται|
+there is already a template in the system with this ID|υπάρχει ήδη ένα πρότυπο σε αυτό το σύστημα, με αυτό το ID|
+CONF TEMPLATE ADDED|ΠΙΣΤ TEMPLATE ΠΡΟΣΤΙΘΕΜΕΝΗ|
+CARRIER NOT ADDED|ΘΑΛΑΜΙΣΚΟ δεν προστίθενται|
+there is already a carrier in the system with this ID|υπάρχει ήδη ένα μεταφορέα στο σύστημα με αυτό το ID|
+CONF TEMPLATE NOT MODIFIED|ΠΙΣΤ TEMPLATE ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+CARRIER NOT MODIFIED|ΔΕΝ ΘΑΛΑΜΙΣΚΟ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+CARRIER MODIFIED|ΘΑΛΑΜΙΣΚΟ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+CONF TEMPLATE NOT DELETED|ΠΙΣΤ TEMPLATE δεν διαγράφονται|
+Template ID be at least 2 characters in length|Πρότυπο ID να είναι τουλάχιστον 2 χαρακτήρες|
+CONF TEMPLATE DELETION CONFIRMATION|ΠΙΣΤ TEMPLATE DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ|
+Click here to delete conf template|Κάντε κλικ εδώ για να διαγράψετε το πρότυπο conf|
+CARRIER NOT DELETED|ΘΑΛΑΜΙΣΚΟ δεν διαγράφονται|
+Carrier ID be at least 2 characters in length|Θαλαμίσκος ID να είναι τουλάχιστον 2 χαρακτήρες|
+CARRIER DELETION CONFIRMATION|ΘΑΛΑΜΙΣΚΟ DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ|
+Click here to delete carrier|Κάντε κλικ εδώ για να διαγράψετε μεταφορέα|
+CONF TEMPLATE DELETION COMPLETED|ΠΙΣΤ TEMPLATE DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ|
+CARRIER DELETION COMPLETED|ΘΑΛΑΜΙΣΚΟ DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ|
+MODIFY A CONF TEMPLATE RECORD|MODIFY Α ΠΙΣΤ TEMPLATE RECORD|
+DELETE THIS CONF TEMPLATE|Διαγραφή αυτής της ΠΙΣΤ TEMPLATE|
+MODIFY A CARRIER RECORD|MODIFY Α ΘΑΛΑΜΙΣΚΟ RECORD|
+DELETE THIS CARRIER|Διαγραφή αυτής της CARRIER|
+CARRIERS WITHIN THIS SERVER|ΜΕΤΑΦΟΡΕΙΣ WITHIN THIS SERVER|
+CONF TEMPLATE LISTINGS|ΠΙΣΤ TEMPLATE Καταχωρίσεις|
+CARRIER LISTINGS|ΘΑΛΑΜΙΣΚΟ Καταχωρίσεις|
+PHONES USING THIS CONF TEMPLATE|PHONES ΧΡΗΣΙΜΟΠΟΙΩΝΤΑΣ ΤΗΝ ΠΑΡΟΥΣΑ ΠΙΣΤ TEMPLATE|
+CARRIERS USING THIS CONF TEMPLATE|Που χρησιμοποιούν ΠΑΡΟΝΤΑ ΠΙΣΤ TEMPLATE|
+Conf Override:|Επιβ Override:|
+Template ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the conf template throughout the system|ID Template - </B> Το πεδίο αυτό πρέπει να είναι τουλάχιστον 2 χαρακτήρες και δεν υπερβαίνει τους 15 χαρακτήρες σε μήκος, δεν χώρους. Αυτό είναι το αναγνωριστικό που θα χρησιμοποιείται για τον προσδιορισμό της conf πρότυπο σε ολόκληρο το σύστημα|
+Template Name -<\/B> This is the descriptive name of the conf file template entry|Όνομα - </B> Αυτό είναι το όνομα του αρχείου conf πρότυπο εισόδου|
+Template Contents -<\/B> This field is where you can enter in the specific settings to be used by all phones and-or carriers that are set to use this conf template. Fields that should NOT be included in this box are: secret, accountcode, account, username and mailbox|Περιεχόμενα Template - </B> Το πεδίο αυτό είναι όπου μπορείτε να εισάγετε τις ειδικές ρυθμίσεις στο να χρησιμοποιηθούν από όλα τα τηλέφωνα και-ή αερομεταφορέων που έχουν ρυθμιστεί να χρησιμοποιούν αυτό το πρότυπο conf. Τα πεδία που δεν θα πρέπει να περιλαμβάνονται στη θέση αυτή είναι: μυστικό, accountcode, υπόψη, username και το γραμματοκιβώτιο|
+Carrier ID -<\/B> This field needs to be at least 2 characters in length and no more than 15 characters in length, no spaces. This is the ID that will be used to identify the carrier for this specific entry throughout the system|ID Carrier - </B> Το πεδίο αυτό πρέπει να είναι τουλάχιστον 2 χαρακτήρες και δεν υπερβαίνει τους 15 χαρακτήρες σε μήκος, δεν χώρους. Αυτό είναι το αναγνωριστικό που θα χρησιμοποιείται για τον προσδιορισμό του αερομεταφορέα για τη συγκεκριμένη θέση σε όλο το σύστημα|
+Carrier Name -<\/B> This is the descriptive name of the carrier entry|Όνομα Carrier - </B> Αυτό είναι το όνομα του μεταφορέα εισόδου|
+Registration String -<\/B> This field is where you can enter in the exact string needed in the IAX or SIP configuration file to register to the provider. Optional but highly recommended if your carrier allows registration|Εγγραφή String - </B> Το πεδίο αυτό είναι όπου μπορείτε να εισαγάγετε στον ακριβή συμβολοσειρά που απαιτούνται στο SIP IAX ή αρχείο διαμόρφωσης για να εγγραφείτε στο φορέα παροχής υπηρεσιών. Προαιρετικό αλλά συνιστάται ιδιαίτερα αν ο φορέας σας επιτρέπει την καταχώριση|
+Template ID -<\/B> This optional field allows you to choose a conf file template for this carrier entry|ID Template - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να επιλέξετε ένα πρότυπο conf αρχείο για τον εν λόγω αερομεταφορέα εισόδου|
+Account Entry -<\/B> This field is used if you have not selected a template to use, and it is where you can enter in the specific account settings to be used for this carrier|Λογαριασμός Θέση - </B> Το πεδίο αυτό χρησιμοποιείται αν δεν έχετε επιλέξει να χρησιμοποιήσετε ένα πρότυπο, και είναι όπου μπορείτε να εισαγάγετε στον ειδικό λογαριασμό ρυθμίσεις που πρέπει να χρησιμοποιείται για τον εν λόγω αερομεταφορέα|
+Protocol -<\/B> This field allows you to define the protocol to use for the carrier entry. Currently only IAX and SIP are supported|Πρωτόκολλο - </B> Αυτό το πεδίο σας επιτρέπει να ορίσετε το πρωτόκολλο να χρησιμοποιήσετε για την είσοδο του μεταφορέα. Επί του παρόντος μόνο SIP IAX και υποστηρίζονται|
+Globals String -<\/B> This optional field allows you to define a global variable to use for the carrier in the dialplan|Globals String - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να ορίσετε μια global μεταβλητή που θα χρησιμοποιηθεί για τον μεταφορέα στο dialplan|
+Dialplan Entry -<\/B> This optional field allows you to define a set of dialplan entries to use for this carrier|Dialplan Είσοδος - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να ορίσετε ένα σύνολο dialplan καταχωρήσεις να χρησιμοποιήσετε για τον εν λόγω αερομεταφορέα|
+Server IP -<\/B> This is the server that this specific carrier record is associated with|Server IP - </B> Αυτό είναι το διακομιστή ότι αυτό το συγκεκριμένο μεταφορέα εγγραφή είναι συνδεδεμένες με|
+Active -<\/B> This defines whether the carrier will be included in the auto-generated conf files or not|Ενεργή - </B> Αυτό καθορίζει εάν ο μεταφορέας θα συμπεριληφθούν στα auto-conf αρχεία που δημιουργούνται ή δεν|
+Conf Override Settings -<\/B> If populated, and the Template ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated|Επιβ Παράκαμψη Ρυθμίσεις - </B> Αν πληθυσμό, και το πρότυπο που να είναι ID - ΚΑΝΕΝΑ - τότε το περιεχόμενο της εν λόγω τομέα χρησιμοποιούνται ως conf αρχείο καταχωρήσεις για αυτό το τηλέφωνο. generate_vicidial_conf τηλέφωνα server για αυτό πρέπει να ρυθμιστεί σε αυτό το Y για να εργαστούν. Το πεδίο αυτό δεν θα πρέπει να περιλαμβάνει το [επέκταση] γραμμή, που θα είναι αυτόματα|
+Template ID -<\/B> This is the conf file template ID that this phone entry will use for its Asterisk settings. Default is --NONE--|ID Template - </B> Αυτό είναι το πρότυπο αρχείο conf ID εισόδου ότι αυτό το τηλέφωνο θα χρησιμοποιήσει για την Asterisk ρυθμίσεις. Προεπιλεγμένο είναι - ΚΑΝΕΝΑ --|
+If you will be taking in inbound calls from this carrier trunk you might want to set the context=trunkinbound within this field so that you can use the DID handling process within VICIDIAL|Αν πρόκειται να λαμβάνουν σε εισερχόμενα κλήσεις από τον εν λόγω αερομεταφορέα κορμού μπορεί να θέλετε να ρυθμίσετε το πλαίσιο = trunkinbound σε αυτό τον τομέα, ώστε να μπορείτε να χρησιμοποιήσετε τη διαδικασία χειρισμού DID εντός VICIDIAL|
+There is a reserved default DID that you can use which is just the word -default- without the dashes, that will allos you to send any call that does not match any other existing patterns to the default DID|Υπάρχει reserved προεπιλογή DID που μπορείτε να χρησιμοποιήσετε το οποίο είναι μόνο η λέξη-default-χωρίς παύλες, ότι θα μπορείτε να στείλετε ΑΛΛΟΣ κάθε κλήση που δεν ταιριάζει με οποιαδήποτε άλλα υφιστάμενα πρότυπα στην προεπιλεγμένη DID|
+Campaign VDAD extension|Καμπάνια VDAD επέκταση|
+This field allows for a custom VDAD transfer extension. This allows you to use different call handling methods depending upon your campaign.|Το πεδίο αυτό επιτρέπει για μια προσαρμοσμένη VDAD μεταφορά επέκταση. Αυτό σας επιτρέπει να χρησιμοποιήσετε διάφορες μεθόδους χειρισμού κλήσεων, ανάλογα με την καμπάνια σας.|
+  - 8364 - same as 8368|- 8364 - 8368 ως ίδια|
+  - 8365 - Will send the call only to an agent on the same server as the call is on|- 8365 - Θα στείλετε την πρόσκληση σε ένα μόνο παράγοντα στον ίδιο διακομιστή, όπως είναι η πρόσκληση για|
+  - 8366 - Used for press-1 and survey campaigns|- 8366 - Χρησιμοποιείται για Τύπο-1 εκστρατείες και έρευνα|
+  - 8367 - Will try to first send the call to an agent on the local server, then it will look on other servers|- 8367 - Θα προσπαθήσουμε πρώτα να στείλετε την πρόσκληση σε έναν πράκτορα για τον τοπικό διακομιστή, τότε θα ψάξει για άλλους servers|
+  - 8368 - DEFAULT  Will send the call to the next available agent no matter what server they are on|- 8368 - DEFAULT; Θα στείλετε την πρόσκληση για το επόμενο διαθέσιμο πράκτορα θέμα αυτό δεν είναι για server|
+  - 8369 - Used for Answering Machine Detection after that, same behavior as 8368|- 8369 - Χρησιμοποιείται για τηλεφωνητή Ανίχνευση ότι μετά, ίδια συμπεριφορά ως 8368|
+  - 8373 - Used for Answering Machine Detection after that same behavior as 8366|- 8373 - Χρησιμοποιείται για τηλεφωνητή Ανίχνευση μετά την ίδια συμπεριφορά ως 8366|
+Also in this section are the WEB VARs for each campaign. These allow each agent to have a different variable string that can be added to the WEB FORM or SCRIPT tab URLs by simply putting --A--web_vars--B-- as you would put any other field.|Επίσης σε αυτό το τμήμα της WEB VARs για κάθε καμπάνια. Αυτά επιτρέπουν κάθε παράγοντα να έχει μια διαφορετική μεταβλητή συμβολοσειρά που μπορεί να προστεθεί στην ηλεκτρονική φόρμα ή SCRIPT καρτέλα URLs από απλά θέτοντας - Α - web_vars - Β - όπως θα την κάθε άλλο τομέα.|
+Group Alias List|Ομάδα Γνωστός Κατάλογος|
+Add A New Group Alias|Προσθέστε μια νέα ομάδα Γνωστός|
+ADD NEW GROUP ALIAS|Προσθήκη νέου GROUP ALIAS|
+ADDING NEW GROUP ALIAS|Την προσθήκη νέων GROUP ALIAS|
+MODIFY GROUP ALIAS|MODIFY GROUP ALIAS|
+DELETE GROUP ALIAS|Διαγραφή ομάδας ALIAS|
+GROUP ALIAS LIST|ΟΜΑΔΑ ALIAS ΚΑΤΑΛΟΓΟΣ|
+GROUP ALIAS LISTINGS|ΟΜΑΔΑ ALIAS Καταχωρίσεις|
+MODIFY A GROUP ALIAS RECORD|MODIFY Α ΟΜΙΛΟΣ ALIAS RECORD|
+Group Alias ID|Ομάδα Γνωστός ID|
+Group Alias Name|Ομάδα ψευδώνυμο|
+CallerID Number|CallerID Αριθμός|
+CallerID Name|CallerID Όνομα|
+DELETE THIS GROUP ALIAS|Διαγράψετε αυτή την ομάδα ALIAS|
+GROUP ALIAS NOT MODIFIED|ALIAS ΟΜΑΔΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+GROUP ALIAS MODIFIED|ΟΜΑΔΑ ALIAS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ|
+ADD A NEW GROUP ALIAS|ADD μια νέα ομάδα ALIAS|
+MODIFY A GROUP ALIAS RECORD|MODIFY Α ΟΜΙΛΟΣ ALIAS RECORD|
+GROUP ALIAS NOT ADDED|ΟΜΑΔΑ ALIAS δεν προστίθενται|
+GROUP ALIAS ADDED|ΟΜΑΔΑ ALIAS ΠΡΟΣΤΙΘΕΜΕΝΗ|
+GROUP ALIAS NOT DELETED|ΟΜΑΔΑ ALIAS δεν διαγράφονται|
+GROUP ALIAS DELETION CONFIRMATION|ΟΜΑΔΑ ALIAS DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ|
+Click here to delete group alias|Κάντε κλικ εδώ για να διαγράψετε ομάδα άλλως|
+GROUP ALIAS DELETION COMPLETED|ΟΜΑΔΑ ALIAS DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ|
+Group Alias ID -<\/B> The ID of the group alias used by agents to dial out calls from the VICIDIAL agent interface with different Caller IDs. no spaces or other special characters allowed. Must be between 2 and 20 characters in length|Ομάδα Γνωστός ID - </B> Η ID της ομάδας άλλως χρησιμοποιείται από τους αντιπροσώπους που ορίζονται για να καλέσετε τις κλήσεις από το VICIDIAL πράκτορα διεπαφής με διαφορετικές ταυτότητες καλούντος. δεν κενά ή άλλους ειδικούς χαρακτήρες επιτρέπονται. Πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες|
+Group Alias Name -<\/B> The name used to describe a group alias, Must be between 2 and 50 characters in length|Ομάδα ψευδώνυμο - </B> Το όνομα που χρησιμοποιείται για να περιγράψει μια ομάδα άλλως, πρέπει να είναι μεταξύ 2 και 50 χαρακτήρες|
+Caller ID Number -<\/B> The Caller ID number used in this Group Alias. Must be digits only|Αριθμός Ταυτότητας καλούντος - </B> Η καλούντος αριθμό ταυτότητας που χρησιμοποιούνται σε αυτή την ομάδα Γνωστός. Πρέπει να είναι μόνο ψηφία|
+Caller ID Name -<\/B> The Caller ID name that can be sent out with this Group Alias. As far as we know this will only work in Canada on PRI circuits and using an IAX loop trunk through Asterisk|Όνομα καλούντος ID - </B> Το όνομα του καλούντος ID που μπορούν να αποσταλούν με αυτή την ομάδα Γνωστός. Από όσο γνωρίζουμε αυτό θα λειτουργήσει μόνο στον Καναδά και στις PRI κυκλωμάτων χρησιμοποιώντας IAX βρόχο κορμού μέσω Asterisk|
+Group Alias Allowed -<\/B> If you want to allow your agents to use group aliases then you need to set this to Y. Group Aliases are explained more in the Admin section, they allow agents to select different callerIDs for outbound manual calls that they may place. Default is N|Ομάδα Γνωστός Επιτρέπεται - </B> Αν θέλετε να σας επιτρέψει πράκτορες να χρησιμοποιούν ψευδώνυμα ομάδα τότε πρέπει να ορίσετε αυτή την ομάδα να Y. Γνωστός εξηγούνται περισσότερο στο τμήμα Διοίκησης, που επιτρέπει στους εκπροσώπους να επιλέξετε διαφορετικό callerIDs εγχειρίδιο για εξερχόμενες κλήσεις ότι μπορεί να πραγματοποιηθεί. Προεπιλεγμένο είναι Ν|
+Default Group Alias -<\/B> If you have allowed Group Aliases then this is the group alias that is selected first by default when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty|Προεπιλεγμένη ομάδα Γνωστός - </B> Αν έχετε επιτρέπεται Γνωστός ομάδα, τότε αυτό είναι γνωστός και ότι η ομάδα έχει επιλεγεί από προεπιλογή κατά την πρώτη του πράκτορα επιλέγει να χρησιμοποιήσει μια ομάδα Γνωστός για εξερχόμενες κλήσης εγχειρίδιο. Προεπιλεγμένο είναι ΚΑΝΕΝΑ ή κενό|
+Default Group Alias -<\/B> If you have allowed Group Aliases for the campaign that the agent is logged into then this is the group alias that is selected first by default on a call coming in from this inbound group when the agent chooses to use a Group Alias for an outbound manual call. Default is NONE or empty|Προεπιλεγμένη ομάδα Γνωστός - </B> Αν έχετε τη δυνατότητα Ομάδα Γνωστός για την εκστρατεία ότι ο αντιπρόσωπος είναι συνδεδεμένοι στο τότε αυτή είναι η ομάδα που έχει επιλεγεί άλλως πρώτα από προεπιλογή για μια κλήση που προέρχεται από αυτή την ομάδα, όταν ο εισερχόμενος πράκτορας επιλέγει να χρησιμοποιήσετε μια ομάδα Γνωστός για εξερχόμενες κλήσης εγχειρίδιο. Προεπιλεγμένο είναι ΚΑΝΕΝΑ ή κενό|
+Group Alias Allowed|Ομάδα Γνωστός Επιτρέπεται|
+Default Group Alias|Προεπιλεγμένη ομάδα Γνωστός|
+AGENT_CHOOSE allows the agent to choose which callerID to use for 3-way calls from a list of choices.|AGENT_CHOOSE επιτρέπει να επιλέγουν τον πράκτορα που callerID να χρησιμοποιήσετε για την 3-way ζητεί από μια λίστα επιλογών.|
+you cannot use reserved words in group aliases|δεν μπορείτε να χρησιμοποιήσετε τις δεσμευμένες λέξεις της ομάδας ψευδώνυμα|
+Agent Shift Enforcement Override|Agent Shift Επιβολή Override|
+Manager Shift Enforcement Override|Manager Shift Επιβολή Override|
+Shift Enforcement|Shift εκτέλεση|
+Max Calls per Second|Max ζητεί ανά Δεύτερη|
+Max FILL Calls per Second|Max ΣΥΜΠΛΗΡΩΣΤΕ ζητεί ανά Δεύτερη|
+This setting will override whatever the users user group has set for Shift Enforcement. DISABLED will use the user group setting. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is DISABLED.|Η ρύθμιση αυτή θα αντικαταστήσει τους χρήστες ανεξάρτητα από την ομάδα χρηστών που έχει για την εκτέλεση Shift. DISABLED θα χρησιμοποιήσει ο χρήστης ομάδα ρύθμιση. OFF δεν θα επιβάλει σε όλες τις βάρδιες. START θα επιβάλει μόνο το χρόνο σύνδεσης, αλλά δεν θα επηρεάσει έναν πράκτορα που εκτελεί τους πάνω μετατόπιση του χρόνου και αν είναι ήδη συνδεδεμένος in. ALL θα επιβάλλει μετατόπιση χρόνος έναρξης και θα συνδεθείτε ορίζονται μετά από έναν πράκτορα που τρέχουν πάνω από το τέλος του χρόνου τους βάρδια. Η προεπιλογή είναι άτομα με ειδικές ανάγκες.|
+This setting if set to 1 will allow a manager to enter their user and password on an agent screen to override the shift restrictions on an agent session if the agent is trying to log in outside of their shift. Default is 0.|Η ρύθμιση αυτή ορίζεται σε 1, αν θα επιτρέψει ο διαχειριστής του να εισέλθει στα χρήστη και κωδικό πρόσβασης σε έναν πράκτορα της οθόνης για να παρακάμψετε τους περιορισμούς σχετικά με τη μετατόπιση ενός πράκτορα συνόδου εάν ο πράκτορας προσπαθεί να συνδεθείτε με τους εκτός της βάρδιας. Η προεπιλογή είναι 0.|
+This setting allows you to restrict agent logins based upon the shifts that are selected below. OFF will not enforce shifts at all. START will only enforce the login time but will not affect an agent that is running over their shift time if they are already logged in. ALL will enforce shift start time and will log an agent out after they run over the end of their shift time. Default is OFF.|Η ρύθμιση αυτή σας επιτρέπει να περιορίσετε πράκτορα συνδέσεις με βάση τις αλλαγές που έχουν επιλεγεί. OFF δεν θα επιβάλει σε όλες τις βάρδιες. START θα επιβάλει μόνο το χρόνο σύνδεσης, αλλά δεν θα επηρεάσει έναν πράκτορα που εκτελεί τους πάνω μετατόπιση του χρόνου και αν είναι ήδη συνδεδεμένος in. ALL θα επιβάλλει μετατόπιση χρόνος έναρξης και θα συνδεθείτε ορίζονται μετά από έναν πράκτορα που τρέχουν πάνω από το τέλος του χρόνου τους βάρδια. Προεπιλεγμένο είναι OFF.|
+This setting determines the maximum number of calls that can be placed by the outbound auto-dialing script on this server per second. Must be from 1 to 100. Default is 20.|Αυτή η ρύθμιση καθορίζει το μέγιστο αριθμό των κλήσεων που μπορούν να διατεθούν από το εξερχόμενο αυτόματη κλήση δέσμης ενεργειών σε αυτόν το διακομιστή ανά δευτερόλεπτο. Πρέπει να είναι από 1 έως 100. Η προεπιλογή είναι 20.|
+This setting determines the maximum number of calls that can be placed by the auto-FILL outbound auto-dialing script on for all servers, per second. Must be from 1 to 200. Default is 40.|Αυτή η ρύθμιση καθορίζει το μέγιστο αριθμό των κλήσεων που μπορούν να διατεθούν από το auto-ΣΥΜΠΛΗΡΩΣΤΕ εξερχό auto-κλήση δέσμης ενεργειών για όλους τους διακομιστές, ανά δευτερόλεπτο. Πρέπει να είναι από 1 έως 200. Η προεπιλογή είναι 40.|
+System Load|System Load|
+Live Channels|Live Channels|
+Disk Usage|Disk Usage|
+These two statistics show the loadavg of a system times 100 and the CPU usage percentage of the server and is updated every minute. The loadavg should on average be below 100 multiplied by the number of CPU cores your system has, for optimal performance. The CPU usage percentage should stay below 50 for optimal performance.|Τα δύο αυτά στατιστικά στοιχεία δείχνουν την loadavg ενός συστήματος φορές 100 και το ποσοστό χρήσης της CPU του διακομιστή και ενημερώνεται ανά λεπτό. Η loadavg θα πρέπει να είναι κατά μέσο όρο κάτω των 100 πολλαπλασιάζεται με τον αριθμό των πυρήνων της CPU σας σύστημα, για τη βέλτιστη απόδοση. Η χρήση της CPU ποσοστό θα πρέπει να παραμείνει κάτω από 50 για τη βέλτιστη απόδοση.|
+This field shows the current number of Asterisk channels that are live on the system right now. It is important to note that the number of Asterisk channels is usually much higher than the number of actual calls on a system. This field is updated once every minute.|Αυτό το πεδίο δείχνει τον τρέχοντα αριθμό των σταθμών Asterisk που ζουν με το σύστημα τώρα. Είναι σημαντικό να σημειωθεί ότι ο αριθμός των καναλιών Asterisk είναι συνήθως πολύ υψηλότερη από τον πραγματικό αριθμό των κλήσεων σε ένα σύστημα. Το πεδίο αυτό ενημερώνεται μία φορά ανά λεπτό.|
+This field will show the disk usage for every partition on this server. This field is updated once every minute.|Το πεδίο αυτό θα δείξει το δίσκο χρήσης για κάθε διαμέρισμα σε αυτόν το διακομιστή. Το πεδίο αυτό ενημερώνεται μία φορά ανά λεπτό.|
+ADMIN CHANGE LOG|ADMIN CHANGE LOG|
+USER ADMIN CHANGE LOG|ΧΡΗΣΤΗΣ ΔΙΟΙΚΗΣΗΣ CHANGE LOG|
+SECTION ADMIN CHANGE LOG|ΤΜΗΜΑ ΔΙΟΙΚΗΣΗΣ CHANGE LOG|
+DETAIL ADMIN CHANGE LOG|ΛΕΠΤΟΜΕΡΕΙΑ ADMIN CHANGE LOG|
+Last 10000 records|Τελευταία 10.000 εγγραφές|
+Changes made by|Οι αλλαγές που έγιναν από|
+Record Detail|Εγγραφή Λεπτομέρειες|
+Section Records|Τμήμα Εγγραφές|
+Click here to see Admin chages to this record|Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το αρχείο|
+Click here to see Admin chages to this campaign|Κάντε κλικ εδώ για να δείτε chages Διαχειριστής σε αυτήν την εκστρατεία|
+Click here to see Admin chages to this list|Κάντε κλικ εδώ για να δείτε chages Διαχειριστής σε αυτήν την λίστα|
+Click here to see Admin chages to this In-Group|Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages In-Group|
+Click here to see Admin chages to this DID|Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages DID|
+Click here to see Admin chages to this remote agent|Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το απομακρυσμένο πράκτορα|
+Click here to see Admin chages to this user group|Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages ομάδα χρηστών|
+Click here to see Admin chages to this script|Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το σενάριο|
+Click here to see Admin chages to this filter|Κάντε κλικ εδώ για να δείτε Admin chages για αυτό το φίλτρο|
+Click here to see Admin chages to this call time|Κάντε κλικ εδώ για να δείτε Admin chages φορά σε αυτή την έκκληση|
+Click here to see Admin chages to this shift|Κάντε κλικ εδώ για να δείτε Admin chages την εξέλιξη αυτή|
+Click here to see Admin chages to this phone alias|Κάντε κλικ εδώ για να δείτε Admin chages να άλλως αυτό το τηλέφωνο|
+Click here to see Admin chages to this group alias|Κάντε κλικ εδώ για να δείτε Admin chages άλλως σε αυτή την ομάδα|
+Click here to see Admin chages to this server|Κάντε κλικ εδώ για να δείτε Admin chages σε αυτόν τον διακομιστή|
+Click here to see Admin chages to this conf template|Κάντε κλικ εδώ για να δείτε Admin chages conf σε αυτό το πρότυπο|
+Click here to see Admin chages to this carrier|Κάντε κλικ εδώ για να δείτε Admin chages για τον εν λόγω αερομεταφορέα|
+Click here to see Admin chages to the system settings|Κάντε κλικ εδώ για να δείτε Admin chages για τις ρυθμίσεις του συστήματος|
+Export Reports|Εξαγωγή Εκθέσεις|
+This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0.|Αυτή η ρύθμιση, εάν ρυθμιστεί σε 1 θα επιτρέψει την πρόσβαση του διευθυντή της εξαγωγής κλήση εκθέσεις σχετικά με τις εκθέσεις της οθόνης. Η προεπιλογή είναι 0.|
+This setting if set to 1 will allow a manager to click on the download list link at the bottom of a list modification screen to export the entire contents of a list to a flat data file. Default is 0.|Αυτή η ρύθμιση, εάν ρυθμιστεί σε 1 θα επιτρέψει τη Διαχείριση κλικ για να κατεβάσετε την λίστα σύνδεσμο στο κάτω μέρος της οθόνης μια λίστα τροποποίηση για την εξαγωγή του συνόλου του περιεχομένου του καταλόγου σε μια επίπεδη αρχείο δεδομένων. Η προεπιλογή είναι 0.|
+Export Calls Report|Εξαγωγή ζητεί έκθεση|
+EXPORT CALLS REPORT|ΕΚΘΕΣΗ ΕΞΑΓΩΓΗΣ CALLS|
+For the Export Calls Report, the following field order is used for exports|Για την εξαγωγή ζητεί έκθεση, ώστε τα ακόλουθα τομέα χρησιμοποιείται για τις εξαγωγές|
+Timeclock|Ώρα ρολόι|
+Logout|Αποσύνδεση|
+Show Users|Δείτε Χρήστες|
+Add A New User|Προσθήκη νέου χρήστη|
+Search For A User|Αναζήτηση ενός χρήστη|
+User Stats|Στατιστικά Χρήστη|
+User Status|Κατάσταση χρήστη|
+Time Sheet|Ώρα Φύλλο|
+Days Status|Ημέρες Status|
+Campaigns Main|Κύρια Καμπάνιες|
+Statuses|Καθεστώτων|
+HotKeys|HotKeys|
+Lead Recycle|Μόλυβδος Ανακύκλωσης|
+Auto Alt-Dial|Auto Alt-Dial|
+Auto Alt Dial|Alt Auto Dial|
+List Mix|Κατάλογος Mix|
+Pause Codes|Παύση Κώδικες|
+Basic|Βασική|
+Detail|Λεπτομέρειες|
+Survey|Έρευνα|
+Real-Time|Real-Time|
+CAMPAIGN ID|CAMPAIGN ID|
+DIAL PLAN|DIAL PLAN|
+DIAL METHOD|ΤΗΛΕΦΩΝΕΙΣΤΕ ΜΕΘΟΔΟΣ|
+LEADS COUNT|LEADS COUNT|
+LEAD ORDER|ΜΟΛΥΒΔΟΥ ORDER|
+DIAL STATUSES|ΤΗΛΕΦΩΝΕΙΣΤΕ καθεστώτων|
+SCRIPT ID|SCRIPT ID|
+SCRIPT NAME|SCRIPT ΟΝΟΜΑ|
+USER GROUP|ΟΜΑΔΑ ΧΡΗΣΤΩΝ|
+GROUP NAME|Όνομα Ομάδας|
+PRIORITY|ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ|
+FORCE TIMECLOCK|ΙΣΧΥΟΝΤΑ TIMECLOCK|
+CALLTIME ID|CALLTIME ID|
+CALLTIME NAME|CALLTIME ΟΝΟΜΑ|
+DEFAULT START|DEFAULT START|
+DEFAULT STOP|DEFAULT STOP|
+SHIFT ID|SHIFT ID|
+SHIFT NAME|SHIFT ΟΝΟΜΑ|
+SHIFT START|SHIFT START|
+SHIFT LENGTH|SHIFT ΜΗΚΟΣ|
+WEEKDAYS|Καθημερινά|
+Template ID|Πρότυπο ID|
+Template Name|Όνομα|
+Carrier ID|Θαλαμίσκος ID|
+Carrier Name|Φέρον Όνομα|
+Registration|Εγγραφή|
+Active|Ενεργό|
+USER ID|ID ΧΡΗΣΤΗ|
+FULL NAME|ΟΝΟΜΑΤΕΠΩΝΥΜΟ|
+LEVEL|ΕΠΙΠΕΔΟ|
+LINKS|ΣΥΝΔΕΣΜΟΙ|
+TRUNKS|Μπαούλα|
+HUMAN|ΑΝΘΡΩΠΙΝΗ|
+ANSWER|ΑΠΑΝΤΗΣΗ|
+CATEGORY|ΚΑΤΗΓΟΡΙΑ|
+STATUSES IN THIS CATEGORY|Καθεστώτων σε αυτήν την κατηγορία|
+Display|Εμφάνιση|
+Dates|Ημερομηνίες|
+PLEASE SELECT A CAMPAIGN OR USER GROUP AND DATE-TIME ABOVE AND CLICK|Επιλέξτε μια καμπάνια ή ομάδα χρηστών ΗΜΕΡΟΜΗΝΙΑ ΚΑΙ ΩΡΑ-ΑΝΩ ΚΑΙ CLICK|
+PLEASE SELECT A USER AND DATE-TIME ABOVE AND CLICK|ΠΑΡΑΚΑΛΟΥΜΕ ΕΠΙΛΕΞΤΕ ΧΡΗΣΤΗ ΚΑΙ ΗΜΕΡΟΜΗΝΙΑ-ΩΡΑ ΚΑΙ ΑΝΩ ΚΛΙΚ|
+PLEASE SELECT A CAMPAIGN AND DATE-TIME ABOVE AND CLICK|Επιλέξτε μια καμπάνια ΗΜΕΡΟΜΗΝΙΑ ΚΑΙ ΩΡΑ-ΑΝΩ ΚΑΙ CLICK|
+PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT|Επιλέξτε μια Ενδοομιλικών ΚΑΙ ΗΜΕΡΟΜΗΝΙΑ άνω ΚΛΙΚ ΚΑΙ ΑΠΟΣΤΟΛΗ|
+DOWNLOAD|ΛΗΨΗ|
+Users|Χρήστες|
+User|Χρήστης|
+Reports|Εκθέσεις|
+OUTBOUND|ΕΞΕΡΧΟΜΕΝΟ|
+INBOUND|Εισερχόμενα|
+Server Stats and Reports|Στατιστικά Server και Εκθέσεις|
+Click here to see a VDAD report for this campaign|Κάντε κλικ εδώ για να δείτε μια VDAD έκθεση για αυτή την καμπάνια|
+Show DIDs|Δείτε DIDs|
+Add A New DID|Προστίθεται ένα νέο DID|
+Templates|Πρότυπα|
+Carriers|Carriers|
+Carrier Name|Φέρον Όνομα|
+Click here to see all CallBack Holds in this user group|Κάντε κλικ εδώ για να δείτε όλες τις Callback Κύτος σε αυτή την ομάδα χρηστών|
+Click here to see all CallBack Holds in this list|Κάντε κλικ εδώ για να δείτε όλες τις Callback Κύτος στον κατάλογο αυτό|
+Click here to see a report for this inbound group|Κάντε κλικ εδώ για να δείτε μια έκθεση για αυτό το εισερχόμενο ομάδα|
+Click here to Synchronize users with Vtiger|Κάντε κλικ εδώ για να Συγχρονίστε χρήστες με Vtiger|
+Alert Enabled|Alert Enabled|
+Change Date|Αλλαγή Ημερομηνία|
+Login Date|Σύνδεση Ημερομηνία|
+List Last Call Date|Κατάλογος Last Call Ημερομηνία|
+Phone Code Override|Μήκη Override|
+GROUP ALIAS ID|ΟΜΑΔΑ ALIAS ID|
+GROUP ALIAS NAME|ΟΜΑΔΑ ψευδώνυμο|
+CID NUMBER|ΑΡΙΘΜΟΣ CID|
+CID NAME|CID ΟΝΟΜΑ|
+PHONE ALIAS|PHONE ALIAS|
+ALIAS ID|ALIAS ID|
+ALIAS NAME|Ψευδώνυμο|
+PHONE LOGINS LIST|ΤΗΛ. ΚΑΤΑΛΟΓΟΣ συνδέσεις|
+Shift Length|Shift Μήκος|
+short description of the shift|σύντομη περιγραφή της μετατόπισης|
+DELETE THIS SERVER|DELETE THIS SERVER|
+DELETE THIS CONFERENCE|Διαγραφή αυτής της ΣΥΝΕΔΡΙΟ|
+DELETE THIS VICIDIAL CONFERENCE|Διαγραφή αυτής της VICIDIAL ΣΥΝΕΔΡΙΟ|
+Install Date|Εγκαταστήστε Ημερομηνία|
+Human Answer|Ανθρώπινα Απάντηση|
+STATUS CATEGORIES|Κατάσταση ΚΑΤΗΓΟΡΙΕΣ|
+per campaign|ανά εκστρατεία|
+all campaigns|όλες τις καμπάνιες|

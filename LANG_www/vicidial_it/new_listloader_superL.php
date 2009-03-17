@@ -1,7 +1,7 @@
 <?
 # new_listloader_superL.php
 # 
-# Copyright (C) 2008  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell,Joe Johnson <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI lead loader from formatted file
 # 
@@ -23,11 +23,13 @@
 # 80514-1030 - removed filesize limit and raised number of errors to be displayed
 # 80713-0023 - added last_local_call_time field default of 2008-01-01
 # 81011-2009 - a few bug fixes
+# 90309-1831 - Added admin_log logging
+# 90310-2128 - Added admin header
 #
 # make sure vicidial_list exists and that your file follows the formatting correctly. This page does not dedupe or do any other lead filtering actions yet at this time.
 
-$version = '2.0.5-27';
-$build = '81011-2009';
+$version = '2.0.5-29';
+$build = '90310-2128';
 
 
 require("dbconnect.php");
@@ -162,7 +164,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICIDIAL-LEAD-LOADER\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -317,7 +319,17 @@ function ParseFileName() {
 </script>
 <title>VICIDIAL ADMIN: Lead Loader</title>
 </head>
-<body>
+<BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
+
+<?
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+?>
+
+
 <form action=<?=$PHP_SELF ?> method=post onSubmit="ParseFileName()" enctype="multipart/form-data">
 <input type=hidden name='leadfile_name' value="<?=$leadfile_name ?>">
 <? if ($file_layout!="custom") { ?>
@@ -793,6 +805,12 @@ function ParseFileName() {
 
 if ($leadfile) {
 		$total=0; $good=0; $bad=0; $dup=0; $post=0; $phone_list='';
+
+		### LOG INSERTION Admin Log Table ###
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTE', event_type='LOAD', record_id='$list_id_override', event_code='ADMIN LOAD LIST', event_sql='', event_notes='File Name: $leadfile_name';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		if ($file_layout=="standard") {
 
 	print "<script language='JavaScript1.2'>document.forms[0].leadfile.disabled=true; document.forms[0].submit_file.disabled=true; document.forms[0].reload_page.disabled=true;</script>";
@@ -1518,17 +1536,17 @@ $dsec = ( ( ($hour * 3600) + ($min * 60) ) + $sec );
 $AC_processed=0;
 if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 	{
-	if ($DBX) {print "     Second Sunday March to First Sunday November\n";}
+	if ($DBX) {print "     Second Domenica March to First Domenica November\n";}
 	#**********************************************************************
 	# SSM-FSN
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on Second Sunday March to First Sunday November at 2 am.
+	#     Based on Second Domenica March to First Domenica November at 2 am.
 	#     INPUTS:
 	#       mm              INTEGER       Month.
 	#       dd              INTEGER       Day of the month.
 	#       ns              INTEGER       Seconds into the day.
-	#       dow             INTEGER       Day of week (0=Sunday, to 6=Saturday)
+	#       dow             INTEGER       Day of week (0=Domenica, to 6=Sabato)
 	#     OPTIONAL INPUT:
 	#       timezone        INTEGER       hour difference UTC - local standard time
 	#                                      (DEFAULT is blank)
@@ -1614,12 +1632,12 @@ if ( (!$AC_processed) and ($dst_range == 'SSM-FSN') )
 
 if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 	{
-	if ($DBX) {print "     First Sunday April to Last Sunday October\n";}
+	if ($DBX) {print "     First Domenica April to Last Domenica October\n";}
 	#**********************************************************************
 	# FSA-LSO
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in April and last Sunday in October at 2 am.
+	#     Based on first Domenica in April and last Domenica in October at 2 am.
 	#**********************************************************************
 		
 		$USA_DST=0;
@@ -1683,11 +1701,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSA-LSO') )
 
 if ( (!$AC_processed) and ($dst_range == 'LSM-LSO') )
 	{
-	if ($DBX) {print "     Last Sunday March to Last Sunday October\n";}
+	if ($DBX) {print "     Last Domenica March to Last Domenica October\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on last Sunday in March and last Sunday in October at 1 am.
+	#     Based on last Domenica in March and last Domenica in October at 1 am.
 	#**********************************************************************
 		
 		$GBR_DST=0;
@@ -1751,11 +1769,11 @@ if ( (!$AC_processed) and ($dst_range == 'LSM-LSO') )
 	}
 if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 	{
-	if ($DBX) {print "     Last Sunday October to Last Sunday March\n";}
+	if ($DBX) {print "     Last Domenica October to Last Domenica March\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on last Sunday in October and last Sunday in March at 1 am.
+	#     Based on last Domenica in October and last Domenica in March at 1 am.
 	#**********************************************************************
 		
 		$AUS_DST=0;
@@ -1820,12 +1838,12 @@ if ( (!$AC_processed) and ($dst_range == 'LSO-LSM') )
 
 if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 	{
-	if ($DBX) {print "     First Sunday October to Last Sunday March\n";}
+	if ($DBX) {print "     First Domenica October to Last Domenica March\n";}
 	#**********************************************************************
 	#   TASMANIA ONLY
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in October and last Sunday in March at 1 am.
+	#     Based on first Domenica in October and last Domenica in March at 1 am.
 	#**********************************************************************
 		
 		$AUST_DST=0;
@@ -1887,11 +1905,11 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-LSM') )
 	}
 if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 	{
-	if ($DBX) {print "     First Sunday October to Third Sunday March\n";}
+	if ($DBX) {print "     First Domenica October to Third Domenica March\n";}
 	#**********************************************************************
 	#     This is s 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect.
-	#     Based on first Sunday in October and third Sunday in March at 1 am.
+	#     Based on first Domenica in October and third Domenica in March at 1 am.
 	#**********************************************************************
 		
 		$NZL_DST=0;
@@ -1954,12 +1972,12 @@ if ( (!$AC_processed) and ($dst_range == 'FSO-TSM') )
 
 if ( (!$AC_processed) and ($dst_range == 'TSO-LSF') )
 	{
-	if ($DBX) {print "     Third Sunday October to Last Sunday February\n";}
+	if ($DBX) {print "     Third Domenica October to Last Domenica February\n";}
 	#**********************************************************************
 	# TSO-LSF
 	#     This is returns 1 if Daylight Savings Time is in effect and 0 if 
 	#       Standard time is in effect. Brazil
-	#     Based on Third Sunday October to Last Sunday February at 1 am.
+	#     Based on Third Domenica October to Last Domenica February at 1 am.
 	#**********************************************************************
 		
 		$BZL_DST=0;
@@ -2033,3 +2051,4 @@ return $gmt_offset;
 }
 
 ?>
+</TD></TR></TABLE>

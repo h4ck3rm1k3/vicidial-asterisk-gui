@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"ΙΑΝ"|
@@ -49,8 +49,8 @@ Italian|Ιταλικά|
 agc_check_voicemail_BLINK.gif|agc_check_voicemail_BLINK_el.gif|
 agc_check_voicemail_OFF.gif|agc_check_voicemail_OFF_el.gif|
 agc_check_voicemail_ON.gif|agc_check_voicemail_ON_el.gif|
-agc_live_call_OFF.gif|agc_live_call_OFF_el.gif|
-agc_live_call_ON.gif|agc_live_call_ON_el.gif|
+agc_live_call_OFF.gif|agc_live_call_OFF.gif|
+agc_live_call_ON.gif|agc_live_call_ON.gif|
 agc_tab_active_lines.gif|agc_tab_active_lines_el.gif|
 agc_tab_conferences.gif|agc_tab_conferences_el.gif|
 agc_tab_main.gif|agc_tab_main_el.gif|
@@ -427,3 +427,43 @@ YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|ΠΡΕΠΕΙ ΝΑ �
 ENTER A PAUSE CODE|ΠΛΗΚΤΡΟΛΟΓΕΣΤΕ έναν ΚΩΔΙΚΟ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ|
 YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|ΠΡΕΠΕΙ ΝΑ ΣΤΑΜΑΤΗΘΕΙΤΕ ΓΙΑ ΝΑ ΠΛΗΚΤΡΟΛΟΓΕΙΤΕ έναν ΚΩΔΙΚΟ ΜΙΚΡΗΣΔΙΑΚΟΠΉΣ στον ΤΡΟΠΟ αυτόματος-ΠΙΝΑΚΩΝ|
 Your session has been disabled|Η σύνοδός σας έχει τεθεί εκτός λειτουργίας|
+### BEGIN translation phrases for 2.0.5 release ###
+Gender: |Φύλο:|
+Date of Birth: |Ημερομηνία Γέννησης:|
+YOU MUST BE PAUSED TO CHANGE GROUPS|Πρέπει να είστε Paused TO CHANGE ΟΜΑΔΕΣ|
+Calls in Queue:|Ζητεί, στο Queue:|
+ Timeclock|Timeclock|
+The user and password you entered are not active in the system|Ο χρήστη και τον κωδικό πρόσβασης που πληκτρολογήσατε δεν είναι ενεργό στο σύστημα|
+Please try again|Παρακαλώ δοκιμάστε ξανά|
+You cannot log in or out within 30 seconds of your last login or logout|Δεν μπορείτε να συνδεθείτε ή να αναφέρονται μέσα σε 30 δευτερόλεπτα από την τελευταία σας login ή logout|
+You have now logged-out|Έχετε πλέον συνδεθεί-out|
+You logged out at |Έχετε αποσυνδεθεί από την|
+Amount of time you were logged-in: |Ποσό φορά που ήταν συνδεδεμένος στο:|
+ERROR: timeclock log entry already made: |ERROR: timeclock καταχώρηση αρχείου καταγραφής που έχουν ήδη πραγματοποιηθεί:|
+BACK to Agent Login Screen|ΕΠΙΣΤΡΟΦΗ στο γραφείο Σύνδεση οθόνης|
+BACK to Administration|ΕΠΙΣΤΡΟΦΗ στην Διοίκηση|
+BACK to Welcome Screen|ΕΠΙΣΤΡΟΦΗ στην οθόνη υποδοχής|
+Time since you were last logged-in: |Ο χρόνος από την τελευταία φορά που είναι συνδεδεμένος στο:|
+You last logged-out at: |Μπορείτε τελευταίου συνδεδεμένου αναφέρονται σε:|
+Click LOGIN below to log-in|Κάντε κλικ παρακάτω για να ΕΙΣΟΔΟΣ log-in|
+Amount of time you have been logged-in: |Χρονικό διάστημα σας έχει συνδεθεί σε:|
+You logged-in at:|Μπορείτε συνδεδεμένος στην διεύθυνση:|
+Click LOGOUT below to log-out|Κάντε κλικ παρακάτω για να LOGOUT log-out|
+Undefined|Undefined|
+This phone number is not in the campaign lists|Αυτός ο αριθμός τηλεφώνου δεν είναι στην εκστρατεία καταλόγους|
+Unspecified error|Απροσδιόριστο σφάλμα|
+Extended Alt Phone Information: |Εκτεταμένη Alt Τηλέφωνο Πληροφοριών:|
+ALT DIAL NUMBER:|ALT ΤΗΛΕΦΩΝΕΙΣΤΕ ΑΡΙΘΜΟΣ:|
+Phone Code and Number:|Μήκη και Αριθμός:|
+Notes: |Σημειώσεις:|
+Active: |Active:|
+Alt Count: |Alt Count:|
+Change this phone number to INACTIVE|Αλλαγή αυτό τον αριθμό τηλεφώνου για να Ανενεργό|
+Change this phone number to ACTIVE|Αλλαγή αυτό τον αριθμό τηλεφώνου για να ΔΡΑΣΤΙΚΗΣ|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|Πρέπει να συνδεθείτε ΣΤΗΝ ΠΡΩΤΗ ΤΟΥ TIMECLOCK|
+There is a time synchronization problem with your system, please tell your system administrator|Υπάρχει ένα πρόβλημα συγχρονισμού με το χρόνο σας, παρακαλούμε ενημερώστε τον διαχειριστή του συστήματός σας|
+Preview Call|Προεπισκόπηση πρόσκλησης|
+SELECT A GROUP ALIAS|ΕΠΙΛΕΞΤΕ ΟΜΑΔΑ ALIAS|
+Group Alias Selection|Γνωστός Ομάδα Επιλογής|
+Click Here to Choose a Group Alias|Κάντε κλικ εδώ για να Επιλέξτε μια ομάδα Γνωστός|
+Group Alias|Ομάδα Γνωστός|

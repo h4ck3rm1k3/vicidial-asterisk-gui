@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"JAN"|
@@ -437,3 +437,43 @@ Active: |Aktiv: |
 Alt Count: |Anzahl Alternativen: |
 Change this phone number to INACTIVE|Diese Telfonnummer DEAKTIVIEREN|
 Change this phone number to ACTIVE|Diese Telefonnummer AKTIVIEREN|
+### BEGIN translation phrases for 2.0.5 release ###
+Gender: |Geschlecht:|
+Date of Birth: |Geburtsdatum:|
+YOU MUST BE PAUSED TO CHANGE GROUPS|SIE IST ZU ÄNDERN Paused GRUPPEN|
+Calls in Queue:|Anrufe in der Warteschlange:|
+ Timeclock|Timeclock|
+The user and password you entered are not active in the system|Die Benutzer-und Passwort, das Sie eingetragen sind nicht aktiv in das System|
+Please try again|Bitte versuchen Sie es erneut|
+You cannot log in or out within 30 seconds of your last login or logout|Sie können sich nicht mehr anmelden, oder innerhalb von 30 Sekunden des letzten An-oder Abmeldung|
+You have now logged-out|Sie haben nun abgemeldet|
+You logged out at |Sie abgemeldet auf|
+Amount of time you were logged-in: |Höhe der Zeit, die Sie angemeldet waren-in:|
+ERROR: timeclock log entry already made: |FEHLER: timeclock Log-Eintrag bereits gemacht:|
+BACK to Agent Login Screen|BACK, um Agent Login Screen|
+BACK to Administration|Zurück zur Verwaltung|
+BACK to Welcome Screen|Zurück zur Willkommen-Bildschirm|
+Time since you were last logged-in: |Zeit seit dem letzten Einloggen-in:|
+You last logged-out at: |Sie zuletzt eingeloggt am:|
+Click LOGIN below to log-in|Klicken Sie auf LOGIN unten, um die Log-in|
+Amount of time you have been logged-in: |Höhe der Zeit, die Sie wurden protokolliert-in:|
+You logged-in at:|Sie eingeloggt am:|
+Click LOGOUT below to log-out|Klicken Sie unten, um sich LOGOUT-out|
+Undefined|Undefined|
+This phone number is not in the campaign lists|Diese Telefonnummer ist nicht in der Listen-Kampagne|
+Unspecified error|Unbekannter Fehler|
+Extended Alt Phone Information: |Erweiterte Alt Information Telefon:|
+ALT DIAL NUMBER:|ALT DIAL NUMBER:|
+Phone Code and Number:|Telefon-und Code-Nummer:|
+Notes: |Anmerkungen:|
+Active: |Aktiv:|
+Alt Count: |Alt Graf:|
+Change this phone number to INACTIVE|Ändern Sie diese Telefonnummer an INACTIVE|
+Change this phone number to ACTIVE|Ändern Sie diese Telefonnummer an AKTIVEN|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|Sie müssen sich in die TIMECLOCK ERSTE|
+There is a time synchronization problem with your system, please tell your system administrator|Es ist eine Zeit-Synchronisation Problem mit Ihrem System haben, wenden Sie sich bitte sagen Sie sich an Ihren Systemadministrator|
+Preview Call|Vorschau Call|
+SELECT A GROUP ALIAS|Wählen Sie eine Gruppe ALIAS|
+Group Alias Selection|Gruppe Alias Auswahl|
+Click Here to Choose a Group Alias|Klicken Sie hier, um eine Gruppe Alias|
+Group Alias|Alias-Gruppe|

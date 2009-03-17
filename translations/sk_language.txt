@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"JAN"|
@@ -375,9 +375,9 @@ City|Mesto|
 State|Štát|
 PostCode|PSČ|
 Province|Kraj|
-Vendor ID|zákaznícke ID|
+Vendor ID|zákaznícke|
 DialCode|Volací kód|
-Alt. Phone|Alternatívne číslo|
+Alt. Phone|Alter. číslo|
 Show|Prezrieť|
 Email|Email|
 Comments|Komentár|
@@ -429,3 +429,47 @@ YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|MUSÍTE VLOŽIŤ Č
 ENTER A PAUSE CODE|VLOŽIŤ KÓD PAUZY|
 YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|MUSÍTE BYŤ V PAUZE NA VLOŽENIE KÓDU PAUZY V MÓDE AUTO-DIAL|
 Your session has been disabled|Vaša relácia bola ukončená|
+### BEGIN translation phrases for 2.0.5 release ###
+Gender: |Pohlavie:|
+Date of Birth: |Dátum narodenia:|
+YOU MUST BE PAUSED TO CHANGE GROUPS|Musíte byť pozastavené NA ZMENU ZOSKUPENIA|
+Calls in Queue:|Hovory v Queue:|
+ Timeclock|Timeclock|
+The user and password you entered are not active in the system|Užívateľa a heslo, ktoré ste zadali, nie sú aktívne v systéme|
+Please try again|Prosím, skúste to znova|
+You cannot log in or out within 30 seconds of your last login or logout|Nemôžete sa prihlásiť alebo sa do 30 sekúnd od vášho posledného prihlásenia alebo odhlásenie|
+You have now logged-out|Teraz ste prihlásený-out|
+You logged out at |Ste odhlásený na|
+Amount of time you were logged-in: |Množstvo času, ste prihlásený-in:|
+ERROR: timeclock log entry already made: |ERROR: timeclock log vstupe už bolo dosiahnuté:|
+BACK to Agent Login Screen|SPÄŤ na Agent Prihlásiť obrazovky|
+BACK to Administration|SPÄŤ na administratívne|
+BACK to Welcome Screen|SPÄŤ na úvodnú obrazovku|
+Time since you were last logged-in: |Čas od Vášho posledného prihlásenia-in:|
+You last logged-out at: |Ty posledný prihlásený-out na:|
+Click LOGIN below to log-in|Kliknite nižšie k LOGIN LOG-IN|
+Amount of time you have been logged-in: |Množstvo času, ktoré ste vykáceli-in:|
+You logged-in at:|Ste prihlásený-in na adrese:|
+Click LOGOUT below to log-out|Kliknite na Logout nižšie log-out|
+Undefined|Undefined|
+This phone number is not in the campaign lists|Tento telefón nie je v kampani zoznamy|
+Unspecified error|Nešpecifikovaná chyba|
+Extended Alt Phone Information: |Rozšírená Alt Telefón Informácie:|
+ALT DIAL NUMBER:|ALT DIAL číslo:|
+Phone Code and Number:|Telefón Kód a číslo:|
+Notes: |Poznámky:|
+Active: |Aktívne:|
+Alt Count: |Alt Count:|
+Change this phone number to INACTIVE|Zmeniť toto telefónne číslo k NEAKTÍVNYCH|
+Change this phone number to ACTIVE|Zmeniť toto telefónne číslo k aktívnemu|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|Musíte sa prihlásiť do TIMECLOCK PRVEJ|
+There is a time synchronization problem with your system, please tell your system administrator|Je synchronizácia času problém s vašim systémom, povedzte to, prosím, správcu systému|
+Preview Call|Náhľad Výzva|
+SELECT A GROUP ALIAS|VYBER GROUP ALIAS|
+Group Alias Selection|Skupina Alias Výber|
+Click Here to Choose a Group Alias|Kliknite tu pre Zvoliť skupinu Alias|
+Group Alias|Skupina Alias|
+ERROR: There are no Shifts enabled for your user group|ERROR: Nie sú k dispozícii žiadne Posuvy povolený pre užívateľské skupiny|
+ERROR: You are not allowed to log in outside of your shift|ERROR: Nemáte možnosť prihlásiť sa mimo vašej smeny|
+MANAGER OVERRIDE|MANAGER prepísať|
+Your Shift is over or has changed, you have been logged out of your session|Vaša Shift je nad alebo sa zmenilo, ste boli odhlásený vašej relácie|

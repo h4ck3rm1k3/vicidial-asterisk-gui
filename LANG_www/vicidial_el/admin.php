@@ -1,13 +1,10 @@
 <?
 # admin.php - VICIDIAL administration page
-# 
-# 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
-
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# 
 
 require("dbconnect.php");
-
 
 ######################################################################################################
 ######################################################################################################
@@ -16,7 +13,7 @@ require("dbconnect.php");
 ######################################################################################################
 
 $page_width='770';
-$section_width='720';
+$section_width='750';
 $header_font_size='3';
 $subheader_font_size='2';
 $subcamp_font_size='2';
@@ -32,22 +29,16 @@ $scripts_color =	'#99FFCC';
 $filters_color =	'#CCCCCC';
 $admin_color =		'#FF99FF';
 $reports_color =	'#99FF33';
-#$users_color =		'#FFFF99';
-#$campaigns_color =	'#FFFF99';
-#$lists_color =		'#FFFF99';
-#$ingroups_color =	'#FFFF99';
-#$remoteagent_color ='#FFFF99';
-#$usergroups_color =	'#FFFF99';
-#$scripts_color =	'#FFFF99';
-#$filters_color =	'#FFFF99';
-#$admin_color =		'#FFFF99';
-#$reports_color =	'#FFFF99';
 	$times_color =		'#FF33FF';
+	$shifts_color =		'#FF33FF';
 	$phones_color =		'#FF33FF';
 	$conference_color =	'#FF33FF';
 	$server_color =		'#FF33FF';
+	$templates_color =	'#FF33FF';
+	$carriers_color =	'#FF33FF';
 	$settings_color = 	'#FF33FF';
 	$status_color = 	'#FF33FF';
+$subcamp_color =	'#FF9933';
 $users_font =		'BLACK';
 $campaigns_font =	'BLACK';
 $lists_font =		'BLACK';
@@ -64,8 +55,31 @@ $reports_font =		'BLACK';
 	$server_font =		'BLACK';
 	$settings_font = 	'BLACK';
 	$status_font = 	'BLACK';
-$subcamp_color =	'#FF9933';
 $subcamp_font =		'BLACK';
+
+### comment this section out for colorful section headings
+$users_color =		'#E6E6E6';
+$campaigns_color =	'#E6E6E6';
+$lists_color =		'#E6E6E6';
+$ingroups_color =	'#E6E6E6';
+$remoteagent_color ='#E6E6E6';
+$usergroups_color =	'#E6E6E6';
+$scripts_color =	'#E6E6E6';
+$filters_color =	'#E6E6E6';
+$admin_color =		'#E6E6E6';
+$reports_color =	'#E6E6E6';
+	$times_color =		'#C6C6C6';
+	$shifts_color =		'#C6C6C6';
+	$phones_color =		'#C6C6C6';
+	$conference_color =	'#C6C6C6';
+	$server_color =		'#C6C6C6';
+	$templates_color =	'#C6C6C6';
+	$carriers_color =	'#C6C6C6';
+	$settings_color = 	'#C6C6C6';
+	$status_color = 	'#C6C6C6';
+$subcamp_color =	'#C6C6C6';
+###
+
 
 $PHP_AUTH_USER=$_SERVER['PHP_AUTH_USER'];
 $PHP_AUTH_PW=$_SERVER['PHP_AUTH_PW'];
@@ -178,6 +192,8 @@ if (isset($_GET["campaign_rec_exten"]))	{$campaign_rec_exten=$_GET["campaign_rec
 	elseif (isset($_POST["campaign_rec_exten"]))	{$campaign_rec_exten=$_POST["campaign_rec_exten"];}
 if (isset($_GET["campaign_rec_filename"]))	{$campaign_rec_filename=$_GET["campaign_rec_filename"];}
 	elseif (isset($_POST["campaign_rec_filename"]))	{$campaign_rec_filename=$_POST["campaign_rec_filename"];}
+if (isset($_GET["ingroup_rec_filename"]))	{$ingroup_rec_filename=$_GET["ingroup_rec_filename"];}
+	elseif (isset($_POST["ingroup_rec_filename"]))	{$ingroup_rec_filename=$_POST["ingroup_rec_filename"];}
 if (isset($_GET["campaign_recording"]))	{$campaign_recording=$_GET["campaign_recording"];}
 	elseif (isset($_POST["campaign_recording"]))	{$campaign_recording=$_POST["campaign_recording"];}
 if (isset($_GET["campaign_vdad_exten"]))	{$campaign_vdad_exten=$_GET["campaign_vdad_exten"];}
@@ -292,8 +308,8 @@ if (isset($_GET["drop_call_seconds"]))	{$drop_call_seconds=$_GET["drop_call_seco
 	elseif (isset($_POST["drop_call_seconds"]))	{$drop_call_seconds=$_POST["drop_call_seconds"];}
 if (isset($_GET["drop_exten"]))	{$drop_exten=$_GET["drop_exten"];}
 	elseif (isset($_POST["drop_exten"]))	{$drop_exten=$_POST["drop_exten"];}
-if (isset($_GET["drop_message"]))	{$drop_message=$_GET["drop_message"];}
-	elseif (isset($_POST["drop_message"]))	{$drop_message=$_POST["drop_message"];}
+if (isset($_GET["drop_action"]))	{$drop_action=$_GET["drop_action"];}
+	elseif (isset($_POST["drop_action"]))	{$drop_action=$_POST["drop_action"];}
 if (isset($_GET["dtmf_send_extension"]))	{$dtmf_send_extension=$_GET["dtmf_send_extension"];}
 	elseif (isset($_POST["dtmf_send_extension"]))	{$dtmf_send_extension=$_POST["dtmf_send_extension"];}
 if (isset($_GET["enable_fast_refresh"]))	{$enable_fast_refresh=$_GET["enable_fast_refresh"];}
@@ -428,8 +444,8 @@ if (isset($_GET["reset_list"]))	{$reset_list=$_GET["reset_list"];}
 	elseif (isset($_POST["reset_list"]))	{$reset_list=$_POST["reset_list"];}
 if (isset($_GET["safe_harbor_exten"]))	{$safe_harbor_exten=$_GET["safe_harbor_exten"];}
 	elseif (isset($_POST["safe_harbor_exten"]))	{$safe_harbor_exten=$_POST["safe_harbor_exten"];}
-if (isset($_GET["safe_harbor_message"]))	{$safe_harbor_message=$_GET["safe_harbor_message"];}
-	elseif (isset($_POST["safe_harbor_message"]))	{$safe_harbor_message=$_POST["safe_harbor_message"];}
+if (isset($_GET["drop_action"]))	{$drop_action=$_GET["drop_action"];}
+	elseif (isset($_POST["drop_action"]))	{$drop_action=$_POST["drop_action"];}
 if (isset($_GET["scheduled_callbacks"]))	{$scheduled_callbacks=$_GET["scheduled_callbacks"];}
 	elseif (isset($_POST["scheduled_callbacks"]))	{$scheduled_callbacks=$_POST["scheduled_callbacks"];}
 if (isset($_GET["script_comments"]))	{$script_comments=$_GET["script_comments"];}
@@ -472,6 +488,8 @@ if (isset($_GET["updater_check_enabled"]))	{$updater_check_enabled=$_GET["update
 	elseif (isset($_POST["updater_check_enabled"]))	{$updater_check_enabled=$_POST["updater_check_enabled"];}
 if (isset($_GET["use_internal_dnc"]))	{$use_internal_dnc=$_GET["use_internal_dnc"];}
 	elseif (isset($_POST["use_internal_dnc"]))	{$use_internal_dnc=$_POST["use_internal_dnc"];}
+if (isset($_GET["use_campaign_dnc"]))	{$use_campaign_dnc=$_GET["use_campaign_dnc"];}
+	elseif (isset($_POST["use_campaign_dnc"]))	{$use_campaign_dnc=$_POST["use_campaign_dnc"];}
 if (isset($_GET["user"]))	{$user=$_GET["user"];}
 	elseif (isset($_POST["user"]))	{$user=$_POST["user"];}
 if (isset($_GET["user_group"]))	{$user_group=$_GET["user_group"];}
@@ -570,7 +588,8 @@ if (isset($_GET["campaign_stats_refresh"]))			{$campaign_stats_refresh=$_GET["ca
 	elseif (isset($_POST["campaign_stats_refresh"])){$campaign_stats_refresh=$_POST["campaign_stats_refresh"];}
 if (isset($_GET["list_description"]))			{$list_description=$_GET["list_description"];}
 	elseif (isset($_POST["list_description"]))	{$list_description=$_POST["list_description"];}
-if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}		elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
+if (isset($_GET["vicidial_recording_override"]))		{$vicidial_recording_override=$_GET["vicidial_recording_override"];}	
+	elseif (isset($_POST["vicidial_recording_override"]))	{$vicidial_recording_override=$_POST["vicidial_recording_override"];}
 if (isset($_GET["use_non_latin"]))				{$use_non_latin=$_GET["use_non_latin"];}
 	elseif (isset($_POST["use_non_latin"]))		{$use_non_latin=$_POST["use_non_latin"];}
 if (isset($_GET["webroot_writable"]))			{$webroot_writable=$_GET["webroot_writable"];}
@@ -669,6 +688,272 @@ if (isset($_GET["source_group_id"]))			{$source_group_id=$_GET["source_group_id"
 	elseif (isset($_POST["source_group_id"]))	{$source_group_id=$_POST["source_group_id"];}
 if (isset($_GET["default_xfer_group"]))				{$default_xfer_group=$_GET["default_xfer_group"];}
 	elseif (isset($_POST["default_xfer_group"]))	{$default_xfer_group=$_POST["default_xfer_group"];}
+if (isset($_GET["qc_enabled"]))					{$qc_enabled=$_GET["qc_enabled"];}
+	elseif (isset($_POST["qc_enabled"]))		{$qc_enabled=$_POST["qc_enabled"];}
+if (isset($_GET["qc_user_level"]))				{$qc_user_level=$_GET["qc_user_level"];}
+	elseif (isset($_POST["qc_user_level"]))		{$qc_user_level=$_POST["qc_user_level"];}
+if (isset($_GET["qc_pass"]))					{$qc_pass=$_GET["qc_pass"];}
+	elseif (isset($_POST["qc_pass"]))			{$qc_pass=$_POST["qc_pass"];}
+if (isset($_GET["qc_finish"]))					{$qc_finish=$_GET["qc_finish"];}
+	elseif (isset($_POST["qc_finish"]))			{$qc_finish=$_POST["qc_finish"];}
+if (isset($_GET["qc_commit"]))					{$qc_commit=$_GET["qc_commit"];}
+	elseif (isset($_POST["qc_commit"]))			{$qc_commit=$_POST["qc_commit"];}
+if (isset($_GET["qc_campaigns"]))				{$qc_campaigns=$_GET["qc_campaigns"];}
+	elseif (isset($_POST["qc_campaigns"]))		{$qc_campaigns=$_POST["qc_campaigns"];}
+if (isset($_GET["qc_groups"]))					{$qc_groups=$_GET["qc_groups"];}
+	elseif (isset($_POST["qc_groups"]))			{$qc_groups=$_POST["qc_groups"];}
+if (isset($_GET["queue_priority"]))				{$queue_priority=$_GET["queue_priority"];}
+	elseif (isset($_POST["queue_priority"]))	{$queue_priority=$_POST["queue_priority"];}
+if (isset($_GET["drop_inbound_group"]))				{$drop_inbound_group=$_GET["drop_inbound_group"];}
+	elseif (isset($_POST["drop_inbound_group"]))	{$drop_inbound_group=$_POST["drop_inbound_group"];}
+if (isset($_GET["qc_statuses"]))			{$qc_statuses=$_GET["qc_statuses"];}
+	elseif (isset($_POST["qc_statuses"]))	{$qc_statuses=$_POST["qc_statuses"];}
+if (isset($_GET["qc_lists"]))				{$qc_lists=$_GET["qc_lists"];}
+	elseif (isset($_POST["qc_lists"]))		{$qc_lists=$_POST["qc_lists"];}
+if (isset($_GET["qc_get_record_launch"]))			{$qc_get_record_launch=$_GET["qc_get_record_launch"];}
+	elseif (isset($_POST["qc_get_record_launch"]))	{$qc_get_record_launch=$_POST["qc_get_record_launch"];}
+if (isset($_GET["qc_show_recording"]))				{$qc_show_recording=$_GET["qc_show_recording"];}
+	elseif (isset($_POST["qc_show_recording"]))		{$qc_show_recording=$_POST["qc_show_recording"];}
+if (isset($_GET["qc_shift_id"]))				{$qc_shift_id=$_GET["qc_shift_id"];}
+	elseif (isset($_POST["qc_shift_id"]))		{$qc_shift_id=$_POST["qc_shift_id"];}
+if (isset($_GET["qc_web_form_address"]))				{$qc_web_form_address=$_GET["qc_web_form_address"];}
+	elseif (isset($_POST["qc_web_form_address"]))	{$qc_web_form_address=$_POST["qc_web_form_address"];}
+if (isset($_GET["qc_script"]))						{$qc_script=$_GET["qc_script"];}
+	elseif (isset($_POST["qc_script"]))				{$qc_script=$_POST["qc_script"];}
+if (isset($_GET["ingroup_recording_override"]))		{$ingroup_recording_override=$_GET["ingroup_recording_override"];}	
+	elseif (isset($_POST["ingroup_recording_override"]))	{$ingroup_recording_override=$_POST["ingroup_recording_override"];}
+if (isset($_GET["code"]))				{$code=$_GET["code"];}	
+	elseif (isset($_POST["code"]))		{$code=$_POST["code"];}
+if (isset($_GET["code_name"]))			{$code_name=$_GET["code_name"];}	
+	elseif (isset($_POST["code_name"]))	{$code_name=$_POST["code_name"];}
+if (isset($_GET["afterhours_xfer_group"]))			{$afterhours_xfer_group=$_GET["afterhours_xfer_group"];}	
+	elseif (isset($_POST["afterhours_xfer_group"]))	{$afterhours_xfer_group=$_POST["afterhours_xfer_group"];}
+if (isset($_GET["alias_id"]))				{$alias_id=$_GET["alias_id"];}	
+	elseif (isset($_POST["alias_id"]))		{$alias_id=$_POST["alias_id"];}
+if (isset($_GET["alias_name"]))				{$alias_name=$_GET["alias_name"];}	
+	elseif (isset($_POST["alias_name"]))		{$alias_name=$_POST["alias_name"];}
+if (isset($_GET["logins_list"]))				{$logins_list=$_GET["logins_list"];}	
+	elseif (isset($_POST["logins_list"]))		{$logins_list=$_POST["logins_list"];}
+if (isset($_GET["shift_id"]))				{$shift_id=$_GET["shift_id"];}	
+	elseif (isset($_POST["shift_id"]))		{$shift_id=$_POST["shift_id"];}
+if (isset($_GET["shift_name"]))				{$shift_name=$_GET["shift_name"];}	
+	elseif (isset($_POST["shift_name"]))		{$shift_name=$_POST["shift_name"];}
+if (isset($_GET["shift_start_time"]))			{$shift_start_time=$_GET["shift_start_time"];}	
+	elseif (isset($_POST["shift_start_time"]))	{$shift_start_time=$_POST["shift_start_time"];}
+if (isset($_GET["shift_length"]))				{$shift_length=$_GET["shift_length"];}	
+	elseif (isset($_POST["shift_length"]))		{$shift_length=$_POST["shift_length"];}
+if (isset($_GET["shift_weekdays"]))				{$shift_weekdays=$_GET["shift_weekdays"];}	
+	elseif (isset($_POST["shift_weekdays"]))	{$shift_weekdays=$_POST["shift_weekdays"];}
+if (isset($_GET["group_shifts"]))			{$group_shifts=$_GET["group_shifts"];}	
+	elseif (isset($_POST["group_shifts"]))	{$group_shifts=$_POST["group_shifts"];}
+if (isset($_GET["timeclock_end_of_day"]))			{$timeclock_end_of_day=$_GET["timeclock_end_of_day"];}	
+	elseif (isset($_POST["timeclock_end_of_day"]))	{$timeclock_end_of_day=$_POST["timeclock_end_of_day"];}
+if (isset($_GET["survey_first_audio_file"]))			{$survey_first_audio_file=$_GET["survey_first_audio_file"];}	
+	elseif (isset($_POST["survey_first_audio_file"]))	{$survey_first_audio_file=$_POST["survey_first_audio_file"];}
+if (isset($_GET["survey_dtmf_digits"]))					{$survey_dtmf_digits=$_GET["survey_dtmf_digits"];}	
+	elseif (isset($_POST["survey_dtmf_digits"]))		{$survey_dtmf_digits=$_POST["survey_dtmf_digits"];}
+if (isset($_GET["survey_ni_digit"]))					{$survey_ni_digit=$_GET["survey_ni_digit"];}	
+	elseif (isset($_POST["survey_ni_digit"]))			{$survey_ni_digit=$_POST["survey_ni_digit"];}
+if (isset($_GET["survey_opt_in_audio_file"]))			{$survey_opt_in_audio_file=$_GET["survey_opt_in_audio_file"];}	
+	elseif (isset($_POST["survey_opt_in_audio_file"]))	{$survey_opt_in_audio_file=$_POST["survey_opt_in_audio_file"];}
+if (isset($_GET["survey_ni_audio_file"]))				{$survey_ni_audio_file=$_GET["survey_ni_audio_file"];}	
+	elseif (isset($_POST["survey_ni_audio_file"]))		{$survey_ni_audio_file=$_POST["survey_ni_audio_file"];}
+if (isset($_GET["survey_method"]))						{$survey_method=$_GET["survey_method"];}	
+	elseif (isset($_POST["survey_method"]))				{$survey_method=$_POST["survey_method"];}
+if (isset($_GET["survey_no_response_action"]))			{$survey_no_response_action=$_GET["survey_no_response_action"];}	
+	elseif (isset($_POST["survey_no_response_action"]))	{$survey_no_response_action=$_POST["survey_no_response_action"];}
+if (isset($_GET["survey_ni_status"]))					{$survey_ni_status=$_GET["survey_ni_status"];}	
+	elseif (isset($_POST["survey_ni_status"]))			{$survey_ni_status=$_POST["survey_ni_status"];}
+if (isset($_GET["survey_response_digit_map"]))			{$survey_response_digit_map=$_GET["survey_response_digit_map"];}	
+	elseif (isset($_POST["survey_response_digit_map"]))	{$survey_response_digit_map=$_POST["survey_response_digit_map"];}
+if (isset($_GET["survey_xfer_exten"]))					{$survey_xfer_exten=$_GET["survey_xfer_exten"];}	
+	elseif (isset($_POST["survey_xfer_exten"]))			{$survey_xfer_exten=$_POST["survey_xfer_exten"];}
+if (isset($_GET["survey_camp_record_dir"]))				{$survey_camp_record_dir=$_GET["survey_camp_record_dir"];}	
+	elseif (isset($_POST["survey_camp_record_dir"]))	{$survey_camp_record_dir=$_POST["survey_camp_record_dir"];}
+if (isset($_GET["add_timeclock_log"]))				{$add_timeclock_log=$_GET["add_timeclock_log"];}	
+	elseif (isset($_POST["add_timeclock_log"]))		{$add_timeclock_log=$_POST["add_timeclock_log"];}
+if (isset($_GET["modify_timeclock_log"]))			{$modify_timeclock_log=$_GET["modify_timeclock_log"];}	
+	elseif (isset($_POST["modify_timeclock_log"]))	{$modify_timeclock_log=$_POST["modify_timeclock_log"];}
+if (isset($_GET["delete_timeclock_log"]))			{$delete_timeclock_log=$_GET["delete_timeclock_log"];}	
+	elseif (isset($_POST["delete_timeclock_log"]))	{$delete_timeclock_log=$_POST["delete_timeclock_log"];}
+if (isset($_GET["phone_numbers"]))					{$phone_numbers=$_GET["phone_numbers"];}	
+	elseif (isset($_POST["phone_numbers"]))			{$phone_numbers=$_POST["phone_numbers"];}
+if (isset($_GET["vdc_header_date_format"]))					{$vdc_header_date_format=$_GET["vdc_header_date_format"];}	
+	elseif (isset($_POST["vdc_header_date_format"]))		{$vdc_header_date_format=$_POST["vdc_header_date_format"];}
+if (isset($_GET["vdc_customer_date_format"]))				{$vdc_customer_date_format=$_GET["vdc_customer_date_format"];}	
+	elseif (isset($_POST["vdc_customer_date_format"]))		{$vdc_customer_date_format=$_POST["vdc_customer_date_format"];}
+if (isset($_GET["vdc_header_phone_format"]))				{$vdc_header_phone_format=$_GET["vdc_header_phone_format"];}	
+	elseif (isset($_POST["vdc_header_phone_format"]))		{$vdc_header_phone_format=$_POST["vdc_header_phone_format"];}
+if (isset($_GET["disable_alter_custphone"]))			{$disable_alter_custphone=$_GET["disable_alter_custphone"];}	
+	elseif (isset($_POST["disable_alter_custphone"]))	{$disable_alter_custphone=$_POST["disable_alter_custphone"];}
+if (isset($_GET["alter_custphone_override"]))			{$alter_custphone_override=$_GET["alter_custphone_override"];}	
+	elseif (isset($_POST["alter_custphone_override"]))	{$alter_custphone_override=$_POST["alter_custphone_override"];}
+if (isset($_GET["vdc_agent_api_access"]))				{$vdc_agent_api_access=$_GET["vdc_agent_api_access"];}	
+	elseif (isset($_POST["vdc_agent_api_access"]))		{$vdc_agent_api_access=$_POST["vdc_agent_api_access"];}
+if (isset($_GET["vdc_agent_api_active"]))				{$vdc_agent_api_active=$_GET["vdc_agent_api_active"];}	
+	elseif (isset($_POST["vdc_agent_api_active"]))		{$vdc_agent_api_active=$_POST["vdc_agent_api_active"];}
+if (isset($_GET["display_queue_count"]))				{$display_queue_count=$_GET["display_queue_count"];}	
+	elseif (isset($_POST["display_queue_count"]))		{$display_queue_count=$_POST["display_queue_count"];}
+if (isset($_GET["sale_category"]))				{$sale_category=$_GET["sale_category"];}	
+	elseif (isset($_POST["sale_category"]))		{$sale_category=$_POST["sale_category"];}
+if (isset($_GET["dead_lead_category"]))				{$dead_lead_category=$_GET["dead_lead_category"];}	
+	elseif (isset($_POST["dead_lead_category"]))	{$dead_lead_category=$_POST["dead_lead_category"];}
+if (isset($_GET["manual_dial_filter"]))				{$manual_dial_filter=$_GET["manual_dial_filter"];}	
+	elseif (isset($_POST["manual_dial_filter"]))	{$manual_dial_filter=$_POST["manual_dial_filter"];}
+if (isset($_GET["agent_clipboard_copy"]))			{$agent_clipboard_copy=$_GET["agent_clipboard_copy"];}	
+	elseif (isset($_POST["agent_clipboard_copy"]))	{$agent_clipboard_copy=$_POST["agent_clipboard_copy"];}
+if (isset($_GET["agent_extended_alt_dial"]))			{$agent_extended_alt_dial=$_GET["agent_extended_alt_dial"];}	
+	elseif (isset($_POST["agent_extended_alt_dial"]))	{$agent_extended_alt_dial=$_POST["agent_extended_alt_dial"];}
+if (isset($_GET["play_place_in_line"]))				{$play_place_in_line=$_GET["play_place_in_line"];}	
+	elseif (isset($_POST["play_place_in_line"]))	{$play_place_in_line=$_POST["play_place_in_line"];}
+if (isset($_GET["play_estimate_hold_time"]))			{$play_estimate_hold_time=$_GET["play_estimate_hold_time"];}	
+	elseif (isset($_POST["play_estimate_hold_time"]))	{$play_estimate_hold_time=$_POST["play_estimate_hold_time"];}
+if (isset($_GET["hold_time_option"]))				{$hold_time_option=$_GET["hold_time_option"];}	
+	elseif (isset($_POST["hold_time_option"]))		{$hold_time_option=$_POST["hold_time_option"];}
+if (isset($_GET["hold_time_option_seconds"]))			{$hold_time_option_seconds=$_GET["hold_time_option_seconds"];}	
+	elseif (isset($_POST["hold_time_option_seconds"]))	{$hold_time_option_seconds=$_POST["hold_time_option_seconds"];}
+if (isset($_GET["hold_time_option_exten"]))				{$hold_time_option_exten=$_GET["hold_time_option_exten"];}	
+	elseif (isset($_POST["hold_time_option_exten"]))	{$hold_time_option_exten=$_POST["hold_time_option_exten"];}
+if (isset($_GET["hold_time_option_voicemail"]))				{$hold_time_option_voicemail=$_GET["hold_time_option_voicemail"];}	
+	elseif (isset($_POST["hold_time_option_voicemail"]))	{$hold_time_option_voicemail=$_POST["hold_time_option_voicemail"];}
+if (isset($_GET["hold_time_option_xfer_group"]))			{$hold_time_option_xfer_group=$_GET["hold_time_option_xfer_group"];}	
+	elseif (isset($_POST["hold_time_option_xfer_group"]))	{$hold_time_option_xfer_group=$_POST["hold_time_option_xfer_group"];}
+if (isset($_GET["hold_time_option_callback_filename"]))				{$hold_time_option_callback_filename=$_GET["hold_time_option_callback_filename"];}	
+	elseif (isset($_POST["hold_time_option_callback_filename"]))	{$hold_time_option_callback_filename=$_POST["hold_time_option_callback_filename"];}
+if (isset($_GET["hold_time_option_callback_list_id"]))				{$hold_time_option_callback_list_id=$_GET["hold_time_option_callback_list_id"];}	
+	elseif (isset($_POST["hold_time_option_callback_list_id"]))		{$hold_time_option_callback_list_id=$_POST["hold_time_option_callback_list_id"];}
+if (isset($_GET["hold_recall_xfer_group"]))				{$hold_recall_xfer_group=$_GET["hold_recall_xfer_group"];}	
+	elseif (isset($_POST["hold_recall_xfer_group"]))	{$hold_recall_xfer_group=$_POST["hold_recall_xfer_group"];}
+if (isset($_GET["no_delay_call_route"]))			{$no_delay_call_route=$_GET["no_delay_call_route"];}	
+	elseif (isset($_POST["no_delay_call_route"]))	{$no_delay_call_route=$_POST["no_delay_call_route"];}
+if (isset($_GET["play_welcome_message"]))			{$play_welcome_message=$_GET["play_welcome_message"];}	
+	elseif (isset($_POST["play_welcome_message"]))	{$play_welcome_message=$_POST["play_welcome_message"];}
+if (isset($_GET["did_id"]))					{$did_id=$_GET["did_id"];}	
+	elseif (isset($_POST["did_id"]))		{$did_id=$_POST["did_id"];}
+if (isset($_GET["source_did"]))				{$source_did=$_GET["source_did"];}	
+	elseif (isset($_POST["source_did"]))	{$source_did=$_POST["source_did"];}
+if (isset($_GET["did_pattern"]))			{$did_pattern=$_GET["did_pattern"];}	
+	elseif (isset($_POST["did_pattern"]))	{$did_pattern=$_POST["did_pattern"];}
+if (isset($_GET["did_description"]))			{$did_description=$_GET["did_description"];}	
+	elseif (isset($_POST["did_description"]))	{$did_description=$_POST["did_description"];}
+if (isset($_GET["did_active"]))				{$did_active=$_GET["did_active"];}	
+	elseif (isset($_POST["did_active"]))	{$did_active=$_POST["did_active"];}
+if (isset($_GET["did_route"]))				{$did_route=$_GET["did_route"];}	
+	elseif (isset($_POST["did_route"]))		{$did_route=$_POST["did_route"];}
+if (isset($_GET["exten_context"]))			{$exten_context=$_GET["exten_context"];}	
+	elseif (isset($_POST["exten_context"]))	{$exten_context=$_POST["exten_context"];}
+if (isset($_GET["phone"]))					{$phone=$_GET["phone"];}	
+	elseif (isset($_POST["phone"]))			{$phone=$_POST["phone"];}
+if (isset($_GET["user_unavailable_action"]))			{$user_unavailable_action=$_GET["user_unavailable_action"];}	
+	elseif (isset($_POST["user_unavailable_action"]))	{$user_unavailable_action=$_POST["user_unavailable_action"];}
+if (isset($_GET["user_route_settings_ingroup"]))			{$user_route_settings_ingroup=$_GET["user_route_settings_ingroup"];}	
+	elseif (isset($_POST["user_route_settings_ingroup"]))	{$user_route_settings_ingroup=$_POST["user_route_settings_ingroup"];}
+if (isset($_GET["call_handle_method"]))				{$call_handle_method=$_GET["call_handle_method"];}	
+	elseif (isset($_POST["call_handle_method"]))	{$call_handle_method=$_POST["call_handle_method"];}
+if (isset($_GET["agent_search_method"]))			{$agent_search_method=$_GET["agent_search_method"];}	
+	elseif (isset($_POST["agent_search_method"]))	{$agent_search_method=$_POST["agent_search_method"];}
+if (isset($_GET["phone_code"]))				{$phone_code=$_GET["phone_code"];}	
+	elseif (isset($_POST["phone_code"]))	{$phone_code=$_POST["phone_code"];}
+if (isset($_GET["email"]))					{$email=$_GET["email"];}	
+	elseif (isset($_POST["email"]))			{$email=$_POST["email"];}
+if (isset($_GET["modify_inbound_dids"]))			{$modify_inbound_dids=$_GET["modify_inbound_dids"];}	
+	elseif (isset($_POST["modify_inbound_dids"]))	{$modify_inbound_dids=$_POST["modify_inbound_dids"];}
+if (isset($_GET["delete_inbound_dids"]))			{$delete_inbound_dids=$_GET["delete_inbound_dids"];}	
+	elseif (isset($_POST["delete_inbound_dids"]))	{$delete_inbound_dids=$_POST["delete_inbound_dids"];}
+if (isset($_GET["three_way_call_cid"]))				{$three_way_call_cid=$_GET["three_way_call_cid"];}	
+	elseif (isset($_POST["three_way_call_cid"]))	{$three_way_call_cid=$_POST["three_way_call_cid"];}
+if (isset($_GET["three_way_dial_prefix"]))			{$three_way_dial_prefix=$_GET["three_way_dial_prefix"];}
+	elseif (isset($_POST["three_way_dial_prefix"]))	{$three_way_dial_prefix=$_POST["three_way_dial_prefix"];}
+if (isset($_GET["forced_timeclock_login"]))				{$forced_timeclock_login=$_GET["forced_timeclock_login"];}
+	elseif (isset($_POST["forced_timeclock_login"]))	{$forced_timeclock_login=$_POST["forced_timeclock_login"];}
+if (isset($_GET["answer_sec_pct_rt_stat_one"]))				{$answer_sec_pct_rt_stat_one=$_GET["answer_sec_pct_rt_stat_one"];}
+	elseif (isset($_POST["answer_sec_pct_rt_stat_one"]))	{$answer_sec_pct_rt_stat_one=$_POST["answer_sec_pct_rt_stat_one"];}
+if (isset($_GET["answer_sec_pct_rt_stat_two"]))				{$answer_sec_pct_rt_stat_two=$_GET["answer_sec_pct_rt_stat_two"];}
+	elseif (isset($_POST["answer_sec_pct_rt_stat_two"]))	{$answer_sec_pct_rt_stat_two=$_POST["answer_sec_pct_rt_stat_two"];}
+if (isset($_GET["list_active_change"]))				{$list_active_change=$_GET["list_active_change"];}
+	elseif (isset($_POST["list_active_change"]))	{$list_active_change=$_POST["list_active_change"];}
+if (isset($_GET["web_form_target"]))			{$web_form_target=$_GET["web_form_target"];}
+	elseif (isset($_POST["web_form_target"]))	{$web_form_target=$_POST["web_form_target"];}
+if (isset($_GET["alt_server_ip"]))				{$alt_server_ip=$_GET["alt_server_ip"];}
+	elseif (isset($_POST["alt_server_ip"]))	{$alt_server_ip=$_POST["alt_server_ip"];}
+if (isset($_GET["recording_web_link"]))				{$recording_web_link=$_GET["recording_web_link"];}
+	elseif (isset($_POST["recording_web_link"]))	{$recording_web_link=$_POST["recording_web_link"];}
+if (isset($_GET["enable_vtiger_integration"]))			{$enable_vtiger_integration=$_GET["enable_vtiger_integration"];}
+	elseif (isset($_POST["enable_vtiger_integration"]))	{$enable_vtiger_integration=$_POST["enable_vtiger_integration"];}
+if (isset($_GET["vtiger_server_ip"]))			{$vtiger_server_ip=$_GET["vtiger_server_ip"];}
+	elseif (isset($_POST["vtiger_server_ip"]))	{$vtiger_server_ip=$_POST["vtiger_server_ip"];}
+if (isset($_GET["vtiger_dbname"]))				{$vtiger_dbname=$_GET["vtiger_dbname"];}
+	elseif (isset($_POST["vtiger_dbname"]))		{$vtiger_dbname=$_POST["vtiger_dbname"];}
+if (isset($_GET["vtiger_login"]))			{$vtiger_login=$_GET["vtiger_login"];}
+	elseif (isset($_POST["vtiger_login"]))	{$vtiger_login=$_POST["vtiger_login"];}
+if (isset($_GET["vtiger_pass"]))			{$vtiger_pass=$_GET["vtiger_pass"];}
+	elseif (isset($_POST["vtiger_pass"]))	{$vtiger_pass=$_POST["vtiger_pass"];}
+if (isset($_GET["vtiger_url"]))				{$vtiger_url=$_GET["vtiger_url"];}
+	elseif (isset($_POST["vtiger_url"]))	{$vtiger_url=$_POST["vtiger_url"];}
+if (isset($_GET["vtiger_search_category"]))				{$vtiger_search_category=$_GET["vtiger_search_category"];}
+	elseif (isset($_POST["vtiger_search_category"]))	{$vtiger_search_category=$_POST["vtiger_search_category"];}
+if (isset($_GET["vtiger_create_call_record"]))			{$vtiger_create_call_record=$_GET["vtiger_create_call_record"];}
+	elseif (isset($_POST["vtiger_create_call_record"]))	{$vtiger_create_call_record=$_POST["vtiger_create_call_record"];}
+if (isset($_GET["vtiger_create_lead_record"]))			{$vtiger_create_lead_record=$_GET["vtiger_create_lead_record"];}
+	elseif (isset($_POST["vtiger_create_lead_record"]))	{$vtiger_create_lead_record=$_POST["vtiger_create_lead_record"];}
+if (isset($_GET["vtiger_screen_login"]))			{$vtiger_screen_login=$_GET["vtiger_screen_login"];}
+	elseif (isset($_POST["vtiger_screen_login"]))	{$vtiger_screen_login=$_POST["vtiger_screen_login"];}
+if (isset($_GET["qc_features_active"]))				{$qc_features_active=$_GET["qc_features_active"];}
+	elseif (isset($_POST["qc_features_active"]))	{$qc_features_active=$_POST["qc_features_active"];}
+if (isset($_GET["outbound_autodial_active"]))			{$outbound_autodial_active=$_GET["outbound_autodial_active"];}
+	elseif (isset($_POST["outbound_autodial_active"]))	{$outbound_autodial_active=$_POST["outbound_autodial_active"];}
+if (isset($_GET["cpd_amd_action"]))				{$cpd_amd_action=$_GET["cpd_amd_action"];}
+	elseif (isset($_POST["cpd_amd_action"]))	{$cpd_amd_action=$_POST["cpd_amd_action"];}
+if (isset($_GET["download_lists"]))				{$download_lists=$_GET["download_lists"];}
+	elseif (isset($_POST["download_lists"]))	{$download_lists=$_POST["download_lists"];}
+if (isset($_GET["active_asterisk_server"]))				{$active_asterisk_server=$_GET["active_asterisk_server"];}
+	elseif (isset($_POST["active_asterisk_server"]))	{$active_asterisk_server=$_POST["active_asterisk_server"];}
+if (isset($_GET["generate_vicidial_conf"]))				{$generate_vicidial_conf=$_GET["generate_vicidial_conf"];}
+	elseif (isset($_POST["generate_vicidial_conf"]))	{$generate_vicidial_conf=$_POST["generate_vicidial_conf"];}
+if (isset($_GET["rebuild_conf_files"]))				{$rebuild_conf_files=$_GET["rebuild_conf_files"];}
+	elseif (isset($_POST["rebuild_conf_files"]))	{$rebuild_conf_files=$_POST["rebuild_conf_files"];}
+if (isset($_GET["template_id"]))			{$template_id=$_GET["template_id"];}
+	elseif (isset($_POST["template_id"]))	{$template_id=$_POST["template_id"];}
+if (isset($_GET["conf_override"]))			{$conf_override=$_GET["conf_override"];}
+	elseif (isset($_POST["conf_override"]))	{$conf_override=$_POST["conf_override"];}
+if (isset($_GET["template_name"]))			{$template_name=$_GET["template_name"];}
+	elseif (isset($_POST["template_name"]))	{$template_name=$_POST["template_name"];}
+if (isset($_GET["template_contents"]))			{$template_contents=$_GET["template_contents"];}
+	elseif (isset($_POST["template_contents"]))	{$template_contents=$_POST["template_contents"];}
+if (isset($_GET["carrier_id"]))			{$carrier_id=$_GET["carrier_id"];}
+	elseif (isset($_POST["carrier_id"]))	{$carrier_id=$_POST["carrier_id"];}
+if (isset($_GET["carrier_name"]))			{$carrier_name=$_GET["carrier_name"];}
+	elseif (isset($_POST["carrier_name"]))	{$carrier_name=$_POST["carrier_name"];}
+if (isset($_GET["registration_string"]))			{$registration_string=$_GET["registration_string"];}
+	elseif (isset($_POST["registration_string"]))	{$registration_string=$_POST["registration_string"];}
+if (isset($_GET["account_entry"]))			{$account_entry=$_GET["account_entry"];}
+	elseif (isset($_POST["account_entry"]))	{$account_entry=$_POST["account_entry"];}
+if (isset($_GET["globals_string"]))				{$globals_string=$_GET["globals_string"];}
+	elseif (isset($_POST["globals_string"]))	{$globals_string=$_POST["globals_string"];}
+if (isset($_GET["dialplan_entry"]))				{$dialplan_entry=$_GET["dialplan_entry"];}
+	elseif (isset($_POST["dialplan_entry"]))	{$dialplan_entry=$_POST["dialplan_entry"];}
+if (isset($_GET["group_alias_id"]))				{$group_alias_id=$_GET["group_alias_id"];}
+	elseif (isset($_POST["group_alias_id"]))	{$group_alias_id=$_POST["group_alias_id"];}
+if (isset($_GET["group_alias_name"]))				{$group_alias_name=$_GET["group_alias_name"];}
+	elseif (isset($_POST["group_alias_name"]))	{$group_alias_name=$_POST["group_alias_name"];}
+if (isset($_GET["caller_id_number"]))				{$caller_id_number=$_GET["caller_id_number"];}
+	elseif (isset($_POST["caller_id_number"]))	{$caller_id_number=$_POST["caller_id_number"];}
+if (isset($_GET["caller_id_name"]))				{$caller_id_name=$_GET["caller_id_name"];}
+	elseif (isset($_POST["caller_id_name"]))	{$caller_id_name=$_POST["caller_id_name"];}
+if (isset($_GET["agent_allow_group_alias"]))			{$agent_allow_group_alias=$_GET["agent_allow_group_alias"];}
+	elseif (isset($_POST["agent_allow_group_alias"]))	{$agent_allow_group_alias=$_POST["agent_allow_group_alias"];}
+if (isset($_GET["default_group_alias"]))				{$default_group_alias=$_GET["default_group_alias"];}
+	elseif (isset($_POST["default_group_alias"]))		{$default_group_alias=$_POST["default_group_alias"];}
+if (isset($_GET["outbound_calls_per_second"]))				{$outbound_calls_per_second=$_GET["outbound_calls_per_second"];}
+	elseif (isset($_POST["outbound_calls_per_second"]))		{$outbound_calls_per_second=$_POST["outbound_calls_per_second"];}
+if (isset($_GET["shift_enforcement"]))				{$shift_enforcement=$_GET["shift_enforcement"];}
+	elseif (isset($_POST["shift_enforcement"]))		{$shift_enforcement=$_POST["shift_enforcement"];}
+if (isset($_GET["agent_shift_enforcement_override"]))			{$agent_shift_enforcement_override=$_GET["agent_shift_enforcement_override"];}
+	elseif (isset($_POST["agent_shift_enforcement_override"]))	{$agent_shift_enforcement_override=$_POST["agent_shift_enforcement_override"];}
+if (isset($_GET["manager_shift_enforcement_override"]))				{$manager_shift_enforcement_override=$_GET["manager_shift_enforcement_override"];}
+	elseif (isset($_POST["manager_shift_enforcement_override"]))	{$manager_shift_enforcement_override=$_POST["manager_shift_enforcement_override"];}
+if (isset($_GET["export_reports"]))				{$export_reports=$_GET["export_reports"];}
+	elseif (isset($_POST["export_reports"]))	{$export_reports=$_POST["export_reports"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -679,6 +964,26 @@ if (strlen($dial_status) > 0)
 	$ADD='28';
 	$status = $dial_status;
 	}
+
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin,enable_queuemetrics_logging,enable_vtiger_integration,qc_features_active,outbound_autodial_active FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
+	$row=mysql_fetch_row($rslt);
+	$non_latin =						$row[0];
+	$SSenable_queuemetrics_logging =	$row[1];
+	$SSenable_vtiger_integration =		$row[2];
+	$SSqc_features_active =				$row[3];
+	$SSoutbound_autodial_active =		$row[4];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
 
 ######################################################################################################
 ######################################################################################################
@@ -750,7 +1055,6 @@ $delete_users = ereg_replace("[^0-9]","",$delete_users);
 $dial_timeout = ereg_replace("[^0-9]","",$dial_timeout);
 $dialplan_number = ereg_replace("[^0-9]","",$dialplan_number);
 $drop_call_seconds = ereg_replace("[^0-9]","",$drop_call_seconds);
-$drop_exten = ereg_replace("[^0-9]","",$drop_exten);
 $enable_fast_refresh = ereg_replace("[^0-9]","",$enable_fast_refresh);
 $enable_persistant_mysql = ereg_replace("[^0-9]","",$enable_persistant_mysql);
 $fast_refresh_rate = ereg_replace("[^0-9]","",$fast_refresh_rate);
@@ -782,7 +1086,6 @@ $phone_number = ereg_replace("[^0-9]","",$phone_number);
 $QUEUE_ACTION_enabled = ereg_replace("[^0-9]","",$QUEUE_ACTION_enabled);
 $recording_exten = ereg_replace("[^0-9]","",$recording_exten);
 $remote_agent_id = ereg_replace("[^0-9]","",$remote_agent_id);
-$safe_harbor_exten = ereg_replace("[^0-9]","",$safe_harbor_exten);
 $telnet_port = ereg_replace("[^0-9]","",$telnet_port);
 $updater_check_enabled = ereg_replace("[^0-9]","",$updater_check_enabled);
 $user_level = ereg_replace("[^0-9]","",$user_level);
@@ -807,10 +1110,49 @@ $mix_container_item = ereg_replace("[^0-9]","",$mix_container_item);
 $prompt_interval = ereg_replace("[^0-9]","",$prompt_interval);
 $agent_alert_delay = ereg_replace("[^0-9]","",$agent_alert_delay);
 $manual_dial_list_id = ereg_replace("[^0-9]","",$manual_dial_list_id);
+$qc_user_level = ereg_replace("[^0-9]","",$qc_user_level);
+$qc_pass = ereg_replace("[^0-9]","",$qc_pass);
+$qc_finish = ereg_replace("[^0-9]","",$qc_finish);
+$qc_commit = ereg_replace("[^0-9]","",$qc_commit);
+$shift_start_time = ereg_replace("[^0-9]","",$shift_start_time);
+$timeclock_end_of_day = ereg_replace("[^0-9]","",$timeclock_end_of_day);
+$survey_xfer_exten = ereg_replace("[^0-9]","",$survey_xfer_exten);
+$add_timeclock_log = ereg_replace("[^0-9]","",$add_timeclock_log);
+$modify_timeclock_log = ereg_replace("[^0-9]","",$modify_timeclock_log);
+$delete_timeclock_log = ereg_replace("[^0-9]","",$delete_timeclock_log);
+$vdc_agent_api_access = ereg_replace("[^0-9]","",$vdc_agent_api_access);
+$vdc_agent_api_active = ereg_replace("[^0-9]","",$vdc_agent_api_active);
+$hold_time_option_seconds = ereg_replace("[^0-9]","",$hold_time_option_seconds);
+$hold_time_option_callback_list_id = ereg_replace("[^0-9]","",$hold_time_option_callback_list_id);
+$did_id = ereg_replace("[^0-9]","",$did_id);
+$source_did = ereg_replace("[^0-9]","",$source_did);
+$modify_inbound_dids = ereg_replace("[^0-9]","",$modify_inbound_dids);
+$delete_inbound_dids = ereg_replace("[^0-9]","",$delete_inbound_dids);
+$answer_sec_pct_rt_stat_one = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_one);
+$answer_sec_pct_rt_stat_two = ereg_replace("[^0-9]","",$answer_sec_pct_rt_stat_two);
+$enable_vtiger_integration = ereg_replace("[^0-9]","",$enable_vtiger_integration);
+$qc_features_active = ereg_replace("[^0-9]","",$qc_features_active);
+$outbound_autodial_active = ereg_replace("[^0-9]","",$outbound_autodial_active);
+$download_lists = ereg_replace("[^0-9]","",$download_lists);
+$caller_id_number = ereg_replace("[^0-9]","",$caller_id_number);
+$outbound_calls_per_second = ereg_replace("[^0-9]","",$outbound_calls_per_second);
+$manager_shift_enforcement_override = ereg_replace("[^0-9]","",$manager_shift_enforcement_override);
+$export_reports = ereg_replace("[^0-9]","",$export_reports);
+
+### DIGITS and COLONS
+$shift_length = ereg_replace("[^\:0-9]","",$shift_length);
+
+### DIGITS and HASHES and STARS
+$survey_dtmf_digits = ereg_replace("[^\#\*0-9]","",$survey_dtmf_digits);
+$survey_ni_digit = ereg_replace("[^\#\*0-9]","",$survey_ni_digit);
 
 ### DIGITS and DASHES
 $group_rank = ereg_replace("[^-0-9]","",$group_rank);
 $campaign_rank = ereg_replace("[^-0-9]","",$campaign_rank);
+$queue_priority = ereg_replace("[^-0-9]","",$queue_priority);
+
+### DIGITS and NEWLINES
+$phone_numbers = ereg_replace("[^\n0-9]","",$phone_numbers);
 
 ### Y or N ONLY ###
 $active = ereg_replace("[^NY]","",$active);
@@ -818,24 +1160,39 @@ $allow_closers = ereg_replace("[^NY]","",$allow_closers);
 $reset_hopper = ereg_replace("[^NY]","",$reset_hopper);
 $amd_send_to_vmx = ereg_replace("[^NY]","",$amd_send_to_vmx);
 $alt_number_dialing = ereg_replace("[^NY]","",$alt_number_dialing);
-$safe_harbor_message = ereg_replace("[^NY]","",$safe_harbor_message);
 $selectable = ereg_replace("[^NY]","",$selectable);
 $reset_list = ereg_replace("[^NY]","",$reset_list);
 $fronter_display = ereg_replace("[^NY]","",$fronter_display);
-$drop_message = ereg_replace("[^NY]","",$drop_message);
 $use_internal_dnc = ereg_replace("[^NY]","",$use_internal_dnc);
+$use_campaign_dnc = ereg_replace("[^NY]","",$use_campaign_dnc);
 $omit_phone_code = ereg_replace("[^NY]","",$omit_phone_code);
 $available_only_ratio_tally = ereg_replace("[^NY]","",$available_only_ratio_tally);
 $sys_perf_log = ereg_replace("[^NY]","",$sys_perf_log);
 $vicidial_balance_active = ereg_replace("[^NY]","",$vicidial_balance_active);
 $vd_server_logs = ereg_replace("[^NY]","",$vd_server_logs);
-$agent_pause_codes_active = ereg_replace("[^NY]","",$agent_pause_codes_active);
 $campaign_stats_refresh = ereg_replace("[^NY]","",$campaign_stats_refresh);
 $disable_alter_custdata = ereg_replace("[^NY]","",$disable_alter_custdata);
 $no_hopper_leads_logins = ereg_replace("[^NY]","",$no_hopper_leads_logins);
 $human_answered = ereg_replace("[^NY]","",$human_answered);
 $tovdad_display = ereg_replace("[^NY]","",$tovdad_display);
 $campaign_allow_inbound = ereg_replace("[^NY]","",$campaign_allow_inbound);
+$disable_alter_custphone = ereg_replace("[^NY]","",$disable_alter_custphone);
+$display_queue_count = ereg_replace("[^NY]","",$display_queue_count);
+$qc_show_recording = ereg_replace("[^NY]","",$qc_show_recording);
+$sale_category = ereg_replace("[^NY]","",$sale_category);
+$dead_lead_category = ereg_replace("[^NY]","",$dead_lead_category);
+$agent_extended_alt_dial  = ereg_replace("[^NY]","",$agent_extended_alt_dial);
+$play_place_in_line  = ereg_replace("[^NY]","",$play_place_in_line);
+$play_estimate_hold_time  = ereg_replace("[^NY]","",$play_estimate_hold_time);
+$no_delay_call_route  = ereg_replace("[^NY]","",$no_delay_call_route);
+$did_active  = ereg_replace("[^NY]","",$did_active);
+$active_asterisk_server = ereg_replace("[^NY]","",$active_asterisk_server);
+$generate_vicidial_conf = ereg_replace("[^NY]","",$generate_vicidial_conf);
+$rebuild_conf_files = ereg_replace("[^NY]","",$rebuild_conf_files);
+$agent_allow_group_alias = ereg_replace("[^NY]","",$agent_allow_group_alias);
+
+$qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
+
 
 ### ALPHA-NUMERIC ONLY ###
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
@@ -853,10 +1210,19 @@ $concurrent_transfers = ereg_replace("[^0-9a-zA-Z]","",$concurrent_transfers);
 $billable = ereg_replace("[^0-9a-zA-Z]","",$billable);
 $pause_code = ereg_replace("[^0-9a-zA-Z]","",$pause_code);
 $vicidial_recording_override = ereg_replace("[^0-9a-zA-Z]","",$vicidial_recording_override);
+$ingroup_recording_override = ereg_replace("[^0-9a-zA-Z]","",$ingroup_recording_override);
 $queuemetrics_log_id = ereg_replace("[^0-9a-zA-Z]","",$queuemetrics_log_id);
-$after_hours_action = ereg_replace("[^0-9a-zA-Z]","",$after_hours_action);
 $after_hours_exten = ereg_replace("[^0-9a-zA-Z]","",$after_hours_exten);
 $after_hours_voicemail = ereg_replace("[^0-9a-zA-Z]","",$after_hours_voicemail);
+$qc_script = ereg_replace("[^0-9a-zA-Z]","",$qc_script);
+$code = ereg_replace("[^0-9a-zA-Z]","",$code);
+$survey_no_response_action = ereg_replace("[^0-9a-zA-Z]","",$survey_no_response_action);
+$survey_ni_status = ereg_replace("[^0-9a-zA-Z]","",$survey_ni_status);
+$qc_get_record_launch = ereg_replace("[^0-9a-zA-Z]","",$qc_get_record_launch);
+$agent_pause_codes_active = ereg_replace("[^0-9a-zA-Z]","",$agent_pause_codes_active);
+$three_way_dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$three_way_dial_prefix);
+$shift_enforcement = ereg_replace("[^0-9a-zA-Z]","",$shift_enforcement);
+$agent_shift_enforcement_override = ereg_replace("[^0-9a-zA-Z]","",$agent_shift_enforcement_override);
 
 ### DIGITS and Dots
 $server_ip = ereg_replace("[^\.0-9]","",$server_ip);
@@ -866,6 +1232,7 @@ $phone_ip = ereg_replace("[^\.0-9]","",$phone_ip);
 $old_server_ip = ereg_replace("[^\.0-9]","",$old_server_ip);
 $computer_ip = ereg_replace("[^\.0-9]","",$computer_ip);
 $queuemetrics_server_ip = ereg_replace("[^\.0-9]","",$queuemetrics_server_ip);
+$vtiger_server_ip = ereg_replace("[^\.0-9]","",$vtiger_server_ip);
 
 ### ALPHA-NUMERIC and spaces and hash and star and comma
 $xferconf_a_dtmf = ereg_replace("[^ \,\*\#0-9a-zA-Z]","",$xferconf_a_dtmf);
@@ -913,8 +1280,8 @@ $park_file_name = ereg_replace("[^-\_0-9a-zA-Z]","",$park_file_name);
 $pass = ereg_replace("[^-\_0-9a-zA-Z]","",$pass);
 $phone_login = ereg_replace("[^-\_0-9a-zA-Z]","",$phone_login);
 $phone_pass = ereg_replace("[^-\_0-9a-zA-Z]","",$phone_pass);
-$PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
-$PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
+$PHP_AUTH_PW = ereg_replace("[^-\_0-9a-zA-Z]","",$PHP_AUTH_PW);
+$PHP_AUTH_USER = ereg_replace("[^-\_0-9a-zA-Z]","",$PHP_AUTH_USER);
 $protocol = ereg_replace("[^-\_0-9a-zA-Z]","",$protocol);
 $server_id = ereg_replace("[^-\_0-9a-zA-Z]","",$server_id);
 $stage = ereg_replace("[^-\_0-9a-zA-Z]","",$stage);
@@ -940,11 +1307,61 @@ $source_campaign_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_campaign_id);
 $source_user_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_user_id);
 $source_group_id = ereg_replace("[^-\_0-9a-zA-Z]","",$source_group_id);
 $default_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$default_xfer_group);
+$drop_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_exten);
+$safe_harbor_exten = ereg_replace("[^-\_0-9a-zA-Z]","",$safe_harbor_exten);
+$drop_action = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_action);
+$drop_inbound_group = ereg_replace("[^-\_0-9a-zA-Z]","",$drop_inbound_group);
+$afterhours_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$afterhours_xfer_group);
+$after_hours_action = ereg_replace("[^-\_0-9a-zA-Z]","",$after_hours_action);
+$alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$alias_id);
+$shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$shift_id);
+$qc_shift_id = ereg_replace("[^-\_0-9a-zA-Z]","",$qc_shift_id);
+$survey_first_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_first_audio_file);
+$survey_opt_in_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_opt_in_audio_file);
+$survey_ni_audio_file = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_ni_audio_file);
+$survey_method = ereg_replace("[^-\_0-9a-zA-Z]","",$survey_method);
+$alter_custphone_override = ereg_replace("[^-\_0-9a-zA-Z]","",$alter_custphone_override);
+$manual_dial_filter = ereg_replace("[^-\_0-9a-zA-Z]","",$manual_dial_filter);
+$agent_clipboard_copy = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_clipboard_copy);
+$hold_time_option = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_time_option);
+$hold_time_option_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_time_option_xfer_group);
+$hold_recall_xfer_group = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_recall_xfer_group);
+$play_welcome_message = ereg_replace("[^-\_0-9a-zA-Z]","",$play_welcome_message);
+$did_route = ereg_replace("[^-\_0-9a-zA-Z]","",$did_route);
+$user_unavailable_action = ereg_replace("[^-\_0-9a-zA-Z]","",$user_unavailable_action);
+$user_route_settings_ingroup = ereg_replace("[^-\_0-9a-zA-Z]","",$user_route_settings_ingroup);
+$call_handle_method = ereg_replace("[^-\_0-9a-zA-Z]","",$call_handle_method);
+$agent_search_method = ereg_replace("[^-\_0-9a-zA-Z]","",$agent_search_method);
+$hold_time_option_voicemail = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_time_option_voicemail);
+$hold_time_option_callback_filename = ereg_replace("[^-\_0-9a-zA-Z]","",$hold_time_option_callback_filename);
+$exten_context = ereg_replace("[^-\_0-9a-zA-Z]","",$exten_context);
+$three_way_call_cid = ereg_replace("[^-\_0-9a-zA-Z]","",$three_way_call_cid);
+$web_form_target = ereg_replace("[^-\_0-9a-zA-Z]","",$web_form_target);
+$recording_web_link = ereg_replace("[^-\_0-9a-zA-Z]","",$recording_web_link);
+$vtiger_search_category = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_search_category);
+$vtiger_create_call_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_call_record);
+$vtiger_create_lead_record = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_create_lead_record);
+$vtiger_screen_login = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_screen_login);
+$cpd_amd_action = ereg_replace("[^-\_0-9a-zA-Z]","",$cpd_amd_action);
+$template_id = ereg_replace("[^-\_0-9a-zA-Z]","",$template_id);
+$carrier_id = ereg_replace("[^-\_0-9a-zA-Z]","",$carrier_id);
+$group_alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$group_alias_id);
+$default_group_alias = ereg_replace("[^-\_0-9a-zA-Z]","",$default_group_alias);
+
+### ALPHA-NUMERIC and underscore and dash and comma
+$logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
+$forced_timeclock_login = ereg_replace("[^-\,\_0-9a-zA-Z]","",$forced_timeclock_login);
 
 ### ALPHA-NUMERIC and spaces
 $lead_order = ereg_replace("[^ 0-9a-zA-Z]","",$lead_order);
 ### ALPHA-NUMERIC and hash
 $group_color = ereg_replace("[^\#0-9a-zA-Z]","",$group_color);
+### ALPHA-NUMERIC and hash and star and dot and underscore
+$hold_time_option_exten = ereg_replace("[^\*\#\.\_0-9a-zA-Z]","",$hold_time_option_exten);
+$did_pattern = ereg_replace("[^\*\#\.\_0-9a-zA-Z]","",$did_pattern);
+$voicemail_ext = ereg_replace("[^\*\#\.\_0-9a-zA-Z]","",$voicemail_ext);
+$phone = ereg_replace("[^\*\#\.\_0-9a-zA-Z]","",$phone);
+$phone_code = ereg_replace("[^\*\#\.\_0-9a-zA-Z]","",$phone_code);
 
 ### ALPHA-NUMERIC and spaces dots, commas, dashes, underscores
 $adaptive_dl_diff_target = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$adaptive_dl_diff_target);
@@ -954,6 +1371,7 @@ $call_time_comments = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$call_time_comments
 $call_time_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$call_time_name);
 $campaign_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_name);
 $campaign_rec_filename = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$campaign_rec_filename);
+$ingroup_rec_filename = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$ingroup_rec_filename);
 $company = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$company);
 $full_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$full_name);
 $fullname = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$fullname);
@@ -977,6 +1395,15 @@ $list_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$list_description);
 $vcl_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vcl_name);
 $vsc_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_name);
 $vsc_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$vsc_description);
+$code_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$code_name);
+$alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alias_name);
+$shift_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$shift_name);
+$did_description = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$did_description);
+$alt_server_ip = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$alt_server_ip);
+$template_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$template_name);
+$carrier_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$carrier_name);
+$group_alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$group_alias_name);
+$caller_id_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$caller_id_name);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -994,15 +1421,36 @@ $queuemetrics_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$queuemetrics_pas
 $after_hours_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$after_hours_message_filename);
 $welcome_message_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$welcome_message_filename);
 $onhold_prompt_filename = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$onhold_prompt_filename);
+$email = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$email);
+$vtiger_dbname = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_dbname);
+$vtiger_login = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_login);
+$vtiger_pass = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$vtiger_pass);
+
+### ALPHA-NUMERIC and underscore and dash and slash and at and space and colon
+$vdc_header_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_header_date_format);
+$vdc_customer_date_format = ereg_replace("[^- \:\/\_0-9a-zA-Z]","",$vdc_customer_date_format);
+
+### ALPHA-NUMERIC and underscore and dash and at and space and parantheses
+$vdc_header_phone_format = ereg_replace("[^- \(\)\_0-9a-zA-Z]","",$vdc_header_phone_format);
 
 ### remove semi-colons ###
 $lead_filter_sql = ereg_replace(";","",$lead_filter_sql);
 $list_mix_container = ereg_replace(";","",$list_mix_container);
+$survey_response_digit_map = ereg_replace(";","",$survey_response_digit_map);
+$survey_camp_record_dir = ereg_replace(";","",$survey_camp_record_dir);
+$conf_override = ereg_replace(";","",$conf_override);
+$template_contents = ereg_replace(";","",$template_contents);
+$registration_string = ereg_replace(";","",$registration_string);
+$account_entry = ereg_replace(";","",$account_entry);
+$globals_string = ereg_replace(";","",$globals_string);
+$dialplan_entry = ereg_replace(";","",$dialplan_entry);
 
 ### VARIABLES TO BE mysql_real_escape_string ###
 # $web_form_address
 # $queuemetrics_url
 # $admin_home_url
+# $qc_web_form_address
+# $vtiger_url
 
 ### VARIABLES not filtered at all ###
 # $script_text
@@ -1141,17 +1589,74 @@ $list_mix_container = ereg_replace(";","",$list_mix_container);
 # 71116-0942 - Added campaign_rank and fewest_calls as methods for agent call routing
 # 71122-1135 - Added default transfer group for campaigns and inbound groups
 # 71125-1751 - Added allowable transfer groups to campaign detail screen
+# 80107-1204 - Started framework for new QC section
+# 80112-0242 - Added more options for lead order
+# 80211-1901 - Added DB Schema Version to system settings display
+# 80224-1334 - Added Queue Priority to in-groups and campaigns
+# 80302-0232 - added drop_action and transfer to in-group for both in-groups and outbound
+# 80310-1504 - added QC settings section to campaign screen
+# 80317-2037 - Added Recording override settings to in-groups
+# 80414-1505 - More work on QC, added vicidial_qc_codes
+# 80424-0442 - Added non_latin system_settings lookup at top to override dbconnect setting
+# 80505-0333 - Added phones_alias sections to allow for load-balanced-phone-logins
+# 80512-1529 - Added auto-generate of User ID feature
+# 80515-1345 - Added Shifts sub-section to Admin section
+# 80528-0001 - Added campaign survey sub-section
+# 80528-1102 - Added user timeclock edit options
+# 80608-1304 - Changed add-to-DNC to allow for multiple entries per submission
+# 80625-0032 - Added time/phone display format options to system settings
+# 80703-0124 - Added alter cust phone and api settings
+# 80715-1130 - Added Recycle leads limit count
+# 80719-1351 - Changed QC settings in campaigns and In-Groups
+# 80809-2305 - Added Sale and Dead Lead categories to status categories page
+# 80815-1036 - Added manual dial filter to capaigns
+# 80823-2124 - Added copy to clipboard campaign option
+# 80829-2359 - Added EXTENDED auto_alt_dial options
+# 80831-0406 - Added agent screen extended alt-dial option to campaigns
+# 80909-0553 - Added campaign-specific DNC list option and add
+# 81002-1101 - Added more in-group options and new DID section and user options
+# 81007-0936 - Added three_way_call_cid option to campaigns
+# 81012-1725 - Added INBOUND_MAN dial method allowing for manual list dialing with inbound calls
+# 81030-0348 - Added campaign pause code force option
+# 81030-2228 - Fixed DIDs creation issue
+# 81103-1408 - Added 3way call dial prefix option
+# 81107-1551 - Added Stats Percent of Calls Answered Within X seconds fields to in-groups
+# 81118-0933 - Changed lists listing with links and more options
+# 81119-0715 - Added ability to bulk enable/disable lists from modify campaign screen
+# 81209-1538 - Added web_form_target to campaign screen
+# 81210-1430 - Added http server IP and recording link options to servers
+# 81222-0500 - Reformatted all listings to same format changed to field selects instead of *
+# 81228-2300 - Added fields for vtiger integration and active vicidial_user display
+# 90101-1216 - Added options for user synchronization with vtiger
+# 90112-0335 - Added vtiger_create_lead_record and vtiger_create_lead_record options
+# 90115-0502 - Activated AGENT DID routing option
+# 90126-2256 - Added vtiger_screen_login campaign option and user agent alert option
+# 90201-1503 - Added option to disable the viewing of inactive QC features
+# 90202-0112 - Added option to disable outbound autodialing(or list dialing)
+# 90202-0444 - Added cpd_amd_action option for processing of AMD messages
+# 90209-1339 - Added download_lists option to allow downloading of lists
+# 90210-1042 - Added options for auto-generation of asterisk conf files
+# 90301-2026 - Added Vtiger group synchronization
+# 90302-2046 - Changed Section heading to be on the left side of the screen
+# 90303-0631 - Added web vars to agent campaign and in-group settings
+# 90303-2047 - Added group aliases and default group aliases
+# 90306-1214 - Added shift enforcement and server/system calls per second options
+# 90308-0956 - Added server statistics
+# 90309-0059 - Changed logging to admin_server_log
+# 90310-2203 - Added export_reports option for call activity report data exports
 #
-# 
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.4-119';
-$build = '71125-1751';
+$admin_version = '2.0.5-172';
+$build = '90310-2203';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
+$REPORTdate = date("Y-m-d");
 $MT[0]='';
 $US='_';
+$active_lists=0;
+$inactive_lists=0;
 
 $month_old = mktime(0, 0, 0, date("m")-1, date("d"),  date("Y"));
 $past_month_date = date("Y-m-d H:i:s",$month_old);
@@ -1169,11 +1674,28 @@ if ($force_logout)
     exit;
 }
 
-	$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7;";
-	if ($DB) {echo "|$stmt|\n";}
-	$rslt=mysql_query($stmt, $link);
+#############################################
+##### START SYSTEM_SETTINGS LOOKUP #####
+$stmt = "SELECT use_non_latin FROM system_settings;";
+$rslt=mysql_query($stmt, $link);
+if ($DB) {echo "$stmt\n";}
+$qm_conf_ct = mysql_num_rows($rslt);
+$i=0;
+while ($i < $qm_conf_ct)
+	{
 	$row=mysql_fetch_row($rslt);
-	$auth=$row[0];
+	$non_latin =					$row[0];
+	$i++;
+	}
+##### END SETTINGS LOOKUP #####
+###########################################
+
+$stmt="SELECT count(*) from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW' and user_level > 7 and active='Y';";
+if ($DB) {echo "|$stmt|\n";}
+if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
+$rslt=mysql_query($stmt, $link);
+$row=mysql_fetch_row($rslt);
+$auth=$row[0];
 
 if ($WeBRooTWritablE > 0)
 	{$fp = fopen ("./project_auth_entries.txt", "a");}
@@ -1196,46 +1718,50 @@ $browser = getenv("HTTP_USER_AGENT");
 		{
 		$office_no=strtoupper($PHP_AUTH_USER);
 		$password=strtoupper($PHP_AUTH_PW);
-			$stmt="SELECT * from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-			$LOGfullname				=$row[3];
-			$LOGuser_level				=$row[4];
-			$LOGuser_group				=$row[5];
-			$LOGdelete_users			=$row[8];
-			$LOGdelete_user_groups		=$row[9];
-			$LOGdelete_lists			=$row[10];
-			$LOGdelete_campaigns		=$row[11];
-			$LOGdelete_ingroups			=$row[12];
-			$LOGdelete_remote_agents	=$row[13];
-			$LOGload_leads				=$row[14];
-			$LOGcampaign_detail			=$row[15];
-			$LOGast_admin_access		=$row[16];
-			$LOGast_delete_phones		=$row[17];
-			$LOGdelete_scripts			=$row[18];
-			$LOGdelete_filters			=$row[29];
-			$LOGalter_agent_interface	=$row[30];
-			$LOGdelete_call_times		=$row[32];
-			$LOGmodify_call_times		=$row[33];
-			$LOGmodify_users			=$row[34];
-			$LOGmodify_campaigns		=$row[35];
-			$LOGmodify_lists			=$row[36];
-			$LOGmodify_scripts			=$row[37];
-			$LOGmodify_filters			=$row[38];
-			$LOGmodify_ingroups			=$row[39];
-			$LOGmodify_usergroups		=$row[40];
-			$LOGmodify_remoteagents		=$row[41];
-			$LOGmodify_servers			=$row[42];
-			$LOGview_reports			=$row[43];
+		$stmt="SELECT * from vicidial_users where user='$PHP_AUTH_USER' and pass='$PHP_AUTH_PW';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$LOGfull_name				=$row[3];
+		$LOGuser_level				=$row[4];
+		$LOGuser_group				=$row[5];
+		$LOGdelete_users			=$row[8];
+		$LOGdelete_user_groups		=$row[9];
+		$LOGdelete_lists			=$row[10];
+		$LOGdelete_campaigns		=$row[11];
+		$LOGdelete_ingroups			=$row[12];
+		$LOGdelete_remote_agents	=$row[13];
+		$LOGload_leads				=$row[14];
+		$LOGcampaign_detail			=$row[15];
+		$LOGast_admin_access		=$row[16];
+		$LOGast_delete_phones		=$row[17];
+		$LOGdelete_scripts			=$row[18];
+		$LOGdelete_filters			=$row[29];
+		$LOGalter_agent_interface	=$row[30];
+		$LOGdelete_call_times		=$row[32];
+		$LOGmodify_call_times		=$row[33];
+		$LOGmodify_users			=$row[34];
+		$LOGmodify_campaigns		=$row[35];
+		$LOGmodify_lists			=$row[36];
+		$LOGmodify_scripts			=$row[37];
+		$LOGmodify_filters			=$row[38];
+		$LOGmodify_ingroups			=$row[39];
+		$LOGmodify_usergroups		=$row[40];
+		$LOGmodify_remoteagents		=$row[41];
+		$LOGmodify_servers			=$row[42];
+		$LOGview_reports			=$row[43];
+		$LOGmodify_dids				=$row[56];
+		$LOGdelete_dids				=$row[57];
+		$LOGmanager_shift_enforcement_override=$row[61];
+		$LOGexport_reports			=$row[64];
 
-			$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-			$LOGallowed_campaigns		=$row[0];
+		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$LOGallowed_campaigns		=$row[0];
 
 		if ($WeBRooTWritablE > 0)
 			{
-			fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|$LOGfullname|\n");
+			fwrite ($fp, "VICIDIAL|GOOD|$date|$PHP_AUTH_USER|XXXX|$ip|$browser|$LOGfull_name|\n");
 			fclose($fp);
 			}
 		}
@@ -1272,18 +1798,25 @@ if ($ADD==111)			{$hh='lists';		echo "Πρόσθεσε Νέα Λίστα";}
 if ($ADD==121)			{$hh='lists';		echo "Προσθέστε νέο DNC";}
 if ($ADD==1111)			{$hh='ingroups';	echo "Πρόσθεσε Νέα Εισ-Ομάδα";}
 if ($ADD==1211)			{$hh='ingroups';	echo "$$$-ΟΜΑΔΑ αντιγράφων";}
+if ($ADD==1311)			{$hh='ingroups';	echo "Προσθήκη νέουDID";}
+if ($ADD==1411)			{$hh='ingroups';	echo "ΑντιγραφήDID";}
 if ($ADD==11111)		{$hh='remoteagent';	echo "Πρόσθεσε Νέους Απομακρυσμένους Χειριστές";}
 if ($ADD==111111)		{$hh='usergroups';	echo "Πρόσθεσε Νέα Ομάδα Χρηστών";}
 if ($ADD==1111111)		{$hh='scripts';		echo "Πρόσθεσε Νέο Βοηθό";}
 if ($ADD==11111111)		{$hh='filters';		echo "Πρόσθεσε Φίλτρο";}
 if ($ADD==111111111)	{$hh='admin';	$sh='times';	echo "Πρόσθεσε Νέο Χρόνο Κλήσης";}
+if ($ADD==131111111)	{$hh='admin';	$sh='shifts';	echo "Προσθήκη νέου Shift";}
 if ($ADD==1111111111)	{$hh='admin';	$sh='times';	echo "Πρόσθεσε Νέο Χρόνο Κλήσης Κατάστασης";}
 if ($ADD==11111111111)	{$hh='admin';	$sh='phones';	echo "ΠΡΟΣΘΕΣΕ ΝΕΟ ΤΗΛΕΦΩΝΟ";}
+if ($ADD==12111111111)	{$hh='admin';	$sh='phones';	echo "Προσθήκη νέου PHONE ALIAS";}
+if ($ADD==13111111111)	{$hh='admin';	$sh='phones';	echo "Προσθήκη νέου GROUP ALIAS";}
 if ($ADD==111111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΕΣΕ ΝΕΟ ΔΙΑΚΟΜΙΣΤΗ";}
+if ($ADD==131111111111)	{$hh='admin';	$sh='templates';	echo "Προσθήκη νέου ΠΙΣΤ TEMPLATE";}
+if ($ADD==141111111111)	{$hh='admin';	$sh='carriers';	echo "Προσθήκη νέου ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==1111111111111)	{$hh='admin';	$sh='conference';	echo "ΠΡΟΣΘΕΣΕ ΝΕΑ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==11111111111111)	{$hh='admin';	$sh='conference';	echo "ADD NEW VICIDIAL CONFERENCE";}
-if ($ADD=="2")			{$hh='users';		echo "Προσθήκη Νέου Χρήστη";}
-if ($ADD=="2A")			{$hh='users';		echo "Νέα αντιγραμμένη προσθήκη χρηστών";}
+if ($ADD=='2')			{$hh='users';		echo "Προσθήκη Νέου Χρήστη";}
+if ($ADD=='2A')			{$hh='users';		echo "Νέα αντιγραμμένη προσθήκη χρηστών";}
 if ($ADD==20)			{$hh='campaigns';	$sh='basic';	echo "Νέα αντιγραμμένη προσθήκη εκστρατείας";}
 if ($ADD==21)			{$hh='campaigns';	$sh='basic';	echo "Προσθήκη Νέας Εκστρατείας";}
 if ($ADD==22)			{$hh='campaigns';	$sh='status';	echo "Προσθήκη Νέας Κατάστασης Εκστρατείας";}
@@ -1296,34 +1829,55 @@ if ($ADD==29)			{$hh='campaigns';	$sh='listmix';	echo "Μίγμα καταλόγ
 if ($ADD==211)			{$hh='lists';		echo "Προσθήκη Νέας Λίστας";}
 if ($ADD==2111)			{$hh='ingroups';	echo "Προσθήκη Νέας Εισ-Ομάδας";}
 if ($ADD==2011)			{$hh='ingroups';	echo "Νέα αντιγραμμένη προσθήκη-ΟΜΑΔΑΣ";}
+if ($ADD==2311)			{$hh='ingroups';	echo "Νέα προσθήκη DID";}
+if ($ADD==2411)			{$hh='ingroups';	echo "Νέα προσθήκη αντιγραφή DID";}
 if ($ADD==21111)		{$hh='remoteagent';	echo "Προσθήκη Νέων Απομακρυσμένων Χειριστών";}
 if ($ADD==211111)		{$hh='usergroups';	echo "Προσθήκη Νέας Ομάδας Χρηστών";}
 if ($ADD==2111111)		{$hh='scripts';		echo "Νέα προσθήκη Βοηθού";}
 if ($ADD==21111111)		{$hh='filters';		echo "Προσθήκη Νέου Φίλτρου";}
 if ($ADD==211111111)	{$hh='admin';	$sh='times';	echo "Προσθήκη Νέου Χρόνου Κλήσης";}
+if ($ADD==231111111)	{$hh='admin';	$sh='shifts';	echo "Νέα προσθήκη Shift";}
 if ($ADD==2111111111)	{$hh='admin';	$sh='times';	echo "Προσθήκη Νέου Χρόνου Κλήσης Κατάστασης";}
 if ($ADD==21111111111)	{$hh='admin';	$sh='phones';	echo "ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΤΗΛΕΦΩΝΟΥ";}
+if ($ADD==22111111111)	{$hh='admin';	$sh='phones';	echo "Την προσθήκη νέων PHONE ALIAS";}
+if ($ADD==23111111111)	{$hh='admin';	$sh='phones';	echo "Την προσθήκη νέων GROUP ALIAS";}
 if ($ADD==211111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΔΙΑΚΟΜΙΣΤΗ";}
 if ($ADD==221111111111)	{$hh='admin';	$sh='server';	echo "ΠΡΟΣΘΕΤΕΙ ΝΕΑ ΕΓΓΡΑΦΗ ΕΞΥΠΗΡΕΤΗΤΗ ΚΟΡΜΟΥ";}
+if ($ADD==231111111111)	{$hh='admin';	$sh='templates';	echo "Την προσθήκη νέων ΠΙΣΤ TEMPLATE";}
+if ($ADD==241111111111)	{$hh='admin';	$sh='carriers';	echo "Την προσθήκη νέων ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==2111111111111)	{$hh='admin';	$sh='conference';	echo "ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΣΥΝΔΙΑΛΕΞΗΣ";}
 if ($ADD==21111111111111)	{$hh='admin';	$sh='conference';	echo "ADDING NEW VICIDIAL CONFERENCE";}
 if ($ADD==221111111111111)	{$hh='admin';	$sh='status';	echo "ΠΡΟΣΘΗΚΗ ΤΩΝ ΘΈΣΕΩΝ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
 if ($ADD==231111111111111)	{$hh='admin';	$sh='status';	echo "ΠΡΟΣΘΗΚΗ ΤΗΣ ΚΑΤΗΓΟΡΊΑΣ ΘΈΣΗΣ VICIDIAL";}
+if ($ADD==241111111111111)	{$hh='admin';	$sh='status';	echo "Adding VICIDIAL QC Κατάσταση ΚΩΔΙΚΟΣ";}
 if ($ADD==3)			{$hh='users';		echo "Τροποποίηση Χρήστη";}
 if ($ADD==30)			{$hh='campaigns';	echo "Εκστρατεία δεν επιτρέπεται";}
 if ($ADD==31)			
-				{
-				$hh='campaigns';	$sh='detail';	echo "Τροποποίηση Εκστρατείας - Detail - $campaign_id";
-				if ($SUB==22)	{echo " - Statuses";}
-				if ($SUB==23)	{echo " - HotKeys";}
-				if ($SUB==25)	{echo " -Μόλυβδος ανακύκλωσηςEntries";}
-				if ($SUB==26)	{echo " - Auto Alt Dial Statuses";}
-				if ($SUB==27)	{echo " - Agent Pause Codes";}
-				if ($SUB==29)	{echo " - List Mixes";}
-				}
+		{
+		$hh='campaigns';	$sh='detail';	echo "Τροποποίηση Εκστρατείας - Λεπτομέρειες - $campaign_id";
+		if ($SUB==22)	{echo " - Καθεστώτων";}
+		if ($SUB==23)	{echo " - HotKeys";}
+		if ($SUB==25)	{echo " -Μόλυβδος ανακύκλωσηςEntries";}
+		if ($SUB==26)	{echo " - Alt Auto Dial Καθεστώτων";}
+		if ($SUB==27)	{echo " - Agent Παύση Κώδικες";}
+		if ($SUB==28)	{echo " - QC";}
+		if ($SUB==29)	{echo " - Κατάλογος Mixes";}
+		if ($SUB=='20A')	{echo " - Έρευνα";}
+		}
+if ($ADD==34)
+		{
+		$hh='campaigns';	$sh='basic';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση - $campaign_id";
+		if ($SUB==22)	{echo " - Καθεστώτων";}
+		if ($SUB==23)	{echo " - HotKeys";}
+		if ($SUB==25)	{echo " -Μόλυβδος ανακύκλωσηςEntries";}
+		if ($SUB==26)	{echo " - Alt Auto Dial Καθεστώτων";}
+		if ($SUB==27)	{echo " - Agent Παύση Κώδικες";}
+		if ($SUB==28)	{echo " - QC";}
+		if ($SUB==29)	{echo " - Κατάλογος Mixes";}
+		if ($SUB=='20A')	{echo " - Έρευνα";}
+		}
 if ($ADD==32)			{$hh='campaigns';	$sh='status';	echo "Θέσεις εκστρατείας";}
 if ($ADD==33)			{$hh='campaigns';	$sh='hotkey';	echo "Εκστρατεία HotKeys";}
-if ($ADD==34)			{$hh='campaigns';	$sh='basic';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
 if ($ADD==35)			{$hh='campaigns';	$sh='recycle';	echo "Ανακύκλωσης καταχωρήσεις μολύβδου εκστρατείας";}
 if ($ADD==36)			{$hh='campaigns';	$sh='autoalt';	echo "Αυτόματες ALT θέσεις πινάκων εκστρατείας";}
 if ($ADD==37)			{$hh='campaigns';	$sh='pause';	echo "Κώδικες μικρής διακοπής πρακτόρων εκστρατείας";}
@@ -1331,20 +1885,27 @@ if ($ADD==38)			{$hh='campaigns';	$sh='dialstat';	echo "Θέσεις πινάκ�
 if ($ADD==39)			{$hh='campaigns';	$sh='listmix';	echo "Μίγματα καταλόγων εκστρατείας";}
 if ($ADD==311)			{$hh='lists';		echo "Τροποποίηση Λίστας";}
 if ($ADD==3111)			{$hh='ingroups';	echo "Τροποποίηση Εισ-Ομάδων";}
+if ($ADD==3311)			{$hh='ingroups';	echo "ModifyDID";}
 if ($ADD==31111)		{$hh='remoteagent';	echo "Τροποποίηση Απομακρυσμένων Χειριστών";}
 if ($ADD==311111)		{$hh='usergroups';	echo "Τροποποίηση Ομάδων Χρηστών";}
 if ($ADD==3111111)		{$hh='scripts';		echo "Τροποποιήστε τον Βοηθό";}
 if ($ADD==31111111)		{$hh='filters';		echo "Τροποποίηση Φίλτρου";}
 if ($ADD==311111111)	{$hh='admin';	$sh='times';	echo "Τροποποίηση Χρόνου Κλήσης";}
 if ($ADD==321111111)	{$hh='admin';	$sh='times';	echo "Τροποποίηση Λίστας Ορισμών Χρόνου Κλήσης Κατάστασης ";}
+if ($ADD==331111111)	{$hh='admin';	$sh='shifts';	echo "Τροποποιήστε Shift";}
 if ($ADD==3111111111)	{$hh='admin';	$sh='times';	echo "Τροποπίηση Χρόνου Κλήσης Κατάστασης";}
 if ($ADD==31111111111)	{$hh='admin';	$sh='phones';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ";}
+if ($ADD==32111111111)	{$hh='admin';	$sh='phones';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ ALIAS";}
+if ($ADD==33111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY GROUP ALIAS";}
 if ($ADD==311111111111)	{$hh='admin';	$sh='server';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ";}
+if ($ADD==331111111111)	{$hh='admin';	$sh='templates';	echo "MODIFY ΠΙΣΤ TEMPLATE";}
+if ($ADD==341111111111)	{$hh='admin';	$sh='carriers';	echo "MODIFY ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==3111111111111)	{$hh='admin';	$sh='conference';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==31111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==311111111111111)	{$hh='admin';	$sh='settings';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
 if ($ADD==321111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΘΈΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
 if ($ADD==331111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΗΝ ΚΑΤΗΓΟΡΊΑ ΘΈΣΗΣ VICIDIAL";}
+if ($ADD==341111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL QC Κατάσταση ΚΩΔΙΚΟΣ";}
 if ($ADD=="4A")			{$hh='users';		echo "Τροποποίηση Χρήστη - Admin";}
 if ($ADD=="4B")			{$hh='users';		echo "Τροποποίηση Χρήστη - Admin";}
 if ($ADD==4)			{$hh='users';		echo "Τροποποίηση Χρήστη";}
@@ -1354,41 +1915,56 @@ if ($ADD==43)			{$hh='campaigns';	$sh='hotkey';	echo "Τροποποίηση Ε�
 if ($ADD==44)			{$hh='campaigns';	$sh='basic';	echo "Τροποποίηση Εκστρατείας - Βασική Επισκόπηση";}
 if ($ADD==45)			{$hh='campaigns';	$sh='recycle';	echo "Τροποποιήστε τον οδηγό εκστρατείας ανακύκλωσης";}
 if ($ADD==47)			{$hh='campaigns';	$sh='pause';	echo "Τροποποιήστε τον κώδικα μικρής διακοπής πρακτόρων";}
+if ($ADD==48)			{$hh='campaigns';	$sh='qc';	echo "Τροποποίηση Ρυθμίσεων Καμπάνιας QC";}
 if ($ADD==49)			{$hh='campaigns';	$sh='listmix';	echo "Τροποποιήστε το μίγμα καταλόγων εκστρατείας";}
+if ($ADD=='40A')		{$hh='campaigns';	$sh='survey';	echo "Τροποποίηση Καμπάνιας Έρευνα";}
 if ($ADD==411)			{$hh='lists';		echo "Τροποποίηση Λίστας";}
 if ($ADD==4111)			{$hh='ingroups';	echo "Τροποποίηση Εισ-Ομάδων";}
+if ($ADD==4311)			{$hh='ingroups';	echo "ModifyDID";}
 if ($ADD==41111)		{$hh='remoteagent';	echo "Τροποποίηση Απομακρυσμένων Χειριστών";}
 if ($ADD==411111)		{$hh='usergroups';	echo "Τροποποίηση Ομάδων Χρηστών";}
 if ($ADD==4111111)		{$hh='scripts';		echo "Τροποποιήστε τον Βοηθό";}
 if ($ADD==41111111)		{$hh='filters';		echo "Τροποποίηση Φίλτρου";}
 if ($ADD==411111111)	{$hh='admin';	$sh='times';	echo "Τροποποίηση Χρόνου Κλήσης";}
+if ($ADD==431111111)	{$hh='admin';	$sh='shifts';	echo "Τροποποιήστε Shift";}
 if ($ADD==4111111111)	{$hh='admin';	$sh='times';	echo "Τροποπίηση Χρόνου Κλήσης Κατάστασης";}
 if ($ADD==41111111111)	{$hh='admin';	$sh='phones';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ";}
+if ($ADD==42111111111)	{$hh='admin';	$sh='phones';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ ALIAS";}
+if ($ADD==43111111111)	{$hh='admin';	$sh='phones';	echo "MODIFY GROUP ALIAS";}
 if ($ADD==411111111111)	{$hh='admin';	$sh='server';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ";}
 if ($ADD==421111111111)	{$hh='admin';	$sh='server';	echo "ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΕΞΥΠΗΡΕΤΗΤΗ ΚΟΡΜΟΥ";}
+if ($ADD==431111111111)	{$hh='admin';	$sh='templates';	echo "MODIFY ΠΙΣΤ TEMPLATE";}
+if ($ADD==441111111111)	{$hh='admin';	$sh='carriers';	echo "MODIFY ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==4111111111111)	{$hh='admin';	$sh='conference';	echo "ΤΡΟΠΟΠΟΙΗΣΕ ΣΥΝΔΙΑΛΕΞΗ";}
 if ($ADD==41111111111111)	{$hh='admin';	$sh='conference';	echo "MODIFY VICIDIAL CONFERENCE";}
 if ($ADD==411111111111111)	{$hh='admin';	$sh='settings';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
 if ($ADD==421111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΘΈΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL";}
 if ($ADD==431111111111111)	{$hh='admin';	$sh='status';	echo "ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΚΑΤΗΓΟΡΊΕΣ ΘΈΣΗΣ VICIDIAL";}
-if ($ADD==5)			{$hh='users';		echo "Delete User";}
-if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "Delete Εκστρατεία";}
+if ($ADD==441111111111111)	{$hh='admin';	$sh='status';	echo "MODIFY VICIDIAL QC Κατάσταση ΚΩΔΙΚΟΣ";}
+if ($ADD==5)			{$hh='users';		echo "ΔιαγράφωΧρήστης";}
+if ($ADD==51)			{$hh='campaigns';	$sh='detail';	echo "ΔιαγράφωΕκστρατεία";}
 if ($ADD==52)			{$hh='campaigns';	$sh='detail';	echo "Αποσυνδεμένοι Χειριστές";}
 if ($ADD==53)			{$hh='campaigns';	$sh='detail';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
-if ($ADD==511)			{$hh='lists';		echo "Delete List";}
-if ($ADD==5111)			{$hh='ingroups';	echo "Delete In-Group";}
+if ($ADD==511)			{$hh='lists';		echo "ΔιαγράφωList";}
+if ($ADD==5111)			{$hh='ingroups';	echo "ΔιαγράφωIn-Group";}
+if ($ADD==5311)			{$hh='ingroups';	echo "ΔιαγράφωDID";}
 if ($ADD==51111)		{$hh='remoteagent';	echo "Διάγραψε τους Απομακρυσμένους Χειριστές";}
 if ($ADD==511111)		{$hh='usergroups';	echo "Διάγραψε  τους χρήστες Group";}
 if ($ADD==5111111)		{$hh='scripts';		echo "Διάγραψε τον Βοηθό";}
 if ($ADD==51111111)		{$hh='filters';		echo "Διαγραφή Φίλτρου";}
 if ($ADD==511111111)	{$hh='admin';	$sh='times';	echo "Διαγραφή Χρόνου Κλήσης";}
+if ($ADD==531111111)	{$hh='admin';	$sh='shifts';	echo "Διαγραφή Shift";}
 if ($ADD==5111111111)	{$hh='admin';	$sh='times';	echo "Διαγραφή Χρόνου Κλήσης Κατάστασης";}
 if ($ADD==51111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==52111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
+if ($ADD==53111111111)	{$hh='admin';	$sh='phones';	echo "Διαγραφή ομάδας ALIAS";}
 if ($ADD==511111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
+if ($ADD==531111111111)	{$hh='admin';	$sh='templates';	echo "DELETE ΠΙΣΤ TEMPLATE";}
+if ($ADD==541111111111)	{$hh='admin';	$sh='carriers';	echo "DELETE ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==5111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==51111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
-if ($ADD==6)			{$hh='users';		echo "Delete User";}
-if ($ADD==61)			{$hh='campaigns';	$sh='detail';	echo "Delete Εκστρατεία";}
+if ($ADD==6)			{$hh='users';		echo "ΔιαγράφωΧρήστης";}
+if ($ADD==61)			{$hh='campaigns';	$sh='detail';	echo "ΔιαγράφωΕκστρατεία";}
 if ($ADD==62)			{$hh='campaigns';	$sh='detail';	echo "Αποσυνδεμένοι Χειριστές";}
 if ($ADD==63)			{$hh='campaigns';	$sh='detail';	echo "έκτακτης ανάγκης καθαρισμού VDAC";}
 if ($ADD==65)			{$hh='campaigns';	$sh='recycle';	echo "Διαγράψτε τον οδηγό ανακύκλωσης";}
@@ -1396,21 +1972,31 @@ if ($ADD==66)			{$hh='campaigns';	$sh='autoalt';	echo "Διαγράψτε την
 if ($ADD==67)			{$hh='campaigns';	$sh='pause';	echo "Διαγράψτε τον κώδικα μικρής διακοπής πρακτόρων";}
 if ($ADD==68)			{$hh='campaigns';	$sh='dialstat';	echo "Θέση πινάκων εκστρατείας αφαιρούμενη";}
 if ($ADD==69)			{$hh='campaigns';	$sh='listmix';	echo "Μίγμα καταλόγων εκστρατείας αφαιρούμενο";}
-if ($ADD==611)			{$hh='lists';		echo "Delete List";}
-if ($ADD==6111)			{$hh='ingroups';	echo "Delete In-Group";}
+if ($ADD==611)			{$hh='lists';		echo "ΔιαγράφωList";}
+if ($ADD==6111)			{$hh='ingroups';	echo "ΔιαγράφωIn-Group";}
+if ($ADD==6311)			{$hh='ingroups';	echo "ΔιαγράφωDID";}
 if ($ADD==61111)		{$hh='remoteagent';	echo "Διάγραψε τους Απομακρυσμένους Χειριστές";}
 if ($ADD==611111)		{$hh='usergroups';	echo "Διάγραψε  τους χρήστες Group";}
 if ($ADD==6111111)		{$hh='scripts';		echo "Διάγραψε τον Βοηθό";}
 if ($ADD==61111111)		{$hh='filters';		echo "Διαγραφή Φίλτρου";}
 if ($ADD==611111111)	{$hh='admin';	$sh='times';	echo "Διαγραφή Χρόνου Κλήσης";}
+if ($ADD==631111111)	{$hh='admin';	$sh='shifts';	echo "Διαγραφή Shift";}
 if ($ADD==6111111111)	{$hh='admin';	$sh='times';	echo "Διαγραφή Χρόνου Κλήσης Κατάστασης";}
 if ($ADD==61111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE";}
+if ($ADD==62111111111)	{$hh='admin';	$sh='phones';	echo "DELETE PHONE ALIAS";}
+if ($ADD==63111111111)	{$hh='admin';	$sh='phones';	echo "Διαγραφή ομάδας ALIAS";}
 if ($ADD==611111111111)	{$hh='admin';	$sh='server';	echo "DELETE SERVER";}
 if ($ADD==621111111111)	{$hh='admin';	$sh='server';	echo "ΔΙΑΓΡΑΦΗ ΕΓΓΡΑΦΗΣ ΕΞΥΠΗΡΕΤΗΤΗ ΚΟΡΜΟΥ";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='templates';	echo "DELETE ΠΙΣΤ TEMPLATE";}
+if ($ADD==621111111111)	{$hh='admin';	$sh='carriers';	echo "DELETE ΘΑΛΑΜΙΣΚΟ";}
 if ($ADD==6111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE CONFERENCE";}
 if ($ADD==61111111111111)	{$hh='admin';	$sh='conference';	echo "DELETE VICIDIAL CONFERENCE";}
 if ($ADD==73)			{$hh='campaigns';	echo "Μετρητής Κληθέντων Οδηγών";}
 if ($ADD==7111111)		{$hh='scripts';		echo "Προεπισκόπιση Βοηθού";}
+if ($ADD==700000000000000)	{$hh='reports';	echo "ΔΙΑΧΕΙΡΙΣΗ CHANGE LOG";}
+if ($ADD==710000000000000)	{$hh='reports';	echo "VICIDIAL ΧΡΗΣΤΗΣ ΔΙΟΙΚΗΣΗΣ CHANGE LOG";}
+if ($ADD==720000000000000)	{$hh='reports';	echo "VICIDIAL ΤΜΗΜΑ ΔΙΟΙΚΗΣΗΣ CHANGE LOG";}
+if ($ADD==730000000000000)	{$hh='reports';	echo "VICIDIAL ΛΕΠΤΟΜΕΡΕΙΑ ADMIN CHANGE LOG";}
 if ($ADD==0)			{$hh='users';		echo "Λίστα Χρηστών";}
 if ($ADD==8)			{$hh='users';		echo "Επανακλήσεις μέσα στον χειριστή";}
 if ($ADD==81)			{$hh='campaigns';	$sh='list';	echo "Επανακλήσεις μέσα στην εκστρατεία";}
@@ -1419,14 +2005,20 @@ if ($ADD==8111)			{$hh='usergroups';	echo "CallBacks μέσα στην ομάδ�
 if ($ADD==10)			{$hh='campaigns';	$sh='list';		echo "Εκστρατείες";}
 if ($ADD==100)			{$hh='lists';		echo "Λίστες";}
 if ($ADD==1000)			{$hh='ingroups';	echo "Εισ-Ομάδες";}
+if ($ADD==1300)			{$hh='ingroups';	echo "DIDs";}
 if ($ADD==10000)		{$hh='remoteagent';	echo "Απομακρυσμένοι Χειριστές";}
 if ($ADD==100000)		{$hh='usergroups';	echo "Ομάδες Χρήστη";}
 if ($ADD==1000000)		{$hh='scripts';		echo "Βοηθοί";}
 if ($ADD==10000000)		{$hh='filters';		echo "Φίλτρα";}
 if ($ADD==100000000)	{$hh='admin';	$sh='times';	echo "Χρόνοι Κλήσεων";}
+if ($ADD==130000000)	{$hh='admin';	$sh='shifts';	echo "Βάρδιες";}
 if ($ADD==1000000000)	{$hh='admin';	$sh='times';	echo "";}
 if ($ADD==10000000000)	{$hh='admin';	$sh='phones';	echo "ΛΙΣΤΑ ΤΗΛΕΦΩΝΟΥ";}
+if ($ADD==12000000000)	{$hh='admin';	$sh='phones';	echo "PHONE ALIAS ΚΑΤΑΛΟΓΟΣ";}
+if ($ADD==13000000000)	{$hh='admin';	$sh='phones';	echo "ΟΜΑΔΑ ALIAS ΚΑΤΑΛΟΓΟΣ";}
 if ($ADD==100000000000)	{$hh='admin';	$sh='server';	echo "ΛΙΣΤΑ ΔΙΑΚΟΜΙΣΤΗ";}
+if ($ADD==130000000000)	{$hh='admin';	$sh='templates';	echo "ΠΙΣΤ TEMPLATE ΚΑΤΑΛΟΓΟΣ";}
+if ($ADD==140000000000)	{$hh='admin';	$sh='carriers';	echo "ΘΑΛΑΜΙΣΚΟ ΚΑΤΑΛΟΓΟΣ";}
 if ($ADD==1000000000000)	{$hh='admin';	$sh='conference';	echo "ΛΙΣΤΑ ΣΥΝΔΙΑΛΕΞΕΩΝ";}
 if ($ADD==10000000000000)	{$hh='admin';	$sh='conference';	echo "VICIDIAL ΛΙΣΤΑ ΣΥΝΔΙΑΛΕΞΕΩΝ";}
 if ($ADD==550)			{$hh='users';		echo "Φόρμα Αναζήτησης";}
@@ -1507,7 +2099,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$campaigns_to_print = mysql_num_rows($rslt);
 	$campaigns_list='';
 	$campaigns_value='';
-	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
+	$RANKcampaigns_list="<tr><td>CAMPAIGN</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td><td ALIGN=CENTER>WEB VARS</td></tr>\n";
 
 	$o=0;
 	while ($campaigns_to_print > $o)
@@ -1522,30 +2114,40 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$o=0;
 	while ($campaigns_to_print > $o)
 		{
-		$stmt="SELECT campaign_rank,calls_today from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
+		$group_web_vars='';
+		$campaign_web='';
+		$stmt="SELECT campaign_rank,calls_today,group_web_vars from vicidial_campaign_agents where user='$user' and campaign_id='$campaign_id_values[$o]'";
 		$rslt=mysql_query($stmt, $link);
 		$ranks_to_print = mysql_num_rows($rslt);
 		if ($ranks_to_print > 0)
 			{
 			$row=mysql_fetch_row($rslt);
 			$SELECT_campaign_rank = $row[0];
-			$calls_today = $row[1];
+			$calls_today =			$row[1];
+			$group_web_vars =		$row[2];
 			}
 		else
-			{$calls_today=0;   $SELECT_campaign_rank=0;}
+			{$calls_today=0;   $SELECT_campaign_rank=0;   $group_web_vars='';}
 		if ( ($ADD=="4A") or ($ADD=="4B") )
 			{
 			if (isset($_GET["RANK_$campaign_id_values[$o]"]))			{$campaign_rank=$_GET["RANK_$campaign_id_values[$o]"];}
 				elseif (isset($_POST["RANK_$campaign_id_values[$o]"]))	{$campaign_rank=$_POST["RANK_$campaign_id_values[$o]"];}
+			if (isset($_GET["WEB_$campaign_id_values[$o]"]))			{$campaign_web=$_GET["WEB_$campaign_id_values[$o]"];}
+				elseif (isset($_POST["WEB_$campaign_id_values[$o]"]))	{$campaign_web=$_POST["WEB_$campaign_id_values[$o]"];}
+			if ($non_latin < 1)
+				{
+				$campaign_rank = ereg_replace("[^-\_0-9]","",$campaign_rank);
+				$campaign_web = preg_replace("/;|\"|\'/","",$campaign_web);
+				}
 
 			if ($ranks_to_print > 0)
 				{
-				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank' where campaign_id='$campaign_id_values[$o]' and user='$user';";
+				$stmt="UPDATE vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', group_web_vars='$campaign_web' where campaign_id='$campaign_id_values[$o]' and user='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
 			else
 				{
-				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user';";
+				$stmt="INSERT INTO vicidial_campaign_agents set campaign_rank='$campaign_rank', campaign_weight='$campaign_rank', campaign_id='$campaign_id_values[$o]', user='$user', group_web_vars='$campaign_web';";
 				$rslt=mysql_query($stmt, $link);
 				}
 
@@ -1600,8 +2202,11 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			$RANKcampaigns_list .= ">$h</option>";
 			$h--;
 			}
+		if ( (strlen($campaign_web) < 1) and (strlen($group_web_vars) > 0) )
+			{$campaign_web=$group_web_vars;}
 		$RANKcampaigns_list .= "</select></td>\n";
-		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$RANKcampaigns_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td>\n";
+		$RANKcampaigns_list .= "<td> &nbsp; &nbsp; <input type=text size=25 maxlength=255 name=WEB_$campaign_id_values[$o] value=\"$campaign_web\"></td></tr>\n";
 		$o++;
 		}
 	##### END get campaigns listing for rankings #####
@@ -1609,7 +2214,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 
 	##### BEGIN get inbound groups listing for checkboxes #####
 	$xfer_groupsSQL='';
-	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) )
+	if ( (($ADD>20) and ($ADD<70)) and ($ADD!=41) or ( ($ADD==41) and (eregi('list_activation', $stage))) )
 	{
 	$stmt="SELECT closer_campaigns,xfer_groups from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -1659,12 +2264,13 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	}
 
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+#	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
 	$rslt=mysql_query($stmt, $link);
 	$groups_to_print = mysql_num_rows($rslt);
 	$groups_list='';
 	$groups_value='';
 	$XFERgroups_list='';
-	$RANKgroups_list="<tr><td>INBOUND GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td></tr>\n";
+	$RANKgroups_list="<tr><td>Εισερχόμενα GROUP</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS</td><td ALIGN=CENTER>WEB VARS</td></tr>\n";
 
 	$o=0;
 	while ($groups_to_print > $o)
@@ -1678,14 +2284,17 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	$o=0;
 	while ($groups_to_print > $o)
 		{
-		$stmt="SELECT group_rank,calls_today from vicidial_inbound_group_agents where user='$user' and group_id='$group_id_values[$o]'";
+		$group_web_vars='';
+		$group_web='';
+		$stmt="SELECT group_rank,calls_today,group_web_vars from vicidial_inbound_group_agents where user='$user' and group_id='$group_id_values[$o]'";
 		$rslt=mysql_query($stmt, $link);
 		$ranks_to_print = mysql_num_rows($rslt);
 		if ($ranks_to_print > 0)
 			{
 			$row=mysql_fetch_row($rslt);
-			$SELECT_group_rank = $row[0];
-			$calls_today = $row[1];
+			$SELECT_group_rank =	$row[0];
+			$calls_today =			$row[1];
+			$group_web_vars =		$row[2];
 			}
 		else
 			{$calls_today=0;   $SELECT_group_rank=0;}
@@ -1693,15 +2302,23 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			{
 			if (isset($_GET["RANK_$group_id_values[$o]"]))			{$group_rank=$_GET["RANK_$group_id_values[$o]"];}
 				elseif (isset($_POST["RANK_$group_id_values[$o]"]))	{$group_rank=$_POST["RANK_$group_id_values[$o]"];}
+			if (isset($_GET["WEB_$group_id_values[$o]"]))			{$group_web=$_GET["WEB_$group_id_values[$o]"];}
+				elseif (isset($_POST["WEB_$group_id_values[$o]"]))	{$group_web=$_POST["WEB_$group_id_values[$o]"];}
+
+			if ($non_latin < 1)
+				{
+				$group_rank = ereg_replace("[^-\_0-9]","",$group_rank);
+				$group_web = preg_replace("/;|\"|\'/","",$group_web);
+				}
 
 			if ($ranks_to_print > 0)
 				{
-				$stmt="UPDATE vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank' where group_id='$group_id_values[$o]' and user='$user';";
+				$stmt="UPDATE vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_web_vars='$group_web' where group_id='$group_id_values[$o]' and user='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
 			else
 				{
-				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user';";
+				$stmt="INSERT INTO vicidial_inbound_group_agents set group_rank='$group_rank', group_weight='$group_rank', group_id='$group_id_values[$o]', user='$user', group_web_vars='$group_web';";
 				$rslt=mysql_query($stmt, $link);
 				}
 
@@ -1741,7 +2358,12 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				}
 			$p++;
 			}
-		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
+		$stmt="SELECT queue_priority from vicidial_inbound_groups where group_id='$group_id_values[$o]';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$VIG_priority =			$row[0];
+
+		$groups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] - $VIG_priority <BR>\n";
 		$XFERgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] <BR>\n";
 		$RANKgroups_list .= "> <a href=\"$PHP_SELF?ADD=3111&group_id=$group_id_values[$o]\">$group_id_values[$o]</a> - $group_name_values[$o] </td>";
 		$RANKgroups_list .= "<td> &nbsp; &nbsp; <select size=1 name=RANK_$group_id_values[$o]>\n";
@@ -1754,8 +2376,11 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 			$RANKgroups_list .= ">$h</option>";
 			$h--;
 			}
+		if ( (strlen($group_web) < 1) and (strlen($group_web_vars) > 0) )
+			{$group_web=$group_web_vars;}
 		$RANKgroups_list .= "</select></td>\n";
-		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td></tr>\n";
+		$RANKgroups_list .= "<td align=right> &nbsp; &nbsp; $calls_today</td>\n";
+		$RANKgroups_list .= "<td> &nbsp; &nbsp; <input type=text size=25 maxlength=255 name=WEB_$group_id_values[$o] value=\"$group_web\"></td></tr>\n";
 		$o++;
 		}
 	if (strlen($groups_value)>2) {$groups_value .= " -";}
@@ -1769,16 +2394,26 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 	{
 		if ( ($ADD==211111) or ($ADD==311111) or ($ADD==511111) or ($ADD==611111) )
 		{
-		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$user_group';";
+		$stmt="SELECT allowed_campaigns,qc_allowed_campaigns,qc_allowed_inbound_groups from vicidial_user_groups where user_group='$user_group';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
-		$allowed_campaigns =	$row[0];
+		$allowed_campaigns =			$row[0];
+		$qc_allowed_campaigns =			$row[1];
+		$qc_allowed_inbound_groups =	$row[2];
 		$allowed_campaigns = preg_replace("/ -$/","",$allowed_campaigns);
 		$campaigns = explode(" ", $allowed_campaigns);
+		$qc_allowed_campaigns = preg_replace("/ -$/","",$qc_allowed_campaigns);
+		$qc_campaigns = explode(" ", $qc_allowed_campaigns);
+		$qc_allowed_inbound_groups = preg_replace("/ -$/","",$qc_allowed_inbound_groups);
+		$qc_groups = explode(" ", $qc_allowed_inbound_groups);
 		}
 
 	$campaigns_value='';
 	$campaigns_list='<B><input type="checkbox" name="campaigns[]" value="-ALL-CAMPAIGNS-"';
+	$qc_campaigns_value='';
+	$qc_campaigns_list='<B><input type="checkbox" name="qc_campaigns[]" value="-ALL-CAMPAIGNS-"';
+	$qc_groups_value='';
+	$qc_groups_list='<B><input type="checkbox" name="qc_groups[]" value="-ALL-GROUPS-"';
 		$p=0;
 		while ($p<100)
 			{
@@ -1787,9 +2422,21 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				$campaigns_list.=" CHECKED";
 				$campaigns_value .= " -ALL-CAMPAIGNS- -";
 				}
+			if (eregi('ALL-CAMPAIGNS',$qc_campaigns[$p])) 
+				{
+				$qc_campaigns_list.=" CHECKED";
+				$qc_campaigns_value .= " -ALL-CAMPAIGNS- -";
+				}
+			if (eregi('ALL-GROUPS',$qc_groups[$p])) 
+				{
+				$qc_groups_list.=" CHECKED";
+				$qc_groups_value .= " -ALL-GROUPS- -";
+				}
 			$p++;
 			}
 	$campaigns_list.="> ALL-CAMPAIGNS - ΟΙ ΧΡΗΣΤΕΣ ΜΠΟΡΟΥΝ ΝΑ ΔΟΥΝ ΟΠΟΙΑΔΗΠΟΤΕ ΕΚΣΤΡΑΤΕΙΑ</B><BR>\n";
+	$qc_campaigns_list.="> ALL-CAMPAIGNS - Οι χρήστες μπορούν να QC οποιαδήποτε καμπάνια</B><BR>\n";
+	$qc_groups_list.="> ALL-GROUPS - Οι χρήστες μπορούν να ANY QC εισερχόμενα ΟΜΑΔΑ</B><BR>\n";
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
@@ -1802,6 +2449,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$campaign_id_value = $rowx[0];
 		$campaign_name_value = $rowx[1];
 		$campaigns_list .= "<input type=\"checkbox\" name=\"campaigns[]\" value=\"$campaign_id_value\"";
+		$qc_campaigns_list .= "<input type=\"checkbox\" name=\"qc_campaigns[]\" value=\"$campaign_id_value\"";
 		$p=0;
 		while ($p<100)
 			{
@@ -1811,18 +2459,52 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				$campaigns_list .= " CHECKED";
 				$campaigns_value .= " $campaign_id_value";
 				}
+			if ($campaign_id_value == $qc_campaigns[$p]) 
+				{
+				$qc_campaigns_list .= " CHECKED";
+				$qc_campaigns_value .= " $campaign_id_value";
+				}
 		#	echo "<!--  O $p|$campaign_id_value|$campaigns[$p]| -->";
 			$p++;
 			}
 		$campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
+		$qc_campaigns_list .= "> $campaign_id_value - $campaign_name_value<BR>\n";
 		$o++;
 		}
+
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$groups_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($groups_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$group_id_value = $rowx[0];
+		$group_name_value = $rowx[1];
+		$qc_groups_list .= "<input type=\"checkbox\" name=\"qc_groups[]\" value=\"$group_id_value\"";
+		$p=0;
+		while ($p<100)
+			{
+			if ($group_id_value == $qc_groups[$p]) 
+				{
+				$qc_groups_list .= " CHECKED";
+				$qc_groups_value .= " $group_id_value";
+				}
+			$p++;
+			}
+		$qc_groups_list .= "> $group_id_value - $group_name_value<BR>\n";
+		$o++;
+		}
+
 	if (strlen($campaigns_value)>2) {$campaigns_value .= " -";}
+	if (strlen($qc_campaigns_value)>2) {$qc_campaigns_value .= " -";}
+	if (strlen($qc_groups_value)>2) {$qc_groups_value .= " -";}
 	}
 	##### END get campaigns listing for checkboxes #####
 
 
-	if ( (strlen($ADD)==11) or (strlen($ADD)>12) )
+	if ( (strlen($ADD)==11) or (strlen($ADD)>12) or ( ($ADD > 1299) and ($ADD < 9999) ) )
 	{
 	##### get server listing for dynamic pulldown
 	$stmt="SELECT server_ip,server_description from servers order by server_ip";
@@ -1901,6 +2583,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Κωδικός Τηλεφώνου -</B> εδώ μπορείτε να θέσετε ένα προκαθορισμένο κωδικό τηλεφώνου κατά την είσοδο του χειριστή στο vicidial.php.
 
 <BR>
+<A NAME="vicidial_users-active">
+<BR>
+<B>Ενεργή - </B> Το πεδίο αυτό καθορίζει αν ο χρήστης είναι ενεργός στο σύστημα και μπορεί να χρησιμοποιήσει VICIDIAL πόρων. Προεπιλεγμένο είναι Y
+
+<BR>
 <A NAME="vicidial_users-hotkeys_active">
 <BR>
 <B>Hot Keys ενεργός -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να χρησιμοποιήσει τα πλήκτρα γρήγορου τερματισμού vicidial.php.
@@ -1935,10 +2622,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Μεταφορές-</B> Αυτή η επιλογή μπορεί να απαγορεύσει σε έναν χειριστή να ανοίξει την διαδικασία μεταφορά-συνδιάσκεψη. Αν είναι απενεργοποιημένη, ο χρήστης δεν μπορεί να μεαφέρει κλήσεις ή να κάνει κλήση σε τρίτο.
 
-<BR>
-<A NAME="vicidial_users-closer_default_blended">
-<BR>
-<B>Πιό στενή προεπιλογή που συνδυάζεται -</B> αυτή η επιλογή προκαθορίζει απλά το συνδυασμένο τετραγωνίδιο σε μια ΠΙΟ ΣΤΕΝΉ οθόνη σύνδεσης.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-closer_default_blended">
+	<BR>
+	<B>Πιό στενή προεπιλογή που συνδυάζεται -</B> αυτή η επιλογή προκαθορίζει απλά το συνδυασμένο τετραγωνίδιο σε μια ΠΙΟ ΣΤΕΝΉ οθόνη σύνδεσης.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-vicidial_recording_override">
@@ -1946,19 +2640,34 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>VICIDIAL συμπληρωματική προμήθεια καταγραφής -</B> αυτή η επιλογήθα αγνοήσει οποιο δήποτε η επιλογή είναι στην εκστρατεία για τηνκαταγραφή. Τα ΑΤΟΜΑ ΜΕ ΕΙΔΙΚΈΣ ΑΝΑΓΚΕΣ δεν θα αγνοήσουν τηρύθμιση καταγραφής εκστρατείας. Δεν θα θέσει εκτός λειτουργίαςΠΟΤΕ την καταγραφή στον πελάτη.  ONDEMAND είναι η προεπιλογήκαι επιτρέπει στον πράκτορα για να αρχίσει και να σταματήσει όπωςαπαιτείται.  ALLCALLS θα αρχίσει την καταγραφή στον πελάτηόποτε μια κλήση στέλνεται σε έναν πράκτορα.  ALLFORCE θααρχίσει την καταγραφή στον πελάτη όποτε μια κλήση στέλνεται σεέναν πράκτορα που δεν δίνει στον πράκτορα καμία επιλογή νασταματήσει. Για ALLCALLS και ALLFORCE υπάρχει μια επιλογή ναχρησιμοποιηθεί η καθυστέρηση καταγραφής για να περικόψει στιςπολύ σύντομα καταγραφές και recude το φορτίο συστημάτων.
 
 <BR>
+<A NAME="vicidial_users-agent_shift_enforcement_override">
+<BR>
+<B>Agent Shift Επιβολή Override -</B> Η ρύθμιση αυτή θα αντικαταστήσει τους χρήστες ανεξάρτητα από την ομάδα χρηστών που έχει για την εκτέλεση Shift. DISABLED θα χρησιμοποιήσει ο χρήστης ομάδα ρύθμιση. OFF δεν θα επιβάλει σε όλες τις βάρδιες. START θα επιβάλει μόνο το χρόνο σύνδεσης, αλλά δεν θα επηρεάσει έναν πράκτορα που εκτελεί τους πάνω μετατόπιση του χρόνου και αν είναι ήδη συνδεδεμένος in. ALL θα επιβάλλει μετατόπιση χρόνος έναρξης και θα συνδεθείτε ορίζονται μετά από έναν πράκτορα που τρέχουν πάνω από το τέλος του χρόνου τους βάρδια. Η προεπιλογή είναι άτομα με ειδικές ανάγκες.
+
+<BR>
+<A NAME="vicidial_users-alert_enabled">
+<BR>
+<B>Alert Enabled - </B> Το πεδίο αυτό δείχνει κατά πόσο ο μεσάζων έχει τη δυνατότητα web browser ειδοποιήσεις για κλήσεις όταν έρθουν σε vicidial.php συνόδου τους. Η προεπιλογή είναι 0 για τα NO.
+
+<BR>
 <A NAME="vicidial_users-vicidial_users-campaign_ranks">
 <BR>
-<B>Τάξεις εκστρατείας - σε αυτό το τμήμα μπορείτε να καθορίσετε τηντάξη που ένας πράκτορας θα έχει για κάθε εκστρατεία. Αυτές οιτάξεις μπορούν να χρησιμοποιηθούν για να επιτρέψουν τηνπροτιμημένη κλήση καθοδηγώντας όταν τίθεται η επόμενη κλήσηπρακτόρων campaign_rank.
+<B>Τάξεις εκστρατείας - σε αυτό το τμήμα μπορείτε να καθορίσετε τηντάξη που ένας πράκτορας θα έχει για κάθε εκστρατεία. Αυτές οιτάξεις μπορούν να χρησιμοποιηθούν για να επιτρέψουν τηνπροτιμημένη κλήση καθοδηγώντας όταν τίθεται η επόμενη κλήσηπρακτόρων campaign_rank. Επίσης σε αυτό το τμήμα της WEB VARs για κάθε καμπάνια. Αυτά επιτρέπουν κάθε παράγοντα να έχει μια διαφορετική μεταβλητή συμβολοσειρά που μπορεί να προστεθεί στην ηλεκτρονική φόρμα ή SCRIPT καρτέλα URLs από απλά θέτοντας - Α - web_vars - Β - όπως θα την κάθε άλλο τομέα.
 
 <BR>
 <A NAME="vicidial_users-closer_campaigns">
 <BR>
-<B>Εισερχόμενες Ομάδες -</B> Εδώ μπορείτε να επιλέξετε τις εισερχόμενες ομάδες που θέλετε να λαμβάνουν τις κλήσεις , εάν έχετε επιλέξει την εκστρατεία CLOSER. Θα είστε σε θέση επίσης να θέσετε την τάξη, ή το επίπεδοικανότητας, σε αυτό το τμήμα κάθε μιας από τις εισερχόμενεςομάδες καθώς επίσης και όντας σε θέση να δείτε τοναριθμό κλήσεων που παραλαμβάνονται από κάθε εισερχόμενη ομάδαγια αυτόν τον συγκεκριμένο πράκτορα. Επίσης σε αυτό το τμήμα είναι η δυνατότητα να δοθεί στονπράκτορα μια τάξη για κάθε εισερχόμενη ομάδα. Αυτές οι τάξειςμπορούν να χρησιμοποιηθούν για την προτιμημένη κλήση καθοδηγώνταςόταν επιλέγεται εκείνη η επιλογή στην οθόνη-ΟΜΑΔΑΣ.
+<B>Εισερχόμενες Ομάδες -</B> Εδώ μπορείτε να επιλέξετε τις εισερχόμενες ομάδες που θέλετε να λαμβάνουν τις κλήσεις , εάν έχετε επιλέξει την εκστρατεία CLOSER. Θα είστε σε θέση επίσης να θέσετε την τάξη, ή το επίπεδοικανότητας, σε αυτό το τμήμα κάθε μιας από τις εισερχόμενεςομάδες καθώς επίσης και όντας σε θέση να δείτε τοναριθμό κλήσεων που παραλαμβάνονται από κάθε εισερχόμενη ομάδαγια αυτόν τον συγκεκριμένο πράκτορα. Επίσης σε αυτό το τμήμα είναι η δυνατότητα να δοθεί στονπράκτορα μια τάξη για κάθε εισερχόμενη ομάδα. Αυτές οι τάξειςμπορούν να χρησιμοποιηθούν για την προτιμημένη κλήση καθοδηγώνταςόταν επιλέγεται εκείνη η επιλογή στην οθόνη-ΟΜΑΔΑΣ. Επίσης σε αυτό το τμήμα της WEB VARs για κάθε καμπάνια. Αυτά επιτρέπουν κάθε παράγοντα να έχει μια διαφορετική μεταβλητή συμβολοσειρά που μπορεί να προστεθεί στην ηλεκτρονική φόρμα ή SCRIPT καρτέλα URLs από απλά θέτοντας - Α - web_vars - Β - όπως θα την κάθε άλλο τομέα.
 
 <BR>
 <A NAME="vicidial_users-alter_custdata_override">
 <BR>
 <B>Ο πράκτορας αλλάζει τη συμπληρωματική προμήθεια στοιχείωνπελατών -</B> αυτή η επιλογή θα αγνοήσει οποιος δήποτε η επιλογήείναι στην εκστρατεία για την αλλαγή των στοιχείων πελατών.NOT_ACTIVE θα χρησιμοποιήσει οποιου δήποτε που θέτει είναιπαρών για την εκστρατεία.  ALLOW_ALTER θα επιτρέψει πάντα τονπράκτορα να αλλάξει τα στοιχεία πελατών, η των οποίων ρύθμισηεκστρατείας είναι. Η προεπιλογή είναι NOT_ACTIVE.
+
+<BR>
+<A NAME="vicidial_users-alter_custphone_override">
+<BR>
+<B>Agent Alter Πελατών τηλέφωνο Παράκαμψη - </B> Η επιλογή αυτή θα υπερισχύσει του όποια κι αν είναι η επιλογή είναι στην εκστρατεία για την τροποποίηση του πελάτη τον αριθμό του τηλεφώνου. NOT_ACTIVE θα χρησιμοποιήσει όποια ρύθμιση είναι παρόντες κατά την εκστρατεία. ALLOW_ALTER θα επιτρέπει πάντα για τον πράκτορα να τροποποιήσει τον αριθμό τηλεφώνου του πελάτη, δεν το θέμα αυτό η εκστρατεία η ρύθμιση. Προεπιλεγμένο είναι NOT_ACTIVE.
 
 <BR>
 <A NAME="vicidial_users-alter_agent_interface_options">
@@ -1995,10 +2704,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Διαγράψτε τους Απομακρυσμένους Χειριστές -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να διαγράψει τους απομακρυσμένους χειριστές από το σύστημα.
 
-<BR>
-<A NAME="vicidial_users-load_leads">
-<BR>
-<B>Εισαγωγή Οδηγών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να εισάγει τους οδηγούς στον πίνακα vicidial_list μέσω του βασισμένου σε Ιστοσελίδα Εισαγωγέα οδηγών.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-load_leads">
+	<BR>
+	<B>Εισαγωγή Οδηγών -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να εισάγει τους οδηγούς στον πίνακα vicidial_list μέσω του βασισμένου σε Ιστοσελίδα Εισαγωγέα οδηγών.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-campaign_detail">
@@ -2030,10 +2746,17 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Αλλαγή Εκστρατείας Χειριστού -</B> εάν θέσετε σε 1 αυτή την επιλογή, επιτρέπει στο χρήστη να αλλάξει την εκτρατεία όπου ένας πράκτορας έχει συνδεθεί .
 
-<BR>
-<A NAME="vicidial_users-delete_filters">
-<BR>
-<B>Διαγραφή Φίλτρων -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να διαγράφει φίλτρα από το σύστημα.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-delete_filters">
+	<BR>
+	<B>Διαγραφή Φίλτρων -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να διαγράφει φίλτρα από το σύστημα.
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_users-delete_call_times">
@@ -2054,6 +2777,82 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_users-view_reports">
 <BR>
 <B>Εκθέσεις άποψης -</B> αυτή η επιλογή επιτρέπει στο χρήστη για να δειτις εκθέσεις VICIDIAL.
+
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_users-qc_enabled">
+	<BR>
+	<B>QC Enabled - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να συνδεθείτε με το γραφείο ποιοτικού ελέγχου της οθόνης.
+
+	<BR>
+	<A NAME="vicidial_users-qc_user_level">
+	<BR>
+	<B>QC επίπεδο χρήστη - </B> Αυτή η ρύθμιση ορίζει τι ο πράκτορας Ελέγχου Ποιότητας χρήστη επίπεδο. Αυτό θα υπαγορεύσει το επίπεδο λειτουργικότητας για τον αντιπρόσωπο στο τμήμα QC:<BR>
+	1 - Τίποτα δεν Modify<BR>
+	2 - Τίποτα δεν ModifyΕκτός Status<BR>
+	3 - Τροποποιήστε Όλα τα πεδία<BR>
+	4 - Βεβαιωθείτε πρώτου γύρου, QC<BR>
+	5 - Δείτε QC Στατιστικά<BR>
+	6 - Ικανότητα ModifyΕΤΟΙΜΑ αρχεία<BR>
+	7 - Manager Επίπεδο<BR>
+
+	<BR>
+	<A NAME="vicidial_users-qc_pass">
+	<BR>
+	<B>QC Εγγραφή Pass - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι μια εγγραφή έχει περάσει από τον πρώτο γύρο, QC, μετά την επανεξέταση των ρεκόρ.
+
+	<BR>
+	<A NAME="vicidial_users-qc_finish">
+	<BR>
+	<B>QC Εγγραφή Finish - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι μια εγγραφή έχει τελειώσει ο δεύτερος γύρος των QC πέρασε μετά την επανεξέταση των ρεκόρ.
+
+	<BR>
+	<A NAME="vicidial_users-qc_commit">
+	<BR>
+	<B>QC Αναλήψεις Record - </B> Η επιλογή αυτή επιτρέπει στον πράκτορα να διευκρινιστεί ότι ένα ρεκόρ το οποίο έχει δεσμευθεί στην QC. Αυτό δεν είναι πλέον δυνατό να τροποποιηθεί από κανέναν.
+	<?
+	}
+?>
+
+<BR>
+<A NAME="vicidial_users-add_timeclock_log">
+<BR>
+<B>ΠροσθήκηΏρα ρολόι Εγγραφή Εγγραφή - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να προσθέσετε εγγραφές στο μητρώο timeclock.
+
+<BR>
+<A NAME="vicidial_users-modify_timeclock_log">
+<BR>
+<B>ΤροποποιήστεΏρα ρολόι Εγγραφή Εγγραφή - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να τροποποιήσει τις εγγραφές του timeclock log.
+
+<BR>
+<A NAME="vicidial_users-delete_timeclock_log">
+<BR>
+<B>Εγγραφή ΔιαγραφήΏρα ρολόι Record - </B> Η επιλογή αυτή επιτρέπει στο χρήστη να διαγράψει αρχεία στο timeclock log.
+
+<BR>
+<A NAME="vicidial_users-vdc_agent_api_access">
+<BR>
+<B>Agent API Πρόσβαση - </B> Η επιλογή αυτή επιτρέπει τον λογαριασμό που πρέπει να χρησιμοποιούνται με την vicidial πράκτορας API εντολές.
+
+<BR>
+<A NAME="vicidial_users-manager_shift_enforcement_override">
+<BR>
+<B>Manager Shift Επιβολή Override -</B> Η ρύθμιση αυτή ορίζεται σε 1, αν θα επιτρέψει ο διαχειριστής του να εισέλθει στα χρήστη και κωδικό πρόσβασης σε έναν πράκτορα της οθόνης για να παρακάμψετε τους περιορισμούς σχετικά με τη μετατόπιση ενός πράκτορα συνόδου εάν ο πράκτορας προσπαθεί να συνδεθείτε με τους εκτός της βάρδιας. Η προεπιλογή είναι 0.
+
+<BR>
+<A NAME="vicidial_users-download_lists">
+<BR>
+<B>Download Κατάλογοι -</B> Αυτή η ρύθμιση, εάν ρυθμιστεί σε 1 θα επιτρέψει τη Διαχείριση κλικ για να κατεβάσετε την λίστα σύνδεσμο στο κάτω μέρος της οθόνης μια λίστα τροποποίηση για την εξαγωγή του συνόλου του περιεχομένου του καταλόγου σε μια επίπεδη αρχείο δεδομένων. Η προεπιλογή είναι 0.
+
+<BR>
+<A NAME="vicidial_users-export_reports">
+<BR>
+<B>Εξαγωγή Εκθέσεις -</B> Αυτή η ρύθμιση, εάν ρυθμιστεί σε 1 θα επιτρέψει την πρόσβαση του διευθυντή της εξαγωγής κλήση εκθέσεις σχετικά με τις εκθέσεις της οθόνης. Η προεπιλογή είναι 0. Για την εξαγωγή ζητεί έκθεση, ώστε τα ακόλουθα τομέα χρησιμοποιείται για τις εξαγωγές: <BR>call_date,phone_number,status,user,full_name,campaign_id/in-group,vendor_lead_code,source_id,list_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,length_in_sec,user_group,alt_dial/queue_seconds
+
+
 
 
 
@@ -2108,7 +2907,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-web_form_address">
 <BR>
-<B>Ιστοσελίδα -</B> Αυτή είναι η προσαρμοσμένη διεύθυνση που θα σας κατευθύνει για κλήσεις που έρχονται σε αυτήν την ομάδα.
+<B>Ιστοσελίδα -</B> Αυτή είναι η προσαρμοσμένη διεύθυνση που θα σας κατευθύνει για κλήσεις που έρχονται σε αυτήν την ομάδα. Για να προσαρμόσετε το ερώτημα string μετά την ηλεκτρονική φόρμα, απλά αρχίζει την ηλεκτρονική φόρμα με VAR και στη συνέχεια τη διεύθυνση URL που θέλετε να χρησιμοποιήσετε, σε αντικατάσταση των μεταβλητών με τις ονομασίες των μεταβλητών που θέλετε να χρησιμοποιήσετε - Α - phone_number - Β -- όπως ακριβώς και στην καρτέλα scripts τμήμα.
+
+<BR>
+<A NAME="vicidial_campaigns-web_form_target">
+<BR>
+<B>Web Μορφή Target-</B> Αυτό είναι όπου μπορείτε να ρυθμίσετε το έθιμο ιστοσελίδα πλαίσιο ότι η ηλεκτρονική φόρμα θα ανοίξει όταν ο χρήστης κάνει κλικ στην ηλεκτρονική φόρμα κουμπί. Προεπιλεγμένο είναι _blank.
 
 <BR>
 <A NAME="vicidial_campaigns-allow_closers">
@@ -2125,99 +2929,264 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Ομάδες μεταφοράς - με αυτές τις λίστες τετραγωνιδίου μπορείτε ναεπιλέξετε τις ομάδες ότι οι πράκτορες σε αυτήν την εκστρατείαμπορούν να μεταφέρουν τις κλήσεις. Επιτρέψτε ότι Closersπρέπει να επιτραπεί για αυτήν την επιλογή να παρουσιάσει.
 
-<BR>
-<A NAME="vicidial_campaigns-campaign_allow_inbound">
-<BR>
-<B>Επιτρέψτε πλησίον και συνδύασε - αυτό είναι όπου μπορείτε ναθέσετε εάν οι χρήστες αυτής της εκστρατείας θα έχουν τηνεπιλογή να πάρουν τις εισερχόμενες κλήσεις με αυτήν τηνεκστρατεία. Εάν θέλετε να κάνετε συνδυασμένων εισερχόμενος καιεξερχόμενος έπειτα αυτό πρέπει να τεθεί το Υ. Εάν θέλετε μόνονα κάνετε τον εξερχόμενο σχηματισμό σε αυτήν την εκστρατείαθέστε αυτό σε Ν. Default είναι ν.
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_campaigns-campaign_allow_inbound">
+	<BR>
+	<B>Επιτρέψτε πλησίον και συνδύασε - αυτό είναι όπου μπορείτε ναθέσετε εάν οι χρήστες αυτής της εκστρατείας θα έχουν τηνεπιλογή να πάρουν τις εισερχόμενες κλήσεις με αυτήν τηνεκστρατεία. Εάν θέλετε να κάνετε συνδυασμένων εισερχόμενος καιεξερχόμενος έπειτα αυτό πρέπει να τεθεί το Υ. Εάν θέλετε μόνονα κάνετε τον εξερχόμενο σχηματισμό σε αυτήν την εκστρατείαθέστε αυτό σε Ν. Default είναι ν.
 
-<BR>
-<A NAME="vicidial_campaigns-dial_status">
-<BR>
-<B>Κατάσταση Κλήσης -</B> Εδώ ορίζετε τις καταστάσεις που θέλετε να κληθούν μέσα στις λίστες, οι οποίες είναι ενεργές για   την εκστρατεία παρακάτω. Να προσθέσει μια άλλη θέση στον πίνακα, να το επιλέξει από τονεξελισσόμενους κατάλογο και τον κρότο ΠΡΟΣΘΕΤΕΙ. Για να αφαιρέσετεμια από τις θέσεις πινάκων, χτυπήστε στη REMOVE σύνδεση δίπλαστη θέση που θέλετε να αφαιρέσετε.
+	<BR>
+	<A NAME="vicidial_campaigns-dial_status">
+	<BR>
+	<B>Κατάσταση Κλήσης -</B> Εδώ ορίζετε τις καταστάσεις που θέλετε να κληθούν μέσα στις λίστες, οι οποίες είναι ενεργές για   την εκστρατεία παρακάτω. Να προσθέσει μια άλλη θέση στον πίνακα, να το επιλέξει από τονεξελισσόμενους κατάλογο και τον κρότο ΠΡΟΣΘΕΤΕΙ. Για να αφαιρέσετεμια από τις θέσεις πινάκων, χτυπήστε στη REMOVE σύνδεση δίπλαστη θέση που θέλετε να αφαιρέσετε.
 
-<BR>
-<A NAME="vicidial_campaigns-lead_order">
-<BR>
-<B>Ταξινόμηση Λίστας -</B> Σε αυτόν τον κατάλογο επιλογών μπορείτε να επιλέξετε πώς οι οδηγοί, που ταιριάζουν με τις καταστάσεις που επιλέξατε παραπάνω, θα τοποθετηθούν στον hopper:
- <BR> &nbsp; - DOWN: επιλογή των πρώτων οδηγών που εισήχθησαν στον πίνακα vicidial_list
- <BR> &nbsp; - UP: επιλογή των τελευταίων οδηγών που εισήχθησαν στον πίνακα vicidial_list
- <BR> &nbsp; - UP PHONE: επιλογή του υψηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα κάτω
- <BR> &nbsp; - DOWN PHONE: επιλογή του χαμηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα πάνω
- <BR> &nbsp; - UP LAST NAME: έναρξη με τα επίθετα να ξεκινάνε με Ζ και συνεχίζει προς τα κάτω
- <BR> &nbsp; - DOWN LAST NAME: έναρξη με τα επίθετα να ξεκινάνε με Α και συνεχίζει προς τα πάνω
- <BR> &nbsp; - UP COUNT: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα κάτω
- <BR> &nbsp; - DOWN COUNT: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει
- <BR> &nbsp; - DOWN COUNT 2nd NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε άλλο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
- <BR> &nbsp; - DOWN COUNT 3nd NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τρίτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
- <BR> &nbsp; - DOWN COUNT 4th NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τέταρτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
+	<BR>
+	<A NAME="vicidial_campaigns-lead_order">
+	<BR>
+	<B>Ταξινόμηση Λίστας -</B> Σε αυτόν τον κατάλογο επιλογών μπορείτε να επιλέξετε πώς οι οδηγοί, που ταιριάζουν με τις καταστάσεις που επιλέξατε παραπάνω, θα τοποθετηθούν στον hopper:
+	 <BR> &nbsp; - DOWN: επιλογή των πρώτων οδηγών που εισήχθησαν στον πίνακα vicidial_list
+	 <BR> &nbsp; - UP: επιλογή των τελευταίων οδηγών που εισήχθησαν στον πίνακα vicidial_list
+	 <BR> &nbsp; - UP PHONE: επιλογή του υψηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα κάτω
+	 <BR> &nbsp; - DOWN PHONE: επιλογή του χαμηλότερου τηλεφωνικού αριθμού και συνεχίζει προς τα πάνω
+	 <BR> &nbsp; - UP LAST NAME: έναρξη με τα επίθετα να ξεκινάνε με Ζ και συνεχίζει προς τα κάτω
+	 <BR> &nbsp; - DOWN LAST NAME: έναρξη με τα επίθετα να ξεκινάνε με Α και συνεχίζει προς τα πάνω
+	 <BR> &nbsp; - UP COUNT: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα κάτω
+	 <BR> &nbsp; - DOWN COUNT: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει
+	 <BR> &nbsp; - DOWN COUNT 2nd NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε άλλο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
+	 <BR> &nbsp; - DOWN COUNT 3nd NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τρίτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
+	 <BR> &nbsp; - DOWN COUNT 4th NEW: έναρξη με τους λιγότερους σε κλήση οδηγούς και συνεχίζει προς τα πάνω με την εισαγωγή ενός ΝΕΟΥ οδηγού για κάθε τέταρτο οδηγό - Πρέπει να ΜΗΝ έχει νέα επιλεγμένα στις καταστάσεις κλήσεων
 
-<BR>
-<A NAME="vicidial_campaigns-hopper_level">
-<BR>
-<B>Επίπεδο Hopper -</B> Αυτό είναι το πόσους οδηγούς η διαδικασία VDhopper, προσπαθεί να διατηρήσει στον πίνακα vicidial_hopper για αυτήν την εκστρατεία. Εάν η διαδικασία VDhopper τρέχει κάθε λεπτό, ρυθμίστε αυτό λίγο περισσότερο από τον αριθμό των οδηγών που περνούν σε ένα λεπτό.
+	<BR>
+	<A NAME="vicidial_campaigns-hopper_level">
+	<BR>
+	<B>Επίπεδο Hopper -</B> Αυτό είναι το πόσους οδηγούς η διαδικασία VDhopper, προσπαθεί να διατηρήσει στον πίνακα vicidial_hopper για αυτήν την εκστρατεία. Εάν η διαδικασία VDhopper τρέχει κάθε λεπτό, ρυθμίστε αυτό λίγο περισσότερο από τον αριθμό των οδηγών που περνούν σε ένα λεπτό.
 
-<BR>
-<A NAME="vicidial_campaigns-lead_filter_id">
-<BR>
-<B>Φίλτρο Οδηγοιύ -</B> αυτή είναι μία μέθοδος για να δημιουργήτε φίλτρα για την SQL ερώτηση. Χρησιμοποιήστε αυτό το χαρακτηριστικό με προσοχή, είναι εύκολο να σταματήσει το σύστημα με μία μικρή αλλαγή στη δήλωση SQL. Η προεπιλογή είναι ΚΑΜΙΑ.
+	<BR>
+	<A NAME="vicidial_campaigns-lead_filter_id">
+	<BR>
+	<B>Φίλτρο Οδηγοιύ -</B> αυτή είναι μία μέθοδος για να δημιουργήτε φίλτρα για την SQL ερώτηση. Χρησιμοποιήστε αυτό το χαρακτηριστικό με προσοχή, είναι εύκολο να σταματήσει το σύστημα με μία μικρή αλλαγή στη δήλωση SQL. Η προεπιλογή είναι ΚΑΜΙΑ.
 
-<BR>
-<A NAME="vicidial_campaigns-force_reset_hopper">
-<BR>
-<B>Υποχρεωτική Επαναφορά του Hopper -</B> Αυτό σας επιτρέπει καθαρίσετε τα περιεχόμενα κατά την επιβεβαίωση της φόρμας. Αυτό θα συμβεί πάλι όταν η διαδικασία VDhopper θα τρέξει.
+	<BR>
+	<A NAME="vicidial_campaigns-force_reset_hopper">
+	<BR>
+	<B>Υποχρεωτική Επαναφορά του Hopper -</B> Αυτό σας επιτρέπει καθαρίσετε τα περιεχόμενα κατά την επιβεβαίωση της φόρμας. Αυτό θα συμβεί πάλι όταν η διαδικασία VDhopper θα τρέξει.
 
-<BR>
-<A NAME="vicidial_campaigns-dial_method">
-<BR>
-<B>Μέθοδος Κλήσης
+	<BR>
+	<A NAME="vicidial_campaigns-dial_method">
+	<BR>
+	<B>Μέθοδος Κλήσης
  -</B> This field is the way to define how dialing is to take place. If MANUAL then the auto_dial_level will be locked at 0 unless Μέθοδος Κλήσης
- is changed. If RATIO then the normal dialing a number of lines for Active agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. Δεν μπορείτε να αλλάξετε το επίπεδο Αυτόματης Κλήσης, εάν έχετε ορίσει κάποια μέθοδο Προσαρμογής Κλήσεων. Μόνο ο διακομιστής μπορεί να το αλλάξει όταν είναι σε διαδικασία αυτόματων κλήσεων.
-.
+ is changed. If RATIO then the normal dialing a number of lines for Ενεργό agents. ADAPT_HARD_LIMIT will dial predictively up to the dropped percentage and then not allow aggressive dialing once the drop limit is reached until the percentage goes down again. ADAPT_TAPERED allows for running over the dropped percentage in the first half of the shift -as defined by call_time selected for campaign- and gets more strict as the shift goes on. ADAPT_AVERAGE tries to maintain an average or the dropped percentage not imposing hard limits as aggressively as the other two methods. Δεν μπορείτε να αλλάξετε το επίπεδο Αυτόματης Κλήσης, εάν έχετε ορίσει κάποια μέθοδο Προσαρμογής Κλήσεων. Μόνο ο διακομιστής μπορεί να το αλλάξει όταν είναι σε διαδικασία αυτόματων κλήσεων.
+. Εισερχόμενα_MAN επιτρέπει στον αντιπρόσωπο να πραγματοποιηθεί χειροκίνητη κλήση κλήσεις από μια εκστρατεία λίστα, ενώ είναι σε θέση να λάβει εισερχόμενη κλήση κλήσεις μεταξύ εγχειρίδιο κλήσεις.
 
-<BR>
-<A NAME="vicidial_campaigns-auto_dial_level">
-<BR>
-<B>Επίπεδο Αυτόματης Κλήσης -</B> Εδώ είναι που καθορίζεται πόσες γραμμές θα χρησιμοποιούνται ανά ενεργό χρήστη. Μηδέν (0) σημαίνει ότι η αυτόματη κλήση είναι μη ενεργή και οι χρήστες πατούν το πλήκτρο για την κλήση κάθε αριθμού. Διαφορετικά, το σύστημα καλεί γραμμές ίσες με τους ενεργούς χρήστες, πολλαπλασιασμένους με το επίπεδο κλήσης και σύμφωνα με το πόσες γραμμές η εκστρτεία σε κάθε διακομιστή επιτρέπει. Το ADAPT τετραγωνίδιο ΣΥΜΠΛΗΡΩΜΑΤΙΚΗΣ ΠΡΟΜΉΘΕΙΑΣ επιτρέπει σεσας για να αναγκάσει ένα νέο επίπεδο πινάκων ακόμα κι αν ημέθοδος πινάκων είναι σε έναν ADAPT τρόπο. Αυτό είναιχρήσιμο εάν υπάρχει μια δραματική μετατόπιση στην ποιότητα τωνμολύβδων και θέλετε να αλλάξετε δραστικά το dial_level με τοχέρι.
+	<BR>
+	<A NAME="vicidial_campaigns-auto_dial_level">
+	<BR>
+	<B>Επίπεδο Αυτόματης Κλήσης -</B> Εδώ είναι που καθορίζεται πόσες γραμμές θα χρησιμοποιούνται ανά ενεργό χρήστη. Μηδέν (0) σημαίνει ότι η αυτόματη κλήση είναι μη ενεργή και οι χρήστες πατούν το πλήκτρο για την κλήση κάθε αριθμού. Διαφορετικά, το σύστημα καλεί γραμμές ίσες με τους ενεργούς χρήστες, πολλαπλασιασμένους με το επίπεδο κλήσης και σύμφωνα με το πόσες γραμμές η εκστρτεία σε κάθε διακομιστή επιτρέπει. Το ADAPT τετραγωνίδιο ΣΥΜΠΛΗΡΩΜΑΤΙΚΗΣ ΠΡΟΜΉΘΕΙΑΣ επιτρέπει σεσας για να αναγκάσει ένα νέο επίπεδο πινάκων ακόμα κι αν ημέθοδος πινάκων είναι σε έναν ADAPT τρόπο. Αυτό είναιχρήσιμο εάν υπάρχει μια δραματική μετατόπιση στην ποιότητα τωνμολύβδων και θέλετε να αλλάξετε δραστικά το dial_level με τοχέρι.
 
-<BR>
-<A NAME="vicidial_campaigns-available_only_ratio_tally">
-<BR>
-<B>Διαθέσιμα μόνο ετικέτες  -</B> Εάν θέσετε σε Ν αυτό το πεδίο, θα αφήσει εκτός τις καταστάσεις των χειριστών out INCALL και QUEUE, καθώς υπολογίζεται ο αριθμός των κλήσεων όταν δεν είναι σε κατάσταση κλήσης MANUAL. Προκαθορισμένα είναι Ο.
+	<BR>
+	<A NAME="vicidial_campaigns-available_only_ratio_tally">
+	<BR>
+	<B>Διαθέσιμα μόνο ετικέτες  -</B> Εάν θέσετε σε Ν αυτό το πεδίο, θα αφήσει εκτός τις καταστάσεις των χειριστών out INCALL και QUEUE, καθώς υπολογίζεται ο αριθμός των κλήσεων όταν δεν είναι σε κατάσταση κλήσης MANUAL. Προκαθορισμένα είναι Ο.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_dropped_percentage">
-<BR>
-<B>Ποσοστό Ορίου Εγκατ. Κλήσεων -</B> Σε αυτό το πεδίο μπορείτε να θέσετε το όριο του ποσοστού εγκατ. κλήσεων καθώς χρησιμοποιείτε μία μέθοδος προσαρμοσμένης-πρόβλεψη κλήσεων, όχι MANUAL ή RATIO.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_dropped_percentage">
+	<BR>
+	<B>Ποσοστό Ορίου Εγκατ. Κλήσεων -</B> Σε αυτό το πεδίο μπορείτε να θέσετε το όριο του ποσοστού εγκατ. κλήσεων καθώς χρησιμοποιείτε μία μέθοδος προσαρμοσμένης-πρόβλεψη κλήσεων, όχι MANUAL ή RATIO.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_maximum_level">
-<BR>
-<B>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων -</B> Σε αυτό το πεδίο μπορείτε να θέσετε το όριο για το όριο του αριθμού γραμμών για κάθε χειριστή καθώς χρησιμοποιείτε μία μέθοδος προσαρμοσμένης-πρόβλεψη κλήσεων, όχι MANUAL ή RATIO. Αυτός ο αριθμός μπορεί να είναι μεγαλύτερος από το επίπεδο αυτόματης κλήσης εάν το υλικό σας το υποστηρίζει. Η τιμή πρέπει να είναι θετικός αριθμός μεγαλύτερος από ένα και μπορεί να έχει δεκαδικά. Προκαθορισμένα είναι 3.0.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_maximum_level">
+	<BR>
+	<B>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων -</B> Σε αυτό το πεδίο μπορείτε να θέσετε το όριο για το όριο του αριθμού γραμμών για κάθε χειριστή καθώς χρησιμοποιείτε μία μέθοδος προσαρμοσμένης-πρόβλεψη κλήσεων, όχι MANUAL ή RATIO. Αυτός ο αριθμός μπορεί να είναι μεγαλύτερος από το επίπεδο αυτόματης κλήσης εάν το υλικό σας το υποστηρίζει. Η τιμή πρέπει να είναι θετικός αριθμός μεγαλύτερος από ένα και μπορεί να έχει δεκαδικά. Προκαθορισμένα είναι 3.0.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_latest_server_time">
-<BR>
-<B>Τελευταίος Χρόνος Διακομιστή -</B> Αυτό το πεδίο χρησιμοποιείτε μόνο από την μέθοδο ADAPT_TAPERED. Θα πρέπει να καταχωρήσετε την ώρα και τα λεπτά που θα σταματήσει τις κλήσεις η εκστρατεία. Αυτό επιτρέπει στον αλγόριθμο να αποφασίσει πόσο επιθετικά θα κάνει κλήσεις και πόσο χρόνο.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_latest_server_time">
+	<BR>
+	<B>Τελευταίος Χρόνος Διακομιστή -</B> Αυτό το πεδίο χρησιμοποιείτε μόνο από την μέθοδο ADAPT_TAPERED. Θα πρέπει να καταχωρήσετε την ώρα και τα λεπτά που θα σταματήσει τις κλήσεις η εκστρατεία. Αυτό επιτρέπει στον αλγόριθμο να αποφασίσει πόσο επιθετικά θα κάνει κλήσεις και πόσο χρόνο.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_intensity">
-<BR>
-<B>Ενταση Τροποποίησης Προσαρμογής -</B> Αυτό το πεδίο χρησιμοποιείτε για να αλλάζει ένταση προβλέψεων είτε υψηλότερα ή χαμηλότερα. Προκαθορισμένα είναι 0. Αυτό το πεδίο δεν χρησιμοποιείται από τις μεθόδους  MANUAL ή RATIO.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_intensity">
+	<BR>
+	<B>Ενταση Τροποποίησης Προσαρμογής -</B> Αυτό το πεδίο χρησιμοποιείτε για να αλλάζει ένταση προβλέψεων είτε υψηλότερα ή χαμηλότερα. Προκαθορισμένα είναι 0. Αυτό το πεδίο δεν χρησιμοποιείται από τις μεθόδους  MANUAL ή RATIO.
 
-<BR>
-<A NAME="vicidial_campaigns-adaptive_dl_diff_target">
-<BR>
-<B>Επίπεδο Κλήσεων Μεταβολής Στόχου -</B> Αυτό το πεδίο χρησιμοποιείτε για να έχει στόχο ένα συγκεκριμένο αριθμό χειριστών να περιμένουν κλήσεις ή κλήσεις να περιμένουν για χειριστές. Π.χ. εάν θέλετε πάντα να έχετε κατά μέσο όρο έναν χειριστή ελεύθερο για ν παίρνει τις κλήσεις, τότε πρέπει να το θέσετε σε -1. Εάν στόχος είναι να έχετε πάντα μία κλήση σε αναμονή για ένα χειριστή, τότε πρέπει να το θέσετε σε 1. Προκαθορισμένα είναι 0. Αυτό το πεδίο δεν χρησιμοποιείται από τις μεθόδους  MANUAL ή RATIO.
+	<BR>
+	<A NAME="vicidial_campaigns-adaptive_dl_diff_target">
+	<BR>
+	<B>Επίπεδο Κλήσεων Μεταβολής Στόχου -</B> Αυτό το πεδίο χρησιμοποιείτε για να έχει στόχο ένα συγκεκριμένο αριθμό χειριστών να περιμένουν κλήσεις ή κλήσεις να περιμένουν για χειριστές. Π.χ. εάν θέλετε πάντα να έχετε κατά μέσο όρο έναν χειριστή ελεύθερο για ν παίρνει τις κλήσεις, τότε πρέπει να το θέσετε σε -1. Εάν στόχος είναι να έχετε πάντα μία κλήση σε αναμονή για ένα χειριστή, τότε πρέπει να το θέσετε σε 1. Προκαθορισμένα είναι 0. Αυτό το πεδίο δεν χρησιμοποιείται από τις μεθόδους  MANUAL ή RATIO.
 
-<BR>
-<A NAME="vicidial_campaigns-concurrent_transfers">
-<BR>
-<B>Ταυτόχρονες μεταφορές -</B> αυτή η ρύθμιση χρησιμοποιείται για νακαθορίσει τον αριθμό κλήσεων που μπορεί να σταλεί στουςπράκτορες συγχρόνως. Συνιστάται αυτή η ρύθμιση να αφήνεται στοΑΥΤΟΚΙΝΗΤΟ. Αυτός ο τομέας δεν χρησιμοποιείται με τη ΧΕΙΡΩΝΑΚΤΙΚΗμέθοδο πινάκων.
+	<BR>
+	<A NAME="vicidial_campaigns-concurrent_transfers">
+	<BR>
+	<B>Ταυτόχρονες μεταφορές -</B> αυτή η ρύθμιση χρησιμοποιείται για νακαθορίσει τον αριθμό κλήσεων που μπορεί να σταλεί στουςπράκτορες συγχρόνως. Συνιστάται αυτή η ρύθμιση να αφήνεται στοΑΥΤΟΚΙΝΗΤΟ. Αυτός ο τομέας δεν χρησιμοποιείται με τη ΧΕΙΡΩΝΑΚΤΙΚΗμέθοδο πινάκων.
 
-<BR>
-<A NAME="vicidial_campaigns-auto_alt_dial">
-<BR>
-<B>Αυτόματος ALT-ARJCMO'S που σχηματίζει -</B> αυτή η ρύθμισηχρησιμοποιείται για να σχηματίσει αυτόματα τους εναλλάσσομαιτομείς αριθμού σχηματίζοντας σε ΑΝΑΛΟΓΙΑ και ΝΑ ΠΡΟΣΑΡΜΟΣΕΙ τιςμεθόδους πινάκων όταν δεν υπάρχει καμία επαφή στον κύριοτηλεφωνικό αριθμό για έναν μόλυβδο, τις θέσεις NA, β,συνεχούς ρεύματος και ν. Αυτή η ρύθμιση δεν χρησιμοποιείται με τηΧΕΙΡΩΝΑΚΤΙΚΗ μέθοδο πινάκων.
+	<BR>
+	<A NAME="vicidial_campaigns-queue_priority">
+	<BR>
+	<B>Κοτσίδας Προτεραιότητα - </B> Αυτή η ρύθμιση χρησιμοποιείται για να καθορίσει τη σειρά με την οποία οι εξερχόμενες κλήσεις από αυτή την εκστρατεία θα πρέπει να απαντηθούν σε σχέση με τις εισερχόμενες κλήσεις αν η συγκεκριμένη καμπάνια είναι αναμεμειγμένο σε λειτουργία.
+
+	<BR>
+	<A NAME="vicidial_campaigns-auto_alt_dial">
+	<BR>
+	<B>Αυτόματος ALT-ARJCMO'S που σχηματίζει -</B> αυτή η ρύθμισηχρησιμοποιείται για να σχηματίσει αυτόματα τους εναλλάσσομαιτομείς αριθμού σχηματίζοντας σε ΑΝΑΛΟΓΙΑ και ΝΑ ΠΡΟΣΑΡΜΟΣΕΙ τιςμεθόδους πινάκων όταν δεν υπάρχει καμία επαφή στον κύριοτηλεφωνικό αριθμό για έναν μόλυβδο, τις θέσεις NA, β,συνεχούς ρεύματος και ν. Αυτή η ρύθμιση δεν χρησιμοποιείται με τηΧΕΙΡΩΝΑΚΤΙΚΗ μέθοδο πινάκων. EXTENDED αναπληρωματικών αριθμοί είναι αριθμοί που φορτώνονται στο σύστημα εκτός του κανονικού οδηγήσει πληροφορίες οθόνης. Χρησιμοποιώντας EXTENDED σας μπορεί να έχει εκατοντάδες αριθμούς τηλεφώνου για ένα μόνο πελάτη ρεκόρ.
+
+	<BR>
+	<A NAME="vicidial_campaigns-dial_timeout">
+	<BR>
+	<B>Κλήση Εκτός Χρόνου -</B> άν έχει οριστεί, οι κλήσεις που φυσιολογικά θα έκλειναν μετά το χρόνο που έχει οριστεί στο extensions.conf, θα κλείσουν σε αυτόν τον χρόνο εάν είναι μικρότερος του extensions.conf. Αυτό επιτρέπει στην γρήγορη αλλαγή των χρόνων από διακομιστή σε διακομιστή και περιορίζοντας τα αοτελέσματα σε μία εκστρατεία. Εάν έχετε πολλές κλήσεις με Αυτόματους Τηλεφωνητές ή Φωνητικών Ταχυδρομείων, μπορείτε να αλλάξετε αυτή την τιμή μεταξύ 21-26 και να δείτε αν τα αποτελέσματα είναι καλύτερα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-campaign_vdad_exten">
+	<BR>
+	<B>Καμπάνια VDAD επέκταση -</B> Το πεδίο αυτό επιτρέπει για μια προσαρμοσμένη VDAD μεταφορά επέκταση. Αυτό σας επιτρέπει να χρησιμοποιήσετε διάφορες μεθόδους χειρισμού κλήσεων, ανάλογα με την καμπάνια σας. 
+- 8364 - 8368 ως ίδια
+- 8365 - Θα στείλετε την πρόσκληση σε ένα μόνο παράγοντα στον ίδιο διακομιστή, όπως είναι η πρόσκληση για
+- 8366 - Χρησιμοποιείται για Τύπο-1 εκστρατείες και έρευνα
+- 8367 - Θα προσπαθήσουμε πρώτα να στείλετε την πρόσκληση σε έναν πράκτορα για τον τοπικό διακομιστή, τότε θα ψάξει για άλλους servers
+  - 8368 - DEFAULT � Will send the call to the next available agent no matter what server they are on
+- 8369 - Χρησιμοποιείται για τηλεφωνητή Ανίχνευση ότι μετά, ίδια συμπεριφορά ως 8368
+- 8373 - Χρησιμοποιείται για τηλεφωνητή Ανίχνευση μετά την ίδια συμπεριφορά ως 8366
+
+	<BR>
+	<A NAME="vicidial_campaigns-am_message_exten">
+	<BR>
+	<B>Μήνυμα αυτόματου τηλεφωνητού -</B> αυτός το πεδίο χρησιμοποιείτε για τις τυφλές κλήσεις μεταφοράς όταν παίρνει ο χειριστής έναν αυτόματο τηλεφωνητή και χτυπά στο πλήκτρο μηνυμάτων αυτόματων τηλεφωνητών στο πλαίσιο διασκέψεων μεταφοράς. Πρέπει το θέσετε αυτό στο dial plan - extensions.conf - και σιγουρευτείτε ότι παίζει ένα αρχείο μουσικής κατόπιν κλείνει το τηλέφωνο. 
+
+	<BR>
+	<A NAME="vicidial_campaigns-amd_send_to_vmx">
+	<BR>
+	<B>AMD στέλνει στο VM -</B> αυτές οι επιλογές επιτρέπουν να καθορίσετε εάν ένα μήνυμα αφήνεται σε έναν αυτόματο τηλεφωνητή όταν ανιχνεύεται ότι η κλήση είναι ένας αυτόματος τηλεφωνητής και εάν το AMD είναι ενεργό.
+
+	<BR>
+	<A NAME="vicidial_campaigns-cpd_amd_action">
+	<BR>
+	<B>CPD AMD Δράση - </B> Αν χρησιμοποιείτε τον Sangoma ParaXip Πρόσκληση πρόοδος Ανίχνευση λογισμικό και στη συνέχεια θα θέλετε να ενεργοποιήσετε αυτή τη ρύθμιση, είτε να DISPO που θα διαθέσεις την πρόσκληση ως AA και να κολλήσει το πάνω αν η πρόσκληση είναι υπό επεξεργασία και δεν έχει σταλεί σε έναν πράκτορα ή ακόμη μήνυμα που θα αποστείλει την πρόσκληση προς το τηλεφωνητή Μήνυμα ορίζεται για αυτή την καμπάνια. Προεπιλεγμένο είναι DISABLED.
+
+	<BR>
+	<A NAME="vicidial_campaigns-alt_number_dialing">
+	<BR>
+	<B>Κλήση Εναλ Αρ Χρήστη -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να κάνει χειροκίνητη κλήση του εναλλακτικού αριθμού τηλεφώνου ή το πεδίο address3 μετά την κλήση του κυρίου αριθμού.
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_call_seconds">
+	<BR>
+	<B>Δευτερ. Εγκαταλ. Κλήσης -</B> Ο αριθμός των δευτερολέπτων από την στιγμή που ο πελάτης σηκώνει το τηλ μέχρι η κλήση να θεωρηθεί εγκαταλειμένη. Μόνο για εξερχόμενες κλήσεις  .
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_action">
+	<BR>
+	<B>Drop δράσης - </B> Αυτό το μενού σας επιτρέπει να διαλέξετε ό, τι συμβαίνει σε μια κλήση όταν έχει να περιμένει περισσότερο από ό, τι έχει οριστεί στο Drop Call δευτερόλεπτα τομέα. HANGUP απλά θα κλείσεις την κλήση, το μήνυμα θα αποστείλει την πρόσκληση της Drop παράταση που έχετε ορίζονται κατωτέρω, τηλεφωνητή θα απευθύνει την πρόσκληση προς το τηλεφωνητή θέση που έχετε IN_GROUP ορίζονται κατωτέρω, και θα απευθύνει την πρόσκληση στην ομάδα Inbound που καθορίζονται κατωτέρω
+
+	<BR>
+	<A NAME="vicidial_campaigns-safe_harbor_exten">
+	<BR>
+	<B>Εσωτ.σύνδεση Ασφαλούς Φύλαξης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Ασφαλής Φύλαξης στον διακομιστή.
+
+	<BR>
+	<A NAME="vicidial_campaigns-voicemail_ext">
+	<BR>
+	<B>Φωνητικό Ταχυδρομείο -</B> Εάν έχει οριστεί, οι κλήσεις που φυσιολογικά θα ΕΓΚΑΤΑΛΕΙΠΟΝΤΑΝ, θα κατευθυνθούν σε αυό το φωνητικό ταχυδρομείο, ώστε να ακούσετε και να αφήσετε ένα μήνυμα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-drop_inbound_group">
+	<BR>
+	<B>Drop Μεταφορά Όμιλος - </B> Αν Drop Δράσης έχει οριστεί σε IN_GROUP, η πρόσκληση θα σταλεί σε αυτή την εισερχόμενη ομάδα εάν ανέρχεται Drop Call Δευτερόλεπτα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-no_hopper_leads_logins">
+	<BR>
+	<B>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins -</B> εάν θέστε τοΥ, επιτρέπει στους πράκτορες στη σύνδεση στην εκστρατεία ακόμα κιαν δεν υπάρχει κανένας μόλυβδος που φορτώνεται στη χοάνη γιαεκείνη την εκστρατεία. Αυτή η λειτουργία δεν απαιτείται στιςεκστρατείες στενός-τύπων. Η προεπιλογή είναι ν.
+
+	<BR>
+	<A NAME="vicidial_campaigns-list_order_mix">
+	<BR>
+	<B>Μίγμα διαταγής καταλόγων - αγνοεί τους τομείς θέσης διαταγήςκαι πινάκων μολύβδου. Θα χρησιμοποιήσει τις παραμέτρους καταλόγωνκαι θέσης για την επιλεγμένη είσοδο μιγμάτων καταλόγων στο υπο-τμήμα μιγμάτων καταλόγων αντ' αυτού. Η προεπιλογή είναι ΕΚΤΟΣΛΕΙΤΟΥΡΓΊΑΣ.
+
+	<BR>
+	<A NAME="vicidial_campaigns-vcl_id">
+	<BR>
+	<B>Ταυτότητα μιγμάτων καταλόγων - ταυτότητα του μίγματος καταλόγων.Πρέπει να είστε από 2-20 χαρακτήρες στο μήκος χωρίς ταδιαστήματα ή άλλη ειδική στίξη.
+
+	<BR>
+	<A NAME="vicidial_campaigns-vcl_name">
+	<BR>
+	<B>Όνομα μιγμάτων καταλόγων - περιγραφικό όνομα του μίγματοςκαταλόγων. Πρέπει να είστε από 2-50 χαρακτήρες στο μήκος.
+
+	<BR>
+	<A NAME="vicidial_campaigns-list_mix_container">
+	<BR>
+	<B>Λεπτομέρεια μιγμάτων καταλόγων - η σύνθεση της εισόδου μιγμάτωνκαταλόγων. Περιέχει τον κατάλογο ταυτότητα, τη διαταγή μιγμάτων,τα ποσοστά και τις θέσεις που αποτελούν αυτό το μίγμα καταλόγων.Τα ποσοστά πρέπει πάντα να προσθέσουν μέχρι 100, και οικατάλογοι όλοι πρέπει να είναι ενεργοί και καθορισμένοι τηνεκστρατεία για την είσοδο μιγμάτων διαταγής που ενεργοποιείται.
+
+	<BR>
+	<A NAME="vicidial_campaigns-mix_method">
+	<BR>
+	<B>Μέθοδος μιγμάτων καταλόγων - η μέθοδος όλα τα μέρη τηςλεπτομέρειας μιγμάτων καταλόγων από κοινού.  EVEN_MIX θααναμίξει τους μολύβδους από κάθε μέρος που παρεμβάλλεται λευκέςσελίδες με τα άλλα μέρη, όπως αυτό το 1,2,3,1,2,3,1,2,3.IN_ORDER θα βάλει τους μολύβδους στη διαταγή στην οποίαπαρατίθενται στην οθόνη λεπτομέρειας μιγμάτων καταλόγων1,1,1,2,2,2,3,3,3. ΤΥΧΑΊΑ θα τους βάλουν στην ΤΥΧΑΊΑ προεπιλογήδιαταγής 1,3,2,1,1,3,2,1,3. είναι IN_ORDER.
+
+	<BR>
+	<A NAME="vicidial_campaigns-agent_extended_alt_dial">
+	<BR>
+	<B>Agent Screen Εκτεταμένη Alt Dial - </B> Αυτό το χαρακτηριστικό επιτρέπει σε υπαλλήλους να επεκταθεί η πρόσβαση των αναπληρωματικών τους αριθμούς τηλεφώνου για οδηγεί πέρα από την κανονική Alt τηλέφωνο και Address3 τομείς που μπορούν να χρησιμοποιηθούν σε VICIDIAL για αριθμούς τηλεφώνου πέραν της κύριας αριθμό τηλεφώνου. Η παράταση μπορεί να είναι αριθμοί τηλεφώνου κλήσης αυτόματα χρησιμοποιώντας το πρόγραμμα Auto-Alt-Dial χαρακτηριστικό στο VICIDIAL ρυθμίσεις της καμπάνιας, αλλά αυτό που επιτρέπει Agent Screen χαρακτηριστικό θα επιτρέψει επίσης τον αντιπρόσωπο για να καλέσετε τους αριθμούς αυτούς από τους πράκτορα οθόνη, καθώς και να επεξεργαστούν τις πληροφορίες.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_first_audio_file">
+	<BR>
+	<B>Έρευνα Πρώτο αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται από τη στιγμή που ο πελάτης παραλαμβάνει το τηλέφωνο όταν τρέχει μια έρευνα καμπάνια.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_dtmf_digits">
+	<BR>
+	<B>Έρευνα DTMF Digits - </B> Αυτό το πεδίο όπου θα καθοριστούν οι θέσεις ότι ο πελάτης μπορεί να πατήσει ως επιλογή για μια έρευνα της καμπάνιας. ψηφία DTMF είναι έγκυρο0123456789*#
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_digit">
+	<BR>
+	<B>Έρευνα δεν ενδιαφέρεται Digit - </B> Αυτό το πεδίο όπου θα καθορίσει ο πελάτης ψηφίο πιεστεί θα δείτε ότι δεν ενδιαφέρονται.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_status">
+	<BR>
+	<B>Έρευνα δεν ενδιαφέρεται Status - </B> Το πεδίο αυτό είναι που έχετε επιλέξει το καθεστώς που θα χρησιμοποιηθεί για δεν ενδιαφέρεται. DNC Εάν χρησιμοποιείται και η καμπάνια είναι ρυθμισμένη να χρησιμοποιεί DNC στη συνέχεια τον αριθμό τηλεφώνου, θα προστίθεται αυτόματα στο VICIDIAL εσωτερική DNC λίστα.και πιθανώς η εκστρατεία ειδικά DNC λίστα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_opt_in_audio_file">
+	<BR>
+	<B>Έρευνα Opt-σε αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται όταν ο πελάτης έχει επιλέξει-in με την έρευνα, δεν επέλεξε-ή που δεν απάντησαν και αν η μη ανταπόκριση ενέργεια έχει οριστεί σε OptOut. Μετά από αυτό το αρχείο ήχου παίζεται, η μέθοδος έρευνας δράση.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_ni_audio_file">
+	<BR>
+	<B>Έρευνα δεν ενδιαφέρεται αρχείο ήχου - </B> Αυτό είναι το όνομα αρχείου ήχου που παίζεται όταν ο πελάτης έχει επιλέξει-από την έρευνα, δεν επέλεξε-ή σε περίπτωση που δεν απαντήσει η μη ανταπόκριση ενέργεια έχει οριστεί σε OptIn. Μετά από αυτό το αρχείο ήχου παίζεται, η πρόσκληση θα είναι ανηρτημένα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_method">
+	<BR>
+	<B>Μέθοδος Έρευνα - </B> Αυτή η επιλογή καθορίζει τι θα συμβεί σε μια κλήση μετά ο πελάτης επέλεξε-in. AGENT_XFER θα αποστείλει την πρόσκληση για το επόμενο διαθέσιμο πράκτορα. Τηλεφωνητής θα αποστείλει την πρόσκληση προς το τηλεφωνητή θέση που καθορίζεται στο Τηλεφωνητής τομέα. ΕΠΕΚΤΑΣΗ θα στείλει ο πελάτης με την παράταση που ορίζεται στην έκθεση Xfer Επέκταση τομέα. HANGUP θα κλείσεις τον πελάτη. CAMPREC_60_WAV θα στείλει ο πελάτης να έχουμε μια καταγραφή που γίνεται με τους απάντηση, η καταγραφή αυτή θα πρέπει να τοποθετούνται σε ένα φάκελο με το όνομα, όπως η εκστρατεία στο εσωτερικό της καμπάνιας Έρευνα Καταγραφή Directory.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_no_response_action">
+	<BR>
+	<B>Έρευνα της μη αντίδρασης Δράση - </B> Αυτό είναι που σας καθορίζουν τι θα συμβεί αν δεν υπάρχει απάντηση στο ερώτημα της έρευνας. OptIn θα στείλει την πρόσκληση για την Έρευνα για την μέθοδο και αν ο πελάτης θα πατήσει το ψηφίο DTMF. OptOut θα στείλει ο πελάτης για να μέθοδος έρευνας, ακόμα και εάν δεν πιέσετε ένα ψηφίο DTMF.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_response_digit_map">
+	<BR>
+	<B>Έρευνα Απάντηση Digit Map - </B> Αυτό είναι το σημείο όπου μπορείτε να ορίσετε μια περιγραφή για να πάνε με κάθε ψηφίο DTMF επιλογή που ο πελάτης μπορεί να επιλέξει.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_xfer_exten">
+	<BR>
+	<B>Έρευνα Xfer Επέκταση - </B>, εάν η έρευνα Μέθοδος ΕΠΕΚΤΑΣΗ είναι επιλεγμένο τότε ο πελάτης θα πρέπει να απευθύνεται έκκληση για την επέκταση αυτής της dialplan.
+
+	<BR>
+	<A NAME="vicidial_campaigns-survey_camp_record_dir">
+	<BR>
+	<B>Έρευνα Καμπάνια Καταγραφή Directory - </B> Εάν η μέθοδος έρευνας της CAMPREC_60_WAV είναι επιλεγμένο, τότε η αντίδραση των πελατών θα πρέπει να καταχωρούνται και να τοποθετούνται σε έναν κατάλογο το όνομα του από την εκστρατεία στο εσωτερικό αυτού του καταλόγου.
+
+	<?
+	}
+?>
 
 <BR>
 <A NAME="vicidial_campaigns-next_agent_call">
@@ -2236,11 +3205,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Τοπική Ωρα Κλήσης -</B> Εδώ, μπορείτε να ορίσετε τις ώρες που θα θέλατε να γίνουν οι κλήσεις. Αυτό ελέγχετε από τον κωδικό περις και ρυθμίζεται για Daylight Savings εάν είναι εφαρμόσιμο.
 
 <BR>
-<A NAME="vicidial_campaigns-dial_timeout">
-<BR>
-<B>Κλήση Εκτός Χρόνου -</B> άν έχει οριστεί, οι κλήσεις που φυσιολογικά θα έκλειναν μετά το χρόνο που έχει οριστεί στο extensions.conf, θα κλείσουν σε αυτόν τον χρόνο εάν είναι μικρότερος του extensions.conf. Αυτό επιτρέπει στην γρήγορη αλλαγή των χρόνων από διακομιστή σε διακομιστή και περιορίζοντας τα αοτελέσματα σε μία εκστρατεία. Εάν έχετε πολλές κλήσεις με Αυτόματους Τηλεφωνητές ή Φωνητικών Ταχυδρομείων, μπορείτε να αλλάξετε αυτή την τιμή μεταξύ 21-26 και να δείτε αν τα αποτελέσματα είναι καλύτερα.
-
-<BR>
 <A NAME="vicidial_campaigns-dial_prefix">
 <BR>
 <B>Πρόθεμα Κλήσης -</B> Αυτό το ο επιτρέπει την πιο εύκολη αλλαγή της διαδρομής της κλήσης να βγει έξω μέσω διαφορετικής μεθόδου, χωρίς να γίνει επαναφόρτωση στο Asterisk. Προκαθορισμένο είναι το 9 βασισμένο σύμφωνα με το 91NXXNXXXXXX στο σχέδιο κλήσεων - extensions.conf.
@@ -2254,11 +3218,6 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_campaigns-campaign_cid">
 <BR>
 <B>CallerID Εκστρατείας -</B> Αυτός ο τομέας επιτρέπει την αποστολή ενός αριθμού συνήθειας callerid στις εξερχόμενες κλήσεις. Αυτό είναι ο αριθμός που θα παρουσίαζε στο callerid του προσώπου που καλείτε. Η προεπιλογή είναι ΑΓΝΩΣΤΗ. Εάν χρησιμοποιείτε το T1 ή Eί να σχηματίσει έξω αυτήν την επιλογή είναι μόνο διαθέσιμος εάν χρησιμοποιετε PRIs - ISDN Tί ή Eί - που ανοίγουν το χαρακτηριστικό γνώρισμα συνήθειας callerid, αυτό δεν θα λειτουργήσει με την υπηρεσία ληστεύω-κομματιών - RBS - κυκλώματα. Αυτό θα λειτουργήσει επίσης μέσω του περισσότερου VOIP - ΓΟΥΛΙΑ ή κορμοί IAX - προμηθευτές που επιτρέπουν δυναμικό εξερχόμενο callerID. Η σνήθεια callerID ισχύει μόνο για τις κλήσεις που τοποθετούνται για την εκστρατεία VICIDIAL άμεσα, οποιεσδήποτε κλήσεις ή μεταφορές 3$ων συμβαλλόμενων μερών δεν θα στείλουν τη συνήθεια callerID. ΣΗΜΕΙΩΣΗ: Μερικές φορές να βάλει ΑΓΝΩΣΤΗ ή ΙΔΙΩΤΙΚΗ στον τομέα θα παραγάγει την αποστολή του αριθμού προεπιλογής σας callerID από το μεταφορέα σας με τις κλήσεις. Μπορείτε να θελήσετε να εξετάσετε αυτό και να υποβάλετε 0000000000 ο τομέας callerid αντ' αυτού εάν δεν θέλετε να σας στείλετε CallerID.
-
-<BR>
-<A NAME="vicidial_campaigns-campaign_vdad_exten">
-<BR>
-<B>Τηλ.Σύνδεση Εκστρατείας VDAD -</B> Αυτό το πεδίο επιτρέπει γαι μία προσαρμόσιμη VDAD  εσωτ.σύνδεση μεταφοράς. Αυτό σας επιτρέπει να χρησιμοποιήσετε διαφορετικές διαδικασίες VDADtransfer.agi, σύμφωνα με την κστρατεία. Η προκαθορισμένη AGI μεταφορά - εσωτ.σύνδ. 8365 agi VDADtransfer.agi - στέλνει αμέσως τις κλήσεις στον χρήστη, μόλις το σηκώσουν. Ενα πρόσθετο AGI παράεα πολιτικής έρευνας συμπεριλαμβάνεται - 8366 agi - VDADtransferSURVEY.agi - όπου παίζει ένα μήνυμα στο κληθέν πρόσωπο και επιτρέπει να κάνουν επιλογς με τα πλήκτρα.
 
 <BR>
 <A NAME="vicidial_campaigns-campaign_rec_exten">
@@ -2291,49 +3250,14 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Κατά την έναρξη κλήσης -</B> αυτές οι επιλογές επιτρέπουν να επιλέξετε εάν θέλετε την αυτόματη έναρξη μίας ιστο σελίδας σε ένα διαφορετικό παράθυρο, αυτόματη μεάβαση στον Βοηθό ή τίποτα. 
 
 <BR>
-<A NAME="vicidial_campaigns-am_message_exten">
-<BR>
-<B>Μήνυμα αυτόματου τηλεφωνητού -</B> αυτός το πεδίο χρησιμοποιείτε για τις τυφλές κλήσεις μεταφοράς όταν παίρνει ο χειριστής έναν αυτόματο τηλεφωνητή και χτυπά στο πλήκτρο μηνυμάτων αυτόματων τηλεφωνητών στο πλαίσιο διασκέψεων μεταφοράς. Πρέπει το θέσετε αυτό στο dial plan - extensions.conf - και σιγουρευτείτε ότι παίζει ένα αρχείο μουσικής κατόπιν κλείνει το τηλέφωνο. 
-
-<BR>
-<A NAME="vicidial_campaigns-amd_send_to_vmx">
-<BR>
-<B>AMD στέλνει στο VM -</B> αυτές οι επιλογές επιτρέπουν να καθορίσετε εάν ένα μήνυμα αφήνεται σε έναν αυτόματο τηλεφωνητή όταν ανιχνεύεται ότι η κλήση είναι ένας αυτόματος τηλεφωνητής και εάν το AMD είναι ενεργό.
-
-<BR>
 <A NAME="vicidial_campaigns-xferconf_a_dtmf">
 <BR>
 <B>Xfer- Συνδ DTMF -</B> αυτά τα τέσσερα πεδία επιτρέπουν να έχετε δύο σύνολα συνδιάσκεψης μεταφοράς και DTMF. Όταν η κλήση ή η εκστρατεία φορτώνεται, ο Βοηθός θα παρουσιάσει δύο πλήκτρα στο πλαίσιο μεταφορά-διασκέψεων και αυτόματα θα παρουσιάσει τα πεδία αριθμό για κλήση και στείλε DTMF όταν πατηθεί. Εάν θέλετε να επιτρέψετε τις μεταφορές σε σύμβουλο, ενός fronter σε έναν closer,  θα πρέπει να θέσετε CXFER στο πεδίο number-to-dial και το σωστό κείμενο κλήσης θα σταλεί να κάνει μία τοπική μεταφορά σε σύμβουλο. Καθώς η κλήση θα απαντηθεί, μπορείτε να αφήσετε το πελάτη με τον χειριστή closer και να συνεχίσετε στην επόμενη κλήση πατώντας το πλήκτρο ΑΠΟΧΩΡΗΣΗ 3μελής ΚΛΗΣΗΣ. Εάν θέλετε να μεταφέρετε τους πελάτες σε AGI διαδικασία ή σε IVR, τότε θα πρέπει να θέσετε AXFER στο πεδίο number-to-dial. Μπορείτε επίσης να θέσετε και μία προσωπική τηλ. σύνδεση μετά το AXFER ή CXFER.
 
 <BR>
-<A NAME="vicidial_campaigns-alt_number_dialing">
-<BR>
-<B>Κλήση Εναλ Αρ Χρήστη -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να κάνει χειροκίνητη κλήση του εναλλακτικού αριθμού τηλεφώνου ή το πεδίο address3 μετά την κλήση του κυρίου αριθμού.
-
-<BR>
 <A NAME="vicidial_campaigns-scheduled_callbacks">
 <BR>
 <B>Προγραμματισμένες Επανακλήσεις -</B> Αυτή η επιλογή επιτρέπει στον χειριστή να τερματίσει μία κλήση ως CALLBK και να επιλέξει τα δεδομένα και την ώρα κατά την οποία ο οδηγός θα ξανα-ενεργοποιηθεί.
-
-<BR>
-<A NAME="vicidial_campaigns-drop_call_seconds">
-<BR>
-<B>Δευτερ. Εγκαταλ. Κλήσης -</B> Ο αριθμός των δευτερολέπτων από την στιγμή που ο πελάτης σηκώνει το τηλ μέχρι η κλήση να θεωρηθεί εγκαταλειμένη. Μόνο για εξερχόμενες κλήσεις  .
-
-<BR>
-<A NAME="vicidial_campaigns-voicemail_ext">
-<BR>
-<B>Φωνητικό Ταχυδρομείο -</B> Εάν έχει οριστεί, οι κλήσεις που φυσιολογικά θα ΕΓΚΑΤΑΛΕΙΠΟΝΤΑΝ, θα κατευθυνθούν σε αυό το φωνητικό ταχυδρομείο, ώστε να ακούσετε και να αφήσετε ένα μήνυμα.
-
-<BR>
-<A NAME="vicidial_campaigns-safe_harbor_message">
-<BR>
-<B>Μήνυμα Ασφαλούς Φύλαξης -</B> Εάν είναι Υ θα παίξει ένα μήνυμα στον πελάτη μετά το πέρας των δευτερολέπτων ασφαλούς εγκατάλειψης, χωρίς να μεταφερθεί σε ένν χειριστή. Αυτή η επιλογή υπερβαίνει την αποστολή σε θυρίδα ηχητικού μηνύματος εάν είναι Υ.
-
-<BR>
-<A NAME="vicidial_campaigns-safe_harbor_exten">
-<BR>
-<B>Εσωτ.σύνδεση Ασφαλούς Φύλαξης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Ασφαλής Φύλαξης στον διακομιστή.
 
 <BR>
 <A NAME="vicidial_campaigns-wrapup_seconds">
@@ -2351,6 +3275,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Εσωτερικός κατάλογος DNC χρήσης -</B> αυτό καθορίζει εάν αυτή ηεκστρατεία είναι στους μολύβδους φίλτν ενάντια στον εσωτερικόκατάλογο DNC. Εάν τίθεται το Υ, η χοάνη θα ψάξει κάθετηλεφωνικό αριθμό στον κατάλογο DNC πρίν τοποθετεί τον στηχοάνη. Εάν είναι στον κατάλογο DNC έπειτα θα αλλάξει ότιθέση μολύβδου σε DNCL έτσι που δεν μπορεί να σχηματιστεί. Ηπροεπιλογή είναι ν.
 
 <BR>
+<A NAME="vicidial_campaigns-use_campaign_dnc">
+<BR>
+<B>Χρησιμοποίησε Καμπάνια DNC List - </B> Αυτό καθορίζει αν αυτό είναι η εκστρατεία εναντίον ενός φίλτρου οδηγεί DNC λίστα που είναι ειδικά για τη συγκεκριμένη καμπάνια μόνο. Αν είναι να Y, η χοάνη θα εξετάσει, για κάθε αριθμό τηλεφώνου στον αγώνα-ειδικά DNC λίστα πριν από την τοποθέτησή του στην χοάνη. Αν είναι στην εκστρατεία ειδικά DNC λίστα τότε θα αλλάξει το καθεστώς που οδηγούν σε DNCC έτσι δεν μπορεί να εξερχόμενων. Προεπιλεγμένο είναι Ν.
+
+<BR>
 <A NAME="vicidial_campaigns-closer_campaigns">
 <BR>
 <B>Εισερχόμενες ομάδες -</B> For CLOSER campaigns only. Here is where you select the inbound groups you want agents in this CLOSER campaign to be able to take calls from. It is important for BLENDED inbound-outbound campaigns only to select the inbound groups that are used for agents in this campaign. The calls coming into the inbound groups selected here will be counted as active calls for a blended campaign even if all agents in the campaign are not logged in to receive calls from all of those selected inbound groups.
@@ -2358,7 +3287,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_campaigns-agent_pause_codes_active">
 <BR>
-<B>Η μικρή διακοπή πρακτόρων κωδικοποιεί ενεργό -</B> επιτρέπει στουςπράκτορες για να επιλέξει έναν κώδικα μικρής διακοπής ότανχτυπούν στο κουμπί ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ στους κώδικες μικρής διακοπήςvicidial.php. είναι ευπροσδιόριστοι ανά εκστρατεία στοκατώτατο σημείο της οθόνης λεπτομέρειας άποψης εκστρατείας καιαποθηκεύονται στον πίνακα vicidial_agent_log. Η προεπιλογήείναι ν.
+<B>Η μικρή διακοπή πρακτόρων κωδικοποιεί ενεργό -</B> επιτρέπει στουςπράκτορες για να επιλέξει έναν κώδικα μικρής διακοπής ότανχτυπούν στο κουμπί ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ στους κώδικες μικρής διακοπήςvicidial.php. είναι ευπροσδιόριστοι ανά εκστρατεία στοκατώτατο σημείο της οθόνης λεπτομέρειας άποψης εκστρατείας καιαποθηκεύονται στον πίνακα vicidial_agent_log. Η προεπιλογήείναι ν. ΙΣΧΥΟΝΤΑ θα ισχύουν οι παράγοντες να επιλέγουν μια παύση κωδικό αν κάντε κλικ στο κουμπί PAUSE.
 
 <BR>
 <A NAME="vicidial_campaigns-disable_alter_custdata">
@@ -2366,39 +3295,112 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Θέστε εκτός λειτουργίας αλλάζει τα στοιχεία πελατών -</B> εάνθέστε το Υ, δεν αλλάζει οποιων δήποτε από το αρχείο στοιχείωνπελατών όταν διαθέσεις πρακτόρων η κλήση. Η προεπιλογή είναι ν.
 
 <BR>
-<A NAME="vicidial_campaigns-no_hopper_leads_logins">
+<A NAME="vicidial_campaigns-disable_alter_custphone">
 <BR>
-<B>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins -</B> εάν θέστε τοΥ, επιτρέπει στους πράκτορες στη σύνδεση στην εκστρατεία ακόμα κιαν δεν υπάρχει κανένας μόλυβδος που φορτώνεται στη χοάνη γιαεκείνη την εκστρατεία. Αυτή η λειτουργία δεν απαιτείται στιςεκστρατείες στενός-τύπων. Η προεπιλογή είναι ν.
+<B>Απενεργοποίηση Alter Πελατών τηλέφωνο - </B> Σε περίπτωση που σε Y, δεν αλλάζει ο πελάτης τον αριθμό τηλεφώνου όταν ένας πράκτορας διαθέσεις την κλήση. Προεπιλεγμένο είναι Y.
 
 <BR>
-<A NAME="vicidial_campaigns-list_order_mix">
+<A NAME="vicidial_campaigns-display_queue_count">
 <BR>
-<B>Μίγμα διαταγής καταλόγων - αγνοεί τους τομείς θέσης διαταγήςκαι πινάκων μολύβδου. Θα χρησιμοποιήσει τις παραμέτρους καταλόγωνκαι θέσης για την επιλεγμένη είσοδο μιγμάτων καταλόγων στο υπο-τμήμα μιγμάτων καταλόγων αντ' αυτού. Η προεπιλογή είναι ΕΚΤΟΣΛΕΙΤΟΥΡΓΊΑΣ.
-
-<BR>
-<A NAME="vicidial_campaigns-vcl_id">
-<BR>
-<B>Ταυτότητα μιγμάτων καταλόγων - ταυτότητα του μίγματος καταλόγων.Πρέπει να είστε από 2-20 χαρακτήρες στο μήκος χωρίς ταδιαστήματα ή άλλη ειδική στίξη.
-
-<BR>
-<A NAME="vicidial_campaigns-vcl_name">
-<BR>
-<B>Όνομα μιγμάτων καταλόγων - περιγραφικό όνομα του μίγματοςκαταλόγων. Πρέπει να είστε από 2-50 χαρακτήρες στο μήκος.
-
-<BR>
-<A NAME="vicidial_campaigns-list_mix_container">
-<BR>
-<B>Λεπτομέρεια μιγμάτων καταλόγων - η σύνθεση της εισόδου μιγμάτωνκαταλόγων. Περιέχει τον κατάλογο ταυτότητα, τη διαταγή μιγμάτων,τα ποσοστά και τις θέσεις που αποτελούν αυτό το μίγμα καταλόγων.Τα ποσοστά πρέπει πάντα να προσθέσουν μέχρι 100, και οικατάλογοι όλοι πρέπει να είναι ενεργοί και καθορισμένοι τηνεκστρατεία για την είσοδο μιγμάτων διαταγής που ενεργοποιείται.
-
-<BR>
-<A NAME="vicidial_campaigns-mix_method">
-<BR>
-<B>Μέθοδος μιγμάτων καταλόγων - η μέθοδος όλα τα μέρη τηςλεπτομέρειας μιγμάτων καταλόγων από κοινού.  EVEN_MIX θααναμίξει τους μολύβδους από κάθε μέρος που παρεμβάλλεται λευκέςσελίδες με τα άλλα μέρη, όπως αυτό το 1,2,3,1,2,3,1,2,3.IN_ORDER θα βάλει τους μολύβδους στη διαταγή στην οποίαπαρατίθενται στην οθόνη λεπτομέρειας μιγμάτων καταλόγων1,1,1,2,2,2,3,3,3. ΤΥΧΑΊΑ θα τους βάλουν στην ΤΥΧΑΊΑ προεπιλογήδιαταγής 1,3,2,1,1,3,2,1,3. είναι IN_ORDER.
+<B>Εμφάνιση Agent Queue Count - </B> Σε περίπτωση που σε Y, σε περίπτωση που ο πελάτης περιμένει για έναν πράκτορα, ο κοτσίδας ζητεί απεικόνιση στο πάνω μέρος της οθόνης πράκτορας θα γίνονται κόκκινα και δείχνουν τον αριθμό των αναμονής κλήσεων. Προεπιλεγμένο είναι Y.
 
 <BR>
 <A NAME="vicidial_campaigns-manual_dial_list_id">
 <BR>
 <B>Χειρωνακτικός κατάλογος ταυτότητα πινάκων - η προεπιλογήlist_id για να χρησιμοποιηθεί όταν δημιουργείται έναςπράκτορας placces μια χειρωνακτική κλήση και ένα νέο αρχείομολύβδου στο vicidial_list. Η προεπιλογή είναι 999. Αυτός οτομέας μπορεί να περιέχει τα ψηφία μόνο.
+
+<BR>
+<A NAME="vicidial_campaigns-manual_dial_filter">
+<BR>
+<B>Εγχειρίδιο Dial Διηθείται - </B> Αυτό σας επιτρέπει να φιλτράρετε τις κλήσεις που πράκτορες να καλέσετε στο εγχειρίδιο λειτουργίας για την εκστρατεία αυτή με οποιονδήποτε συνδυασμό από τα ακόλουθα: DNC - προβλέπονται για την έναρξη, CAMPAIGNΛΙΣΤΕΣ - ο αριθμός πρέπει να είναι εντός των καταλόγων για την εκστρατεία, ΚΑΝΕΝΑ - δεν υπάρχει φίλτρο για χειροκίνητη κλήση ή γρήγορα dial καταλόγους.
+
+<BR>
+<A NAME="vicidial_campaigns-agent_clipboard_copy">
+<BR>
+<B>Agent Screen Clipboard Αντιγραφή - </B> Αυτή η δυνατότητα είναι ενεργοποιημένη για το παρόν μόνο τον Internet Explorer. Η λειτουργία αυτή σας επιτρέπει να επιλέξετε ένα πεδίο που θα αντιγραφεί στον υπολογιστή πρόχειρο του παράγοντα υπολογιστή σε μια πρόσκληση που απηύθυνε σε έναν πράκτορα. Κοινές χρήσεις για αυτό είναι να καταστεί δυνατή η εύκολη επικόλληση του λογαριασμού αριθμούς ή αριθμούς τηλεφώνου κληρονομιά σε πελάτη σχετικά με τις εφαρμογές πράκτορα υπολογιστή.
+
+<BR>
+<A NAME="vicidial_campaigns-three_way_call_cid">
+<BR>
+<B>3-Way Outbound Call CallerID - </B> Αυτό ορίζει τι έστειλε ως εξερχόμενο callerID σειρά από 3 δρόμων κλήσεις που διατίθενται από το γραφείο, η καμπάνια χρησιμοποιεί το έθιμο εκστρατεία callerID, ΠΕΛΑΤΗ χρησιμοποιεί τον αριθμό των πελατών που είναι ενεργή παράγοντες για την οθόνη και AGENT_PHONE χρησιμοποιεί το callerID για το τηλέφωνο ότι ο παράγοντας που είναι συνδεδεμένοι στο. AGENT_CHOOSE επιτρέπει να επιλέγουν τον πράκτορα που callerID να χρησιμοποιήσετε για την 3-way ζητεί από μια λίστα επιλογών.
+
+<BR>
+<A NAME="vicidial_campaigns-three_way_dial_prefix">
+<BR>
+<B>3-Way Call Πρόθεμα Κλήσης - </B> Αυτό ορίζει τι είναι χρησιμοποιείται ως πρόθεμα κλήσης για 3-way κλήσεις, προεπιλογή είναι άδειο, ώστε η εκστρατεία dial πρόθεμα χρησιμοποιείται, passthru έτσι ώστε να μπορείτε να ακούτε τους ήχους είναι 88.
+
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_campaigns-qc_enabled">
+	<BR>
+	<B>QC Enabled - </B> Η ρύθμιση αυτού του τομέα να Y επιτρέπει τον παράγοντα Ποιοτικός Έλεγχος χαρακτηριστικά στην εργασία. Προεπιλεγμένο είναι Ν.
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_statuses">
+	<BR>
+	<B>QC καθεστώτων - </B> Η περιοχή αυτή είναι που θα επιλέξετε το οποίο οδηγεί των καθεστώτων θα πρέπει να φύγει πάνω από το σύστημα, QC. Τοποθετήστε ένα δίπλα στο ελέγξτε την κατάσταση που θέλετε, QC για την αναθεώρηση. 
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_shift_id">
+	<BR>
+	<B>QC Shift - </B> Αυτό είναι το χρονοδιάγραμμα μετάβασης που χρησιμοποιούνται για την έλξη, QC αρχεία για μια καμπάνια. Οι μέρες της εβδομάδας αγνοούνται για αυτές τις λειτουργίες.
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_get_record_launch">
+	<BR>
+	<B>QC Get Record Launch-</B> Αυτό επιτρέπει σε μια από τις ακόλουθες δράσεις, το οποίο θα ενεργοποιείται σε ένα QC πράκτορας που λαμβάνει ένα νέο ρεκόρ.
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_show_recording">
+	<BR>
+	<B>QC Δείτε Καταγραφή - </B> Αυτό επιτρέπει την καταγραφή που μπορεί να συνδέεται με την εγγραφή QC να εμφανίζονται στην οθόνη QC πράκτορα.
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_web_form_address">
+	<BR>
+	<B>QC WebForm Διεύθυνση - </B> Αυτό είναι το ότι μια διεύθυνση ιστοσελίδας, QC, μπορεί να πάει στο γραφείο, όταν κάνετε κλικ στο σύνδεσμο WEBFORM στην οθόνη QC.
+
+	<BR>
+	<A NAME="vicidial_campaigns-qc_script">
+	<BR>
+	<B>QC Σενάριο - </B> Αυτό είναι το σενάριο που μπορεί να χρησιμοποιηθεί από τους πράκτορες, QC στην SCRIPT καρτέλα στην οθόνη, QC.
+	<?
+	}
+?>
+
+<BR>
+<A NAME="vicidial_campaigns-vtiger_search_category">
+<BR>
+<B>Αναζήτηση Vtiger Κατηγορία - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεων στη συνέχεια τη ρύθμιση αυτή θα καθορίσει εάν η σελίδα vtiger_search.php θα αναζητήσετε τον αριθμό τηλεφώνου που είχε εγγραφεί. Υπάρχουν 4 επιλογές που μπορεί να χρησιμοποιηθεί στον τομέα αυτό: ΜΟΛΥΒΔΟΥ-Η επιλογή αυτή θα αναζητήσει μέσω του Vtiger οδηγεί μόνο, ΛΟΓΑΡΙΑΣΜΟΥ-Η επιλογή αυτή θα ψάξει μέσω των λογαριασμών Vtiger και όλες τις επαφές και επιμέρους επαφές για τον αριθμό τηλεφώνου, VENDOR-Αυτή η επιλογή μόνο μέσω της αναζήτησης Vtiger πωλητές, ACCTID-Η επιλογή αυτή λειτουργεί μόνο για τους λογαριασμούς και θα λάβει τα vicidial vendor_lead_code τομέα και προσπαθήστε να αναζητήσετε το αναγνωριστικό λογαριασμού Vtiger. Αν ανεπιτυχή θα προσπαθήσουμε τυχόν άλλες μεθόδους που αναφέρονται που έχετε επιλέξει. Πολλαπλές επιλογές μπορούν να χρησιμοποιηθούν για κάθε αναζήτηση, αλλά σε μεγάλες βάσεις δεδομένων που αυτό δεν συνιστάται. Προεπιλεγμένο είναι ΜΟΛΥΒΔΟΥ.
+
+<BR>
+<A NAME="vicidial_campaigns-vtiger_create_call_record">
+<BR>
+<B>Δημιουργία Vtiger Call Record - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεις τότε αυτή η ρύθμιση θα καθορίσει κατά πόσο ένα νέο ρεκόρ Vtiger δραστηριότητα δημιουργείται για την πρόσκληση, όταν ο αντιπρόσωπος πηγαίνει στο vtiger_search σελίδα. Προεπιλεγμένο είναι Y.
+
+<BR>
+<A NAME="vicidial_campaigns-vtiger_create_lead_record">
+<BR>
+<B>Δημιουργία Vtiger Μόλυβδος Record - </B> Εάν είναι ενεργοποιημένη Vtiger ενσωμάτωση στο σύστημα και τις ρυθμίσεις Vtiger Αναζήτηση ΜΟΛΥΒΔΟ τότε η κατηγορία περιλαμβάνει τη ρύθμιση αυτή θα καθορίσει κατά πόσο ένα νέο ρεκόρ Vtiger οδηγήσει δημιουργείται όταν ο πράκτορας πηγαίνει στη σελίδα vtiger_search και δεν είναι βρέθηκαν να έχουν την κλήση του αριθμού τηλεφώνου. Προεπιλεγμένο είναι Y.
+
+<BR>
+<A NAME="vicidial_campaigns-vtiger_screen_login">
+<BR>
+<B>Vtiger Screen Είσοδος - </B> Εάν είναι ενεργοποιημένη Vtiger ένταξη στο σύστημα ρυθμίσεις τότε αυτή η ρύθμιση θα καθορίσει κατά πόσο ο χρήστης είναι συνδεδεμένος στο Vtiger διεπαφής αυτόματα όταν συνδεθείτε στο VICIDIAL. Προεπιλεγμένο είναι Y.
+
+<BR>
+<A NAME="vicidial_campaigns-agent_allow_group_alias">
+<BR>
+<B>Ομάδα Γνωστός Επιτρέπεται - </B> Αν θέλετε να σας επιτρέψει πράκτορες να χρησιμοποιούν ψευδώνυμα ομάδα τότε πρέπει να ορίσετε αυτή την ομάδα να Y. Γνωστός εξηγούνται περισσότερο στο τμήμα Διοίκησης, που επιτρέπει στους εκπροσώπους να επιλέξετε διαφορετικό callerIDs εγχειρίδιο για εξερχόμενες κλήσεις ότι μπορεί να πραγματοποιηθεί. Προεπιλεγμένο είναι Ν.
+
+<BR>
+<A NAME="vicidial_campaigns-default_group_alias">
+<BR>
+<B>Προεπιλεγμένη ομάδα Γνωστός - </B> Αν έχετε επιτρέπεται Γνωστός ομάδα, τότε αυτό είναι γνωστός και ότι η ομάδα έχει επιλεγεί από προεπιλογή κατά την πρώτη του πράκτορα επιλέγει να χρησιμοποιήσει μια ομάδα Γνωστός για εξερχόμενες κλήσης εγχειρίδιο. Προεπιλεγμένο είναι ΚΑΝΕΝΑ ή κενό.
+
 
 
 
@@ -2448,13 +3450,13 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_list-dnc">
 <BR>
-<B>Κατάλογος VICIDIAL DNC -</B> αυτό δεν καλεί τον κατάλογοπεριέχει κάθε μόλυβδο που έχει τεθεί μια θέση DNC στοσύστημα. Μέσω των ΚΑΤΑΛΩΝ - ΠΡΟΣΘΕΣΤΕ τον ΑΡΙΘΜΟ στη σελίδαDNC που είστε σε θέση να προσθέσετε με το χέρι έναν αριθμό σεαυτόν τον κατάλογο έτσι ώστε δεν θα κληθεί από τις εκστρατείεςπου χρησιμοποιούν τον εσωτερικό κατάλογο DNC.
+<B>Κατάλογος VICIDIAL DNC - </B> Αυτό δεν θέτουν κάθε λίστα περιέχει μόλυβδο που έχει τεθεί σε καθεστώς των DNC στο σύστημα. Μέσω του ΚΑΤΑΛΟΓΟΙ - ADD TO ΑΡΙΘΜΟΣ DNC σελίδα μπορείτε να προσθέσετε τους αριθμούς σε αυτόν τον κατάλογο, έτσι ώστε δεν θα ονομάζεται από καμπάνιες που χρησιμοποιούν την εσωτερική DNC λίστα. Υπάρχει επίσης η δυνατότητα να προσθέσετε οδηγεί στην καμπάνια-DNC ειδικών καταλόγων για αυτές τις καμπάνιες που έχουν τους.
 
 
 
 <BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_INBOUND_GROUPS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<B><FONT SIZE=3>VICIDIAL_Εισερχόμενα_GROUPS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
 <A NAME="vicidial_inbound_groups-group_id">
 <BR>
 <B>ID Ομάδας -</B> Αυτό είναι το σύντομο όνομα της εισερχόμενης ομάδας, δεν μπορεί να διορθωθεί μετά από την αρχική παράδοση, δεν μπορεί να περιέχει κενά και πρέπει να είναι μεταξύ 2 και 20χαρακτήρες.
@@ -2492,6 +3494,12 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
  <BR> &nbsp; - campaign_rank: διαταγές από την τάξη που δίνεται στον πράκτοραγια την εκστρατεία. Ο υψηλότερος σε χαμηλότερο.
  <BR> &nbsp; - fewest_calls_campaign: orders by the number of calls received by an agent for the campaign. Least calls first.
 <BR>
+
+<BR>
+<A NAME="vicidial_inbound_groups-queue_priority">
+<BR>
+<B>Queue Priority -</B> This setting is used to define the order in which the calls from this inbound group should be answered in relation to calls from other inbound groups.
+
 <A NAME="vicidial_inbound_groups-fronter_display">
 <BR>
 <B>Οθόνη Μπροστινού -</B> Αυτό το πεδίο καθορίζει κατά πόσον στον VICIDIAL  χόμενος χρήστης θα εμφανίζεται το όνομα του μπροστινού - εάν υπάρχει κάποιο - στο πεδίο κατάστασης όταν η κλήση έρχεται στον χρήστη.
@@ -2514,22 +3522,27 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-drop_call_seconds">
 <BR>
-<B>Δευτερ. Εγκαταλ. Κλήσης -</B> Ο αριθμός των δευτερολέπτων από την στιγμή που ο πελάτης σηκώνει το τηλ μέχρι η κλήση να θεωρηθεί εγκαταλειμένη. Μόνο για εξερχόμενες κλήσεις  .
+<B>Drop Call δευτερόλεπτα - </B> Ο αριθμός των δευτερολέπτων σε μια κλήση θα παραμείνουν στην ουρά πριν να θεωρείται DROP.
 
 <BR>
-<A NAME="vicidial_inbound_groups-voicemail_ext">
+<A NAME="vicidial_inbound_groups-drop_action">
 <BR>
-<B>Φωνητικό Ταχυδρομείο -</B> Εάν έχει οριστεί, οι κλήσεις που φυσιολογικά θα ΕΓΚΑΤΑΛΕΙΠΟΝΤΑΝ, θα κατευθυνθούν σε αυό το φωνητικό ταχυδρομείο, ώστε να ακούσετε και να αφήσετε ένα μήνυμα.
-
-<BR>
-<A NAME="vicidial_inbound_groups-drop_message">
-<BR>
-<B>Μήνυμα Εγκατάλειψης -</B> Εάν είναι Υ θα παίξει ένα μήνυμα στον πελάτη μετά το πέρας των δευτερολέπτων Εγκατάλειψης, χωρίς να μεταφερθεί σε έναν χειριστή. Αυτή η επιλογή υπερβαίνει την αποστολή σε θυρίδα ηχητικού μηνύματος εάν είναι Υ.
+<B>Drop δράσης - </B> Αυτό το μενού σας επιτρέπει να διαλέξετε ό, τι συμβαίνει σε μια κλήση όταν έχει να περιμένει περισσότερο από ό, τι έχει οριστεί στο Drop Call δευτερόλεπτα τομέα. HANGUP απλά θα κλείσεις την κλήση, το μήνυμα θα αποστείλει την πρόσκληση της Drop παράταση που έχετε ορίζονται κατωτέρω, τηλεφωνητή θα απευθύνει την πρόσκληση προς το τηλεφωνητή θέση που έχετε IN_GROUP ορίζονται κατωτέρω, και θα απευθύνει την πρόσκληση στην ομάδα Inbound που καθορίζονται κατωτέρω.
 
 <BR>
 <A NAME="vicidial_inbound_groups-drop_exten">
 <BR>
-<B>Εσωτ.Σύνδεση Εγκατάλειψης -</B> Αυτή είναι η εσωτ.σύνδεση του πλάνου κλήσεων, όπου βρίσκεται το ηχητικό αρχείο της Εγκατάλειψης στον διακομιστή.
+<B>Drop παράταση - </B> Αν Drop δράση που να είναι μήνυμα, αυτό είναι η κλήση σχέδιο επέκτασης ότι η πρόσκληση θα σταλεί στο εάν ανέρχεται Drop Call Δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-voicemail_ext">
+<BR>
+<B>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ -</B> If Drop Action is set to VOICEMAIL, the call DROP would instead be directed to this voicemail box to hear and leave a message.
+
+<BR>
+<A NAME="vicidial_inbound_groups-drop_inbound_group">
+<BR>
+<B>Drop Μεταφορά Όμιλος - </B> Αν Drop Δράσης έχει οριστεί σε IN_GROUP, η πρόσκληση θα σταλεί σε αυτή την εισερχόμενη ομάδα εάν ανέρχεται Drop Call Δευτερόλεπτα.
 
 <BR>
 <A NAME="vicidial_inbound_groups-call_time_id">
@@ -2539,7 +3552,7 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-after_hours_action">
 <BR>
-<B>Μετά από τη δράση ωρών - η δράση για να εκτελέσει εάν είναιμετά από τις ώρες όπως καθορίζεται στο χρόνο πρόσκλησης γιααυτήν την εισερχόμενη ομάδα.  HANGUP hangup αμέσως η κλήση,MESSASGE θα παίξει το αρχείο στο μετέπειτα τομέα Filenamμηνυμάτων ωρών, η ΕΠΈΚΤΑΣΗ θα στείλει την κλήση στη μετέπειταπαράταση ωρών στον dialplan και το ΦΩΝΗΤΙΚΌ ΤΑΧΥΔΡΟΜΕΊΟ θαστείλει την κλήση στο παράθυρο φωνητικού ταχυδρομείου πουαπαριθμείται στο μετέπειτα τομέα φωνητικού ταχυδρομείου ωρών. Ηπροεπιλογή είναι ΜΗΝΥΜΑ.
+<B>Μετά από ώρες δράσης - </B> Η δράση για την εκτέλεση, αν είναι μετά από ώρες, όπως ορίζεται στην πρόσκληση αυτή την φορά για τα εισερχόμενα ομάδα. HANGUP θα hangup αμέσως την πρόσκληση, MESSASGE θα παίξει το αρχείο στο Μετά από ώρες Μήνυμα Filenam τομέα, ΕΠΕΚΤΑΣΗ θα αποστείλει την πρόσκληση για την Μετά από ώρες Παράταση στο dialplan τηλεφωνητή και θα απευθύνει την πρόσκληση προς το τηλεφωνητή κουτί που απαριθμούνται στο Μετά Ώρες Τηλεφωνητής τομέα , IN_GROUP θα αποστείλει την πρόσκληση προς την εισερχόμενη ομάδα επιλεγμένων στο Μετά Ώρες Μεταφορά Ομάδα επιλέξτε λίστα. Προεπιλεγμένο είναι ΜΗΝΥΜΑ.
 
 <BR>
 <A NAME="vicidial_inbound_groups-after_hours_message_filename">
@@ -2557,9 +3570,19 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Μετά από το φωνητικό ταχυδρομείο ωρών - το κιβώτιο φωνητικούταχυδρομείου για να στείλει την πρόσκληση εάν η δράση τίθεται τοΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΊΟ.
 
 <BR>
+<A NAME="vicidial_inbound_groups-afterhours_xfer_group">
+<BR>
+<B>Μετά από ώρες Μεταφορά Όμιλος - </B> Εάν Μετά Ώρες Δράσης έχει οριστεί σε IN_GROUP, η πρόσκληση θα σταλεί σε αυτή την εισερχόμενη ομάδα, αν αυτή τεθεί σε-η ομάδα εκτός από τη διάρκεια των κλήσεων για το καθεστώς που ορίζεται στην ομάδα.
+
+<BR>
 <A NAME="vicidial_inbound_groups-welcome_message_filename">
 <BR>
 <B>Ευπρόσδεκτο όνομα αρχείου μηνυμάτων - το ακουστικό αρχείο πουβρίσκεται στον κεντρικό υπολογιστή που παίζεται όταν μπαίνει ηκλήση. Εάν θέστε ΚΑΝΕΝΑΣ --- έπειτα κανένα μήνυμα δεν θαπαιχτεί. Η προεπιλογή είναι ΚΑΜΙΑ ---
+
+<BR>
+<A NAME="vicidial_inbound_groups-play_welcome_message">
+<BR>
+<B>Παίξτε Καλωσόρισμα - </B> Οι ρυθμίσεις αυτές, όταν επιλέγουν να παίξουν το μήνυμα υποδοχής που ορίζεται, πάντα θα παίζει κάθε φορά, ΠΟΤΕ δεν πρόκειται ποτέ να παίξετε, IF_WAIT_ONLY μόνο θα παίξει το μήνυμα υποδοχής, αν η κλήση δεν πάνε αμέσως σε ένα παράγοντα , και YES_UNLESS_NODELAY θα είναι πάντα ευπρόσδεκτη παίξει το μήνυμα Αν δεν το NO_DELAY η ρύθμιση είναι ενεργοποιημένη. Προεπιλεγμένο είναι πάντα.
 
 <BR>
 <A NAME="vicidial_inbound_groups-moh_context">
@@ -2574,7 +3597,52 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <A NAME="vicidial_inbound_groups-prompt_interval">
 <BR>
-<B>Στο γρήγορο διάστημα λαβής - το χρονικό διάστημα σταδευτερόλεπτα για να περιμένει πρίν παίζει επάνω κρατά γρήγορος.Η προεπιλογή είναι 60.
+<B>Στο γρήγορο διάστημα λαβής - το χρονικό διάστημα σταδευτερόλεπτα για να περιμένει πρίν παίζει επάνω κρατά γρήγορος.Η προεπιλογή είναι 60. Για να απενεργοποιήσετε την Προτροπή σε αναμονή, που το χρονικό διάστημα έως 0.
+
+<BR>
+<A NAME="vicidial_inbound_groups-play_place_in_line">
+<BR>
+<B>Παίξτε στο Τόπος Γραμμή - </B> Αυτό καθορίζει αν ο καλών θα ακούσει τη θέση τους στη γραμμή όταν εισέλθουν στην ουρά, καθώς και όταν ακούν την announcemend. Προεπιλεγμένο είναι Ν.
+
+<BR>
+<A NAME="vicidial_inbound_groups-play_estimate_hold_time">
+<BR>
+<B>Παίξτε Κρατήστε Εκτιμώμενη ώρα - </B> Αυτό καθορίζει αν ο καλών θα ακούσει τον εκτιμώμενο χρόνο κατέχουν προτού μεταφερθούν σε έναν πράκτορα. Προεπιλεγμένο είναι Ν.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή - </B> Αυτό σας επιτρέπει να καθορίσετε την δρομολόγηση των κλήσεων, εάν ο εκτιμώμενος χρόνος κατέχουν πάνω από το ποσό των δευτερολέπτων που καθορίζεται παρακάτω. Προεπιλεγμένο είναι ΚΑΝΕΝΑ.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_seconds">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή δευτερόλεπτα - </B> Αν Κρατήστε Ώρα Επιλογή έχει οριστεί σε οτιδήποτε, αλλά ΚΑΝΕΝΑ, αυτό είναι ο αριθμός των δευτερολέπτων του χρόνου εκτιμάται ότι κατέχουν θα ενεργοποιήσει την αναμονή ώρα της επιλογής. Η προεπιλογή είναι 360 δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_exten">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή Επέκταση - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε ΕΠΕΚΤΑΣΗ, αυτή είναι η επέκταση dialplan ότι η πρόσκληση θα σταλεί στο εάν ο εκτιμώμενος χρόνος κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_voicemail">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή Τηλεφωνητής - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε τηλεφωνητή, αυτή είναι η θέση τηλεφωνητή ότι η πρόσκληση θα σταλεί στο εάν ο εκτιμώμενος χρόνος κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_xfer_group">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή Μεταφορά σε ομάδα - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε IN_GROUP, αυτή είναι η ομάδα που την εισερχόμενη κλήση θα αποσταλεί στο εάν ο εκτιμώμενος χρόνος αναμονή υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_callback_filename">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή αρχείου Callback - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε CALLERID_CALLBACK, αυτό είναι το όνομα του αρχείου εντολών που έπαιξε πριν από την κλήση καταγράφεται ως μια νέα πρωτοβουλία στον κατάλογο ID που καθορίζονται κατωτέρω, εάν η εκτιμώμενη κατέχει υπερβαίνει το χρόνο Κρατήστε Ώρα Επιλογή Δευτερόλεπτα.
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_time_option_callback_list_id">
+<BR>
+<B>Κρατήστε Ώρα Επιλογή Callback Κατάλογος ID - </B> Αν Κρατήστε Ώρα επιλογή είναι ρυθμισμένη σε CALLERID_CALLBACK, αυτός είναι ο Κατάλογος ID η κλήση προστίθεται ως μια νέα πρωτοβουλία, αν το εκτιμώμενο χρόνο κατέχει υπερβαίνει το Κρατήστε Ώρα Επιλογή Δευτερόλεπτα.
 
 <BR>
 <A NAME="vicidial_inbound_groups-agent_alert_exten">
@@ -2590,6 +3658,176 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_inbound_groups-default_xfer_group">
 <BR>
 <B>Ομάδα μεταφοράς προεπιλογής - αυτός ο τομέας είναι η-ΟΜΑΔΑπροεπιλογής που θα επιλεχτεί αυτόματα όταν πηγαίνει ο πράκτοραςστο πλαίσιο μεταφορά-διασκέψεων στη διεπαφή πρακτόρων τους.
+
+<BR>
+<A NAME="vicidial_inbound_groups-ingroup_recording_override">
+<BR>
+<B>-Στην ομάδα Καταγραφή Παράκαμψη - </B> Το πεδίο αυτό επιτρέπει την πρωταρχική της εκστρατείας πρόσκληση εγγραφής ρύθμιση. Η ρύθμιση αυτή μπορεί να παρακαμφθεί από την καταγραφή vicidial_user υπερισχύει ρύθμιση. DISABLED δεν θα υπερισχύσει του εκστρατεία καταγραφής ρύθμιση. ΠΟΤΕ θα απενεργοποιήσει την εγγραφή για τον πελάτη. ONDEMAND είναι η προεπιλεγμένη και επιτρέπει στον αντιπρόσωπο να ξεκινήσετε και να σταματήσετε την εγγραφή, όπως απαιτείται. ALLCALLS θα αρχίσει η εγγραφή του υπολογιστή-πελάτη κάθε φορά που μια κλήση στέλνεται σε έναν πράκτορα. ALLFORCE θα αρχίσει η εγγραφή του υπολογιστή-πελάτη κάθε φορά που μια κλήση στέλνεται σε έναν πράκτορα που ο πράκτορας δεν την επιλογή για να σταματήσει η εγγραφή.
+
+<BR>
+<A NAME="vicidial_inbound_groups-ingroup_rec_filename">
+<BR>
+<B>-Στην ομάδα αρχείου Καταγραφή - </B> Το πεδίο αυτό θα αντικαταστήσει το Εκστρατεία Καταγραφή Filenaming σύστημα εάν δεν έχει οριστεί σε ΚΑΝΕΝΑ. Οι μεταβλητές που επιτρέπονται είναι CAMPAIGN CUSTPHONE FULLDATE TINYDATE EPOCH ΠΡΑΚΤΟΡΑ. Η προεπιλογή είναι FULLDATE_ΧΕΙΡΙΣΤΗΣκαι θα μοιάζει κάπως έτσι 20051020-103108_6666. Ένα άλλο παράδειγμα είναι CAMPAIGN_TINYDATE_CUSTPHONE που θα μοιάζει κάπως έτσι TESTCAMP_51020103108_3125551212. 50 char max. Προεπιλεγμένο είναι ΚΑΝΕΝΑ.
+
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_enabled">
+	<BR>
+	<B>QC Enabled - </B> Η ρύθμιση αυτού του τομέα να Y επιτρέπει τον παράγοντα Ποιοτικός Έλεγχος χαρακτηριστικά στην εργασία. Προεπιλεγμένο είναι Ν.
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_statuses">
+	<BR>
+	<B>QC καθεστώτων - </B> Η περιοχή αυτή είναι που θα επιλέξετε το οποίο οδηγεί των καθεστώτων θα πρέπει να φύγει πάνω από το σύστημα, QC. Τοποθετήστε ένα δίπλα στο ελέγξτε την κατάσταση που θέλετε, QC για την αναθεώρηση. 
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_shift_id">
+	<BR>
+	<B>QC Shift - </B> Αυτό είναι το χρονοδιάγραμμα μετάβασης που χρησιμοποιούνται για την έλξη, QC αρχεία για μια inbound_group. Οι μέρες της εβδομάδας αγνοούνται για αυτές τις λειτουργίες.
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_get_record_launch">
+	<BR>
+	<B>QC Get Record Launch-</B> Αυτό επιτρέπει σε μια από τις ακόλουθες δράσεις, το οποίο θα ενεργοποιείται σε ένα QC πράκτορας που λαμβάνει ένα νέο ρεκόρ.
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_show_recording">
+	<BR>
+	<B>QC Δείτε Καταγραφή - </B> Αυτό επιτρέπει την καταγραφή που μπορεί να συνδέεται με την εγγραφή QC να εμφανίζονται στην οθόνη QC πράκτορα.
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_web_form_address">
+	<BR>
+	<B>QC WebForm Διεύθυνση - </B> Αυτό είναι το ότι μια διεύθυνση ιστοσελίδας, QC, μπορεί να πάει στο γραφείο, όταν κάνετε κλικ στο σύνδεσμο WEBFORM στην οθόνη QC.
+
+	<BR>
+	<A NAME="vicidial_inbound_groups-qc_script">
+	<BR>
+	<B>QC Σενάριο - </B> Αυτό είναι το σενάριο που μπορεί να χρησιμοποιηθεί από τους πράκτορες, QC στην SCRIPT καρτέλα στην οθόνη, QC.
+	<?
+	}
+?>
+
+<BR>
+<A NAME="vicidial_inbound_groups-hold_recall_xfer_group">
+<BR>
+<B>Κρατήστε Ανάκληση Μεταφορά σε ομάδα - </B> Σε περίπτωση που ο πελάτης ζητά πίσω σε αυτή την ομάδα-σε περισσότερες από μία φορές και αυτό δεν έχει οριστεί σε ΚΑΝΕΝΑ, τότε η κλήση θα αποστέλλονται αυτόματα στην επιλεγμένη ομάδα σε αυτό το πεδίο . Προεπιλεγμένο είναι ΚΑΝΕΝΑ.
+
+<BR>
+<A NAME="vicidial_inbound_groups-no_delay_call_route">
+<BR>
+<B>Δεν Υστέρηση Call διαδρομή - </B> Η ρύθμιση αυτής να Y θα άρουν όλες τις φορές περιμένουμε και ήχου προτροπές και επιχειρείτε να στείλετε την πρόσκληση δικαίωμα ενός πράκτορα. Δεν υπερισχύει ευπρόσδεκτο μήνυμα ή σε αναμονή εντολών ρυθμίσεις. Προεπιλεγμένο είναι Ν.
+
+<BR>
+<A NAME="vicidial_inbound_groups-answer_sec_pct_rt_stat_one">
+<BR>
+<B>Στατιστικά Ποσοστό ζητεί απάντηση εντός Χ δευτερόλεπτα - </B> Αυτό το πεδίο σας επιτρέπει να ορίσετε τον αριθμό των δευτερολέπτων που κατέχουν την απεικόνιση σε πραγματικό χρόνο stats θα χρησιμοποιήσουν για να υπολογίσουν το ποσοστό των κλήσεων απαντά ότι απαντήθηκαν εντός Χ αριθμό των δευτερολέπτων σε αναμονή.
+
+<BR>
+<A NAME="vicidial_inbound_groups-default_group_alias">
+<BR>
+<B>Προεπιλεγμένη ομάδα Γνωστός - </B> Αν έχετε τη δυνατότητα Ομάδα Γνωστός για την εκστρατεία ότι ο αντιπρόσωπος είναι συνδεδεμένοι στο τότε αυτή είναι η ομάδα που έχει επιλεγεί άλλως πρώτα από προεπιλογή για μια κλήση που προέρχεται από αυτή την ομάδα, όταν ο εισερχόμενος πράκτορας επιλέγει να χρησιμοποιήσετε μια ομάδα Γνωστός για εξερχόμενες κλήσης εγχειρίδιο. Προεπιλεγμένο είναι ΚΑΝΕΝΑ ή κενό.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>VICIDIAL_Εισερχόμενα_DIDS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<BR>
+<A NAME="vicidial_inbound_dids-did_pattern">
+<BR>
+<B>DID Επέκταση - </B> Αυτό είναι το πλήθος, την παράταση ή DID που θα ενεργοποιήσουν την παρούσα θέση και που θα σας διαδρομή, και εντός του συστήματος με τη βοήθεια αυτής της λειτουργίας. Υπάρχει reserved προεπιλογή DID που μπορείτε να χρησιμοποιήσετε το οποίο είναι μόνο η λέξη-default-χωρίς παύλες, ότι θα μπορείτε να στείλετε ΑΛΛΟΣ κάθε κλήση που δεν ταιριάζει με οποιαδήποτε άλλα υφιστάμενα πρότυπα στην προεπιλεγμένη DID.
+
+<BR>
+<A NAME="vicidial_inbound_dids-did_description">
+<BR>
+<B>DID Περιγραφή - </B> Αυτή είναι η περιγραφή της DID δρομολόγησης εισόδου.
+
+<BR>
+<A NAME="vicidial_inbound_dids-did_active">
+<BR>
+<B>DID Ενεργό - </B> Αυτό το πεδίο όπου το σύνολο DID εισόδου σε ενεργό ή μη. Προεπιλεγμένο είναι Y.
+
+<BR>
+<A NAME="vicidial_inbound_dids-did_route">
+<BR>
+<B>DID Route - </B> Αυτό το είδος της διαδρομής που μπορείτε να ρυθμίσετε το DID χρήση. Παράταση θα αποστείλει τις κλήσεις προς την επέκταση τέθηκε κάτω, τηλεφωνητή θα αποστείλει κλήσεις απευθείας στον τηλεφωνητή τέθηκε κάτω από το πλαίσιο, ο πράκτορας θα αποστείλει κλήσεις σε VICIDIAL παράγοντα όταν είναι συνδεδεμένοι, τηλέφωνο θα στείλει την κλήση σε τηλέφωνα εισόδου επιλεγεί στη συνέχεια, θα IN_GROUP αποστέλλουν κλήσεις απευθείας από την καθορισμένη εισερχόμενα ομάδα. Προεπιλεγμένο είναι παράταση.
+
+<BR>
+<A NAME="vicidial_inbound_dids-extension">
+<BR>
+<B>Επέκταση - </B> Εάν είναι επιλεγμένο παράταση ως τις DID διαδρομή, τότε αυτή είναι η επέκταση dialplan που ζητά θα αποσταλεί στο. Προεπιλεγμένο είναι 9998811112, της μη παροχής υπηρεσιών.
+
+<BR>
+<A NAME="vicidial_inbound_dids-exten_context">
+<BR>
+<B>Παράταση Πλαίσιο - </B> Εάν είναι επιλεγμένο παράταση ως τις DID διαδρομή, τότε αυτό είναι το πλαίσιο dialplan ότι οι κλήσεις θα σταλούν σε. Προεπιλογή είναι προεπιλογή.
+
+<BR>
+<A NAME="vicidial_inbound_dids-voicemail_ext">
+<BR>
+<B>Τηλεφωνητής Πλαίσιο - </B> Τηλεφωνητής Εάν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η θέση τηλεφωνητή ότι οι κλήσεις που θα αποσταλεί στο. Προεπιλεγμένο είναι άδειο.
+
+<BR>
+<A NAME="vicidial_inbound_dids-phone">
+<BR>
+<B>Τηλέφωνο Επέκταση - </B> ΤΗΛΕΦΩΝΟΥ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το τηλέφωνο που καλεί επέκταση θα αποσταλεί στο.
+
+<BR>
+<A NAME="vicidial_inbound_dids-server_ip">
+<BR>
+<B>Τηλέφωνο IP Διακομιστή - </B> ΤΗΛΕΦΩΝΟΥ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το server IP για το τηλέφωνο που καλεί επέκταση θα σταλεί στο.
+
+<BR>
+<A NAME="vicidial_inbound_dids-user">
+<BR>
+<B>Χρήστης Agent - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το γραφείο που VICIDIAL κλήσεις θα σταλούν σε.
+
+<BR>
+<A NAME="vicidial_inbound_dids-user_unavailable_action">
+<BR>
+<B>Χρήστης Unavailable Δράση - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομής, και ο χρήστης είναι συνδεδεμένος ή δεν υπάρχουν, τότε αυτή είναι η διαδρομή που θα λάβουν τις προσκλήσεις.
+
+<BR>
+<A NAME="vicidial_inbound_dids-user_route_settings_ingroup">
+<BR>
+<B>Ρυθμίσεις χρήστη Οδός-Στην Ομάδα - </B> ΠΡΑΚΤΟΡΑ Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η ομάδα-Στο ότι θα πρέπει να χρησιμοποιείται για την ουρά ρυθμίσεις του καλούντος είναι σε αναμονή για αποστολή προς τον πράκτορα. Προεπιλεγμένο είναι AGENTDIRECT.
+
+<BR>
+<A NAME="vicidial_inbound_dids-group_id">
+<BR>
+<B>Στην Ομάδα-ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η ομάδα-Στο ότι οι κλήσεις που θα σταλεί στο.
+
+<BR>
+<A NAME="vicidial_inbound_dids-call_handle_method">
+<BR>
+<B>Στην Ομάδα-Call Χειριστείτε Μέθοδος - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η πρόσκληση χειρισμό μέθοδος που χρησιμοποιείται για αυτές τις κλήσεις. CID θα προσθέσετε ένα νέο ρεκόρ οδηγήσει με κάθε κλήση χρησιμοποιώντας το CallerID όπως τον αριθμό τηλεφώνου, θα προσπαθήσει να CIDLOOKUP lookup τον αριθμό τηλεφώνου από το CallerID σε ολόκληρο το σύστημα, θα attampt να CIDLOOKUPRL lookup τον αριθμό τηλεφώνου από το CallerID ορίζεται σε ένα μόνο κατάλογο , CIDLOOKUPRC θα attampt να lookup τον αριθμό τηλεφώνου από το CallerID σε όλες τις λίστες που ανήκουν στην καθορίζονται εκστρατεία, ΣΤΕΝΟΤΕΡΗΣ καθορίζεται για VICIDIAL Στενότερος κλήσεις, ANI θα προσθέσει ένα νέο ρεκόρ οδηγήσει με κάθε κλήση χρησιμοποιώντας την ANI όπως ο αριθμός τηλεφώνου, ANILOOKUP θα προσπαθήσει να lookup τον αριθμό τηλεφώνου από το ANI σε ολόκληρο το σύστημα, ANILOOKUPRL θα attampt να lookup τον αριθμό τηλεφώνου από το ANI ορίζεται σε ένα μόνο κατάλογο, θα XDIGITID εντολών του καλούντος για μια Χ ψήφιο κωδικό πριν από την πρόσκληση θα τεθούν σε την ουρά. Προεπιλεγμένο είναι CID.
+
+<BR>
+<A NAME="vicidial_inbound_dids-agent_search_method">
+<BR>
+<B>Στην Ομάδα-Agent Search Μέθοδος - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτή είναι η μέθοδος αναζήτησης παράγοντας που πρέπει να χρησιμοποιούνται από τα εισερχόμενα ομάδα, LO είναι Load-Balanced-Υπερχείλιση και θα προσπαθήσει να στείλει την πρόσκληση σε έναν πράκτορα για τον τοπικό διακομιστή πριν δοκιμάσετε να το στείλετε σε έναν πράκτορα σε άλλο διακομιστή, LB Load είναι ισορροπημένη και θα προσπαθήσει να στείλει την πρόσκληση για την επόμενη πράκτορα θέμα αυτό δεν είναι για server, SO-Server είναι το μόνο και θα μόνο να προσπαθήσουμε να στείλουμε τις κλήσεις σε παράγοντες σχετικά με το διακομιστή ότι η πρόσκληση ήταν για. Προεπιλεγμένο είναι LB.
+
+<BR>
+<A NAME="vicidial_inbound_dids-list_id">
+<BR>
+<B>-Στην ομάδα Κατάλογος ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτός είναι ο Κατάλογος ID που οδηγεί μπορεί να ερευνάται και ότι οδηγεί θα προστεθούν στο αν χρειάζεται.
+
+<BR>
+<A NAME="vicidial_inbound_dids-campaign_id">
+<BR>
+<B>-Στην ομάδα καμπάνιας ID - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το ID Εκστρατείας που οδηγεί μπορεί να αναζητήσει σε περίπτωση που η πρόσκληση χειριστεί μέθοδος CIDLOOKUPRC.
+
+<BR>
+<A NAME="vicidial_inbound_dids-phone_code">
+<BR>
+<B>-Στην ομάδα Τηλέφωνο κώδικα - </B> IN_GROUP Αν έχει επιλεγεί ως η DID διαδρομή, τότε αυτό είναι το τηλέφωνο κώδικα που χρησιμοποιείται εάν μια νέα πρωτοβουλία δημιουργείται.
+
 
 
 
@@ -2648,36 +3886,42 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_CAMPAIGN_HOTKEYS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
-<A NAME="vicidial_campaign_hotkeys">
-<BR>
-<B>Με την χρήση προσαρμοσμένων κλειδιών εκστρατείας, οι χρήστες που χρησιμοποιούν την εφαρμογή vicidial μπορούν να κλείσουν και να τερματίσουν την κλήση, με ένα μόνο πάτημα πλήκτρου.</B> There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead. 
-
-
-
-
-
-<BR><BR><BR><BR>
-
-<B><FONT SIZE=3>VICIDIAL_LEAD_RECYCLE ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
-<A NAME="vicidial_lead_recycle">
-<BR>
-<B>Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links.</B>
+	<B><FONT SIZE=3>VICIDIAL_CAMPAIGN_HOTKEYS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+	<A NAME="vicidial_campaign_hotkeys">
+	<BR>
+	<B>Με την χρήση προσαρμοσμένων κλειδιών εκστρατείας, οι χρήστες που χρησιμοποιούν την εφαρμογή vicidial μπορούν να κλείσουν και να τερματίσουν την κλήση, με ένα μόνο πάτημα πλήκτρου.</B> There are two special HotKey options that you can use in conjunction with Alternate Phone number dialing, ALTPH2 - Alternate Phone Hot Dial and ADDR3-----Address3 Hot Dial allow an agent to use a hotkey to hang up their call, stay on the same lead, and dial another contact number from that lead. 
 
 
 
 
 
-<BR><BR><BR><BR>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL ΑΥΤΟΜΑΤΕΣ ΘΈΣΕΙΣ ΠΙΝΑΚΩΝ ALT</FONT></B><BR><BR>
-<A NAME="vicidial_auto_alt_dial_statuses">
-<BR>
-<B>Εάν ο αυτόματος τομέας σχηματισμού ALT-ARJCMOY' τίθεται,κατόπιν οι μόλυβδοι που είναι κάτω από αυτές τις αυτόματεςθέσεις πινάκων ALT θα σχηματίσουν το alt_phone και-ή τουςτομείς address3 τους αφότου τίθενται οποιεσδήποτε από αυτέςτις θέσεις κανένας-απάντησης.</B>
+	<B><FONT SIZE=3>VICIDIAL_LEAD_RECYCLE ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+	<A NAME="vicidial_lead_recycle">
+	<BR>
+	<B>Through the use of lead recycling, you can call specific statuses of leads again at a specified interval without resetting the entire list. Lead recycling is campaign-specific and does not have to be a selected dialable status in your campaign. The attempt delay field is the number of seconds until the lead can be placed back in the hopper, this number must be at least 120 seconds. The attempt maximum field is the maximum number of times that a lead of this status can be attempted before the list needs to be reset, this number can be from 1 to 10. You can activate and deactivate a lead recycle entry with the provided links.</B>
 
 
+
+
+
+	<BR><BR><BR><BR>
+
+	<B><FONT SIZE=3>VICIDIAL ΑΥΤΟΜΑΤΕΣ ΘΈΣΕΙΣ ΠΙΝΑΚΩΝ ALT</FONT></B><BR><BR>
+	<A NAME="vicidial_auto_alt_dial_statuses">
+	<BR>
+	<B>Εάν ο αυτόματος τομέας σχηματισμού ALT-ARJCMOY' τίθεται,κατόπιν οι μόλυβδοι που είναι κάτω από αυτές τις αυτόματεςθέσεις πινάκων ALT θα σχηματίσουν το alt_phone και-ή τουςτομείς address3 τους αφότου τίθενται οποιεσδήποτε από αυτέςτις θέσεις κανένας-απάντησης.</B>
+
+	<?
+	}
+?>
 
 
 
@@ -2705,10 +3949,41 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Ονομα Ομάδας-</B> Αυτή είναι η περιγραφή της vicidial ομάδας χρήστη μέχρι 40 χαρακτήρες.
 
 <BR>
+<A NAME="vicidial_user_groups-forced_timeclock_login">
+<BR>
+<B>ΔύναμηΏρα ρολόι Είσοδος - </B> Αυτή η επιλογή σας επιτρέπει να μην επιτρέπει να συνδεθείτε με έναν πράκτορα στην VICIDIAL διεπαφή πράκτορα, εάν δεν έχουν συνδεθεί στο timeclock. Προεπιλεγμένο είναι Ν. Υπάρχει η δυνατότητα να εξαιρούν admin χρήστες, 8 και 9 επίπεδα.
+
+<BR>
+<A NAME="vicidial_user_groups-shift_enforcement">
+<BR>
+<B>Shift εκτέλεση -</B> Η ρύθμιση αυτή σας επιτρέπει να περιορίσετε πράκτορα συνδέσεις με βάση τις αλλαγές που έχουν επιλεγεί. OFF δεν θα επιβάλει σε όλες τις βάρδιες. START θα επιβάλει μόνο το χρόνο σύνδεσης, αλλά δεν θα επηρεάσει έναν πράκτορα που εκτελεί τους πάνω μετατόπιση του χρόνου και αν είναι ήδη συνδεδεμένος in. ALL θα επιβάλλει μετατόπιση χρόνος έναρξης και θα συνδεθείτε ορίζονται μετά από έναν πράκτορα που τρέχουν πάνω από το τέλος του χρόνου τους βάρδια. Προεπιλεγμένο είναι OFF.
+
+<BR>
+<A NAME="vicidial_user_groups-group_shifts">
+<BR>
+<B>Ομάδα Βάρδιες - </B> Αυτό είναι ένα επιλέξιμο λίστα των βαρδιών που μπορούν να περιορίσουν το χρόνο παράγοντες σύνδεσης, για το σύστημα.
+
+<BR>
 <A NAME="vicidial_user_groups-allowed_campaigns">
 <BR>
 <B>Εκστρατείες -</B> αυτό είναι ένας επιλέξιμος κατάλογος εκστρατειώνστον οποίο τα μέλη αυτής της ομάδας χρηστών μπορούν νασυνδεθούν. Η επιλογή όλος-ΕΚΣΤΡΑΤΕΙΩΝ επιτρέπει στους χρήστες σεαυτήν την ομάδα για να δει και να συνδεθεί σε οποιαδήποτεεκστρατεία στο σύστημα.
 
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR>
+	<A NAME="vicidial_user_groups-qc_allowed_campaigns">
+	<BR>
+	<B>QC Επιτρέπονται Καμπάνιες - </B> Αυτό είναι ένα επιλέξιμο κατάλογο των καμπάνιες που τα μέλη αυτής της ομάδας χρηστών θα είναι σε θέση να QC. Η ALL-CAMPAIGNS επιλογή επιτρέπει στους χρήστες αυτής της ομάδας να QC οποιαδήποτε εκστρατεία για το σύστημα.
+
+	<BR>
+	<A NAME="vicidial_user_groups-qc_allowed_inbound_groups">
+	<BR>
+	<B>QC Επιτρέπονται Inbound Ομάδες - </B> Αυτό είναι ένα επιλέξιμο λίστα των εισερχόμενων ομάδες που τα μέλη αυτής της ομάδας χρηστών θα είναι σε θέση να QC. Η ALL-ΟΜΑΔΕΣ επιλογή επιτρέπει στους χρήστες σε αυτή την ομάδα χρηστών να QC οποιαδήποτε εισερχόμενα ομάδας για το σύστημα.
+	<?
+	}
+?>
 
 
 
@@ -2746,25 +4021,31 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_LEAD_ΦΙΛΤΡΑ ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
-<A NAME="vicidial_lead_filters-lead_filter_id">
-<BR>
-<B>ID Φίλτρου -</B> Αυτό είναι το σύντομο όνομα ενός Φίλτρου Οδηγού. Πρέπει να είναι ένας μοναδικός κωδικός. Μην χρησιμοποιήσετε κενά ή στίξη για αυτό το πεδίο. Χαρακτήρες 2 με 10.
+	<B><FONT SIZE=3>VICIDIAL_LEAD_ΦΙΛΤΡΑ ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+	<A NAME="vicidial_lead_filters-lead_filter_id">
+	<BR>
+	<B>ID Φίλτρου -</B> Αυτό είναι το σύντομο όνομα ενός Φίλτρου Οδηγού. Πρέπει να είναι ένας μοναδικός κωδικός. Μην χρησιμοποιήσετε κενά ή στίξη για αυτό το πεδίο. Χαρακτήρες 2 με 10.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_name">
-<B>Ονομα Φίλτρου -</B> Αυτό είναι ένα πιο περιγραφικό όνομα για το Φίλτρο. Είναι μία σύντομη περιγρφή του φίλτρου. Χαρακτήρες 2 με 30.
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_name">
+	<B>Ονομα Φίλτρου -</B> Αυτό είναι ένα πιο περιγραφικό όνομα για το Φίλτρο. Είναι μία σύντομη περιγρφή του φίλτρου. Χαρακτήρες 2 με 30.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_comments">
-<B>Σχόλια Φίλτρου -</B> Εδώ μπορείτε σχολιάσετε το φίλτρο. Χαρακτήρες 2 με 255.
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_comments">
+	<B>Σχόλια Φίλτρου -</B> Εδώ μπορείτε σχολιάσετε το φίλτρο. Χαρακτήρες 2 με 255.
 
-<BR>
-<A NAME="vicidial_lead_filters-lead_filter_sql">
-<B>SQL Φίλτρου -</B>  Εδώ μπορείτε να ορίσετε SQL ερώτημα για το φίλτρο. Μην ξεκινήσετε ή τελειώσετε με ένα AND, αυτό θα γίνει αυτόματα από το hopper. Ένα παράδειγμα είναι- called_count > 4 and called_count < 8 -.
-
+	<BR>
+	<A NAME="vicidial_lead_filters-lead_filter_sql">
+	<B>SQL Φίλτρου -</B>  Εδώ μπορείτε να ορίσετε SQL ερώτημα για το φίλτρο. Μην ξεκινήσετε ή τελειώσετε με ένα AND, αυτό θα γίνει αυτόματα από το hopper. Ένα παράδειγμα είναι- called_count > 4 and called_count < 8 -.
+	<?
+	}
+?>
 
 
 
@@ -2806,43 +4087,75 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 <BR><BR><BR><BR>
 
-<B><FONT SIZE=3>ΛΕΙΤΟΥΡΓΙΑ ΕΙΣΑΓΩΓΗΣ ΛΙΣΤΑΣ</FONT></B><BR><BR>
-<A NAME="vicidial_list_loader">
+<B><FONT SIZE=3>VICIDIAL_SHIFTS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<A NAME="vicidial_shifts-shift_id">
 <BR>
-Ο βασικός βασισμένος στο WEB φορτωτής μολύβδου VICIDIALσχεδιάζεται απλά για να πάρει ένα αρχείο μολύβδου - μέχρι8MB στο μέγεθος - που είναι είτε ετικέττα είτε σωλήνας πουοριοθετείται και τον φορτώνει στον πίνακα vicidial_list. Οφορτωτής μολύβδου επιτρέπει τον τομέα επιλέγοντας και TXT -σαφές κείμενο, CSV - κόμμα χώρισε τις τιμές και XLS -σχήματα αρχείων Excel. Ο φορτωτής μολύβδου δεν κάνει τηνεπικύρωση στοιχείων, αλλά επιτρέπει σε σας για να ελέγξει για τααντίγραφα σε το, μέσα στην εκστρατεία ή μέσα το σε ολόκληροσύστημα. Επίσης, σιγουρευτείτε ότι έχετε δημιουργήσει τονκατάλογο ότι αυτοί οι μόλυβδοι πρόκειται να κάτω έτσι ώστεμπορείτε να τους χρησιμοποιήσετε. Εδώ είναι ένας κατάλογος τωντομέων στην κατάλληλη διαταγή τους για τα αρχεία μολύβδου:
-	<OL>
-	<LI>Κωδικός Οδηγού Προμηθευτού
-	<LI>Πηγαίος Κώδικας - εσωτερική χρήση μόνο από διαχειριστές και DBAs
-	<LI>ID λίστας - ο αριθμός λίστας που οι οδηγοί θα παρουσιαστούν κάτω από
-	<LI>Κωδικός τηλεφώνου - το πρόθεμα του τηλεφωνικού αριθμού (1 για ΗΠΑ, 01144 για Βρετανία κλπ)
-	<LI>Ο αριθμός τηλεφώνου - πρέπει να είναι τουλάχιστον 8 ψηφία
-	<LI>Τίτλος - ο τίτλος του πελάτη (κος. κα. κλπ)
-	<LI>Ονομα
-	<LI>Μεσαίο Αρχικό
-	<LI>Επίθετο
-	<LI>1 Γραμμή Διεύθυνσης
-	<LI>2 Γραμμή Διεύθυνσης
-	<LI>3 Γραμμή Διεύθυνσης
-	<LI>Πόλη
-	<LI>Κράτος - περιορισμός σε 2 χαρακτήρες
-	<LI>Επαρχία
-	<LI>Ταχ.Κωδ.
-	<LI>Χώρα
-	<LI>Φύλο
-	<LI>Ημερ. Γέννησης
-	<LI>Εναλ. Αριθμός Τηλ.
-	<LI>Διεύθυνση Ηλεκτρ.Ταχυδρομείου
-	<LI>Φράση Ασφαλείας
-	<LI>Σχόλια
-	</OL>
+<B>ID Shift - </B> Αυτή είναι η σύντομη ονομασία της Vicidial Shift Ορισμός. Αυτό πρέπει να είναι ένα μοναδικό αναγνωριστικό. Μην χρησιμοποιείτε τυχόν διαστήματα ή σημεία στίξης για αυτόν τον τομέα. max 20 χαρακτήρες, τουλάχιστον 2 χαρακτήρες.
 
-<BR>ΣΗΜΕΙΩΣΕΙΣ: Η λειτουργία φορτωτών μολύβδου Excel επιτρέπεταιαπό μια σειρά χειρογράφων perl και πρέπει να έχει κατάλληλαδιαμορφωμένη/ένα αρχείο κ.λπ.../astguiclient.conf σε ισχύ στονκεντρικό υπολογιστή δικτύου. Επίσης, οι ενότητες ζευγών perlπρέπει να φορτωθούν για το για να εργαστούν επίσης - ολε-Storage_Lite και υπολογισμός με λογιστικό φύλλο(spreadsheet)- ParseExcel. Μπορείτε να ελέγξετε για τα λάθηχρόνου εκτέλεσης σε αυτοί με την εξέταση το αρχείο apache σαςerror_log. Επίσης, για τους ελέγχους διπλασιασμού ενάντια στουςκαταλόγους gampaign, ο κατάλογος που έχει τα νέα προβαδίσματαπου πηγαίνουν σε το πρέπει να δημιουργηθεί στο σύστημα προτού νααρχίσετε να φορτώνετε τους μολύβδους.
+<BR>
+<A NAME="vicidial_shifts-shift_name">
+<B>Shift Όνομα - </B> Αυτό είναι ένα πιο περιγραφικό όνομα του Shift Ορισμός. Αυτή είναι μια σύντομη περίληψη του Shift ορισμό. το πολύ 50 χαρακτήρες, τουλάχιστον 2 χαρακτήρες.
+
+<BR>
+<A NAME="vicidial_shifts-shift_start_time">
+<B>Start Time Shift - </B> Αυτή είναι η στιγμή που αρχίζει η εκστρατεία στροφή. Πρέπει να είναι μόνο αριθμοί, 9.30 π.μ. και 0930 θα είναι 5:00 μμ θα είναι 1.700.
+
+<BR>
+<A NAME="vicidial_shifts-shift_length">
+<B>Shift Μήκος - </B> Αυτό είναι το χρόνο σε ώρες και τα λεπτά που διαρκεί η εκστρατεία στροφή. 8 ώρα θα είναι 08:00 και 7 ώρες και 30 λεπτά θα είναι 07:30.
+
+<BR>
+<A NAME="vicidial_shifts-shift_weekdays">
+<B>Shift Καθημερινά - </B> Στην ενότητα αυτή θα πρέπει να επιλέξετε τις μέρες την εβδομάδα ότι αυτή η στροφή είναι ενεργή.
 
 
 
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
 
-<BR><BR><BR><BR>
+	<BR><BR><BR><BR>
 
+	<B><FONT SIZE=3>ΛΕΙΤΟΥΡΓΙΑ ΕΙΣΑΓΩΓΗΣ ΛΙΣΤΑΣ</FONT></B><BR><BR>
+	<A NAME="vicidial_list_loader">
+	<BR>
+	Ο βασικός βασισμένος στο WEB φορτωτής μολύβδου VICIDIALσχεδιάζεται απλά για να πάρει ένα αρχείο μολύβδου - μέχρι8MB στο μέγεθος - που είναι είτε ετικέττα είτε σωλήνας πουοριοθετείται και τον φορτώνει στον πίνακα vicidial_list. Οφορτωτής μολύβδου επιτρέπει τον τομέα επιλέγοντας και TXT -σαφές κείμενο, CSV - κόμμα χώρισε τις τιμές και XLS -σχήματα αρχείων Excel. Ο φορτωτής μολύβδου δεν κάνει τηνεπικύρωση στοιχείων, αλλά επιτρέπει σε σας για να ελέγξει για τααντίγραφα σε το, μέσα στην εκστρατεία ή μέσα το σε ολόκληροσύστημα. Επίσης, σιγουρευτείτε ότι έχετε δημιουργήσει τονκατάλογο ότι αυτοί οι μόλυβδοι πρόκειται να κάτω έτσι ώστεμπορείτε να τους χρησιμοποιήσετε. Εδώ είναι ένας κατάλογος τωντομέων στην κατάλληλη διαταγή τους για τα αρχεία μολύβδου:
+		<OL>
+		<LI>Κωδικός Οδηγού Προμηθευτού
+		<LI>Πηγαίος Κώδικας - εσωτερική χρήση μόνο από διαχειριστές και DBAs
+		<LI>ID λίστας - ο αριθμός λίστας που οι οδηγοί θα παρουσιαστούν κάτω από
+		<LI>Κωδικός τηλεφώνου - το πρόθεμα του τηλεφωνικού αριθμού (1 για ΗΠΑ, 01144 για Βρετανία κλπ)
+		<LI>Ο αριθμός τηλεφώνου - πρέπει να είναι τουλάχιστον 8 ψηφία
+		<LI>Τίτλος - ο τίτλος του πελάτη (κος. κα. κλπ)
+		<LI>Ονομα
+		<LI>Μεσαίο Αρχικό
+		<LI>Επίθετο
+		<LI>1 Γραμμή Διεύθυνσης
+		<LI>2 Γραμμή Διεύθυνσης
+		<LI>3 Γραμμή Διεύθυνσης
+		<LI>Πόλη
+		<LI>Κράτος - περιορισμός σε 2 χαρακτήρες
+		<LI>Επαρχία
+		<LI>Ταχ.Κωδ.
+		<LI>Χώρα
+		<LI>Φύλο
+		<LI>Ημερ. Γέννησης
+		<LI>Εναλ. Αριθμός Τηλ.
+		<LI>Διεύθυνση Ηλεκτρ.Ταχυδρομείου
+		<LI>Φράση Ασφαλείας
+		<LI>Σχόλια
+		</OL>
+
+	<BR>ΣΗΜΕΙΩΣΕΙΣ: Η λειτουργία φορτωτών μολύβδου Excel επιτρέπεταιαπό μια σειρά χειρογράφων perl και πρέπει να έχει κατάλληλαδιαμορφωμένη/ένα αρχείο κ.λπ.../astguiclient.conf σε ισχύ στονκεντρικό υπολογιστή δικτύου. Επίσης, οι ενότητες ζευγών perlπρέπει να φορτωθούν για το για να εργαστούν επίσης - ολε-Storage_Lite και υπολογισμός με λογιστικό φύλλο(spreadsheet)- ParseExcel. Μπορείτε να ελέγξετε για τα λάθηχρόνου εκτέλεσης σε αυτοί με την εξέταση το αρχείο apache σαςerror_log. Επίσης, για τους ελέγχους διπλασιασμού ενάντια στουςκαταλόγους gampaign, ο κατάλογος που έχει τα νέα προβαδίσματαπου πηγαίνουν σε το πρέπει να δημιουργηθεί στο σύστημα προτού νααρχίσετε να φορτώνετε τους μολύβδους.
+
+
+
+
+	<BR><BR><BR><BR>
+	<?
+	}
+?>
 
 
 
@@ -3183,6 +4496,58 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>DBY Πόρτα -</B> Η MySQL TCP πόρτα που ο χρήστης χρησιμοποιεί όταν συνδέεται. Η προκαθορισμένη είναι 3306. Δευτερεύονserver, μην χρησιμοποιημένος αυτήν την περίοδο.
 
+<BR>
+<A NAME="phones-alias_id">
+<BR>
+<B>Γνωστός ID - </B> Η ID του ψευδώνυμο που χρησιμοποιείται για να επιτρέψει συνδέσεις τηλεφώνου φορτίο ισορροπημένη. δεν κενά ή άλλους ειδικούς χαρακτήρες επιτρέπονται. Πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες.
+
+<BR>
+<A NAME="phones-alias_name">
+<BR>
+<B>Ψευδώνυμο - </B> Το όνομα που χρησιμοποιείται για την περιγραφή ενός τηλέφωνα άλλως, πρέπει να είναι μεταξύ 2 και 50 χαρακτήρες.
+
+<BR>
+<A NAME="phones-logins_list">
+<BR>
+<B>Τηλέφωνα logins List - </B> Η comma separated κατάλογο τηλέφωνο συνδέσεις χρησιμοποιούνται όταν ένας πράκτορας συνδέεται στο τηλέφωνο χρησιμοποιώντας φορτίο ισορροπημένη συνδέσεις. Το γραφείο θα βρει εφαρμογή η ενεργός διακομιστής με τις λιγότερες παράγοντες συνδεθεί σε αυτήν και μια κλήση από το διακομιστή στον πράκτορα κατά login.
+
+<BR>
+<A NAME="phones-email">
+<BR>
+<B>Τηλέφωνα Email - </B> Η διεύθυνση ηλεκτρονικού ταχυδρομείου που σχετίζονται με αυτό το τηλέφωνο εισόδου. Αυτό χρησιμοποιείται για τηλεφωνητή ρυθμίσεις.
+
+<BR>
+<A NAME="phones-template_id">
+<BR>
+<B>ID Template - </B> Αυτό είναι το πρότυπο αρχείο conf ID εισόδου ότι αυτό το τηλέφωνο θα χρησιμοποιήσει για την Asterisk ρυθμίσεις. Προεπιλεγμένο είναι - ΚΑΝΕΝΑ --.
+
+<BR>
+<A NAME="phones-conf_override">
+<BR>
+<B>Conf Override Settings -</B> If populated, and the Πρότυπο ID is set to --NONE-- then the contents of this field are used as the conf file entries for this phone. generate_vicidial_conf for this phones server must be set to Y for this to work. This field should NOT contain the [extension] line, that will be automatically generated.
+
+<BR>
+<A NAME="phones-group_alias_id">
+<BR>
+<B>Ομάδα Γνωστός ID - </B> Η ID της ομάδας άλλως χρησιμοποιείται από τους αντιπροσώπους που ορίζονται για να καλέσετε τις κλήσεις από το VICIDIAL πράκτορα διεπαφής με διαφορετικές ταυτότητες καλούντος. δεν κενά ή άλλους ειδικούς χαρακτήρες επιτρέπονται. Πρέπει να είναι μεταξύ 2 και 20 χαρακτήρες.
+
+<BR>
+<A NAME="phones-group_alias_name">
+<BR>
+<B>Ομάδα ψευδώνυμο - </B> Το όνομα που χρησιμοποιείται για να περιγράψει μια ομάδα άλλως, πρέπει να είναι μεταξύ 2 και 50 χαρακτήρες.
+
+<BR>
+<A NAME="phones-caller_id_number">
+<BR>
+<B>Αριθμός Ταυτότητας καλούντος - </B> Η καλούντος αριθμό ταυτότητας που χρησιμοποιούνται σε αυτή την ομάδα Γνωστός. Πρέπει να είναι μόνο ψηφία.
+
+<BR>
+<A NAME="phones-caller_id_name">
+<BR>
+<B>Όνομα καλούντος ID - </B> Το όνομα του καλούντος ID που μπορούν να αποσταλούν με αυτή την ομάδα Γνωστός. Από όσο γνωρίζουμε αυτό θα λειτουργήσει μόνο στον Καναδά και στις PRI κυκλωμάτων χρησιμοποιώντας IAX βρόχο κορμού μέσω Asterisk.
+
+
+
 
 <BR><BR><BR><BR>
 
@@ -3207,6 +4572,21 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>Ενεργός -</B> Ορίζει κατά πόσον ο διακομιστής Asterisk είναι ενεργός ή μη ενεργός.
 
 <BR>
+<A NAME="servers-sysload">
+<BR>
+<B>System Load -</B> Τα δύο αυτά στατιστικά στοιχεία δείχνουν την loadavg ενός συστήματος φορές 100 και το ποσοστό χρήσης της CPU του διακομιστή και ενημερώνεται ανά λεπτό. Η loadavg θα πρέπει να είναι κατά μέσο όρο κάτω των 100 πολλαπλασιάζεται με τον αριθμό των πυρήνων της CPU σας σύστημα, για τη βέλτιστη απόδοση. Η χρήση της CPU ποσοστό θα πρέπει να παραμείνει κάτω από 50 για τη βέλτιστη απόδοση.
+
+<BR>
+<A NAME="servers-channels_total">
+<BR>
+<B>Live Channels -</B> Αυτό το πεδίο δείχνει τον τρέχοντα αριθμό των σταθμών Asterisk που ζουν με το σύστημα τώρα. Είναι σημαντικό να σημειωθεί ότι ο αριθμός των καναλιών Asterisk είναι συνήθως πολύ υψηλότερη από τον πραγματικό αριθμό των κλήσεων σε ένα σύστημα. Το πεδίο αυτό ενημερώνεται μία φορά ανά λεπτό.
+
+<BR>
+<A NAME="servers-disk_usage">
+<BR>
+<B>Disk Usage -</B> Το πεδίο αυτό θα δείξει το δίσκο χρήσης για κάθε διαμέρισμα σε αυτόν το διακομιστή. Το πεδίο αυτό ενημερώνεται μία φορά ανά λεπτό.
+
+<BR>
 <A NAME="servers-asterisk_version">
 <BR>
 <B>Εκδοση Asterisk</B>.
@@ -3215,6 +4595,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="servers-max_vicidial_trunks">
 <BR>
 <B>Μέγιστος Αριθμός Trunk του VICIDIAL -</B> Αυτό το πεδίο θα προσδιορίσει τον μέγιστο αριθμό γραμμών, τις οποίες θα χρησιμοποιήσει η διεργασία αυτόατης κλήσης. Εάν θέλετε να αφιερώσετε δύο PRI σε ένα διακομιστή τότε θα πρέπει να το ορίσετε σε 46. Το προκαθορισμένο είναι 96.
+
+<BR>
+<A NAME="servers-outbound_calls_per_second">
+<BR>
+<B>Max ζητεί ανά Δεύτερη -</B> Αυτή η ρύθμιση καθορίζει το μέγιστο αριθμό των κλήσεων που μπορούν να διατεθούν από το εξερχόμενο αυτόματη κλήση δέσμης ενεργειών σε αυτόν το διακομιστή ανά δευτερόλεπτο. Πρέπει να είναι από 1 έως 100. Η προεπιλογή είναι 20.
 
 <BR>
 <A NAME="servers-telnet_host">
@@ -3296,6 +4681,111 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <BR>
 <B>Διακύμανση εκτός ορίων -</B> Καθορίζει τον αριθμό των τηλ.κυκλ.συνδ. που δεν επιτρέπετε στο σύστημα να χειριστεί για Διακύμανση Τηλεφωνικής Κλήσης.
 
+<BR>
+<A NAME="servers-recording_web_link">
+<BR>
+<B>Καταγραφή Σύνδεσμος - </B> Η ρύθμιση αυτή σας επιτρέπει να παρακάμπτουν την προεπιλογή της οθόνης του συνδέσμου εγγραφή στο admin ιστοσελίδες. Προεπιλεγμένο είναι SERVER_IP.
+
+<BR>
+<A NAME="servers-alt_server_ip">
+<BR>
+<B>Αναπληρωματικό Καταγραφή IP Διακομιστή - </B> Αυτή η ρύθμιση είναι όπου μπορείτε να βάλετε ένα διακομιστή IP ή άλλο μηχάνημα το όνομα που μπορεί να χρησιμοποιηθεί στη θέση του server_ip στις συνδέσεις με ηχογραφήσεις εντός του admin ιστοσελίδες. Προεπιλεγμένο είναι άδειο.
+
+<BR>
+<A NAME="servers-active_asterisk_server">
+<BR>
+<B>Asterisk Ενεργό Server - </B> Αν Asterisk δεν εκτελείται σε αυτόν το διακομιστή ή αν VICIDIAL δεν θα πρέπει να χρησιμοποιούν αυτό το διακομιστή ή αν είναι μόνο με τη χρήση αυτού του διακομιστή για άλλα σενάρια, όπως η χοάνη φόρτωσης script που θέλετε να ρυθμίσετε αυτή να Ν. Προεπιλ είναι Y.
+
+<BR>
+<A NAME="servers-generate_vicidial_conf">
+<BR>
+<B>Δημιουργήστε conf αρχεία - </B> Αν θα θέλατε το σύστημα auto-δημιουργούν αστερίσκο conf αρχεία με βάση τις ενδείξεις τηλεφώνων, την εξισορρόπηση φορτίου εγγραφές και εγκατάσταση εντός VICIDIAL τότε που αυτό να είναι Προεπιλ Y. Y.
+
+<BR>
+<A NAME="servers-rebuild_conf_files">
+<BR>
+<B>Αναδημιουργία conf αρχεία - </B> Αν θέλετε να αναγκάσετε μια ανακατασκευή του Asterisk conf αρχεία ή αν κάποιο από τα τηλέφωνα ή μεταφορέα εγγραφές έχουν αλλάξει, τότε αυτό θα πρέπει να ρυθμιστεί σε Υ. Μετά την conf αρχεία που έχουν δημιουργηθεί και έχει Asterisk φορτώθηκε στη συνέχεια, αυτό θα αλλάξει σε Ν. Προεπιλεγμένο είναι Y.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>vicidial_conf_templates ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<A NAME="vicidial_conf_templates-template_id">
+<BR>
+<B>ID Template - </B> Το πεδίο αυτό πρέπει να είναι τουλάχιστον 2 χαρακτήρες και δεν υπερβαίνει τους 15 χαρακτήρες σε μήκος, δεν χώρους. Αυτό είναι το αναγνωριστικό που θα χρησιμοποιείται για τον προσδιορισμό της conf πρότυπο σε ολόκληρο το σύστημα.
+
+<BR>
+<A NAME="vicidial_conf_templates-template_name">
+<BR>
+<B>Όνομα - </B> Αυτό είναι το όνομα του αρχείου conf πρότυπο εισόδου.
+
+<BR>
+<A NAME="vicidial_conf_templates-template_contents">
+<BR>
+<B>Περιεχόμενα Template - </B> Το πεδίο αυτό είναι όπου μπορείτε να εισάγετε τις ειδικές ρυθμίσεις στο να χρησιμοποιηθούν από όλα τα τηλέφωνα και-ή αερομεταφορέων που έχουν ρυθμιστεί να χρησιμοποιούν αυτό το πρότυπο conf. Τα πεδία που δεν θα πρέπει να περιλαμβάνονται στη θέση αυτή είναι: μυστικό, accountcode, υπόψη, username και το γραμματοκιβώτιο.
+
+
+
+
+
+<BR><BR><BR><BR>
+
+<B><FONT SIZE=3>vicidial_server_carriers ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+<A NAME="vicidial_server_carriers-carrier_id">
+<BR>
+<B>ID Carrier - </B> Το πεδίο αυτό πρέπει να είναι τουλάχιστον 2 χαρακτήρες και δεν υπερβαίνει τους 15 χαρακτήρες σε μήκος, δεν χώρους. Αυτό είναι το αναγνωριστικό που θα χρησιμοποιείται για τον προσδιορισμό του αερομεταφορέα για τη συγκεκριμένη θέση σε όλο το σύστημα.
+
+<BR>
+<A NAME="vicidial_server_carriers-carrier_name">
+<BR>
+<B>Όνομα Carrier - </B> Αυτό είναι το όνομα του μεταφορέα εισόδου.
+
+<BR>
+<A NAME="vicidial_server_carriers-registration_string">
+<BR>
+<B>Εγγραφή String - </B> Το πεδίο αυτό είναι όπου μπορείτε να εισαγάγετε στον ακριβή συμβολοσειρά που απαιτούνται στο SIP IAX ή αρχείο διαμόρφωσης για να εγγραφείτε στο φορέα παροχής υπηρεσιών. Προαιρετικό αλλά συνιστάται ιδιαίτερα αν ο φορέας σας επιτρέπει την καταχώριση.
+
+<BR>
+<A NAME="vicidial_server_carriers-template_id">
+<BR>
+<B>ID Template - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να επιλέξετε ένα πρότυπο conf αρχείο για τον εν λόγω αερομεταφορέα εισόδου.
+
+<BR>
+<A NAME="vicidial_server_carriers-account_entry">
+<BR>
+<B>Λογαριασμός Θέση - </B> Το πεδίο αυτό χρησιμοποιείται αν δεν έχετε επιλέξει να χρησιμοποιήσετε ένα πρότυπο, και είναι όπου μπορείτε να εισαγάγετε στον ειδικό λογαριασμό ρυθμίσεις που πρέπει να χρησιμοποιείται για τον εν λόγω αερομεταφορέα. Αν πρόκειται να λαμβάνουν σε εισερχόμενα κλήσεις από τον εν λόγω αερομεταφορέα κορμού μπορεί να θέλετε να ρυθμίσετε το πλαίσιο = trunkinbound σε αυτό τον τομέα, ώστε να μπορείτε να χρησιμοποιήσετε τη διαδικασία χειρισμού DID εντός VICIDIAL.
+
+<BR>
+<A NAME="vicidial_server_carriers-protocol">
+<BR>
+<B>Πρωτόκολλο - </B> Αυτό το πεδίο σας επιτρέπει να ορίσετε το πρωτόκολλο να χρησιμοποιήσετε για την είσοδο του μεταφορέα. Επί του παρόντος μόνο SIP IAX και υποστηρίζονται.
+
+<BR>
+<A NAME="vicidial_server_carriers-globals_string">
+<BR>
+<B>Globals String - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να ορίσετε μια global μεταβλητή που θα χρησιμοποιηθεί για τον μεταφορέα στο dialplan.
+
+<BR>
+<A NAME="vicidial_server_carriers-dialplan_entry">
+<BR>
+<B>Dialplan Είσοδος - </B> Αυτό το προαιρετικό πεδίο σας επιτρέπει να ορίσετε ένα σύνολο dialplan καταχωρήσεις να χρησιμοποιήσετε για τον εν λόγω αερομεταφορέα.
+
+<BR>
+<A NAME="vicidial_server_carriers-server_ip">
+<BR>
+<B>IP Διακομιστή - </B> Αυτό είναι το διακομιστή ότι αυτό το συγκεκριμένο μεταφορέα εγγραφή είναι συνδεδεμένες με.
+
+<BR>
+<A NAME="vicidial_server_carriers-active">
+<BR>
+<B>Ενεργή - </B> Αυτό καθορίζει εάν ο μεταφορέας θα συμπεριληφθούν στα auto-conf αρχεία που δημιουργούνται ή δεν.
+
+
+
+
 
 <BR><BR><BR><BR>
 
@@ -3312,13 +4802,19 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 
 
 
-<BR><BR><BR><BR>
+<?
+if ($SSoutbound_autodial_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
 
-<B><FONT SIZE=3>VICIDIAL_SERVER_TRUNKS ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
-<A NAME="vicidial_server_trunks">
-<BR>
-<B>Οι Τηλ.Κυκλ.Συνδ. του εξυπηρετητή σας επιτρέπουν να περιορίσετε τις εξερχόμενες γραμμές που χρησιμοποιούνται στον εξυπηρετητή ανά εκστρατεία. Χωρίς αυτές τις εγγραφές, επιτρέπετε στην εκστρατεία να έχει όσες γραμμές μπορεί να έχει, μέχρι τον μέγιστο καθορισμένο αριθμό Τηλ.Κυκλ.Συνδ..</B>
-
+	<B><FONT SIZE=3>VICIDIAL_SERVER_Μπαούλα ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
+	<A NAME="vicidial_server_trunks">
+	<BR>
+	<B>Οι Τηλ.Κυκλ.Συνδ. του εξυπηρετητή σας επιτρέπουν να περιορίσετε τις εξερχόμενες γραμμές που χρησιμοποιούνται στον εξυπηρετητή ανά εκστρατεία. Χωρίς αυτές τις εγγραφές, επιτρέπετε στην εκστρατεία να έχει όσες γραμμές μπορεί να έχει, μέχρι τον μέγιστο καθορισμένο αριθμό Τηλ.Κυκλ.Συνδ..</B>
+	<?
+	}
+?>
 
 
 
@@ -3334,6 +4830,99 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="settings-webroot_writable">
 <BR>
 <B>Webroot writable -</B> αυτή η ρύθμιση επιτρέπει σε σας για νακαθορίσει εάν temp τα αρχεία και τα αρχεία επικύρωσης πρέπεινα τοποθετηθούν στο webroot στον κεντρικό υπολογιστή δικτύουσας. Η προεπιλογή είναι 1.
+
+<BR>
+<A NAME="settings-vicidial_agent_disable">
+<BR>
+<B>VICIDIAL ο πράκτορας θέτει εκτός λειτουργίας την επίδειξη -</B> αυτός ο τομέας χρησιμοποιείται για να επιλέξει πότε για ναπαρουσιάσει σε έναν πράκτορα πότε η σύνοδός τους έχει τεθείεκτός λειτουργίας από το σύστημα, μια δράση διευθυντών ή απόένα εξωτερικό μέτρο. Η ρύθμιση NOT_ACTIVE θα θέσει εκτόςλειτουργίας το μήνυμα στην οθόνη πρακτόρων. Η ρύθμισηLIVE_ΧΕΙΡΙΣΤΗΣθα επιδείξει μόνο το εκτός λειτουργίας μήνυμα όταναφαιρεθεί το αρχείο πρακτόρων vicidial_auto_calls, όπως κατάτη διάρκεια μιας αποσύνδεσης δύναμης ή της αποσύνδεσης έκτακτηςανάγκης. 
+
+<BR>
+<A NAME="settings-allow_sipsak_messages">
+<BR>
+<B>Επιτρέψτε τα μηνύματα SIPSAK -</B> εάν θέστε 1, αυτό θα επιτρέψειτον τηλεφωνικό πίνακα θέτοντας για να εργαστεί κατάλληλα, οκεντρικός υπολογιστής θα στείλει τα μηνύματα στο τηλέφωνοΓΟΥΛΙΏΝ στην επίδειξη στην τηλεφωνική LCD επίδειξη ότανσυνδέεται με VICIDIAL. Αυτό το χαρακτηριστικό γνώρισμαλειτουργεί μόνο με τα τηλέφωνα ΓΟΥΛΙΩΝ και απαιτεί sipsak τηνεφαρμογή για να εγκατασταθεί στον κεντρικό υπολογιστή δικτύου. Ηπροεπιλογή είναι 0. 
+
+<BR>
+<A NAME="settings-vdc_agent_api_active">
+<BR>
+<B>Agent API Ενεργό - </B> Αν οριστεί σε 1, αυτό θα επιτρέψει τη διασύνδεση API γραφείο να λειτουργεί. Η προεπιλογή είναι 0. 
+
+<BR>
+<A NAME="settings-admin_home_url">
+<BR>
+<B>Σπίτι URL Admin -</B> αυτό είναι η διεύθυνση URL ήιστοχώρων ότι θα πάτε εάν χτυπήσετε στην ΕΓΧΏΡΙΑ σύνδεση στηνκορυφή της σελίδας admin.php.
+
+<BR>
+<A NAME="settings-enable_agc_xfer_log">
+<BR>
+<B>Επιτρέψτε το αρχείο ημερολογίου μεταφοράς πρακτόρων - αυτή ηεπιλογή θα καταγράψει σε ένα αρχείο ημερολογίου κειμένων στοwebserver κάθε φορά που μεταφέρεται μια κλήση σε ένανπράκτορα. Η προεπιλογή είναι 0, άτομα με ειδικές ανάγκες.
+
+<BR>
+<A NAME="settings-timeclock_end_of_day">
+<BR>
+<B>Ώρα ρολόι Τέλος της ημέρας - </B> Αυτή η ρύθμιση καθορίζει, όταν όλοι οι χρήστες θα πρέπει να συνδεθεί αυτόματα από το σύστημα timeclock. Μόνο εκτελείται μία φορά την ημέρα. πρέπει να είναι μόνο 4 ψηφία ψηφίο 2 ώρες και 2 λεπτά ψηφίο στο 24ωρο διάστημα. Η προεπιλογή είναι 0000.
+
+<BR>
+<A NAME="settings-timeclock_last_reset_date">
+<BR>
+<B>ΤελευταίαΏρα ρολόι Auto Αποσύνδεση - </B> Αυτό το πεδίο εμφανίζει την ημερομηνία της τελευταίας αυτόματη αποσύνδεση.
+
+<BR>
+<A NAME="settings-vdc_header_date_format">
+<BR>
+<B>Agent Screen Επικεφαλίδας Ημερομηνία Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή της ημερομηνίας που εμφανίζεται στο πάνω μέρος της οθόνης VICIDIAL πράκτορα. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι MS_DASH_24HR<BR>
+MS_DASH_24HR  2008-06-24 23:59:59 - Προκαθορισμένος ημερομηνία με τη μορφή έτος μήνας ημέρα ακολουθούμενη από 24 ώρες χρόνο<BR>
+US_SLASH_24HR 06/24/2008 23:59:59 - ΗΠΑ με τη μορφή ημερομηνίας ημέρα του μήνα χρόνου ακολουθούμενη από 24 ώρες χρόνο<BR>
+EU_SLASH_24HR 24/06/2008 23:59:59 - Ευρωπαϊκή ημέρα με μορφή Ημέρα Μήνας Έτος ακολουθούμενη από 24 ώρες χρόνο<BR>
+AL_TEXT_24HR  JUN 24 23:59:59 - Κείμενο με συντετμημένη μορφή ημερομηνίας ημέρα του μήνα ακολουθούμενη από 24 ώρες χρόνο<BR>
+MS_DASH_AMPM  2008-06-24 11:59:59 PM - Προκαθορισμένος ημερομηνία με τη μορφή έτος μήνας ημέρα ακολουθούμενη από 12 ώρες χρόνο<BR>
+US_SLASH_AMPM 06/24/2008 11:59:59 PM - ΗΠΑ με τη μορφή ημερομηνίας ημέρα του μήνα χρόνου ακολουθούμενη από 12 ώρες χρόνο<BR>
+EU_SLASH_AMPM 24/06/2008 11:59:59 PM - Ευρωπαϊκή ημέρα με μορφή Ημέρα Μήνας Έτος ακολουθούμενη από 12 ώρες χρόνο<BR>
+AL_TEXT_AMPM  JUN 24 11:59:59 PM - Κείμενο με συντετμημένη μορφή ημερομηνίας ημέρα του μήνα ακολουθούμενη από 12 ώρες χρόνο<BR>
+
+<BR>
+<A NAME="settings-vdc_customer_date_format">
+<BR>
+<B>Agent Screen Πελατών Ημερομηνία Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή των πελατών ζώνη ώρας ημερομηνία που εμφανίζεται στο πάνω μέρος της πληροφόρησης πελατών τμήμα του πράκτορα VICIDIAL οθόνη. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι AL_TEXT_AMPM<BR>
+MS_DASH_24HR  2008-06-24 23:59:59 - Προκαθορισμένος ημερομηνία με τη μορφή έτος μήνας ημέρα ακολουθούμενη από 24 ώρες χρόνο<BR>
+US_SLASH_24HR 06/24/2008 23:59:59 - ΗΠΑ με τη μορφή ημερομηνίας ημέρα του μήνα χρόνου ακολουθούμενη από 24 ώρες χρόνο<BR>
+EU_SLASH_24HR 24/06/2008 23:59:59 - Ευρωπαϊκή ημέρα με μορφή Ημέρα Μήνας Έτος ακολουθούμενη από 24 ώρες χρόνο<BR>
+AL_TEXT_24HR  JUN 24 23:59:59 - Κείμενο με συντετμημένη μορφή ημερομηνίας ημέρα του μήνα ακολουθούμενη από 24 ώρες χρόνο<BR>
+MS_DASH_AMPM  2008-06-24 11:59:59 PM - Προκαθορισμένος ημερομηνία με τη μορφή έτος μήνας ημέρα ακολουθούμενη από 12 ώρες χρόνο<BR>
+US_SLASH_AMPM 06/24/2008 11:59:59 PM - ΗΠΑ με τη μορφή ημερομηνίας ημέρα του μήνα χρόνου ακολουθούμενη από 12 ώρες χρόνο<BR>
+EU_SLASH_AMPM 24/06/2008 11:59:59 PM - Ευρωπαϊκή ημέρα με μορφή Ημέρα Μήνας Έτος ακολουθούμενη από 12 ώρες χρόνο<BR>
+AL_TEXT_AMPM  JUN 24 11:59:59 PM - Κείμενο με συντετμημένη μορφή ημερομηνίας ημέρα του μήνα ακολουθούμενη από 12 ώρες χρόνο<BR>
+
+<BR>
+<A NAME="settings-vdc_header_phone_format">
+<BR>
+<B>Agent Screen Πελατών τηλέφωνο Format - </B> Αυτό το μενού σας επιτρέπει να επιλέξετε τη μορφή του πελάτη τον αριθμό τηλεφώνου που εμφανίζεται στην κατάσταση τμήμα του πράκτορα VICIDIAL οθόνη. Οι επιλογές για τη ρύθμιση αυτή είναι οι εξής: προεπιλογή είναι US_PARN<BR>
+US_DASH 000-000-0000 - USA παύλα διαχωρίζονται αριθμό τηλεφώνου<BR>
+US_PARN (000)000-0000 - USA παύλα αριθμός διαχωρίζονται με τον κωδικό περιοχής σε παρένθεση<BR>
+MS_NODS 0000000000 - Δεν μορφοποίησης<BR>
+UK_DASH 00 0000-0000 - UK παύλα διαχωρίζονται αριθμό τηλεφώνου με το διάστημα μετά την πόλη κωδικός<BR>
+AU_SPAC 000 000 000 - Australia χώρος χωρίζεται αριθμό τηλεφώνου<BR>
+IT_DASH 0000-000-000 - Italy παύλα διαχωρίζονται αριθμό τηλεφώνου<BR>
+FR_SPAC 00 00 00 00 00 - France χώρος χωρίζεται αριθμό τηλεφώνου<BR>
+
+<BR>
+<A NAME="settings-vdc_agent_api_active">
+<BR>
+<B>Agent interface API Access Ενεργό -</B> This option allows you to enable or disable the agent interface API. Default is 0.
+
+<BR>
+<A NAME="settings-qc_features_active">
+<BR>
+<B>QC Χαρακτηριστικά Ενεργό - </B> Αυτή η επιλογή σας επιτρέπει να ενεργοποιήσετε ή να απενεργοποιήσετε τη QC ή Ποιοτικός Έλεγχος χαρακτηριστικά. Η προεπιλογή είναι 0 για το ανενεργό.
+
+<BR>
+<A NAME="settings-outbound_autodial_active">
+<BR>
+<B>Εξερχόμενο Auto-Dial Ενεργό - </B> Αυτή η επιλογή σας επιτρέπει να ενεργοποιήσετε ή να απενεργοποιήσετε τον εξερχόμενο αυτόματης κλήσης εντός VICIDIAL, θέτοντας σε αυτόν τον τομέα θα 0 αφαίρεση των καταλόγων και ΦΙΛΤΡΑ πολλά τμήματα και τομείς από το Εκστρατεία Τροποποίηση οθόνες. Εγχειρίδιο εισόδου κλήσης θα εξακολουθεί να είναι εντός των επιτρεπομένων από τον αντιπρόσωπο της οθόνης, αλλά δεν κατάλογο κλήσης θα είναι δυνατή. Η προεπιλογή είναι 1 για ενεργή.
+
+<BR>
+<A NAME="settings-outbound_calls_per_second">
+<BR>
+<B>Max ΣΥΜΠΛΗΡΩΣΤΕ ζητεί ανά Δεύτερη -</B> Αυτή η ρύθμιση καθορίζει το μέγιστο αριθμό των κλήσεων που μπορούν να διατεθούν από το auto-ΣΥΜΠΛΗΡΩΣΤΕ εξερχό auto-κλήση δέσμης ενεργειών για όλους τους διακομιστές, ανά δευτερόλεπτο. Πρέπει να είναι από 1 έως 200. Η προεπιλογή είναι 40.
 
 <BR>
 <A NAME="settings-enable_queuemetrics_logging">
@@ -3376,27 +4965,34 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B>QueueMetrics EnterQueue Prepend -</B> αυτός ο τομέαςχρησιμοποιείται για να επιτρέψει ένας από τους τομείς στοιχείωνvicidial_list μπροστά από τον τηλεφωνικό αριθμό του πελάτη γιατις προσαρμοσμένες εκθέσεις QueueMetrics. Η προεπιλογή δενείναι ΚΑΜΙΑ για να μην εποικήσει τίποτα.
 
 <BR>
-<A NAME="settings-vicidial_agent_disable">
+<A NAME="settings-enable_vtiger_integration">
 <BR>
-<B>VICIDIAL ο πράκτορας θέτει εκτός λειτουργίας την επίδειξη -</B> αυτός ο τομέας χρησιμοποιείται για να επιλέξει πότε για ναπαρουσιάσει σε έναν πράκτορα πότε η σύνοδός τους έχει τεθείεκτός λειτουργίας από το σύστημα, μια δράση διευθυντών ή απόένα εξωτερικό μέτρο. Η ρύθμιση NOT_ACTIVE θα θέσει εκτόςλειτουργίας το μήνυμα στην οθόνη πρακτόρων. Η ρύθμισηLIVE_ΧΕΙΡΙΣΤΗΣθα επιδείξει μόνο το εκτός λειτουργίας μήνυμα όταναφαιρεθεί το αρχείο πρακτόρων vicidial_auto_calls, όπως κατάτη διάρκεια μιας αποσύνδεσης δύναμης ή της αποσύνδεσης έκτακτηςανάγκης. 
+<B>Ενεργοποίηση Vtiger Ένταξη - </B> Η ρύθμιση αυτή σας δίνει τη δυνατότητα να επιτρέψει την ένταξη Vtiger με VICIDIAL. Σήμερα Vtiger συνδέσμους προς admin και αναζήτησης του χρήστη, καθώς και την αντιγραφή είναι τα μόνα διαθέσιμα στοιχεία ολοκλήρωσης. Η προεπιλογή είναι 0.
 
 <BR>
-<A NAME="settings-allow_sipsak_messages">
+<A NAME="settings-vtiger_server_ip">
 <BR>
-<B>Επιτρέψτε τα μηνύματα SIPSAK -</B> εάν θέστε 1, αυτό θα επιτρέψειτον τηλεφωνικό πίνακα θέτοντας για να εργαστεί κατάλληλα, οκεντρικός υπολογιστής θα στείλει τα μηνύματα στο τηλέφωνοΓΟΥΛΙΏΝ στην επίδειξη στην τηλεφωνική LCD επίδειξη ότανσυνδέεται με VICIDIAL. Αυτό το χαρακτηριστικό γνώρισμαλειτουργεί μόνο με τα τηλέφωνα ΓΟΥΛΙΩΝ και απαιτεί sipsak τηνεφαρμογή για να εγκατασταθεί στον κεντρικό υπολογιστή δικτύου. Ηπροεπιλογή είναι 0. 
+<B>Vtiger ΣΠ IP Διακομιστή - </B> Αυτή είναι η διεύθυνση IP της βάσης δεδομένων για την εγκατάσταση Vtiger.
 
 <BR>
-<A NAME="settings-admin_home_url">
+<A NAME="settings-vtiger_dbname">
 <BR>
-<B>Σπίτι URL Admin -</B> αυτό είναι η διεύθυνση URL ήιστοχώρων ότι θα πάτε εάν χτυπήσετε στην ΕΓΧΏΡΙΑ σύνδεση στηνκορυφή της σελίδας admin.php.
+<B>Vtiger Database Name - </B> Αυτό είναι το όνομα της βάσης δεδομένων για την βάση δεδομένων σας Vtiger.
 
 <BR>
-<A NAME="settings-enable_agc_xfer_log">
+<A NAME="settings-vtiger_login">
 <BR>
-<B>Επιτρέψτε το αρχείο ημερολογίου μεταφοράς πρακτόρων - αυτή ηεπιλογή θα καταγράψει σε ένα αρχείο ημερολογίου κειμένων στοwebserver κάθε φορά που μεταφέρεται μια κλήση σε ένανπράκτορα. Η προεπιλογή είναι 0, άτομα με ειδικές ανάγκες.
+<B>Σύνδεση Vtiger Database - </B> Αυτό είναι το όνομα χρήστη που χρησιμοποιείται για να συνδεθείτε στο λογαριασμό σας Vtiger βάση δεδομένων.
 
+<BR>
+<A NAME="settings-vtiger_pass">
+<BR>
+<B>Vtiger Database Password - </B> Αυτό είναι το κωδικό πρόσβασης που χρησιμοποιείται για να συνδεθείτε στο λογαριασμό σας Vtiger βάση δεδομένων.
 
-
+<BR>
+<A NAME="settings-vtiger_url">
+<BR>
+<B>Vtiger URL - </B> Αυτό είναι το URL ή διεύθυνση web site που χρησιμοποιείται για να σας Vtiger εγκατάσταση.
 
 
 <BR><BR><BR><BR>
@@ -3412,8 +5008,22 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <B><FONT SIZE=3>VICIDIAL_STATUS_CATEGORIES ΠΙΝΑΚΑΣ</FONT></B><BR><BR>
 <A NAME="vicidial_status_categories">
 <BR>
-<B>Μέσω της χρήσης των κατηγοριών θέσης συστημάτων, μπορείτε νασυγκεντρώσετε τις θέσεις για να επιτρέψετε τη στατιστική ανάλυσησε μια ομάδα θέσεων. Η ταυτότητα κατηγορίας πρέπει να είναι2-20 χαρακτήρες στο μήκος χωρίς τα διαστήματα, το όνομαπρέπει να είναι 2-50 χαρακτήρες στο μήκος, η περιγραφή είναιπροαιρετική και η επίδειξη TimeonVDAD καθορίζει εάν εκείνη ηθέση θα είναι ενός θέσης από μέχρι 4 θέσεις που μπορούν ναυπολογιστούν και να επιδειχθούν στο χρόνο στη σε πραγματικό χρόνοέκθεση VDAD.</B>
+<B>Μέσω της χρήσης των κατηγοριών θέσης συστημάτων, μπορείτε νασυγκεντρώσετε τις θέσεις για να επιτρέψετε τη στατιστική ανάλυσησε μια ομάδα θέσεων. Η ταυτότητα κατηγορίας πρέπει να είναι2-20 χαρακτήρες στο μήκος χωρίς τα διαστήματα, το όνομαπρέπει να είναι 2-50 χαρακτήρες στο μήκος, η περιγραφή είναιπροαιρετική και η επίδειξη TimeonVDAD καθορίζει εάν εκείνη ηθέση θα είναι ενός θέσης από μέχρι 4 θέσεις που μπορούν ναυπολογιστούν και να επιδειχθούν στο χρόνο στη σε πραγματικό χρόνοέκθεση VDAD.</B> Η Πώληση Κατηγορία και Dead επικεφαλής της κατηγορίας είναι και οι δύο που χρησιμοποιούνται από το σύστημα όταν Κατάλογος Πρόταση αναλύοντας κατάλογο στατιστικών.
 
+
+<?
+if ($SSqc_features_active > 0)
+	{
+	?>
+	<BR><BR><BR><BR>
+
+	<B><FONT SIZE=3>QC VICIDIAL κωδικοί</FONT></B><BR><BR>
+	<A NAME="vicidial_qc_status_codes">
+	<BR>
+	<B>Ο Ποιοτικός Έλεγχος-QC σύστημα εντός VICIDIAL έχει τους δικούς της κωδικοί χωριστά από εκείνα που, κατά την κλήση των λειτουργιών χειρισμού VICIDIAL. QC statuse κωδικοί πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες και δεν περιέχουν ειδικούς χαρακτήρες όπως ένα χώρο ή παχέος εντέρου. Ο κωδικός QC περιγραφή πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες.</B>
+	<?
+	}
+?>
 
 
 
@@ -3513,7 +5123,7 @@ if ($ADD==73)
 ######################
 
 if ($ADD==7111111)
-{
+	{
 	##### TEST VARIABLES #####
 	$vendor_lead_code = 'VENDOR:LEAD;CODE';
 	$list_id = 'LISTID';
@@ -3553,459 +5163,115 @@ if ($ADD==7111111)
 	$RGSIPexten = 'SIP/gs102';
 	$RGsession_id = '8600051';
 
-echo "</title>\n";
-echo "</head>\n";
-echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	echo "</title>\n";
+	echo "</head>\n";
+	echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$stmt="SELECT * from vicidial_scripts where script_id='$script_id';";
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$script_name =		$row[1];
-$script_text =		$row[3];
+	$stmt="SELECT * from vicidial_scripts where script_id='$script_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$script_name =		$row[1];
+	$script_text =		$row[3];
 
-if (eregi("iframe src",$script_text))
-	{
-	$vendor_lead_code = eregi_replace(' ','+',$vendor_lead_code);
-	$list_id = eregi_replace(' ','+',$list_id);
-	$gmt_offset_now = eregi_replace(' ','+',$gmt_offset_now);
-	$phone_code = eregi_replace(' ','+',$phone_code);
-	$phone_number = eregi_replace(' ','+',$phone_number);
-	$title = eregi_replace(' ','+',$title);
-	$first_name = eregi_replace(' ','+',$first_name);
-	$middle_initial = eregi_replace(' ','+',$middle_initial);
-	$last_name = eregi_replace(' ','+',$last_name);
-	$address1 = eregi_replace(' ','+',$address1);
-	$address2 = eregi_replace(' ','+',$address2);
-	$address3 = eregi_replace(' ','+',$address2);
-	$city = eregi_replace(' ','+',$city);
-	$state = eregi_replace(' ','+',$state);
-	$province = eregi_replace(' ','+',$province);
-	$postal_code = eregi_replace(' ','+',$postal_code);
-	$country_code = eregi_replace(' ','+',$country_code);
-	$gender = eregi_replace(' ','+',$gender);
-	$date_of_birth = eregi_replace(' ','+',$date_of_birth);
-	$alt_phone = eregi_replace(' ','+',$alt_phone);
-	$email = eregi_replace(' ','+',$email);
-	$security_phrase = eregi_replace(' ','+',$security_phrase);
-	$comments = eregi_replace(' ','+',$comments);
-	$RGfullname = eregi_replace(' ','+',$RGfullname);
-	$RGuser = eregi_replace(' ','+',$RGuser);
-	$RGlead_id = eregi_replace(' ','+',$RGlead_id);
-	$RGcampaign = eregi_replace(' ','+',$RGcampaign);
-	$RGphone_login = eregi_replace(' ','+',$RGphone_login);
-	$RGgroup = eregi_replace(' ','+',$RGgroup);
-	$RGchannel_group = eregi_replace(' ','+',$RGchannel_group);
-	$RGSQLdate = eregi_replace(' ','+',$RGSQLdate);
-	$RGepoch = eregi_replace(' ','+',$RGepoch);
-	$RGuniqueid = eregi_replace(' ','+',$RGuniqueid);
-	$RGcustomer_zap_channel = eregi_replace(' ','+',$RGcustomer_zap_channel);
-	$RGserver_ip = eregi_replace(' ','+',$RGserver_ip);
-	$RGSIPexten = eregi_replace(' ','+',$RGSIPexten);
-	$RGsession_id = eregi_replace(' ','+',$RGsession_id);
+	if (eregi("iframe src",$script_text))
+		{
+		$vendor_lead_code = eregi_replace(' ','+',$vendor_lead_code);
+		$list_id = eregi_replace(' ','+',$list_id);
+		$gmt_offset_now = eregi_replace(' ','+',$gmt_offset_now);
+		$phone_code = eregi_replace(' ','+',$phone_code);
+		$phone_number = eregi_replace(' ','+',$phone_number);
+		$title = eregi_replace(' ','+',$title);
+		$first_name = eregi_replace(' ','+',$first_name);
+		$middle_initial = eregi_replace(' ','+',$middle_initial);
+		$last_name = eregi_replace(' ','+',$last_name);
+		$address1 = eregi_replace(' ','+',$address1);
+		$address2 = eregi_replace(' ','+',$address2);
+		$address3 = eregi_replace(' ','+',$address2);
+		$city = eregi_replace(' ','+',$city);
+		$state = eregi_replace(' ','+',$state);
+		$province = eregi_replace(' ','+',$province);
+		$postal_code = eregi_replace(' ','+',$postal_code);
+		$country_code = eregi_replace(' ','+',$country_code);
+		$gender = eregi_replace(' ','+',$gender);
+		$date_of_birth = eregi_replace(' ','+',$date_of_birth);
+		$alt_phone = eregi_replace(' ','+',$alt_phone);
+		$email = eregi_replace(' ','+',$email);
+		$security_phrase = eregi_replace(' ','+',$security_phrase);
+		$comments = eregi_replace(' ','+',$comments);
+		$RGfullname = eregi_replace(' ','+',$RGfullname);
+		$RGuser = eregi_replace(' ','+',$RGuser);
+		$RGlead_id = eregi_replace(' ','+',$RGlead_id);
+		$RGcampaign = eregi_replace(' ','+',$RGcampaign);
+		$RGphone_login = eregi_replace(' ','+',$RGphone_login);
+		$RGgroup = eregi_replace(' ','+',$RGgroup);
+		$RGchannel_group = eregi_replace(' ','+',$RGchannel_group);
+		$RGSQLdate = eregi_replace(' ','+',$RGSQLdate);
+		$RGepoch = eregi_replace(' ','+',$RGepoch);
+		$RGuniqueid = eregi_replace(' ','+',$RGuniqueid);
+		$RGcustomer_zap_channel = eregi_replace(' ','+',$RGcustomer_zap_channel);
+		$RGserver_ip = eregi_replace(' ','+',$RGserver_ip);
+		$RGSIPexten = eregi_replace(' ','+',$RGSIPexten);
+		$RGsession_id = eregi_replace(' ','+',$RGsession_id);
+		}
+
+	$script_text = eregi_replace('--A--vendor_lead_code--B--',"$vendor_lead_code",$script_text);
+	$script_text = eregi_replace('--A--list_id--B--',"$list_id",$script_text);
+	$script_text = eregi_replace('--A--gmt_offset_now--B--',"$gmt_offset_now",$script_text);
+	$script_text = eregi_replace('--A--phone_code--B--',"$phone_code",$script_text);
+	$script_text = eregi_replace('--A--phone_number--B--',"$phone_number",$script_text);
+	$script_text = eregi_replace('--A--title--B--',"$title",$script_text);
+	$script_text = eregi_replace('--A--first_name--B--',"$first_name",$script_text);
+	$script_text = eregi_replace('--A--middle_initial--B--',"$middle_initial",$script_text);
+	$script_text = eregi_replace('--A--last_name--B--',"$last_name",$script_text);
+	$script_text = eregi_replace('--A--address1--B--',"$address1",$script_text);
+	$script_text = eregi_replace('--A--address2--B--',"$address2",$script_text);
+	$script_text = eregi_replace('--A--address3--B--',"$address3",$script_text);
+	$script_text = eregi_replace('--A--city--B--',"$city",$script_text);
+	$script_text = eregi_replace('--A--state--B--',"$state",$script_text);
+	$script_text = eregi_replace('--A--province--B--',"$province",$script_text);
+	$script_text = eregi_replace('--A--postal_code--B--',"$postal_code",$script_text);
+	$script_text = eregi_replace('--A--country_code--B--',"$country_code",$script_text);
+	$script_text = eregi_replace('--A--gender--B--',"$gender",$script_text);
+	$script_text = eregi_replace('--A--date_of_birth--B--',"$date_of_birth",$script_text);
+	$script_text = eregi_replace('--A--alt_phone--B--',"$alt_phone",$script_text);
+	$script_text = eregi_replace('--A--email--B--',"$email",$script_text);
+	$script_text = eregi_replace('--A--security_phrase--B--',"$security_phrase",$script_text);
+	$script_text = eregi_replace('--A--comments--B--',"$comments",$script_text);
+	$script_text = eregi_replace('--A--fullname--B--',"$RGfullname",$script_text);
+	$script_text = eregi_replace('--A--fronter--B--',"$RGuser",$script_text);
+	$script_text = eregi_replace('--A--user--B--',"$RGuser",$script_text);
+	$script_text = eregi_replace('--A--lead_id--B--',"$RGlead_id",$script_text);
+	$script_text = eregi_replace('--A--campaign--B--',"$RGcampaign",$script_text);
+	$script_text = eregi_replace('--A--phone_login--B--',"$RGphone_login",$script_text);
+	$script_text = eregi_replace('--A--group--B--',"$RGgroup",$script_text);
+	$script_text = eregi_replace('--A--channel_group--B--',"$RGchannel_group",$script_text);
+	$script_text = eregi_replace('--A--SQLdate--B--',"$RGSQLdate",$script_text);
+	$script_text = eregi_replace('--A--epoch--B--',"$RGepoch",$script_text);
+	$script_text = eregi_replace('--A--uniqueid--B--',"$RGuniqueid",$script_text);
+	$script_text = eregi_replace('--A--customer_zap_channel--B--',"$RGcustomer_zap_channel",$script_text);
+	$script_text = eregi_replace('--A--server_ip--B--',"$RGserver_ip",$script_text);
+	$script_text = eregi_replace('--A--SIPexten--B--',"$RGSIPexten",$script_text);
+	$script_text = eregi_replace('--A--session_id--B--',"$RGsession_id",$script_text);
+	$script_text = eregi_replace("\n","<BR>",$script_text);
+
+
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "Προεπισκόπιση Βοηθού: $script_id<BR>\n";
+	echo "<TABLE WIDTH=600><TR><TD>\n";
+	echo "<center><B>$script_name</B><BR></center>\n";
+	echo "$script_text\n";
+	echo "</TD></TR></TABLE></center>\n";
+
+	echo "</BODY></HTML>\n";
+
+	exit;
 	}
 
-$script_text = eregi_replace('--A--vendor_lead_code--B--',"$vendor_lead_code",$script_text);
-$script_text = eregi_replace('--A--list_id--B--',"$list_id",$script_text);
-$script_text = eregi_replace('--A--gmt_offset_now--B--',"$gmt_offset_now",$script_text);
-$script_text = eregi_replace('--A--phone_code--B--',"$phone_code",$script_text);
-$script_text = eregi_replace('--A--phone_number--B--',"$phone_number",$script_text);
-$script_text = eregi_replace('--A--title--B--',"$title",$script_text);
-$script_text = eregi_replace('--A--first_name--B--',"$first_name",$script_text);
-$script_text = eregi_replace('--A--middle_initial--B--',"$middle_initial",$script_text);
-$script_text = eregi_replace('--A--last_name--B--',"$last_name",$script_text);
-$script_text = eregi_replace('--A--address1--B--',"$address1",$script_text);
-$script_text = eregi_replace('--A--address2--B--',"$address2",$script_text);
-$script_text = eregi_replace('--A--address3--B--',"$address3",$script_text);
-$script_text = eregi_replace('--A--city--B--',"$city",$script_text);
-$script_text = eregi_replace('--A--state--B--',"$state",$script_text);
-$script_text = eregi_replace('--A--province--B--',"$province",$script_text);
-$script_text = eregi_replace('--A--postal_code--B--',"$postal_code",$script_text);
-$script_text = eregi_replace('--A--country_code--B--',"$country_code",$script_text);
-$script_text = eregi_replace('--A--gender--B--',"$gender",$script_text);
-$script_text = eregi_replace('--A--date_of_birth--B--',"$date_of_birth",$script_text);
-$script_text = eregi_replace('--A--alt_phone--B--',"$alt_phone",$script_text);
-$script_text = eregi_replace('--A--email--B--',"$email",$script_text);
-$script_text = eregi_replace('--A--security_phrase--B--',"$security_phrase",$script_text);
-$script_text = eregi_replace('--A--comments--B--',"$comments",$script_text);
-$script_text = eregi_replace('--A--fullname--B--',"$RGfullname",$script_text);
-$script_text = eregi_replace('--A--fronter--B--',"$RGuser",$script_text);
-$script_text = eregi_replace('--A--user--B--',"$RGuser",$script_text);
-$script_text = eregi_replace('--A--lead_id--B--',"$RGlead_id",$script_text);
-$script_text = eregi_replace('--A--campaign--B--',"$RGcampaign",$script_text);
-$script_text = eregi_replace('--A--phone_login--B--',"$RGphone_login",$script_text);
-$script_text = eregi_replace('--A--group--B--',"$RGgroup",$script_text);
-$script_text = eregi_replace('--A--channel_group--B--',"$RGchannel_group",$script_text);
-$script_text = eregi_replace('--A--SQLdate--B--',"$RGSQLdate",$script_text);
-$script_text = eregi_replace('--A--epoch--B--',"$RGepoch",$script_text);
-$script_text = eregi_replace('--A--uniqueid--B--',"$RGuniqueid",$script_text);
-$script_text = eregi_replace('--A--customer_zap_channel--B--',"$RGcustomer_zap_channel",$script_text);
-$script_text = eregi_replace('--A--server_ip--B--',"$RGserver_ip",$script_text);
-$script_text = eregi_replace('--A--SIPexten--B--',"$RGSIPexten",$script_text);
-$script_text = eregi_replace('--A--session_id--B--',"$RGsession_id",$script_text);
-$script_text = eregi_replace("\n","<BR>",$script_text);
 
-
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-echo "Προεπισκόπιση Βοηθού: $script_id<BR>\n";
-echo "<TABLE WIDTH=600><TR><TD>\n";
-echo "<center><B>$script_name</B><BR></center>\n";
-echo "$script_text\n";
-echo "</TD></TR></TABLE></center>\n";
-
-echo "</BODY></HTML>\n";
-
-exit;
-}
-
-
-
-
-######################### HTML HEADER BEGIN #######################################
-if ($hh=='users') 
-	{$users_hh="bgcolor =\"$users_color\""; $users_fc="$users_font"; $users_bold="$header_selected_bold";}
-	else {$users_hh=''; $users_fc='WHITE'; $users_bold="$header_nonselected_bold";}
-if ($hh=='campaigns') 
-	{$campaigns_hh="bgcolor=\"$campaigns_color\""; $campaigns_fc="$campaigns_font"; $campaigns_bold="$header_selected_bold";}
-	else {$campaigns_hh=''; $campaigns_fc='WHITE'; $campaigns_bold="$header_nonselected_bold";}
-if ($hh=='lists') 
-	{$lists_hh="bgcolor=\"$lists_color\""; $lists_fc="$lists_font"; $lists_bold="$header_selected_bold";}
-	else {$lists_hh=''; $lists_fc='WHITE'; $lists_bold="$header_nonselected_bold";}
-if ($hh=='ingroups') 
-	{$ingroups_hh="bgcolor=\"$ingroups_color\""; $ingroups_fc="$ingroups_font"; $ingroups_bold="$header_selected_bold";}
-	else {$ingroups_hh=''; $ingroups_fc='WHITE'; $ingroups_bold="$header_nonselected_bold";}
-if ($hh=='remoteagent') 
-	{$remoteagent_hh="bgcolor=\"$remoteagent_color\""; $remoteagent_fc="$remoteagent_font"; $remoteagent_bold="$header_selected_bold";}
-	else {$remoteagent_hh=''; $remoteagent_fc='WHITE'; $remoteagent_bold="$header_nonselected_bold";}
-if ($hh=='usergroups') 
-	{$usergroups_hh="bgcolor=\"$usergroups_color\""; $usergroups_fc="$usergroups_font"; $usergroups_bold="$header_selected_bold";}
-	else {$usergroups_hh=''; $usergroups_fc='WHITE'; $usergroups_bold="$header_nonselected_bold";}
-if ($hh=='scripts') 
-	{$scripts_hh="bgcolor=\"$scripts_color\""; $scripts_fc="$scripts_font"; $scripts_bold="$header_selected_bold";}
-	else {$scripts_hh=''; $scripts_fc='WHITE'; $scripts_bold="$header_nonselected_bold";}
-if ($hh=='filters') 
-	{$filters_hh="bgcolor=\"$filters_color\""; $filters_fc="$filters_font"; $filters_bold="$header_selected_bold";}
-	else {$filters_hh=''; $filters_fc='WHITE'; $filters_bold="$header_nonselected_bold";}
-if ($hh=='admin') 
-	{$admin_hh="bgcolor=\"$admin_color\""; $admin_fc="$admin_font"; $admin_bold="$header_selected_bold";}
-	else {$admin_hh=''; $admin_fc='WHITE'; $admin_bold="$header_nonselected_bold";}
-if ($hh=='reports') 
-	{$reports_hh="bgcolor=\"$reports_color\""; $reports_fc="$reports_font"; $reports_bold="$header_selected_bold";}
-	else {$reports_hh=''; $reports_fc='WHITE'; $reports_bold="$header_nonselected_bold";}
-
-echo "</title>\n";
-echo "<script language=\"Javascript\">\n";
-
-######################
-# ADD=31 or 34 and SUB=29 for list mixes
-######################
-if ( ( ($ADD==34) or ($ADD==31) or ($ADD==49) ) and ($SUB==29) and ($LOGmodify_campaigns==1) and ( (eregi("$campaign_id",$LOGallowed_campaigns)) or (eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
-{
-
-?>
-//Μίγμα καταλόγωνstatus add and remove
-function mod_mix_status(stage,vcl_id,entry) 
-	{
-	var mod_status = document.getElementById("dial_status_" + entry + "_" + vcl_id);
-	if (mod_status.value.length < 1)
-		{
-		alert("You must select a status first");
-		}
-	else
-		{
-		var old_statuses = document.getElementById("status_" + entry + "_" + vcl_id);
-		var ROold_statuses = document.getElementById("ROstatus_" + entry + "_" + vcl_id);
-		var MODstatus = new RegExp(" " + mod_status.value + " ","g");
-		if (stage=="ADD")
-			{
-			if (old_statuses.value.match(MODstatus))
-				{
-				alert("The status " + mod_status.value + " is already present");
-				}
-			else
-				{
-				var new_statuses = " " + mod_status.value + "" + old_statuses.value;
-				old_statuses.value = new_statuses;
-				ROold_statuses.value = new_statuses;
-				mod_status.value = "";
-				}
-			}
-		if (stage=="REMOVE")
-			{
-			var MODstatus = new RegExp(" " + mod_status.value + " ","g");
-			old_statuses.value = old_statuses.value.replace(MODstatus, " ");
-			ROold_statuses.value = ROold_statuses.value.replace(MODstatus, " ");
-			}
-		}
-	}
-
-//Μίγμα καταλόγωνpercent difference calculation and warning message
-function mod_mix_percent(vcl_id,entries) 
-	{
-	var i=0;
-	var total_percent=0;
-	var percent_diff='';
-	while(i < entries)
-		{
-		var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
-		temp_percent = mod_percent_field.value * 1;
-		total_percent = (total_percent + temp_percent);
-		i++;
-		}
-
-	var mod_diff_percent = document.getElementById("PCT_DIFF_" + vcl_id);
-	percent_diff = (total_percent - 100);
-	if (percent_diff > 0)
-		{
-		percent_diff = '+' + percent_diff;
-		}
-	var mix_list_submit = document.getElementById("submit_" + vcl_id);
-	if ( (percent_diff > 0) || (percent_diff < 0) )
-		{
-		mix_list_submit.disabled = true;
-		document.getElementById("ERROR_" + vcl_id).innerHTML = "<font color=red><B>The Difference % must be 0</B></font>";
-		}
-	else
-		{
-		mix_list_submit.disabled = false;
-		document.getElementById("ERROR_" + vcl_id).innerHTML = "";
-		}
-
-	mod_diff_percent.value = percent_diff;
-	}
-
-function submit_mix(vcl_id,entries) 
-	{
-	var h=1;
-	var j=1;
-	var list_mix_container='';
-	var mod_list_mix_container_field = document.getElementById("list_mix_container_" + vcl_id);
-	while(h < 11)
-		{
-		var i=0;
-		while(i < entries)
-			{
-			var mod_list_id_field = document.getElementById("list_id_" + i + "_" + vcl_id);
-			var mod_priority_field = document.getElementById("priority_" + i + "_" + vcl_id);
-			var mod_percent_field = document.getElementById("percentage_" + i + "_" + vcl_id);
-			var mod_statuses_field = document.getElementById("status_" + i + "_" + vcl_id);
-			if (mod_priority_field.value==h)
-				{
-				list_mix_container = list_mix_container + mod_list_id_field.value + "|" + j + "|" + mod_percent_field.value + "|" + mod_statuses_field.value + "|:";
-				j++
-				}
-			i++;
-			}
-		h++
-		}
-	mod_list_mix_container_field.value = list_mix_container;
-	var form_to_submit = document.getElementById("" + vcl_id);
-	form_to_submit.submit();
-	}
-<?
-}
-?>
-
-function openNewWindow(url) {
-  window.open (url,"",'width=620,height=300,scrollbars=yes,menubar=yes,address=yes');
-}
-function scriptInsertField() {
-	openField = '--A--';
-	closeField = '--B--';
-	var textBox = document.scriptForm.script_text;
-	var scriptIndex = document.getElementById("selectedField").selectedIndex;
-	var insValue =  document.getElementById('selectedField').options[scriptIndex].value;
-  if (document.selection) {
-	//IE
-	textBox = document.scriptForm.script_text;
-	insValue = document.scriptForm.selectedField.options[document.scriptForm.selectedField.selectedIndex].text;
-	textBox.focus();
-	sel = document.selection.createRange();
-	sel.text = openField + insValue + closeField;
-  } else if (textBox.selectionStart || textBox.selectionStart == 0) {
-	//Mozilla
-	var startPos = textBox.selectionStart;
-	var endPos = textBox.selectionEnd;
-	textBox.value = textBox.value.substring(0, startPos)
-	+ openField + insValue + closeField
-	+ textBox.value.substring(endPos, textBox.value.length);
-  } else {
-	textBox.value += openField + insValue + closeField;
-  }
-}
-
-</script>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
-<?
-echo "<!-- ILPV -->\n";
-echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  NOWRAP><a href=\"../vicidial_en/admin.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">English <img src=\"../agc/images/en.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";echo "<TD WIDTH=100 ALIGN=RIGHT VALIGN=TOP  BGCOLOR=\"#CCFFCC\" NOWRAP><a href=\"../vicidial_el/admin.php?relogin=YES&VD_login=$VD_login&VD_campaign=$VD_campaign&phone_login=$phone_login&phone_pass=$phone_pass&VD_pass=$VD_pass\">Ελληνικά <img src=\"../agc/images/el.gif\" BORDER=0 HEIGHT=14 WIDTH=20></a></TD>\n";
-$stmt="SELECT admin_home_url from system_settings;";
-$rslt=mysql_query($stmt, $link);
-$row=mysql_fetch_row($rslt);
-$admin_home_url_LU =	$row[0];
-
-?>
-<CENTER>
-<TABLE WIDTH=<?=$page_width ?> BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT COLSPAN=5><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; ΔΙΑΧΕΙΡΙΣΗ - <a href="<? echo $admin_home_url_LU ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>ΣΠΙΤΙ</a> | <a href="<? echo $PHP_SELF ?>?force_logout=1"><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=1>Αποσύνδεση</a></TD><TD ALIGN=RIGHT COLSPAN=6><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </B></TD></TR>
-
-<TR BGCOLOR=#015B91>
-<TD ALIGN=CENTER <?=$users_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=0"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$users_fc ?> SIZE=<?=$header_font_size ?>><?=$users_bold ?> Χρήστες </a></TD>
-<TD ALIGN=CENTER <?=$campaigns_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$campaigns_fc ?> SIZE=<?=$header_font_size ?>><?=$campaigns_bold ?> Εκστρατείες </a></TD>
-<TD ALIGN=CENTER <?=$lists_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?> Κατάλογοι </a></TD>
-<TD ALIGN=CENTER <?=$scripts_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$scripts_fc ?> SIZE=<?=$header_font_size ?>><?=$scripts_bold ?> Χειρόγραφα </a></TD>
-<TD ALIGN=CENTER <?=$filters_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$filters_fc ?> SIZE=<?=$header_font_size ?>><?=$filters_bold ?> Φίλτρα </a></TD>
-<TD ALIGN=CENTER <?=$ingroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$ingroups_fc ?> SIZE=<?=$header_font_size ?>><?=$ingroups_bold ?> $$$-ΟΜΑΔΕΣ </a></TD>
-<TD ALIGN=CENTER <?=$usergroups_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$usergroups_fc ?> SIZE=<?=$header_font_size ?>><?=$usergroups_bold ?> Ομάδες χρηστών </a></TD>
-<TD ALIGN=CENTER <?=$remoteagent_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$remoteagent_fc ?> SIZE=<?=$header_font_size ?>><?=$remoteagent_bold ?> Μακρινοί πράκτορες </a></TD>
-<TD ALIGN=CENTER <?=$admin_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$admin_fc ?> SIZE=<?=$header_font_size ?>><?=$admin_bold ?> Admin </a></TD>
-<TD ALIGN=CENTER <?=$reports_hh ?>><a href="<? echo $PHP_SELF ?>?ADD=999999"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$reports_fc ?> SIZE=<?=$header_font_size ?>><?=$reports_bold ?> Εκθέσεις </a></TD>
-</TR>
-
-<? if (strlen($users_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χρήστες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο χρήστη </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1A"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Χρήστης αντιγράφων </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=550"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός χρήστη </a></TD></TR>
-<? } 
-if (strlen($campaigns_hh) > 1) 
-	{ 
-
-#	if ($sh=='basic') {$basic_sh="bgcolor=\"$subcamp_color\""; $basic_fc="$subcamp_font";}
-#		else {$basic_sh=''; $basic_fc='BLACK';}
-#	if ($sh=='detail') {$detail_sh="bgcolor=\"$subcamp_color\""; $detail_fc="$subcamp_font";}
-#		else {$detail_sh=''; $detail_fc='BLACK';}
-#	if ($sh=='dialstat') {$dialstat_sh="bgcolor=\"$subcamp_color\""; $dialstat_fc="$subcamp_font";}
-#		else {$dialstat_sh=''; $dialstat_fc='BLACK';}
-
-	if ($sh=='basic') {$sh='list';}
-	if ($sh=='detail') {$sh='list';}
-	if ($sh=='dialstat') {$sh='list';}
-
-	if ($sh=='list') {$list_sh="bgcolor=\"$subcamp_color\""; $list_fc="$subcamp_font";}
-		else {$list_sh=''; $list_fc='BLACK';}
-	if ($sh=='status') {$status_sh="bgcolor=\"$subcamp_color\""; $status_fc="$subcamp_font";}
-		else {$status_sh=''; $status_fc='BLACK';}
-	if ($sh=='hotkey') {$hotkey_sh="bgcolor=\"$subcamp_color\""; $hotkey_fc="$subcamp_font";}
-		else {$hotkey_sh=''; $hotkey_fc='BLACK';}
-	if ($sh=='recycle') {$recycle_sh="bgcolor=\"$subcamp_color\""; $recycle_fc="$subcamp_font";}
-		else {$recycle_sh=''; $recycle_fc='BLACK';}
-	if ($sh=='autoalt') {$autoalt_sh="bgcolor=\"$subcamp_color\""; $autoalt_fc="$subcamp_font";}
-		else {$autoalt_sh=''; $autoalt_fc='BLACK';}
-	if ($sh=='pause') {$pause_sh="bgcolor=\"$subcamp_color\""; $pause_fc="$subcamp_font";}
-		else {$pause_sh=''; $pause_fc='BLACK';}
-	if ($sh=='listmix') {$listmix_sh="bgcolor=\"$subcamp_color\""; $listmix_fc="$subcamp_font";}
-		else {$listmix_sh=''; $listmix_fc='BLACK';}
-
-	?>
-<TR BGCOLOR=<?=$campaigns_color ?>>
-<TD ALIGN=CENTER <?=$list_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$list_fc ?> SIZE=<?=$subcamp_font_size ?>>Κεντρικός αγωγός εκστρατειών</a></TD>
-<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=32"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$subcamp_font_size ?>> Statuses </a></TD>
-<TD ALIGN=LEFT <?=$hotkey_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=33"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$hotkey_fc ?> SIZE=<?=$subcamp_font_size ?>> HotKeys </a></TD>
-<TD ALIGN=LEFT <?=$recycle_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=35"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$recycle_fc ?> SIZE=<?=$subcamp_font_size ?>>Μόλυβδος ανακύκλωσης</a></TD>
-<TD ALIGN=LEFT <?=$autoalt_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=36"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$autoalt_fc ?> SIZE=<?=$subcamp_font_size ?>>Αυτόματος-ALT πίνακας</a></TD>
-<TD ALIGN=LEFT <?=$pause_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=37"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$pause_fc ?> SIZE=<?=$subcamp_font_size ?>>Κώδικες μικρής διακοπής</a></TD>
-<TD ALIGN=LEFT <?=$listmix_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=39"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$listmix_fc ?> SIZE=<?=$subcamp_font_size ?>>Μίγμα καταλόγων</a></TD>
-</TR>
-	<?
-	if (strlen($list_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$subcamp_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Παρουσιάστε εκστρατείες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Προσθέστε μια νέα εκστρατεία </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=12"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Εκστρατεία αντιγράφων </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subcamp_font_size ?>> Σε πραγματικό χρόνο περίληψη εκστρατειών </a></TD></TR>
-		<? } 
-
-	} 
-if (strlen($lists_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε καταλόγους </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο κατάλογο </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Αναζήτηση ενός μολύβδου </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε τον αριθμό σε DNC </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="./new_listloader_superL.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Νέοι μόλυβδοι φορτίων </a></TD></TR>
-<? } 
-if (strlen($scripts_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$scripts_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χειρόγραφα </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε ένα νέο χειρόγραφο </a></TD></TR>
-<? } 
-if (strlen($filters_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$filters_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε φίλτρα </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε ένα νέο φίλτρο </a></TD></TR>
-<? } 
-if (strlen($ingroups_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$ingroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε-ΟΜΑΔΕΣ </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα-ΟΜΑΔΑ </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1211"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> $$$-ΟΜΑΔΑ αντιγράφων </a></TD></TR>
-<? } 
-if (strlen($usergroups_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$usergroups_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε ομάδες χρηστών </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα ομάδα χρηστών </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="group_hourly_stats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Ωριαία έκθεση ομάδας </a></TD></TR>
-<? } 
-if (strlen($remoteagent_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$remoteagent_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε μακρινούς πράκτορες </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε τους νέους μακρινούς πράκτορες </a></TD></TR>
-<? } 
-
-if (strlen($admin_hh) > 1) { 
-	if ($sh=='times') {$times_sh="bgcolor=\"$times_color\""; $times_fc="$times_font";} # hard teal
-		else {$times_sh=''; $times_fc='BLACK';}
-	if ($sh=='phones') {$phones_sh="bgcolor=\"$server_color\""; $phones_fc="$phones_font";} # pink
-		else {$phones_sh=''; $phones_fc='BLACK';}
-	if ($sh=='server') {$server_sh="bgcolor=\"$server_color\""; $server_fc="$server_font";} # pink
-		else {$server_sh=''; $server_fc='BLACK';}
-	if ($sh=='conference') {$conference_sh="bgcolor=\"$server_color\""; $conference_fc="$server_font";} # pink
-		else {$conference_sh=''; $conference_fc='BLACK';}
-	if ($sh=='settings') {$settings_sh="bgcolor=\"$settings_color\""; $settings_fc="$settings_font";} # pink
-		else {$settings_sh=''; $settings_fc='BLACK';}
-	if ($sh=='status') {$status_sh="bgcolor=\"$status_color\""; $status_fc="$status_font";} # pink
-		else {$status_sh=''; $status_fc='BLACK';}
-
-	?>
-<TR BGCOLOR=<?=$admin_color ?>>
-<TD ALIGN=LEFT <?=$times_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$times_fc ?> SIZE=<?=$header_font_size ?>> Χρόνοι κλήσης </a></TD>
-<TD ALIGN=LEFT <?=$phones_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$phones_fc ?> SIZE=<?=$header_font_size ?>> Τηλέφωνα </a></TD>
-<TD ALIGN=LEFT <?=$conference_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$conference_fc ?> SIZE=<?=$header_font_size ?>> Διασκέψεις </a></TD>
-<TD ALIGN=LEFT <?=$server_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$server_fc ?> SIZE=<?=$header_font_size ?>> Κεντρικοί υπολογιστές </a></TD>
-<TD ALIGN=LEFT <?=$settings_sh ?> COLSPAN=1><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$settings_fc ?> SIZE=<?=$header_font_size ?>> Τοποθετήσεις συστημάτων </a></TD>
-<TD ALIGN=LEFT <?=$status_sh ?> COLSPAN=2><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$status_fc ?> SIZE=<?=$header_font_size ?>>Θέσεις συστημάτων</a></TD>
-</TR>
-	<?
-	if (strlen($times_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$times_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=100000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χρόνους κλήσης </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο χρόνο κλήσης </a> &nbsp; &nbsp; | &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε χρόνους κρατικής κλήσης </a> &nbsp; &nbsp; |  &nbsp; &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο χρόνο κρατικής κλήσης </a> &nbsp; </TD></TR>
-		<? } 
-	if (strlen($phones_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$phones_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε τηλέφωνα </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε ένα νέο τηλέφωνο </a></TD></TR>
-		<? }
-	if (strlen($conference_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$conference_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=1000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε διασκέψεις </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=1111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα διάσκεψη </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=10000000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε διασκέψεις VICIDIAL </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=11111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε μια νέα διάσκεψη VICIDIAL </a></TD></TR>
-		<? }
-	if (strlen($server_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$server_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=100000000000"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Παρουσιάστε κεντρικούς υπολογιστές </a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Προσθέστε έναν νέο κεντρικό υπολογιστή </a></TD></TR>
-	<?}
-	if (strlen($settings_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$settings_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=311111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Τοποθετήσεις συστημάτων </a></TD></TR>
-	<?}
-	if (strlen($status_sh) > 1) { 
-		?>
-	<TR BGCOLOR=<?=$status_color ?>><TD ALIGN=LEFT COLSPAN=10><a href="<? echo $PHP_SELF ?>?ADD=321111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Θέσεις συστημάτων</a> &nbsp; | &nbsp; <a href="<? echo $PHP_SELF ?>?ADD=331111111111111"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Κατηγορίες θέσης</a></TD></TR>
-	<?}
-
-### Do nothing if admin has no permissions
-if($LOGast_admin_access < 1) 
-	{
-	$ADD='99999999999999999999';
-	echo "</TABLE></center>\n";
-	echo "Δεν έχετε το δικαίωμα για να δείτε την σελίδα. Παρακαλώ επιστρέψτε.\n";
-	}
-
-} 
-if (strlen($reports_hh) > 1) { 
-	?>
-<TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=10><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </B></TD></TR>
-<? } ?>
-
-
-<TR><TD ALIGN=LEFT COLSPAN=10 HEIGHT=2 BGCOLOR=#015B91></TD></TR>
-<TR><TD ALIGN=LEFT COLSPAN=10>
-<? 
-######################### HTML HEADER BEGIN #######################################
+$ADMIN=$PHP_SELF;
+require("admin_header.php");
 
 
 
@@ -4023,27 +5289,28 @@ if (strlen($reports_hh) > 1) {
 ######################
 
 if ($ADD=="1")
-{
-	if ($LOGmodify_users==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΗΣΤΗ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Χρήστη: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Χρήστη: </td><td align=left><select size=1 name=user_level>";
-	$h=1;
-	while ($h<=$LOGuser_level)
+	if ($LOGmodify_users==1)
 		{
-		echo "<option>$h</option>";
-		$h++;
-		}
-	echo "</select>$NWB#vicidial_users-user_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Χρήστη: </td><td align=left><select size=1 name=user_group>\n";
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΗΣΤΗ<form action=$PHP_SELF method=POST name=userform id=userform>\n";
+		echo "<input type=hidden name=ADD value=2>\n";
+		echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Χρήστη: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Χρήστη: </td><td align=left><select size=1 name=user_level>";
+		$h=1;
+		while ($h<=$LOGuser_level)
+			{
+			echo "<option>$h</option>";
+			$h++;
+			}
+		echo "</select>$NWB#vicidial_users-user_level$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Χρήστη: </td><td align=left><select size=1 name=user_group>\n";
 
 		$stmt="SELECT user_group,group_name from vicidial_user_groups order by user_group";
 		$rslt=mysql_query($stmt, $link);
@@ -4051,49 +5318,51 @@ if ($ADD=="1")
 		$Ugroups_list='';
 
 		$o=0;
-		while ($Ugroups_to_print > $o) {
+		while ($Ugroups_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$Ugroups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$Ugroups_list";
+		echo "<option SELECTED>$user_group</option>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλέφωνο Σύνδεσης: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός Πρόσβασης Τηλεφώνου: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
+		echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ onClick=\"user_submit()\"></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$Ugroups_list";
-	echo "<option SELECTED>$user_group</option>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλέφωνο Σύνδεσης: </td><td align=left><input type=text name=phone_login size=20 maxlength=20>$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός Πρόσβασης Τηλεφώνου: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20>$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
-	echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
-# ADD=1 display the COPY USER FORM SCREEN
+# ADD=1A display the COPY USER FORM SCREEN
 ######################
 
 if ($ADD=="1A")
-{
-	if ($LOGmodify_users==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_users==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΧΡΗΣΤΗΣ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2A>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Χρήστη: </td><td align=left><input type=text name=user size=20 maxlength=10>$NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
+		echo "<br>ΧΡΗΣΤΗΣ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST name=userform id=userform>\n";
+		echo "<input type=hidden name=ADD value=2A>\n";
+		echo "<input type=hidden name=user_toggle id=user_toggle value=0>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Χρήστη: </td><td align=left><input type=text name=user id=user size=20 maxlength=10> <input type=button name=auto_user value=\"AUTO-GENERATE\" onClick=\"user_auto()\"> $NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=20 maxlength=10>$NWB#vicidial_users-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=full_name size=20 maxlength=100>$NWB#vicidial_users-full_name$NWE</td></tr>\n";
 
-	if ($LOGuser_level==9) {$levelMAX=10;}
-	else {$levelMAX=$LOGuser_level;}
+		if ($LOGuser_level==9) {$levelMAX=10;}
+		else {$levelMAX=$LOGuser_level;}
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source User: </td><td align=left><select size=1 name=source_user_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source Χρήστης: </td><td align=left><select size=1 name=source_user_id>\n";
 
 		$stmt="SELECT user,full_name from vicidial_users where user_level < $levelMAX order by full_name;";
 		$rslt=mysql_query($stmt, $link);
@@ -4101,22 +5370,23 @@ if ($ADD=="1A")
 		$Uusers_list='';
 
 		$o=0;
-		while ($Uusers_to_print > $o) {
+		while ($Uusers_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$Uusers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$Uusers_list";
+		echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=button name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ onClick=\"user_submit()\"></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$Uusers_list";
-	echo "</select>$NWB#vicidial_users-user$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4124,41 +5394,49 @@ if ($ADD=="1A")
 ######################
 
 if ($ADD==11)
-{
+	{
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_description size=30 maxlength=255>$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Αρχείου Στάθμευσης: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρόνος Τοπικής Κλήσης: </td><td align=left><select size=1 name=local_call_time><option>24hours</option><option>9am-9pm</option><option>9am-5pm</option><option>12pm-5pm</option><option>12pm-9pm</option><option>5pm-9pm</option></select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
-	echo "$scripts_list";
-	echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_description size=30 maxlength=255>$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left><input type=text name=park_ext size=10 maxlength=10>$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Αρχείου Στάθμευσης: </td><td align=left><input type=text name=park_file_name size=10 maxlength=10>$NWB#vicidial_campaigns-park_file_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255>$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>1000</option><option>2000</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option selected>0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Χρόνος Τοπικής Κλήσης: </td><td align=left><select size=1 name=local_call_time>";
+		echo "$call_times_list";
+		echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "</select>$NWB#vicidial_campaigns-campaign_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_campaigns-get_call_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4166,19 +5444,19 @@ if ($ADD==11)
 ######################
 
 if ($ADD==12)
-{
-	if ($LOGmodify_campaigns==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_campaigns==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΑΝΤΙΓΡΑΨΤΕ μια ΕΚΣΤΡΑΤΕΙΑ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=20>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
+		echo "<br>ΑΝΤΙΓΡΑΨΤΕ μια ΕΚΣΤΡΑΤΕΙΑ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=20>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><input type=text name=campaign_id size=10 maxlength=8>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=30 maxlength=30>$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία πηγής:</td><td align=left><select size=1 name=source_campaign_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία πηγής:</td><td align=left><select size=1 name=source_campaign_id>\n";
 
 		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 		$rslt=mysql_query($stmt, $link);
@@ -4186,23 +5464,25 @@ if ($ADD==12)
 		$campaigns_list='';
 
 		$o=0;
-		while ($campaigns_to_print > $o) {
+		while ($campaigns_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$campaigns_list";
+		echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
+		
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>ΣΗΜΕΙΩΣΗ: Η αντιγραφή μιας εκστρατείας θα αντιγράψετε όλες τις ρυθμίσεις από τον πλοίαρχο καμπάνια που θα επιλέξετε, αλλά δεν θα αντιγράψετε μια καμπάνια ειδικά DNC λίστα αν υπήρχε ένα master με την επιλεγμένη καμπάνια.</td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$campaigns_list";
-	echo "</select>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
-	
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4210,19 +5490,19 @@ if ($ADD==12)
 ######################
 
 if ($ADD==111)
-{
-	if ($LOGmodify_lists==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_lists==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW LIST<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Λίστας: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (μόνο αριθμοί)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Λίστας: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή καταλόγων: </td><td align=left><input type=text name=list_description size=30 maxlength=255>$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left><select size=1 name=campaign_id>\n";
+		echo "<br>ADD A NEW LIST<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Λίστας: </td><td align=left><input type=text name=list_id size=8 maxlength=8> (μόνο αριθμοί)$NWB#vicidial_lists-list_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Λίστας: </td><td align=left><input type=text name=list_name size=20 maxlength=20>$NWB#vicidial_lists-list_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή καταλόγων: </td><td align=left><input type=text name=list_description size=30 maxlength=255>$NWB#vicidial_lists-list_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left><select size=1 name=campaign_id>\n";
 
 		$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
 		$rslt=mysql_query($stmt, $link);
@@ -4230,24 +5510,25 @@ if ($ADD==111)
 		$campaigns_list='';
 
 		$o=0;
-		while ($campaigns_to_print > $o) {
+		while ($campaigns_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
+			}
+		echo "$campaigns_list";
+		echo "<option SELECTED>$campaign_id</option>\n";
+		echo "</select>$NWB#vicidial_lists-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
 		}
-	echo "$campaigns_list";
-	echo "<option SELECTED>$campaign_id</option>\n";
-	echo "</select>$NWB#vicidial_lists-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4255,42 +5536,91 @@ if ($ADD==111)
 ######################
 
 if ($ADD==121)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-if (strlen($phone_number) > 2)
 	{
-	$stmt="SELECT count(*) from vicidial_dnc where phone_number='$phone_number';";
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$campaigns_list = "<option SELECTED value=\"SYSTEM_INTERNAL\">SYSTEM_INTERNAL - INTERNAL VICIDIAL DNC LIST</option>\n";
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where use_campaign_dnc='Y' order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	if ($row[0] > 0)
-		{echo "<br>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ - αυτός ο τηλεφωνικός αριθμός είναι ήδη δενκαλεί τον κατάλογο: $phone_number<BR><BR>\n";}
-	else
+	$campaigns_to_print = mysql_num_rows($rslt);
+
+	$o=0;
+	while ($campaigns_to_print > $o) 
 		{
-		$stmt="INSERT INTO vicidial_dnc (phone_number) values('$phone_number');";
-		$rslt=mysql_query($stmt, $link);
+		$rowx=mysql_fetch_row($rslt);
+		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
 
-		echo "<br><B>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ: $phone_number</B><BR><BR>\n";
-
-		### LOG INSERTION TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+	if (strlen($phone_numbers) > 2)
+		{
+		$PN = explode("\n",$phone_numbers);
+		$PNct = count($PN);
+		$p=0;
+		while ($p < $PNct)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|ADD A NEW DNC NUMBER|$PHP_AUTH_USER|$ip|'$phone_number'|\n");
-			fclose($fp);
+			if (ereg('SYSTEM_INTERNAL',$campaign_id))
+				{
+				$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				if ($row[0] > 0)
+					{echo "<br>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ - αυτός ο τηλεφωνικός αριθμός είναι ήδη δενκαλεί τον κατάλογο: $PN[$p]\n";}
+				else
+					{
+					$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
+					$rslt=mysql_query($stmt, $link);
+
+					echo "<br><B>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ: $PN[$p]</B>\n";
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = ereg_replace(';','',$SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ΠΡΟΣΘΕΣΤΕ ΤΟΝ ΑΡΙΘΜΟ ΣΕ DNC LIST', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					}
+				}
+			else
+				{
+				$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				if ($row[0] > 0)
+					{echo "<br>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ - αυτός ο τηλεφωνικός αριθμός είναι ήδη δενκαλεί τον κατάλογο: $PN[$p] $campaign_id\n";}
+				else
+					{
+					$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$campaign_id');";
+					$rslt=mysql_query($stmt, $link);
+
+					echo "<br><B>DNC ΠΡΟΣΤΙΘΈΜΕΝΟ: $PN[$p] $campaign_id</B>\n";
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = ereg_replace(';','',$SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					}
+				}
+			$p++;
 			}
 		}
+
+	echo "<br>ADD αριθμούς στην DNC ΚΑΤΑΛΟΓΟΣ<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=121>\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>List: </td><td align=left><select size=1 name=campaign_id>\n";
+	echo "$campaigns_list";
+	echo "</select></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλέφωνα:<BR><BR> (έναν αριθμό τηλεφώνου σε κάθε γραμμή μόνο)<BR>$NWB#vicidial_list-dnc$NWE</td><td align=left><TEXTAREA name=phone_numbers ROWS=20 COLS=20></TEXTAREA></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+	echo "</TABLE></center>\n";
 	}
-
-echo "<br>ΠΡΟΣΘΕΣΤΕ έναν ΑΡΙΘΜΟ στον ΚΑΤΑΛΟΓΟ DNC<form action=$PHP_SELF method=POST>\n";
-echo "<input type=hidden name=ADD value=121>\n";
-echo "<center><TABLE width=$section_width cellspacing=3>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Τηλεφωνικός αριθμός: </td><td align=left><input type=text name=phone_number size=14 maxlength=12> (μόνο αριθμοί)$NWB#vicidial_list-dnc$NWE</td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-echo "</TABLE></center>\n";
-
-}
 
 
 ######################
@@ -4298,36 +5628,36 @@ echo "</TABLE></center>\n";
 ######################
 
 if ($ADD==1111)
-{
+	{
 	if ($LOGmodify_ingroups==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΕΙΣΕΡΧΟΜΕΝΗΣ ΟΜΑΔΑΣ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρώμα Ομάδας: </td><td align=left><input type=text name=group_color size=7 maxlength=7>$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μπροστινή Οθόνη: </td><td align=left><select size=1 name=fronter_display><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
-	echo "$scripts_list";
-	echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ΠΡΟΣΘΗΚΗ ΕΙΣΕΡΧΟΜΕΝΗΣ ΟΜΑΔΑΣ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Χρώμα Ομάδας: </td><td align=left id=\"group_color_td\"><input type=text name=group_color size=7 maxlength=7>$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Μπροστινή Οθόνη: </td><td align=left><select size=1 name=fronter_display><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Βοηθός: </td><td align=left><select size=1 name=script_id>\n";
+		echo "$scripts_list";
+		echo "</select>$NWB#vicidial_inbound_groups-ingroup_script$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left><select size=1 name=get_call_launch><option selected>NONE</option><option>SCRIPT</option><option>WEBFORM</option></select>$NWB#vicidial_inbound_groups-get_call_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4335,19 +5665,19 @@ if ($ADD==1111)
 ######################
 
 if ($ADD==1211)
-{
-	if ($LOGmodify_ingroups==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	if ($LOGmodify_ingroups==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΕΙΣΕΡΧΟΜΕΝΗ ΟΜΑΔΑ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2011>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
+		echo "<br>ΕΙΣΕΡΧΟΜΕΝΗ ΟΜΑΔΑ ΑΝΤΙΓΡΑΦΩΝ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2011>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><input type=text name=group_id size=20 maxlength=20> (no spaces)$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30>$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Source ID Ομάδας: </td><td align=left><select size=1 name=source_group_id>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Source ID Ομάδας: </td><td align=left><select size=1 name=source_group_id>\n";
 
 		$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
 		$rslt=mysql_query($stmt, $link);
@@ -4355,23 +5685,96 @@ if ($ADD==1211)
 		$groups_list='';
 
 		$o=0;
-		while ($groups_to_print > $o) {
+		while ($groups_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$groups_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
 			$o++;
-		}
-	echo "$groups_list";
-	echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
+			}
+		echo "$groups_list";
+		echo "</select>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=1311 display the ADD NEW DID SCREEN
+######################
+
+if ($ADD==1311)
+	{
+	if ($LOGmodify_dids==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD A NEW DID<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2311>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Επέκταση:</td><td align=left><input type=text name=did_pattern size=20 maxlength=50> (no spaces or dashes)$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Περιγραφή:</td><td align=left><input type=text name=did_description size=40 maxlength=50>$NWB#vicidial_inbound_dids-did_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
+
+
+######################
+# ADD=1411 display the COPY DID SCREEN
+######################
+
+if ($ADD==1411)
+	{
+	if ($LOGmodify_dids==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ΑΝΤΙΤΥΠΟ DID<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2411>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Επέκταση:</td><td align=left><input type=text name=did_pattern size=20 maxlength=50> (no spaces or dashes)$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Περιγραφή:</td><td align=left><input type=text name=did_description size=40 maxlength=50>$NWB#vicidial_inbound_dids-did_description$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>DID Πηγή:</td><td align=left><select size=1 name=source_did>\n";
+
+		$stmt="SELECT did_id,did_pattern,did_description from vicidial_inbound_dids order by did_pattern";
+		$rslt=mysql_query($stmt, $link);
+		$dids_to_print = mysql_num_rows($rslt);
+		$dids_list='';
+
+		$o=0;
+		while ($dids_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$dids_list .= "<option value=\"$rowx[0]\">$rowx[1] - $rowx[2]</option>\n";
+			$o++;
+			}
+		echo "$dids_list";
+		echo "</select>$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -4379,38 +5782,38 @@ if ($ADD==1211)
 ######################
 
 if ($ADD==11111)
-{
+	{
 	if ($LOGmodify_remoteagents==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΩΝ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρήστη Ξεκινά: </td><td align=left><input type=text name=user_start size=6 maxlength=6> (μόνο αριθμοί, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Γραμμών: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3> (μόνο αριθμοί)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
-	echo "$servers_list";
-	echo "</select>$NWB#vicidial_remote_agents-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εξωτερική Τηλ. Σύνδεση: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20> (ο αριθμός που κλήθηκε από το πλάνο κλήσεων για να καλέσει τους χειριστές)$NWB#vicidial_remote_agents-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option>ΕΝΕΡΓΟ</option><option SELECTED>INACTIVE</option></select>$NWB#vicidial_remote_agents-status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left><select size=1 name=campaign_id>\n";
-	echo "$campaigns_list";
-	echo "</select>$NWB#vicidial_remote_agents-campaign_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες Ομάδες: </td><td align=left>\n";
-	echo "$groups_list";
-	echo "$NWB#vicidial_remote_agents-closer_campaigns$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	echo "ΣΗΜΕΙΩΣΗ: Μπορεί να διαρκέσει και 30 δευτερόλεπτα για να καταχωρηθούν οι αλλαγές της οθόνης\n";
-	}
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΩΝ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρήστη Ξεκινά: </td><td align=left><input type=text name=user_start size=6 maxlength=6> (μόνο αριθμοί, incremented)$NWB#vicidial_remote_agents-user_start$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Γραμμών: </td><td align=left><input type=text name=number_of_lines size=3 maxlength=3> (μόνο αριθμοί)$NWB#vicidial_remote_agents-number_of_lines$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "$servers_list";
+		echo "</select>$NWB#vicidial_remote_agents-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εξωτερική Τηλ. Σύνδεση: </td><td align=left><input type=text name=conf_exten size=20 maxlength=20> (ο αριθμός που κλήθηκε από το πλάνο κλήσεων για να καλέσει τους χειριστές)$NWB#vicidial_remote_agents-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option>ΕΝΕΡΓΟ</option><option SELECTED>INACTIVE</option></select>$NWB#vicidial_remote_agents-status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία: </td><td align=left><select size=1 name=campaign_id>\n";
+		echo "$campaigns_list";
+		echo "</select>$NWB#vicidial_remote_agents-campaign_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εισερχόμενες Ομάδες: </td><td align=left>\n";
+		echo "$groups_list";
+		echo "$NWB#vicidial_remote_agents-closer_campaigns$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		echo "ΣΗΜΕΙΩΣΗ: Μπορεί να διαρκέσει και 30 δευτερόλεπτα για να καταχωρηθούν οι αλλαγές της οθόνης\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4418,26 +5821,26 @@ if ($ADD==11111)
 ######################
 
 if ($ADD==111111)
-{
+	{
 	if ($LOGmodify_usergroups==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα:</td><td align=left><input type=text name=user_group size=15 maxlength=20> (όχι κενά ή στίξη)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή:</td><td align=left><input type=text name=group_name size=40 maxlength=40> (περιγραφή ομάδας)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ΠΡΟΣΘΗΚΗ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα:</td><td align=left><input type=text name=user_group size=15 maxlength=20> (όχι κενά ή στίξη)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή:</td><td align=left><input type=text name=group_name size=40 maxlength=40> (περιγραφή ομάδας)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4445,72 +5848,72 @@ if ($ADD==111111)
 ######################
 
 if ($ADD==1111111)
-{
+	{
 	if ($LOGmodify_scripts==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ταυτότητα χειρογράφων:: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα χειρογράφων: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (τίτλος του βοηθού)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια χειρόγραφου: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κείμενο χειρόγραφου: </td><td align=left>";
-	# BEGIN Insert Field
-	echo "<select id=\"selectedField\" name=\"selectedField\">";
-	echo "<option>vendor_lead_code</option>";
-	echo "<option>source_id</option>";
-	echo "<option>list_id</option>";
-	echo "<option>gmt_offset_now</option>";
-	echo "<option>called_since_last_reset</option>";
-	echo "<option>phone_code</option>";
-	echo "<option>phone_number</option>";
-	echo "<option>title</option>";
-	echo "<option>first_name</option>";
-	echo "<option>middle_initial</option>";
-	echo "<option>last_name</option>";
-	echo "<option>address1</option>";
-	echo "<option>address2</option>";
-	echo "<option>address3</option>";
-	echo "<option>city</option>";
-	echo "<option>state</option>";
-	echo "<option>province</option>";
-	echo "<option>postal_code</option>";
-	echo "<option>country_code</option>";
-	echo "<option>gender</option>";
-	echo "<option>date_of_birth</option>";
-	echo "<option>alt_phone</option>";
-	echo "<option>email</option>";
-	echo "<option>security_phrase</option>";
-	echo "<option>comments</option>";
-	echo "<option>lead_id</option>";
-	echo "<option>campaign</option>";
-	echo "<option>phone_login</option>";
-	echo "<option>group</option>";
-	echo "<option>channel_group</option>";
-	echo "<option>SQLdate</option>";
-	echo "<option>epoch</option>";
-	echo "<option>uniqueid</option>";
-	echo "<option>customer_zap_channel</option>";
-	echo "<option>server_ip</option>";
-	echo "<option>SIPexten</option>";
-	echo "<option>session_id</option>";
-	echo "</select>";
-	echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
-	# END Insert Field
-	echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ταυτότητα χειρογράφων:: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα χειρογράφων: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (τίτλος του βοηθού)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια χειρόγραφου: </td><td align=left><input type=text name=script_comments size=50 maxlength=255> $NWB#vicidial_scripts-script_comments$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#vicidial_scripts-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κείμενο χειρόγραφου: </td><td align=left>";
+		# BEGIN Insert Field
+		echo "<select id=\"selectedField\" name=\"selectedField\">";
+		echo "<option>vendor_lead_code</option>";
+		echo "<option>source_id</option>";
+		echo "<option>list_id</option>";
+		echo "<option>gmt_offset_now</option>";
+		echo "<option>called_since_last_reset</option>";
+		echo "<option>phone_code</option>";
+		echo "<option>phone_number</option>";
+		echo "<option>title</option>";
+		echo "<option>first_name</option>";
+		echo "<option>middle_initial</option>";
+		echo "<option>last_name</option>";
+		echo "<option>address1</option>";
+		echo "<option>address2</option>";
+		echo "<option>address3</option>";
+		echo "<option>city</option>";
+		echo "<option>state</option>";
+		echo "<option>province</option>";
+		echo "<option>postal_code</option>";
+		echo "<option>country_code</option>";
+		echo "<option>gender</option>";
+		echo "<option>date_of_birth</option>";
+		echo "<option>alt_phone</option>";
+		echo "<option>email</option>";
+		echo "<option>security_phrase</option>";
+		echo "<option>comments</option>";
+		echo "<option>lead_id</option>";
+		echo "<option>campaign</option>";
+		echo "<option>phone_login</option>";
+		echo "<option>group</option>";
+		echo "<option>channel_group</option>";
+		echo "<option>SQLdate</option>";
+		echo "<option>epoch</option>";
+		echo "<option>uniqueid</option>";
+		echo "<option>customer_zap_channel</option>";
+		echo "<option>server_ip</option>";
+		echo "<option>SIPexten</option>";
+		echo "<option>session_id</option>";
+		echo "</select>";
+		echo "<input type=\"button\" name=\"insertField\" value=\"Insert\" onClick=\"scriptInsertField();\"><BR>";
+		# END Insert Field
+		echo "<TEXTAREA NAME=script_text ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_scripts-script_text$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4518,28 +5921,28 @@ if ($ADD==1111111)
 ######################
 
 if ($ADD==11111111)
-{
+	{
 	if ($LOGmodify_filters==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΕΣΕ ΦΙΛΤΡΟ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Φίλτρου: </td><td align=left><input type=text name=lead_filter_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα Φίλτρου:</td><td align=left><input type=text name=lead_filter_name size=30 maxlength=30> (σύντομη περιγραφή του φίλτρου)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Φίλτρου: </td><td align=left><input type=text name=lead_filter_comments size=50 maxlength=255> $NWB#vicidial_lead_filters-lead_filter_comments$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>SQL Φίλτρου:  </td><td align=left><TEXTAREA NAME=lead_filter_sql ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_lead_filters-lead_filter_sql$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ΠΡΟΣΘΕΣΕ ΦΙΛΤΡΟ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Φίλτρου: </td><td align=left><input type=text name=lead_filter_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα Φίλτρου:</td><td align=left><input type=text name=lead_filter_name size=30 maxlength=30> (σύντομη περιγραφή του φίλτρου)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Φίλτρου: </td><td align=left><input type=text name=lead_filter_comments size=50 maxlength=255> $NWB#vicidial_lead_filters-lead_filter_comments$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>SQL Φίλτρου:  </td><td align=left><TEXTAREA NAME=lead_filter_sql ROWS=20 COLS=50 value=\"\"></TEXTAREA> $NWB#vicidial_lead_filters-lead_filter_sql$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4547,29 +5950,29 @@ if ($ADD==11111111)
 ######################
 
 if ($ADD==111111111)
-{
+	{
 	if ($LOGmodify_call_times==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (σύντομη περιγραφή του χρόνου κλήσης)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (σύντομη περιγραφή του χρόνου κλήσης)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Χρόνου Κλήσης: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Οι επιλογές Ημέρας και ώρας θα εμφανιστούν όταν θα δημιουργήσετε τον Ορισμό Χρόνου Κλήσης</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Οι επιλογές Ημέρας και ώρας θα εμφανιστούν όταν θα δημιουργήσετε τον Ορισμό Χρόνου Κλήσης</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4577,30 +5980,70 @@ if ($ADD==111111111)
 ######################
 
 if ($ADD==1111111111)
-{
+	{
 	if ($LOGmodify_call_times==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρόνου Κλήσης Κατάστασης: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left><input type=text name=state_call_time_state size=4 maxlength=2> (όχι κενά ή στίξη)$NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Χρόνου Κλήσης Κατάτασης: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (σύντομη περιγραφή του χρόνου κλήσης)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Χρόνου Κλήσης Κατάστασης: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
+		echo "<br>ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Χρόνου Κλήσης Κατάστασης: </td><td align=left><input type=text name=call_time_id size=12 maxlength=10> (όχι κενά ή στίξη)$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left><input type=text name=state_call_time_state size=4 maxlength=2> (όχι κενά ή στίξη)$NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Χρόνου Κλήσης Κατάτασης: </td><td align=left><input type=text name=call_time_name size=30 maxlength=30> (σύντομη περιγραφή του χρόνου κλήσης)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σχόλια Χρόνου Κλήσης Κατάστασης: </td><td align=left><input type=text name=call_time_comments size=50 maxlength=255> $NWB#vicidial_call_times-call_time_comments$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Οι επιλογές Ημέρας και ώρας θα εμφανιστούν όταν θα δημιουργήσετε τον Ορισμό Χρόνου Κλήσης</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Οι επιλογές Ημέρας και ώρας θα εμφανιστούν όταν θα δημιουργήσετε τον Ορισμό Χρόνου Κλήσης</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=131111111 display the ADD NEW SHIFT SCREEN
+######################
+
+if ($ADD==131111111)
+	{
+	if ($LOGmodify_call_times==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD NEW SHIFT<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=231111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID:</td><td align=left><input type=text name=shift_id size=22 maxlength=20> (όχι κενά ή στίξη)$NWB#vicidial_shifts-shift_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Όνομα:</td><td align=left><input type=text name=shift_name size=50 maxlength=50> (σύντομη περιγραφή της μετατόπισης)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Ώρα έναρξης:</td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time>\n";
+		echo " &nbsp; Shift End Time:<input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time>\n";
+		echo "<input type=button name=shift_calc value=\"Calculate Shift Μήκος\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Μήκος: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Shift Καθημερινά:<BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\">Κυριακή<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\">Δευτέρα<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\">Τρίτη<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\">Τετάρτη<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\">Πέμπτη<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\">Παρασκευή<BR>\n";
+		echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\">Σάββατο<BR>\n";
+		echo "</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -4608,47 +6051,111 @@ if ($ADD==1111111111)
 ######################
 
 if ($ADD==11111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΤΗΛΕΦΩΝΟΥ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<br>ΠΡΟΣΘΗΚΗ ΤΗΛΕΦΩΝΟΥ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδεσης τηλεφώνου: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Σχεδίου Κλήσεων: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20 value=\"$row[1]\"> (μόνο αριθμοί)$NWB#phones-dialplan_number$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιεχόμενο Φωνητικού Ταχυδρομείου: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (μόνο αριθμοί)$NWB#phones-voicemail_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εξερχόμενο CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20 value=\"$row[65]\"> (μόνο αριθμοί)$NWB#phones-outbound_cid$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Τηλεφώνου: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15 value=\"$row[3]\"> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Υπολογιστή: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15 value=\"$row[4]\"> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδεσης τηλεφώνου: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"\">$NWB#phones-extension$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Σχεδίου Κλήσεων: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20> (μόνο αριθμοί)$NWB#phones-dialplan_number$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλεφωνητής Box:</td><td align=left><input type=text name=voicemail_id size=10 maxlength=10> (μόνο αριθμοί)$NWB#phones-voicemail_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εξερχόμενο CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20> (μόνο αριθμοί)$NWB#phones-outbound_cid$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Τηλεφώνου: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Υπολογιστή: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$row[5]</option>\n";
-	echo "</select>$NWB#phones-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Σύνδεση:</td><td align=left><input type=text name=login size=10 maxlength=10 value=\"$row[6]\">$NWB#phones-login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=10 maxlength=10 value=\"$row[7]\">$NWB#phones-pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option>ΕΝΕΡΓΟ</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option><option selected>$row[8]</option></select>$NWB#phones-status$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργός Λογαριασμός: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[9]</option></select>$NWB#phones-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τύπος τηλεφώνου: </td><td align=left><input type=text name=phone_type size=20 maxlength=50 value=\"$row[10]\">$NWB#phones-phone_type$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=fullname size=20 maxlength=50 value=\"$row[11]\">$NWB#phones-fullname$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εταιρία:</td><td align=left><input type=text name=company size=10 maxlength=10 value=\"$row[12]\">$NWB#phones-company$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εικόνα:</td><td align=left><input type=text name=picture size=20 maxlength=19 value=\"$row[13]\">$NWB#phones-picture$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Προτόκολο Πελάτη: </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option><option selected>$row[16]</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τοπικό GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$row[17]</option></select> (Μην ρυθμίσεις για DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$row[5]</option>\n";
+		echo "</select>$NWB#phones-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Σύνδεση:</td><td align=left><input type=text name=login size=10 maxlength=10>$NWB#phones-login$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός:</td><td align=left><input type=text name=pass size=10 maxlength=10>$NWB#phones-pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Κατάσταση:</td><td align=left><select size=1 name=status><option SELECTED>ΕΝΕΡΓΟ</option><option>SUSPENDED</option><option>CLOSED</option><option>PENDING</option><option>ADMIN</option></select>$NWB#phones-status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργός Λογαριασμός: </td><td align=left><select size=1 name=active><option SELECTED>Y</option><option>N</option></select>$NWB#phones-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τύπος τηλεφώνου: </td><td align=left><input type=text name=phone_type size=20 maxlength=50>$NWB#phones-phone_type$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=fullname size=20 maxlength=50>$NWB#phones-fullname$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εταιρία:</td><td align=left><input type=text name=company size=10 maxlength=10>$NWB#phones-company$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εικόνα:</td><td align=left><input type=text name=picture size=20 maxlength=19>$NWB#phones-picture$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Προτόκολο Πελάτη: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#phones-protocol$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τοπικό GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option SELECTED>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option></select> (Μην ρυθμίσεις για DST)$NWB#phones-local_gmt$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=12111111111 display the ADD NEW PHONE ALIAS SCREEN
+######################
+
+if ($ADD==12111111111)
+	{
+	if ($LOGast_admin_access==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ΠΡΟΣΘΗΚΗ ΤΗΛΕΦΩΝΟΥ ALIAS<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=22111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Γνωστός ID:</td><td align=left><input type=text name=alias_id size=20 maxlength=20 value=\"\">$NWB#phones-alias_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ψευδώνυμο:</td><td align=left><input type=text name=alias_name size=30 maxlength=50> $NWB#phones-alias_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλέφωνο logins List:</td><td align=left><input type=text name=logins_list size=50 maxlength=255> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
+
+
+######################
+# ADD=13111111111 display the ADD NEW GROUP ALIAS SCREEN
+######################
+
+if ($ADD==13111111111)
+	{
+	if ($LOGast_admin_access==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>ADD μια νέα ομάδα ALIAS<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=23111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Γνωστός ID: </td><td align=left><input type=text name=group_alias_id size=30 maxlength=30 value=\"\">$NWB#phones-group_alias_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα ψευδώνυμο: </td><td align=left><input type=text name=group_alias_name size=30 maxlength=50> $NWB#phones-group_alias_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Αριθμός: </td><td align=left><input type=text name=caller_id_number size=20 maxlength=20> $NWB#phones-caller_id_number$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Όνομα: </td><td align=left><input type=text name=caller_id_name size=20 maxlength=20> $NWB#phones-caller_id_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option selected>N</option></select></td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -4656,29 +6163,127 @@ if ($ADD==11111111111)
 ######################
 
 if ($ADD==111111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΔΙΑΚΟΜΙΣΤΗ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=211111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Διακομιστή: </td><td align=left><input type=text name=server_id size=10 maxlength=10>$NWB#servers-server_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή Διακομιστή: </td><td align=left><input type=text name=server_description size=30 maxlength=255>$NWB#servers-server_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Διακομιστή: </td><td align=left><input type=text name=server_ip size=20 maxlength=15>$NWB#servers-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#servers-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκδοση Asterisk: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20>$NWB#servers-asterisk_version$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "<br>ΠΡΟΣΘΗΚΗ ΔΙΑΚΟΜΙΣΤΗ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=211111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>ID Διακομιστή: </td><td align=left><input type=text name=server_id size=10 maxlength=10>$NWB#servers-server_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή Διακομιστή: </td><td align=left><input type=text name=server_description size=30 maxlength=255>$NWB#servers-server_description$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Διακομιστή: </td><td align=left><input type=text name=server_ip size=20 maxlength=15>$NWB#servers-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option></select>$NWB#servers-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκδοση Asterisk: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20>$NWB#servers-asterisk_version$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
+
+
+######################
+# ADD=131111111111 display the ADD NEW CONF TEMPLATE SCREEN
+######################
+
+if ($ADD==131111111111)
+	{
+	if ($LOGmodify_servers==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>Προσθήκη νέου ΠΙΣΤ TEMPLATE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=231111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγνωριστικό: </td><td align=left><input type=text name=template_id size=15 maxlength=15>$NWB#vicidial_conf_templates-template_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα: </td><td align=left><input type=text name=template_name size=40 maxlength=50>$NWB#vicidial_conf_templates-template_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Template Περιεχόμενα: </td><td align=left><TEXTAREA NAME=template_contents ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_conf_templates-template_contents$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
+
+
+######################
+# ADD=141111111111 display the ADD NEW CARRIER SCREEN
+######################
+
+if ($ADD==141111111111)
+	{
+	if ($LOGmodify_servers==1)
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>Προσθήκη νέου ΘΑΛΑΜΙΣΚΟ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=241111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Θαλαμίσκος ID: </td><td align=left><input type=text name=carrier_id size=15 maxlength=15>$NWB#vicidial_server_carriers-carrier_id$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Φέρον Όνομα: </td><td align=left><input type=text name=carrier_name size=40 maxlength=50>$NWB#vicidial_server_carriers-carrier_name$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εγγραφή String: </td><td align=left><input type=text name=registration_string size=50 maxlength=255>$NWB#vicidial_server_carriers-registration_string$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγνωριστικό: </td><td align=left><select size=1 name=template_id>\n";
+		$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+		$rslt=mysql_query($stmt, $link);
+		$templates_to_print = mysql_num_rows($rslt);
+		$templates_list='<option SELECTED>--NONE--</option>';
+		$o=0;
+		while ($templates_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+		echo "$templates_list";
+		echo "</select>$NWB#vicidial_server_carriers-template_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Λογαριασμός Είσοδος: </td><td align=left><TEXTAREA NAME=account_entry ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_server_carriers-account_entry$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Πρωτόκολλο: </td><td align=left><select size=1 name=protocol><option SELECTED>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option></select>$NWB#vicidial_server_carriers-protocol$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Globals String: </td><td align=left><input type=text name=globals_string size=50 maxlength=255>$NWB#vicidial_server_carriers-globals_string$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Είσοδος: </td><td align=left><TEXTAREA NAME=dialplan_entry ROWS=10 COLS=70></TEXTAREA> $NWB#vicidial_server_carriers-dialplan_entry$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+		##### get server listing for dynamic pulldown
+		$stmt="SELECT server_ip,server_description from servers order by server_ip";
+		$rsltx=mysql_query($stmt, $link);
+		$servers_to_print = mysql_num_rows($rsltx);
+		$servers_list='';
+
+		$o=0;
+		while ($servers_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rsltx);
+			$servers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$o++;
+			}
+
+		echo "$servers_list";
+		echo "</select>$NWB#vicidial_server_carriers-server_ip$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	}
 
 
 ######################
@@ -4686,30 +6291,30 @@ if ($ADD==111111111111)
 ######################
 
 if ($ADD==1111111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ΠΡΟΣΘΗΚΗ ΣΥΝΔΙΑΛΕΞΗΣ<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=2111111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Συνδιάλεξης: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (μόνο αριθμοί)$NWB#conferences-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<br>ΠΡΟΣΘΗΚΗ ΣΥΝΔΙΑΛΕΞΗΣ<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=2111111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Συνδιάλεξης: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (μόνο αριθμοί)$NWB#conferences-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$server_ip</option>\n";
-	echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$server_ip</option>\n";
+		echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 ######################
@@ -4717,30 +6322,30 @@ if ($ADD==1111111111111)
 ######################
 
 if ($ADD==11111111111111)
-{
+	{
 	if ($LOGast_admin_access==1)
-	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	echo "<br>ADD A NEW VICIDIAL CONFERENCE<form action=$PHP_SELF method=POST>\n";
-	echo "<input type=hidden name=ADD value=21111111111111>\n";
-	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Συνδιάλεξης: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (μόνο αριθμοί)$NWB#conferences-conf_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+		echo "<br>ADD A NEW VICIDIAL CONFERENCE<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=21111111111111>\n";
+		echo "<center><TABLE width=$section_width cellspacing=3>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Συνδιάλεξης: </td><td align=left><input type=text name=conf_exten size=8 maxlength=7> (μόνο αριθμοί)$NWB#conferences-conf_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
 
-	echo "$servers_list";
-	echo "<option SELECTED>$server_ip</option>\n";
-	echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
-	echo "</TABLE></center>\n";
-	}
+		echo "$servers_list";
+		echo "<option SELECTED>$server_ip</option>\n";
+		echo "</select>$NWB#conferences-server_ip$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+		echo "</TABLE></center>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 
@@ -4756,7 +6361,7 @@ if ($ADD==11111111111111)
 ######################
 
 if ($ADD=="2")
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
 	$rslt=mysql_query($stmt, $link);
@@ -4765,38 +6370,265 @@ if ($ADD=="2")
 		{echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - υπάρχει ήδη ένας χρήστης με αυτό τον αριθμό\n";}
 	else
 		{
-		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+		if (ereg('AUTOGENERA',$user))
+			{
+			$user = 'AUTOGENERA';
+			}
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or ( (strlen($user) > 10) and (!ereg('AUTOGENERA',$user)) ) )
 			{
 			 echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
-			 echo "<br>το id χρήστη πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
+			 echo "<br>user id must be between 2 and 10 characters long\n";
 			 echo "<br>το πλήρες όνομα και κωδικός πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
 			}
 		 else
 			{
+			if (ereg('AUTOGENERA',$user))
+				{
+				$new_user=0;
+				$auto_user_add_value=0;
+				while ($new_user < 2)
+					{
+					if ($new_user < 1)
+						{
+						$stmt = "SELECT auto_user_add_value FROM system_settings;";
+						$rslt=mysql_query($stmt, $link);
+						$ss_auav_ct = mysql_num_rows($rslt);
+						if ($ss_auav_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$auto_user_add_value = $row[0];
+							}
+						$new_user++;
+						}
+					$stmt = "SELECT count(*) FROM vicidial_users where user='$auto_user_add_value';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{
+						$new_user++;
+						}
+					else 
+						{
+						echo "<!-- AG: $auto_user_add_value -->\n";
+						$auto_user_add_value = ($auto_user_add_value + 7);
+						}
+					}
+				$user = $auto_user_add_value;
+				echo "<br><B>user_id has been auto-generated: $user</B><br>\n";
+
+				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
 			echo "<br><B>ΧΡΗΣΤΗΣ ΠΡΟΣΤΕΘΗΚΕ: $user</B>\n";
 
 			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass) values('$user','$pass','$full_name','$user_level','$user_group','$phone_login','$phone_pass');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='ADD', record_id='$user', event_code='ADMIN ADD USER', event_sql=\"$SQL_log\", event_notes='user: $user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A USER          |$PHP_AUTH_USER|$ip|'$user','$pass','$full_name','$user_level','$user_group','$phone_login','$phone_pass'|\n");
-				fclose($fp);
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
 				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				$user_name =		$user;
+				$user_password =	$pass;
+				$last_name =		$full_name;
+				$is_admin =			'off';
+				$roleid =			'H5';
+				$status =			'Ενεργό';
+				$groupid =			'1';
+					if ($user_level >= 7) {$roleid = 'H3';}
+					if ($user_level >= 8) {$roleid = 'H4';}
+					if ($user_level >= 9) {$roleid = 'H2';}
+					if ($user_level >= 9) {$is_admin = 'on';}
+				$salt = substr($user_name, 0, 2);
+				$salt = '$1$' . $salt . '$';
+				$encrypted_password = crypt($user_password, $salt);
+
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
+
+				######################################
+				##### BEGIN Add/Update user info in Vtiger
+				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$found_count = $row[0];
+
+				### user exists in vtiger, update it
+				if ($found_count > 0)
+					{
+					$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$userid = $row[0];
+
+					$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$usergroupcount = $row[0];
+
+					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					if ($usergroupcount < 1)
+						{
+						$stmt="SELECT user_group FROM vicidial_user_groups;";
+						$rslt=mysql_query($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$VD_groups_ct = mysql_num_rows($rslt);
+						$k=0;
+						$VD_groups_list='';
+						while ($k < $VD_groups_ct)
+							{
+							$row=mysql_fetch_row($rslt);
+							$VD_groups_list .= "'$row[0]',";
+							$k++;
+							}
+						$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+						$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+						if ($DB) {echo "|$stmtC|\n";}
+						$rslt=mysql_query($stmtC, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+						$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+						if ($DB) {echo "|$stmtD|\n";}
+						$rslt=mysql_query($stmtD, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+						}
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW USER RECORD IN VTIGER
+					$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$userid = mysql_insert_id($linkV);
+				
+					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW USER RECORD IN VTIGER
+					}
+				##### END Add/Update user info in Vtiger
+				######################################
+				}
+			### END vtiger integration
 			}
 		}
 
-$ADD=3;
-}
+	$ADD=3;
+	}
 
 ######################
 # ADD=2A adds the copied new user to the system
 ######################
 
 if ($ADD=="2A")
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_users where user='$user';";
 	$rslt=mysql_query($stmt, $link);
@@ -4805,15 +6637,53 @@ if ($ADD=="2A")
 		{echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - υπάρχει ήδη ένας χρήστης με αυτό τον αριθμό\n";}
 	else
 		{
-		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 8) )
+		 if ( (strlen($user) < 2) or (strlen($pass) < 2) or (strlen($full_name) < 2) or (strlen($user) > 10) )
 			{
 			 echo "<br>Ο ΧΡΗΣΤΗΣ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ  - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
-			 echo "<br>το id χρήστη πρέπει να είναι μεταξύ 2 και 8 χαρακτήρες\n";
+			 echo "<br>user id must be between 2 and 10 characters long\n";
 			 echo "<br>το πλήρες όνομα και κωδικός πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+			 echo "<!-- |$user|$pass|$full_name| -->\n";
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override from vicidial_users where user=\"$source_user_id\";";
+			if (ereg('AUTOGEN',$user))
+				{
+				$new_user=0;
+				$auto_user_add_value=0;
+				while ($new_user < 2)
+					{
+					if ($new_user < 1)
+						{
+						$stmt = "SELECT auto_user_add_value FROM system_settings;";
+						$rslt=mysql_query($stmt, $link);
+						$ss_auav_ct = mysql_num_rows($rslt);
+						if ($ss_auav_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$auto_user_add_value = $row[0];
+							}
+						$new_user++;
+						}
+					$stmt = "SELECT count(*) FROM vicidial_users where user='$auto_user_add_value';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{
+						$new_user++;
+						}
+					else 
+						{
+						echo "<!-- AG: $auto_user_add_value -->\n";
+						$auto_user_add_value = ($auto_user_add_value + 7);
+						}
+					}
+				$user = $auto_user_add_value;
+				echo "<br><B>user_id has been auto-generated: $user</B><br>\n";
+
+				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
+				$rslt=mysql_query($stmt, $link);
+				}
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -4822,30 +6692,216 @@ if ($ADD=="2A")
 			$stmtA="INSERT INTO vicidial_campaign_agents (user,campaign_id,campaign_rank,campaign_weight,calls_today) SELECT \"$user\",campaign_id,campaign_rank,campaign_weight,\"0\" from vicidial_campaign_agents where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmtA, $link);
 
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='COPY', record_id='$user', event_code='ADMIN ΧΡΗΣΤΗΣ ΑΝΤΙΓΡΑΦΩΝ', event_sql=\"$SQL_log\", event_notes='user: $user';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
+				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				$user_name =		$user;
+				$user_password =	$pass;
+				$last_name =		$full_name;
+				$is_admin =			'off';
+				$roleid =			'H5';
+				$status =			'Ενεργό';
+				$groupid =			'1';
+					if ($user_level >= 7) {$roleid = 'H3';}
+					if ($user_level >= 8) {$roleid = 'H4';}
+					if ($user_level >= 9) {$roleid = 'H2';}
+					if ($user_level >= 9) {$is_admin = 'on';}
+				$salt = substr($user_name, 0, 2);
+				$salt = '$1$' . $salt . '$';
+				$encrypted_password = crypt($user_password, $salt);
+
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
+
+				######################################
+				##### BEGIN Add/Update user info in Vtiger
+				$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$found_count = $row[0];
+
+				### user exists in vtiger, update it
+				if ($found_count > 0)
+					{
+					$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$userid = $row[0];
+
+					$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$usergroupcount = $row[0];
+
+					$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					if ($usergroupcount < 1)
+						{
+						$stmt="SELECT user_group FROM vicidial_user_groups;";
+						$rslt=mysql_query($stmt, $link);
+						if ($DB) {echo "$stmt\n";}
+						$VD_groups_ct = mysql_num_rows($rslt);
+						$k=0;
+						$VD_groups_list='';
+						while ($k < $VD_groups_ct)
+							{
+							$row=mysql_fetch_row($rslt);
+							$VD_groups_list .= "'$row[0]',";
+							$k++;
+							}
+						$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+						$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+						if ($DB) {echo "|$stmtC|\n";}
+						$rslt=mysql_query($stmtC, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+						$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+						if ($DB) {echo "|$stmtD|\n";}
+						$rslt=mysql_query($stmtD, $linkV);
+						if (!$rslt) {die('Could not execute: ' . mysql_error());}
+						}
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW USER RECORD IN VTIGER
+					$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$userid = mysql_insert_id($linkV);
+				
+					$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+					if ($DB) {echo "|$stmtB|\n";}
+					$rslt=mysql_query($stmtB, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW USER RECORD IN VTIGER
+					}
+				##### END Add/Update user info in Vtiger
+				######################################
+				}
+			### END vtiger integration
+
 			echo "<br><B>USER COPIED: $user copied from $source_user_id</B>\n";
 			echo "<br><br>\n";
 			echo "<a href=\"$PHP_SELF?ADD=3&user=$user\">Click here to go to the user record</a>\n";
 			echo "<br><br>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A COPIED USER   |$PHP_AUTH_USER|$ip|$user|$source_user_id|$stmt|\n");
-				fclose($fp);
-				}
 			}
 		}
-exit;
-}
+	exit;
+	}
 
 ######################
 # ADD=21 adds the new campaign to the system
 ######################
 
 if ($ADD==21)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -4874,31 +6930,28 @@ if ($ADD==21)
 				$stmt="INSERT INTO vicidial_campaigns (campaign_id,campaign_name,campaign_description,active,dial_status_a,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,campaign_script,get_call_launch,campaign_changedate,campaign_stats_refresh,list_order_mix) values('$campaign_id','$campaign_name','$campaign_description','$active','NEW','DOWN','$park_ext','$park_file_name','" . mysql_real_escape_string($web_form_address) . "','$allow_closers','$hopper_level','$auto_dial_level','$next_agent_call','$local_call_time','$voicemail_ext','$script_id','$get_call_launch','$SQLdate','Y','DISABLED');";
 				$rslt=mysql_query($stmt, $link);
 
-				$stmt="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+				$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
+				$rslt=mysql_query($stmtA, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
-
-				echo "<!-- $stmt -->";
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ  |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
-
 				}
 			}
 		}
-$ADD=31;
-}
+	$ADD=31;
+	}
 
 ######################
 # ADD=20 adds copied new campaign to the system
 ######################
 
 if ($ADD==20)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -4917,7 +6970,7 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,safe_harbor_message,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
@@ -4935,27 +6988,24 @@ if ($ADD==20)
 			$stmtA="INSERT INTO vicidial_pause_codes (pause_code,pause_code_name,billable,campaign_id) SELECT pause_code,pause_code_name,billable,\"$campaign_id\" from vicidial_pause_codes where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmtA, $link);
 
-			echo "<!-- $stmt -->";
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|COPY TO NEW CAMPAIGN|$PHP_AUTH_USER|$ip|$campaign_id|$source_campaign_id|$stmt|$stmtA|\n");
-				fclose($fp);
-				}
-
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='COPY', record_id='$campaign_id', event_code='ADMIN COPY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=31;
-}
+	$ADD=31;
+	}
 
 ######################
 # ADD=22 adds the new campaign status to the system
 ######################
 
 if ($ADD==22)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaign_statuses where campaign_id='$campaign_id' and status='$status';";
 	$rslt=mysql_query($stmt, $link);
@@ -4984,19 +7034,19 @@ if ($ADD==22)
 				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) values('$status','$status_name','$selectable','$campaign_id','$human_answered','$category');";
 				$rslt=mysql_query($stmt, $link);
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ STATUS |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_STATUS', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ STATUS', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-$SUB=22;
-$ADD=31;
-}
+	$SUB=22;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5004,7 +7054,7 @@ $ADD=31;
 ######################
 
 if ($ADD==23)
-{
+	{
 	$HKstatus_data = explode('-----',$HKstatus);
 	$status = $HKstatus_data[0];
 	$status_name = $HKstatus_data[1];
@@ -5030,18 +7080,18 @@ if ($ADD==23)
 			$stmt="INSERT INTO vicidial_campaign_hotkeys values('$status','$hotkey','$status_name','$selectable','$campaign_id');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΑΣ ΕΚΣΤΡΑΤΕΙΑΣ HOT KEY |$PHP_AUTH_USER|$ip|'$status','$hotkey','$status_name','$selectable','$campaign_id'|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_HOTKEY', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ HOTKEY', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status|HotKey: $hotkey';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$SUB=23;
-$ADD=31;
-}
+	$SUB=23;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5049,7 +7099,7 @@ $ADD=31;
 ######################
 
 if ($ADD==25)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lead_recycle where campaign_id='$campaign_id' and status='$status';";
@@ -5059,11 +7109,11 @@ if ($ADD==25)
 		{echo "<br>ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΙΘΕΜΕΝΟΣ - υπάρχει ήδη έναςμόλυβδος-ανακύκλωσης για αυτήν την εκστρατεία με αυτήν την θέση\n";}
 	else
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) or ($attempt_delay < 120) or ($attempt_maximum < 1) or ($attempt_maximum > 10) )
+		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) or ($attempt_delay < 120) or ($attempt_delay >= 43200) or ($attempt_maximum < 1) or ($attempt_maximum > 10) )
 			{
 			 echo "<br>ΑΝΑΚΥΚΛΩΣΗΣ ΜΟΛΥΒΔΟΥ ΕΚΣΤΡΑΤΕΙΑΣ ΠΡΟΣΤΙΘΕΜΕΝΟΣ - παρακαλώ επιστρέψτεκαι εξετάστε τα στοιχεία που εισαγάγατε\n";
 			 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
-			 echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα\n";
+			 echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα και λιγότερο από 43.200 δευτερολέπτων ή 12 ωρών\n";
 			 echo "<br>οι μέγιστες προσπάθειες πρέπει να είναι από 1 έως 10\n";
 			}
 		 else
@@ -5073,18 +7123,18 @@ if ($ADD==25)
 			$stmt="INSERT INTO vicidial_lead_recycle(campaign_id,status,attempt_delay,attempt_maximum,active) values('$campaign_id','$status','$attempt_delay','$attempt_maximum','$active');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW LEAD RECYCLE    |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_RECYCLE', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ LEAD RECYCLE', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$SUB=25;
-$ADD=31;
-}
+	$SUB=25;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5092,7 +7142,7 @@ $ADD=31;
 ######################
 
 if ($ADD==26)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
@@ -5120,18 +7170,18 @@ if ($ADD==26)
 			$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A AUTO-ALT-DIAL STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_ALTDIAL', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ ALT DIAL', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$auto_alt_dial_statuses';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$SUB=26;
-$ADD=31;
-}
+	$SUB=26;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5139,7 +7189,7 @@ $ADD=31;
 ######################
 
 if ($ADD==27)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
 	$rslt=mysql_query($stmt, $link);
@@ -5152,7 +7202,7 @@ if ($ADD==27)
 			{
 			 echo "<br>ΚΩΔΙΚΑΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΠΡΟΣΤΙΘΕΜΕΝΟΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
 			 echo "<br>pause code must be between 1 and 6 characters in length\n";
-			 echo "<br>pause code name must be between 2 and 30 characters in length\n";
+			 echo "<br>pause κωδικό όνομα πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες\n";
 			}
 		 else
 			{
@@ -5161,18 +7211,18 @@ if ($ADD==27)
 			$stmt="INSERT INTO vicidial_pause_codes(campaign_id,pause_code,pause_code_name,billable) values('$campaign_id','$pause_code','$pause_code_name','$billable');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW ΧΕΙΡΙΣΤΗΣPAUSE CODE|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_PAUSECODE', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ PAUSE CODE', event_sql=\"$SQL_log\", event_notes='Κώδικας μικρής διακοπής: $pause_code';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$SUB=27;
-$ADD=31;
-}
+	$SUB=27;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5180,7 +7230,7 @@ $ADD=31;
 ######################
 
 if ($ADD==28)
-{
+	{
 	$status = eregi_replace("-----.*",'',$status);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
@@ -5208,18 +7258,18 @@ if ($ADD==28)
 			$stmt="UPDATE vicidial_campaigns set dial_statuses='$dial_statuses' where campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ DIAL STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_DIALSTATUS', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ DIAL STATUS', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$statuses';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-#$SUB=28;
-$ADD=31;
-}
+	#$SUB=28;
+	$ADD=31;
+	}
 
 
 ######################
@@ -5227,7 +7277,7 @@ $ADD=31;
 ######################
 
 if ($ADD==211)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lists where list_id='$list_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5250,17 +7300,17 @@ if ($ADD==211)
 			$stmt="INSERT INTO vicidial_lists (list_id,list_name,campaign_id,active,list_description,list_changedate) values('$list_id','$list_name','$campaign_id','$active','$list_description','$SQLdate');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW LIST      |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='ADD', record_id='$list_id', event_code='ADMIN ADD LIST', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=311;
-}
+	$ADD=311;
+	}
 
 
 
@@ -5269,7 +7319,7 @@ $ADD=311;
 ######################
 
 if ($ADD==2111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5296,20 +7346,23 @@ if ($ADD==2111)
 				$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch) values('$group_id','$group_name','$group_color','$active','" . mysql_real_escape_string($web_form_address) . "','$voicemail_ext','$next_agent_call','$fronter_display','$script_id','$get_call_launch');";
 				$rslt=mysql_query($stmt, $link);
 
+				$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$group_id');";
+				$rslt=mysql_query($stmtA, $link);
+
 				echo "<br><B>ΟΜΑΔΑ ΠΡΟΣΤΕΘΗΚΕ: $group_id</B>\n";
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ADD A NEW GROUP     |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='ADD', record_id='$group_id', event_code='ADMIN ADD Εισερχόμενα GROUP', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-$ADD=3111;
-}
+	$ADD=3111;
+	}
 
 
 ######################
@@ -5317,7 +7370,7 @@ $ADD=3111;
 ######################
 
 if ($ADD==2011)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_inbound_groups where group_id='$group_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5334,22 +7387,118 @@ if ($ADD==2011)
 			}
 		 else
 			{
-			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_message,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group from vicidial_inbound_groups where group_id=\"$source_group_id\";";
+			$stmt="INSERT INTO vicidial_inbound_groups (group_id,group_name,group_color,active,web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias) SELECT \"$group_id\",\"$group_name\",group_color,\"N\",web_form_address,voicemail_ext,next_agent_call,fronter_display,ingroup_script,get_call_launch,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,drop_call_seconds,drop_action,drop_exten,call_time_id,after_hours_action,after_hours_message_filename,after_hours_exten,after_hours_voicemail,welcome_message_filename,moh_context,onhold_prompt_filename,prompt_interval,agent_alert_exten,agent_alert_delay,default_xfer_group,queue_priority,drop_inbound_group,ingroup_recording_override,ingroup_rec_filename,afterhours_xfer_group,qc_enabled,qc_statuses,qc_shift_id,qc_get_record_launch,qc_show_recording,qc_web_form_address,qc_script,play_place_in_line,play_estimate_hold_time,hold_time_option,hold_time_option_seconds,hold_time_option_exten,hold_time_option_voicemail,hold_time_option_xfer_group,hold_time_option_callback_filename,hold_time_option_callback_list_id,hold_recall_xfer_group,no_delay_call_route,play_welcome_message,answer_sec_pct_rt_stat_one,answer_sec_pct_rt_stat_two,default_group_alias from vicidial_inbound_groups where group_id=\"$source_group_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΟΜΑΔΑ ΠΡΟΣΤΕΘΗΚΕ: $group_id</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='COPY', record_id='$group_id', event_code='ADMIN ΕΙΣΕΡΧΟΜΕΝΗ ΟΜΑΔΑ ΑΝΤΙΓΡΑΦΩΝ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=3111;
+	}
+
+
+######################
+# ADD=2311 adds the new did to the system
+######################
+
+if ($ADD==2311)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ - υπάρχει ήδη μια DID στο σύστημα με αυτό το ID\n";}
+	else
+		{
+		$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ - υπάρχει ήδη μια DID στο σύστημα με την παράταση αυτή\n";}
+		else
+			{
+			 if ( (strlen($did_pattern) < 2) or (eregi(' ',$did_pattern)) or (eregi('-',$did_pattern)) or (eregi("\+",$did_pattern)) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|COPIED TO NEW GROUP |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				 echo "<br>Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				 echo "<br>DID Extension must be between 2 and 20 characters in length and contain no ' -+'.\n";
+				}
+			 else
+				{
+				$stmt="INSERT INTO vicidial_inbound_dids (did_pattern,did_description) values('$did_pattern','$did_description');";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$did_pattern';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				$did_id = $row[0];
+
+				echo "<br><B>DID ADDED: $did_pattern $did_description    - $did_id</B>\n";
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='DIDS', event_type='ADD', record_id='$did_id', event_code='ADMIN ADD DID', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-$ADD=3111;
-}
+	$ADD=3311;
+	}
+
+
+######################
+# ADD=2411 adds copied did to the system
+######################
+
+if ($ADD==2411)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_inbound_dids where did_pattern='$did_pattern';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ - υπάρχει ήδη μια DID στο σύστημα με την παράταση αυτή\n";}
+	else
+		{
+		 if ( (strlen($source_did) < 1) or (strlen($did_pattern) < 1) or (eregi(' ',$source_did)) or (eregi(' ',$did_pattern)) or (eregi("\+",$source_did)) )
+			{
+			 echo "<br>Δέν ΠΡΟΣΤΙΘΕΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>DID Extension must be between 2 and 20 characters in length and contain no ' -+'.\n";
+			}
+		 else
+			{
+			$stmt="INSERT INTO vicidial_inbound_dids (did_pattern,did_description,did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup,group_id,call_handle_method,agent_search_method,list_id,campaign_id,phone_code) SELECT \"$did_pattern\",\"$did_description\",did_active,did_route,extension,exten_context,voicemail_ext,phone,server_ip,user,user_unavailable_action,user_route_settings_ingroup,group_id,call_handle_method,agent_search_method,list_id,campaign_id,phone_code from vicidial_inbound_dids where did_id=\"$source_did\";";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmt="SELECT did_id from vicidial_inbound_dids where did_pattern='$did_pattern';";
+			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			$did_id = $row[0];
+
+			echo "<br><B>DID ADDED: $did_pattern     - $did_id</B>\n";
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='DIDS', event_type='COPY', record_id='$did_id', event_code='ADMIN ΑΝΤΙΤΥΠΟ DID', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=3311;
+	}
 
 
 ######################
@@ -5357,7 +7506,7 @@ $ADD=3111;
 ######################
 
 if ($ADD==21111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_remote_agents where server_ip='$server_ip' and user_start='$user_start';";
 	$rslt=mysql_query($stmt, $link);
@@ -5378,24 +7527,24 @@ if ($ADD==21111)
 
 			echo "<br><B>ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΠΡΟΣΤΕΘΗΚΑΝ: $user_start</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ENTRY     |$PHP_AUTH_USER|$ip|'$user_start','$number_of_lines','$server_ip','$conf_exten','$status','$campaign_id','$groups_value'|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='REMOTEAGENTS', event_type='ADD', record_id='$user_start', event_code='ADMIN ADD REMOTE AGENT', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=10000;
-}
+	$ADD=10000;
+	}
 
 ######################
 # ADD=211111 adds new user group to the system
 ######################
 
 if ($ADD==211111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_user_groups where user_group='$user_group';";
 	$rslt=mysql_query($stmt, $link);
@@ -5416,24 +7565,100 @@ if ($ADD==211111)
 
 			echo "<br><B>ΟΜΑΔΑ ΧΡΗΣΤΗ ΠΡΟΣΤΕΘΗΚΕ: $user_group</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='USERGROUPS', event_type='ADD', record_id='$user_group', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΟΜΑΔΑΣ ΧΡΗΣΤΗ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			###############################################################
+			##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+			$rslt=mysql_query($stmt, $link);
+			if ($DB) {echo "$stmt\n";}
+			$ss_conf_ct = mysql_num_rows($rslt);
+			if ($ss_conf_ct > 0)
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ΠΡΟΣΘΗΚΗ ΝΕΟΥ ΧΡΗΣΤΗ GROUP ENTRY     |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				$row=mysql_fetch_row($rslt);
+				$enable_vtiger_integration =	$row[0];
+				$vtiger_server_ip	=			$row[1];
+				$vtiger_dbname =				$row[2];
+				$vtiger_login =					$row[3];
+				$vtiger_pass =					$row[4];
+				$vtiger_url =					$row[5];
+				}
+			##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+			#############################################################
+
+			if ($enable_vtiger_integration > 0)
+				{
+				### connect to your vtiger database
+				$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+				if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+				echo 'Connected successfully';
+				mysql_select_db("$vtiger_dbname", $linkV);
+
+				######################################
+				##### BEGIN Add/Update group info in Vtiger
+				$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$group_found_count = $row[0];
+
+				### group exists in vtiger, update it
+				if ($group_found_count > 0)
+					{
+					$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+					$rslt=mysql_query($stmt, $linkV);
+					if ($DB) {echo "$stmt\n";}
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					$row=mysql_fetch_row($rslt);
+					$groupid = $row[0];
+					}
+
+				### user doesn't exist in vtiger, insert it
+				else
+					{
+					#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+					# Get next available id from vtiger_groups_seq to use as groupid
+					$stmt="SELECT id from vtiger_groups_seq;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					$row=mysql_fetch_row($rslt);
+					$groupid = ($row[0] + 1);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					# Increase next available groupid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='$group_name';";
+					if ($DB) {echo "|$stmtA|\n";}
+					$rslt=mysql_query($stmtA, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					#### END CREATE NEW GROUP RECORD IN VTIGER
+					}
+				##### END Add/Update group info in Vtiger
+				######################################
 				}
 			}
 		}
-$ADD=100000;
-}
+	$ADD=100000;
+	}
 
 ######################
 # ADD=2111111 adds new script to the system
 ######################
 
 if ($ADD==2111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_scripts where script_id='$script_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5454,17 +7679,17 @@ if ($ADD==2111111)
 
 			echo "<br><B>Ο ΒΟΗΘΟΣ ΠΡΟΣΤΕΘΗΚΕ: $script_id</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW SCRIPT ENTRY         |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΒΟΗΘΟΙ', event_type='ADD', record_id='$script_id', event_code='ADMIN ΠΡΟΣΘΕΣΕ ΒΟΗΘΟ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=1000000;
-}
+	$ADD=1000000;
+	}
 
 
 ######################
@@ -5472,7 +7697,7 @@ $ADD=1000000;
 ######################
 
 if ($ADD==21111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_lead_filters where lead_filter_id='$lead_filter_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5493,17 +7718,17 @@ if ($ADD==21111111)
 
 			echo "<br><B>ΤΟ ΦΙΛΤΡΟ ΠΡΟΣΤΕΘΗΚΕ: $lead_filter_id</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW FILTER ENTRY         |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΦΙΛΤΡΑ', event_type='ADD', record_id='$lead_filter_id', event_code='ADMIN ΠΡΟΣΘΕΣΕ ΦΙΛΤΡΟ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=10000000;
-}
+	$ADD=10000000;
+	}
 
 
 ######################
@@ -5511,7 +7736,7 @@ $ADD=10000000;
 ######################
 
 if ($ADD==211111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_call_times where call_time_id='$call_time_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5532,17 +7757,17 @@ if ($ADD==211111111)
 
 			echo "<br><B>ΠΡΟΣΘΗΚΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ: $call_time_id</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW CALL TIME ENTRY      |$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES', event_type='ADD', record_id='$call_time_id', event_code='ADMIN ADD CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=311111111;
-}
+	$ADD=311111111;
+	}
 
 
 ######################
@@ -5550,7 +7775,7 @@ $ADD=311111111;
 ######################
 
 if ($ADD==2111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_state_call_times where state_call_time_id='$call_time_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5571,17 +7796,66 @@ if ($ADD==2111111111)
 
 			echo "<br><B>ΠΡΟΣΘΗΚΗ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ: $call_time_id</B>\n";
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW STATE CALL TIME ENTRY|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES_STATE', event_type='ADD', record_id='$call_time_id', event_code='ADMIN ADD STATE CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=3111111111;
-}
+	$ADD=3111111111;
+	}
+
+
+######################
+# ADD=231111111 adds new shift definition to the system
+######################
+
+if ($ADD==231111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_shifts where shift_id='$shift_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>SHIFT ΟΡΙΣΜΟΣ δεν προστίθενται - υπάρχει ήδη μια μετατόπιση προς την παρούσα θέση ID\n";}
+	else
+		{
+		$shift_length_test = eregi_replace(':','',$shift_length);
+		 if ( (strlen($shift_id) < 2) or (strlen($shift_name) < 2) or (strlen($shift_start_time) < 4) or (strlen($shift_start_time) > 4) or (strlen($shift_length) < 5) or (strlen($shift_length) > 5) or ($shift_start_time > 2359) or ($shift_length_test > 2400) )
+			{
+			 echo "<br>SHIFT ΟΡΙΣΜΟΣ δεν προστίθενται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>ID Shift και το όνομα πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+			 echo "<br>Shift ώρα έναρξης πρέπει να είναι 4 ψηφία στο μήκος και να είναι μια έγκυρη ώρα\n";
+			 echo "<br>Shift Μήκος 5 χαρακτήρες πρέπει να είναι σε μήκος και να είναι 24 ώρες ή λιγότερο\n";
+			 }
+		 else
+			{
+			$p=0;
+			$shift_weekdays_ct = count($shift_weekdays);
+			while ($p <= $shift_weekdays_ct)
+				{
+				$SHIFT_weekdays .= "$shift_weekdays[$p]";
+				$p++;
+				}
+			$stmt="INSERT INTO vicidial_shifts SET shift_id='$shift_id',shift_name='$shift_name',shift_start_time='$shift_start_time',shift_length='$shift_length',shift_weekdays='$SHIFT_weekdays';";
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>SHIFT ΠΡΟΣΤΙΘΕΜΕΝΗ:$shift_id</B>\n";
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SHIFTS', event_type='ADD', record_id='$shift_id', event_code='ADMIN ADD SHIFT', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=331111111;
+	}
 
 
 ######################
@@ -5589,8 +7863,7 @@ $ADD=3111111111;
 ######################
 
 if ($ADD==21111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from phones where extension='$extension' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -5599,18 +7872,127 @@ echo "<TABLE><TR><TD>\n";
 		{echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - υπάρχει ήδη ένα τηλέφωνο με αυτή την εσωτ.σύνδεση/διακομιστή\n";}
 	else
 		{
-		 if ( (strlen($extension) < 1) or (strlen($server_ip) < 7) or (strlen($dialplan_number) < 1) or (strlen($voicemail_id) < 1) or (strlen($login) < 1)  or (strlen($pass) < 1))
-			{echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";}
-		 else
+		$stmt="SELECT count(*) from phones where login='$login';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>PHONE NOT ADDED - υπάρχει ήδη ένα τηλέφωνο στο σύστημα με αυτή τη σύνδεση\n";}
+		else
 			{
-			echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΠΡΟΣΤΕΘΗΚΕ\n";
-
-			$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
+			$stmt="SELECT count(*) from phones_alias where alias_id='$login';";
 			$rslt=mysql_query($stmt, $link);
+			$row=mysql_fetch_row($rslt);
+			if ($row[0] > 0)
+				{echo "<br>PHONE NOT ADDED - υπάρχει ήδη ένα τηλέφωνο άλλως στο σύστημα με αυτή τη σύνδεση\n";}
+			else
+				{
+				 if ( (strlen($extension) < 1) or (strlen($server_ip) < 7) or (strlen($dialplan_number) < 1) or (strlen($voicemail_id) < 1) or (strlen($login) < 1)  or (strlen($pass) < 1))
+					{echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΠΡΟΣΤΕΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";}
+				 else
+					{
+					echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΠΡΟΣΤΕΘΗΚΕ\n";
+
+					$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = ereg_replace(';','',$SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONES', event_type='ADD', record_id='$extension', event_code='ADMIN ADD PHONE', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					}
+				}
 			}
 		}
-$ADD=31111111111;
-}
+	$ADD=31111111111;
+	}
+
+
+######################
+# ADD=22111111111 adds new phone alias to the system
+######################
+
+if ($ADD==22111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>PHONE ALIAS δεν προστίθενται - υπάρχει ήδη ένα τηλέφωνο Γνωστός στο σύστημα με αυτό το ID\n";}
+	else
+		{
+		$stmt="SELECT count(*) from phones where login='$alias_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] > 0)
+			{echo "<br>PHONE ALIAS δεν προστίθενται - υπάρχει ήδη μια Τηλέφωνο Σύνδεση στο σύστημα με αυτό το ID\n";}
+		else
+			{
+			 if ( (strlen($alias_id) < 1) or (strlen($alias_name) < 2) )
+				{echo "<br>PHONE ALIAS δεν προστίθενται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+			 else
+				{
+				echo "<br>PHONE ALIAS ΠΡΟΣΤΙΘΕΜΕΝΗ\n";
+
+				$stmt="INSERT INTO phones_alias (alias_id,alias_name,logins_list) values('$alias_id','$alias_name','$logins_list');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONEALIASES', event_type='ADD', record_id='$alias_id', event_code='ADMIN ADD PHONE ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			}
+		}
+	$ADD=32111111111;
+	}
+
+
+######################
+# ADD=23111111111 adds new group alias to the system
+######################
+
+if ($ADD==23111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>ΟΜΑΔΑ ALIAS δεν προστίθενται - υπάρχει ήδη ένα τηλέφωνο Γνωστός στο σύστημα με αυτό το ID\n";}
+	else
+		{
+		if (preg_match("/AGENT_PHONE|CUSTOMER|CAMPAIGN|NONE/",$group_alias_id))
+			{echo "<br>ΟΜΑΔΑ ALIAS δεν προστίθενται - δεν μπορείτε να χρησιμοποιήσετε τις δεσμευμένες λέξεις της ομάδας ψευδώνυμα\n";}
+		else
+			{
+			 if ( (strlen($group_alias_id) < 1) or (strlen($group_alias_name) < 2) )
+				{echo "<br>ΟΜΑΔΑ ALIAS δεν προστίθενται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+			 else
+				{
+				echo "<br>ΟΜΑΔΑ ALIAS ΠΡΟΣΤΙΘΕΜΕΝΗ\n";
+
+				$stmt="INSERT INTO groups_alias (group_alias_id,group_alias_name,caller_id_number,caller_id_name,active) values('$group_alias_id','$group_alias_name','$caller_id_number','$caller_id_name','$active');";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='GROUPALIASES', event_type='ADD', record_id='$group_alias_id', event_code='ADMIN ADD GROUP ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			}
+		}
+	$ADD=33111111111;
+	}
 
 
 ######################
@@ -5618,8 +8000,7 @@ $ADD=31111111111;
 ######################
 
 if ($ADD==211111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from servers where server_id='$server_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5636,10 +8017,18 @@ echo "<TABLE><TR><TD>\n";
 
 			$stmt="INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_version) values('$server_id','$server_description','$server_ip','$active','$asterisk_version');";
 			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERS', event_type='ADD', record_id='$server_id', event_code='ADMIN ADD SERVER', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=311111111111;
-}
+	$ADD=311111111111;
+	}
 
 
 ######################
@@ -5647,7 +8036,7 @@ $ADD=311111111111;
 ######################
 
 if ($ADD==221111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT max_vicidial_trunks from servers where server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -5686,18 +8075,90 @@ if ($ADD==221111111111)
 				$stmt="INSERT INTO vicidial_server_trunks(server_ip,campaign_id,dedicated_trunks,trunk_restriction) values('$server_ip','$campaign_id','$dedicated_trunks','$trunk_restriction');";
 				$rslt=mysql_query($stmt, $link);
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ADD A NEW VICIDIAL TRUNK  |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERS_TRUNK', event_type='ADD', record_id='$server_ip', event_code='ADMIN ADD ΔΙΑΚΟΜΙΣΤΗΣ TRUNK', event_sql=\"$SQL_log\", event_notes='campaign: $campaign_id';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-$ADD=311111111111;
-}
+	$ADD=311111111111;
+	}
+
+
+######################
+# ADD=231111111111 adds new conf template to the system
+######################
+
+if ($ADD==231111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_conf_templates where template_id='$template_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>ΠΙΣΤ TEMPLATE δεν προστίθενται - υπάρχει ήδη ένα πρότυπο σε αυτό το σύστημα, με αυτό το ID\n";}
+	else
+		{
+		 if (strlen($template_id) < 2)
+			{echo "<br>ΠΙΣΤ TEMPLATE δεν προστίθενται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+		 else
+			{
+			echo "<br>ΠΙΣΤ TEMPLATE ΠΡΟΣΤΙΘΕΜΕΝΗ\n";
+
+			$stmt="INSERT INTO vicidial_conf_templates (template_id,template_name,template_contents) values('$template_id','$template_name','$template_contents');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CONFTEMPLATES', event_type='ADD', record_id='$template_id', event_code='ADMIN ADD CONF TEMPLATE', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=331111111111;
+	}
+
+
+######################
+# ADD=241111111111 adds new server carrier to the system
+######################
+
+if ($ADD==241111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_server_carriers where carrier_id='$carrier_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>ΘΑΛΑΜΙΣΚΟ δεν προστίθενται - υπάρχει ήδη ένα μεταφορέα στο σύστημα με αυτό το ID\n";}
+	else
+		{
+		 if ( (strlen($carrier_id) < 2) or (strlen($server_ip) < 7) )
+			{echo "<br>ΘΑΛΑΜΙΣΚΟ δεν προστίθενται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+		 else
+			{
+			echo "<br>CARRIER ADDED\n";
+
+			$stmt="INSERT INTO vicidial_server_carriers (carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active) values('$carrier_id','$carrier_name','$registration_string','$template_id','$account_entry','$protocol','$globals_string','$dialplan_entry','$server_ip','N');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CARRIERS', event_type='ADD', record_id='$carrier_id', event_code='ADMIN ADD CARRIER', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=341111111111;
+	}
 
 
 ######################
@@ -5705,8 +8166,7 @@ $ADD=311111111111;
 ######################
 
 if ($ADD==2111111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from conferences where conf_exten='$conf_exten' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -5725,8 +8185,8 @@ echo "<TABLE><TR><TD>\n";
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=3111111111111;
-}
+	$ADD=3111111111111;
+	}
 
 
 ######################
@@ -5734,8 +8194,7 @@ $ADD=3111111111111;
 ######################
 
 if ($ADD==21111111111111)
-{
-echo "<TABLE><TR><TD>\n";
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_conferences where conf_exten='$conf_exten' and server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
@@ -5754,8 +8213,8 @@ echo "<TABLE><TR><TD>\n";
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=31111111111111;
-}
+	$ADD=31111111111111;
+	}
 
 
 ######################
@@ -5763,8 +8222,7 @@ $ADD=31111111111111;
 ######################
 
 if ($ADD==221111111111111)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_campaign_statuses where status='$status';";
 	$rslt=mysql_query($stmt, $link);
@@ -5793,18 +8251,18 @@ if ($ADD==221111111111111)
 				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered,category) values('$status','$status_name','$selectable','$human_answered','$category');";
 				$rslt=mysql_query($stmt, $link);
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|ADD A NEW SYSTEM STATUS   |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SYSTEMSTATUSES', event_type='ADD', record_id='$status', event_code='ADMIN ADD SYSTEM STATUS', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-$ADD=321111111111111;
-}
+	$ADD=321111111111111;
+	}
 
 
 ######################
@@ -5812,8 +8270,7 @@ $ADD=321111111111111;
 ######################
 
 if ($ADD==231111111111111)
-{
-
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 	$stmt="SELECT count(*) from vicidial_status_categories where vsc_id='$vsc_id';";
 	$rslt=mysql_query($stmt, $link);
@@ -5830,7 +8287,7 @@ if ($ADD==231111111111111)
 			}
 		 else
 			{
-			echo "<br><B>STATUS CATEGORY ADDED: $vsc_id - $vsc_name</B>\n";
+			echo "<br><B>STATUS ΚΑΤΗΓΟΡΙΑ ADDED: $vsc_id - $vsc_name</B>\n";
 
 			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
 			$rslt=mysql_query($stmt, $link);
@@ -5841,20 +8298,61 @@ if ($ADD==231111111111111)
 				echo "<br><B>ΛΑΘΟΣ: Υπάρχουν ήδη 4 κατηγορίες θέσης καθορισμένες την επίδειξηTimeOnVDAD</B>\n";
 				}
 
-			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display');";
+			$stmt="INSERT INTO vicidial_status_categories (vsc_id,vsc_name,vsc_description,tovdad_display,sale_category,dead_lead_category) values('$vsc_id','$vsc_name','$vsc_description','$tovdad_display','$sale_category','$dead_lead_category');";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ADD A NEW STATUS CATEGORY |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='STATUSCATEGORIES', event_type='ADD', record_id='$vsc_id', event_code='ADMIN ADD STATUS ΚΑΤΗΓΟΡΙΑ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-$ADD=331111111111111;
-}
+	$ADD=331111111111111;
+	}
+
+
+
+######################
+# ADD=241111111111111 adds the new qc status code to the system
+######################
+
+if ($ADD==241111111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	$stmt="SELECT count(*) from vicidial_qc_codes where code='$code';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	if ($row[0] > 0)
+		{echo "<br>QC Κατάσταση ΚΩΔΙΚΟΣ δεν προστίθενται- υπάρχει ήδη μια qc κωδικό στο σύστημα με αυτό το όνομα: $row[0]\n";}
+	else
+		{
+		 if ( (strlen($code) < 1) or (strlen($code_name) < 2) )
+			{
+			 echo "<br>QC Κατάσταση ΚΩΔΙΚΟΣ δεν προστίθενται- Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>κωδικός πρέπει να είναι μεταξύ 1 και 8 χαρακτήρες\n";
+			 echo "<br>κωδικό όνομα πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες\n";
+			}
+		 else
+			{
+			echo "<br><B>QC Κατάσταση ΠΡΟΣΤΙΘΕΝΤΑΙ ΚΩΔΙΚΟΣ:$code_name - $code</B>\n";
+
+			$stmt="INSERT INTO vicidial_qc_codes (code,code_name) values('$code','$code_name');";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='QCSTATUSES', event_type='ADD', record_id='$code', event_code='ADMIN ADD QC STATUS', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	$ADD=341111111111111;
+	}
 
 
 
@@ -5883,20 +8381,211 @@ if ($ADD=="4A")
 		}
 	 else
 		{
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$closer_default_blended =	'0';
+			$delete_filters =			'0';
+			$load_leads =				'0';
+			}
 		echo "<br><B>ΧΡΗΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override',export_reports='$export_reports' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='MODIFY', record_id='$user', event_code='ADMIN MODIFY USER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
 			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Ενεργό';
+			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+			##### END Add/Update user info in Vtiger
+			######################################
+			}
+		### END vtiger integration
+
 		}
 	}
 	else
@@ -5925,18 +8614,211 @@ if ($ADD=="4B")
 		}
 	 else
 		{
+		if ($SSoutbound_autodial_active < 1)
+			{
+			$closer_default_blended =	'0';
+			$delete_filters =			'0';
+			$load_leads =				'0';
+			}
 		echo "<br><B>ΧΡΗΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active',agent_shift_enforcement_override='$agent_shift_enforcement_override' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='MODIFY', record_id='$user', event_code='ADMIN MODIFY USER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
 			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Ενεργό';
+			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+			##### END Add/Update user info in Vtiger
+			######################################
+			}
+		### END vtiger integration
+
 		}
 	}
 	else
@@ -5968,16 +8850,203 @@ if ($ADD==4)
 		{
 		echo "<br><B>ΧΡΗΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',active='$active' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='MODIFY', record_id='$user', event_code='ADMIN MODIFY USER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER INFO    |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
 			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$user_name =		$user;
+			$user_password =	$pass;
+			$last_name =		$full_name;
+			$is_admin =			'off';
+			$roleid =			'H5';
+			$status =			'Ενεργό';
+			$groupid =			'1';
+				if ($user_level >= 7) {$roleid = 'H3';}
+				if ($user_level >= 8) {$roleid = 'H4';}
+				if ($user_level >= 9) {$roleid = 'H2';}
+				if ($user_level >= 9) {$is_admin = 'on';}
+			$salt = substr($user_name, 0, 2);
+			$salt = '$1$' . $salt . '$';
+			$encrypted_password = crypt($user_password, $salt);
+
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
+
+			######################################
+			##### BEGIN Add/Update user info in Vtiger
+			$stmt="SELECT count(*) from vtiger_users where user_name='$user_name';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$found_count = $row[0];
+
+			### user exists in vtiger, update it
+			if ($found_count > 0)
+				{
+				$stmt="SELECT id from vtiger_users where user_name='$user_name';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$userid = $row[0];
+
+				$stmt="SELECT count(*) from vtiger_users2group WHERE userid='$userid' and groupid='$groupid';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$usergroupcount = $row[0];
+
+				$stmtA = "UPDATE vtiger_users SET user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status' where id='$userid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtB = "UPDATE vtiger_user2role SET roleid='$roleid' where userid='$userid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				if ($usergroupcount < 1)
+					{
+					$stmt="SELECT user_group FROM vicidial_user_groups;";
+					$rslt=mysql_query($stmt, $link);
+					if ($DB) {echo "$stmt\n";}
+					$VD_groups_ct = mysql_num_rows($rslt);
+					$k=0;
+					$VD_groups_list='';
+					while ($k < $VD_groups_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$VD_groups_list .= "'$row[0]',";
+						$k++;
+						}
+					$VD_groups_list = preg_replace("/.$/",'',$VD_groups_list);
+
+					$stmtC = "DELETE FROM vtiger_users2group WHERE userid='$userid' and groupid IN(SELECT groupid from vtiger_groups where groupname IN($VD_groups_list));";
+					if ($DB) {echo "|$stmtC|\n";}
+					$rslt=mysql_query($stmtC, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+					$stmtD = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+					if ($DB) {echo "|$stmtD|\n";}
+					$rslt=mysql_query($stmtD, $linkV);
+					if (!$rslt) {die('Could not execute: ' . mysql_error());}
+					}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW USER RECORD IN VTIGER
+				$stmtA = "INSERT INTO vtiger_users SET user_name='$user_name',user_password='$encrypted_password',last_name='$last_name',is_admin='$is_admin',status='$status',date_format='yyyy-mm-dd',first_name='',reports_to_id='',description='',title='',department='',phone_home='',phone_mobile='',phone_work='',phone_other='',phone_fax='',email1='',email2='',yahoo_id='',signature='',address_street='',address_city='',address_state='',address_country='',address_postalcode='',user_preferences='',imagename='';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$userid = mysql_insert_id($linkV);
+			
+				$stmtB = "INSERT INTO vtiger_user2role SET userid='$userid',roleid='$roleid';";
+				if ($DB) {echo "|$stmtB|\n";}
+				$rslt=mysql_query($stmtB, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtC = "INSERT INTO vtiger_users2group SET userid='$userid',groupid='$groupid';";
+				if ($DB) {echo "|$stmtC|\n";}
+				$rslt=mysql_query($stmtC, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtD = "UPDATE vtiger_users_seq SET id='$userid';";
+				if ($DB) {echo "|$stmtD|\n";}
+				$rslt=mysql_query($stmtD, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW USER RECORD IN VTIGER
+				}
+			##### END Add/Update user info in Vtiger
+			######################################
+			}
+		### END vtiger integration
+
 		}
 	}
 	else
@@ -5989,90 +9058,164 @@ $ADD=3;		# go to user modification below
 }
 
 ######################
-# ADD=41 submit campaign modifications to the system
+# ADD=41 submit campaign modifications to the system - DETAIL
 ######################
 
 if ($ADD==41)
 {
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 		{
-		 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
-		 echo "<br>το όνομα της εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες\n";
-		 echo "<br>|$campaign_name|$active|\n";
-		}
-	 else
-		{
-		echo "<br><B>ΕΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $campaign_id</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		if ($dial_method == 'MANUAL') 
+		if ($SSoutbound_autodial_active < 1)
 			{
-			$auto_dial_level='0';
-			$adlSQL = "auto_dial_level='0',";
+			$adaptive_dl_diff_target =		'0';
+			$adaptive_dropped_percentage =	'99';
+			$adaptive_intensity =			'0';
+			$adaptive_latest_server_time =	'2359';
+			$adaptive_maximum_level =		'1.0';
+			$agent_extended_alt_dial =		'N';
+			$alt_number_dialing =			'N';
+			$am_message_exten =				'8300';
+			$amd_send_to_vmx =				'N';
+			$auto_alt_dial =				'N';
+			$auto_dial_level =				'1.0';
+			$available_only_ratio_tally =	'Y';
+			$campaign_allow_inbound =		'Y';
+			$campaign_vdad_exten =			'8368';
+			$concurrent_transfers =			'AUTO';
+			$dial_method =					'RATIO';
+			$dial_status =					'';
+			$dial_timeout =					'60';
+			$drop_action =					'HANGUP';
+			$drop_call_seconds =			'5';
+			$drop_inbound_group =			'---NONE---';
+			$force_reset_hopper =			'N';
+			$hopper_level =					'5';
+			$lead_filter_id =				'NONE';
+			$lead_order =					'DOWN';
+			$list_order_mix =				'DISABLED';
+			$no_hopper_leads_logins =		'Y';
+			$queue_priority =				'50';
+			$safe_harbor_exten =			'8300';
+			$survey_camp_record_dir =		'/home/survey';
+			$survey_dtmf_digits =			'1238';
+			$survey_first_audio_file =		'US_pol_survey_hello';
+			$survey_method =				'AGENT_XFER';
+			$survey_ni_audio_file =			'';
+			$survey_ni_digit =				'8';
+			$survey_ni_status =				'NI';
+			$survey_no_response_action =	'OPTIN';
+			$survey_opt_in_audio_file =		'US_pol_survey_transfer';
+			$survey_response_digit_map =	'1-DEMOCRAT|2-REPUBLICAN|3-INDEPENDANT|8-OPTOUT|X-NO RESPONSE|';
+			$survey_xfer_exten =			'8300';
+			$voicemail_ext =				'';
+			$cpd_amd_action =				'DISABLED';
+			}
+		if (ereg('list_activation',$stage))
+			{
+			$p=0;
+			echo "<BR>ΔΡΑΣΤΙΚΗΣ ΚΑΤΑΛΟΓΟΙ ΜΕΤΑΒΑΛΛΟΜΕΝΩΝ";
+			$list_active_change_ct = count($list_active_change);
+			while ($p < $list_active_change_ct)
+				{
+				$LIST_ACTIVATE .= "'$list_active_change[$p]',";
+				$p++;
+				}
+			
+			$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$rslt=mysql_query($stmtB, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|$stmtB|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE ΛΙΣΤΕΣ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			if ($DB > 0) {echo "|$stmt|\n|$stmtB|\n";}
 			}
 		else
 			{
-			if ($dial_level_override > 0)
+			 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 				{
-				$adlSQL = "auto_dial_level='$auto_dial_level',";
+				 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
+				 echo "<br>το όνομα της εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες\n";
+				 echo "<br>|$campaign_name|$active|\n";
 				}
-			else
+			 else
 				{
-				if ($dial_method == 'RATIO')
+				echo "<br><B>ΕΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $campaign_id</B>\n";
+
+				if ($dial_method == 'MANUAL') 
 					{
-					if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
-					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					$auto_dial_level='0';
+					$adlSQL = "auto_dial_level='0',";
 					}
 				else
 					{
-					$adlSQL = "";
-					if ($auto_dial_level < 1) 
+					if ($dial_level_override > 0)
 						{
-						$auto_dial_level = "1.0";
 						$adlSQL = "auto_dial_level='$auto_dial_level',";
 						}
+					else
+						{
+						if ($dial_method == 'RATIO')
+							{
+							if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
+							$adlSQL = "auto_dial_level='$auto_dial_level',";
+							}
+						else
+							{
+							$adlSQL = "";
+							if ($auto_dial_level < 1) 
+								{
+								$auto_dial_level = "1.0";
+								$adlSQL = "auto_dial_level='$auto_dial_level',";
+								}
+							}
+						}
 					}
+				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+					{$hopper_level='100';}
+
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmtA, $link);
+
+				if ($reset_hopper == 'Y')
+					{
+					echo "<br>ΕΠΑΝΑΦΟΡΑ ΚΑΘΟΘΗΓΗΤΗ ΕΚΣΤΡΑΤΕΙΑΣ HOPPER\n";
+					echo "<br> - Αναμονή 1 λεπτού πριν την κλήση του επόμενου αριθμού\n";
+					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = ereg_replace(';','',$SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
+					}
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmtA|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
-			}
-		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
-			{$hopper_level='100';}
-
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',safe_harbor_message='$safe_harbor_message',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value' where campaign_id='$campaign_id';";
-		$rslt=mysql_query($stmtA, $link);
-
-		if ($reset_hopper == 'Y')
-			{
-			echo "<br>ΕΠΑΝΑΦΟΡΑ ΚΑΘΟΘΗΓΗΤΗ ΕΚΣΤΡΑΤΕΙΑΣ HOPPER\n";
-			echo "<br> - Αναμονή 1 λεπτού πριν την κλήση του επόμενου αριθμού\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG RESET TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
-			}
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
-			fclose($fp);
 			}
 		}
-	}
-	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
-	}
+		else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6104,14 +9247,13 @@ if ($ADD==42)
 			$stmtA="DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status';";
 			$rslt=mysql_query($stmtA, $link);
 
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_STATUS', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN STATUS', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		if (ereg('modify',$stage))
 			{
@@ -6120,13 +9262,13 @@ if ($ADD==42)
 			$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where campaign_id='$campaign_id' and status='$status';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_STATUS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN STATUS', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
 	}
@@ -6163,13 +9305,13 @@ if ($ADD==43)
 		$stmt="DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE CAMPAIGN STATUS|$PHP_AUTH_USER|$ip|DELETE FROM vicidial_campaign_hotkeys where campaign_id='$campaign_id' and status='$status' and hotkey='$hotkey'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_HOTKEY', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN HOTKEY', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status|HotKey: $hotkey';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6188,76 +9330,139 @@ $ADD=31;	# go to campaign modification form below
 if ($ADD==44)
 {
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 		{
-		 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
-		 echo "<br>το όνομα της εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες\n";
-		}
-	 else
-		{
-		echo "<br><B>ΕΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $campaign_id</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		if ($dial_method == 'RATIO')
+		if ($SSoutbound_autodial_active < 1)
 			{
-			if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
-			$adlSQL = "auto_dial_level='$auto_dial_level',";
+			$adaptive_dl_diff_target =		'0';
+			$adaptive_dropped_percentage =	'99';
+			$adaptive_intensity =			'0';
+			$adaptive_latest_server_time =	'2359';
+			$adaptive_maximum_level =		'1.0';
+			$agent_extended_alt_dial =		'N';
+			$alt_number_dialing =			'N';
+			$am_message_exten =				'8300';
+			$amd_send_to_vmx =				'N';
+			$auto_alt_dial =				'N';
+			$auto_dial_level =				'1.0';
+			$available_only_ratio_tally =	'Y';
+			$campaign_allow_inbound =		'Y';
+			$campaign_vdad_exten =			'8368';
+			$concurrent_transfers =			'AUTO';
+			$dial_method =					'RATIO';
+			$dial_status =					'';
+			$dial_timeout =					'60';
+			$drop_action =					'HANGUP';
+			$drop_call_seconds =			'5';
+			$drop_inbound_group =			'---NONE---';
+			$force_reset_hopper =			'N';
+			$hopper_level =					'5';
+			$lead_filter_id =				'NONE';
+			$lead_order =					'DOWN';
+			$list_order_mix =				'DISABLED';
+			$no_hopper_leads_logins =		'Y';
+			$queue_priority =				'50';
+			$safe_harbor_exten =			'8300';
+			$voicemail_ext =				'';
+			}
+		if (ereg('list_activation',$stage))
+			{
+			$p=0;
+			echo "<BR>ΔΡΑΣΤΙΚΗΣ ΚΑΤΑΛΟΓΟΙ ΜΕΤΑΒΑΛΛΟΜΕΝΩΝ";
+			$list_active_change_ct = count($list_active_change);
+			while ($p < $list_active_change_ct)
+				{
+				$LIST_ACTIVATE .= "'$list_active_change[$p]',";
+				$p++;
+				}
+			
+			$stmt = "UPDATE vicidial_lists SET active='Y' where list_id IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$stmtB = "UPDATE vicidial_lists SET active='N' where list_id NOT IN($LIST_ACTIVATE'') and campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+			$rslt=mysql_query($stmtB, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|$stmtB|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE ΛΙΣΤΕΣ', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			if ($DB > 0) {echo "|$stmt|\n|$stmtB|\n";}
 			}
 		else
 			{
-			if ($dial_method == 'MANUAL') 
+
+			 if ( (strlen($campaign_name) < 6) or (strlen($active) < 1) )
 				{
-				$auto_dial_level='0';
-				$adlSQL = "auto_dial_level='0',";
+				 echo "<br>Η ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΘΗΚΕ - Παρακαλώ ελέγξτε τα δεδομένα που καταχωρήσατε\n";
+				 echo "<br>το όνομα της εκστρατείας πρέπει να είναι τουλάχιστον 6 χαρακτήρες\n";
 				}
-			else
+			 else
 				{
-				$adlSQL = "";
-				if ($auto_dial_level < 1) 
+				echo "<br><B>ΕΣΤΡΑΤΕΙΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $campaign_id</B>\n";
+
+				if ($dial_method == 'RATIO')
 					{
-					$auto_dial_level = "1.0";
+					if ($auto_dial_level < 1) {$auto_dial_level = "1.0";}
 					$adlSQL = "auto_dial_level='$auto_dial_level',";
+					}
+				else
+					{
+					if ($dial_method == 'MANUAL') 
+						{
+						$auto_dial_level='0';
+						$adlSQL = "auto_dial_level='0',";
+						}
+					else
+						{
+						$adlSQL = "";
+						if ($auto_dial_level < 1) 
+							{
+							$auto_dial_level = "1.0";
+							$adlSQL = "auto_dial_level='$auto_dial_level',";
+							}
+						}
+					}
+				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
+					{$hopper_level='100';}
+
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmtA, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmtA|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+
+				if ($reset_hopper == 'Y')
+					{
+					echo "<br>ΕΠΑΝΑΦΟΡΑ ΚΑΘΟΘΗΓΗΤΗ ΕΚΣΤΡΑΤΕΙΑΣ HOPPER\n";
+					echo "<br> - Αναμονή 1 λεπτού πριν την κλήση του επόμενου αριθμού\n";
+					$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
+					$rslt=mysql_query($stmt, $link);
+
+					### LOG INSERTION Admin Log Table ###
+					$SQL_log = "$stmt|";
+					$SQL_log = ereg_replace(';','',$SQL_log);
+					$SQL_log = addslashes($SQL_log);
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $link);
 					}
 				}
 			}
-		if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
-			{$hopper_level='100';}
-
-		$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',hopper_level='$hopper_level', $adlSQL lead_filter_id='$lead_filter_id',dial_method='$dial_method',adaptive_intensity='$adaptive_intensity',campaign_changedate='$SQLdate',list_order_mix='$list_order_mix' where campaign_id='$campaign_id';";
-		$rslt=mysql_query($stmtA, $link);
-
-		if ($reset_hopper == 'Y')
-			{
-			echo "<br>ΕΠΑΝΑΦΟΡΑ ΚΑΘΟΘΗΓΗΤΗ ΕΚΣΤΡΑΤΕΙΑΣ HOPPER\n";
-			echo "<br> - Αναμονή 1 λεπτού πριν την κλήση του επόμενου αριθμού\n";
-			$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id' and status IN('READY','QUEUE','DONE');;";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG HOPPER RESET TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|CAMPAIGN HOPPERRESET|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
-			}
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY CAMPAIGN INFO|$PHP_AUTH_USER|$ip|$stmtA|$reset_hopper|\n");
-			fclose($fp);
-			}
 		}
-	}
-	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
-	}
+		else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 $ADD=34;	# go to campaign modification form below
 }
 
@@ -6271,11 +9476,11 @@ if ($ADD==45)
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) or ($attempt_delay < 120)  or ($attempt_maximum < 1) or ($attempt_maximum > 10) )
+	 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) or ($attempt_delay < 120) or ($attempt_delay >= 43200) or ($attempt_maximum < 1) or ($attempt_maximum > 10) )
 		{
 		 echo "<br>CAMPAIGN LEAD RECYCLE NOT MODIFIED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
 		 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
-		 echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα\n";
+		 echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα και λιγότερο από 43.200 δευτερολέπτων ή 12 ωρών\n";
 		 echo "<br>οι μέγιστες προσπάθειες πρέπει να είναι από 1 έως 10\n";
 		}
 	 else
@@ -6285,13 +9490,13 @@ if ($ADD==45)
 		$stmt="UPDATE vicidial_lead_recycle SET attempt_delay='$attempt_delay',attempt_maximum='$attempt_maximum',active='$active' where campaign_id='$campaign_id' and status='$status';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY LEAD RECYCLE   |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_RECYCLE', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN LEAD RECYCLE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6317,7 +9522,7 @@ if ($ADD==47)
 		{
 		 echo "<br>ΚΩΔΙΚΑΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
 		 echo "<br>pause_code must be between 1 and 6 characters in length\n";
-		 echo "<br>pause_code name must be between 2 and 30 characters in length\n";
+		 echo "<br>pause_κωδικό όνομα πρέπει να είναι μεταξύ 2 και 30 χαρακτήρες\n";
 		}
 	 else
 		{
@@ -6326,13 +9531,13 @@ if ($ADD==47)
 		$stmt="UPDATE vicidial_pause_codes SET pause_code_name='$pause_code_name',billable='$billable' where campaign_id='$campaign_id' and pause_code='$pause_code';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY ΧΕΙΡΙΣΤΗΣPAUSECODE|$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_PAUSECODE', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN PAUSE CODE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6341,6 +9546,103 @@ if ($ADD==47)
 	exit;
 	}
 $SUB=27;
+$ADD=31;	# go to campaign modification form below
+}
+
+
+######################
+# ADD=48 modify campaign QC settings in the system
+######################
+if ($ADD==48)
+{
+	if ( ($LOGmodify_campaigns==1) and ($SSqc_features_active) )
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>QC SETTINGS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		}
+	 else
+		{
+		$p=0;
+		$qc_statuses_ct = count($qc_statuses);
+		while ($p < $qc_statuses_ct)
+			{
+			$QC_statuses .= " $qc_statuses[$p]";
+			$p++;
+			}
+		$p=0;
+		$qc_lists_ct = count($qc_lists);
+		while ($p < $qc_lists_ct)
+			{
+			$QC_lists .= " $qc_lists[$p]";
+			$p++;
+			}
+		
+		if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
+		if (strlen($QC_lists)>0) {$QC_lists .= " -";}
+
+		echo "<br><B>QC SETTINGS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $campaign_id</B>\n";
+
+		$stmt="UPDATE vicidial_campaigns SET qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_lists='$QC_lists',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_shift_id='$qc_shift_id' where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_QC', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN QC SETTINGS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$SUB=28;
+$ADD=31;	# go to campaign modification form below
+}
+
+
+######################
+# ADD=40A modify campaign survey settings in the system
+######################
+
+if ($ADD=='40A')
+{
+	if ($LOGmodify_campaigns==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($campaign_id) < 2)
+		{
+		 echo "<br>ΕΡΕΥΝΑ SETTINGS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		}
+	 else
+		{
+		echo "<br><B>ΕΡΕΥΝΑ SETTINGS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $campaign_id</B>\n";
+
+		$stmt="UPDATE vicidial_campaigns SET survey_first_audio_file='$survey_first_audio_file',survey_dtmf_digits='$survey_dtmf_digits',survey_ni_digit='$survey_ni_digit',survey_opt_in_audio_file='$survey_opt_in_audio_file',survey_ni_audio_file='$survey_ni_audio_file',survey_method='$survey_method',survey_no_response_action='$survey_no_response_action',survey_ni_status='$survey_ni_status',survey_response_digit_map='$survey_response_digit_map',survey_xfer_exten='$survey_xfer_exten',survey_camp_record_dir='$survey_camp_record_dir',voicemail_ext='$voicemail_ext' where campaign_id='$campaign_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_SURVEY', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN SURVEY', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$SUB='20A';
 $ADD=31;	# go to campaign modification form below
 }
 
@@ -6375,22 +9677,22 @@ if ($ADD==49)
 
 		 if ( (strlen($campaign_id) < 2) or (strlen($vcl_id) < 1) or (strlen($list_mix_container) < 6) or (strlen($vcl_name) < 2) )
 			{
-			 echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-			 echo "<br>vcl_id must be between 1 and 20 characters in length\n";
-			 echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
+			echo "<br>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>vcl_id must be between 1 and 20 characters in length\n";
+			echo "<br>vcl_name name must be between 2 and 30 characters in length\n";
 			}
 		 else
 			{
 			$stmt="UPDATE vicidial_campaigns_list_mix SET vcl_name='$vcl_name',mix_method='$mix_method',list_mix_container='$list_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN LIST MIX', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
@@ -6418,13 +9720,13 @@ if ($ADD==49)
 			$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN LIST MIX', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $list_id</B>\n";
 			}
@@ -6491,13 +9793,13 @@ if ($ADD==49)
 				$stmt="UPDATE vicidial_campaigns_list_mix SET list_mix_container='$NEWlist_mix_container' where campaign_id='$campaign_id' and vcl_id='$vcl_id';";
 				$rslt=mysql_query($stmt, $link);
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN LIST MIX', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 
 				echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΟ: $campaign_id - $vcl_id - $list_id - $mix_container_item</B>\n";
 				}
@@ -6529,13 +9831,13 @@ if ($ADD==49)
 				$stmt="INSERT INTO vicidial_campaigns_list_mix SET list_mix_container='$list_id|1|100| $status -|',campaign_id='$campaign_id',vcl_id='$vcl_id',vcl_name='$vcl_name',mix_method='$mix_method',status='INACTIVE';";
 				$rslt=mysql_query($stmt, $link);
 
-				### LOG CHANGES TO LOG FILE ###
-				if ($WeBRooTWritablE > 0)
-					{
-					$fp = fopen ("./admin_changes_log.txt", "a");
-					fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-					fclose($fp);
-					}
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='ADD', record_id='$campaign_id', event_code='ADMIN ΠΡΟΣΘΗΚΗ ΕΚΣΤΡΑΤΕΙΑΣ LIST MIX', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 
 				echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΡΟΣΤΙΘΕΜΕΝΟ:$campaign_id - $vcl_id - $vcl_name</B>\n";
 				}
@@ -6557,13 +9859,13 @@ if ($ADD==49)
 			$stmt="DELETE from vicidial_campaigns_list_mix where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN LIST MIX', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ:$campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
@@ -6587,13 +9889,13 @@ if ($ADD==49)
 			$stmt="UPDATE vicidial_campaigns_list_mix SET status='ACTIVE' where vcl_id='$vcl_id' and campaign_id='$campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY LIST MIX       |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_LISTMIX', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN LIST MIX ACTIVE', event_sql=\"$SQL_log\", event_notes='Κατάλογος Mix: $vcl_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>ΜΙΓΜΑ ΚΑΤΑΛΟΓΩΝ ΠΟΥ ΕΝΕΡΓΟΠΟΙΕΙΤΑΙ: $campaign_id - $vcl_id - $vcl_name</B>\n";
 			}
@@ -6631,33 +9933,33 @@ if ($ADD==411)
 		$stmt="UPDATE vicidial_lists set list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description',list_changedate='$SQLdate' where list_id='$list_id';";
 		$rslt=mysql_query($stmt, $link);
 
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='MODIFY', record_id='$list_id', event_code='ADMIN MODIFY LIST', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		if ($reset_list == 'Y')
 			{
 			echo "<br>ΕΠΑΝΑΦΟΡΑ ΚΑΤΑΣΤΑΣΗΣ ΚΛΗΣΗΣ ΛΙΣΤΑΣ\n";
-			$stmt="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
-			$rslt=mysql_query($stmt, $link);
+			$stmtB="UPDATE vicidial_list set called_since_last_reset='N' where list_id='$list_id';";
+			$rslt=mysql_query($stmtB, $link);
 
-			### LOG RESET TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|RESET LIST CALLED   |$PHP_AUTH_USER|$ip|list_name='$list_name'|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='RESET', record_id='$list_id', event_code='ADMIN RESET LIST', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		if ($campaign_id != "$old_campaign_id")
 			{
 			echo "<br>ΑΠΟΜΑΚΡΥΝΣΗ ΚΑΘΟΔΗΓΗΤΩΝ ΛΙΣΤΑΣ HOPPER ΑΠΟ ΠΑΛΑΙΑ HOPPER ΕΚΣΤΡΑΤΕΙΑ ($old_campaign_id)\n";
-			$stmt="DELETE from vicidial_hopper where list_id='$list_id' and campaign_id='$old_campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-			}
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY LIST INFO    |$PHP_AUTH_USER|$ip|list_name='$list_name',campaign_id='$campaign_id',active='$active',list_description='$list_description' where list_id='$list_id'|\n");
-			fclose($fp);
+			$stmtC="DELETE from vicidial_hopper where list_id='$list_id' and campaign_id='$old_campaign_id';";
+			$rslt=mysql_query($stmtC, $link);
 			}
 		}
 	}
@@ -6687,18 +9989,36 @@ if ($ADD==4111)
 		}
 	 else
 		{
+		$p=0;
+		$qc_statuses_ct = count($qc_statuses);
+		while ($p < $qc_statuses_ct)
+			{
+			$QC_statuses .= " $qc_statuses[$p]";
+			$p++;
+			}
+		$p=0;
+		$qc_lists_ct = count($qc_lists);
+		while ($p < $qc_lists_ct)
+			{
+			$QC_lists .= " $qc_lists[$p]";
+			$p++;
+			}
+		
+		if (strlen($QC_statuses)>0) {$QC_statuses .= " -";}
+		if (strlen($QC_lists)>0) {$QC_lists .= " -";}
+
 		echo "<br><B>ΟΜΑΔΑ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $group_id</B>\n";
 
-		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_message='$drop_message',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group' where group_id='$group_id';";
+		$stmt="UPDATE vicidial_inbound_groups set group_name='$group_name', group_color='$group_color', active='$active', web_form_address='" . mysql_real_escape_string($web_form_address) . "', voicemail_ext='$voicemail_ext', next_agent_call='$next_agent_call', fronter_display='$fronter_display', ingroup_script='$script_id', get_call_launch='$get_call_launch', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number', xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',drop_exten='$drop_exten',call_time_id='$call_time_id',after_hours_action='$after_hours_action',after_hours_message_filename='$after_hours_message_filename',after_hours_exten='$after_hours_exten',after_hours_voicemail='$after_hours_voicemail',welcome_message_filename='$welcome_message_filename',moh_context='$moh_context',onhold_prompt_filename='$onhold_prompt_filename',prompt_interval='$prompt_interval',agent_alert_exten='$agent_alert_exten',agent_alert_delay='$agent_alert_delay',default_xfer_group='$default_xfer_group',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',ingroup_recording_override='$ingroup_recording_override',ingroup_rec_filename='$ingroup_rec_filename',afterhours_xfer_group='$afterhours_xfer_group',qc_enabled='$qc_enabled',qc_statuses='$QC_statuses',qc_shift_id='$qc_shift_id',qc_get_record_launch='$qc_get_record_launch',qc_show_recording='$qc_show_recording',qc_web_form_address='$qc_web_form_address',qc_script='$qc_script',play_place_in_line='$play_place_in_line',play_estimate_hold_time='$play_estimate_hold_time',hold_time_option='$hold_time_option',hold_time_option_seconds='$hold_time_option_seconds',hold_time_option_exten='$hold_time_option_exten',hold_time_option_voicemail='$hold_time_option_voicemail',hold_time_option_xfer_group='$hold_time_option_xfer_group',hold_time_option_callback_filename='$hold_time_option_callback_filename',hold_time_option_callback_list_id='$hold_time_option_callback_list_id',hold_recall_xfer_group='$hold_recall_xfer_group',no_delay_call_route='$no_delay_call_route',play_welcome_message='$play_welcome_message',answer_sec_pct_rt_stat_one='$answer_sec_pct_rt_stat_one',answer_sec_pct_rt_stat_two='$answer_sec_pct_rt_stat_two',default_group_alias='$default_group_alias' where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY GROUP INFO   |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='MODIFY', record_id='$group_id', event_code='ADMIN MODIFY INGROUP', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6707,6 +10027,47 @@ if ($ADD==4111)
 	exit;
 	}
 $ADD=3111;	# go to in-group modification form below
+}
+
+
+
+######################
+# ADD=4311 modify did info in the system
+######################
+
+if ($ADD==4311)
+{
+	if ($LOGmodify_dids==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($did_id) < 1) or (strlen($did_pattern) < 1) )
+		{
+		 echo "<br>Δέν ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>did_extension must be at least 1 character in length\n";
+		}
+	 else
+		{
+		echo "<br><B>DID ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $did_pattern</B>\n";
+
+		$stmt="UPDATE vicidial_inbound_dids set did_pattern='$did_pattern',did_description='$did_description',did_active='$did_active',did_route='$did_route',extension='$extension',exten_context='$exten_context',voicemail_ext='$voicemail_ext',phone='$phone',server_ip='$server_ip',user='$user',user_unavailable_action='$user_unavailable_action',user_route_settings_ingroup='$user_route_settings_ingroup',group_id='$group_id',call_handle_method='$call_handle_method',agent_search_method='$agent_search_method',list_id='$list_id',campaign_id='$campaign_id',phone_code='$phone_code' where did_id='$did_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='DIDS', event_type='MODIFY', record_id='$did_id', event_code='ADMIN MODIFY DID', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=3311;	# go to did modification form below
 }
 
 
@@ -6733,13 +10094,13 @@ if ($ADD==41111)
 
 		echo "<br><B>ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ΤΡΟΠΟΠΟΙΗΘΗΚΑΝ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ ENTRY     |$PHP_AUTH_USER|$ip|set user_start='$user_start', number_of_lines='$number_of_lines', server_ip='$server_ip', conf_exten='$conf_exten', status='$status', campaign_id='$campaign_id', closer_campaigns='$groups_value' where remote_agent_id='$remote_agent_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='REMOTEAGENTS', event_type='MODIFY', record_id='$remote_agent_id', event_code='ADMIN MODIFY REMOTE AGENT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6769,17 +10130,106 @@ if ($ADD==411111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value' where user_group='$OLDuser_group';";
+		$p=0;
+		$GROUP_shifts=' ';
+		$group_shifts_ct = count($group_shifts);
+		while ($p <= $group_shifts_ct)
+			{
+			$GROUP_shifts .= "$group_shifts[$p] ";
+			$p++;
+			}
+		$stmt="UPDATE vicidial_user_groups set user_group='$user_group', group_name='$group_name',allowed_campaigns='$campaigns_value',qc_allowed_campaigns='$qc_campaigns_value',qc_allowed_inbound_groups='$qc_groups_value',group_shifts='$GROUP_shifts',forced_timeclock_login='$forced_timeclock_login',shift_enforcement='$shift_enforcement' where user_group='$OLDuser_group';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>ΟΜΑΔΑ ΧΡΗΣΤΗ ΤΡΟΠΟΠΟΙΗΘΗΚΕ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='USERGROUPS', event_type='MODIFY', record_id='$user_group', event_code='ADMIN MODIFY ΟΜΑΔΑ ΧΡΗΣΤΩΝ', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		###############################################################
+		##### START SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$ss_conf_ct = mysql_num_rows($rslt);
+		if ($ss_conf_ct > 0)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY USER GROUP ENTRY     |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			$row=mysql_fetch_row($rslt);
+			$enable_vtiger_integration =	$row[0];
+			$vtiger_server_ip	=			$row[1];
+			$vtiger_dbname =				$row[2];
+			$vtiger_login =					$row[3];
+			$vtiger_pass =					$row[4];
+			$vtiger_url =					$row[5];
+			}
+		##### END SYSTEM_SETTINGS VTIGER CONNECTION INFO LOOKUP #####
+		#############################################################
+
+		if ($enable_vtiger_integration > 0)
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			echo 'Connected successfully';
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			######################################
+			##### BEGIN Add/Update group info in Vtiger
+			$stmt="SELECT count(*) from vtiger_groups where groupname='$user_group';";
+			$rslt=mysql_query($stmt, $linkV);
+			if ($DB) {echo "$stmt\n";}
+			if (!$rslt) {die('Could not execute: ' . mysql_error());}
+			$row=mysql_fetch_row($rslt);
+			$group_found_count = $row[0];
+
+			### group exists in vtiger, update it
+			if ($group_found_count > 0)
+				{
+				$stmt="SELECT groupid from vtiger_groups where groupname='$user_group';";
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "$stmt\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				$row=mysql_fetch_row($rslt);
+				$groupid = $row[0];
+
+				$stmtA = "UPDATE vtiger_groups SET description='$group_name' where groupid='$groupid';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				}
+
+			### user doesn't exist in vtiger, insert it
+			else
+				{
+				#### BEGIN CREATE NEW GROUP RECORD IN VTIGER
+				# Get next available id from vtiger_groups_seq to use as groupid
+				$stmt="SELECT id from vtiger_groups_seq;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$groupid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next available groupid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_groups_seq SET id = '$groupid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				$stmtA = "INSERT INTO vtiger_groups SET groupid='$groupid',groupname='$user_group',description='$group_name';";
+				if ($DB) {echo "|$stmtA|\n";}
+				$rslt=mysql_query($stmtA, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#### END CREATE NEW GROUP RECORD IN VTIGER
+				}
+			##### END Add/Update group info in Vtiger
+			######################################
 			}
 		}
 	}
@@ -6815,13 +10265,13 @@ if ($ADD==4111111)
 
 		echo "<br><B>Ο ΒΟΗΘΟΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY SCRIPT ENTRY         |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΒΟΗΘΟΙ', event_type='MODIFY', record_id='$script_id', event_code='ADMIN MODIFY SCRIPT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6855,13 +10305,13 @@ if ($ADD==41111111)
 
 		echo "<br><B>ΤΟ ΦΙΛΤΡΟ ΤΡΟΠΟΠΟΙΗΘΗΚΕ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY FILTER ENTRY         |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΦΙΛΤΡΑ', event_type='MODIFY', record_id='$lead_filter_id', event_code='ADMIN MODIFY FILTER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6911,13 +10361,13 @@ if ($ADD==411111111)
 
 		echo "<br><B>ΤΡΟΠΟΠΟΙΗΘΗΚΕ ΧΡΟΝΟΣ ΚΛΗΣΗΣ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY CALL TIME ENTRY      |$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES', event_type='MODIFY', record_id='$call_time_id', event_code='ADMIN MODIFY CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6967,13 +10417,13 @@ if ($ADD==4111111111)
 
 		echo "<br><B>ΤΡΟΠΟΠΟΙΗΘΗΚΕ ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ</B>\n";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|MODIFY STATE CALL TIME ENTRY|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES', event_type='MODIFY', record_id='$call_time_id', event_code='ADMIN MODIFY STATE CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
 	}
 	else
@@ -6982,6 +10432,57 @@ if ($ADD==4111111111)
 	exit;
 	}
 $ADD=3111111111;	# go to state call time modification form below
+}
+
+
+######################
+# ADD=431111111 modify shift in the system
+######################
+
+if ($ADD==431111111)
+{
+	if ($LOGmodify_call_times==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$shift_length_test = eregi_replace(':','',$shift_length);
+	 if ( (strlen($shift_id) < 2) or (strlen($shift_name) < 2) or (strlen($shift_start_time) < 4) or (strlen($shift_start_time) > 4) or (strlen($shift_length) < 5) or (strlen($shift_length) > 5) or ($shift_start_time > 2359) or ($shift_length_test > 2400) )
+		{
+		echo "<br>SHIFT DEFINITION NOT MODIFIED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>ID Shift και το όνομα πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+		echo "<br>Shift ώρα έναρξης πρέπει να είναι 4 ψηφία στο μήκος και να είναι μια έγκυρη ώρα\n";
+		echo "<br>Shift Μήκος 5 χαρακτήρες πρέπει να είναι σε μήκος και να είναι 24 ώρες ή λιγότερο\n";
+		}
+	 else
+		{
+		$p=0;
+		$shift_weekdays_ct = count($shift_weekdays);
+		while ($p <= $shift_weekdays_ct)
+			{
+			$SHIFT_weekdays .= "$shift_weekdays[$p]";
+			$p++;
+			}
+		$shift_start_time = preg_replace('/\D/', '', $shift_start_time);
+		$stmt="UPDATE vicidial_shifts set shift_name='$shift_name', shift_start_time='$shift_start_time', shift_length='$shift_length', shift_weekdays='$SHIFT_weekdays' where shift_id='$shift_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>SHIFT ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ</B>\n";
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SHIFTS', event_type='MODIFY', record_id='$shift_id', event_code='ADMIN MODIFY SHIFT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=331111111;	# go to shift modification form below
 }
 
 
@@ -7008,7 +10509,18 @@ if ($ADD==41111111111)
 			{
 			echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $extension\n";
 
-			$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysql_real_escape_string($local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysql_real_escape_string($VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages' where extension='$old_extension' and server_ip='$old_server_ip';";
+			$stmt="UPDATE phones set extension='$extension', dialplan_number='$dialplan_number', voicemail_id='$voicemail_id', phone_ip='$phone_ip', computer_ip='$computer_ip', server_ip='$server_ip', login='$login', pass='$pass', status='$status', active='$active', phone_type='$phone_type', fullname='$fullname', company='$company', picture='$picture', protocol='$protocol', local_gmt='$local_gmt', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', login_user='$login_user', login_pass='$login_pass', login_campaign='$login_campaign', park_on_extension='$park_on_extension', conf_on_extension='$conf_on_extension', VICIDIAL_park_on_extension='$VICIDIAL_park_on_extension', VICIDIAL_park_on_filename='$VICIDIAL_park_on_filename', monitor_prefix='$monitor_prefix', recording_exten='$recording_exten', voicemail_exten='$voicemail_exten', voicemail_dump_exten='$voicemail_dump_exten', ext_context='$ext_context', dtmf_send_extension='$dtmf_send_extension', call_out_number_group='$call_out_number_group', client_browser='$client_browser', install_directory='$install_directory', local_web_callerID_URL='" . mysql_real_escape_string($local_web_callerID_URL) . "', VICIDIAL_web_URL='" . mysql_real_escape_string($VICIDIAL_web_URL) . "', AGI_call_logging_enabled='$AGI_call_logging_enabled', user_switching_enabled='$user_switching_enabled', conferencing_enabled='$conferencing_enabled', admin_hangup_enabled='$admin_hangup_enabled', admin_hijack_enabled='$admin_hijack_enabled', admin_monitor_enabled='$admin_monitor_enabled', call_parking_enabled='$call_parking_enabled', updater_check_enabled='$updater_check_enabled', AFLogging_enabled='$AFLogging_enabled', QUEUE_ACTION_enabled='$QUEUE_ACTION_enabled', CallerID_popup_enabled='$CallerID_popup_enabled', voicemail_button_enabled='$voicemail_button_enabled', enable_fast_refresh='$enable_fast_refresh', fast_refresh_rate='$fast_refresh_rate', enable_persistant_mysql='$enable_persistant_mysql', auto_dial_next_number='$auto_dial_next_number', VDstop_rec_after_each_call='$VDstop_rec_after_each_call', DBX_server='$DBX_server', DBX_database='$DBX_database', DBX_user='$DBX_user', DBX_pass='$DBX_pass', DBX_port='$DBX_port', DBY_server='$DBY_server', DBY_database='$DBY_database', DBY_user='$DBY_user', DBY_pass='$DBY_pass', DBY_port='$DBY_port', outbound_cid='$outbound_cid', enable_sipsak_messages='$enable_sipsak_messages', email='$email', template_id='$template_id', conf_override='$conf_override' where extension='$old_extension' and server_ip='$old_server_ip';";
+			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONES', event_type='MODIFY', record_id='$extension', event_code='ADMIN ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ', event_sql=\"$SQL_log\", event_notes='IP Διακομιστή: $server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 			}
 		}
@@ -7019,6 +10531,86 @@ if ($ADD==41111111111)
 	exit;
 	}
 $ADD=31111111111;	# go to phone modification form below
+}
+
+
+######################
+# ADD=42111111111 modify phone alias record in the system
+######################
+
+if ($ADD==42111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT count(*) from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+		 if ( (strlen($alias_id) < 1) or (strlen($alias_name) < 2) )
+		{echo "<br>PHONE ALIAS ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+		 else
+		{
+		echo "<br>PHONE ALIAS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $alias_id\n";
+
+		$stmt="UPDATE phones_alias set alias_name='$alias_name', logins_list='$logins_list' where alias_id='$alias_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONEALIASES', event_type='MODIFY', record_id='$alias_id', event_code='ADMIN ΤΡΟΠΟΠΟΙΗΣΕ ΤΗΛΕΦΩΝΟ ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=32111111111;	# go to phone alias modification form below
+}
+
+
+######################
+# ADD=43111111111 modify group alias record in the system
+######################
+
+if ($ADD==43111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT count(*) from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+		 if ( (strlen($group_alias_id) < 1) or (strlen($group_alias_name) < 2) )
+		{echo "<br>ALIAS ΟΜΑΔΑ ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+		 else
+		{
+		echo "<br>ΟΜΑΔΑ ALIAS ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $alias_id\n";
+
+		$stmt="UPDATE groups_alias set group_alias_name='$group_alias_name', caller_id_number='$caller_id_number', caller_id_name='$caller_id_name', active='$active' where group_alias_id='$group_alias_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='GROUPALIASES', event_type='MODIFY', record_id='$group_alias_id', event_code='ADMIN MODIFY GROUP ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=33111111111;	# go to group alias modification form below
 }
 
 
@@ -7052,7 +10644,18 @@ if ($ADD==411111111111)
 				{
 				echo "<br>Ο ΔΙΑΚΟΜΙΣΤΗΣ ΤΡΟΠΟΠΟΙΗΘΗΚΕ: $server_ip\n";
 
-				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active', balance_trunks_offlimits='$balance_trunks_offlimits' where server_id='$old_server_id';";
+				$stmt="UPDATE servers set server_id='$server_id',server_description='$server_description',server_ip='$server_ip',active='$active',asterisk_version='$asterisk_version', max_vicidial_trunks='$max_vicidial_trunks', telnet_host='$telnet_host', telnet_port='$telnet_port', ASTmgrUSERNAME='$ASTmgrUSERNAME', ASTmgrSECRET='$ASTmgrSECRET', ASTmgrUSERNAMEupdate='$ASTmgrUSERNAMEupdate', ASTmgrUSERNAMElisten='$ASTmgrUSERNAMElisten', ASTmgrUSERNAMEsend='$ASTmgrUSERNAMEsend', local_gmt='$local_gmt', voicemail_dump_exten='$voicemail_dump_exten', answer_transfer_agent='$answer_transfer_agent', ext_context='$ext_context', sys_perf_log='$sys_perf_log', vd_server_logs='$vd_server_logs', agi_output='$agi_output', vicidial_balance_active='$vicidial_balance_active',balance_trunks_offlimits='$balance_trunks_offlimits',recording_web_link='$recording_web_link',alt_server_ip='$alt_server_ip',active_asterisk_server='$active_asterisk_server',generate_vicidial_conf='$generate_vicidial_conf',rebuild_conf_files='$rebuild_conf_files',outbound_calls_per_second='$outbound_calls_per_second' where server_id='$old_server_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+				$rslt=mysql_query($stmtA, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERS', event_type='MODIFY', record_id='$server_id', event_code='ADMIN ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
 				}
 			}
@@ -7106,13 +10709,13 @@ if ($ADD==421111111111)
 			$stmt="UPDATE vicidial_server_trunks SET dedicated_trunks='$dedicated_trunks',trunk_restriction='$trunk_restriction' where campaign_id='$campaign_id' and server_ip='$server_ip';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERΜπαούλα', event_type='MODIFY', record_id='$server_ip', event_code='ADMIN ΤΡΟΠΟΠΟΙΗΣΕ ΔΙΑΚΟΜΙΣΤΗ TRUNK', event_sql=\"$SQL_log\", event_notes='Εκστρατεία: $campaign_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
 	}
@@ -7122,6 +10725,86 @@ if ($ADD==421111111111)
 	exit;
 	}
 $ADD=311111111111;	# go to server modification form below
+}
+
+
+######################
+# ADD=431111111111 modify conf template record in the system
+###################### '$template_id','$template_name','$template_contents'
+
+if ($ADD==431111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($template_id) < 1) or (strlen($template_name) < 1) )
+		{echo "<br>ΠΙΣΤ TEMPLATE ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+	 else
+		{
+		echo "<br>CONF TEMPLATE MODIFIED: $template_id\n";
+
+		$stmt="UPDATE vicidial_conf_templates set template_name='$template_name',template_contents='$template_contents' where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+		$rslt=mysql_query($stmtA, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CONFTEMPLATES', event_type='MODIFY', record_id='$template_id', event_code='ADMIN MODIFY ΠΙΣΤ TEMPLATE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=331111111111;	# go to conf template modification form below
+}
+
+
+######################
+# ADD=441111111111 modify carrier record in the system
+######################
+
+if ($ADD==441111111111)
+{
+	if ($LOGmodify_servers==1)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($carrier_id) < 1) or (strlen($server_ip) < 7) or (strlen($protocol) < 1) )
+		{echo "<br>ΔΕΝ ΘΑΛΑΜΙΣΚΟ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";}
+	 else
+		{
+		echo "<br>ΘΑΛΑΜΙΣΚΟ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ: $carrier_id\n";
+
+		$stmt="UPDATE vicidial_server_carriers set carrier_name='$carrier_name',registration_string='$registration_string',template_id='$template_id',account_entry='$account_entry',protocol='$protocol',globals_string='$globals_string',dialplan_entry='$dialplan_entry',server_ip='$server_ip',active='$active' where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmtA, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CARRIERS', event_type='MODIFY', record_id='$carrier_id', event_code='ADMIN MODIFY ΘΑΛΑΜΙΣΚΟ', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+$ADD=341111111111;	# go to carrier modification form below
 }
 
 
@@ -7206,31 +10889,31 @@ $ADD=31111111111111;	# go to vicidial conference modification form below
 ######################
 
 if ($ADD==411111111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	echo "<br>VICIDIAL ΤΟΠΟΘΕΤΗΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΕΣ\n";
-
-	$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log';";
-	$rslt=mysql_query($stmt, $link);
-
-	### LOG CHANGES TO LOG FILE ###
-	if ($WeBRooTWritablE > 0)
 		{
-		$fp = fopen ("./admin_changes_log.txt", "a");
-		fwrite ($fp, "$date|MODIFY SYSTEM SETTINGS|$PHP_AUTH_USER|$ip|$stmt|\n");
-		fclose($fp);
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		echo "<br>VICIDIAL ΤΟΠΟΘΕΤΗΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΕΣ\n";
+
+		$stmt="UPDATE system_settings set use_non_latin='$use_non_latin',webroot_writable='$webroot_writable',enable_queuemetrics_logging='$enable_queuemetrics_logging',queuemetrics_server_ip='$queuemetrics_server_ip',queuemetrics_dbname='$queuemetrics_dbname',queuemetrics_login='$queuemetrics_login',queuemetrics_pass='$queuemetrics_pass',queuemetrics_url='$queuemetrics_url',queuemetrics_log_id='$queuemetrics_log_id',queuemetrics_eq_prepend='$queuemetrics_eq_prepend',vicidial_agent_disable='$vicidial_agent_disable',allow_sipsak_messages='$allow_sipsak_messages',admin_home_url='$admin_home_url',enable_agc_xfer_log='$enable_agc_xfer_log',timeclock_end_of_day='$timeclock_end_of_day',vdc_header_date_format='$vdc_header_date_format',vdc_customer_date_format='$vdc_customer_date_format',vdc_header_phone_format='$vdc_header_phone_format',vdc_agent_api_active='$vdc_agent_api_active',enable_vtiger_integration='$enable_vtiger_integration',vtiger_server_ip='$vtiger_server_ip',vtiger_dbname='$vtiger_dbname',vtiger_login='$vtiger_login',vtiger_pass='$vtiger_pass',vtiger_url='$vtiger_url',qc_features_active='$qc_features_active',outbound_autodial_active='$outbound_autodial_active',outbound_calls_per_second='$outbound_calls_per_second';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SYSTEMSETTINGS', event_type='MODIFY', record_id='system_settings', event_code='ADMIN MODIFY SYSTEM SETTINGS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$ADD=311111111111111;	# go to vicidial system settings form below
 	}
-$ADD=311111111111111;	# go to vicidial system settings form below
-}
 
 
 ######################
@@ -7238,70 +10921,70 @@ $ADD=311111111111111;	# go to vicidial system settings form below
 ######################
 
 if ($ADD==421111111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	if (ereg('delete',$stage))
 		{
-		if ( (strlen($status) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		if (ereg('delete',$stage))
 			{
-			 echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-			 echo "<br>η θέση συστημάτων δεν μπορεί να είναι μια διατηρημένη θέση:B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
-			 echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
-			}
-		else
-			{
-			echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
-
-			$stmt="DELETE FROM vicidial_statuses where status='$status';";
-			$rslt=mysql_query($stmt, $link);
-
-			$stmtA="DELETE FROM vicidial_campaign_hotkeys where status='$status';";
-			$rslt=mysql_query($stmtA, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			if ( (strlen($status) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$status)) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|$stmtA|\n");
-				fclose($fp);
+				echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				echo "<br>η θέση συστημάτων δεν μπορεί να είναι μια διατηρημένη θέση:B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+				echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
+				}
+			else
+				{
+				echo "<br><B>SYSTEM STATUS DELETED: $status</B>\n";
+
+				$stmt="DELETE FROM vicidial_statuses where status='$status';";
+				$rslt=mysql_query($stmt, $link);
+
+				$stmtA="DELETE FROM vicidial_campaign_hotkeys where status='$status';";
+				$rslt=mysql_query($stmtA, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SYSTEMSTATUSES', event_type='DELETE', record_id='$status', event_code='ADMIN DELETE SYSTEM STATUS', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			}
+		if (ereg('modify',$stage))
+			{
+			if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
+				{
+				echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
+				echo "<br>το όνομα θέσης συστημάτων πρέπει να είναι χαρακτήρεςτουλάχιστον 1 στο μήκος\n";
+				}
+			else
+				{
+				echo "<br><B>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $status</B>\n";
+
+				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where status='$status';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SYSTEMSTATUSES', event_type='MODIFY', record_id='$status', event_code='ADMIN MODIFY SYSTEM STATUS', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-	if (ereg('modify',$stage))
-		{
-		if ( (strlen($status) < 1) or (strlen($status_name) < 2) )
-			{
-			 echo "<br>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-			 echo "<br>η θέση συστημάτων πρέπει να είναι χαρακτήρες τουλάχιστον 1 στομήκος\n";
-			 echo "<br>το όνομα θέσης συστημάτων πρέπει να είναι χαρακτήρεςτουλάχιστον 1 στο μήκος\n";
-			}
-		else
-			{
-			echo "<br><B>ΘΕΣΗ ΣΥΣΤΗΜΑΤΩΝ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $status</B>\n";
-
-			$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where status='$status';";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY SYSTEM STATUS  |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
-			}
-		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$ADD=321111111111111;	# go to system settings modification form below
 	}
-$ADD=321111111111111;	# go to system settings modification form below
-}
 
 
 ######################
@@ -7309,57 +10992,125 @@ $ADD=321111111111111;	# go to system settings modification form below
 ######################
 
 if ($ADD==431111111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		 if ( (strlen($vsc_id) < 2)  or (preg_match("/^UNDEFINED$/i",$vsc_id)) )
+			{
+			echo "<br>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>η κατηγορία θέσης δεν μπορεί να είναι μια διατηρημένη κατηγορία:UNDEFINED\n";
+			echo "<br>η κατηγορία θέσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες στομήκος\n";
+			}
+		 else
+			{
+			if (ereg('delete',$stage))
+				{
+				echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ: $vsc_id</B>\n";
+
+				$stmt="DELETE FROM vicidial_status_categories where vsc_id='$vsc_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='STATUSCATEGORIES', event_type='DELETE', record_id='$vsc_id', event_code='ADMIN DELETE STATUS ΚΑΤΗΓΟΡΙΑ', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			if (ereg('modify',$stage))
+				{
+				echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $vsc_id</B>\n";
+
+				$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+				if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
+					{
+					$tovdad_display = 'N';
+					echo "<br><B>ΛΑΘΟΣ: Υπάρχουν ήδη 4 κατηγορίες θέσης καθορισμένες την επίδειξηTimeOnVDAD</B>\n";
+					}
+
+				$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display',sale_category='$sale_category',dead_lead_category='$dead_lead_category' where vsc_id='$vsc_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='STATUSCATEGORIES', event_type='MODIFY', record_id='$vsc_id', event_code='ADMIN MODIFY STATUS ΚΑΤΗΓΟΡΙΑ', event_sql=\"$SQL_log\", event_notes='';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				}
+			}
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$ADD=331111111111111;	# go to system settings modification form below
+	}
+
+
+######################
+# ADD=441111111111111 modify/delete qc status code in the system
+######################
+
+if ($ADD==441111111111111)
+{
+	if ( ($LOGmodify_servers==1) and ($SSqc_features_active > 0) )
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($vsc_id) < 2)  or (preg_match("/^UNDEFINED$/i",$vsc_id)) )
+	if (ereg('delete',$stage))
 		{
-		 echo "<br>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>η κατηγορία θέσης δεν μπορεί να είναι μια διατηρημένη κατηγορία:UNDEFINED\n";
-		 echo "<br>η κατηγορία θέσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες στομήκος\n";
-		}
-	 else
-		{
-		if (ereg('delete',$stage))
+		if ( (strlen($code) < 1) or (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$code)) )
 			{
-			echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ: $vsc_id</B>\n";
-
-			$stmt="DELETE FROM vicidial_status_categories where vsc_id='$vsc_id';";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			 echo "<br>QC Κατάσταση ΚΩΔΙΚΟΣ δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>the qc status code cannot be a reserved status: B,NA,DNC,NA,DROP,INCALL,QUEUE,NEW\n";
+			 echo "<br>η qc κωδικός πρέπει να είναι τουλάχιστον 1 χαρακτήρες στο μήκος\n";
 			}
-		if (ereg('modify',$stage))
+		else
 			{
-			echo "<br><B>ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ ΤΡΟΠΟΠΟΙΗΜΕΝΗ: $vsc_id</B>\n";
+			echo "<br><B>QC Κατάσταση ΔΙΕΓΡΑΜΜΕΝΩΝ ΚΩΔΙΚΟΣ:$code</B>\n";
 
-			$stmt="SELECT count(*) from vicidial_status_categories where tovdad_display='Y' and vsc_id NOT IN('$vsc_id');";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-			if ( ($row[0] > 3) and (ereg('Y',$tovdad_display)) )
-				{
-				$tovdad_display = 'N';
-				echo "<br><B>ΛΑΘΟΣ: Υπάρχουν ήδη 4 κατηγορίες θέσης καθορισμένες την επίδειξηTimeOnVDAD</B>\n";
-				}
-
-			$stmt="UPDATE vicidial_status_categories SET vsc_name='$vsc_name',vsc_description='$vsc_description',tovdad_display='$tovdad_display' where vsc_id='$vsc_id';";
+			$stmt="DELETE FROM vicidial_qc_codes where code='$code';";
 			$rslt=mysql_query($stmt, $link);
 
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
-				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|MODIFY STATUS CATEGORY|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
-				}
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='QCCODES', event_type='DELETE', record_id='$vsc_id', event_code='ADMIN DELETE QC CODES', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	if (ereg('modify',$stage))
+		{
+		if ( (strlen($code) < 1) or (strlen($code_name) < 2) )
+			{
+			 echo "<br>QC Κατάσταση ΚΩΔΙΚΟΣ ΔΕΝ ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ- Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			 echo "<br>η qc κωδικός πρέπει να είναι τουλάχιστον 1 χαρακτήρες στο μήκος\n";
+			 echo "<br>qc το κωδικό όνομα πρέπει να είναι τουλάχιστον 1 χαρακτήρες στο μήκος\n";
+			}
+		else
+			{
+			echo "<br><B>QC Κατάσταση ΤΡΟΠΟΠΟΙΗΜΕΝΩΝ ΚΩΔΙΚΟΣ:$code</B>\n";
+
+			$stmt="UPDATE vicidial_qc_codes SET code_name='$code_name' where code='$code';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='QCCODES', event_type='MODIFY', record_id='$vsc_id', event_code='ADMIN MODIFY QC CODES', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
 	}
@@ -7368,7 +11119,7 @@ if ($ADD==431111111111111)
 	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
 	exit;
 	}
-$ADD=331111111111111;	# go to system settings modification form below
+$ADD=341111111111111;	# go to qc status code modification form below
 }
 
 
@@ -7392,7 +11143,7 @@ if ($ADD==5)
 	 if ( (strlen($user) < 2) or ($LOGdelete_users < 1) )
 		{
 		 echo "<br>ΧΡΗΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>User be at least 2 characters in length\n";
+		 echo "<br>Χρήστης be at least 2 characters in length\n";
 		}
 	 else
 		{
@@ -7520,6 +11271,28 @@ $ADD='3111';		# go to in-group modification below
 }
 
 ######################
+# ADD=5311 confirmation before deletion of did
+######################
+
+if ($ADD==5311)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($did_id) < 1) or ($LOGdelete_dids < 1) )
+		{
+		 echo "<br>ΔΕΝ ΚΑΤΑΡΓΗΘΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>did_id be at least 1 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>DID DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ: $group_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=6311&did_id=$did_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετεDID $did_id</a><br><br><br>\n";
+		}
+
+$ADD='3311';		# go to did modification below
+}
+
+######################
 # ADD=51111 confirmation before deletion of remote agent record
 ######################
 
@@ -7552,7 +11325,7 @@ if ($ADD==511111)
 	 if ( (strlen($user_group) < 2) or ($LOGdelete_user_groups < 1) )
 		{
 		 echo "<br>ΟΜΑΔΑ ΧΡΗΣΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>User_group be at least 2 characters in length\n";
+		 echo "<br>Χρήστης_group be at least 2 characters in length\n";
 		}
 	 else
 		{
@@ -7623,7 +11396,7 @@ if ($ADD==511111111)
 	 else
 		{
 		echo "<br><B>ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ: $call_time_id</B>\n";
-		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111&call_time_id=$call_time_id&CoNfIrM=YES\">Click here to delete call time $call_time_id</a><br><br><br>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111&call_time_id=$call_time_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετεcall time $call_time_id</a><br><br><br>\n";
 		}
 
 $ADD='311111111';		# go to call time modification below
@@ -7645,12 +11418,33 @@ if ($ADD==5111111111)
 	 else
 		{
 		echo "<br><B>ΕΠΙΒΕΒΑΙΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ: $call_time_id</B>\n";
-		echo "<br><br><a href=\"$PHP_SELF?ADD=6111111111&call_time_id=$call_time_id&CoNfIrM=YES\">Click here to delete state call time $call_time_id</a><br><br><br>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=6111111111&call_time_id=$call_time_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετεstate call time $call_time_id</a><br><br><br>\n";
 		}
 
 $ADD='3111111111';		# go to state call time modification below
 }
 
+######################
+# ADD=531111111 confirmation before deletion of shift record
+######################
+
+if ($ADD==531111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($shift_id) < 2) or ($LOGdelete_call_times < 1) )
+		{
+		 echo "<br>SHIFT δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>Shift ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>SHIFT DELETION CONFIRMATION:$shift_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=631111111&shift_id=$shift_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετε στροφή $shift_id</a><br><br><br>\n";
+		}
+
+$ADD='331111111';		# go to call time modification below
+}
 
 ######################
 # ADD=51111111111 confirmation before deletion of phone record
@@ -7676,6 +11470,50 @@ $ADD='31111111111';		# go to phone modification below
 
 
 ######################
+# ADD=52111111111 confirmation before deletion of phone alias record
+######################
+
+if ($ADD==52111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($alias_id) < 1) or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>PHONE ALIAS δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>Alias ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>PHONE ALIAS DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ: $alias_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=62111111111&alias_id=$alias_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετε τηλέφωνο άλλως $alias_id</a><br><br><br>\n";
+		}
+$ADD='32111111111';		# go to phone alias modification below
+}
+
+
+######################
+# ADD=53111111111 confirmation before deletion of group alias record
+######################
+
+if ($ADD==53111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if ( (strlen($group_alias_id) < 1) or ($LOGast_delete_phones < 1) )
+		{
+		 echo "<br>ΟΜΑΔΑ ALIAS δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>Ομάδα Γνωστός ID must be at least 2 characters in length\n";
+		}
+	 else
+		{
+		echo "<br><B>ΟΜΑΔΑ ALIAS DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ: $group_alias_id</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=63111111111&group_alias_id=$group_alias_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετε ομάδα άλλως $group_alias_id</a><br><br><br>\n";
+		}
+$ADD='33111111111';		# go to group alias modification below
+}
+
+
+######################
 # ADD=511111111111 confirmation before deletion of server record
 ######################
 
@@ -7695,6 +11533,50 @@ if ($ADD==511111111111)
 		echo "<br><br><a href=\"$PHP_SELF?ADD=611111111111&server_id=$server_id&server_ip=$server_ip&CoNfIrM=YES\">Επιλέξτε εδώ για να διαγράψετε το τηλέφωνο $server_id - $server_ip</a><br><br><br>\n";
 		}
 $ADD='311111111111';		# go to server modification below
+}
+
+
+######################
+# ADD=531111111111 confirmation before deletion of conf template record
+######################
+
+if ($ADD==531111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($template_id) < 2)
+		{
+		 echo "<br>ΠΙΣΤ TEMPLATE δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>Πρότυπο ID να είναι τουλάχιστον 2 χαρακτήρες\n";
+		}
+	 else
+		{
+		echo "<br><B>ΠΙΣΤ TEMPLATE DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ: $template_id - $template_name</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=631111111111&template_id=$template_id&server_ip=$server_ip&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετε το πρότυπο conf $template_id - $template_name</a><br><br><br>\n";
+		}
+$ADD='331111111111';		# go to conf template modification below
+}
+
+
+######################
+# ADD=541111111111 confirmation before deletion of carrier record
+######################
+
+if ($ADD==541111111111)
+{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	 if (strlen($carrier_id) < 2)
+		{
+		 echo "<br>ΘΑΛΑΜΙΣΚΟ δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		 echo "<br>Θαλαμίσκος ID να είναι τουλάχιστον 2 χαρακτήρες\n";
+		}
+	 else
+		{
+		echo "<br><B>ΘΑΛΑΜΙΣΚΟ DELETION ΕΠΙΒΕΒΑΙΩΣΗΣ: $carrier_id - $carrier_name</B>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=641111111111&carrier_id=$carrier_id&CoNfIrM=YES\">Κάντε κλικ εδώ για να διαγράψετε μεταφορέα $carrier_id - $carrier_name</a><br><br><br>\n";
+		}
+$ADD='341111111111';		# go to carrier modification below
 }
 
 
@@ -7757,15 +11639,15 @@ $ADD='31111111111111';		# go to vicidial conference modification below
 ######################
 
 if ($ADD==6)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( ( strlen($user) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_users < 1) )
+	if ( ( strlen($user) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_users < 1) )
 		{
 		 echo "<br>ΧΡΗΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>User be at least 2 characters in length\n";
+		 echo "<br>Χρήστης be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmtA="DELETE from vicidial_users where user='$user' limit 1;";
 		$rslt=mysql_query($stmtA, $link);
@@ -7776,37 +11658,38 @@ if ($ADD==6)
 		$stmt="DELETE from vicidial_inbound_group_agents where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING USER!!!!|$PHP_AUTH_USER|$ip|$user|$stmtA|$stmt|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΧΡΗΣΤΕΣ', event_type='DELETE', record_id='$user', event_code='ADMIN DELETE USER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΧΡΗΣΤΗ ΟΛΟΚΛΗΡΩΘΗΚΕ: $user</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='0';		# go to user list
-}
+	$ADD='0';		# go to user list
+	}
 
 ######################
 # ADD=61 delete campaign record
 ######################
 
 if ($ADD==61)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( ( strlen($campaign_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_campaigns < 1) )
+	if ( ( strlen($campaign_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_campaigns < 1) )
 		{
 		 echo "<br>ΕΚΣΤΡΑΤΕΙΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
 		 echo "<br>Εκστρατεία_id be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
-		$stmt="DELETE from vicidial_campaigns where campaign_id='$campaign_id' limit 1;";
-		$rslt=mysql_query($stmt, $link);
+		$stmtA="DELETE from vicidial_campaigns where campaign_id='$campaign_id' limit 1;";
+		$rslt=mysql_query($stmtA, $link);
 
 		$stmt="DELETE from vicidial_campaign_agents where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
@@ -7845,58 +11728,60 @@ if ($ADD==61)
 		$stmt="DELETE from vicidial_hopper where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!DELETING CAMPAIGN!|$PHP_AUTH_USER|$ip|campaign_id='$campaign_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΕΚΣΤΡΑΤΕΙΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ: $campaign_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='10';		# go to campaigns list
-}
+	$ADD='10';		# go to campaigns list
+	}
 
 ######################
 # ADD=62 Logout all agents from a campaign
 ######################
 
 if ($ADD==62)
-{
+	{
 	if ($LOGmodify_campaigns==1)
-	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if (strlen($campaign_id) < 2)
 		{
-		 echo "<br>ΧΕΙΡΙΣΤΕΣ ΠΟΥ ΔΕΝ ΕΙΝΑΙ ΑΠΟΣΥΝΔΕΜΕΝΟΙ ΑΠΟ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Εκστρατεία_id be at least 2 characters in length\n";
-		}
-	 else
-		{
-		$stmt="DELETE from vicidial_live_agents where campaign_id='$campaign_id';";
-		$rslt=mysql_query($stmt, $link);
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if (strlen($campaign_id) < 2)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!ΧΕΙΡΙΣΤΗΣLOGOUT!!!!!!|$PHP_AUTH_USER|$ip|campaign_id='$campaign_id'|\n");
-			fclose($fp);
+			echo "<br>ΧΕΙΡΙΣΤΕΣ ΠΟΥ ΔΕΝ ΕΙΝΑΙ ΑΠΟΣΥΝΔΕΜΕΝΟΙ ΑΠΟ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>Εκστρατεία_id be at least 2 characters in length\n";
 			}
-		echo "<br><B>ΑΠΟΣΥΝΔΕΣΗ ΧΕΙΡΙΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ: $campaign_id</B>\n";
-		echo "<br><br>\n";
+		else
+			{
+			$stmt="DELETE from vicidial_live_agents where campaign_id='$campaign_id';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='LOGOUT', record_id='$campaign_id', event_code='ADMIN LOGOUT CAMPAIGN AGENTS', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>ΑΠΟΣΥΝΔΕΣΗ ΧΕΙΡΙΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ: $campaign_id</B>\n";
+			echo "<br><br>\n";
+			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$ADD='31';		# go to campaign modification below
 	}
-$ADD='31';		# go to campaign modification below
-}
 
 
 ######################
@@ -7904,45 +11789,46 @@ $ADD='31';		# go to campaign modification below
 ######################
 
 if ($ADD==63)
-{
+	{
 	if ($LOGmodify_campaigns==1)
-	{
-	if (eregi('IN',$stage))
-		{$group_id=$campaign_id;}
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if (strlen($campaign_id) < 2)
 		{
-		 echo "<br>VDAC ΔΕΝ ΚΑΘΑΡΙΣΤΗΚΕ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Εκστρατεία_id be at least 2 characters in length\n";
-		}
-	 else
-		{
-		$stmt="DELETE from vicidial_auto_calls where status='LIVE' and campaign_id='$campaign_id' order by call_time limit 1;";
-		$rslt=mysql_query($stmt, $link);
+		if (eregi('IN',$stage))
+			{$group_id=$campaign_id;}
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if (strlen($campaign_id) < 2)
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|EMERGENCY VDAC CLEAR|$PHP_AUTH_USER|$ip|campaign_id='$campaign_id'|\n");
-			fclose($fp);
+			echo "<br>VDAC ΔΕΝ ΚΑΘΑΡΙΣΤΗΚΕ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>Εκστρατεία_id be at least 2 characters in length\n";
 			}
-		echo "<br><B>ΤΕΛΕΥΤΑΙΑ ΕΓΓΡΑΦΗ VDAC ΠΟΥ ΚΑΘΑΡΙΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: $campaign_id</B>\n";
-		echo "<br><br>\n";
+		else
+			{
+			$stmt="DELETE from vicidial_auto_calls where status='LIVE' and campaign_id='$campaign_id' order by call_time limit 1;";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN JAM', event_sql=\"$SQL_log\", event_notes='';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+
+			echo "<br><B>ΤΕΛΕΥΤΑΙΑ ΕΓΓΡΑΦΗ VDAC ΠΟΥ ΚΑΘΑΡΙΖΕΤΑΙ ΓΙΑ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: $campaign_id</B>\n";
+			echo "<br><br>\n";
+			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	# go to campaign modification below
+	if (eregi('IN',$stage))
+		{$ADD='3111';}
+	else
+		{$ADD='31';}	
 	}
-# go to campaign modification below
-if (eregi('IN',$stage))
-	{$ADD='3111';}
-else
-	{$ADD='31';}	
-}
 
 
 ######################
@@ -7950,42 +11836,42 @@ else
 ######################
 
 if ($ADD==65)
-{
-	if ($LOGmodify_campaigns==1)
 	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+	if ($LOGmodify_campaigns==1)
 		{
-		 echo "<br>ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ Ο ΟΔΗΓΟΣ ΑΝΑΚΥΚΛΩΣΗΣ ΕΚΣΤΡΑΤΕΙΑΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
-		 echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα\n";
-		 echo "<br>οι μέγιστες προσπάθειες πρέπει να είναι από 1 έως 10\n";
-		}
-	 else
-		{
-		echo "<br><B>ΔΙΑΓΡΑΦΗΚΕ Ο ΟΔΗΓΟΣ ΑΝΑΚΥΚΛΩΣΗΣ ΕΚΣΤΡΑΤΕΙΑΣ: $campaign_id - $status - $attempt_delay</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="DELETE FROM vicidial_lead_recycle where campaign_id='$campaign_id' and status='$status';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE LEAD RECYCLE   |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			echo "<br>ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ Ο ΟΔΗΓΟΣ ΑΝΑΚΥΚΛΩΣΗΣ ΕΚΣΤΡΑΤΕΙΑΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
+			echo "<br>η καθυστέρηση προσπάθειας πρέπει να είναι τουλάχιστον 120δευτερόλεπτα\n";
+			echo "<br>οι μέγιστες προσπάθειες πρέπει να είναι από 1 έως 10\n";
+			}
+		else
+			{
+			echo "<br><B>ΔΙΑΓΡΑΦΗΚΕ Ο ΟΔΗΓΟΣ ΑΝΑΚΥΚΛΩΣΗΣ ΕΚΣΤΡΑΤΕΙΑΣ: $campaign_id - $status - $attempt_delay</B>\n";
+
+			$stmt="DELETE FROM vicidial_lead_recycle where campaign_id='$campaign_id' and status='$status';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_RECYCLE', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN LEAD RECYCLE', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$SUB=25;
+	$ADD=31;	# go to campaign modification form below
 	}
-$SUB=25;
-$ADD=31;	# go to campaign modification form below
-}
 
 
 ######################
@@ -7993,92 +11879,92 @@ $ADD=31;	# go to campaign modification form below
 ######################
 
 if ($ADD==66)
-{
-	if ($LOGmodify_campaigns==1)
 	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	if ($row[0] < 1)
-		{echo "<br>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - αυτή η αυτόματη θέση πινάκων ALT δεν είναι σε αυτήν τηνεκστρατεία\n";}
-	else
+	if ($LOGmodify_campaigns==1)
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and auto_alt_dial_statuses LIKE \"% $status %\";";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] < 1)
+			{echo "<br>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - αυτή η αυτόματη θέση πινάκων ALT δεν είναι σε αυτήν τηνεκστρατεία\n";}
+		else
 			{
-			 echo "<br>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-			 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
-			}
-		 else
-			{
-			echo "<br><B>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ: $campaign_id - $status</B>\n";
-
-			$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-
-			$auto_alt_dial_statuses = eregi_replace(" $status "," ",$row[0]);
-			$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DELETE AUTALTDIALSTTUS|$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				echo "<br>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
+				}
+			 else
+				{
+				echo "<br><B>ΑΥΤΟΜΑΤΗ ΘΈΣΗ ΠΙΝΑΚΩΝ ALT ΠΟΥ ΔΙΑΓΡΑΦΕΤΑΙ: $campaign_id - $status</B>\n";
+
+				$stmt="SELECT auto_alt_dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+
+				$auto_alt_dial_statuses = eregi_replace(" $status "," ",$row[0]);
+				$stmt="UPDATE vicidial_campaigns set auto_alt_dial_statuses='$auto_alt_dial_statuses' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_ALTDIALS', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN ALT DIAL', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$SUB=26;
+	$ADD=31;	# go to campaign modification form below
 	}
-$SUB=26;
-$ADD=31;	# go to campaign modification form below
-}
 
 ######################
 # ADD=67 delete agent pause code in the system
 ######################
 
 if ($ADD==67)
-{
-	if ($LOGmodify_campaigns==1)
 	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	 if ( (strlen($campaign_id) < 2) or (strlen($pause_code) < 1) )
+	if ($LOGmodify_campaigns==1)
 		{
-		 echo "<br>ΚΩΔΙΚΑΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΕΚΣΤΡΑΤΕΙΑΣ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>pause code must be between 1 and 6 characters in length\n";
-		}
-	 else
-		{
-		echo "<br><B>CAMPAIGN PAUSE CODE DELETED: $campaign_id - $pause_code</B>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="DELETE FROM vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
-		$rslt=mysql_query($stmt, $link);
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
+		 if ( (strlen($campaign_id) < 2) or (strlen($pause_code) < 1) )
 			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE ΧΕΙΡΙΣΤΗΣPAUSECODE|$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
+			echo "<br>ΚΩΔΙΚΑΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΕΚΣΤΡΑΤΕΙΑΣ ΠΟΥ ΔΕΝ ΔΙΑΓΡΑΦΕΤΑΙ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>pause code must be between 1 and 6 characters in length\n";
+			}
+		 else
+			{
+			echo "<br><B>CAMPAIGN PAUSE CODE DELETED: $campaign_id - $pause_code</B>\n";
+
+			$stmt="DELETE FROM vicidial_pause_codes where campaign_id='$campaign_id' and pause_code='$pause_code';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_PAUSECODES', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN PAUSE CODE', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$pause_code';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
 			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$SUB=27;
+	$ADD=31;	# go to campaign modification form below
 	}
-$SUB=27;
-$ADD=31;	# go to campaign modification form below
-}
 
 
 ######################
@@ -8086,67 +11972,67 @@ $ADD=31;	# go to campaign modification form below
 ######################
 
 if ($ADD==68)
-{
-	if ($LOGmodify_campaigns==1)
 	{
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-	$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	if ($row[0] < 1)
-		{echo "<br>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ - αυτή η θέση πινάκων δεν επιλέγεται για αυτήν την εκστρατεία\n";}
-	else
+	if ($LOGmodify_campaigns==1)
 		{
-		 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+		$stmt="SELECT count(*) from vicidial_campaigns where campaign_id='$campaign_id' and dial_statuses LIKE \"% $status %\";";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		if ($row[0] < 1)
+			{echo "<br>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ - αυτή η θέση πινάκων δεν επιλέγεται για αυτήν την εκστρατεία\n";}
+		else
 			{
-			 echo "<br>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-			 echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
-			}
-		 else
-			{
-			echo "<br><B>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ: $campaign_id - $status</B>\n";
-
-			$stmt="SELECT dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-			$row=mysql_fetch_row($rslt);
-
-			$dial_statuses = eregi_replace(" $status "," ",$row[0]);
-			$stmt="UPDATE vicidial_campaigns set dial_statuses='$dial_statuses' where campaign_id='$campaign_id';";
-			$rslt=mysql_query($stmt, $link);
-
-			### LOG CHANGES TO LOG FILE ###
-			if ($WeBRooTWritablE > 0)
+			 if ( (strlen($campaign_id) < 2) or (strlen($status) < 1) )
 				{
-				$fp = fopen ("./admin_changes_log.txt", "a");
-				fwrite ($fp, "$date|DIAL STATUS REMOVED   |$PHP_AUTH_USER|$ip|$stmt|\n");
-				fclose($fp);
+				echo "<br>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+				echo "<br>η κατάσταση πρέπει να είναι μεταξύ 1 και 6 χαρακτήρων στο μήκος\n";
+				}
+			 else
+				{
+				echo "<br><B>ΘΕΣΗ ΠΙΝΑΚΩΝ ΕΚΣΤΡΑΤΕΙΑΣ ΑΦΑΙΡΟΥΜΕΝΗ: $campaign_id - $status</B>\n";
+
+				$stmt="SELECT dial_statuses from vicidial_campaigns where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+				$row=mysql_fetch_row($rslt);
+
+				$dial_statuses = eregi_replace(" $status "," ",$row[0]);
+				$stmt="UPDATE vicidial_campaigns set dial_statuses='$dial_statuses' where campaign_id='$campaign_id';";
+				$rslt=mysql_query($stmt, $link);
+
+				### LOG INSERTION Admin Log Table ###
+				$SQL_log = "$stmt|";
+				$SQL_log = ereg_replace(';','',$SQL_log);
+				$SQL_log = addslashes($SQL_log);
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGN_DIALSTATUSES', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN DIAL STATUS', event_sql=\"$SQL_log\", event_notes='Κατάσταση:$status';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
 				}
 			}
 		}
-	}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	#$SUB=28;
+	$ADD=31;	# go to campaign modification form below
 	}
-#$SUB=28;
-$ADD=31;	# go to campaign modification form below
-}
 
 ######################
 # ADD=611 delete list record and all leads within it
 ######################
 
 if ($ADD==611)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( ( strlen($list_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_lists < 1) )
+	if ( ( strlen($list_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_lists < 1) )
 		{
-		 echo "<br>ΛΙΣΤΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>List_id be at least 2 characters in length\n";
+		echo "<br>ΛΙΣΤΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>List_id be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_lists where list_id='$list_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
@@ -8159,37 +12045,38 @@ if ($ADD==611)
 		$stmt="DELETE from vicidial_list where list_id='$list_id';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING LIST!!!!|$PHP_AUTH_USER|$ip|list_id='$list_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΛΙΣΤΕΣ', event_type='DELETE', record_id='$list_id', event_code='ADMIN DELETE LIST', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΛΙΣΤΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ: $list_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='100';		# go to lists list
-}
+	$ADD='100';		# go to lists list
+	}
 
 ######################
 # ADD=6111 delete in-group record
 ######################
 
 if ($ADD==6111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($group_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_ingroups < 1) )
+	if ( (strlen($group_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_ingroups < 1) )
 		{
-		 echo "<br>ΕΙΣ-ΟΜΑΔΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Group_id be at least 2 characters in length\n";
+		echo "<br>ΕΙΣ-ΟΜΑΔΑ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Group_id be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
-		$stmt="DELETE from vicidial_inbound_groups where group_id='$group_id' limit 1;";
-		$rslt=mysql_query($stmt, $link);
+		$stmtA="DELETE from vicidial_inbound_groups where group_id='$group_id' and group_id NOT IN('AGENTDIRECT') limit 1;";
+		$rslt=mysql_query($stmtA, $link);
 
 		$stmt="DELETE from vicidial_inbound_group_agents where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
@@ -8197,115 +12084,155 @@ if ($ADD==6111)
 		$stmt="DELETE from vicidial_live_inbound_agents where group_id='$group_id';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING IN-GROUP!!|$PHP_AUTH_USER|$ip|group_id='$group_id'|\n");
-			fclose($fp);
-			}
+		$stmt="DELETE from vicidial_campaign_stats where campaign_id='$group_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='INGROUPS', event_type='DELETE', record_id='$group_id', event_code='ADMIN DELETE INGROUP', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΕΙΣ-ΟΜΑΔΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ: $group_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='1000';		# go to in-group list
-}
+	$ADD='1000';		# go to in-group list
+	}
+
+######################
+# ADD=6311 delete did record
+######################
+
+if ($ADD==6311)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($did_id) < 1) or ($CoNfIrM != 'YES') or ($LOGdelete_dids < 1) )
+		{
+		echo "<br>ΔΕΝ ΚΑΤΑΡΓΗΘΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>did_id be at least 1 characters in length\n";
+		}
+	else
+		{
+		$stmt="DELETE from vicidial_inbound_dids where did_id='$did_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='DIDS', event_type='DELETE', record_id='$did_id', event_code='ADMIN DELETE DID', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>DID DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $did_id</B>\n";
+		echo "<br><br>\n";
+		}
+
+	$ADD='1300';		# go to did list
+	}
 
 ######################
 # ADD=61111 delete remote agent record
 ######################
 
 if ($ADD==61111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($remote_agent_id) < 1) or ($CoNfIrM != 'YES') or ($LOGdelete_remote_agents < 1) )
+	if ( (strlen($remote_agent_id) < 1) or ($CoNfIrM != 'YES') or ($LOGdelete_remote_agents < 1) )
 		{
-		 echo "<br>ΑΠΟΜΑΚΡΥΣΜΕΝΟΣ ΧΕΙΡΙΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Remote_agent_id be at least 2 characters in length\n";
+		echo "<br>ΑΠΟΜΑΚΡΥΣΜΕΝΟΣ ΧΕΙΡΙΣΤΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Remote_agent_id be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_remote_agents where remote_agent_id='$remote_agent_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING RMTAGENT!!|$PHP_AUTH_USER|$ip|remote_agent_id='$remote_agent_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='REMOTEAGENTS', event_type='DELETE', record_id='$remote_agent_id', event_code='ADMIN DELETE REMOTE AGENT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΑΠΟΜΑΚΡΥΣΜΕΝΩΝ ΧΕΙΡΙΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ: $remote_agent_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='10000';		# go to remote agents list
-}
+	$ADD='10000';		# go to remote agents list
+	}
 
 ######################
 # ADD=611111 delete user group record
 ######################
 
 if ($ADD==611111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($user_group) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_user_groups < 1) )
+	if ( (strlen($user_group) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_user_groups < 1) )
 		{
-		 echo "<br>ΟΜΑΔΑ ΧΡΗΣΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>User_group be at least 2 characters in length\n";
+		echo "<br>ΟΜΑΔΑ ΧΡΗΣΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Χρήστης_group be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_user_groups where user_group='$user_group' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING USRGROUP!!|$PHP_AUTH_USER|$ip|user_group='$user_group'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='USERGROUPS', event_type='DELETE', record_id='$user_group', event_code='ADMIN DELETE ΟΜΑΔΑ ΧΡΗΣΤΩΝ', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ ΟΛΟΚΛΗΡΩΘΗΚΕ: $user_group</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='100000';		# go to user group list
-}
+	$ADD='100000';		# go to user group list
+	}
 
 ######################
 # ADD=6111111 delete script record
 ######################
 
 if ($ADD==6111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($script_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_scripts < 1) )
+	if ( (strlen($script_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_scripts < 1) )
 		{
-		 echo "<br>ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ Ο ΒΟΗΘΟΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Script_id be at least 2 characters in length\n";
+		echo "<br>ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ Ο ΒΟΗΘΟΣ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Script_id be at least 2 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_scripts where script_id='$script_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING SCRIPT!!!!|$PHP_AUTH_USER|$ip|script_id='$script_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΒΟΗΘΟΙ', event_type='DELETE', record_id='$script_id', event_code='ADMIN DELETE SCRIPT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΓΡΑΦΗ ΒΟΗΘΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ: $script_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='1000000';		# go to script list
-}
+	$ADD='1000000';		# go to script list
+	}
 
 
 ######################
@@ -8313,32 +12240,33 @@ $ADD='1000000';		# go to script list
 ######################
 
 if ($ADD==61111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($lead_filter_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_filters < 1) )
+	if ( (strlen($lead_filter_id) < 2) or ($CoNfIrM != 'YES') or ($LOGdelete_filters < 1) )
 		{
-		 echo "<br>ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>To ID φίλτρου πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+		echo "<br>ΤΟ ΦΙΛΤΡΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>To ID φίλτρου πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_lead_filters where lead_filter_id='$lead_filter_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING FILTER!!!!|$PHP_AUTH_USER|$ip|lead_filter_id='$lead_filter_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='ΦΙΛΤΡΑ', event_type='DELETE', record_id='$lead_filter_id', event_code='ADMIN DELETE ΦΙΛΤΡΑ', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>Η ΔΙΑΓΡΑΦΗ ΤΟΥ ΦΙΛΤΡΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ:  $lead_filter_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='10000000';		# go to filter list
-}
+	$ADD='10000000';		# go to filter list
+	}
 
 
 ######################
@@ -8346,32 +12274,33 @@ $ADD='10000000';		# go to filter list
 ######################
 
 if ($ADD==611111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($call_time_id) < 2) or ($LOGdelete_call_times < 1) )
+	if ( (strlen($call_time_id) < 2) or ($LOGdelete_call_times < 1) )
 		{
-		 echo "<br>Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Το ID χρόνου κλήσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+		echo "<br>Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Το ID χρόνου κλήσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_call_times where call_time_id='$call_time_id' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING CALL TIME!|$PHP_AUTH_USER|$ip|call_time_id='$call_time_id'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES', event_type='DELETE', record_id='$call_time_id', event_code='ADMIN DELETE CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΟΛΟΚΛΗΡΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ: $call_time_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='100000000';		# go to call times list
-}
+	$ADD='100000000';		# go to call times list
+	}
 
 
 ######################
@@ -8379,18 +12308,18 @@ $ADD='100000000';		# go to call times list
 ######################
 
 if ($ADD==6111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($call_time_id) < 2) or ($LOGdelete_call_times < 1) )
+	if ( (strlen($call_time_id) < 2) or ($LOGdelete_call_times < 1) )
 		{
-		 echo "<br>Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Το ID χρόνου κλήσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
+		echo "<br>Ο ΧΡΟΝΟΣ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Το ID χρόνου κλήσης πρέπει να είναι τουλάχιστον 2 χαρακτήρες\n";
 		}
-	 else
+	else
 		{
-		$stmt="DELETE from vicidial_state_call_times where state_call_time_id='$call_time_id' limit 1;";
-		$rslt=mysql_query($stmt, $link);
+		$stmtA="DELETE from vicidial_state_call_times where state_call_time_id='$call_time_id' limit 1;";
+		$rslt=mysql_query($stmtA, $link);
 
 		$stmt="SELECT call_time_id,ct_state_call_times from vicidial_call_times where ct_state_call_times LIKE \"%|$call_time_id|%\" order by call_time_id;";
 		$rslt=mysql_query($stmt, $link);
@@ -8398,36 +12327,72 @@ if ($ADD==6111111111)
 		$sct_list='';
 
 		$o=0;
-		while ($sct_to_print > $o) {
+		while ($sct_to_print > $o) 
+			{
 			$rowx=mysql_fetch_row($rslt);
 			$sct_ids[$o] = "$rowx[0]";
 			$sct_states[$o] = "$rowx[1]";
 			$o++;
-		}
+			}
 		$o=0;
-
-		while ($sct_to_print > $o) {
+		while ($sct_to_print > $o) 
+			{
 			$sct_states[$o] = eregi_replace("\|$call_time_id\|",'|',$sct_states[$o]);
 			$stmt="UPDATE vicidial_call_times set ct_state_call_times='$sct_states[$o]' where call_time_id='$sct_ids[$o]';";
 			$rslt=mysql_query($stmt, $link);
 			echo "$stmt\n";
 			echo "Απομάκρυνση Κανόνα Κατάστασης: $sct_ids[$o]<BR>\n";
 			$o++;
-		}
-
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!DELETING CALL TIME!|$PHP_AUTH_USER|$ip|state_call_time_id='$call_time_id'|\n");
-			fclose($fp);
 			}
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CALLTIMES', event_type='DELETE', record_id='$call_time_id', event_code='ADMIN DELETE STATE CALL TIME', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΟΛΟΚΛΗΡΩΣΗ ΔΙΑΓΡΑΦΗΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ: $call_time_id</B>\n";
 		echo "<br><br>\n";
 		}
 
-$ADD='1000000000';		# go to call times list
-}
+	$ADD='1000000000';		# go to call times list
+	}
+
+
+######################
+# ADD=631111111 delete shift record
+######################
+
+if ($ADD==631111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($shift_id) < 2) or ($LOGdelete_call_times < 1) )
+		{
+		echo "<br>SHIFT δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Shift ID must be at least 2 characters in length\n";
+		}
+	else
+		{
+		$stmt="DELETE from vicidial_shifts where shift_id='$shift_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SHIFTS', event_type='DELETE', record_id='$shift_id', event_code='ADMIN DELETE SHIFT', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>SHIFT DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $shift_id</B>\n";
+		echo "<br><br>\n";
+		}
+
+	$ADD='130000000';		# go to shifts list
+	}
 
 
 ######################
@@ -8435,32 +12400,99 @@ $ADD='1000000000';		# go to call times list
 ######################
 
 if ($ADD==61111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($extension) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+	if ( (strlen($extension) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
 		{
-		 echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Extension be at least 2 characters in length\n";
-		 echo "<br>IP Διακομιστή be at least 7 characters in length\n";
+		echo "<br>ΤΟ ΤΗΛΕΦΩΝΟ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Extension be at least 2 characters in length\n";
+		echo "<br>IP Διακομιστή be at least 7 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from phones where extension='$extension' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING PHONE!!!|$PHP_AUTH_USER|$ip|extension='$extension'|server_ip='$server_ip'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONES', event_type='DELETE', record_id='$extension', event_code='ADMIN DELETE PHONE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>Η ΔΙΑΓΡΑΦΗ ΤΟΥ ΤΗΛΕΦΩΝΟΥ ΟΛΟΚΛΗΡΩΘΗΚΕ: $extension - $server_ip</B>\n";
 		echo "<br><br>\n";
 		}
-$ADD='10000000000';		# go to phone list
-}
+	$ADD='10000000000';		# go to phone list
+	}
+
+
+######################
+# ADD=62111111111 delete phone alias record
+######################
+
+if ($ADD==62111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($alias_id) < 2) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+		{
+		echo "<br>PHONE ALIAS δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Alias ID must be at least 2 characters in length\n";
+		}
+	else
+		{
+		$stmt="DELETE from phones_alias where alias_id='$alias_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='PHONEALIASES', event_type='DELETE', record_id='$alias_id', event_code='ADMIN DELETE PHONE ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>PHONE ALIAS DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $alias_id</B>\n";
+		echo "<br><br>\n";
+		}
+	$ADD='12000000000';		# go to phone alias list
+	}
+
+
+######################
+# ADD=63111111111 delete group alias record
+######################
+
+if ($ADD==63111111111)
+	{
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($group_alias_id) < 2) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+		{
+		echo "<br>ΟΜΑΔΑ ALIAS δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Ομάδα Γνωστός ID must be at least 2 characters in length\n";
+		}
+	else
+		{
+		$stmt="DELETE from groups_alias where group_alias_id='$group_alias_id' limit 1;";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='GROUPALIASES', event_type='DELETE', record_id='$group_alias_id', event_code='ADMIN Διαγραφή ομάδας ALIAS', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>ΟΜΑΔΑ ALIAS DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $group_alias_id</B>\n";
+		echo "<br><br>\n";
+		}
+	$ADD='13000000000';		# go to group alias list
+	}
 
 
 ######################
@@ -8468,32 +12500,33 @@ $ADD='10000000000';		# go to phone list
 ######################
 
 if ($ADD==611111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($server_id) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+	if ( (strlen($server_id) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
 		{
-		 echo "<br>ΔΙΑΚΟΜΙΣΤΗΣ NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>ID Διακομιστή be at least 2 characters in length\n";
-		 echo "<br>IP Διακομιστή be at least 7 characters in length\n";
+		echo "<br>ΔΙΑΚΟΜΙΣΤΗΣ NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>ID Διακομιστή be at least 2 characters in length\n";
+		echo "<br>IP Διακομιστή be at least 7 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from servers where server_id='$server_id' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING SERVER!!|$PHP_AUTH_USER|$ip|server_id='$server_id'|server_ip='$server_ip'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmtA|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERS', event_type='DELETE', record_id='$server_id', event_code='ADMIN DELETE SERVER', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>ΔΙΑΚΟΜΙΣΤΗΣ DELETION COMPLETED: $server_id - $server_ip</B>\n";
 		echo "<br><br>\n";
 		}
-$ADD='100000000000';		# go to server list
-}
+	$ADD='100000000000';		# go to server list
+	}
 
 
 ######################
@@ -8501,40 +12534,123 @@ $ADD='100000000000';		# go to server list
 ######################
 
 if ($ADD==621111111111)
-{
+	{
 	if ($LOGmodify_servers==1)
+		{
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) )
+			{
+			echo "<br>Η ΕΓΓΡΑΦΗ ΤΟΥ ΚΟΡΜΟΥ ΣΤΟΝ ΕΞΥΠΗΡΕΤΗΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+			echo "<br>η εκστρατεία πρέπει να είναι μεταξύ 3 και 8 χαρακτήρων στο μήκος\n";
+			echo "<br>η server_ip καθυστέρηση πρέπει να είναι τουλάχιστον 7 χαρακτήρες\n";
+			}
+		else
+			{
+			echo "<br><B>Η ΕΓΓΡΑΦΗ ΤΟΥ ΚΟΡΜΟΥ ΣΤΟΝ ΕΞΥΠΗΡΕΤΗΤΗ ΔΙΑΓΡΑΦΗΚΕ: $campaign_id - $server_ip</B>\n";
+
+			$stmt="DELETE FROM vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmt, $link);
+
+			### LOG INSERTION Admin Log Table ###
+			$SQL_log = "$stmt|";
+			$SQL_log = ereg_replace(';','',$SQL_log);
+			$SQL_log = addslashes($SQL_log);
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='SERVERΜπαούλα', event_type='DELETE', record_id='$server_ip', event_code='ADMIN DELETE ΔΙΑΚΟΜΙΣΤΗΣ TRUNK', event_sql=\"$SQL_log\", event_notes='Εκστρατεία: $campaign_id';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			}
+		}
+	else
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
+	$ADD=311111111111;	# go to server modification form below
+	}
+
+
+######################
+# ADD=631111111111 delete conf template record
+######################
+
+if ($ADD==631111111111)
 	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($campaign_id) < 2) or (strlen($server_ip) < 7) )
+	if ( (strlen($template_id) < 2) or ($CoNfIrM != 'YES') )
 		{
-		 echo "<br>Η ΕΓΓΡΑΦΗ ΤΟΥ ΚΟΡΜΟΥ ΣΤΟΝ ΕΞΥΠΗΡΕΤΗΤΗ ΔΕΝ ΔΙΑΓΡΑΦΗΚΕ - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>η εκστρατεία πρέπει να είναι μεταξύ 3 και 8 χαρακτήρων στο μήκος\n";
-		 echo "<br>η server_ip καθυστέρηση πρέπει να είναι τουλάχιστον 7 χαρακτήρες\n";
+		echo "<br>ΠΙΣΤ TEMPLATE δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Πρότυπο ID να είναι τουλάχιστον 2 χαρακτήρες\n";
 		}
-	 else
+	else
 		{
-		echo "<br><B>Η ΕΓΓΡΑΦΗ ΤΟΥ ΚΟΡΜΟΥ ΣΤΟΝ ΕΞΥΠΗΡΕΤΗΤΗ ΔΙΑΓΡΑΦΗΚΕ: $campaign_id - $server_ip</B>\n";
-
-		$stmt="DELETE FROM vicidial_server_trunks where campaign_id='$campaign_id' and server_ip='$server_ip';";
+		$stmt="UPDATE phones SET template_id='' where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+		
+		$stmt="UPDATE vicidial_server_carriers SET template_id='' where template_id='$template_id';";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|DELETE ΔΙΑΚΟΜΙΣΤΗΣ TRUNK   |$PHP_AUTH_USER|$ip|$stmt|\n");
-			fclose($fp);
-			}
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="DELETE from vicidial_conf_templates where template_id='$template_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CONFTEMPLATES', event_type='DELETE', record_id='$template_id', event_code='ADMIN DELETE ΠΙΣΤ TEMPLATE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>ΠΙΣΤ TEMPLATE DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $server_id - $server_ip</B>\n";
+		echo "<br><br>\n";
 		}
+	$ADD='130000000000';		# go to conf template list
 	}
-	else
+
+
+######################
+# ADD=641111111111 delete carrier record
+######################
+
+if ($ADD==641111111111)
 	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ( (strlen($carrier_id) < 2) or ($CoNfIrM != 'YES') )
+		{
+		echo "<br>ΘΑΛΑΜΙΣΚΟ δεν διαγράφονται - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Θαλαμίσκος ID να είναι τουλάχιστον 2 χαρακτήρες\n";
+		}
+	else
+		{
+		$stmt="SELECT server_ip from vicidial_server_carriers where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$CARRIERserver_ip =	$row[0];
+
+		$stmt="DELETE from vicidial_server_carriers where carrier_id='$carrier_id';";
+		$rslt=mysql_query($stmt, $link);
+
+		$stmt="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$CARRIERserver_ip';";
+		$rslt=mysql_query($stmt, $link);
+
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CARRIERS', event_type='DELETE', record_id='$carrier_id', event_code='ADMIN DELETE ΘΑΛΑΜΙΣΚΟ', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
+		echo "<br><B>ΘΑΛΑΜΙΣΚΟ DELETION ΣΥΜΠΛΗΡΩΜΕΝΟ: $carrier_id</B>\n";
+		echo "<br><br>\n";
+		}
+	$ADD='140000000000';		# go to carrier list
 	}
-$ADD=311111111111;	# go to server modification form below
-}
 
 
 ######################
@@ -8542,32 +12658,33 @@ $ADD=311111111111;	# go to server modification form below
 ######################
 
 if ($ADD==6111111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($conf_exten) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+	if ( (strlen($conf_exten) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
 		{
-		 echo "<br>CONFERENCE NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Conference be at least 2 characters in length\n";
-		 echo "<br>IP Διακομιστή be at least 7 characters in length\n";
+		echo "<br>CONFERENCE NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Conference be at least 2 characters in length\n";
+		echo "<br>IP Διακομιστή be at least 7 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from conferences where conf_exten='$conf_exten' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING CONF!!!!|$PHP_AUTH_USER|$ip|conf_exten='$conf_exten'|server_ip='$server_ip'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CONFERENCES', event_type='DELETE', record_id='$conf_exten', event_code='ADMIN DELETE CONFERENCE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>CONFERENCE DELETION COMPLETED: $conf_exten - $server_ip</B>\n";
 		echo "<br><br>\n";
 		}
-$ADD='1000000000000';		# go to conference list
-}
+	$ADD='1000000000000';		# go to conference list
+	}
 
 
 ######################
@@ -8575,32 +12692,33 @@ $ADD='1000000000000';		# go to conference list
 ######################
 
 if ($ADD==61111111111111)
-{
+	{
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	 if ( (strlen($conf_exten) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
+	if ( (strlen($conf_exten) < 2) or (strlen($server_ip) < 7) or ($CoNfIrM != 'YES') or ($LOGast_delete_phones < 1) )
 		{
-		 echo "<br>VICIDIAL CONFERENCE NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
-		 echo "<br>Conference be at least 2 characters in length\n";
-		 echo "<br>IP Διακομιστή be at least 7 characters in length\n";
+		echo "<br>VICIDIAL CONFERENCE NOT DELETED - Παρακαλώ επιστρέψτε πίσω και κάνετε έλεγχο των δεδομένων που καταχωρήσατε\n";
+		echo "<br>Conference be at least 2 characters in length\n";
+		echo "<br>IP Διακομιστή be at least 7 characters in length\n";
 		}
-	 else
+	else
 		{
 		$stmt="DELETE from vicidial_conferences where conf_exten='$conf_exten' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
-		### LOG CHANGES TO LOG FILE ###
-		if ($WeBRooTWritablE > 0)
-			{
-			$fp = fopen ("./admin_changes_log.txt", "a");
-			fwrite ($fp, "$date|!!!DELETING CONF!!!!|$PHP_AUTH_USER|$ip|conf_exten='$conf_exten'|server_ip='$server_ip'|\n");
-			fclose($fp);
-			}
+		### LOG INSERTION Admin Log Table ###
+		$SQL_log = "$stmt|";
+		$SQL_log = ereg_replace(';','',$SQL_log);
+		$SQL_log = addslashes($SQL_log);
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CONFERENCES', event_type='DELETE', record_id='$conf_exten', event_code='ADMIN DELETE CONFERENCE', event_sql=\"$SQL_log\", event_notes='';";
+		if ($DB) {echo "|$stmt|\n";}
+		$rslt=mysql_query($stmt, $link);
+
 		echo "<br><B>VICIDIAL CONFERENCE DELETION COMPLETED: $conf_exten - $server_ip</B>\n";
 		echo "<br><br>\n";
 		}
-$ADD='10000000000000';		# go to vicidial conference list
-}
+	$ADD='10000000000000';		# go to vicidial conference list
+	}
 
 
 
@@ -8670,6 +12788,24 @@ if ($ADD==3)
 	$view_reports =			$row[43];
 	$vicidial_recording_override =	$row[44];
 	$alter_custdata_override = $row[45];
+	$qc_enabled =			$row[46];
+	$qc_user_level =		$row[47];
+	$qc_pass =				$row[48];
+	$qc_finish =			$row[49];
+	$qc_commit =			$row[50];
+	$add_timeclock_log =	$row[51];
+	$modify_timeclock_log = $row[52];
+	$delete_timeclock_log = $row[53];
+	$alter_custphone_override = $row[54];
+	$vdc_agent_api_access = $row[55];
+	$modify_inbound_dids =	$row[56];
+	$delete_inbound_dids =	$row[57];
+	$active =				$row[58];
+	$alert_enabled =		$row[59];
+	$download_lists =		$row[60];
+	$agent_shift_enforcement_override =	$row[61];
+	$manager_shift_enforcement_override =	$row[62];
+	$export_reports =		$row[64];
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -8718,6 +12854,7 @@ if ($ADD==3)
 		echo "</select>$NWB#vicidial_users-user_group$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλέφωνο Σύνδεσης: </td><td align=left><input type=text name=phone_login size=20 maxlength=20 value=\"$phone_login\">$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός Πρόσβασης Τηλεφώνου: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20 value=\"$phone_pass\">$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_users-active$NWE</td></tr>\n";
 
 		if ( ($LOGuser_level > 8) or ($LOGalter_agent_interface == "1") )
 			{
@@ -8729,9 +12866,18 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B6D3FC><td align=right>Εγχειρίδιο κλήσεων Χειριστή: </td><td align=left><select size=1 name=agentcall_manual><option>0</option><option>1</option><option SELECTED>$agentcall_manual</option></select>$NWB#vicidial_users-agentcall_manual$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Καταγραφή: </td><td align=left><select size=1 name=vicidial_recording><option>0</option><option>1</option><option SELECTED>$vicidial_recording</option></select>$NWB#vicidial_users-vicidial_recording$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Μεταφορές: </td><td align=left><select size=1 name=vicidial_transfers><option>0</option><option>1</option><option SELECTED>$vicidial_transfers</option></select>$NWB#vicidial_users-vicidial_transfers$NWE</td></tr>\n";
-			echo "<tr bgcolor=#B6D3FC><td align=right>Η πιό στενή προεπιλογή συνδύασε: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
+			if ($SSoutbound_autodial_active > 0)
+				{
+				echo "<tr bgcolor=#B6D3FC><td align=right>Η πιό στενή προεπιλογή συνδύασε: </td><td align=left><select size=1 name=closer_default_blended><option>0</option><option>1</option><option SELECTED>$closer_default_blended</option></select>$NWB#vicidial_users-closer_default_blended$NWE</td></tr>\n";
+				}
 			echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL συμπληρωματική προμήθεια καταγραφής: </td><td align=left><select size=1 name=vicidial_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$vicidial_recording_override</option></select>$NWB#vicidial_users-vicidial_recording_override$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B6D3FC><td align=right>Ο πράκτορας αλλάζει τη συμπληρωματική προμήθεια στοιχείωνπελατών: </td><td align=left><select size=1 name=alter_custdata_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custdata_override</option></select>$NWB#vicidial_users-alter_custdata_override$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Alter Πελατών Παράκαμψη Τηλέφωνο:</td><td align=left><select size=1 name=alter_custphone_override><option>NOT_ACTIVE</option><option>ALLOW_ALTER</option><option SELECTED>$alter_custphone_override</option></select>$NWB#vicidial_users-alter_custphone_override$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Shift Επιβολή Override: </td><td align=left><select size=1 name=agent_shift_enforcement_override><option>DISABLED</option><option>OFF</option><option>START</option><option>ALL</option><option SELECTED>$agent_shift_enforcement_override</option></select>$NWB#vicidial_users-agent_shift_enforcement_override$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Alert Enabled: </td><td align=left>$alert_enabled $NWB#vicidial_users-alert_enabled$NWE</td></tr>\n";
+
 			echo "<tr bgcolor=#B6D3FC><td align=center colspan=2>Τάξεις εκστρατείας:$NWB#vicidial_users-campaign_ranks$NWE<BR>\n";
 			echo "<table border=0>\n";
 			echo "$RANKcampaigns_list";
@@ -8742,6 +12888,14 @@ if ($ADD==3)
 			echo "$RANKgroups_list";
 			echo "</table>\n";
 			echo "</td></tr>\n";
+			if ($SSqc_features_active > 0)
+				{
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled:</td><td align=left><select size=1 name=qc_enabled><option>0</option><option>1</option><option SELECTED>$qc_enabled</option></select>$NWB#vicidial_users-qc_enabled$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC χρήστη Επίπεδο:</td><td align=left><select size=1 name=qc_user_level><option value=1>1 - Τίποτα δεν Modify</option><option value=2>2 - Τίποτα δεν ModifyΕκτός Status</option><option value=3>3 - Τροποποιήστε Όλα τα πεδία</option><option value=4>4 - Βεβαιωθείτε πρώτου γύρου, QC</option><option value=5>5 - Δείτε QC Στατιστικά</option><option value=6>6 - Ικανότητα ModifyΕΤΟΙΜΑ αρχεία</option><option value=7>7 - Manager Επίπεδο</option><option SELECTED>$qc_user_level</option></select>$NWB#vicidial_users-qc_user_level$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Pass:</td><td align=left><select size=1 name=qc_pass><option>0</option><option>1</option><option SELECTED>$qc_pass</option></select>$NWB#vicidial_users-qc_pass$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>QC Τελείωμα:</td><td align=left><select size=1 name=qc_finish><option>0</option><option>1</option><option SELECTED>$qc_finish</option></select>$NWB#vicidial_users-qc_finish$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>Αναλήψεις QC:</td><td align=left><select size=1 name=qc_commit><option>0</option><option>1</option><option SELECTED>$qc_commit</option></select>$NWB#vicidial_users-qc_commit$NWE</td></tr>\n";
+				}
 			}
 		if ($LOGuser_level > 8)
 			{
@@ -8763,6 +12917,8 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τις Λίστες: </td><td align=left><select size=1 name=delete_lists><option>0</option><option>1</option><option SELECTED>$delete_lists</option></select>$NWB#vicidial_users-delete_lists$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Εισαγωγή Οδηγών: </td><td align=left><select size=1 name=load_leads><option>0</option><option>1</option><option SELECTED>$load_leads</option></select>$NWB#vicidial_users-load_leads$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποίηση Οδηγών: </td><td align=left><select size=1 name=modify_leads><option>0</option><option>1</option><option SELECTED>$modify_leads</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Κατεβάστε Λίστες: </td><td align=left><select size=1 name=download_lists><option>0</option><option>1</option><option SELECTED>$download_lists</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Εξαγωγή Εκθέσεις: </td><td align=left><select size=1 name=export_reports><option>0</option><option>1</option><option SELECTED>$export_reports</option></select>$NWB#vicidial_users-export_reports$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τις εκστρατείες: </td><td align=left><select size=1 name=modify_campaigns><option>0</option><option>1</option><option SELECTED>$modify_campaigns</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#9BB9FB><td align=right>Λεπτομέρειες εκστρατείας: </td><td align=left><select size=1 name=campaign_detail><option>0</option><option>1</option><option SELECTED>$campaign_detail</option></select>$NWB#vicidial_users-campaign_detail$NWE</td></tr>\n";
@@ -8770,6 +12926,8 @@ if ($ADD==3)
 
 			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τις-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=modify_ingroups><option>0</option><option>1</option><option SELECTED>$modify_ingroups</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τις Εισ-ΟΜΑΔΕΣ: </td><td align=left><select size=1 name=delete_ingroups><option>0</option><option>1</option><option SELECTED>$delete_ingroups</option></select>$NWB#vicidial_users-delete_ingroups$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε DIDs:</td><td align=left><select size=1 name=modify_inbound_dids><option>0</option><option>1</option><option SELECTED>$modify_inbound_dids</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Διαγραφή DIDs:</td><td align=left><select size=1 name=delete_inbound_dids><option>0</option><option>1</option><option SELECTED>$delete_inbound_dids</option></select>$NWB#vicidial_users-delete_ingroups$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τους μακρινούς πράκτορες: </td><td align=left><select size=1 name=modify_remoteagents><option>0</option><option>1</option><option SELECTED>$modify_remoteagents</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#9BB9FB><td align=right>Διάγραψε τους Απομακρυσμένους Χειριστές: </td><td align=left><select size=1 name=delete_remote_agents><option>0</option><option>1</option><option SELECTED>$delete_remote_agents</option></select>$NWB#vicidial_users-delete_remote_agents$NWE</td></tr>\n";
@@ -8777,16 +12935,26 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τα χειρόγραφα: </td><td align=left><select size=1 name=modify_scripts><option>0</option><option>1</option><option SELECTED>$modify_scripts</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Διάγραψε τον Βοηθόs: </td><td align=left><select size=1 name=delete_scripts><option>0</option><option>1</option><option SELECTED>$delete_scripts</option></select>$NWB#vicidial_users-delete_scripts$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τα φίλτρα: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
-			echo "<tr bgcolor=#9BB9FB><td align=right>Διαγραφή Φίλτρουs: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
-
+			if ($SSoutbound_autodial_active > 0)
+				{
+				echo "<tr bgcolor=#9BB9FB><td align=right>Τροποποιήστε τα φίλτρα: </td><td align=left><select size=1 name=modify_filters><option>0</option><option>1</option><option SELECTED>$modify_filters</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+				echo "<tr bgcolor=#9BB9FB><td align=right>Διαγραφή Φίλτρουs: </td><td align=left><select size=1 name=delete_filters><option>0</option><option>1</option><option SELECTED>$delete_filters</option></select>$NWB#vicidial_users-delete_filters$NWE</td></tr>\n";
+				}
 			echo "<tr bgcolor=#B9CBFD><td align=right>Πρόσβαση AGC Admin: </td><td align=left><select size=1 name=ast_admin_access><option>0</option><option>1</option><option SELECTED>$ast_admin_access</option></select>$NWB#vicidial_users-ast_admin_access$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Το AGC διαγράφει τα τηλέφωνα: </td><td align=left><select size=1 name=ast_delete_phones><option>0</option><option>1</option><option SELECTED>$ast_delete_phones</option></select>$NWB#vicidial_users-ast_delete_phones$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποίηση Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=modify_call_times><option>0</option><option>1</option><option SELECTED>$modify_call_times</option></select>$NWB#vicidial_users-modify_call_times$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Διαγραφή Χρόνου Κλήσηςs: </td><td align=left><select size=1 name=delete_call_times><option>0</option><option>1</option><option SELECTED>$delete_call_times</option></select>$NWB#vicidial_users-delete_call_times$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Τροποποιήστε τους κεντρικούς υπολογιστές: </td><td align=left><select size=1 name=modify_servers><option>0</option><option>1</option><option SELECTED>$modify_servers</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Agent API Πρόσβαση:</td><td align=left><select size=1 name=vdc_agent_api_access><option>0</option><option>1</option><option SELECTED>$vdc_agent_api_access</option></select>$NWB#vicidial_users-vdc_agent_api_access$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#9BB9FB><td align=right>ΠροσθήκηΏρα ρολόι Εγγραφή Εγγραφή: </td><td align=left><select size=1 name=add_timeclock_log><option>0</option><option>1</option><option SELECTED>$add_timeclock_log</option></select>$NWB#vicidial_users-add_timeclock_log$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>ΤροποποιήστεΏρα ρολόι Εγγραφή Εγγραφή: </td><td align=left><select size=1 name=modify_timeclock_log><option>0</option><option>1</option><option SELECTED>$modify_timeclock_log</option></select>$NWB#vicidial_users-modify_timeclock_log$NWE</td></tr>\n";
+			echo "<tr bgcolor=#9BB9FB><td align=right>ΔιαγραφήΏρα ρολόι Εγγραφή Εγγραφή: </td><td align=left><select size=1 name=delete_timeclock_log><option>0</option><option>1</option><option SELECTED>$delete_timeclock_log</option></select>$NWB#vicidial_users-delete_timeclock_log$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B9CBFD><td align=right>Manager Shift Επιβολή Override: </td><td align=left><select size=1 name=manager_shift_enforcement_override><option>0</option><option>1</option><option SELECTED>$manager_shift_enforcement_override</option></select>$NWB#vicidial_users-manager_shift_enforcement_override$NWE</td></tr>\n";
+
 			}
-		echo "<tr bgcolor=#9BB9FB><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 		echo "</TABLE></center>\n";
 
 		if ($LOGdelete_users > 0)
@@ -8796,7 +12964,12 @@ if ($ADD==3)
 		echo "<br><br><a href=\"./AST_agent_time_sheet.php?agent=$row[1]\">Επιλέξτε εδώ για την σελίδα με τους χρόνους χρήσης</a>\n";
 		echo "<br><br><a href=\"./user_status.php?user=$row[1]\">Επιλέξτε εδώ για τη κατάσταση του χρήστη</a>\n";
 		echo "<br><br><a href=\"./user_stats.php?user=$row[1]\">Πατήστε εδώ για στατιστικά χρήστη</a>\n";
+		echo "<br><br><a href=\"./AST_agent_days_detail.php?user=$row[1]&query_date=$REPORTdate&end_date=$REPORTdate&group[]=--ALL--&shift=ALL\">Κάντε κλικ εδώ για το χρήστη πολλαπλών ημέρες καθεστώς λεπτομερώς την έκθεση</a>\n";
 		echo "<br><br><a href=\"$PHP_SELF?ADD=8&user=$row[1]\">Επιλέξτε εδώ για τις Επανακλήσεις του χρήστη που κρατήθηκαν</a>\n";
+		if ($LOGuser_level >= 9)
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=ΧΡΗΣΤΕΣ&stage=$row[1]\">Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το αρχείο</FONT>\n";
+			}
 		}
 	}
 	else
@@ -8811,7 +12984,7 @@ if ($ADD==3)
 # ADD=31 modify campaign info in the system - Detail view
 ######################
 
-if ( ($LOGcampaign_detail < 1) and ($ADD==31) ) {$ADD=34;}	# send to Basic if not allowed
+if ( ($LOGcampaign_detail < 1) and ($ADD==31) ) {$ADD=34;}	# send to Βασική if not allowed
 
 if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
@@ -8831,6 +13004,12 @@ if ($ADD==31)
 			$rslt=mysql_query($stmt, $link);
 		}
 
+		$stmt="SELECT enable_vtiger_integration,vtiger_url from system_settings;";
+		$rslt=mysql_query($stmt, $link);
+		$row=mysql_fetch_row($rslt);
+		$enable_vtiger_integration_LU =		$row[0];
+		$vtiger_url_LU =					$row[1];
+
 		$stmt="SELECT * from vicidial_campaigns where campaign_id='$campaign_id';";
 		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
@@ -8841,6 +13020,7 @@ if ($ADD==31)
 		$dial_status_d = $row[6];
 		$dial_status_e = $row[7];
 		$lead_order = $row[8];
+		$web_form_address = stripslashes($row[11]);
 		$allow_closers = $row[12];
 		$hopper_level = $row[13];
 		$auto_dial_level = $row[14];
@@ -8867,7 +13047,7 @@ if ($ADD==31)
 		$lead_filter_id = $row[35];
 			if ($lead_filter_id=='') {$lead_filter_id='NONE';}
 		$drop_call_seconds = $row[36];
-		$safe_harbor_message = $row[37];
+		$drop_action = $row[37];
 		$safe_harbor_exten = $row[38];
 		$display_dialable_count = $row[39];
 		$wrapup_seconds = $row[40];
@@ -8898,6 +13078,43 @@ if ($ADD==31)
 		$campaign_allow_inbound = $row[65];
 		$manual_dial_list_id = $row[66];
 		$default_xfer_group = $row[67];
+		$queue_priority = $row[69];
+		$drop_inbound_group = $row[70];
+		$qc_enabled = $row[71];
+		$qc_statuses = $row[72];
+		$qc_lists = $row[73];
+		$qc_shift_id = $row[74];
+		$qc_get_record_launch = $row[75];
+		$qc_show_recording = $row[76];
+		$qc_web_form_address = stripslashes($row[77]);
+		$qc_script = $row[78];
+		$survey_first_audio_file = $row[79];
+		$survey_dtmf_digits = $row[80];
+		$survey_ni_digit = $row[81];
+		$survey_opt_in_audio_file = $row[82];
+		$survey_ni_audio_file = $row[83];
+		$survey_method = $row[84];
+		$survey_no_response_action = $row[85];
+		$survey_ni_status = $row[86];
+		$survey_response_digit_map = $row[87];
+		$survey_xfer_exten = $row[88];
+		$survey_camp_record_dir = $row[89];
+		$disable_alter_custphone = $row[90];
+		$display_queue_count = $row[91];
+		$manual_dial_filter = $row[92];
+		$agent_clipboard_copy = $row[93];
+		$agent_extended_alt_dial = $row[94];
+		$use_campaign_dnc = $row[95];
+		$three_way_call_cid = $row[96];
+		$three_way_dial_prefix = $row[97];
+		$web_form_target = $row[98];
+		$vtiger_search_category = $row[99];
+		$vtiger_create_call_record = $row[100];
+		$vtiger_create_lead_record = $row[101];
+		$vtiger_screen_login = $row[102];
+		$cpd_amd_action = $row[103];
+		$agent_allow_group_alias = $row[104];
+		$default_group_alias = $row[105];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -8930,21 +13147,61 @@ if ($ADD==31)
 			}
 		}
 
+	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
+	$Dstatuses = explode(" ", $dial_statuses);
+	$Ds_to_print = (count($Dstatuses) -1);
+
+	$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+	$QCstatuses = explode(" ", $qc_statuses);
+	$QCs_to_print = (count($QCstatuses) -0);
+
+	$qc_lists = preg_replace("/^ | -$/","",$qc_lists);
+	$QClists = explode(" ", $qc_lists);
+	$QCL_to_print = (count($QClists) -0);
+
 	##### get status listings for dynamic pulldown
 	$stmt="SELECT * from vicidial_statuses order by status";
 	$rslt=mysql_query($stmt, $link);
 	$statuses_to_print = mysql_num_rows($rslt);
 	$statuses_list='';
+	$dial_statuses_list='';
+	$qc_statuses_list='';
+	$survey_ni_status_list='';
 
 	$o=0;
 	while ($statuses_to_print > $o) 
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') 
+			{
+			$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($survey_ni_status == $rowx[0])
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\" SELECTED>$rowx[0] - $rowx[1]</option>\n";
+				}
+			else
+				{
+				$survey_ni_status_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				}
+			}
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
 		$o++;
 		}
 
@@ -8957,18 +13214,54 @@ if ($ADD==31)
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 		$statname_list["$rowx[0]"] = "$rowx[1]";
 		$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 		if (eregi("Y",$rowx[2]))
 			{$HKstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";}
+
+		$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+		$p=0;
+		while ($p < $QCs_to_print)
+			{
+			if ($rowx[0] == $QCstatuses[$p]) 
+				{
+				$qc_statuses_list .= " CHECKED";
+				}
+			$p++;
+			}
+		$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
 		$o++;
 		}
 
-	$dial_statuses = preg_replace("/ -$/","",$dial_statuses);
-	$Dstatuses = explode(" ", $dial_statuses);
-	$Ds_to_print = (count($Dstatuses) -1);
+	##### get in-groups listings for dynamic drop in-group pulldown
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+#	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Dgroups_to_print = mysql_num_rows($rslt);
+	$Dgroups_menu='';
+	$Dgroups_selected=0;
+	$o=0;
+	while ($Dgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Dgroups_menu .= "<option ";
+		if ($drop_inbound_group == "$rowx[0]") 
+			{
+			$Dgroups_menu .= "SELECTED ";
+			$Dgroups_selected++;
+			}
+		$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Dgroups_selected < 1) 
+		{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Dgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
 
-	##### get in-groups listings for dynamic pulldown list menu
+
+	##### get in-groups listings for dynamic transfer group pulldown list menu
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups $xfer_groupsSQL order by group_id";
 	$rslt=mysql_query($stmt, $link);
 	$Xgroups_to_print = mysql_num_rows($rslt);
@@ -9005,18 +13298,35 @@ if ($ADD==31)
 		else		{$camp_autoalt_color=$campaigns_color;}
 	if ($SUB==27)	{$camp_pause_color=$subcamp_color;}
 		else		{$camp_pause_color=$campaigns_color;}
+	if ($SUB==28)	{$camp_qc_color=$subcamp_color;}
+		else		{$camp_qc_color=$campaigns_color;}
 	if ($SUB==29)	{$camp_listmix_color=$subcamp_color;}
 		else		{$camp_listmix_color=$campaigns_color;}
+	if ($SUB=='20A')	{$camp_survey_color=$subcamp_color;}
+		else		{$camp_survey_color=$campaigns_color;}
 	echo "<TABLE WIDTH=$page_width CELLPADDING=2 CELLSPACING=0><TR BGCOLOR=\"$campaigns_color\">\n";
 	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
-	echo "<TD><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Basic </font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_detail_color\"> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Detail </font></a> </TD>";
-	echo "<TD BGCOLOR=\"$camp_statuses_color\"><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Statuses</font></a></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Βασική </font></a></TD>";
+	echo "<TD BGCOLOR=\"$camp_detail_color\"> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Λεπτομέρειες </font></a> </TD>";
+	echo "<TD BGCOLOR=\"$camp_statuses_color\"><a href=\"$PHP_SELF?ADD=31&SUB=22&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Καθεστώτων</font></a></TD>";
 	echo "<TD BGCOLOR=\"$camp_hotkeys_color\"><a href=\"$PHP_SELF?ADD=31&SUB=23&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">HotKeys</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Auto Alt Dial</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Pause Codes</font></a></TD>";
-	echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a></TD>";
+
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_recycle_color\"><a href=\"$PHP_SELF?ADD=31&SUB=25&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Lead Recycling</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_autoalt_color\"><a href=\"$PHP_SELF?ADD=31&SUB=26&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Alt Auto Dial</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_listmix_color\"><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Κατάλογος Mix</font></a></TD>";
+		echo "<TD BGCOLOR=\"$camp_survey_color\"><a href=\"$PHP_SELF?ADD=31&SUB=20A&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Έρευνα</font></a></TD>";
+		}
+	echo "<TD BGCOLOR=\"$camp_pause_color\"><a href=\"$PHP_SELF?ADD=31&SUB=27&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Παύση Κώδικες</font></a></TD>";
+	if ($SSqc_features_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_qc_color\"><a href=\"$PHP_SELF?ADD=31&SUB=28&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">QC</font></a></TD>";
+		}
+	if ($SSoutbound_autodial_active < 1)
+		{
+		echo "<TD></TD><TD></TD><TD></TD><TD></TD>\n";
+		}
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Real-Time</font></a></TD>\n";
 	echo "</TR></TABLE>\n";
 
@@ -9034,123 +13344,142 @@ if ($ADD==31)
 		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$campaign_name\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left><input type=text name=campaign_description size=40 maxlength=255 value=\"$campaign_description\">$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Αλλαγή Ημερομηνία: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Σύνδεση Ημερομηνία: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left><input type=text name=park_ext size=10 maxlength=10 value=\"$row[9]\"> - Filename: <input type=text name=park_file_name size=10 maxlength=10 value=\"$row[10]\">$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$row[11]\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Web Μορφή Target: </td><td align=left><input type=text name=web_form_target size=25 maxlength=255 value=\"$web_form_target\">$NWB#vicidial_campaigns-web_form_target$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left><select size=1 name=allow_closers><option>Y</option><option>N</option><option SELECTED>$allow_closers</option></select>$NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-		$o=0;
-		while ($Ds_to_print > $o) 
+		if ($SSoutbound_autodial_active > 0)
 			{
-			$o++;
-			$Dstatus = $Dstatuses[$o];
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left><select size=1 name=campaign_allow_inbound><option>Y</option><option>N</option><option SELECTED>$campaign_allow_inbound</option></select>$NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
-
-			if ($DEFstatusDISABLED > 0)
+			$o=0;
+			while ($Ds_to_print > $o) 
 				{
-				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "REMOVE</DEL></td></tr>\n";
+				$o++;
+				$Dstatus = $Dstatuses[$o];
+
+				echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
+
+				if ($DEFstatusDISABLED > 0)
+					{
+					echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "REMOVE</DEL></td></tr>\n";
+					}
+				else
+					{
+					echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
+					}
 				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+			echo "<option value=\"\"> - NONE - </option>\n";
+
+			echo "$dial_statuses_list";
+			echo "</select> &nbsp; \n";
+			echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">Κατάλογος Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+			echo "$mixes_list";
+			if (ereg("DISABLED",$list_order_mix))
+				{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
 			else
-				{
-				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
-				}
-			}
+				{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+			echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
-		echo "<option value=\"\"> - NONE - </option>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+			echo "$filters_list";
+			echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+			echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
 
-		echo "$statuses_list";
-		echo "</select> &nbsp; \n";
-		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order ><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
-		echo "$mixes_list";
-		if (ereg("DISABLED",$list_order_mix))
-			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
-		else
-			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
-		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+			echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
+: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>Εισερχόμενα_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-		echo "$filters_list";
-		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ΠΡΟΣΑΡΜΟΣΤΕ ΤΗ ΣΥΜΠΛΗΡΩΜΑΤΙΚΗ ΠΡΟΜΉΘΕΙΑ</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
-: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE &nbsp; &nbsp; &nbsp; <input type=checkbox name=dial_level_override value=\"1\">ΠΡΟΣΑΡΜΟΣΤΕ ΤΗ ΣΥΜΠΛΗΡΩΜΑΤΙΚΗ ΠΡΟΜΉΘΕΙΑ</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Διαθέσιμα μόνο ετικέτες
+			echo "<tr bgcolor=#BDFFBD><td align=right>Διαθέσιμα μόνο ετικέτες
 : </td><td align=left><select size=1 name=available_only_ratio_tally><option >Y</option><option>N</option><option SELECTED>$available_only_ratio_tally</option></select>$NWB#vicidial_campaigns-available_only_ratio_tally$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#BDFFBD><td align=right>Ποσοστό Ορίου Εγκατ.Κλήσεων
+			echo "<tr bgcolor=#BDFFBD><td align=right>Ποσοστό Ορίου Εγκατ.Κλήσεων
 : </td><td align=left><select size=1 name=adaptive_dropped_percentage>\n";
-		$n=100;
-		while ($n>=1)
-			{
-			echo "<option>$n</option>\n";
-			$n--;
-			}
-		echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
+			$n=100;
+			while ($n>=1)
+				{
+				echo "<option>$n</option>\n";
+				$n--;
+				}
+			echo "<option SELECTED>$adaptive_dropped_percentage</option></select>% $NWB#vicidial_campaigns-adaptive_dropped_percentage$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#BDFFBD><td align=right>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων
+			echo "<tr bgcolor=#BDFFBD><td align=right>Μέγιστο Επίπεδο Προσαρμογής Κλήσεων
 : </td><td align=left><input type=text name=adaptive_maximum_level size=6 maxlength=6 value=\"$adaptive_maximum_level\"><i>number only</i> $NWB#vicidial_campaigns-adaptive_maximum_level$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#BDFFBD><td align=right>Τελευταίος Χρόνος Διακομιστή
+			echo "<tr bgcolor=#BDFFBD><td align=right>Τελευταίος Χρόνος Διακομιστή
 : </td><td align=left><input type=text name=adaptive_latest_server_time size=6 maxlength=4 value=\"$adaptive_latest_server_time\"><i>4 μόνο αριθμοί</i> $NWB#vicidial_campaigns-adaptive_latest_server_time$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
+			echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
 : </td><td align=left><select size=1 name=adaptive_intensity>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Less Intense';}
-			if ($n>0) {$dtl = 'More Intense';}
-			if ($n == $adaptive_intensity) 
-				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-			$n--;
-			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
+			$n=40;
+			while ($n>=-40)
+				{
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Less Intense';}
+				if ($n>0) {$dtl = 'More Intense';}
+				if ($n == $adaptive_intensity) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 
 
 
-		echo "<tr bgcolor=#BDFFBD><td align=right>Επίπεδο Κλήσεων Μεταβολής Στόχου
+			echo "<tr bgcolor=#BDFFBD><td align=right>Επίπεδο Κλήσεων Μεταβολής Στόχου
 : </td><td align=left><select size=1 name=adaptive_dl_diff_target>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$nabs = abs($n);
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Agents Waiting for Calls';}
-			if ($n>0) {$dtl = 'Calls Waiting for Agents';}
-			if ($n == $adaptive_dl_diff_target) 
-				{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
-			$n--;
+			$n=40;
+			while ($n>=-40)
+				{
+				$nabs = abs($n);
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Agents Waiting for Calls';}
+				if ($n>0) {$dtl = 'Calls Waiting for Agents';}
+				if ($n == $adaptive_dl_diff_target) 
+					{echo "<option SELECTED value=\"$n\">$n --- $nabs $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n --- $nabs $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Ταυτόχρονες μεταφορές: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#BDFFBD><td align=right>Κοτσίδας Προτεραιότητα:</td><td align=left><select size=1 name=queue_priority>\n";
+			$n=99;
+			while ($n>=-99)
+				{
+				$dtl = 'Even';
+				if ($n<0) {$dtl = 'Lower';}
+				if ($n>0) {$dtl = 'Higher';}
+				if ($n == $queue_priority) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-queue_priority$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Αυτόματος σχηματισμός ALT-ARJCMOY: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3</option><option>ALT_AND_EXTENDED</option><option>ALT_AND_ADDR3_AND_EXTENDED</option><option>EXTENDED_ONLY</option><option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
 			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_dl_diff_target$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Ταυτόχρονες μεταφορές: </td><td align=left><select size=1 name=concurrent_transfers><option >AUTO</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10<option SELECTED>$concurrent_transfers</option></select>$NWB#vicidial_campaigns-concurrent_transfers$NWE</td></tr>\n";
-
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Αυτόματος σχηματισμός ALT-ARJCMOY: </td><td align=left><select size=1 name=auto_alt_dial><option >NONE</option><option>ALT_ONLY</option><option>ADDR3_ONLY</option><option>ALT_AND_ADDR3<option SELECTED>$auto_alt_dial</option></select>$NWB#vicidial_campaigns-auto_alt_dial$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>campaign_rank</option><option>fewest_calls</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_campaigns-next_agent_call$NWE</td></tr>\n";
 
@@ -9159,8 +13488,10 @@ if ($ADD==31)
 		echo "<option selected value=\"$local_call_time\">$local_call_time - $call_timename_list[$local_call_time]</option>\n";
 		echo "</select>$NWB#vicidial_campaigns-local_call_time$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση εκτός χρόνου: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση εκτός χρόνου: </td><td align=left><input type=text name=dial_timeout size=3 maxlength=3 value=\"$dial_timeout\"> <i>in seconds</i>$NWB#vicidial_campaigns-dial_timeout$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Πρόθεμα Κλήσης: </td><td align=left><input type=text name=dial_prefix size=20 maxlength=20 value=\"$dial_prefix\"> <font size=1>for 91NXXNXXXXXX value would be 9, for no dial prefix use X</font>$NWB#vicidial_campaigns-dial_prefix$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Παράλειψη Κωδικού Τηλεφώνου
@@ -9168,8 +13499,10 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Εκστρατείας: </td><td align=left><input type=text name=campaign_cid size=20 maxlength=20 value=\"$campaign_cid\">$NWB#vicidial_campaigns-campaign_cid$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατείας VDAD εσωτ.σύνδεση: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατείας VDAD εσωτ.σύνδεση: </td><td align=left><input type=text name=campaign_vdad_exten size=10 maxlength=20 value=\"$campaign_vdad_exten\">$NWB#vicidial_campaigns-campaign_vdad_exten$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Επέκταση εκστρατείας Ηχογρ: </td><td align=left><input type=text name=campaign_rec_exten size=10 maxlength=10 value=\"$campaign_rec_exten\">$NWB#vicidial_campaigns-campaign_rec_exten$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ηχογράφηση εκστρατείας: </td><td align=left><select size=1 name=campaign_recording><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$campaign_recording</option></select>$NWB#vicidial_campaigns-campaign_recording$NWE</td></tr>\n";
@@ -9188,8 +13521,12 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Αυτόματου Τηλεφωνητή: </td><td align=left><input type=text name=am_message_exten size=10 maxlength=20 value=\"$am_message_exten\">$NWB#vicidial_campaigns-am_message_exten$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>AMD στέλνει στο VM: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>AMD στέλνει στο VM: </td><td align=left><select size=1 name=amd_send_to_vmx><option>Y</option><option>N</option><option SELECTED>$amd_send_to_vmx</option></select>$NWB#vicidial_campaigns-amd_send_to_vmx$NWE</td></tr>\n";
 
+			echo "<tr bgcolor=#B6D3FC><td align=right>CPD AMD δράσης: </td><td align=left><select size=1 name=cpd_amd_action><option>DISABLED</option><option>DISPO</option><option>MESSAGE</option><option SELECTED>$cpd_amd_action</option></select>$NWB#vicidial_campaigns-cpd_amd_action$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>DTMF Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_dtmf size=20 maxlength=50 value=\"$xferconf_a_dtmf\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 1: </td><td align=left><input type=text name=xferconf_a_number size=20 maxlength=50 value=\"$xferconf_a_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
@@ -9198,33 +13535,108 @@ if ($ADD==31)
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_campaigns-xferconf_a_dtmf$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση Εναλ Αριθμού: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
-
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Κλήση Εναλ Αριθμού: </td><td align=left><select size=1 name=alt_number_dialing><option>Y</option><option>N</option><option SELECTED>$alt_number_dialing</option></select>$NWB#vicidial_campaigns-alt_number_dialing$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Προγραμματισμένες Επανακλήσεις: </td><td align=left><select size=1 name=scheduled_callbacks><option>Y</option><option>N</option><option SELECTED>$scheduled_callbacks</option></select>$NWB#vicidial_campaigns-scheduled_callbacks$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=2 value=\"$drop_call_seconds\">$NWB#vicidial_campaigns-drop_call_seconds$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Drop δράσης:</td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_campaigns-drop_action$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Χρήση μηνύματος Ασφαλούς Φιλοξενίας: </td><td align=left><select size=1 name=safe_harbor_message><option>Y</option><option>N</option><option SELECTED>$safe_harbor_message</option></select>$NWB#vicidial_campaigns-safe_harbor_message$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ.Σύνδεση Ασφαλούς Φιλοξενίας: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ.Σύνδεση Ασφαλούς Φιλοξενίας: </td><td align=left><input type=text name=safe_harbor_exten size=10 maxlength=20 value=\"$safe_harbor_exten\">$NWB#vicidial_campaigns-safe_harbor_exten$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
 
+			echo "<tr bgcolor=#B6D3FC><td align=right>Drop Μεταφορά Ομάδα:</td><td align=left><select size=1 name=drop_inbound_group>";
+			echo "$Dgroups_menu";
+			echo "</select>$NWB#vicidial_campaigns-drop_inbound_group$NWE</td></tr>\n";
+			}
 		echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ Τυλίγματος: </td><td align=left><input type=text name=wrapup_seconds size=5 maxlength=3 value=\"$wrapup_seconds\">$NWB#vicidial_campaigns-wrapup_seconds$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Μήνυμα Τυλίγματος: </td><td align=left><input type=text name=wrapup_message size=40 maxlength=255 value=\"$wrapup_message\">$NWB#vicidial_campaigns-wrapup_message$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτερικός κατάλογος DNC χρήσης: </td><td align=left><select size=1 name=use_internal_dnc><option>Y</option><option>N</option><option SELECTED>$use_internal_dnc</option></select>$NWB#vicidial_campaigns-use_internal_dnc$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>AgentΚώδικες μικρής διακοπήςΕνεργή:</td><td align=left><select size=1 name=agent_pause_codes_active><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Χρησιμοποίησε Καμπάνια DNC Κατάλογος: </td><td align=left><select size=1 name=use_campaign_dnc><option>Y</option><option>N</option><option SELECTED>$use_campaign_dnc</option></select>$NWB#vicidial_campaigns-use_campaign_dnc$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>AgentΚώδικες μικρής διακοπήςΕνεργή:</td><td align=left><select size=1 name=agent_pause_codes_active><option>FORCE</option><option>Y</option><option>N</option><option SELECTED>$agent_pause_codes_active</option></select>$NWB#vicidial_campaigns-agent_pause_codes_active$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Stats Refresh: </td><td align=left><select size=1 name=campaign_stats_refresh><option>Y</option><option>N</option><option SELECTED>$campaign_stats_refresh</option></select>$NWB#vicidial_campaigns-campaign_stats_refresh$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Θέστε εκτός λειτουργίας αλλάζει τα στοιχεία πελατών: </td><td align=left><select size=1 name=disable_alter_custdata><option>Y</option><option>N</option><option SELECTED>$disable_alter_custdata</option></select>$NWB#vicidial_campaigns-disable_alter_custdata$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Απενεργοποίηση Alter Πελατών Τηλέφωνο:</td><td align=left><select size=1 name=disable_alter_custphone><option>Y</option><option>N</option><option SELECTED>$disable_alter_custphone</option></select>$NWB#vicidial_campaigns-disable_alter_custphone$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τους κανένας-χοάνη-μολύβδους Logins: </td><td align=left><select size=1 name=no_hopper_leads_logins><option>Y</option><option>N</option><option SELECTED>$no_hopper_leads_logins</option></select>$NWB#vicidial_campaigns-no_hopper_leads_logins$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εμφάνιση Agent Queue Count:</td><td align=left><select size=1 name=display_queue_count><option>Y</option><option>N</option><option SELECTED>$display_queue_count</option></select>$NWB#vicidial_campaigns-display_queue_count$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Χειρωνακτικός κατάλογος ταυτότητα πινάκων:</td><td align=left><input type=text name=manual_dial_list_id size=15 maxlength=12 value=\"$manual_dial_list_id\">$NWB#vicidial_campaigns-manual_dial_list_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εγχειρίδιο Dial Filter:</td><td align=left><select size=1 name=manual_dial_filter><option>NONE</option><option>DNC_ONLY</option><option>CAMPΛΙΣΤΕΣ_ONLY</option><option>DNC_AND_CAMPΛΙΣΤΕΣ</option><option SELECTED>$manual_dial_filter</option></select>$NWB#vicidial_campaigns-manual_dial_filter$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Clipboard Αντιγραφή: </td><td align=left><select size=1 name=agent_clipboard_copy><option>NONE</option><option>lead_id</option><option>list_id</option><option>title</option><option>first_name</option><option>middle_initial</option><option>last_name</option><option>phone_code</option><option>phone_number</option><option>address1</option><option>address2</option><option>address3</option><option>city</option><option>state</option><option>province</option><option>postal_code</option><option>country_code</option><option>alt_phone</option><option>comments</option><option>date_of_birth</option><option>email</option><option>gender</option><option>gmt_offset_now</option><option>security_phrase</option><option>vendor_lead_code</option><option SELECTED>$agent_clipboard_copy</option></select>$NWB#vicidial_campaigns-agent_clipboard_copy$NWE</td></tr>\n";
+
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Εκτεταμένη Alt Dial: </td><td align=left><select size=1 name=agent_extended_alt_dial><option>Y</option><option>N</option><option SELECTED>$agent_extended_alt_dial</option></select>$NWB#vicidial_campaigns-agent_extended_alt_dial$NWE</td></tr>\n";
+			}
+		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Outbound Call CallerID: </td><td align=left><select size=1 name=three_way_call_cid><option>CAMPAIGN</option><option>CUSTOMER</option><option>AGENT_PHONE</option><option>AGENT_CHOOSE</option><option SELECTED>$three_way_call_cid</option></select>$NWB#vicidial_campaigns-three_way_call_cid$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>3-Way Call Πρόθεμα Κλήσης: </td><td align=left><input type=text name=three_way_dial_prefix size=15 maxlength=20 value=\"$three_way_dial_prefix\">$NWB#vicidial_campaigns-three_way_dial_prefix$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Γνωστός Επιτρέπεται: </td><td align=left><select size=1 name=agent_allow_group_alias><option>Y</option><option>N</option><option SELECTED>$agent_allow_group_alias</option></select>$NWB#vicidial_campaigns-agent_allow_group_alias$NWE</td></tr>\n";
+
+		if ($agent_allow_group_alias == 'Y')
+			{
+			##### get groups_alias listings for dynamic default group alias pulldown list menu
+			$stmt="SELECT group_alias_id,group_alias_name from groups_alias where active='Y' order by group_alias_id";
+			$rslt=mysql_query($stmt, $link);
+			$group_alias_to_print = mysql_num_rows($rslt);
+			$group_alias_menu='';
+			$group_alias_selected=0;
+			$o=0;
+			while ($group_alias_to_print > $o) 
+				{
+				$rowx=mysql_fetch_row($rslt);
+				$group_alias_menu .= "<option ";
+				if ($default_group_alias == "$rowx[0]") 
+					{
+					$group_alias_menu .= "SELECTED ";
+					$group_alias_selected++;
+					}
+				$group_alias_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+				$o++;
+				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Προεπιλεγμένη ομάδα Γνωστός: </td><td align=left><select size=1 name=default_group_alias>";
+			echo "<option value=\"\">NONE</option>";
+			echo "$group_alias_menu";
+			echo "</select>$NWB#vicidial_campaigns-default_group_alias$NWE</td></tr>\n";
+			}
+
+		if ($SSenable_vtiger_integration > 0)
+			{
+			echo "<tr bgcolor=#B6D3FC><td align=right>Αναζήτηση Vtiger Κατηγορία: </td><td align=left><select size=1 name=vtiger_search_category><option>LEAD</option><option>ACCOUNT</option><option>VENDOR</option><option>LEAD_ACCOUNT</option><option>LEAD_ACCOUNT_VENDOR</option><option>ACCTID</option><option>ACCTID_ACCOUNT</option><option>ACCTID_ACCOUNT_LEAD_VENDOR</option><option SELECTED>$vtiger_search_category</option></select>$NWB#vicidial_campaigns-vtiger_search_category$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Δημιουργία Vtiger Call Record: </td><td align=left><select size=1 name=vtiger_create_call_record><option>Y</option><option>N</option><option SELECTED>$vtiger_create_call_record</option></select>$NWB#vicidial_campaigns-vtiger_create_call_record$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Δημιουργία Vtiger Μόλυβδος Εγγραφή: </td><td align=left><select size=1 name=vtiger_create_lead_record><option>Y</option><option>N</option><option SELECTED>$vtiger_create_lead_record</option></select>$NWB#vicidial_campaigns-vtiger_create_lead_record$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Screen Είσοδος: </td><td align=left><select size=1 name=vtiger_screen_login><option>Y</option><option>N</option><option SELECTED>$vtiger_screen_login</option></select>$NWB#vicidial_campaigns-vtiger_screen_login$NWE</td></tr>\n";
+			}
+		else
+			{
+			echo "<input type=hidden name=vtiger_search_category value=\"$vtiger_search_category\">\n";
+			echo "<input type=hidden name=vtiger_create_call_record value=\"$vtiger_create_call_record\">\n";
+			echo "<input type=hidden name=vtiger_create_lead_record value=\"$vtiger_create_lead_record\">\n";
+			echo "<input type=hidden name=vtiger_screen_login value=\"$vtiger_screen_login\">\n";
+			}
 
 		if ($campaign_allow_inbound == 'Y')
 			{
@@ -9250,33 +13662,88 @@ if ($ADD==31)
 		echo "</TABLE></center></FORM>\n";
 
 	echo "<center>\n";
-	echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
-	echo "<TABLE width=400 cellspacing=3>\n";
-	echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>ΟΝΟΜΑ ΛΙΣΤΑΣ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
 
-		$active_lists = 0;
-		$inactive_lists = 0;
-		$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
-		$rslt=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rslt);
-		$camp_lists='';
+	echo "<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=41>\n";
+	echo "<input type=hidden name=DB value=$DB>\n";
+	echo "<input type=hidden name=stage value=list_activation>\n";
+	echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 
-		$o=0;
-		while ($lists_to_print > $o) 
-			{
-				$rowx=mysql_fetch_row($rslt);
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
+
+		echo "<TABLE><TR><TD>\n";
+			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		$LISTlink='stage=LISTIDDOWN';
+		$TALLYlink='stage=TALLYDOWN';
+		$ACTIVElink='stage=ACTIVEDOWN';
+		$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+		$CALLDATElink='stage=CALLDATEDOWN';
+		$SQLorder='order by list_id';
+		if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+		if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+		if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+		if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+		if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+		if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+		if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+		if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+		if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+		if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+			$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
+			$rslt=mysql_query($stmt, $link);
+			$lists_to_print = mysql_num_rows($rslt);
+
+			echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+			echo "<TR BGCOLOR=BLACK>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID ΛΙΣΤΑΣ</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΟΝΟΜΑ ΛΙΣΤΑΣ</B></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</B></TD>\n";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+			echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΕΝΕΡΓΟ</B></a></TD>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΕΛΕΥΤΑΙΑ ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΡΟΠΟΠΟΙΗΣΗ</TD>\n";
+			echo "</TR>\n";
+
+			$o=0;
+			while ($lists_to_print > $o)
+				{
+				$row=mysql_fetch_row($rslt);
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+				echo "<td><font size=1> $row[1]</td>";
+				echo "<td><font size=1> $row[2]</td>";
+				echo "<td><font size=1> $row[3]</td>";
+				echo "<td><font size=1> $row[4]</td>";
+				echo "<td>";
+
+				if (ereg('Y',$row[4]))
+					{
+					$active_lists++;
+					$camp_lists .= "'$row[0]',";
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+					}
+				else
+					{
+					$inactive_lists++;
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+					}
+
+				echo "</td>";
+				echo "<td><font size=1> $row[5]</td>";
+				echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+
 				$o++;
-			if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
-			if (ereg("N", $rowx[1])) {$inactive_lists++;}
+				}
 
-			if (eregi("1$|3$|5$|7$|9$", $o))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
-			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+			echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"ΕΠΙΣΥΝΑΠΤΩ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΒΟΛΩΝ ΔΡΑΣΤΙΚΗΣ\"></TD></TR>\n";
+			echo "</TABLE></center><BR></FORM>\n";
 
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
-			}
-		echo "</table></center><br>\n";
 		echo "<center><b>\n";
 
 		$filterSQL = $filtersql_list[$lead_filter_id];
@@ -9301,25 +13768,26 @@ if ($ADD==31)
 			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
 			}
 
-
-
-
-
-			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $link);
-			$rowx=mysql_fetch_row($rslt);
-			$hopper_leads = "$rowx[0]";
+		$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
+		if ($DB) {echo "$stmt\n";}
+		$rslt=mysql_query($stmt, $link);
+		$rowx=mysql_fetch_row($rslt);
+		$hopper_leads = "$rowx[0]";
 
 		echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
 		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
-		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
-		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
-		echo "</b></center>\n";
+		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Κάντε κλικ εδώ για να δείτε μια VDAD έκθεση για αυτή την καμπάνια</a><BR><BR>\n";
 		}
+	echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAIGNS&stage=$campaign_id\">Κάντε κλικ εδώ για να δείτε chages Διαχειριστής σε αυτήν την εκστρατεία</FONT>\n";
+		}
+	echo "</b></center>\n";
+	}
 
 
-
+	##### CAMPAIGN CUSTOM STATUSES #####
 	if ($SUB==22)
 		{
 
@@ -9388,7 +13856,7 @@ if ($ADD==31)
 		echo "Κατάσταση:<input type=text name=status size=10 maxlength=8> &nbsp; \n";
 		echo "Περιγραφή:<input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
 		echo "Επιλέξιμο:<select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
-		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Ανθρώπινα Απάντηση: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
 		echo "Κατηγορία:\n";
 		echo "<select size=1 name=category>\n";
 		echo "$cats_list";
@@ -9399,7 +13867,7 @@ if ($ADD==31)
 		echo "</FORM><br>\n";
 		}
 
-
+	##### CAMPAIGN HOTKEYS #####
 	if ($SUB==23)
 		{
 		echo "<br><b>ΠΡΟΣΑΡΜΟΣΜΕΝΑ ΚΛΕΙΔΙΑ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_hotkeys$NWE</b><br>\n";
@@ -9449,35 +13917,85 @@ if ($ADD==31)
 		echo "</form><BR>\n";
 		}
 
-
+	##### CAMPAIGN LEAD RECYCLING #####
 	if ($SUB==25)
 		{
-		echo "<br><br><b>ΑΝΑΚΥΚΛΩΣΗ ΟΔΗΓΟΥ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
-		echo "<TABLE width=500 cellspacing=3>\n";
-		echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΚΑΘΥΣΤΕΡΗΣΗ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΜΕΓΙΣΤΟ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΕΝΕΡΓΟ</td><td> </td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
+		### display counts on leads that have hit the limit in this campaign
+		$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
+		$rslt=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rslt);
+		$camp_lists='';
+		$o=0;
+		while ($lists_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			if (ereg("Y", $rowx[1])) {$camp_lists .= "'$rowx[0]',";}
+			$o++;
+			}
+		$camp_lists = eregi_replace(".$","",$camp_lists);
 
-			$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
-			$rslt=mysql_query($stmt, $link);
-			$recycle_to_print = mysql_num_rows($rslt);
-			$o=0;
-			while ($recycle_to_print > $o) {
-				$rowx=mysql_fetch_row($rslt);
-				$o++;
+		$stmt="SELECT * from vicidial_lead_recycle where campaign_id='$campaign_id' order by status";
+		$rslt=mysql_query($stmt, $link);
+		$recycle_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($recycle_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$RECYCLE_status[$o] =	$rowx[2];
+			$RECYCLE_delay[$o] =	$rowx[3];
+			$RECYCLE_attempt[$o] =	$rowx[4];
+			$RECYCLE_active[$o] =	$rowx[5];
+			$RECYCLE_count[$o] = "'Y','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";
+			if ($RECYCLE_attempt[$o]==1) {$RECYCLE_count[$o] = "'Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==2) {$RECYCLE_count[$o] = "'Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==3) {$RECYCLE_count[$o] = "'Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==4) {$RECYCLE_count[$o] = "'Y4','Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==5) {$RECYCLE_count[$o] = "'Y5','Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==6) {$RECYCLE_count[$o] = "'Y6','Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==7) {$RECYCLE_count[$o] = "'Y7','Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==8) {$RECYCLE_count[$o] = "'Y8','Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]==9) {$RECYCLE_count[$o] = "'Y9','Y10'";}
+			if ($RECYCLE_attempt[$o]>9) {$RECYCLE_count[$o] = "'Y10'";}
+			$o++;
+			}
+		$o=0;
+
+		echo "<br><br><b>ΑΝΑΚΥΚΛΩΣΗ ΟΔΗΓΟΥ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_lead_recycle$NWE</b><br>\n";
+		echo "<TABLE width=700 cellspacing=3>\n";
+		echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΚΑΘΥΣΤΕΡΗΣΗ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>ΜΕΓΙΣΤΟ ΠΡΟΣΠΑΘΕΙΑΣ</td><td>LEADS ΣΕ ΟΡΙΑΚΗ</td><td>ΕΝΕΡΓΟ</td><td> </td><td>ΔΙΑΓΡΑΦΗ</td></tr>\n";
+
+		while ($recycle_to_print > $o) 
+			{
+			$recycle_limit=0;
+			if (strlen($camp_lists) > 2)
+				{
+				$stmt="SELECT count(*) from vicidial_list where status='$RECYCLE_status[$o]' and list_id IN($camp_lists) and called_since_last_reset IN($RECYCLE_count[$o]);";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $link);
+				$counts_to_print = mysql_num_rows($rslt);
+				if ($counts_to_print > 0) 
+					{
+					$rowx=mysql_fetch_row($rslt);
+					$recycle_limit = $rowx[0];
+					}
+				}
 
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
 				{$bgcolor='bgcolor="#9BB9FB"';}
 
-			echo "<tr $bgcolor><td><font size=1>$rowx[2]<form action=$PHP_SELF method=POST>\n";
-			echo "<input type=hidden name=status value=\"$rowx[2]\">\n";
+			echo "<tr $bgcolor><td><font size=2> &nbsp; $RECYCLE_status[$o]<form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=status value=\"$RECYCLE_status[$o]\">\n";
 			echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 			echo "<input type=hidden name=ADD value=45></td>\n";
-			echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$rowx[3]\"></td>\n";
-			echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$rowx[4]\"></td>\n";
-			echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$rowx[5]</option></select></td>\n";
+			echo "<td><font size=1><input type=text size=7 maxlength=5 name=attempt_delay value=\"$RECYCLE_delay[$o]\"></td>\n";
+			echo "<td><font size=1><input type=text size=5 maxlength=3 name=attempt_maximum value=\"$RECYCLE_attempt[$o]\"></td>\n";
+			echo "<td align=right><font size=2>$recycle_limit &nbsp; </td>\n";
+			echo "<td><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$RECYCLE_active[$o]</option></select></td>\n";
 			echo "<td><font size=1><input type=submit name=submit value=MODIFY></form></td>\n";
-			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$rowx[2]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			echo "<td><font size=1><a href=\"$PHP_SELF?ADD=65&campaign_id=$campaign_id&status=$RECYCLE_status[$o]\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
+			$o++;
 			}
 
 		echo "</table>\n";
@@ -9494,9 +14012,11 @@ if ($ADD==31)
 		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
 
 		echo "</FORM><br>\n";
+		echo "<br>\n";
+		echo "* Μόλυβδος μετράει λαμβάνονται από καταλόγους που δραστηριοποιούνται στην εκστρατεία μόνο.\n";
 		}
 
-
+	##### CAMPAIGN AUTO-ALT-NUMBER DIALING #####
 	if ($SUB==26)
 		{
 		echo "<br><br><b>ΑΥΤΟΜΑΤΟΣ ΣΧΗΜΑΤΙΣΜΌΣ ΑΡΙΘΜΟΎ ALT ΓΙΑ ΑΥΤΉΝ ΤΗΝ ΕΚΣΤΡΑΤΕΊΑ: &nbsp; $NWB#vicidial_auto_alt_dial_statuses$NWE</b><br>\n";
@@ -9533,7 +14053,7 @@ if ($ADD==31)
 		echo "</FORM><br>\n";
 		}
 
-
+	##### CAMPAIGN ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ #####
 	if ($SUB==27)
 		{
 		echo "<br><br><b>ΚΩΔΙΚΕΣ ΜΙΚΡΗΣ ΔΙΑΚΟΠΉΣ ΠΡΑΚΤΟΡΩΝ ΓΙΑ ΑΥΤΗΝ ΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_pause_codes$NWE</b><br>\n";
@@ -9574,6 +14094,114 @@ if ($ADD==31)
 		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
 
 		echo "</center></FORM><br>\n";
+		}
+
+	##### CAMPAIGN QC SETTINGS #####
+	if ( ($SUB==28) and ($SSqc_features_active > 0) )
+		{
+		$stmt="SELECT list_id,list_name,active from vicidial_lists where campaign_id='$campaign_id'";
+		$rslt=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rslt);
+		$qc_lists_list='';
+
+		$p=0;
+		while ($lists_to_print > $p) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$qc_lists_list .= "<input type=\"checkbox\" name=\"qc_lists[]\" value=\"$rowx[0]\"";
+			$r=0;
+			while ($r < $QCL_to_print)
+				{
+				if ($rowx[0] == $QClists[$r]) 
+					{
+					$qc_lists_list .= " CHECKED";
+					}
+				$r++;
+				}
+			$qc_lists_list .= "> $rowx[0] - $rowx[1] - $rowx[2]<BR>\n";
+
+			$p++;
+			}
+
+		##### get scripts listings for pulldown
+		$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
+		$rslt=mysql_query($stmt, $link);
+		$scripts_to_print = mysql_num_rows($rslt);
+		$QCscripts_list="";
+		$o=0;
+		while ($scripts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$scriptname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+		##### get shifts listings for pulldown
+		$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+		$rslt=mysql_query($stmt, $link);
+		$shifts_to_print = mysql_num_rows($rslt);
+		$QCshifts_list="";
+		$o=0;
+		while ($shifts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$shiftname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
+		echo "<br><br><b>QC SETTINGS για αυτή την καμπάνια:</b><br>\n";
+		echo "<form action=$PHP_SELF method=POST><center><TABLE width=700 cellspacing=3>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right><input type=hidden name=ADD value=48>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "QC Enabled:</td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_campaigns-qc_enabled$NWE</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC καθεστώτα:<BR> $NWB#vicidial_campaigns-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
+#		echo "<tr bgcolor=#B9CBFD><td align=right>QC Lists: <BR> $NWB#vicidial_campaigns-qc_lists$NWE</td><td>$qc_lists_list</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm:</td><td align=left><input type=text name=qc_web_form_address size=70 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_campaigns-qc_web_form_address$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
+		echo "$QCscripts_list";
+		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-qc_script$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
+		echo "$QCshifts_list";
+		echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
+		echo "</select>$NWB#vicidial_campaigns-qc_shift_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_campaigns-qc_get_record_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Δείτε Καταγραφή: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_campaigns-qc_show_recording$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</table>\n";
+		echo "<BR></center></FORM><br>\n";
+		}
+
+	##### CAMPAIGN SURVEY SETTINGS #####
+	if ($SUB=='20A')
+		{
+
+		echo "<center><br><b>ΕΡΕΥΝΑ SETTINGS για αυτήν την καμπάνια:</b><br>\n";
+		echo "<form action=$PHP_SELF method=POST><center><TABLE width=750 cellspacing=3>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right><input type=hidden name=ADD value=40A>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Πρώτο αρχείο ήχου: </td><td><input type=text size=50 maxlength=50 name=survey_first_audio_file value=\"$survey_first_audio_file\"> $NWB#vicidial_campaigns-survey_first_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα DTMF Digits: </td><td><input type=text size=16 maxlength=16 name=survey_dtmf_digits value=\"$survey_dtmf_digits\"> $NWB#vicidial_campaigns-survey_dtmf_digits$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα δεν ενδιαφέρεται Digit: </td><td><input type=text size=5 maxlength=1 name=survey_ni_digit value=\"$survey_ni_digit\"> $NWB#vicidial_campaigns-survey_ni_digit$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Opt-σε αρχείο ήχου: </td><td><input type=text size=50 maxlength=50 name=survey_opt_in_audio_file value=\"$survey_opt_in_audio_file\"> $NWB#vicidial_campaigns-survey_opt_in_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα δεν ενδιαφέρεται αρχείο ήχου: </td><td><input type=text size=50 maxlength=50 name=survey_ni_audio_file value=\"$survey_ni_audio_file\"> $NWB#vicidial_campaigns-survey_ni_audio_file$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Μέθοδος: </td><td><select size=1 name=survey_method><option>AGENT_XFER</option><option>VOICEMAIL</option><option>ΤΗΛ.ΣΥΝΔΕΣΗ</option><option>HANGUP</option><option>CAMPREC_60_WAV</option><option SELECTED>$survey_method</option></select> $NWB#vicidial_campaigns-survey_method$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα της μη αντίδρασης δράσης: </td><td><select size=1 name=survey_no_response_action><option>OPTIN</option><option>OPTOUT</option><option SELECTED>$survey_no_response_action</option></select> $NWB#vicidial_campaigns-survey_no_response_action$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα δεν ενδιαφέρεται Κατάσταση:</td><td><select name=survey_ni_status>$survey_ni_status_list</select> $NWB#vicidial_campaigns-survey_ni_status$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Απάντηση Digit Χάρτης: </td><td><input type=text size=70 maxlength=100 name=survey_response_digit_map value=\"$survey_response_digit_map\"> $NWB#vicidial_campaigns-survey_response_digit_map$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Έρευνα Xfer Παράταση: </td><td><input type=text size=12 maxlength=20 name=survey_xfer_exten value=\"$survey_xfer_exten\"> $NWB#vicidial_campaigns-survey_xfer_exten$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>Έρευνα Καμπάνια Καταγραφή Directory: </td><td><input type=text size=70 maxlength=255 name=survey_camp_record_dir value=\"$survey_camp_record_dir\"> $NWB#vicidial_campaigns-survey_camp_record_dir$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td><input type=text size=12 maxlength=20 name=voicemail_ext value=\"$voicemail_ext\"> $NWB#vicidial_campaigns-voicemail_ext$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		echo "</table>\n";
+		echo "<BR></center></FORM><br>\n";
 		}
 
 
@@ -9663,12 +14291,13 @@ if ($ADD==34)
 		$rslt=mysql_query($stmt, $link);
 		$statuses_to_print = mysql_num_rows($rslt);
 		$statuses_list='';
-
+		$dial_statuses_list='';
 		$o=0;
 		while ($statuses_to_print > $o) 
 			{
 			$rowx=mysql_fetch_row($rslt);
 			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 			$statname_list["$rowx[0]"] = "$rowx[1]";
 			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 			if (eregi("Y",$rowx[2]))
@@ -9685,6 +14314,7 @@ if ($ADD==34)
 			{
 			$rowx=mysql_fetch_row($rslt);
 			$statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			if ($rowx[0] != 'CBHOLD') {$dial_statuses_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";}
 			$statname_list["$rowx[0]"] = "$rowx[1]";
 			$LRstatuses_list .= "<option value=\"$rowx[0]-----$rowx[1]\">$rowx[0] - $rowx[1]</option>\n";
 			if (eregi("Y",$rowx[2]))
@@ -9740,9 +14370,16 @@ if ($ADD==34)
 	echo "<TD><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> <B>$row[0]</B>: </font></TD>";
 	echo "<TD BGCOLOR=\"$camp_detail_color\"><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Βασική Επισκόπηση </font></a></TD>";
 	echo "<TD> <a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Αναλυτική Επισκόπηση</font></a> </TD>";
-	echo "<TD BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">List Mix</font></a> </TD>";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<TD BGCOLOR=\"$camp_listmix_color\"> <a href=\"$PHP_SELF?ADD=34&SUB=29&campaign_id=$campaign_id\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Κατάλογος Mix</font></a> </TD>";
+		}
 	echo "<TD> <a href=\"./AST_timeonVDADall.php?RR=4&DB=0&group=$row[0]\"><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\">Πραγματικού Χρόνου Οθόνη</font></a></TD>\n";
 	echo "<TD WIDTH=300><font size=2 color=$subcamp_font face=\"ARIAL,HELVETICA\"> &nbsp; </font></TD>\n";
+	if ($SSoutbound_autodial_active < 1)
+		{
+		echo "<TD></TD>";
+		}
 	echo "</TR></TABLE>\n";
 
 	if ($SUB < 1)
@@ -9756,82 +14393,84 @@ if ($ADD==34)
 		echo "<tr bgcolor=#B6D3FC><td align=right>ID Εκστρατείας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_campaigns-campaign_id$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Εκστρατείας: </td><td align=left><input type=text name=campaign_name size=40 maxlength=40 value=\"$row[1]\">$NWB#vicidial_campaigns-campaign_name$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή εκστρατείας: </td><td align=left>$row[57]$NWB#vicidial_campaigns-campaign_description$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Change Date: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Login Date: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Αλλαγή Ημερομηνία: </td><td align=left>$campaign_changedate &nbsp; $NWB#vicidial_campaigns-campaign_changedate$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Εκστρατεία Σύνδεση Ημερομηνία: </td><td align=left>$campaign_logindate &nbsp; $NWB#vicidial_campaigns-campaign_logindate$NWE</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$row[2]</option></select>$NWB#vicidial_campaigns-active$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδ. Στάθμευσης: </td><td align=left>$row[9] - $row[10]$NWB#vicidial_campaigns-park_ext$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left>$row[11]$NWB#vicidial_campaigns-web_form_address$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέπω τους Closers: </td><td align=left>$row[12] $NWB#vicidial_campaigns-allow_closers$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα μεταφοράς προεπιλογής:</td><td align=left>$default_xfer_group $NWB#vicidial_campaigns-default_xfer_group$NWE</td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
-
-		$o=0;
-		while ($Ds_to_print > $o) 
+		if ($SSoutbound_autodial_active > 0)
 			{
-			$o++;
-			$Dstatus = $Dstatuses[$o];
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε πλησίον και συνδύασε:</td><td align=left>$campaign_allow_inbound $NWB#vicidial_campaigns-campaign_allow_inbound$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
-			if ($DEFstatusDISABLED > 0)
+			$o=0;
+			while ($Ds_to_print > $o) 
 				{
-				echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "REMOVE</DEL></td></tr>\n";
+				$o++;
+				$Dstatus = $Dstatuses[$o];
+
+				echo "<tr bgcolor=#B6D3FC><td align=right>Θέση πινάκων$o: </td><td align=left> \n";
+				if ($DEFstatusDISABLED > 0)
+					{
+					echo "<font color=grey><DEL><b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "REMOVE</DEL></td></tr>\n";
+					}
+				else
+					{
+					echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
+					echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
+					}
 				}
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
+			echo "<option value=\"\"> - NONE - </option>\n";
+
+			echo "$dial_statuses_list";
+			echo "</select> &nbsp; \n";
+			echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>DOWN PHONE</option><option>UP PHONE</option><option>DOWN LAST NAME</option><option>UP LAST NAME</option><option>DOWN COUNT</option><option>UP COUNT</option><option>DOWN 2nd NEW</option><option>DOWN 3rd NEW</option><option>DOWN 4th NEW</option><option>DOWN 5th NEW</option><option>DOWN 6th NEW</option><option>UP 2nd NEW</option><option>UP 3rd NEW</option><option>UP 4th NEW</option><option>UP 5th NEW</option><option>UP 6th NEW</option><option>DOWN PHONE 2nd NEW</option><option>DOWN PHONE 3rd NEW</option><option>DOWN PHONE 4th NEW</option><option>DOWN PHONE 5th NEW</option><option>DOWN PHONE 6th NEW</option><option>UP PHONE 2nd NEW</option><option>UP PHONE 3rd NEW</option><option>UP PHONE 4th NEW</option><option>UP PHONE 5th NEW</option><option>UP PHONE 6th NEW</option><option>DOWN LAST NAME 2nd NEW</option><option>DOWN LAST NAME 3rd NEW</option><option>DOWN LAST NAME 4th NEW</option><option>DOWN LAST NAME 5th NEW</option><option>DOWN LAST NAME 6th NEW</option><option>UP LAST NAME 2nd NEW</option><option>UP LAST NAME 3rd NEW</option><option>UP LAST NAME 4th NEW</option><option>UP LAST NAME 5th NEW</option><option>UP LAST NAME 6th NEW</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option>UP COUNT 2nd NEW</option><option>UP COUNT 3rd NEW</option><option>UP COUNT 4th NEW</option><option>UP COUNT 5th NEW</option><option>UP COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">Κατάλογος Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
+			echo "$mixes_list";
+			if (ereg("DISABLED",$list_order_mix))
+				{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
 			else
-				{
-				echo "<b>$Dstatus</b> - $statname_list[$Dstatus] &nbsp; &nbsp; &nbsp; &nbsp; <font size=2>\n";
-				echo "<a href=\"$PHP_SELF?ADD=68&campaign_id=$campaign_id&status=$Dstatuses[$o]\">ΑΦΑΙΡΕΣΤΕ</a></td></tr>\n";
-				}
-			}
+				{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
+			echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Add A Dial Κατάσταση:</td><td align=left><select size=1 name=dial_status $DEFlistDISABLE>\n";
-		echo "<option value=\"\"> - NONE - </option>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
+			echo "$filters_list";
+			echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
+			echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
 
-		echo "$statuses_list";
-		echo "</select> &nbsp; \n";
-		echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ> &nbsp; &nbsp; $NWB#vicidial_campaigns-dial_status$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Σειρά Λίστας: </td><td align=left><select size=1 name=lead_order><option>DOWN</option><option>UP</option><option>UP PHONE</option><option>DOWN PHONE</option><option>UP LAST NAME</option><option>DOWN LAST NAME</option><option>UP COUNT</option><option>DOWN COUNT</option><option>DOWN COUNT 2nd NEW</option><option>DOWN COUNT 3rd NEW</option><option>DOWN COUNT 4th NEW</option><option>DOWN COUNT 5th NEW</option><option>DOWN COUNT 6th NEW</option><option SELECTED>$lead_order</option></select>$NWB#vicidial_campaigns-lead_order$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31&SUB=29&campaign_id=$campaign_id&vcl_id=$list_order_mix\">List Mix</a>: </td><td align=left><select size=1 name=list_order_mix>\n";
-		echo "$mixes_list";
-		if (ereg("DISABLED",$list_order_mix))
-			{echo "<option selected value=\"$list_order_mix\">$list_order_mix - $mixname_list[$list_order_mix]</option>\n";}
-		else
-			{echo "<option selected value=\"ACTIVE\">ACTIVE ($mixname_list[ACTIVE])</option>\n";}
-		echo "</select>$NWB#vicidial_campaigns-list_order_mix$NWE</td></tr>\n";
+			echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
+: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option>Εισερχόμενα_MAN</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$lead_filter_id\">Φίλτρο Οδηγού</a>: </td><td align=left><select size=1 name=lead_filter_id>\n";
-		echo "$filters_list";
-		echo "<option selected value=\"$lead_filter_id\">$lead_filter_id - $filtername_list[$lead_filter_id]</option>\n";
-		echo "</select>$NWB#vicidial_campaigns-lead_filter_id$NWE</td></tr>\n";
+			echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
 
-		echo "<tr bgcolor=#B6D3FC><td align=right>Επίπεδο Hopper: </td><td align=left><select size=1 name=hopper_level><option>1</option><option>5</option><option>10</option><option>20</option><option>50</option><option>100</option><option>200</option><option>500</option><option>700</option><option>1000</option><option>2000</option><option SELECTED>$hopper_level</option></select>$NWB#vicidial_campaigns-hopper_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#B6D3FC><td align=right>Αναγκαστική Επαναφορά του Hopper: </td><td align=left><select size=1 name=reset_hopper><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_campaigns-force_reset_hopper$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Μέθοδος Κλήσης
-: </td><td align=left><select size=1 name=dial_method><option >MANUAL</option><option>RATIO</option><option>ADAPT_HARD_LIMIT</option><option>ADAPT_TAPERED</option><option>ADAPT_AVERAGE</option><option SELECTED>$dial_method</option></select>$NWB#vicidial_campaigns-dial_method$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>ΕΠΙΠΕΔΟ ΑΥΤΟΜΑΤΗΣ ΚΛΗΣΗΣ: </td><td align=left><select size=1 name=auto_dial_level><option >0</option><option>1</option><option>1.1</option><option>1.2</option><option>1.3</option><option>1.4</option><option>1.5</option><option>1.6</option><option>1.7</option><option>1.8</option><option>1.9</option><option>2.0</option><option>2.2</option><option>2.5</option><option>2.7</option><option>3.0</option><option>3.5</option><option>4.0</option><option SELECTED>$auto_dial_level</option></select>(0 = off)$NWB#vicidial_campaigns-auto_dial_level$NWE</td></tr>\n";
-
-		echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
+			echo "<tr bgcolor=#BDFFBD><td align=right>Ενταση Τροποποίησης Προσαρμογής
 : </td><td align=left><select size=1 name=adaptive_intensity>\n";
-		$n=40;
-		while ($n>=-40)
-			{
-			$dtl = 'Balanced';
-			if ($n<0) {$dtl = 'Less Intense';}
-			if ($n>0) {$dtl = 'More Intense';}
-			if ($n == $adaptive_intensity) 
-				{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
-			else
-				{echo "<option value=\"$n\">$n - $dtl</option>\n";}
-			$n--;
+			$n=40;
+			while ($n>=-40)
+				{
+				$dtl = 'Balanced';
+				if ($n<0) {$dtl = 'Less Intense';}
+				if ($n>0) {$dtl = 'More Intense';}
+				if ($n == $adaptive_intensity) 
+					{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+				else
+					{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+				$n--;
+				}
+			echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
 			}
-		echo "</select> $NWB#vicidial_campaigns-adaptive_intensity$NWE</td></tr>\n";
-
 		echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left>$script_id</td></tr>\n";
 
 		echo "<tr bgcolor=#B6D3FC><td align=right>Κατά την έναρξη κλήσης: </td><td align=left>$get_call_launch</td></tr>\n";
@@ -9840,71 +14479,129 @@ if ($ADD==34)
 		echo "</TABLE></center></FORM>\n";
 
 		echo "<center>\n";
-		echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b><br>\n";
-		echo "<TABLE width=400 cellspacing=3>\n";
-		echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>ΟΝΟΜΑ ΛΙΣΤΑΣ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
 
-			$active_lists = 0;
-			$inactive_lists = 0;
-			$stmt="SELECT list_id,active,list_name from vicidial_lists where campaign_id='$campaign_id'";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<form action=$PHP_SELF method=POST>\n";
+		echo "<input type=hidden name=ADD value=44>\n";
+		echo "<input type=hidden name=DB value=$DB>\n";
+		echo "<input type=hidden name=stage value=list_activation>\n";
+		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
+		echo "<br><b>ΛΙΣΤΕΣ ΣΤΗΝ ΕΚΣΤΡΑΤΕΙΑ: &nbsp; $NWB#vicidial_campaign_lists$NWE</b>\n";
+
+		echo "<TABLE><TR><TD>\n";
+			echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		$LISTlink='stage=LISTIDDOWN';
+		$TALLYlink='stage=TALLYDOWN';
+		$ACTIVElink='stage=ACTIVEDOWN';
+		$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+		$CALLDATElink='stage=CALLDATEDOWN';
+		$SQLorder='order by list_id';
+		if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+		if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+		if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+		if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+		if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+		if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+		if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+		if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+		if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+		if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+			$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id and campaign_id='$campaign_id' group by list_id $SQLorder";
 			$rslt=mysql_query($stmt, $link);
 			$lists_to_print = mysql_num_rows($rslt);
-			$camp_lists='';
+
+			echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+			echo "<TR BGCOLOR=BLACK>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID ΛΙΣΤΑΣ</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΟΝΟΜΑ ΛΙΣΤΑΣ</B></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</B></TD>\n";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+			echo "<TD COLSPAN=2><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΕΝΕΡΓΟ</B></a></TD>";
+			echo "<TD><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΕΛΕΥΤΑΙΑ ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ</B></a></TD>";
+			echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΡΟΠΟΠΟΙΗΣΗ</TD>\n";
+			echo "</TR>\n";
 
 			$o=0;
-			while ($lists_to_print > $o) {
-				$rowx=mysql_fetch_row($rslt);
+			while ($lists_to_print > $o)
+				{
+				$row=mysql_fetch_row($rslt);
+				if (eregi("1$|3$|5$|7$|9$", $o))
+					{$bgcolor='bgcolor="#B9CBFD"';} 
+				else
+					{$bgcolor='bgcolor="#9BB9FB"';}
+				echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+				echo "<td><font size=1> $row[1]</td>";
+				echo "<td><font size=1> $row[2]</td>";
+				echo "<td><font size=1> $row[3]</td>";
+				echo "<td><font size=1> $row[4]</td>";
+				echo "<td>";
+
+				if (ereg('Y',$row[4]))
+					{
+					$active_lists++;
+					$camp_lists .= "'$row[0]',";
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\" CHECKED>";
+					}
+				else
+					{
+					$inactive_lists++;
+					echo "<input type=\"checkbox\" name=\"list_active_change[]\" value=\"$row[0]\"";
+					}
+
+				echo "</td>";
+				echo "<td><font size=1> $row[5]</td>";
+				echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+
 				$o++;
-			if (ereg("Y", $rowx[1])) {$active_lists++;   $camp_lists .= "'$rowx[0]',";}
-			if (ereg("N", $rowx[1])) {$inactive_lists++;}
+				}
 
-			if (eregi("1$|3$|5$|7$|9$", $o))
-				{$bgcolor='bgcolor="#B9CBFD"';} 
+			echo "<TR><TD COLSPAN=7 ALIGN=CENTER><input type=submit value=\"ΕΠΙΣΥΝΑΠΤΩ ΚΑΤΑΣΤΑΣΗ ΜΕΤΑΒΟΛΩΝ ΔΡΑΣΤΙΚΗΣ\"></TD></TR>\n";
+			echo "</TABLE></center><BR></FORM>\n";
+			echo "<center><b>\n";
+
+			$filterSQL = $filtersql_list[$lead_filter_id];
+			$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
+			if (strlen($filterSQL)>4)
+				{$fSQL = "and $filterSQL";}
 			else
-				{$bgcolor='bgcolor="#9BB9FB"';}
+				{$fSQL = '';}
 
-			echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[1]</td></tr>\n";
-
-			}
-
-		echo "</table></center><br>\n";
-		echo "<center><b>\n";
-
-		$filterSQL = $filtersql_list[$lead_filter_id];
-		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
-		if (strlen($filterSQL)>4)
-			{$fSQL = "and $filterSQL";}
-		else
-			{$fSQL = '';}
-
-			$camp_lists = eregi_replace(".$","",$camp_lists);
-		echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
+				$camp_lists = eregi_replace(".$","",$camp_lists);
+			echo "Αυτή η εκστρατεία έχει$active_lists ενεργές λίστες και$inactive_lists Μη ενεργές λίστες<br><br>\n";
 
 
-		if ($display_dialable_count == 'Y')
-			{
-			### call function to calculate and print dialable leads
-			dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
-			echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
-			}
-		else
-			{
-			echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
-			echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
-			}
+			if ($display_dialable_count == 'Y')
+				{
+				### call function to calculate and print dialable leads
+				dialable_leads($DB,$link,$local_call_time,$dial_statuses,$camp_lists,$fSQL);
+				echo " - <font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$campaign_id&stage=hide_dialable\">ΑΠΟΚΡΥΨΗ</a></font><BR><BR>";
+				}
+			else
+				{
+				echo "<a href=\"$PHP_SELF?ADD=73&campaign_id=$campaign_id\" target=\"_blank\">Popup Dialable Leads Count</a>";
+				echo " - <font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$campaign_id&stage=show_dialable\">ΕΜΦΑΝΙΣΗ</a></font><BR><BR>";
+				}
 
 
 
-			$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $link);
-			$rowx=mysql_fetch_row($rslt);
-			$hopper_leads = "$rowx[0]";
+				$stmt="SELECT count(*) FROM vicidial_hopper where campaign_id='$campaign_id' and status IN('READY')";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rslt);
+				$hopper_leads = "$rowx[0]";
 
-		echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
-		echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
+			echo "Αυτή η εκστρατεία έχει$hopper_leads >οδηγοί στον hopper κλήσεων<<br><br>\n";
+			echo "<a href=\"./AST_VICIDIAL_hopperlist.php?group=$campaign_id\">Πατήστε εδώ για να δείτε ποιοι οδηγοί είναι στον hopper τώρα</a><br><br>\n";
+			echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Κάντε κλικ εδώ για να δείτε μια VDAD έκθεση για αυτή την καμπάνια</a><BR><BR>\n";
+		}
 		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Επιλέξτε εδώ για να δείτε τις κρατειμένες Επανακλήσεις σε αυτήν την εκστρατεία</a><BR><BR>\n";
-		echo "<a href=\"./AST_VDADstats.php?group=$campaign_id\">Click here to see a VDAD report for this campaign</a><BR><BR>\n";
+		if ($LOGuser_level >= 9)
+			{
+			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAIGNS&stage=$campaign_id\">Κάντε κλικ εδώ για να δείτε chages Διαχειριστής σε αυτήν την εκστρατεία</FONT>\n";
+			}
+
 		echo "</b></center>\n";
 
 		echo "<br>\n";
@@ -9962,6 +14659,7 @@ if ( ($ADD==34) or ($ADD==31) )
 {
 	if ($LOGmodify_campaigns==1)
 	{
+	##### CAMPAIGN LIST MIX SETTINGS #####
 	if ($SUB==29)
 		{
 		##### get list_id listings for dynamic pulldown
@@ -10028,7 +14726,7 @@ if ( ($ADD==34) or ($ADD==31) )
 				{echo "<B>$rowx[5]</B></td>\n";}
 			echo "<td colspan=3>Method:\n";
 			echo "<select size=1 name=mix_method$US$vcl_id id=method$US$vcl_id><option value=\"EVEN_MIX\">EVEN_MIX</option><option value=\"IN_ORDER\">IN_ORDER</option><option value=\"RANDOM\">RANDOM</option><option SELECTED value=\"$rowx[4]\">$rowx[4]</option></select></td></tr>\n";
-			echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>PRIORITY</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
+			echo "<tr><td>ID ΛΙΣΤΑΣ</td><td>ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ</td><td>% MIX</td><td>STATUSES</td><td></td></tr>\n";
 
 # list_id|order|percent|statuses|:list_id|order|percent|statuses|:...
 # 101|1|40| A B NA -|:102|2|25| NEW -|:103|3|30| DROP CALLBK -|:101|4|5| DROP -|
@@ -10088,7 +14786,7 @@ if ( ($ADD==34) or ($ADD==31) )
 				echo "<select size=1 name=dial_status$US$q$US$vcl_id id=dial_status$US$q$US$vcl_id>\n";
 				echo "<option value=\"\"> - Select A Status - </option>\n";
 
-				echo "$statuses_list";
+				echo "$dial_statuses_list";
 				echo "</select> <font size=2><B>\n";
 				echo "<a href=\"#\" onclick=\"mod_mix_status('ADD','$vcl_id','$q');return false;\">ADD</a> &nbsp; \n";
 				echo "<a href=\"#\" onclick=\"mod_mix_status('REMOVE','$vcl_id','$q');return false;\">ΑΦΑΙΡΕΣΤΕ</a>\n";
@@ -10149,7 +14847,7 @@ if ( ($ADD==34) or ($ADD==31) )
 		echo "$mixlists_list";
 		echo "</select></td>\n";
 		echo "<td>Dial Κατάσταση:<select size=1 name=status>\n";
-		echo "$statuses_list";
+		echo "$dial_statuses_list";
 		echo "</select></td>\n";
 		echo "<td> &nbsp; <input type=submit name=submit value=ΕΠΙΒΕΒΑΙΩΣΗ></form></td>\n";
 		echo "</tr>\n";
@@ -10608,7 +15306,6 @@ if ($ADD==311)
 	$rslt=mysql_query($stmt, $link);
 	$campaigns_to_print = mysql_num_rows($rslt);
 	$campaigns_list='';
-
 	$o=0;
 	while ($campaigns_to_print > $o) {
 		$rowx=mysql_fetch_row($rslt);
@@ -10621,7 +15318,7 @@ if ($ADD==311)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_lists-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>ΕΠΑΝΑΦΟΡΑ ΚΑΤΑΣΤΑΣΗΣ ΚΛΗΣΗΣ ΟΔΗΓΟΥ ΓΙΑ ΤΗΝ ΛΙΣΤΑ: </td><td align=left><select size=1 name=reset_list><option>Y</option><option SELECTED>N</option></select>$NWB#vicidial_lists-reset_list$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ημερομηνία αλλαγής καταλόγων: </td><td align=left>$list_changedate &nbsp; $NWB#vicidial_lists-list_changedate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>List Last Call Date: </td><td align=left>$list_lastcalldate &nbsp; $NWB#vicidial_lists-list_lastcalldate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Κατάλογος Last Call Ημερομηνία: </td><td align=left>$list_lastcalldate &nbsp; $NWB#vicidial_lists-list_lastcalldate$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 	echo "</TABLE></center>\n";
 
@@ -10887,11 +15584,16 @@ if ($ADD==311)
 
 	echo "<center><b>\n";
 
-	echo "<br><br><a href=\"$PHP_SELF?ADD=811&list_id=$list_id\">Click here to see all CallBack Holds in this list</a><BR><BR>\n";
+	echo "<br><br><a href=\"$PHP_SELF?ADD=811&list_id=$list_id\">Κάντε κλικ εδώ για να δείτε όλες τις Callback Κύτος στον κατάλογο αυτό</a><BR><BR>\n";
+	echo "<br><br><a href=\"./list_download.php?list_id=$list_id\">Κάντε κλικ εδώ για να κατεβάσετε τον κατάλογο αυτό</a><BR><BR>\n";
 
 	if ($LOGdelete_lists > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=511&list_id=$list_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗ ΤΗΝ ΛΙΣΤΑ</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=ΛΙΣΤΕΣ&stage=$list_id\">Κάντε κλικ εδώ για να δείτε chages Διαχειριστής σε αυτήν την λίστα</FONT>\n";
 		}
 	}
 	else
@@ -10920,7 +15622,7 @@ if ($ADD==3111)
 	$group_name =				$row[1];
 	$group_color =				$row[2];
 	$active =					$row[3];
-	$web_form_address =			$row[4];
+	$web_form_address =			stripslashes($row[4]);
 	$voicemail_ext =			$row[5];
 	$next_agent_call =			$row[6];
 	$fronter_display =			$row[7];
@@ -10931,7 +15633,7 @@ if ($ADD==3111)
 	$xferconf_b_dtmf =			$row[12];
 	$xferconf_b_number =		$row[13];
 	$drop_call_seconds =		$row[14];
-	$drop_message =				$row[15];
+	$drop_action =				$row[15];
 	$drop_exten =				$row[16];
 	$call_time_id =				$row[17];
 	$after_hours_action =		$row[18];
@@ -10945,30 +15647,113 @@ if ($ADD==3111)
 	$agent_alert_exten =		$row[26];
 	$agent_alert_delay =		$row[27];
 	$default_xfer_group =		$row[28];
+	$queue_priority =			$row[29];
+	$drop_inbound_group =		$row[30];
+	$ingroup_recording_override = $row[31];
+	$ingroup_rec_filename =		$row[32];
+	$afterhours_xfer_group =	$row[33];
+	$qc_enabled =				$row[34];
+	$qc_statuses =				$row[35];
+	$qc_shift_id =				$row[36];
+	$qc_get_record_launch =		$row[37];
+	$qc_show_recording =		$row[38];
+	$qc_web_form_address =		stripslashes($row[39]);
+	$qc_script =				$row[40];
+	$play_place_in_line = 		$row[41];
+	$play_estimate_hold_time = 	$row[42];
+	$hold_time_option = 		$row[43];
+	$hold_time_option_seconds = $row[44];
+	$hold_time_option_exten = 	$row[45];
+	$hold_time_option_voicemail = 	$row[46];
+	$hold_time_option_xfer_group = 	$row[47];
+	$hold_time_option_callback_filename =	$row[48];
+	$hold_time_option_callback_list_id = 	$row[49];
+	$hold_recall_xfer_group = 	$row[50];
+	$no_delay_call_route = 		$row[51];
+	$play_welcome_message = 	$row[52];
+	$answer_sec_pct_rt_stat_one =	$row[53];
+	$answer_sec_pct_rt_stat_two =	$row[54];
+	$default_group_alias =		$row[55];
+
 
 	##### get in-groups listings for dynamic pulldown
-	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
 	$rslt=mysql_query($stmt, $link);
 	$Xgroups_to_print = mysql_num_rows($rslt);
 	$Xgroups_menu='';
 	$Xgroups_selected=0;
+	$Dgroups_menu='';
+	$Dgroups_selected=0;
+	$Agroups_menu='';
+	$Agroups_selected=0;
+	$Hgroups_menu='';
+	$Hgroups_selected=0;
+	$Tgroups_menu='';
+	$Tgroups_selected=0;
 	$o=0;
 	while ($Xgroups_to_print > $o) 
 		{
 		$rowx=mysql_fetch_row($rslt);
 		$Xgroups_menu .= "<option ";
+		$Dgroups_menu .= "<option ";
+		$Agroups_menu .= "<option ";
+		$Tgroups_menu .= "<option ";
+		$Hgroups_menu .= "<option ";
 		if ($default_xfer_group == "$rowx[0]") 
 			{
 			$Xgroups_menu .= "SELECTED ";
 			$Xgroups_selected++;
 			}
+		if ($drop_inbound_group == "$rowx[0]") 
+			{
+			$Dgroups_menu .= "SELECTED ";
+			$Dgroups_selected++;
+			}
+		if ($afterhours_xfer_group == "$rowx[0]") 
+			{
+			$Agroups_menu .= "SELECTED ";
+			$Agroups_selected++;
+			}
+		if ($hold_time_option_xfer_group == "$rowx[0]") 
+			{
+			$Tgroups_menu .= "SELECTED ";
+			$Tgroups_selected++;
+			}
+		if ($hold_recall_xfer_group == "$rowx[0]") 
+			{
+			$Hgroups_menu .= "SELECTED ";
+			$Hgroups_selected++;
+			}
 		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		if ($group_id!=$rowx[0])
+			{
+			$Agroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$Tgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$Hgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			}
 		$o++;
 		}
 	if ($Xgroups_selected < 1) 
 		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
 	else 
 		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+	if ($Dgroups_selected < 1) 
+		{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Dgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+	if ($Agroups_selected < 1) 
+		{$Agroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Agroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+	if ($Tgroups_selected < 1) 
+		{$Tgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Tgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+	if ($Hgroups_selected < 1) 
+		{$Hgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Hgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
 
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΟΜΑΔΩΝ: $row[0]<form action=$PHP_SELF method=POST>\n";
@@ -10977,10 +15762,26 @@ if ($ADD==3111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>ID Ομάδας: </td><td align=left><b>$row[0]</b>$NWB#vicidial_inbound_groups-group_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ονομα Ομάδας: </td><td align=left><input type=text name=group_name size=30 maxlength=30 value=\"$row[1]\">$NWB#vicidial_inbound_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρώμα Ομάδας: </td><td align=left bgcolor=\"$row[2]\"><input type=text name=group_color size=7 maxlength=7 value=\"$row[2]\">$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Χρώμα Ομάδας: </td><td align=left bgcolor=\"$row[2]\" id=\"group_color_td\"><input type=text name=group_color size=7 maxlength=7 value=\"$row[2]\">$NWB#vicidial_inbound_groups-group_color$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_inbound_groups-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=50 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ιστο-σελίδα: </td><td align=left><input type=text name=web_form_address size=70 maxlength=255 value=\"$web_form_address\">$NWB#vicidial_inbound_groups-web_form_address$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επόμενη Κλήση Χειριστή: </td><td align=left><select size=1 name=next_agent_call><option >random</option><option>oldest_call_start</option><option>oldest_call_finish</option><option>overall_user_level</option><option>inbound_group_rank</option><option>campaign_rank</option><option>fewest_calls</option><option>fewest_calls_campaign</option><option SELECTED>$next_agent_call</option></select>$NWB#vicidial_inbound_groups-next_agent_call$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#BDFFBD><td align=right>Κοτσίδας Προτεραιότητα:</td><td align=left><select size=1 name=queue_priority>\n";
+	$n=99;
+	while ($n>=-99)
+		{
+		$dtl = 'Even';
+		if ($n<0) {$dtl = 'Lower';}
+		if ($n>0) {$dtl = 'Higher';}
+		if ($n == $queue_priority) 
+			{echo "<option SELECTED value=\"$n\">$n - $dtl</option>\n";}
+		else
+			{echo "<option value=\"$n\">$n - $dtl</option>\n";}
+		$n--;
+		}
+	echo "</select> $NWB#vicidial_inbound_groups-queue_priority$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=right>Μπροστινή Οθόνη: </td><td align=left><select size=1 name=fronter_display><option>Y</option><option>N</option><option SELECTED>$fronter_display</option></select>$NWB#vicidial_inbound_groups-fronter_display$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">Script</a>: </td><td align=left><select size=1 name=script_id>\n";
@@ -10997,34 +15798,64 @@ if ($ADD==3111)
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Μεταφοράς-Συνδ 2: </td><td align=left><input type=text name=xferconf_b_number size=20 maxlength=50 value=\"$xferconf_b_number\">$NWB#vicidial_inbound_groups-xferconf_a_dtmf$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=4 value=\"$drop_call_seconds\">$NWB#vicidial_inbound_groups-drop_call_seconds$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Δευτερ. Εγκαταλ. Κλήσης: </td><td align=left><input type=text name=drop_call_seconds size=5 maxlength=4 value=\"$drop_call_seconds\">$NWB#vicidial_inbound_groups-drop_call_seconds$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop δράσης:</td><td align=left><select size=1 name=drop_action><option>HANGUP</option><option>MESSAGE</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$drop_action</option></select>$NWB#vicidial_inbound_groups-drop_action$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήση μηνύματος Εγκατάλειψης: </td><td align=left><select size=1 name=drop_message><option>Y</option><option>N</option><option SELECTED>$drop_message</option></select>$NWB#vicidial_inbound_groups-drop_message$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>Εσωτ. Σύνδεση Εγκατάλειψης: </td><td align=left><input type=text name=drop_exten size=10 maxlength=20 value=\"$drop_exten\">$NWB#vicidial_inbound_groups-drop_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εσωτ. Σύνδεση Εγκατάλειψης: </td><td align=left><input type=text name=drop_exten size=10 maxlength=20 value=\"$drop_exten\">$NWB#vicidial_inbound_groups-drop_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>ΦΩΝΗΤΙΚΟ ΤΑΧΥΔΡΟΜΕΙΟ: </td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_groups-voicemail_ext$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#99FFCC><td align=right>Drop Μεταφορά Ομάδα:</td><td align=left><select size=1 name=drop_inbound_group>";
+	echo "$Dgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-drop_inbound_group$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$call_time_id\">Χρόνος κλήσης:</a></td><td align=left><select size=1 name=call_time_id>\n";
 	echo "$call_times_list";
 	echo "<option selected value=\"$call_time_id\">$call_time_id - $call_timename_list[$call_time_id]</option>\n";
 	echo "</select>$NWB#vicidial_inbound_groups-call_time_id$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από τη δράση ωρών:</td><td align=left><select size=1 name=after_hours_action><option>HANGUP</option><option>MESSAGE</option><option>ΤΗΛ.ΣΥΝΔΕΣΗ</option><option>VOICEMAIL</option><option SELECTED>$after_hours_action</option></select>$NWB#vicidial_inbound_groups-after_hours_action$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Μετά από τη δράση ωρών:</td><td align=left><select size=1 name=after_hours_action><option>HANGUP</option><option>MESSAGE</option><option>ΤΗΛ.ΣΥΝΔΕΣΗ</option><option>VOICEMAIL</option><option>IN_GROUP</option><option SELECTED>$after_hours_action</option></select>$NWB#vicidial_inbound_groups-after_hours_action$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από το όνομα αρχείου μηνυμάτων ωρών:</td><td align=left><input type=text name=after_hours_message_filename size=20 maxlength=50 value=\"$after_hours_message_filename\">$NWB#vicidial_inbound_groups-after_hours_message_filename$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Μετά από το όνομα αρχείου μηνυμάτων ωρών:</td><td align=left><input type=text name=after_hours_message_filename size=20 maxlength=50 value=\"$after_hours_message_filename\">$NWB#vicidial_inbound_groups-after_hours_message_filename$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από την παράταση ωρών:</td><td align=left><input type=text name=after_hours_exten size=10 maxlength=20 value=\"$after_hours_exten\">$NWB#vicidial_inbound_groups-after_hours_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Μετά από την παράταση ωρών:</td><td align=left><input type=text name=after_hours_exten size=10 maxlength=20 value=\"$after_hours_exten\">$NWB#vicidial_inbound_groups-after_hours_exten$NWE</td></tr>\n";
 
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μετά από το φωνητικό ταχυδρομείο ωρών:</td><td align=left><input type=text name=after_hours_voicemail size=10 maxlength=20 value=\"$after_hours_voicemail\">$NWB#vicidial_inbound_groups-after_hours_voicemail$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Μετά από το φωνητικό ταχυδρομείο ωρών:</td><td align=left><input type=text name=after_hours_voicemail size=10 maxlength=20 value=\"$after_hours_voicemail\">$NWB#vicidial_inbound_groups-after_hours_voicemail$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Μετά από ώρες Μεταφορά Ομάδα:</td><td align=left><select size=1 name=afterhours_xfer_group>";
+	echo "$Agroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-afterhours_xfer_group$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ευπρόσδεκτο όνομα αρχείου μηνυμάτων:</td><td align=left><input type=text name=welcome_message_filename size=20 maxlength=50 value=\"$welcome_message_filename\">$NWB#vicidial_inbound_groups-welcome_message_filename$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παίξτε Καλωσόρισμα:</td><td align=left><select size=1 name=play_welcome_message><option>ALWAYS</option><option>NEVER</option><option>IF_WAIT_ONLY</option><option>YES_UNLESS_NODELAY</option><option SELECTED>$play_welcome_message</option></select>$NWB#vicidial_inbound_groups-play_welcome_message$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Μουσική στο πλαίσιο λαβής:</td><td align=left><input type=text name=moh_context size=10 maxlength=20 value=\"$moh_context\">$NWB#vicidial_inbound_groups-moh_context$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Στο γρήγορο όνομα αρχείου λαβής:</td><td align=left><input type=text name=onhold_prompt_filename size=20 maxlength=50 value=\"$onhold_prompt_filename\">$NWB#vicidial_inbound_groups-onhold_prompt_filename$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Στο γρήγορο διάστημα λαβής:</td><td align=left><input type=text name=prompt_interval size=5 maxlength=5 value=\"$prompt_interval\">$NWB#vicidial_inbound_groups-prompt_interval$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παίξτε στο Line Τόπος:</td><td align=left><select size=1 name=play_place_in_line><option>Y</option><option>N</option><option SELECTED>$play_place_in_line</option></select>$NWB#vicidial_inbound_groups-play_place_in_line$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παίξτε Κρατήστε Εκτιμώμενη Ώρα:</td><td align=left><select size=1 name=play_estimate_hold_time><option>Y</option><option>N</option><option SELECTED>$play_estimate_hold_time</option></select>$NWB#vicidial_inbound_groups-play_estimate_hold_time$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε την επιλογή Ώρα:</td><td align=left><select size=1 name=hold_time_option><option>NONE</option><option>ΤΗΛ.ΣΥΝΔΕΣΗ</option><option>VOICEMAIL</option><option>IN_GROUP</option><option>CALLERID_CALLBACK</option><option>DROP_ACTION</option><option>PRESS_VMAIL</option><option SELECTED>$hold_time_option</option></select>$NWB#vicidial_inbound_groups-hold_time_option$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε την επιλογή Δευτερόλεπτα Ώρα:</td><td align=left><input type=text name=hold_time_option_seconds size=5 maxlength=5 value=\"$hold_time_option_seconds\">$NWB#vicidial_inbound_groups-hold_time_option_seconds$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε Ώρα Επιλογή Παράταση:</td><td align=left><input type=text name=hold_time_option_exten size=20 maxlength=20 value=\"$hold_time_option_exten\">$NWB#vicidial_inbound_groups-hold_time_option_exten$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε Ώρα Επιλογή Τηλεφωνητής:</td><td align=left><input type=text name=hold_time_option_voicemail size=20 maxlength=20 value=\"$hold_time_option_voicemail\">$NWB#vicidial_inbound_groups-hold_time_option_voicemail$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε Ώρα Επιλογή Μεταφορά σε ομάδα:</td><td align=left><select size=1 name=hold_time_option_xfer_group>";
+	echo "$Tgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-hold_time_option_xfer_group$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε Ώρα Επιλογή Callback αρχείου:</td><td align=left><input type=text name=hold_time_option_callback_filename size=20 maxlength=20 value=\"$hold_time_option_callback_filename\">$NWB#vicidial_inbound_groups-hold_time_option_callback_filename$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Κρατήστε Ώρα Επιλογή Callback Κατάλογος ID:</td><td align=left><input type=text name=hold_time_option_callback_list_id size=14 maxlength=14 value=\"$hold_time_option_callback_list_id\">$NWB#vicidial_inbound_groups-hold_time_option_callback_list_id$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=right>Αγρυπνη επέκταση πρακτόρων:</td><td align=left><input type=text name=agent_alert_exten size=10 maxlength=20 value=\"$agent_alert_exten\">$NWB#vicidial_inbound_groups-agent_alert_exten$NWE</td></tr>\n";
 
@@ -11034,12 +15865,158 @@ if ($ADD==3111)
 	echo "$Xgroups_menu";
 	echo "</select>$NWB#vicidial_inbound_groups-default_xfer_group$NWE</td></tr>\n";
 
+	##### get groups_alias listings for dynamic default group alias pulldown list menu
+	$stmt="SELECT group_alias_id,group_alias_name from groups_alias where active='Y' order by group_alias_id";
+	$rslt=mysql_query($stmt, $link);
+	$group_alias_to_print = mysql_num_rows($rslt);
+	$group_alias_menu='';
+	$group_alias_selected=0;
+	$o=0;
+	while ($group_alias_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$group_alias_menu .= "<option ";
+		if ($default_group_alias == "$rowx[0]") 
+			{
+			$group_alias_menu .= "SELECTED ";
+			$group_alias_selected++;
+			}
+		$group_alias_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Προεπιλεγμένη ομάδα Γνωστός: </td><td align=left><select size=1 name=default_group_alias>";
+	echo "<option value=\"\">NONE</option>";
+	echo "$group_alias_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-default_group_alias$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Κρατήστε Ανάκληση Μεταφορά σε ομάδα:</td><td align=left><select size=1 name=hold_recall_xfer_group>";
+	echo "$Hgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_groups-hold_recall_xfer_group$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Δεν Υστέρηση Call Διαδρομή:</td><td align=left><select size=1 name=no_delay_call_route><option>Y</option><option>N</option><option SELECTED>$no_delay_call_route</option></select>$NWB#vicidial_inbound_groups-no_delay_call_route$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>-Στην ομάδα Καταγραφή Override:</td><td align=left><select size=1 name=ingroup_recording_override><option>DISABLED</option><option>NEVER</option><option>ONDEMAND</option><option>ALLCALLS</option><option>ALLFORCE</option><option SELECTED>$ingroup_recording_override</option></select>$NWB#vicidial_inbound_groups-ingroup_recording_override$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>-Στην ομάδα Καταγραφή αρχείου:</td><td align=left><input type=text name=ingroup_rec_filename size=50 maxlength=50 value=\"$ingroup_rec_filename\">$NWB#vicidial_inbound_groups-ingroup_rec_filename$NWE</td></tr>\n";
+	
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στατιστικά Ποσοστό ζητεί απάντηση εντός δευτερολέπτων X 1: </td><td align=left><input type=text name=answer_sec_pct_rt_stat_one size=5 maxlength=5 value=\"$answer_sec_pct_rt_stat_one\">$NWB#vicidial_inbound_groups-answer_sec_pct_rt_stat_one$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στατιστικά Ποσοστό ζητεί απάντηση εντός δευτερολέπτων X 2: </td><td align=left><input type=text name=answer_sec_pct_rt_stat_two size=5 maxlength=5 value=\"$answer_sec_pct_rt_stat_two\">$NWB#vicidial_inbound_groups-answer_sec_pct_rt_stat_one$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
-	echo "</TABLE></center>\n";
+
+	if ($SSqc_features_active > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> &nbsp; </td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=center colspan=2> Inbound Ομάδα QC Ρυθμίσεις: </td></tr>\n";
+
+		##### get status listings for dynamic pulldown
+		$qc_statuses = preg_replace("/^ | -$/","",$qc_statuses);
+		$QCstatuses = explode(" ", $qc_statuses);
+		$QCs_to_print = (count($QCstatuses) -0);
+		$stmt="SELECT * from vicidial_statuses where status NOT IN('QUEUE','INCALL') order by status";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$qc_statuses_list='';
+
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+			$p=0;
+			while ($p < $QCs_to_print)
+				{
+				if ($rowx[0] == $QCstatuses[$p]) 
+					{
+					$qc_statuses_list .= " CHECKED";
+					}
+				$p++;
+				}
+			$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+
+			$o++;
+			}
+
+		$stmt="SELECT distinct(status),status_name from vicidial_campaign_statuses order by status";
+		$rslt=mysql_query($stmt, $link);
+		$Cstatuses_to_print = mysql_num_rows($rslt);
+
+		$o=0;
+		while ($Cstatuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			if (!ereg("\"$rowx[0]\"",$qc_statuses_list))
+				{
+				$qc_statuses_list .= "<input type=\"checkbox\" name=\"qc_statuses[]\" value=\"$rowx[0]\"";
+				$p=0;
+				while ($p < $QCs_to_print)
+					{
+					if ($rowx[0] == $QCstatuses[$p]) 
+						{
+						$qc_statuses_list .= " CHECKED";
+						}
+					$p++;
+					}
+				$qc_statuses_list .= "> $rowx[0] - $rowx[1]<BR>\n";
+				}
+			$o++;
+			}
+
+		##### get scripts listings for pulldown
+		$stmt="SELECT script_id,script_name from vicidial_scripts order by script_id";
+		$rslt=mysql_query($stmt, $link);
+		$scripts_to_print = mysql_num_rows($rslt);
+		$QCscripts_list="";
+		$o=0;
+		while ($scripts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCscripts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$scriptname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+		##### get shifts listings for pulldown
+		$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+		$rslt=mysql_query($stmt, $link);
+		$shifts_to_print = mysql_num_rows($rslt);
+		$QCshifts_list="";
+		$o=0;
+		while ($shifts_to_print > $o)
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$QCshifts_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+			$shiftname_list["$rowx[0]"] = "$rowx[1]";
+			$o++;
+			}
+
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC Enabled:</td><td><select size=1 name=qc_enabled><option>Y</option><option>N</option><option SELECTED>$qc_enabled</option></select> $NWB#vicidial_inbound_groups-qc_enabled$NWE</td></tr>\n";
+		echo "<tr bgcolor=#9BB9FB><td align=right>QC καθεστώτα:<BR> $NWB#vicidial_inbound_groups-qc_statuses$NWE</td><td>$qc_statuses_list</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC WebForm:</td><td align=left><input type=text name=qc_web_form_address size=70 maxlength=255 value=\"$qc_web_form_address\">$NWB#vicidial_inbound_groups-qc_web_form_address$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=3111111&script_id=$script_id\">QC Script</a>: </td><td align=left><select size=1 name=qc_script>\n";
+		echo "$QCscripts_list";
+		echo "<option selected value=\"$qc_script\">$qc_script - $scriptname_list[$qc_script]</option>\n";
+		echo "</select>$NWB#vicidial_inbound_groups-qc_script$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right><a href=\"$PHP_SELF?ADD=331111111&shift_id=$qc_shift_id\">QC Shift</a>: </td><td align=left><select size=1 name=qc_shift_id>\n";
+		echo "$QCshifts_list";
+		echo "<option selected value=\"$qc_shift_id\">$qc_shift_id - $shiftname_list[$qc_shift_id]</option>\n";
+		echo "</select>$NWB#vicidial_inbound_groups-qc_shift_id$NWE</td></tr>\n";
+
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Get Record Launch: </td><td><select size=1 name=qc_get_record_launch><option>NONE</option><option>SCRIPT</option><option>WEBFORM</option><option>QCSCRIPT</option><option>QCWEBFORM</option><option SELECTED>$qc_get_record_launch</option></select> $NWB#vicidial_inbound_groups-qc_get_record_launch$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=right>QC Δείτε Καταγραφή: </td><td><select size=1 name=qc_show_recording><option>Y</option><option>N</option><option SELECTED>$qc_show_recording</option></select> $NWB#vicidial_inbound_groups-qc_show_recording$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B9CBFD><td align=center colspan=2><input type=submit name=submit value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+		}
+
+	echo "</table>\n";
+	echo "<BR></center></FORM><br>\n";
+
 
 	### list of agent rank or skill-level for this inbound group
 	echo "<center>\n";
-	echo "<br><b>ΧΕΙΡΙΣΤΗΣRANKS FOR THIS INBOUND GROUP:</b><br>\n";
+	echo "<br><b>ΧΕΙΡΙΣΤΗΣRANKS FOR THIS Εισερχόμενα GROUP:</b><br>\n";
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>USER</td><td> &nbsp; &nbsp; RANK</td><td> &nbsp; &nbsp; CALLS TODAY</td></tr>\n";
 
@@ -11064,7 +16041,7 @@ if ($ADD==3111)
 
 	echo "</table></center><br>\n";
 
-	echo "<a href=\"./AST_CLOSERstats.php?group=$group_id\">Click here to see a report for this inbound group</a><BR><BR>\n";
+	echo "<a href=\"./AST_CLOSERstats.php?group[]=$group_id\">Κάντε κλικ εδώ για να δείτε μια έκθεση για αυτό το εισερχόμενο ομάδα</a><BR><BR>\n";
 
 	echo "<center><b>\n";
 
@@ -11072,6 +16049,163 @@ if ($ADD==3111)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=53&campaign_id=$group_id&stage=IN\">EMERGENCY VDAC CLEAR FOR THIS IN-GROUP</a><BR><BR>\n";
 		echo "<br><br><a href=\"$PHP_SELF?ADD=5111&group_id=$group_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΕΙΣ-ΟΜΑΔΑ</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=INGROUPS&stage=$group_id\">Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages In-Group</FONT>\n";
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+
+######################
+# ADD=3311 modify did info in the system
+######################
+
+if ($ADD==3311)
+{
+	if ($LOGmodify_dids==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_inbound_dids where did_id='$did_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$did_id = 				$row[0];
+	$did_pattern = 			$row[1];
+	$did_description = 		$row[2];
+	$did_active = 			$row[3];
+	$did_route = 			$row[4];
+	$extension = 			$row[5];
+	$exten_context = 		$row[6];
+	$voicemail_ext = 		$row[7];
+	$phone = 				$row[8];
+	$server_ip = 			$row[9];
+	$user = 				$row[10];
+	$user_unavailable_action = 	$row[11];
+	$user_route_settings_ingroup = 	$row[12];
+	$group_id = 			$row[13];
+	$call_handle_method = 	$row[14];
+	$agent_search_method =	$row[15];
+	$list_id = 				$row[16];
+	$campaign_id = 			$row[17];
+	$phone_code = 			$row[18];
+
+
+	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
+	$rslt=mysql_query($stmt, $link);
+	$campaigns_to_print = mysql_num_rows($rslt);
+	$campaigns_list='';
+	$o=0;
+	while ($campaigns_to_print > $o) {
+		$rowx=mysql_fetch_row($rslt);
+		$campaigns_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+	}
+
+	##### get in-groups listings for dynamic pulldown
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Xgroups_to_print = mysql_num_rows($rslt);
+	$Xgroups_menu='';
+	$Xgroups_selected=0;
+	$o=0;
+	while ($Xgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Xgroups_menu .= "<option ";
+		if ($user_route_settings_ingroup == "$rowx[0]") 
+			{
+			$Xgroups_menu .= "SELECTED ";
+			$Xgroups_selected++;
+			}
+		$Xgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Xgroups_selected < 1) 
+		{$Xgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Xgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+
+
+	##### get in-groups listings for dynamic pulldown
+	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where group_id NOT IN('AGENTDIRECT') order by group_id";
+	$rslt=mysql_query($stmt, $link);
+	$Dgroups_to_print = mysql_num_rows($rslt);
+	$Dgroups_menu='';
+	$Dgroups_selected=0;
+	$o=0;
+	while ($Dgroups_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$Dgroups_menu .= "<option ";
+		if ($group_id == "$rowx[0]") 
+			{
+			$Dgroups_menu .= "SELECTED ";
+			$Dgroups_selected++;
+			}
+		$Dgroups_menu .= "value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	if ($Dgroups_selected < 1) 
+		{$Dgroups_menu .= "<option SELECTED value=\"---NONE---\">---NONE---</option>\n";}
+	else 
+		{$Dgroups_menu .= "<option value=\"---NONE---\">---NONE---</option>\n";}
+
+
+	echo "<br>MODIFY A DID RECORD:$row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=4311>\n";
+	echo "<input type=hidden name=did_id value=\"$did_id\">\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>DID Επέκταση:</td><td align=left><input type=text name=did_pattern size=30 maxlength=50 value=\"$did_pattern\">$NWB#vicidial_inbound_dids-did_pattern$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>DID Περιγραφή:</td><td align=left><input type=text name=did_description size=40 maxlength=50 value=\"$did_description\">$NWB#vicidial_inbound_dids-did_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=did_active><option>Y</option><option>N</option><option SELECTED>$did_active</option></select>$NWB#vicidial_inbound_dids-did_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>DID Οδός:</td><td align=left><select size=1 name=did_route><option>AGENT</option><option>EXTEN</option><option>VOICEMAIL</option><option>PHONE</option><option>IN_GROUP</option><option SELECTED>$did_route</option></select>$NWB#vicidial_inbound_dids-did_route$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παράταση:</td><td align=left><input type=text name=extension size=40 maxlength=50 value=\"$extension\">$NWB#vicidial_inbound_dids-extension$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παράταση Πλαίσιο:</td><td align=left><input type=text name=exten_context size=40 maxlength=50 value=\"$exten_context\">$NWB#vicidial_inbound_dids-exten_context$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλεφωνητής Box:</td><td align=left><input type=text name=voicemail_ext size=10 maxlength=10 value=\"$voicemail_ext\">$NWB#vicidial_inbound_dids-voicemail_ext$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παράταση Τηλέφωνο:</td><td align=left><input type=text name=phone size=20 maxlength=100 value=\"$phone\">$NWB#vicidial_inbound_dids-phone$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+	echo "$servers_list";
+	echo "<option SELECTED>$server_ip</option>\n";
+	echo "</select>$NWB#vicidial_inbound_dids-server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήστης Agent:</td><td align=left><input type=text name=user size=20 maxlength=20 value=\"$user\">$NWB#vicidial_inbound_dids-user$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήστης Unavailable δράσης:</td><td align=left><select size=1 name=user_unavailable_action><option>EXTEN</option><option>VOICEMAIL</option><option>PHONE</option><option>IN_GROUP</option><option SELECTED>$user_unavailable_action</option></select>$NWB#vicidial_inbound_dids-user_unavailable_action$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ρυθμίσεις χρήστη Οδός-Στην ομάδα:</td><td align=left><select size=1 name=user_route_settings_ingroup>";
+	echo "$Xgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_dids-user_route_settings_ingroup$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=3111&group_id=$group_id\">In-ID Ομάδας</a>: </td><td align=left><select size=1 name=group_id>";
+	echo "$Dgroups_menu";
+	echo "</select>$NWB#vicidial_inbound_dids-group_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στην Ομάδα-Call Χειροκίνητος Τρόπος:</td><td align=left><select size=1 name=call_handle_method><option>CID</option><option>CIDLOOKUP</option><option>CIDLOOKUPRL</option><option>CIDLOOKUPRC</option><option>ANI</option><option>ANILOOKUP</option><option>ANILOOKUPRL</option><option>CLOSER</option><option>3DIGITID</option><option>4DIGITID</option><option>5DIGITID</option><option>10DIGITID</option><option SELECTED>$call_handle_method</option></select>$NWB#vicidial_inbound_dids-call_handle_method$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στην Ομάδα-Agent Search Μέθοδος:</td><td align=left><select size=1 name=agent_search_method><option value=\"LB\">LB - Load Balanced</option><option value=\"LO\">LO - Load Balanced Overflow</option><option value=\"SO\">SO - Server Only</option><option SELECTED>$agent_search_method</option></select>$NWB#vicidial_inbound_dids-agent_search_method$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στην ομάδα Κατάλογος-ID:</td><td align=left><input type=text name=list_id size=14 maxlength=14 value=\"$list_id\">$NWB#vicidial_inbound_dids-list_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στην ομάδα της εκστρατείας-ID:</td><td align=left><select size=1 name=campaign_id>\n";
+	echo "$campaigns_list";
+	echo "<option SELECTED>$campaign_id</option>\n";
+	echo "</select>$NWB#vicidial_inbound_dids-campaign_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Στην Ομάδα-τηλέφωνο Κωδικός:</td><td align=left><input type=text name=phone_code size=14 maxlength=14 value=\"$phone_code\">$NWB#vicidial_inbound_dids-phone_code$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+	echo "</table>\n";
+	echo "<BR></center></FORM><br>\n";
+
+
+
+	if ($LOGdelete_dids > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=5311&did_id=$did_id\">Διαγραφή αυτής της DID</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=DIDS&stage=$did_id\">Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages DID</FONT>\n";
 		}
 	}
 	else
@@ -11133,6 +16267,10 @@ if ($ADD==31111)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=51111&remote_agent_id=$remote_agent_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΟΝ ΤΟΝ ΑΠΟΜΑΚΡΥΣΜΕΝΟ ΧΕΙΡΙΣΤΗ</a>\n";
 		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=REMOTEAGENTS&stage=$remote_agent_id\">Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το απομακρυσμένο πράκτορα</FONT>\n";
+		}
 	}
 	else
 	{
@@ -11156,8 +16294,12 @@ if ($ADD==311111)
 	$stmt="SELECT * from vicidial_user_groups where user_group='$user_group';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$user_group =		$row[0];
-	$group_name =		$row[1];
+	$user_group =				$row[0];
+	$group_name =				$row[1];
+	$GROUP_shifts =				$row[5];
+	$forced_timeclock_login =	$row[6];
+	$shift_enforcement =		$row[7];
+
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΗ ΚΑΤΑΧΩΡΗΣΗΣ ΟΜΑΔΑΣ ΧΡΗΣΤΩΝ<form action=$PHP_SELF method=POST>\n";
@@ -11166,9 +16308,51 @@ if ($ADD==311111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα:</td><td align=left><input type=text name=user_group size=15 maxlength=20 value=\"$user_group\"> (όχι κενά ή στίξη)$NWB#vicidial_user_groups-user_group$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή:</td><td align=left><input type=text name=group_name size=40 maxlength=40 value=\"$group_name\"> (περιγραφή ομάδας)$NWB#vicidial_user_groups-group_name$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρεπόμενες Εκστρατείες: </td><td align=left>\n";
-	echo "$campaigns_list";
-	echo "$NWB#vicidial_user_groups-allowed_campaigns$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>ΔύναμηΏρα ρολόι Σύνδεση: </td><td align=left><select size=1 name=forced_timeclock_login><option SELECTED>N</option><option>Y</option><option>ADMIN_EXEMPT</option><option SELECTED>$forced_timeclock_login</option></select>$NWB#vicidial_user_groups-forced_timeclock_login$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Shift εκτέλεση: </td><td align=left><select size=1 name=shift_enforcement><option SELECTED>OFF</option><option>START</option><option>ALL</option><option>ADMIN_EXEMPT</option><option SELECTED>$shift_enforcement</option></select>$NWB#vicidial_user_groups-shift_enforcement$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρεπόμενες Εκστρατείες: <BR>$NWB#vicidial_user_groups-allowed_campaigns$NWE</td><td align=left>\n";
+	echo "$campaigns_list <BR>&nbsp;";
+	echo "</td></tr>\n";
+
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Βάρδιες:<BR>$NWB#vicidial_user_groups-group_shifts$NWE</td><td align=left>\n";
+	$stmt="SELECT shift_id,shift_name from vicidial_shifts order by shift_id";
+	$rslt=mysql_query($stmt, $link);
+	$shifts_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($shifts_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$shift_id_value = $rowx[0];
+		$shift_name_value = $rowx[1];
+		echo "<input type=\"checkbox\" name=\"group_shifts[]\" value=\"$shift_id_value\"";
+		$p=0;
+		while ($p<100)
+			{
+			if (ereg(" $shift_id_value ", $GROUP_shifts))
+				{
+				echo " CHECKED";
+				}
+			$p++;
+			}
+		echo "> <a href=\"$PHP_SELF?ADD=331111111&shift_id=$shift_id_value\">$shift_id_value</a> - $shift_name_value<BR>\n";
+		$o++;
+		}
+	echo " <BR>&nbsp;</td></tr>\n";
+
+	if ($SSqc_features_active > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=right>QC Επιτρέπονται Καμπάνιες:<BR>$NWB#vicidial_user_groups-qc_allowed_campaigns$NWE</td><td align=left>\n";
+		echo "$qc_campaigns_list";
+		echo " <BR>&nbsp;</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>QC Επιτρέπονται Εισερχόμενες Ομάδες:<BR>$NWB#vicidial_user_groups-qc_allowed_inbound_groups$NWE</td><td align=left>\n";
+		echo "$qc_groups_list";
+		echo " <BR>&nbsp;</td></tr>\n";
+		}
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
 	echo "</TABLE></center>\n";
 
@@ -11176,14 +16360,14 @@ if ($ADD==311111)
 	### list of users in this user group
 
 		$active_confs = 0;
-		$stmt="SELECT user,full_name,user_level from vicidial_users where user_group='$user_group'";
+		$stmt="SELECT user,full_name,user_level,active from vicidial_users where user_group='$user_group'";
 		$rsltx=mysql_query($stmt, $link);
 		$users_to_print = mysql_num_rows($rsltx);
 
 		echo "<center>\n";
 		echo "<br><b>ΧΡΗΣΤΕΣ ΜΕΣΑ ΣΕ ΑΥΤΗΝ ΤΗΝ ΟΜΑΔΑ ΧΡΗΣΤΩΝ : $users_to_print</b><br>\n";
 		echo "<TABLE width=400 cellspacing=3>\n";
-		echo "<tr><td>USER</td><td>FULL NAME</td><td>LEVEL</td></tr>\n";
+		echo "<tr><td>USER</td><td>ΟΝΟΜΑΤΕΠΩΝΥΜΟ</td><td>ΕΠΙΠΕΔΟ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
 
 		$o=0;
 		while ($users_to_print > $o) 
@@ -11200,6 +16384,7 @@ if ($ADD==311111)
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$rowx[0]\">$rowx[0]</a></td>\n";
 		echo "<td><font size=1>$rowx[1]</td>\n";
 		echo "<td><font size=1>$rowx[2]</td>\n";
+		echo "<td><font size=1>$rowx[3]</td>\n";
 		echo "</tr>\n";
 		}
 
@@ -11207,11 +16392,16 @@ if ($ADD==311111)
 
 
 
-	echo "<br><br><a href=\"$PHP_SELF?ADD=8111&user_group=$user_group\">Click here to see all CallBack Holds in this user group</a><BR><BR>\n";
+	echo "<br><br><a href=\"$PHP_SELF?ADD=8111&user_group=$user_group\">Κάντε κλικ εδώ για να δείτε όλες τις Callback Κύτος σε αυτή την ομάδα χρηστών</a><BR><BR>\n";
+	echo "<br><br><a href=\"./timeclock_status.php?user_group=$user_group\">Κάντε κλικ εδώ για να δείτε την κατάστασηΏρα ρολόι ομάδα για αυτόν τον χρήστη</a><BR><BR>\n";
 
 	if ($LOGdelete_user_groups > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=511111&user_group=$user_group\">ΔΙΑΓΡΑΨΕ ΑΥΤΗΝ ΤΗΝ ΟΜΑΔΑ ΧΡΗΣΤΩΝ</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=USERGROUPS&stage=$user_group\">Κάντε κλικ εδώ για να δείτε σε αυτό το Admin chages ομάδα χρηστών</FONT>\n";
 		}
 	}
 	else
@@ -11300,6 +16490,10 @@ if ($ADD==3111111)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=5111111&script_id=$script_id\">ΔΙΑΓΡΑΨΕ ΑΥΤΟΝ ΤΟΝ ΒΟΗΘΟ</a>\n";
 		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=ΒΟΗΘΟΙ&stage=$script_id\">Κάντε κλικ εδώ για να δείτε Admin chages σε αυτό το σενάριο</FONT>\n";
+		}
 	}
 	else
 	{
@@ -11365,6 +16559,10 @@ if ($ADD==31111111)
 	if ($LOGdelete_filters > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=51111111&lead_filter_id=$lead_filter_id\">ΔΙΑΓΡΑΦΗ ΤΟΥ ΦΙΛΤΡΟΥ</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=ΦΙΛΤΡΑ&stage=$lead_filter_id\">Κάντε κλικ εδώ για να δείτε Admin chages για αυτό το φίλτρο</FONT>\n";
 		}
 	}
 	else
@@ -11469,7 +16667,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Προκαθορσμένη Εκκίν�
 echo "<tr bgcolor=#B6D3FC><td align=right>Κυριακή Εκκίνηση:</td><td align=left><input type=text name=ct_sunday_start size=5 maxlength=4 value=\"$ct_sunday_start\"> </td><td align=right>Κυριακή Παύση:</td><td align=left><input type=text name=ct_sunday_stop size=5 maxlength=4 value=\"$ct_sunday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Δευτέρα Εκκίνηση:</td><td align=left><input type=text name=ct_monday_start size=5 maxlength=4 value=\"$ct_monday_start\"> </td><td align=right>Δευτέρα Παύση:</td><td align=left><input type=text name=ct_monday_stop size=5 maxlength=4 value=\"$ct_monday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Τρίτη Εκκίνηση:</td><td align=left><input type=text name=ct_tuesday_start size=5 maxlength=4 value=\"$ct_tuesday_start\"> </td><td align=right>Τρίτη Παύση:</td><td align=left><input type=text name=ct_tuesday_stop size=5 maxlength=4 value=\"$ct_tuesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Wednesday Start:</td><td align=left><input type=text name=ct_wednesday_start size=5 maxlength=4 value=\"$ct_wednesday_start\"> </td><td align=right>Τετάρτη Παύση:</td><td align=left><input type=text name=ct_wednesday_stop size=5 maxlength=4 value=\"$ct_wednesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Τετάρτη Start:</td><td align=left><input type=text name=ct_wednesday_start size=5 maxlength=4 value=\"$ct_wednesday_start\"> </td><td align=right>Τετάρτη Παύση:</td><td align=left><input type=text name=ct_wednesday_stop size=5 maxlength=4 value=\"$ct_wednesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Πέμπτη Εκκίνηση:</td><td align=left><input type=text name=ct_thursday_start size=5 maxlength=4 value=\"$ct_thursday_start\"> </td><td align=right>Πέμπτη Παύση:</td><td align=left><input type=text name=ct_thursday_stop size=5 maxlength=4 value=\"$ct_thursday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Παρασκευή Εκκίνηση:</td><td align=left><input type=text name=ct_friday_start size=5 maxlength=4 value=\"$ct_friday_start\"> </td><td align=right>Παρασκευή Παύση:</td><td align=left><input type=text name=ct_friday_stop size=5 maxlength=4 value=\"$ct_friday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Σάββατο Εκκίνηση:</td><td align=left><input type=text name=ct_saturday_start size=5 maxlength=4 value=\"$ct_saturday_start\"> </td><td align=right>Σάββατο Παύση:</td><td align=left><input type=text name=ct_saturday_stop size=5 maxlength=4 value=\"$ct_saturday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
@@ -11541,7 +16739,7 @@ echo "<TABLE>\n";
 	}
 
 echo "</TABLE>\n";
-echo "<B>INBOUND GROUPS USING THIS CALL TIME:</B><BR>\n";
+echo "<B>Εισερχόμενα GROUPS USING THIS CALL TIME:</B><BR>\n";
 echo "<TABLE>\n";
 
 	$stmt="SELECT group_id,group_name from vicidial_inbound_groups where call_time_id='$call_time_id';";
@@ -11560,6 +16758,10 @@ echo "</center><BR><BR>\n";
 if ($LOGdelete_call_times > 0)
 	{
 	echo "<br><br><a href=\"$PHP_SELF?ADD=511111111&call_time_id=$call_time_id\">ΔΙΑΓΡΑΦΗ ΟΡΙΣΜΟΥ ΧΡΟΝΟΥ ΚΛΗΣΗΣ</a>\n";
+	}
+if ($LOGuser_level >= 9)
+	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CALLTIMES&stage=$call_time_id\">Κάντε κλικ εδώ για να δείτε Admin chages φορά σε αυτή την έκκληση</FONT>\n";
 	}
 }
 else
@@ -11618,7 +16820,7 @@ echo "<tr bgcolor=#B6D3FC><td align=right>Προκαθορσμένη Εκκίν�
 echo "<tr bgcolor=#B6D3FC><td align=right>Κυριακή Εκκίνηση:</td><td align=left><input type=text name=ct_sunday_start size=5 maxlength=4 value=\"$ct_sunday_start\"> </td><td align=right>Κυριακή Παύση:</td><td align=left><input type=text name=ct_sunday_stop size=5 maxlength=4 value=\"$ct_sunday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Δευτέρα Εκκίνηση:</td><td align=left><input type=text name=ct_monday_start size=5 maxlength=4 value=\"$ct_monday_start\"> </td><td align=right>Δευτέρα Παύση:</td><td align=left><input type=text name=ct_monday_stop size=5 maxlength=4 value=\"$ct_monday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Τρίτη Εκκίνηση:</td><td align=left><input type=text name=ct_tuesday_start size=5 maxlength=4 value=\"$ct_tuesday_start\"> </td><td align=right>Τρίτη Παύση:</td><td align=left><input type=text name=ct_tuesday_stop size=5 maxlength=4 value=\"$ct_tuesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
-echo "<tr bgcolor=#B6D3FC><td align=right>Wednesday Start:</td><td align=left><input type=text name=ct_wednesday_start size=5 maxlength=4 value=\"$ct_wednesday_start\"> </td><td align=right>Τετάρτη Παύση:</td><td align=left><input type=text name=ct_wednesday_stop size=5 maxlength=4 value=\"$ct_wednesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Τετάρτη Start:</td><td align=left><input type=text name=ct_wednesday_start size=5 maxlength=4 value=\"$ct_wednesday_start\"> </td><td align=right>Τετάρτη Παύση:</td><td align=left><input type=text name=ct_wednesday_stop size=5 maxlength=4 value=\"$ct_wednesday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Πέμπτη Εκκίνηση:</td><td align=left><input type=text name=ct_thursday_start size=5 maxlength=4 value=\"$ct_thursday_start\"> </td><td align=right>Πέμπτη Παύση:</td><td align=left><input type=text name=ct_thursday_stop size=5 maxlength=4 value=\"$ct_thursday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Παρασκευή Εκκίνηση:</td><td align=left><input type=text name=ct_friday_start size=5 maxlength=4 value=\"$ct_friday_start\"> </td><td align=right>Παρασκευή Παύση:</td><td align=left><input type=text name=ct_friday_stop size=5 maxlength=4 value=\"$ct_friday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Σάββατο Εκκίνηση:</td><td align=left><input type=text name=ct_saturday_start size=5 maxlength=4 value=\"$ct_saturday_start\"> </td><td align=right>Σάββατο Παύση:</td><td align=left><input type=text name=ct_saturday_stop size=5 maxlength=4 value=\"$ct_saturday_stop\"> $NWB#vicidial_call_times-ct_sunday_start$NWE</td></tr>\n";
@@ -11655,6 +16857,120 @@ echo "Δεν έχετε το δικαίωμα για να δείτε την σε
 }
 
 
+
+######################
+# ADD=331111111 modify shift definition info in the system
+######################
+
+if ($ADD==331111111)
+{
+
+if ($LOGmodify_call_times==1)
+{
+echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from vicidial_shifts where shift_id='$shift_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$shift_name =		$row[1];
+	$shift_start_time =	$row[2];
+	$shift_length =		$row[3];
+	$shift_weekdays =	$row[4];
+
+	$shift_start_hour = substr($shift_start_time,0,2);
+	$shift_start_min = substr($shift_start_time,2,2);
+	$shift_length_hour = substr($shift_length,0,2);
+	$shift_length_min = substr($shift_length,3,2);
+	$shift_end_hour = ($shift_start_hour + $shift_length_hour);
+	$shift_end_min = ($shift_start_min + $shift_length_min);
+	if ($shift_end_min >=60) 
+		{
+		$shift_end_min = ($shift_end_min - 60);
+		$shift_end_hour++;
+		}
+	if ($shift_end_hour >=24) 
+		{
+		$shift_end_hour = ($shift_end_hour - 24);
+		}
+	$shift_end_hour = sprintf("%02s", $shift_end_hour);	
+	$shift_end_min = sprintf("%02s", $shift_end_min);	
+	$shift_end = "$shift_end_hour$shift_end_min";
+
+echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+echo "<br>MODIFY της στροφής<form action=$PHP_SELF method=POST>\n";
+echo "<input type=hidden name=ADD value=431111111>\n";
+echo "<input type=hidden name=shift_id value=\"$shift_id\">\n";
+echo "<center><TABLE width=$section_width cellspacing=3>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID:</td><td align=left><B>$shift_id</B></td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Όνομα:</td><td align=left><input type=text name=shift_name size=50 maxlength=50 value=\"$shift_name\"> (σύντομη περιγραφή της μετατόπισης)$NWB#vicidial_shifts-shift_name$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Ώρα έναρξης:</td><td align=left><input type=text name=shift_start_time size=5 maxlength=4 id=shift_start_time value=\"$shift_start_time\">\n";
+echo " &nbsp; Shift End Time:<input type=text name=shift_end_time size=5 maxlength=4 id=shift_end_time value=\"$shift_end\">\n";
+echo "<input type=button name=shift_calc value=\"Calculate Shift Μήκος\" onClick=\"shift_time();\"> $NWB#vicidial_shifts-shift_start_time$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Μήκος: </td><td align=left><input type=text name=shift_length id=shift_length size=6 maxlength=5 value=\"$shift_length\"> $NWB#vicidial_shifts-shift_length$NWE</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=right>Shift Καθημερινά:<BR>$NWB#vicidial_shifts-shift_weekdays$NWE</td><td align=left>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"0\"";
+	if (ereg('0',$shift_weekdays)) {echo " CHECKED";}
+echo ">Κυριακή<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"1\"";
+	if (ereg('1',$shift_weekdays)) {echo " CHECKED";}
+echo ">Δευτέρα<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"2\"";
+	if (ereg('2',$shift_weekdays)) {echo " CHECKED";}
+echo ">Τρίτη<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"3\"";
+	if (ereg('3',$shift_weekdays)) {echo " CHECKED";}
+echo ">Τετάρτη<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"4\"";
+	if (ereg('4',$shift_weekdays)) {echo " CHECKED";}
+echo ">Πέμπτη<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"5\"";
+	if (ereg('5',$shift_weekdays)) {echo " CHECKED";}
+echo ">Παρασκευή<BR>\n";
+echo "<input type=\"checkbox\" name=\"shift_weekdays[]\" value=\"6\"";
+	if (ereg('6',$shift_weekdays)) {echo " CHECKED";}
+echo ">Σάββατο<BR>\n";
+echo "</td></tr>\n";
+echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=ΕΠΙΒΕΒΑΙΩΣΗ value=ΕΠΙΒΕΒΑΙΩΣΗ></td></tr>\n";
+echo "</TABLE></center>\n";
+
+echo "</TABLE><BR><BR>\n";
+echo "<B>ΟΜΑΔΕΣ ΧΡΗΣΤΩΝ ΧΡΗΣΙΜΟΠΟΙΩΝΤΑΣ ΤΗΝ ΠΑΡΟΥΣΑ SHIFT:</B><BR>\n";
+echo "<TABLE>\n";
+
+
+	$stmt="SELECT user_group,group_name from vicidial_user_groups where group_shifts LIKE\"% $shift_id %\";";
+	$rslt=mysql_query($stmt, $link);
+	$camps_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($camps_to_print > $o) {
+		$row=mysql_fetch_row($rslt);
+		echo "<TR><TD><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0] </a></TD><TD> $row[1]<BR></TD></TR>\n";
+		$o++;
+	}
+
+
+echo "</TABLE>\n";
+echo "</center><BR><BR>\n";
+
+if ($LOGdelete_call_times > 0)
+	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=531111111&shift_id=$shift_id\">Διαγραφή αυτής της SHIFT ΟΡΙΣΜΟΣ</a>\n";
+	}
+if ($LOGuser_level >= 9)
+	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=SHIFTS&stage=$shift_id\">Κάντε κλικ εδώ για να δείτε Admin chages την εξέλιξη αυτή</FONT>\n";
+	}
+}
+else
+{
+echo "Δεν έχετε το δικαίωμα για να δείτε την σελίδα. Παρακαλώ επιστρέψτε.";
+}
+
+}
+
+
 ######################
 # ADD=31111111111 modify phone record in the system
 ######################
@@ -11677,7 +16993,7 @@ if ($ADD==31111111111)
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλ.σύνδεσης τηλεφώνου: </td><td align=left><input type=text name=extension size=20 maxlength=100 value=\"$row[0]\">$NWB#phones-extension$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Αριθμός Σχεδίου Κλήσεων: </td><td align=left><input type=text name=dialplan_number size=15 maxlength=20 value=\"$row[1]\"> (μόνο αριθμοί)$NWB#phones-dialplan_number$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιεχόμενο Φωνητικού Ταχυδρομείου: </td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (μόνο αριθμοί)$NWB#phones-voicemail_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Τηλεφωνητής Box:</td><td align=left><input type=text name=voicemail_id size=10 maxlength=10 value=\"$row[2]\"> (μόνο αριθμοί)$NWB#phones-voicemail_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Εξερχόμενο CallerID: </td><td align=left><input type=text name=outbound_cid size=10 maxlength=20 value=\"$row[65]\"> (μόνο αριθμοί)$NWB#phones-outbound_cid$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Τηλεφώνου: </td><td align=left><input type=text name=phone_ip size=20 maxlength=15 value=\"$row[3]\"> (optional)$NWB#phones-phone_ip$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Υπολογιστή: </td><td align=left><input type=text name=computer_ip size=20 maxlength=15 value=\"$row[4]\"> (optional)$NWB#phones-computer_ip$NWE</td></tr>\n";
@@ -11692,6 +17008,7 @@ if ($ADD==31111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργός Λογαριασμός: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[9]</option></select>$NWB#phones-active$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Τύπος τηλεφώνου: </td><td align=left><input type=text name=phone_type size=20 maxlength=50 value=\"$row[10]\">$NWB#phones-phone_type$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Πλήρες Ονομα: </td><td align=left><input type=text name=fullname size=20 maxlength=50 value=\"$row[11]\">$NWB#phones-fullname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Email:</td><td align=left><input type=text name=email size=50 maxlength=100 value=\"$row[67]\"> $NWB#phones-email$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Εταιρία:</td><td align=left><input type=text name=company size=10 maxlength=10 value=\"$row[12]\">$NWB#phones-company$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Εικόνα:</td><td align=left><input type=text name=picture size=20 maxlength=19 value=\"$row[13]\">$NWB#phones-picture$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Νέα Μηνύματα: </td><td align=left><b>$row[14]</b>$NWB#phones-messages$NWE</td></tr>\n";
@@ -11746,6 +17063,25 @@ if ($ADD==31111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY Χρήστης: </td><td align=left><input type=text name=DBY_user size=15 maxlength=15 value=\"$row[62]\"> (ΔευτερεύονDB Login)$NWB#phones-DBY_user$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY Κωδικός: </td><td align=left><input type=text name=DBY_pass size=15 maxlength=15 value=\"$row[63]\"> (ΔευτερεύονDB Secret)$NWB#phones-DBY_pass$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>DBY Πόρτα: </td><td align=left><input type=text name=DBY_port size=6 maxlength=6 value=\"$row[64]\"> (ΔευτερεύονDB Port)$NWB#phones-DBY_port$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[68]\">Πρότυπο ID</a>: </td><td align=left><select size=1 name=template_id>\n";
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+	$templates_list='<option SELECTED>--NONE--</option>';
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "$templates_list";
+	echo "<option SELECTED>$row[68]</option>\n";
+	echo "</select>$NWB#phones-template_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Επιβ Override: </td><td align=left><TEXTAREA NAME=conf_override ROWS=10 COLS=70>$row[69]</TEXTAREA> $NWB#phones-conf_override$NWE</td></tr>\n";
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
 	echo "</TABLE></center>\n";
 
@@ -11754,6 +17090,122 @@ if ($ADD==31111111111)
 	if ($LOGast_delete_phones > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=51111111111&extension=$extension&server_ip=$server_ip\">ΔΙΑΓΡΑΨΕ ΑΥΤΟ ΤΟ ΤΗΛΕΦΩΝΟ</a>\n";
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=32111111111 modify phone alias record in the system
+######################
+
+if ($ADD==32111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT * from phones_alias where alias_id='$alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+
+	echo "<br>MODIFY τηλεφώνου ALIAS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=42111111111>\n";
+	echo "<input type=hidden name=alias_id value=\"$row[0]\">\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Γνωστός ID:</td><td align=left><B>$row[0]</B> $NWB#phones-alias_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ψευδώνυμο:</td><td align=left><input type=text name=alias_name size=30 maxlength=50 value=\"$row[1]\"> $NWB#phones-alias_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Phones Logins List: </td><td align=left><input type=text name=logins_list size=50 maxlength=255 value=\"$row[2]\"> (comma separated)$NWB#phones-logins_list$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+
+	### list of phones in this phones alias
+	$phone_alias_SQL = ereg_replace(',',"','",$row[2]);
+ 
+	echo "<center>\n";
+	echo "<br><b>Στο πλαίσιο του παρόντος PHONES ΤΗΛΕΦΩΝΑ ALIAS:</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>LOGIN</td><td>ΤΗΛ.ΣΥΝΔΕΣΗ</td><td>SERVER</td><td>PROTOCOL</td><td>IP</td></tr>\n";
+
+		$stmt="SELECT login,extension,server_ip,protocol,phone_ip from phones where login IN ('$phone_alias_SQL');";
+		if ($DB) {echo "|$stmt|";}
+		$rsltx=mysql_query($stmt, $link);
+		$lists_to_print = mysql_num_rows($rsltx);
+
+		$o=0;
+		while ($lists_to_print > $o) {
+			$rowx=mysql_fetch_row($rsltx);
+			$o++;
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$rowx[1]&server_ip=$rowx[2]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[4]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=52111111111&alias_id=$row[0]\">ΔΙΑΓΡΑΨΕ ΑΥΤΟ ΤΟ ΤΗΛΕΦΩΝΟ ALIAS</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=PHONEALIASES&stage=$alias_id\">Κάντε κλικ εδώ για να δείτε Admin chages να άλλως αυτό το τηλέφωνο</FONT>\n";
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=33111111111 modify group alias record in the system
+######################
+
+if ($ADD==33111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT group_alias_id,group_alias_name,caller_id_number,caller_id_name,active from groups_alias where group_alias_id='$group_alias_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+
+	echo "<br>MODIFY Α ΟΜΙΛΟΣ ALIAS RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=43111111111>\n";
+	echo "<input type=hidden name=group_alias_id value=\"$row[0]\">\n";
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα Γνωστός ID: </td><td align=left><B>$row[0]</B> $NWB#phones-group_alias_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ομάδα ψευδώνυμο: </td><td align=left><input type=text name=group_alias_name size=30 maxlength=50 value=\"$row[1]\"> $NWB#phones-group_alias_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Αριθμός: </td><td align=left><input type=text name=caller_id_number size=20 maxlength=20 value=\"$row[2]\"> $NWB#phones-caller_id_number$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>CallerID Όνομα: </td><td align=left><input type=text name=caller_id_name size=20 maxlength=20 value=\"$row[3]\"> $NWB#phones-caller_id_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[4]</option></select></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=53111111111&group_alias_id=$row[0]\">Διαγράψετε αυτή την ομάδα ALIAS</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=GROUPALIASES&stage=$group_alias_id\">Κάντε κλικ εδώ για να δείτε Admin chages άλλως σε αυτή την ομάδα</FONT>\n";
 		}
 	}
 	else
@@ -11775,42 +17227,89 @@ if ($ADD==311111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from servers where server_id='$server_id' or server_ip='$server_ip';";
+	$stmt="SELECT server_id,server_description,server_ip,active,asterisk_version,max_vicidial_trunks,telnet_host,telnet_port,ASTmgrUSERNAME,ASTmgrSECRET,ASTmgrUSERNAMEupdate,ASTmgrUSERNAMElisten,ASTmgrUSERNAMEsend,local_gmt,voicemail_dump_exten,answer_transfer_agent,ext_context,sys_perf_log,vd_server_logs,agi_output,vicidial_balance_active,balance_trunks_offlimits,recording_web_link,alt_server_ip,active_asterisk_server,generate_vicidial_conf,rebuild_conf_files,outbound_calls_per_second,sysload,channels_total,cpu_idle_percent,disk_usage from servers where server_id='$server_id' or server_ip='$server_ip';";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
-	$server_id = $row[0];
-	$server_ip = $row[2];
+	$server_id =					$row[0];
+	$server_description =			$row[1];
+	$server_ip =					$row[2];
+	$active =						$row[3];
+	$asterisk_version =				$row[4];
+	$max_vicidial_trunks =			$row[5];
+	$telnet_host =					$row[6];
+	$telnet_port =					$row[7];
+	$ASTmgrUSERNAME =				$row[8];
+	$ASTmgrSECRET =					$row[9];
+	$ASTmgrUSERNAMEupdate =			$row[10];
+	$ASTmgrUSERNAMElisten =			$row[11];
+	$ASTmgrUSERNAMEsend =			$row[12];
+	$local_gmt =					$row[13];
+	$voicemail_dump_exten =			$row[14];
+	$answer_transfer_agent =		$row[15];
+	$ext_context =					$row[16];
+	$sys_perf_log =					$row[17];
+	$vd_server_logs =				$row[18];
+	$agi_output =					$row[19];
+	$vicidial_balance_active =		$row[20];
+	$balance_trunks_offlimits =		$row[21];
+	$recording_web_link =			$row[22];
+	$alt_server_ip =				$row[23];
+	$active_asterisk_server =		$row[24];
+	$generate_vicidial_conf =		$row[25];
+	$rebuild_conf_files =			$row[26];
+	$outbound_calls_per_second =	$row[27];
+	$sysload =						$row[28];
+	$channels_total =				$row[29];
+	$cpu_idle_percent =				$row[30];
+	$disk_usage =					$row[31];
+
+	$cpu = (100 - $cpu_idle_percent);
+	$disk_usage = preg_replace("/ /"," - ",$disk_usage);
+	$disk_usage = preg_replace("/\|/","% &nbsp; &nbsp; ",$disk_usage);
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΗ ΕΓΓΡΑΦΗΣ ΔΙΑΚΟΜΙΣΤΗ: $row[0]<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111>\n";
 	echo "<input type=hidden name=old_server_id value=\"$server_id\">\n";
-	echo "<input type=hidden name=old_server_ip value=\"$row[2]\">\n";
+	echo "<input type=hidden name=old_server_ip value=\"$server_ip\">\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>ID Διακομιστή: </td><td align=left><input type=text name=server_id size=10 maxlength=10 value=\"$row[0]\">$NWB#servers-server_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή Διακομιστή: </td><td align=left><input type=text name=server_description size=30 maxlength=255 value=\"$row[1]\">$NWB#servers-server_description$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Διακομιστή: </td><td align=left><input type=text name=server_ip size=20 maxlength=15 value=\"$row[2]\">$NWB#servers-server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$row[3]</option></select>$NWB#servers-active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Εκδοση Asterisk: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20 value=\"$row[4]\">$NWB#servers-asterisk_version$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Μέγιστος Αριθμός Trunk: </td><td align=left><input type=text name=max_vicidial_trunks size=5 maxlength=4 value=\"$row[5]\">$NWB#servers-max_vicidial_trunks$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Διακύμανση Τηλεφωνικής Κλήσης: </td><td align=left><select size=1 name=vicidial_balance_active><option>Y</option><option>N</option><option selected>$row[20]</option></select>$NWB#servers-vicidial_balance_active$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Διακύμανση εκτός ορίων: </td><td align=left><input type=text name=balance_trunks_offlimits size=5 maxlength=4 value=\"$row[21]\">$NWB#servers-balance_trunks_offlimits$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Λήπτης Telnet: </td><td align=left><input type=text name=telnet_host size=20 maxlength=20 value=\"$row[6]\">$NWB#servers-telnet_host$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Πόρτα Telnet: </td><td align=left><input type=text name=telnet_port size=6 maxlength=5 value=\"$row[7]\">$NWB#servers-telnet_port$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAME size=20 maxlength=20 value=\"$row[8]\">$NWB#servers-ASTmgrUSERNAME$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός Διαχειριστή: </td><td align=left><input type=text name=ASTmgrSECRET size=20 maxlength=20 value=\"$row[9]\">$NWB#servers-ASTmgrSECRET$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Ενημέρωση Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMEupdate size=20 maxlength=20 value=\"$row[10]\">$NWB#servers-ASTmgrUSERNAMEupdate$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Παρακολούθηση Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMElisten size=20 maxlength=20 value=\"$row[11]\">$NWB#servers-ASTmgrUSERNAMElisten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Αποστολή Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMEsend size=20 maxlength=20 value=\"$row[12]\">$NWB#servers-ASTmgrUSERNAMEsend$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Τοπικό GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$row[13]</option></select> (Μην ρυθμίσεις για DST)$NWB#servers-local_gmt$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>VMail εσωτ.σύνδεση απόρριψης: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$row[14]\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>AD εσωτ.σύνδεση: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$row[15]\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Προκαθορισμένο Περιεχόμενο: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$row[16]\">$NWB#servers-ext_context$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>ID Διακομιστή: </td><td align=left><input type=text name=server_id size=10 maxlength=10 value=\"$server_id\">$NWB#servers-server_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Περιγραφή Διακομιστή: </td><td align=left><input type=text name=server_description size=30 maxlength=255 value=\"$server_description\">$NWB#servers-server_description$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Δνση IP Διακομιστή: </td><td align=left><input type=text name=server_ip size=20 maxlength=15 value=\"$server_ip\">$NWB#servers-server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option selected>$active</option></select>$NWB#servers-active$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>System Load: </td><td align=left>$sysload - $cpu% &nbsp; $NWB#servers-sysload$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Live Channels: </td><td align=left>$channels_total &nbsp; $NWB#servers-channels_total$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Disk Usage: </td><td align=left>$disk_usage &nbsp; $NWB#servers-disk_usage$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Εκδοση Asterisk: </td><td align=left><input type=text name=asterisk_version size=20 maxlength=20 value=\"$asterisk_version\">$NWB#servers-asterisk_version$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Μέγιστος Αριθμός Trunk: </td><td align=left><input type=text name=max_vicidial_trunks size=5 maxlength=4 value=\"$max_vicidial_trunks\">$NWB#servers-max_vicidial_trunks$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Max ζητεί ανά Δεύτερη: </td><td align=left><input type=text name=outbound_calls_per_second size=5 maxlength=4 value=\"$outbound_calls_per_second\">$NWB#servers-outbound_calls_per_second$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Διακύμανση Τηλεφωνικής Κλήσης: </td><td align=left><select size=1 name=vicidial_balance_active><option>Y</option><option>N</option><option selected>$vicidial_balance_active</option></select>$NWB#servers-vicidial_balance_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Διακύμανση εκτός ορίων: </td><td align=left><input type=text name=balance_trunks_offlimits size=5 maxlength=4 value=\"$balance_trunks_offlimits\">$NWB#servers-balance_trunks_offlimits$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Λήπτης Telnet: </td><td align=left><input type=text name=telnet_host size=20 maxlength=20 value=\"$telnet_host\">$NWB#servers-telnet_host$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Πόρτα Telnet: </td><td align=left><input type=text name=telnet_port size=6 maxlength=5 value=\"$telnet_port\">$NWB#servers-telnet_port$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAME size=20 maxlength=20 value=\"$ASTmgrUSERNAME\">$NWB#servers-ASTmgrUSERNAME$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Κωδικός Διαχειριστή: </td><td align=left><input type=text name=ASTmgrSECRET size=20 maxlength=20 value=\"$ASTmgrSECRET\">$NWB#servers-ASTmgrSECRET$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ενημέρωση Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMEupdate size=20 maxlength=20 value=\"$ASTmgrUSERNAMEupdate\">$NWB#servers-ASTmgrUSERNAMEupdate$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Παρακολούθηση Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMElisten size=20 maxlength=20 value=\"$ASTmgrUSERNAMElisten\">$NWB#servers-ASTmgrUSERNAMElisten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αποστολή Χρήστη Διαχειριστή: </td><td align=left><input type=text name=ASTmgrUSERNAMEsend size=20 maxlength=20 value=\"$ASTmgrUSERNAMEsend\">$NWB#servers-ASTmgrUSERNAMEsend$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Τοπικό GMT: </td><td align=left><select size=1 name=local_gmt><option>12.75</option><option>12.00</option><option>11.00</option><option>10.00</option><option>9.50</option><option>9.00</option><option>8.00</option><option>7.00</option><option>6.50</option><option>6.00</option><option>5.75</option><option>5.50</option><option>5.00</option><option>4.50</option><option>4.00</option><option>3.50</option><option>3.00</option><option>2.00</option><option>1.00</option><option>0.00</option><option>-1.00</option><option>-2.00</option><option>-3.00</option><option>-3.50</option><option>-4.00</option><option>-5.00</option><option>-6.00</option><option>-7.00</option><option>-8.00</option><option>-9.00</option><option>-10.00</option><option>-11.00</option><option>-12.00</option><option selected>$local_gmt</option></select> (Μην ρυθμίσεις για DST)$NWB#servers-local_gmt$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>VMail εσωτ.σύνδεση απόρριψης: </td><td align=left><input type=text name=voicemail_dump_exten size=20 maxlength=20 value=\"$voicemail_dump_exten\">$NWB#servers-voicemail_dump_exten$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>AD εσωτ.σύνδεση: </td><td align=left><input type=text name=answer_transfer_agent size=20 maxlength=20 value=\"$answer_transfer_agent\">$NWB#servers-answer_transfer_agent$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Προκαθορισμένο Περιεχόμενο: </td><td align=left><input type=text name=ext_context size=20 maxlength=20 value=\"$ext_context\">$NWB#servers-ext_context$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επίδοση Συστήματος
-: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$row[17]</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
+: </td><td align=left><select size=1 name=sys_perf_log><option>Y</option><option>N</option><option selected>$sys_perf_log</option></select>$NWB#servers-sys_perf_log$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Γεγονότα Διακομιστή
-: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$row[18]</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
+: </td><td align=left><select size=1 name=vd_server_logs><option>Y</option><option>N</option><option selected>$vd_server_logs</option></select>$NWB#servers-vd_server_logs$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Εξοδος AGI
-: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$row[19]</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
+: </td><td align=left><select size=1 name=agi_output><option>NONE</option><option>STDERR</option><option>FILE</option><option>BOTH</option><option selected>$agi_output</option></select>$NWB#servers-agi_output$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Καταγραφή Σύνδεσμος: </td><td align=left><select size=1 name=recording_web_link><option>SERVER_IP</option><option>ALT_IP</option><option selected>$recording_web_link</option></select>$NWB#servers-recording_web_link$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Alternate Recording IP Διακομιστή: </td><td align=left><input type=text name=alt_server_ip size=30 maxlength=100 value=\"$alt_server_ip\">$NWB#servers-alt_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Asterisk Ενεργό Server: </td><td align=left><select size=1 name=active_asterisk_server><option>Y</option><option>N</option><option selected>$active_asterisk_server</option></select>$NWB#servers-active_asterisk_server$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Δημιουργήστε conf αρχεία: </td><td align=left><select size=1 name=generate_vicidial_conf><option>Y</option><option>N</option><option selected>$generate_vicidial_conf</option></select>$NWB#servers-generate_vicidial_conf$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αναδημιουργία conf αρχεία: </td><td align=left><select size=1 name=rebuild_conf_files><option>Y</option><option>N</option><option selected>$rebuild_conf_files</option></select>$NWB#servers-rebuild_conf_files$NWE</td></tr>\n";
+
+
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
 	echo "</TABLE></center></form>\n";
 
@@ -11848,7 +17347,7 @@ if ($ADD==311111111111)
 	echo "<br><b>ΠΡΟΣΘΗΚΗ ΕΓΓΡΑΦΗΣ ΕΞΥΠΗΡΕΤΗΤΗ ΚΟΣΡΜΟΥ</b><BR><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=221111111111>\n";
 	echo "<input type=hidden name=server_ip value=\"$server_ip\">\n";
-	echo "TRUNKS: <input size=6 maxlength=4 name=dedicated_trunks><BR>\n";
+	echo "Μπαούλα: <input size=6 maxlength=4 name=dedicated_trunks><BR>\n";
 	echo "ΕΚΣΤΡΑΤΕΙΑ: <select size=1 name=campaign_id>\n";
 	echo "$campaigns_list\n";
 	echo "</select><BR>\n";
@@ -11858,23 +17357,56 @@ if ($ADD==311111111111)
 	echo "</center></FORM><br>\n";
 
 
+	### list of carriers on this server
+	echo "<center>\n";
+	echo "<br><b>ΜΕΤΑΦΟΡΕΙΣ WITHIN THIS SERVER:</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>CARRIER ID</td><td>ΟΝΟΜΑ</td><td>REGISTRATION</td><td>ΕΝΕΡΓΟ</td></tr>\n";
+
+	$active_carriers = 0;
+	$inactive_carriers = 0;
+	$stmt="SELECT carrier_id,carrier_name,registration_string,active from vicidial_server_carriers where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$carriers_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($carriers_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[3])) {$active_carriers++;}
+		if (ereg("N", $rowx[3])) {$inactive_carriers++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[1]</td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+
 	### list of phones on this server
 	echo "<center>\n";
 	echo "<br><b>ΤΗΛΕΦΩΝΑ ΣΤΟΝ ΔΙΑΚΟΜΙΣΤΗ:</b><br>\n";
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>ΤΗΛ.ΣΥΝΔΕΣΗ</td><td>ΟΝΟΜΑ</td><td>ΕΝΕΡΓΟ</td></tr>\n";
 
-		$active_phones = 0;
-		$inactive_phones = 0;
-		$stmt="SELECT extension,active,fullname from phones where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT extension,active,fullname from phones where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
 		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
 		if (ereg("N", $rowx[1])) {$inactive_phones++;}
 
@@ -11895,17 +17427,18 @@ if ($ADD==311111111111)
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>CONFERENCE</td><td>ΤΗΛ.ΣΥΝΔΕΣΗ</td></tr>\n";
 
-		$active_confs = 0;
-		$stmt="SELECT conf_exten,extension from conferences where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_confs = 0;
+	$stmt="SELECT conf_exten,extension from conferences where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
-			$active_confs++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		$active_confs++;
 
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -11924,17 +17457,18 @@ if ($ADD==311111111111)
 	echo "<TABLE width=400 cellspacing=3>\n";
 	echo "<tr><td>VD CONFERENCE</td><td>ΤΗΛ.ΣΥΝΔΕΣΗ</td></tr>\n";
 
-		$active_vdconfs = 0;
-		$stmt="SELECT conf_exten,extension from vicidial_conferences where server_ip='$row[2]'";
-		$rsltx=mysql_query($stmt, $link);
-		$lists_to_print = mysql_num_rows($rsltx);
-		$camp_lists='';
+	$active_vdconfs = 0;
+	$stmt="SELECT conf_exten,extension from vicidial_conferences where server_ip='$row[2]'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
 
-		$o=0;
-		while ($lists_to_print > $o) {
-			$rowx=mysql_fetch_row($rsltx);
-			$o++;
-			$active_vdconfs++;
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		$active_vdconfs++;
 
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -11950,6 +17484,7 @@ if ($ADD==311111111111)
 	echo "<center><b>\n";
 
 		$camp_lists = eregi_replace(".$","",$camp_lists);
+	echo "Αυτός ο διακομιστής έχει $active_carriers active carriers and $inactive_carriers inactive carriers<br><br>\n";
 	echo "Αυτός ο διακομιστής έχει $active_phones ενεργά τηλέφωνα και $inactive_phones μη ενεργά τηλέφωνα<br><br>\n";
 	echo "Αυτός ο διακομιστής έχει $active_confs active conferences<br><br>\n";
 	echo "Αυτός ο διακομιστής έχει $active_vdconfs active vicidial conferences<br><br>\n";
@@ -11957,6 +17492,218 @@ if ($ADD==311111111111)
 	if ($LOGast_delete_phones > 0)
 		{
 		echo "<br><br><a href=\"$PHP_SELF?ADD=511111111111&server_id=$server_id&server_ip=$server_ip\">DELETE THIS SERVER</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=SERVERS&stage=$server_id\">Κάντε κλικ εδώ για να δείτε Admin chages σε αυτόν τον διακομιστή</FONT>\n";
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=331111111111 modify conf template record in the system
+######################
+
+if ($ADD==331111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT template_id,template_name,template_contents from vicidial_conf_templates where template_id='$template_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$template_id =			$row[0];
+	$template_name =		$row[1];
+	$template_contents =	$row[2];
+
+	echo "<br>MODIFY Α ΠΙΣΤ TEMPLATE RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=431111111111>\n";
+	echo "<input type=hidden name=template_id value=\"$template_id\">\n";
+
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Αναγνωριστικό: </td><td align=left><B>$template_id</B></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Όνομα: </td><td align=left><input type=text name=template_name size=40 maxlength=50 value=\"$template_name\">$NWB#vicidial_conf_templates-template_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Template Περιεχόμενα: </td><td align=left><TEXTAREA NAME=template_contents ROWS=10 COLS=70>$template_contents</TEXTAREA> $NWB#vicidial_conf_templates-template_contents$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+	echo "<center><b>\n";
+
+	### list of phones using this conf template
+	echo "<center>\n";
+	echo "<br><b>PHONES ΧΡΗΣΙΜΟΠΟΙΩΝΤΑΣ ΤΗΝ ΠΑΡΟΥΣΑ ΠΙΣΤ TEMPLATE:</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>ΤΗΛ.ΣΥΝΔΕΣΗ</td><td>ΟΝΟΜΑ</td><td>SERVER</td><td>ΕΝΕΡΓΟ</td></tr>\n";
+
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT extension,active,fullname,server_ip from phones where template_id='$template_id'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
+		if (ereg("N", $rowx[1])) {$inactive_phones++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$rowx[0]&server_ip=$rowx[3]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[1]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+	### list of carriers using this conf template
+	echo "<center>\n";
+	echo "<br><b>Που χρησιμοποιούν ΠΑΡΟΝΤΑ ΠΙΣΤ TEMPLATE:</b><br>\n";
+	echo "<TABLE width=500 cellspacing=3>\n";
+	echo "<tr><td>CARRIER</td><td>ΟΝΟΜΑ</td><td>SERVER</td><td>ΕΝΕΡΓΟ</td></tr>\n";
+
+	$active_phones = 0;
+	$inactive_phones = 0;
+	$stmt="SELECT carrier_id,active,carrier_name,server_ip from vicidial_server_carriers where template_id='$template_id'";
+	$rsltx=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rsltx);
+	$camp_lists='';
+
+	$o=0;
+	while ($lists_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$o++;
+		if (ereg("Y", $rowx[1])) {$active_phones++;   $camp_lists .= "'$rowx[0]',";}
+		if (ereg("N", $rowx[1])) {$inactive_phones++;}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$rowx[0]\">$rowx[0]</a></td><td><font size=1>$rowx[2]</td><td><font size=1>$rowx[3]</td><td><font size=1>$rowx[1]</td></tr>\n";
+		}
+
+	echo "</table></center><br>\n";
+
+
+
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=531111111111&template_id=$template_id&template_name=$template_name\">Διαγραφή αυτής της ΠΙΣΤ TEMPLATE</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CONFTEMPLATES&stage=$template_id\">Κάντε κλικ εδώ για να δείτε Admin chages conf σε αυτό το πρότυπο</FONT>\n";
+		}
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+######################
+# ADD=341111111111 modify carrier record in the system
+######################
+
+if ($ADD==341111111111)
+{
+	if ($LOGast_admin_access==1)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active from vicidial_server_carriers where carrier_id='$carrier_id';";
+	$rslt=mysql_query($stmt, $link);
+	$row=mysql_fetch_row($rslt);
+	$carrier_id =			$row[0];
+	$carrier_name =			$row[1];
+	$registration_string =	$row[2];
+	$template_id =			$row[3];
+	$account_entry =		$row[4];
+	$protocol =				$row[5];
+	$globals_string =		$row[6];
+	$dialplan_entry =		$row[7];
+	$server_ip =			$row[8];
+	$active =				$row[9];
+
+	echo "<br>MODIFY Α ΘΑΛΑΜΙΣΚΟ RECORD: $row[0]<form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=441111111111>\n";
+	echo "<input type=hidden name=carrier_id value=\"$carrier_id\">\n";
+
+	echo "<center><TABLE width=$section_width cellspacing=3>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Θαλαμίσκος ID: </td><td align=left><B>$carrier_id</B></td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Φέρον Όνομα: </td><td align=left><input type=text name=carrier_name size=40 maxlength=50 value=\"$carrier_name\">$NWB#vicidial_server_carriers-carrier_name$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Εγγραφή String: </td><td align=left><input type=text name=registration_string size=50 maxlength=255 value=\"$registration_string\">$NWB#vicidial_server_carriers-registration_string$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right><a href=\"$PHP_SELF?ADD=331111111111&template_id=$template_id\">Πρότυπο ID</a>: </td><td align=left><select size=1 name=template_id>\n";
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+	$templates_list='<option SELECTED>--NONE--</option>';
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$rowx=mysql_fetch_row($rslt);
+		$templates_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+	echo "$templates_list";
+	echo "<option SELECTED>$template_id</option>\n";
+	echo "</select>$NWB#vicidial_server_carriers-template_id$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Λογαριασμός Είσοδος: </td><td align=left><TEXTAREA NAME=account_entry ROWS=10 COLS=70>$account_entry</TEXTAREA> $NWB#vicidial_server_carriers-account_entry$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Πρωτόκολλο: </td><td align=left><select size=1 name=protocol><option>SIP</option><option>Zap</option><option>IAX2</option><option>EXTERNAL</option><option SELECTED>$protocol</option></select>$NWB#vicidial_server_carriers-protocol$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Globals String: </td><td align=left><input type=text name=globals_string size=50 maxlength=255 value=\"$globals_string\">$NWB#vicidial_server_carriers-globals_string$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>Dialplan Είσοδος: </td><td align=left><TEXTAREA NAME=dialplan_entry ROWS=10 COLS=70>$dialplan_entry</TEXTAREA> $NWB#vicidial_server_carriers-dialplan_entry$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#B6D3FC><td align=right>IP Διακομιστή: </td><td align=left><select size=1 name=server_ip>\n";
+	##### get server listing for dynamic pulldown
+	$stmt="SELECT server_ip,server_description from servers order by server_ip";
+	$rsltx=mysql_query($stmt, $link);
+	$servers_to_print = mysql_num_rows($rsltx);
+	$servers_list='';
+
+	$o=0;
+	while ($servers_to_print > $o)
+		{
+		$rowx=mysql_fetch_row($rsltx);
+		$servers_list .= "<option value=\"$rowx[0]\">$rowx[0] - $rowx[1]</option>\n";
+		$o++;
+		}
+
+	echo "$servers_list";
+	echo "<option SELECTED>$server_ip</option>\n";
+	echo "</select>$NWB#vicidial_server_carriers-server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ενεργή:</td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_server_carriers-active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
+	echo "</TABLE></center>\n";
+
+	echo "<center><b>\n";
+	if ($LOGast_delete_phones > 0)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=541111111111&carrier_id=$carrier_id&carrier_name=$carrier_name\">Διαγραφή αυτής της CARRIER</a>\n";
+		}
+	if ($LOGuser_level >= 9)
+		{
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CARRIERS&stage=$carrier_id\">Κάντε κλικ εδώ για να δείτε Admin chages για τον εν λόγω αερομεταφορέα</FONT>\n";
 		}
 	}
 	else
@@ -12002,7 +17749,7 @@ if ($ADD==3111111111111)
 	echo "<center><b>\n";
 	if ($LOGast_delete_phones > 0)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=5111111111111&conf_exten=$conf_exten&server_ip=$server_ip\">DELETE THIS CONFERENCE</a>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=5111111111111&conf_exten=$conf_exten&server_ip=$server_ip\">Διαγραφή αυτής της ΣΥΝΕΔΡΙΟ</a>\n";
 		}
 	}
 	else
@@ -12048,7 +17795,7 @@ if ($ADD==31111111111111)
 	echo "<center><b>\n";
 	if ($LOGast_delete_phones > 0)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=51111111111111&conf_exten=$conf_exten&server_ip=$server_ip\">DELETE THIS VICIDIAL CONFERENCE</a>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=51111111111111&conf_exten=$conf_exten&server_ip=$server_ip\">Διαγραφή αυτής της VICIDIAL ΣΥΝΕΔΡΙΟ</a>\n";
 		}
 	}
 	else
@@ -12071,7 +17818,7 @@ if ($ADD==311111111111111)
 	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log from system_settings;";
+	$stmt="SELECT version,install_date,use_non_latin,webroot_writable,enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_url,queuemetrics_log_id,queuemetrics_eq_prepend,vicidial_agent_disable,allow_sipsak_messages,admin_home_url,enable_agc_xfer_log,db_schema_version,auto_user_add_value,timeclock_end_of_day,timeclock_last_reset_date,vdc_header_date_format,vdc_customer_date_format,vdc_header_phone_format,vdc_agent_api_active,qc_last_pull_time,enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url,qc_features_active,outbound_autodial_active,outbound_calls_per_second from system_settings;";
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$version =						$row[0];
@@ -12090,32 +17837,34 @@ if ($ADD==311111111111111)
 	$allow_sipsak_messages =		$row[13];
 	$admin_home_url =				$row[14];
 	$enable_agc_xfer_log =			$row[15];
+	$db_schema_version =			$row[16];
+	$auto_user_add_value =			$row[17];
+	$timeclock_end_of_day =			$row[18];
+	$timeclock_last_reset_date =	$row[19];
+	$vdc_header_date_format =		$row[20];
+	$vdc_customer_date_format =		$row[21];
+	$vdc_header_phone_format =		$row[22];
+	$vdc_agent_api_active =			$row[23];
+	$qc_last_pull_time = 			$row[24];
+	$enable_vtiger_integration = 	$row[25];
+	$vtiger_server_ip = 			$row[26];
+	$vtiger_dbname = 				$row[27];
+	$vtiger_login = 				$row[28];
+	$vtiger_pass = 					$row[29];
+	$vtiger_url = 					$row[30];
+	$qc_features_active =			$row[31];
+	$outbound_autodial_active =		$row[32];
+	$outbound_calls_per_second =	$row[33];
 
 	echo "<br>ΤΡΟΠΟΠΟΙΗΣΤΕ ΤΙΣ ΤΟΠΟΘΕΤΉΣΕΙΣ ΣΥΣΤΗΜΑΤΩΝ VICIDIAL<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=411111111111111>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Έκδοση: </td><td align=left> $version</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Install Date: </td><td align=left> $install_date</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>DB Schema Έκδοση: </td><td align=left> $db_schema_version</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Auto Χρήστης-add Value: </td><td align=left> $auto_user_add_value</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Εγκαταστήστε Ημερομηνία: </td><td align=left> $install_date</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Μη-λατινικά χρήσης: </td><td align=left><select size=1 name=use_non_latin><option>1</option><option>0</option><option selected>$use_non_latin</option></select>$NWB#settings-use_non_latin$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Webroot writable: </td><td align=left><select size=1 name=webroot_writable><option>1</option><option>0</option><option selected>$webroot_writable</option></select>$NWB#settings-webroot_writable$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε την αναγραφή QueueMetrics: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
-
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics κεντρικός υπολογιστής IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics όνομα DB: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics σύνδεση DB: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics κωδικός πρόσβασης DB: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics καταγράψτε την ταυτότητα: </td><td align=left><input type=text name=queuemetrics_log_id size=12 maxlength=10 value=\"$queuemetrics_log_id\">$NWB#settings-queuemetrics_log_id$NWE</td></tr>\n";
-	echo "<tr bgcolor=#B6D3FC><td align=right>QueueMetrics EnterQueue Prepend:</td><td align=left><select size=1 name=queuemetrics_eq_prepend>\n";
-	echo "<option value=\"NONE\">NONE</option>\n";
-	echo "<option value=\"lead_id\">lead_id</option>\n";
-	echo "<option value=\"list_id\">list_id</option>\n";
-	echo "<option value=\"source_id\">source_id</option>\n";
-	echo "<option value=\"vendor_lead_code\">vendor_lead_code</option>\n";
-	echo "<option value=\"address3\">address3</option>\n";
-	echo "<option value=\"security_phrase\">security_phrase</option>\n";
-	echo "<option selected value=\"$queuemetrics_eq_prepend\">$queuemetrics_eq_prepend</option>\n";
-	echo "</select>$NWB#settings-queuemetrics_eq_prepend$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>VICIDIAL ο πράκτορας θέτει εκτός λειτουργίας την επίδειξη: </td><td align=left><select size=1 name=vicidial_agent_disable>\n";
 	echo "<option value=\"NOT_ACTIVE\">NOT_ACTIVE</option>\n";
 	echo "<option value=\"LIVE_AGENT\">LIVE_AGENT</option>\n";
@@ -12126,11 +17875,83 @@ if ($ADD==311111111111111)
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε τα μηνύματα SIPSAK: </td><td align=left><select size=1 name=allow_sipsak_messages><option>1</option><option>0</option><option selected>$allow_sipsak_messages</option></select>$NWB#settings-allow_sipsak_messages$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Σπίτι URL Admin:</td><td align=left><input type=text name=admin_home_url size=50 maxlength=255 value=\"$admin_home_url\">$NWB#settings-admin_home_url$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Επιτρέψτε το αρχείο ημερολογίου μεταφοράς πρακτόρων: </td><td align=left><select size=1 name=enable_agc_xfer_log><option>1</option><option>0</option><option selected>$enable_agc_xfer_log</option></select>$NWB#settings-enable_agc_xfer_log$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Ώρα ρολόι Τέλος της ημέρας:</td><td align=left><input type=text name=timeclock_end_of_day size=5 maxlength=4 value=\"$timeclock_end_of_day\">$NWB#settings-timeclock_end_of_day$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>ΤελευταίαΏρα ρολόι Αυτόματη Αποσύνδεση:</td><td align=left> $timeclock_last_reset_date</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Τελευταία Τραβήξτε Ώρα:</td><td align=left> $qc_last_pull_time</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Επικεφαλίδας Μορφή Ημερομηνίας: </td><td align=left><select size=1 name=vdc_header_date_format>\n";
+	echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
+	echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
+	echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+	echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
+	echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
+	echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
+	echo "<option>EU_SLASH_AMPM 24/06/2008 11:59:59 PM</option>\n";
+	echo "<option>AL_TEXT_AMPM  JUN 24 11:59:59 PM</option>\n";
+	echo "<option selected value=\"$vdc_header_date_format\">$vdc_header_date_format</option>\n";
+	echo "</select>$NWB#settings-vdc_header_date_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Πελατών Μορφή Ημερομηνίας: </td><td align=left><select size=1 name=vdc_customer_date_format>\n";
+	echo "<option>MS_DASH_24HR  2008-06-24 23:59:59</option>\n";
+	echo "<option>US_SLASH_24HR 06/24/2008 23:59:59</option>\n";
+	echo "<option>EU_SLASH_24HR 24/06/2008 23:59:59</option>\n";
+	echo "<option>AL_TEXT_24HR  JUN 24 23:59:59</option>\n";
+	echo "<option>MS_DASH_AMPM  2008-06-24 11:59:59 PM</option>\n";
+	echo "<option>US_SLASH_AMPM 06/24/2008 11:59:59 PM</option>\n";
+	echo "<option>EU_SLASH_AMPM 24/06/2008 11:59:59 PM</option>\n";
+	echo "<option>AL_TEXT_AMPM  JUN 24 11:59:59 PM</option>\n";
+	echo "<option selected value=\"$vdc_customer_date_format\">$vdc_customer_date_format</option>\n";
+	echo "</select>$NWB#settings-vdc_customer_date_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent Screen Πελατών τηλέφωνο Μορφοποίηση: </td><td align=left><select size=1 name=vdc_header_phone_format>\n";
+	echo "<option>US_DASH 000-000-0000</option>\n";
+	echo "<option>US_PARN (000)000-0000</option>\n";
+	echo "<option>MS_NODS 0000000000</option>\n";
+	echo "<option>UK_DASH 00 0000-0000</option>\n";
+	echo "<option>AU_SPAC 000 000 000</option>\n";
+	echo "<option>IT_DASH 0000-000-000</option>\n";
+	echo "<option>FR_SPAC 00 00 00 00 00</option>\n";
+	echo "<option selected value=\"$vdc_header_phone_format\">$vdc_header_phone_format</option>\n";
+	echo "</select>$NWB#settings-vdc_header_phone_format$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Agent API Ενεργό:</td><td align=left><select size=1 name=vdc_agent_api_active><option>1</option><option>0</option><option selected>$vdc_agent_api_active</option></select>$NWB#settings-vdc_agent_api_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>QC Χαρακτηριστικά Ενεργή:</td><td align=left><select size=1 name=qc_features_active><option>1</option><option>0</option><option selected>$qc_features_active</option></select>$NWB#settings-qc_features_active$NWE</td></tr>\n";
+	echo "<tr bgcolor=#B6D3FC><td align=right>Εξερχόμενο Auto-Dial Ενεργή:</td><td align=left><select size=1 name=outbound_autodial_active><option>1</option><option>0</option><option selected>$outbound_autodial_active</option></select>$NWB#settings-outbound_autodial_active$NWE</td></tr>\n";
 
+	echo "<tr bgcolor=#B6D3FC><td align=right>Max ΣΥΜΠΛΗΡΩΣΤΕ ζητεί ανά Δεύτερη: </td><td align=left><input type=text name=outbound_calls_per_second size=4 maxlength=3 value=\"$outbound_calls_per_second\">$NWB#settings-outbound_calls_per_second$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#99FFCC><td align=right>Επιτρέψτε την αναγραφή QueueMetrics: </td><td align=left><select size=1 name=enable_queuemetrics_logging><option>1</option><option>0</option><option selected>$enable_queuemetrics_logging</option></select>$NWB#settings-enable_queuemetrics_logging$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics κεντρικός υπολογιστής IP: </td><td align=left><input type=text name=queuemetrics_server_ip size=18 maxlength=15 value=\"$queuemetrics_server_ip\">$NWB#settings-queuemetrics_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics όνομα DB: </td><td align=left><input type=text name=queuemetrics_dbname size=18 maxlength=50 value=\"$queuemetrics_dbname\">$NWB#settings-queuemetrics_dbname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics σύνδεση DB: </td><td align=left><input type=text name=queuemetrics_login size=18 maxlength=50 value=\"$queuemetrics_login\">$NWB#settings-queuemetrics_login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics κωδικός πρόσβασης DB: </td><td align=left><input type=text name=queuemetrics_pass size=18 maxlength=50 value=\"$queuemetrics_pass\">$NWB#settings-queuemetrics_pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics URL: </td><td align=left><input type=text name=queuemetrics_url size=50 maxlength=255 value=\"$queuemetrics_url\">$NWB#settings-queuemetrics_url$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics καταγράψτε την ταυτότητα: </td><td align=left><input type=text name=queuemetrics_log_id size=12 maxlength=10 value=\"$queuemetrics_log_id\">$NWB#settings-queuemetrics_log_id$NWE</td></tr>\n";
+	echo "<tr bgcolor=#99FFCC><td align=right>QueueMetrics EnterQueue Prepend:</td><td align=left><select size=1 name=queuemetrics_eq_prepend>\n";
+	echo "<option value=\"NONE\">NONE</option>\n";
+	echo "<option value=\"lead_id\">lead_id</option>\n";
+	echo "<option value=\"list_id\">list_id</option>\n";
+	echo "<option value=\"source_id\">source_id</option>\n";
+	echo "<option value=\"vendor_lead_code\">vendor_lead_code</option>\n";
+	echo "<option value=\"address3\">address3</option>\n";
+	echo "<option value=\"security_phrase\">security_phrase</option>\n";
+	echo "<option selected value=\"$queuemetrics_eq_prepend\">$queuemetrics_eq_prepend</option>\n";
+	echo "</select>$NWB#settings-queuemetrics_eq_prepend$NWE</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Ενεργοποίηση Vtiger Ένταξη: </td><td align=left><select size=1 name=enable_vtiger_integration><option>1</option><option>0</option><option selected>$enable_vtiger_integration</option></select>$NWB#settings-enable_vtiger_integration$NWE\n";
+	echo " &nbsp; <a href=\"./vtiger_user.php\" target=\"_blank\">Κάντε κλικ εδώ για να Συγχρονίστε χρήστες με Vtiger</a>\n";
+	echo "</td></tr>\n";
+
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger ΣΠ IP Διακομιστή: </td><td align=left><input type=text name=vtiger_server_ip size=18 maxlength=15 value=\"$vtiger_server_ip\">$NWB#settings-vtiger_server_ip$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Name: </td><td align=left><input type=text name=vtiger_dbname size=18 maxlength=50 value=\"$vtiger_dbname\">$NWB#settings-vtiger_dbname$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Σύνδεση:</td><td align=left><input type=text name=vtiger_login size=18 maxlength=50 value=\"$vtiger_login\">$NWB#settings-vtiger_login$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger DB Κωδικός:</td><td align=left><input type=text name=vtiger_pass size=18 maxlength=50 value=\"$vtiger_pass\">$NWB#settings-vtiger_pass$NWE</td></tr>\n";
+	echo "<tr bgcolor=#CCFFFF><td align=right>Vtiger URL: </td><td align=left><input type=text name=vtiger_url size=50 maxlength=255 value=\"$vtiger_url\">$NWB#settings-vtiger_url$NWE</td></tr>\n";
 
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=submit VALUE=ΥΠΟΒΑΛΛΩ></td></tr>\n";
 	echo "</TABLE></center>\n";
 	echo "</form>\n";
+	if ($LOGuser_level >= 9)
+	{
+	echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=SYSTEM\">Κάντε κλικ εδώ για να δείτε Admin chages για τις ρυθμίσεις του συστήματος</FONT>\n";
+	}
+
 	}
 	else
 	{
@@ -12158,7 +17979,7 @@ if ($ADD==321111111111111)
 	echo "<br><center>\n";
 	echo "<b>VICIDIAL ΘΕΣΕΙΣ ΜΕΣΑ ΣΕ ΑΥΤΟ ΤΟ ΣΥΣΤΗΜΑ:&nbsp; $NWB#vicidial_statuses$NWE</b><br>\n";
 	echo "<TABLE width=700 cellspacing=3>\n";
-	echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>SELECT-<BR>ABLE</td><td>HUMAN<BR>ANSWER</td><td>CATEGORY</td><td>MODIFY/DELETE</td></tr>\n";
+	echo "<tr><td>ΚΑΤΑΣΤΑΣΗ</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>SELECT-<BR>ABLE</td><td>ΑΝΘΡΩΠΙΝΗ<BR>ΑΠΑΝΤΗΣΗ</td><td>ΚΑΤΗΓΟΡΙΑ</td><td>MODIFY/DELETE</td></tr>\n";
 
 	##### get status category listings for dynamic pulldown
 	$stmt="SELECT vsc_id,vsc_name from vicidial_status_categories order by vsc_id desc";
@@ -12226,7 +18047,7 @@ if ($ADD==321111111111111)
 	echo "Κατάσταση:<input type=text name=status size=7 maxlength=6> &nbsp; \n";
 	echo "Περιγραφή:<input type=text name=status_name size=30 maxlength=30><BR>\n";
 	echo "Επιλέξιμο:<select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
-	echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Ανθρώπινα Απάντηση: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
 	echo "Κατηγορία:\n";
 	echo "<select size=1 name=category>\n";
 	echo "$cats_list";
@@ -12260,9 +18081,9 @@ if ($ADD==331111111111111)
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br><center>\n";
-	echo "<b>VICIDIAL STATUS CATEGORIES: &nbsp; $NWB#vicidial_status_categories$NWE</b><br>\n";
+	echo "<b>VICIDIAL Κατάσταση ΚΑΤΗΓΟΡΙΕΣ: &nbsp; $NWB#vicidial_status_categories$NWE</b><br>\n";
 	echo "<TABLE width=700 cellspacing=3>\n";
-	echo "<tr><td>CATEGORY</td><td>ΟΝΟΜΑ</td><td>TOVDAD</td><td>STATUSES IN THIS CATEGORY</td></tr>\n";
+	echo "<tr><td>ΚΑΤΗΓΟΡΙΑ</td><td>ΟΝΟΜΑ</td><td>Καθεστώτων σε αυτήν την κατηγορία</td></tr>\n";
 
 		$stmt="SELECT * from vicidial_status_categories order by vsc_id;";
 		$rslt=mysql_query($stmt, $link);
@@ -12271,12 +18092,12 @@ if ($ADD==331111111111111)
 		while ($statuses_to_print > $o) 
 			{
 			$rowx=mysql_fetch_row($rslt);
-
-			$Avsc_id[$o] = $rowx[0];
-			$Avsc_name[$o] = $rowx[1];
-			$Avsc_description[$o] = $rowx[2];
-			$Atovdad_display[$o] = $rowx[3];
-
+			$Avsc_id[$o] =				$rowx[0];
+			$Avsc_name[$o] =			$rowx[1];
+			$Avsc_description[$o] =		$rowx[2];
+			$Atovdad_display[$o] =		$rowx[3];
+			$Asale_category[$o] =		$rowx[4];
+			$Adead_lead_category[$o] =	$rowx[5];
 			$o++;
 			}
 		$p=0;
@@ -12315,12 +18136,13 @@ if ($ADD==331111111111111)
 			echo "<input type=hidden name=vsc_id value=\"$Avsc_id[$p]\">\n";
 			echo "<font size=2><B>$Avsc_id[$p]</B></td>\n";
 			echo "<td><input type=text name=vsc_name size=30 maxlength=50 value=\"$Avsc_name[$p]\"></td>\n";
-			echo "<td><select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select></td>\n";
 			echo "<td><font size=1>\n";
 			echo "$CATstatuses";
 			echo "</td></tr>\n";
-			echo "<tr $bgcolor><td colspan=4><font size=1>Περιγραφή:<input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
-			echo "<tr $bgcolor><td colspan=4 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo "<tr $bgcolor>\n";
+			echo "<td colspan=3>TO VDAD Εμφάνιση: <select size=1 name=tovdad_display><option>Y</option><option>N</option><option selected>$Atovdad_display[$p]</option></select> &nbsp; &nbsp; Πώληση Κατηγορία:<select size=1 name=sale_category><option>Y</option><option>N</option><option selected>$Asale_category[$p]</option></select> &nbsp; &nbsp; Νεκρά Μόλυβδος Κατηγορία:<select size=1 name=dead_lead_category><option>Y</option><option>N</option><option selected>$Adead_lead_category[$p]</option></select> &nbsp; </td></tr>\n";
+			echo "<tr $bgcolor><td colspan=3><font size=1>Περιγραφή:<input type=text name=vsc_description size=90 maxlength=255 value=\"$Avsc_description[$p]\"></td></tr>\n";
+			echo "<tr $bgcolor><td colspan=3 align=center><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; <a href=\"$PHP_SELF?ADD=431111111111111&vsc_id=$Avsc_id[$p]&stage=delete\">ΔΙΑΓΡΑΦΗ</a></td></tr>\n";
 			echo "<tr><td colspan=4><font size=1> &nbsp; </form></td></tr>\n";
 
@@ -12332,9 +18154,89 @@ if ($ADD==331111111111111)
 	echo "<br>ΠΡΟΣΘΕΣΤΕ ΤΗ ΝΕΑ ΚΑΤΗΓΟΡΙΑ ΘΕΣΗΣ<BR><form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=231111111111111>\n";
 	echo "Category ID: <input type=text name=vsc_id size=20 maxlength=20> &nbsp; \n";
-	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; \n";
-	echo "TimeOnVDAD Display: <select size=1 name=tovdad_display><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
+	echo "Name: <input type=text name=vsc_name size=20 maxlength=50> &nbsp; <BR>\n";
+	echo "TimeOnVDAD Εμφάνιση: <select size=1 name=tovdad_display><option>Y</option><option selected>N</option></select> &nbsp; \n";
+	echo "Πώληση Κατηγορία:<select size=1 name=sale_category><option>Y</option><option selected>N</option></select> &nbsp; \n";
+	echo "Νεκρά Μόλυβδος Κατηγορία:<select size=1 name=dead_lead_category><option>Y</option><option selected>N</option></select> &nbsp; <BR>\n";
 	echo "Περιγραφή:<input type=text name=vsc_description size=80 maxlength=255> &nbsp; \n";
+	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
+
+	echo "</FORM><br>\n";
+
+	}
+	else
+	{
+	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+	exit;
+	}
+}
+
+
+
+
+
+######################
+# ADD=341111111111111 modify vicidial QC status code
+######################
+
+if ($ADD==341111111111111)
+{
+	if ( ($LOGmodify_servers==1) and ($SSqc_features_active > 0) )
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	echo "<br><center>\n";
+	echo "<b>QC VICIDIAL κωδικοί στα πλαίσια αυτού του συστήματος:&nbsp; $NWB#vicidial_qc_status_codes$NWE</b><br>\n";
+	echo "<TABLE width=600 cellspacing=3>\n";
+	echo "<tr><td>STATUS CODE</td><td>ΠΕΡΙΓΡΑΦΗ</td><td>MODIFY/DELETE</td></tr>\n";
+
+	##### go through each QC status code
+	$stmt="SELECT count(*) from vicidial_qc_codes;";
+	$rslt=mysql_query($stmt, $link);
+	$rowx=mysql_fetch_row($rslt);
+	if ($rowx[0] > 0)
+		{
+		$stmt="SELECT code,code_name from vicidial_qc_codes order by code;";
+		$rslt=mysql_query($stmt, $link);
+		$statuses_to_print = mysql_num_rows($rslt);
+		$o=0;
+		while ($statuses_to_print > $o) 
+			{
+			$rowx=mysql_fetch_row($rslt);
+			$o++;
+
+			if (eregi("1$|3$|5$|7$|9$", $o))
+				{$bgcolor='bgcolor="#B9CBFD"';} 
+			else
+				{$bgcolor='bgcolor="#9BB9FB"';}
+
+			echo "<tr $bgcolor><td><form action=$PHP_SELF method=POST>\n";
+			echo "<input type=hidden name=ADD value=441111111111111>\n";
+			echo "<input type=hidden name=stage value=modify>\n";
+			echo "<input type=hidden name=code value=\"$rowx[0]\">\n";
+			echo "<font size=2><B>$rowx[0]</B></td>\n";
+			echo "<td><input type=text name=code_name size=20 maxlength=30 value=\"$rowx[1]\"></td>\n";
+			echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
+			echo " &nbsp; \n";
+			
+			if (preg_match("/^B$|^NA$|^DNC$|^NA$|^DROP$|^INCALL$|^QUEUE$|^NEW$/i",$rowx[0]))
+				{
+				echo "<DEL>ΔΙΑΓΡΑΦΗ</DEL>\n";
+				}
+			else
+				{
+				echo "<a href=\"$PHP_SELF?ADD=441111111111111&status=$rowx[0]&stage=delete\">ΔΙΑΓΡΑΦΗ</a>\n";
+				}
+			echo "</form></td></tr>\n";
+			}
+		}
+	echo "</table>\n";
+
+	echo "<br>Προσθήκη νέου QC Κατάσταση ΚΩΔΙΚΟΣ<BR><form action=$PHP_SELF method=POST>\n";
+	echo "<input type=hidden name=ADD value=241111111111111>\n";
+	echo "Κατάσταση:<input type=text name=code size=9 maxlength=8> &nbsp; \n";
+	echo "Περιγραφή:<input type=text name=code_name size=30 maxlength=30><BR>\n";
 	echo "<input type=submit name=submit value=ΠΡΟΣΘΗΚΗ><BR>\n";
 
 	echo "</FORM><br>\n";
@@ -12445,13 +18347,13 @@ if ($ADD==8)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_month_date';";
 		$rslt=mysql_query($stmt, $link);
-		echo "<br>User($user) callback listings LIVE for more than one month have been made INACTIVE\n";
+		echo "<br>Χρήστης($user) callback listings LIVE for more than one month have been made INACTIVE\n";
 		}
 		if ($SUB==899)
 		{
 		$stmt="UPDATE vicidial_callbacks SET status='INACTIVE' where user='$user' and status='LIVE' and callback_time < '$past_week_date';";
 		$rslt=mysql_query($stmt, $link);
-		echo "<br>User($user) callback listings LIVE for more than one week have been made INACTIVE\n";
+		echo "<br>Χρήστης($user) callback listings LIVE for more than one week have been made INACTIVE\n";
 		}
 	}
 $CBinactiveLINK = "<BR><a href=\"$PHP_SELF?ADD=8&SUB=89&user=$user\">Remove LIVE Callbacks older than one month for this user</a><BR><a href=\"$PHP_SELF?ADD=8&SUB=899&user=$user\">Remove LIVE Callbacks older than one week for this user</a><BR>";
@@ -12553,7 +18455,7 @@ if ($ADD==8111)
 
 	$CBquerySQLwhere = "and user_group='$user_group'";
 
-echo "<br>USER GROUP CALLBACK HOLD LISTINGS: $list_id\n";
+echo "<br>ΟΜΑΔΑ ΧΡΗΣΤΩΝ CALLBACK HOLD LISTINGS: $list_id\n";
 $oldADD = "ADD=8111&user_group=$user_group";
 $ADD='82';
 }
@@ -12570,7 +18472,7 @@ $ENDATElink='stage=ENDATEDOWN';
 $SQLorder='order by ';
 if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc,';   $USERlink='stage=USERIDUP';}
 if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc,';   $NAMElink='stage=NAMEUP';}
-if (eregi("ENDATEDOWN",$stage)) {$SQLorder='order by entry_time desc,';   $LEVELlink='stage=LEVELUP';}
+if (eregi("ENDATEDOWN",$stage)) {$SQLorder='order by entry_time desc,';   $ΕΠΙΠΕΔΟlink='stage=ΕΠΙΠΕΔΟUP';}
 
 	$stmt="SELECT * from vicidial_callbacks where status IN('ACTIVE','LIVE') $CBquerySQLwhere $SQLorder recipient,status desc,callback_time";
 	$rslt=mysql_query($stmt, $link);
@@ -12626,103 +18528,165 @@ echo "$CBinactiveLINK";
 # ADD=0 display all active users
 ######################
 if ($ADD==0)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	echo "<br>ΛΙΣΤΕΣ ΧΡΗΣΤΗ: ";
+	if (ereg('display_all',$status)) 
+		{
+		$SQLstatus = '';
+		echo " &nbsp; <a href=\"$PHP_SELF?ADD=0\"><font size=1 color=black>Εμφάνιση μόνο των ενεργών χρηστών</a>\n";
+		}
+	else
+		{
+		$SQLstatus = "where active='Y'";
+		echo " &nbsp; <a href=\"$PHP_SELF?ADD=0&status=display_all\"><font size=1 color=black>δείτε όλους τους χρήστες</a>\n";
+		}
 
-$USERlink='stage=USERIDDOWN';
-$NAMElink='stage=NAMEDOWN';
-$LEVELlink='stage=LEVELDOWN';
-$GROUPlink='stage=GROUPDOWN';
-$SQLorder='order by full_name';
-if (eregi("USERIDUP",$stage)) {$SQLorder='order by user asc';   $USERlink='stage=USERIDDOWN';}
-if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc';   $USERlink='stage=USERIDUP';}
-if (eregi("NAMEUP",$stage)) {$SQLorder='order by full_name asc';   $NAMElink='stage=NAMEDOWN';}
-if (eregi("NAMEDOWN",$stage)) {$SQLorder='order by full_name desc';   $NAMElink='stage=NAMEUP';}
-if (eregi("LEVELUP",$stage)) {$SQLorder='order by user_level asc';   $LEVELlink='stage=LEVELDOWN';}
-if (eregi("LEVELDOWN",$stage)) {$SQLorder='order by user_level desc';   $LEVELlink='stage=LEVELUP';}
-if (eregi("GROUPUP",$stage)) {$SQLorder='order by user_group asc';   $GROUPlink='stage=GROUPDOWN';}
-if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPlink='stage=GROUPUP';}
-	$stmt="SELECT * from vicidial_users $SQLorder";
+	$USERlink='stage=USERIDDOWN';
+	$NAMElink='stage=NAMEDOWN';
+	$ΕΠΙΠΕΔΟlink='stage=ΕΠΙΠΕΔΟDOWN';
+	$GROUPlink='stage=GROUPDOWN';
+	$SQLorder='order by full_name';
+	if (eregi("USERIDUP",$stage)) {$SQLorder='order by user asc';   $USERlink='stage=USERIDDOWN';}
+	if (eregi("USERIDDOWN",$stage)) {$SQLorder='order by user desc';   $USERlink='stage=USERIDUP';}
+	if (eregi("NAMEUP",$stage)) {$SQLorder='order by full_name asc';   $NAMElink='stage=NAMEDOWN';}
+	if (eregi("NAMEDOWN",$stage)) {$SQLorder='order by full_name desc';   $NAMElink='stage=NAMEUP';}
+	if (eregi("ΕΠΙΠΕΔΟUP",$stage)) {$SQLorder='order by user_level asc';   $ΕΠΙΠΕΔΟlink='stage=ΕΠΙΠΕΔΟDOWN';}
+	if (eregi("ΕΠΙΠΕΔΟDOWN",$stage)) {$SQLorder='order by user_level desc';   $ΕΠΙΠΕΔΟlink='stage=ΕΠΙΠΕΔΟUP';}
+	if (eregi("GROUPUP",$stage)) {$SQLorder='order by user_group asc';   $GROUPlink='stage=GROUPDOWN';}
+	if (eregi("GROUPDOWN",$stage)) {$SQLorder='order by user_group desc';   $GROUPlink='stage=GROUPUP';}
+	$stmt="SELECT user,full_name,user_level,user_group,active from vicidial_users $SQLstatus $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$people_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΛΙΣΤΕΣ ΧΡΗΣΤΗ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$USERlink\"><font size=1 color=white><B>USER ID</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$NAMElink\"><font size=1 color=white><B>FULL NAME</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$LEVELlink\"><font size=1 color=white><B>LEVEL</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=0&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
-echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$USERlink\"><font size=1 color=white><B>ID ΧΡΗΣΤΗ</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$NAMElink\"><font size=1 color=white><B>ΟΝΟΜΑΤΕΠΩΝΥΜΟ</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$ΕΠΙΠΕΔΟlink\"><font size=1 color=white><B>ΕΠΙΠΕΔΟ</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=0&status=$status&$GROUPlink\"><font size=1 color=white><B>GROUP</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΕΝΕΡΓΟ</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΣΥΝΔΕΣΜΟΙ</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($people_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=3&user=$row[1]\"><font size=1 color=black>$row[1]</a></td><td><font size=1>$row[3]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3&user=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./user_stats.php?user=$row[1]\">ΣΤΑΤΙΣΤΙΚΑ</a> | <a href=\"./user_status.php?user=$row[1]\">ΚΑΤΑΣΤΑΣΗ</a> | <a href=\"./AST_agent_time_sheet.php?agent=$row[1]\">TIME</a></td></tr>\n";
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=3&user=$row[0]\"><font size=1 color=black>$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1><CENTER><a href=\"$PHP_SELF?ADD=3&user=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./user_stats.php?user=$row[0]\">ΣΤΑΤΙΣΤΙΚΑ</a> | <a href=\"./user_status.php?user=$row[0]\">ΚΑΤΑΣΤΑΣΗ</a> | <a href=\"./AST_agent_time_sheet.php?agent=$row[0]\">TIME</a></CENTER></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10 display all campaigns
 ######################
 if ($ADD==10)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_campaigns order by campaign_id";
+	$stmt="SELECT campaign_id,campaign_name,active,dial_method,auto_dial_level,lead_order,dial_statuses from vicidial_campaigns order by campaign_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$campaigns_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΕΚΣΤΡΑΤΕΙΕΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΕΚΣΤΡΑΤΕΙΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CAMPAIGN ID</B></td>";
+	echo "<td><font size=1 color=white><CENTER><B>ΟΝΟΜΑ</B></CENTER></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE &nbsp; </B></td>";
+	if ($SSoutbound_autodial_active > 0)
+		{
+		echo "<td><font size=1 color=white><B>ΤΗΛΕΦΩΝΕΙΣΤΕ ΜΕΘΟΔΟΣ &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B> ΕΠΙΠΕΔΟ &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B>ΜΟΛΥΒΔΟΥ ORDER &nbsp; </B></td>";
+		echo "<td><font size=1 color=white><B>ΤΗΛΕΦΩΝΕΙΣΤΕ καθεστώτων &nbsp; </B></td>";
+		}
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($campaigns_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\">$row[0]</a></td>";
-		echo "<td><font size=1> $row[1] </td>";
-		echo "<td><font size=1> $row[2]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1> $row[6]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=34&campaign_id=$row[0]\">$row[0]</a> &nbsp; </td>";
+		echo "<td><font size=1>$row[1] &nbsp; </td>";
+		echo "<td><font size=1>$row[2] &nbsp; </td>";
+		if ($SSoutbound_autodial_active > 0)
+			{
+			echo "<td><font size=1>$row[3] &nbsp; </td>";
+			echo "<td><font size=1>$row[4] &nbsp; </td>";
+			echo "<td><font size=1>$row[5] &nbsp; </td>";
+			echo "<td><font size=1>$row[6]</td>";
+			}
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31&campaign_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100 display all lists
 ######################
 if ($ADD==100)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_lists order by list_id";
+	$LISTlink='stage=LISTIDDOWN';
+	$TALLYlink='stage=TALLYDOWN';
+	$ACTIVElink='stage=ACTIVEDOWN';
+	$CAMPAIGNlink='stage=CAMPAIGNDOWN';
+	$CALLDATElink='stage=CALLDATEDOWN';
+	$SQLorder='order by list_id';
+	if (eregi("LISTIDUP",$stage))		{$SQLorder='order by list_id asc';				$LISTlink='stage=LISTIDDOWN';}
+	if (eregi("LISTIDDOWN",$stage))		{$SQLorder='order by list_id desc';				$LISTlink='stage=LISTIDUP';}
+	if (eregi("TALLYUP",$stage))		{$SQLorder='order by tally asc';				$TALLYlink='stage=TALLYDOWN';}
+	if (eregi("TALLYDOWN",$stage))		{$SQLorder='order by tally desc';				$TALLYlink='stage=TALLYUP';}
+	if (eregi("ACTIVEUP",$stage))		{$SQLorder='order by active asc';				$ACTIVElink='stage=ACTIVEDOWN';}
+	if (eregi("ACTIVEDOWN",$stage))		{$SQLorder='order by active desc';				$ACTIVElink='stage=ACTIVEUP';}
+	if (eregi("CAMPAIGNUP",$stage))		{$SQLorder='order by campaign_id asc';			$CAMPAIGNlink='stage=CAMPAIGNDOWN';}
+	if (eregi("CAMPAIGNDOWN",$stage))	{$SQLorder='order by campaign_id desc';			$CAMPAIGNlink='stage=CAMPAIGNUP';}
+	if (eregi("CALLDATEUP",$stage))		{$SQLorder='order by list_lastcalldate asc';	$CALLDATElink='stage=CALLDATEDOWN';}
+	if (eregi("CALLDATEDOWN",$stage))	{$SQLorder='order by list_lastcalldate desc';	$CALLDATElink='stage=CALLDATEUP';}
+	$stmt="SELECT vls.list_id,list_name,list_description,count(*) as tally,active,list_lastcalldate,campaign_id from vicidial_lists vls,vicidial_list vl where vls.list_id=vl.list_id group by list_id $SQLorder";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$lists_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΛΙΣΤΕΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΛΙΣΤΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$LISTlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID ΛΙΣΤΑΣ</B></a></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΟΝΟΜΑ ΛΙΣΤΑΣ</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</B></TD>\n";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$TALLYlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>LEADS COUNT</B></a></TD>\n";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$ACTIVElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΕΝΕΡΓΟ</B></a></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$CALLDATElink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΕΛΕΥΤΑΙΑ ΗΜΕΡΟΜΗΝΙΑ ΥΠΟΒΟΛΗΣ</B></a></TD>";
+	echo "<TD><a href=\"$PHP_SELF?ADD=100&$CAMPAIGNlink\"><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>CAMPAIGN</B></a></TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΤΡΟΠΟΠΟΙΗΣΗ</TD>\n";
+	echo "</TR>\n";
 
+	$lists_printed = '';
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($lists_to_print > $o)
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12730,14 +18694,40 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1>$row[5]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1>$row[7]</td><td><font size=1> &nbsp;</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> $row[6]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$lists_printed .= "'$row[0]',";
+		$o++;
+		}
+
+	$stmt="SELECT list_id,list_name,list_description,0,active,list_lastcalldate,campaign_id from vicidial_lists where list_id NOT IN($lists_printed'');";
+	$rslt=mysql_query($stmt, $link);
+	$lists_to_print = mysql_num_rows($rslt);
+	$o=0;
+	while ($lists_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> $row[6]</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311&list_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 
@@ -12745,19 +18735,29 @@ echo "</TABLE></center>\n";
 # ADD=1000 display all inbound groups
 ######################
 if ($ADD==1000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_inbound_groups order by group_id";
+	$stmt="SELECT group_id,group_name,queue_priority,active,call_time_id,group_color from vicidial_inbound_groups order by group_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$ingroups_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΕΙΣΕΡΧΟΜΕΝΕΣ ΟΜΑΔΕΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΕΙΣΕΡΧΟΜΕΝΕΣ ΟΜΑΔΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><font size=1 color=white>IN-GROUP</TD>";
+	echo "<TD><font size=1 color=white>ΟΝΟΜΑ</TD>";
+	echo "<TD><font size=1 color=white>ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ</TD>\n";
+	echo "<TD><font size=1 color=white>ΕΝΕΡΓΟ</TD>";
+	echo "<TD><font size=1 color=white>TIME</TD>";
+	echo "<TD><font size=1 color=white>COLOR</TD>\n";
+	echo "<TD><font size=1 color=white>ΤΡΟΠΟΠΟΙΗΣΗ</TD>\n";
+	echo "</TR>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($ingroups_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12765,34 +18765,88 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3]</td>";
-		echo "<td><font size=1> $row[5]</td>";
-		echo "<td bgcolor=\"$row[2]\"><font size=1> &nbsp;</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td bgcolor=\"$row[5]\"><font size=1> &nbsp;</td>";
 		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111&group_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+
+######################
+# ADD=1300 display all inbound dids
+######################
+if ($ADD==1300)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT did_id,did_pattern,did_description,did_active,did_route from vicidial_inbound_dids order by did_pattern";
+	$rslt=mysql_query($stmt, $link);
+	$dids_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΕΙΣΕΡΧΟΜΕΝΕΣ ΟΜΑΔΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><font size=1 color=white>#</TD>";
+	echo "<TD><font size=1 color=white>DID</TD>";
+	echo "<TD><font size=1 color=white>ΠΕΡΙΓΡΑΦΗ</TD>\n";
+	echo "<TD><font size=1 color=white>ΕΝΕΡΓΟ</TD>";
+	echo "<TD><font size=1 color=white>ROUTE</TD>";
+	echo "<TD><font size=1 color=white>ΤΡΟΠΟΠΟΙΗΣΗ</TD>\n";
+	echo "</TR>\n";
+
+	$o=0;
+	while ($dids_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3311&did_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3311&did_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=10000 display all remote agents
 ######################
 if ($ADD==10000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_remote_agents order by server_ip,campaign_id,user_start";
+	$stmt="SELECT remote_agent_id,user_start,number_of_lines,server_ip,conf_exten,status,campaign_id from vicidial_remote_agents order by server_ip,campaign_id,user_start";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$remoteagents_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΟΙ ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΟΙ ΑΠΟΜΑΚΡΥΣΜΕΝΟΙ ΧΕΙΡΙΣΤΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>USER</B></td>";
+	echo "<td><font size=1 color=white><B>LINES</B></td>";
+	echo "<td><font size=1 color=white><B>ΔΙΑΚΟΜΙΣΤΗΣ &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>CONF-EXTEN &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>STATUS &nbsp; </B></td>";
+	echo "<td><font size=1 color=white><B>CAMPAIGN &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($remoteagents_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12804,31 +18858,37 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<td><font size=1> $row[4]</td>";
 		echo "<td><font size=1> $row[5]</td>";
 		echo "<td><font size=1> $row[6]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111&remote_agent_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100000 display all user groups
 ######################
 if ($ADD==100000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_user_groups order by user_group";
+	$stmt="SELECT user_group,group_name,forced_timeclock_login from vicidial_user_groups order by user_group";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$usergroups_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΟΜΑΔΕΣ ΧΡΗΣΤΗ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΟΜΑΔΕΣ ΧΡΗΣΤΗ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>ΟΜΑΔΑ ΧΡΗΣΤΩΝ</B></td>";
+	echo "<td><font size=1 color=white><B>Όνομα Ομάδας</B></td>";
+	echo "<td><font size=1 color=white><B>ΙΣΧΥΟΝΤΑ TIMECLOCK &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($usergroups_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12836,31 +18896,38 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111&user_group=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=1000000 display all scripts
 ######################
 if ($ADD==1000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_scripts order by script_id";
+	$stmt="SELECT script_id,script_name,active from vicidial_scripts order by script_id";
 	$rslt=mysql_query($stmt, $link);
-	$people_to_print = mysql_num_rows($rslt);
+	$scripts_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΛΙΣΤΕΣ ΒΟΗΘΩΝ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΛΙΣΤΕΣ ΒΟΗΘΩΝ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SCRIPT ID</B></td>";
+	echo "<td><font size=1 color=white><B>SCRIPT ΟΝΟΜΑ</B></td>";
+	echo "<td><font size=1 color=white><B>ACTIVE &nbsp; </B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($people_to_print > $o) {
+	while ($scripts_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12868,32 +18935,37 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111&script_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=10000000 display all filters
 ######################
 if ($ADD==10000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_lead_filters order by lead_filter_id";
+	$stmt="SELECT lead_filter_id,lead_filter_name from vicidial_lead_filters order by lead_filter_id";
 	$rslt=mysql_query($stmt, $link);
 	$filters_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΛΙΣΤΕΣ ΟΔΗΓΟΥ ΦΙΛΤΡΟΥ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΛΙΣΤΕΣ ΟΔΗΓΟΥ ΦΙΛΤΡΟΥ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>FILTER ID</B></td>";
+	echo "<td><font size=1 color=white><B>FILTER NAME</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($filters_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12901,32 +18973,38 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111111&lead_filter_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 
 ######################
 # ADD=100000000 display all call times
 ######################
 if ($ADD==100000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_call_times order by call_time_id";
+	$stmt="SELECT call_time_id,call_time_name,ct_default_start,ct_default_stop from vicidial_call_times order by call_time_id";
 	$rslt=mysql_query($stmt, $link);
-	$filters_to_print = mysql_num_rows($rslt);
+	$calltimes_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CALLTIME ID</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME ΟΝΟΜΑ</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT START</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT STOP</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($calltimes_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12934,33 +19012,41 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2] </td>";
 		echo "<td><font size=1> $row[3] </td>";
-		echo "<td><font size=1> $row[4] </td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111111&call_time_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=1000000000 display all state call times
 ######################
 if ($ADD==1000000000)
-{
-echo "<TABLE><TR><TD>\n";
-
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_state_call_times order by state_call_time_id";
+	$stmt="SELECT state_call_time_id,state_call_time_state,state_call_time_name,sct_default_start,sct_default_stop from vicidial_state_call_times order by state_call_time_id";
 	$rslt=mysql_query($stmt, $link);
-	$filters_to_print = mysql_num_rows($rslt);
+	$statecalltimes_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΛΙΣΤΕΣ ΧΡΟΝΟΥ ΚΛΗΣΗΣ ΚΑΤΑΣΤΑΣΗΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CALLTIME ID</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME STATE</B></td>";
+	echo "<td><font size=1 color=white><B>CALLTIME ΟΝΟΜΑ</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT START</B></td>";
+	echo "<td><font size=1 color=white><B>DEFAULT STOP</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
 
 	$o=0;
-	while ($filters_to_print > $o) {
+	while ($statecalltimes_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -12971,147 +19057,383 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 		echo "<td><font size=1> $row[2]</td>";
 		echo "<td><font size=1> $row[3] </td>";
 		echo "<td><font size=1> $row[4] </td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111111&call_time_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+######################
+# ADD=130000000 display all shifts
+######################
+if ($ADD==130000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT shift_id,shift_name,shift_start_time,shift_length,shift_weekdays from vicidial_shifts order by shift_id";
+	$rslt=mysql_query($stmt, $link);
+	$shifts_to_print = mysql_num_rows($rslt);
+
+	echo "<br>SHIFT Καταχωρίσεις:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>SHIFT ID</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT ΟΝΟΜΑ</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT START</B></td>";
+	echo "<td><font size=1 color=white><B>SHIFT ΜΗΚΟΣ</B></td>";
+	echo "<td><font size=1 color=white><B>Καθημερινά</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
+	$o=0;
+	while ($shifts_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> $row[2] </td>";
+		echo "<td><font size=1> $row[3] </td>";
+		echo "<td><font size=1> $row[4] </td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=331111111&shift_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10000000000 display all phones
 ######################
 if ($ADD==10000000000)
-{
-echo "<TABLE><TR><TD>\n";
-echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-$EXTENlink='stage=EXTENDOWN';
-$PROTOlink='stage=PROTODOWN';
-$SERVERlink='stage=SERVERDOWN';
-$STATUSlink='stage=STATUSDOWN';
-$SQLorder='order by extension,server_ip';
-if (eregi("EXTENUP",$stage)) {$SQLorder='order by extension asc';   $EXTENlink='stage=EXTENDOWN';}
-if (eregi("EXTENDOWN",$stage)) {$SQLorder='order by extension desc';   $EXTENlink='stage=EXTENUP';}
-if (eregi("PROTOUP",$stage)) {$SQLorder='order by protocol asc';   $PROTOlink='stage=PROTODOWN';}
-if (eregi("PROTODOWN",$stage)) {$SQLorder='order by protocol desc';   $PROTOlink='stage=PROTOUP';}
-if (eregi("SERVERUP",$stage)) {$SQLorder='order by server_ip asc';   $SERVERlink='stage=SERVERDOWN';}
-if (eregi("SERVERDOWN",$stage)) {$SQLorder='order by server_ip desc';   $SERVERlink='stage=SERVERUP';}
-if (eregi("STATUSUP",$stage)) {$SQLorder='order by status asc';   $STATUSlink='stage=STATUSDOWN';}
-if (eregi("STATUSDOWN",$stage)) {$SQLorder='order by status desc';   $STATUSlink='stage=STATUSUP';}
-	$stmt="SELECT * from phones $SQLorder";
+	$EXTENlink='stage=EXTENDOWN';
+	$PROTOlink='stage=PROTODOWN';
+	$SERVERlink='stage=SERVERDOWN';
+	$STATUSlink='stage=STATUSDOWN';
+	$SQLorder='order by extension,server_ip';
+	if (eregi("EXTENUP",$stage)) {$SQLorder='order by extension asc';   $EXTENlink='stage=EXTENDOWN';}
+	if (eregi("EXTENDOWN",$stage)) {$SQLorder='order by extension desc';   $EXTENlink='stage=EXTENUP';}
+	if (eregi("PROTOUP",$stage)) {$SQLorder='order by protocol asc';   $PROTOlink='stage=PROTODOWN';}
+	if (eregi("PROTODOWN",$stage)) {$SQLorder='order by protocol desc';   $PROTOlink='stage=PROTOUP';}
+	if (eregi("SERVERUP",$stage)) {$SQLorder='order by server_ip asc';   $SERVERlink='stage=SERVERDOWN';}
+	if (eregi("SERVERDOWN",$stage)) {$SQLorder='order by server_ip desc';   $SERVERlink='stage=SERVERUP';}
+	if (eregi("STATUSUP",$stage)) {$SQLorder='order by status asc';   $STATUSlink='stage=STATUSDOWN';}
+	if (eregi("STATUSDOWN",$stage)) {$SQLorder='order by status desc';   $STATUSlink='stage=STATUSUP';}
+	$stmt="SELECT extension,protocol,server_ip,dialplan_number,voicemail_id,status,fullname,messages,old_messages from phones $SQLorder";
 	$rslt=mysql_query($stmt, $link);
 	$phones_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΑ ΤΗΛΕΦΩΝΑ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
-echo "<tr bgcolor=black>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$EXTENlink\"><font size=1 color=white><B>EXTEN</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$PROTOlink\"><font size=1 color=white><B>PROTO</B></a></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$SERVERlink\"><font size=1 color=white><B>SERVER</B></a></td>";
-echo "<td colspan=2><font size=1 color=white><B>DIAL PLAN</B></td>";
-echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$STATUSlink\"><font size=1 color=white><B>ΚΑΤΑΣΤΑΣΗ</B></a></td>";
-echo "<td><font size=1 color=white><B>ΟΝΟΜΑ</B></td>";
-echo "<td colspan=2><font size=1 color=white><B>VMAIL</B></td>";
-echo "<td align=center><font size=1 color=white><B>LINKS</B></td></tr>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΑ ΤΗΛΕΦΩΝΑ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$EXTENlink\"><font size=1 color=white><B>EXTEN</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$PROTOlink\"><font size=1 color=white><B>PROTO</B></a></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$SERVERlink\"><font size=1 color=white><B>SERVER</B></a></td>";
+	echo "<td colspan=2><font size=1 color=white><B>DIAL PLAN</B></td>";
+	echo "<td><a href=\"$PHP_SELF?ADD=10000000000&$STATUSlink\"><font size=1 color=white><B>ΚΑΤΑΣΤΑΣΗ</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΟΝΟΜΑ</B></td>";
+	echo "<td colspan=2><font size=1 color=white><B>VMAIL</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΣΥΝΔΕΣΜΟΙ</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($phones_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\"><font size=1 color=black>$row[0]</font></a></td><td><font size=1>$row[16]</td><td><font size=1>$row[5]</td><td><font size=1>$row[1]</td><td><font size=1>$row[2]</td><td><font size=1>$row[8]</td><td><font size=1>$row[11]</td><td><font size=1>$row[14]</td><td><font size=1>$row[15]</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[5]\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./phone_stats.php?extension=$row[0]&server_ip=$row[5]\">ΣΤΑΤΙΣΤΙΚΑ</a></td></tr>\n";
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]\"><font size=1 color=black>$row[0]</font></a></td>
+		<td><font size=1>$row[1]</td>
+		<td><font size=1>$row[2]</td>
+		<td><font size=1>$row[3]</td>
+		<td><font size=1>$row[4]</td>
+		<td><font size=1>$row[5]</td>
+		<td><font size=1>$row[6]</td>
+		<td><font size=1>$row[7]</td>
+		<td><font size=1>$row[8]</td>";
+		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111&extension=$row[0]&server_ip=$row[2]\">ΤΡΟΠΟΠΟΙΗΣΗ</a> | <a href=\"./phone_stats.php?extension=$row[0]&server_ip=$row[2]\">ΣΤΑΤΙΣΤΙΚΑ</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+######################
+# ADD=12000000000 display all phones alias
+######################
+if ($ADD==12000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT alias_id,alias_name,logins_list from phones_alias order by alias_id;";
+	$rslt=mysql_query($stmt, $link);
+	$phonealias_to_print = mysql_num_rows($rslt);
+
+	echo "<br>PHONE ALIAS Καταχωρίσεις:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white><B>ALIAS ID</B></a></td>";
+	echo "<td><font size=1 color=white><B>Ψευδώνυμο</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΤΗΛ. ΚΑΤΑΛΟΓΟΣ συνδέσεις</B></a></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
+	$o=0;
+	while ($phonealias_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=32111111111&alias_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+######################
+# ADD=13000000000 display all group alias
+######################
+if ($ADD==13000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT group_alias_id,group_alias_name,caller_id_number,caller_id_name,active from groups_alias order by group_alias_id;";
+	$rslt=mysql_query($stmt, $link);
+	$phonealias_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ΟΜΑΔΑ ALIAS Καταχωρίσεις:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white><B>ΟΜΑΔΑ ALIAS ID</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΟΜΑΔΑ ψευδώνυμο</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΑΡΙΘΜΟΣ CID</B></a></td>";
+	echo "<td><font size=1 color=white><B>CID ΟΝΟΜΑ</B></a></td>";
+	echo "<td><font size=1 color=white><B>ΕΝΕΡΓΟ</B></a></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
+	$o=0;
+	while ($phonealias_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><a href=\"$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]\"><font size=1 color=black>$row[0]</font></a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=33111111111&group_alias_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=100000000000 display all servers
 ######################
 if ($ADD==100000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from servers order by server_id";
+	$stmt="SELECT server_id,server_description,server_ip,active,asterisk_version,max_vicidial_trunks,local_gmt from servers order by server_id";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$servers_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΟΙ ΔΙΑΚΟΜΙΣΤΕΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΟΙ ΔΙΑΚΟΜΙΣΤΕΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>ΔΙΑΚΟΜΙΣΤΗΣ ID</B></td>";
+	echo "<td><font size=1 color=white><B>ΟΝΟΜΑ</B></td>";
+	echo "<td><font size=1 color=white><B>ΔΙΑΚΟΜΙΣΤΗΣ IP</B></td>";
+	echo "<td><font size=1 color=white><B>ΕΝΕΡΓΟ</B></td>";
+	echo "<td><font size=1 color=white><B>ASTERISK</B></td>";
+	echo "<td><font size=1 color=white><B>Μπαούλα</B></td>";
+	echo "<td><font size=1 color=white><B>GMT</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($servers_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
-		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">$row[0]</a></td><td><font size=1>$row[1]</td>";
-		echo "<td><font size=1> $row[2]</td>";
-		echo "<td><font size=1> $row[4]</td>";
-		echo "<td><font size=1> $row[3]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1>$row[5]</td>";
+		echo "<td><font size=1>$row[6]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=311111111111&server_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+######################
+# ADD=130000000000 display all conf templates
+######################
+if ($ADD==130000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT template_id,template_name from vicidial_conf_templates order by template_id";
+	$rslt=mysql_query($stmt, $link);
+	$templates_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ΠΙΣΤ TEMPLATE Καταχωρίσεις:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>Πρότυπο ID</B></td>";
+	echo "<td><font size=1 color=white><B>Όνομα</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
+	$o=0;
+	while ($templates_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=331111111111&template_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
+
+######################
+# ADD=140000000000 display all carriers
+######################
+if ($ADD==140000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT carrier_id,carrier_name,server_ip,protocol,registration_string,active from vicidial_server_carriers order by carrier_id";
+	$rslt=mysql_query($stmt, $link);
+	$carriers_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ΘΑΛΑΜΙΣΚΟ Καταχωρίσεις:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>Θαλαμίσκος ID</B></td>";
+	echo "<td><font size=1 color=white><B>Φέρον Όνομα</B></td>";
+	echo "<td><font size=1 color=white><B>IP Διακομιστή</B></td>";
+	echo "<td><font size=1 color=white><B>Protocol</B></td>";
+	echo "<td><font size=1 color=white><B>Εγγραφή</B></td>";
+	echo "<td><font size=1 color=white><B>Ενεργό</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
+
+	$o=0;
+	while ($carriers_to_print > $o) 
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td><font size=1>$row[3]</td>";
+		echo "<td><font size=1>$row[4]</td>";
+		echo "<td><font size=1>$row[5]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=341111111111&carrier_id=$row[0]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		$o++;
+		}
+
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=1000000000000 display all conferences
 ######################
 if ($ADD==1000000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from conferences order by conf_exten";
+	$stmt="SELECT conf_exten,server_ip,extension from conferences order by conf_exten";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$conferences_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΣΥΝΔΙΑΛΕΞΕΙΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΣΥΝΔΙΑΛΕΞΕΙΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CONFERENCE</B></td>";
+	echo "<td><font size=1 color=white><B>ΔΙΑΚΟΜΙΣΤΗΣ IP</B></td>";
+	echo "<td><font size=1 color=white><B>ΤΗΛ.ΣΥΝΔΕΣΗ</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($conferences_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
 		else
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
-		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td><font size=1>$row[1]</td>";
+		echo "<td><font size=1>$row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=3111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
-	}
+		}
 
-echo "</TABLE></center>\n";
-}
+	echo "</TABLE></center>\n";
+	}
 
 ######################
 # ADD=10000000000000 display all vicidial conferences
 ######################
 if ($ADD==10000000000000)
-{
-echo "<TABLE><TR><TD>\n";
+	{
+	echo "<TABLE><TR><TD>\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-	$stmt="SELECT * from vicidial_conferences order by conf_exten";
+	$stmt="SELECT conf_exten,server_ip,extension from vicidial_conferences order by conf_exten";
 	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
+	$vicidialconf_to_print = mysql_num_rows($rslt);
 
-echo "<br>ΕΝΤΑΓΜΕΝΕΣ ΣΥΝΔΙΑΛΕΞΕΙΣ:\n";
-echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<br>VICIDIAL ΕΝΤΑΓΜΕΝΕΣ ΣΥΝΔΙΑΛΕΞΕΙΣ:\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<tr bgcolor=black>";
+	echo "<td><font size=1 color=white align=left><B>CONFERENCE</B></td>";
+	echo "<td><font size=1 color=white><B>ΔΙΑΚΟΜΙΣΤΗΣ IP</B></td>";
+	echo "<td><font size=1 color=white><B>ΤΗΛ.ΣΥΝΔΕΣΗ</B></td>";
+	echo "<td align=center><font size=1 color=white><B>ΤΡΟΠΟΠΟΙΗΣΗ</B></td></tr>\n";
 
 	$o=0;
-	while ($phones_to_print > $o) {
+	while ($vicidialconf_to_print > $o) 
+		{
 		$row=mysql_fetch_row($rslt);
 		if (eregi("1$|3$|5$|7$|9$", $o))
 			{$bgcolor='bgcolor="#B9CBFD"';} 
@@ -13119,120 +19441,466 @@ echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 			{$bgcolor='bgcolor="#9BB9FB"';}
 		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">$row[0]</a></td>";
 		echo "<td><font size=1> $row[1]</td>";
-		echo "<td><font size=1> $row[2]</td><td><font size=1>$row[4]</td><td><font size=1> &nbsp;</td>";
-		echo "<td><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
+		echo "<td><font size=1> $row[2]</td>";
+		echo "<td align=center><font size=1><a href=\"$PHP_SELF?ADD=31111111111111&conf_exten=$row[0]&server_ip=$row[1]\">ΤΡΟΠΟΠΟΙΗΣΗ</a></td></tr>\n";
 		$o++;
+		}
+
+	echo "</TABLE></center>\n";
 	}
 
-echo "</TABLE></center>\n";
-}
+
+
+
+
+######################
+# ADD=700000000000000 view all activity in the admin log
+######################
+
+if ($ADD==700000000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	if ($stage > 9999)
+		{
+		$next_limit = ($stage + 10000);
+		$limitSQL = "10000 offset $stage";
+		}
+	else
+		{
+		$next_limit = "10000";
+		$limitSQL = "10000";
+		}
+
+	$stmt="SELECT admin_log_id,event_date,user,ip_address,event_section,event_type,record_id,event_code from vicidial_admin_log order by event_date desc limit $limitSQL;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ADMIN CHANGE LOG: (Τελευταία 10.000 εγγραφές)\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DATE TIME</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>USER</B></TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>IP</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>SECTION</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>TYPE</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>RECORD ID</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>GOTO</TD>\n";
+	echo "</TR>\n";
+
+	$logs_printed = '';
+	$o=0;
+	while ($logs_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+		if (eregi("USER|AGENT",$row[4])) {$record_link = "ADD=3&user=$row[6]";}
+		if (eregi('CAMPAIGN',$row[4])) {$record_link = "ADD=31&campaign_id=$row[6]";}
+		if (eregi('LIST',$row[4])) {$record_link = "ADD=311&list_id=$row[6]";}
+		if (eregi('SCRIPT',$row[4])) {$record_link = "ADD=3111111&script_id=$row[6]";}
+		if (eregi('FILTER',$row[4])) {$record_link = "ADD=31111111&lead_filter_id=$row[6]";}
+		if (eregi('INGROUP',$row[4])) {$record_link = "ADD=3111&group_id=$row[6]";}
+		if (eregi('DID',$row[4])) {$record_link = "ADD=3311&did_id=$row[6]";}
+		if (eregi('USERGROUP',$row[4])) {$record_link = "ADD=311111&user_group=$row[6]";}
+		if (eregi('REMOTEAGENT',$row[4])) {$record_link = "ADD=31111&remote_agent_id=$row[6]";}
+		if (eregi('PHONE',$row[4])) {$record_link = "ADD=10000000000";}
+		if (eregi('CALLTIME',$row[4])) {$record_link = "ADD=311111111&call_time_id=$row[6]";}
+		if (eregi('SHIFT',$row[4])) {$record_link = "ADD=331111111&shift_id=$row[6]";}
+		if (eregi('CONFTEMPLATE',$row[4])) {$record_link = "ADD=331111111111&template_id=$row[6]";}
+		if (eregi('CARRIER',$row[4])) {$record_link = "ADD=341111111111&carrier_id=$row[6]";}
+		if (eregi('SERVER',$row[4])) {$record_link = "ADD=311111111111&server_id=$row[6]";}
+		if (eregi('CONFERENCE',$row[4])) {$record_link = "ADD=1000000000000";}
+		if (eregi('SYSTEM',$row[4])) {$record_link = "ADD=311111111111111";}
+		if (eregi('CATEGOR',$row[4])) {$record_link = "ADD=331111111111111";}
+		if (eregi('GROUPALIAS',$row[4])) {$record_link = "ADD=33111111111&group_alias_id=$row[6]";}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?ADD=710000000000000&stage=$row[2]\">$row[2]</a></td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?ADD=720000000000000&category=$row[4]&stage=$row[6]\">$row[6]</a></td>";
+		echo "<td><font size=1> $row[7]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?$record_link\">GOTO</a></td>";
+		echo "</tr>\n";
+		$logs_printed .= "'$row[0]',";
+		$o++;
+		}
+	echo "</TABLE><BR><BR>\n";
+	echo "<a href=\"$PHP_SELF?ADD=700000000000000&stage=$next_limit\">NEXT</a>\n";
+	echo "</center>\n";
+	}
+
+
+######################
+# ADD=710000000000000 view all activity in the admin log made by one user
+######################
+
+if ($ADD==710000000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT full_name from vicidial_users where user='$stage';";
+	$rslt=mysql_query($stmt, $link);
+	$names_to_print = mysql_num_rows($rslt);
+	if ($names_to_print > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$user_name = $row[0];
+		}
+
+	$stmt="SELECT admin_log_id,event_date,user,ip_address,event_section,event_type,record_id,event_code from vicidial_admin_log where user='$stage' order by event_date desc limit 10000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ADMIN CHANGE LOG: Οι αλλαγές που έγιναν από $stage - $user_name\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DATE TIME</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>USER</B></TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>IP</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>SECTION</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>TYPE</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>RECORD ID</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>GOTO</TD>\n";
+	echo "</TR>\n";
+
+	$logs_printed = '';
+	$o=0;
+	while ($logs_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+
+		if (eregi("USER|AGENT",$row[4])) {$record_link = "ADD=3&user=$row[6]";}
+		if (eregi('CAMPAIGN',$row[4])) {$record_link = "ADD=31&campaign_id=$row[6]";}
+		if (eregi('LIST',$row[4])) {$record_link = "ADD=311&list_id=$row[6]";}
+		if (eregi('SCRIPT',$row[4])) {$record_link = "ADD=3111111&script_id=$row[6]";}
+		if (eregi('FILTER',$row[4])) {$record_link = "ADD=31111111&lead_filter_id=$row[6]";}
+		if (eregi('INGROUP',$row[4])) {$record_link = "ADD=3111&group_id=$row[6]";}
+		if (eregi('DID',$row[4])) {$record_link = "ADD=3311&did_id=$row[6]";}
+		if (eregi('USERGROUP',$row[4])) {$record_link = "ADD=311111&user_group=$row[6]";}
+		if (eregi('REMOTEAGENT',$row[4])) {$record_link = "ADD=31111&remote_agent_id=$row[6]";}
+		if (eregi('PHONE',$row[4])) {$record_link = "ADD=10000000000";}
+		if (eregi('CALLTIME',$row[4])) {$record_link = "ADD=311111111&call_time_id=$row[6]";}
+		if (eregi('SHIFT',$row[4])) {$record_link = "ADD=331111111&shift_id=$row[6]";}
+		if (eregi('CONFTEMPLATE',$row[4])) {$record_link = "ADD=331111111111&template_id=$row[6]";}
+		if (eregi('CARRIER',$row[4])) {$record_link = "ADD=341111111111&carrier_id=$row[6]";}
+		if (eregi('SERVER',$row[4])) {$record_link = "ADD=311111111111&server_id=$row[6]";}
+		if (eregi('CONFERENCE',$row[4])) {$record_link = "ADD=1000000000000";}
+		if (eregi('SYSTEM',$row[4])) {$record_link = "ADD=311111111111111";}
+		if (eregi('CATEGOR',$row[4])) {$record_link = "ADD=331111111111111";}
+		if (eregi('GROUPALIAS',$row[4])) {$record_link = "ADD=33111111111&group_alias_id=$row[6]";}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?ADD=710000000000000&stage=$row[2]\">$row[2]</a></td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?ADD=720000000000000&category=$row[4]&stage=$row[6]\">$row[6]</a></td>";
+		echo "<td><font size=1> $row[7]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?$record_link\">GOTO</a></td>";
+		echo "</tr>\n";
+		$logs_printed .= "'$row[0]',";
+		$o++;
+		}
+	echo "</TABLE><BR><BR>\n";
+	echo "\n";
+	echo "</center>\n";
+	}
+
+
+######################
+# ADD=720000000000000 view all activity in the admin log made to one section/value
+######################
+
+if ($ADD==720000000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT admin_log_id,event_date,user,ip_address,event_section,event_type,record_id,event_code from vicidial_admin_log where event_section='$category' and record_id='$stage' order by event_date desc limit 10000;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	echo "<br>ADMIN CHANGE LOG: Τμήμα Εγγραφές - $category - $stage\n";
+	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
+	echo "<TR BGCOLOR=BLACK>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ID</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>DATE TIME</B></TD>";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>USER</B></TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>IP</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>SECTION</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>TYPE</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>RECORD ID</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>ΠΕΡΙΓΡΑΦΗ</TD>\n";
+	echo "<TD><B><FONT FACE=\"Arial,Helvetica\" size=1 color=white>GOTO</TD>\n";
+	echo "</TR>\n";
+
+	$logs_printed = '';
+	$o=0;
+	while ($logs_to_print > $o)
+		{
+		$row=mysql_fetch_row($rslt);
+
+		if (eregi("USER|AGENT",$row[4])) {$record_link = "ADD=3&user=$row[6]";}
+		if (eregi('CAMPAIGN',$row[4])) {$record_link = "ADD=31&campaign_id=$row[6]";}
+		if (eregi('LIST',$row[4])) {$record_link = "ADD=311&list_id=$row[6]";}
+		if (eregi('SCRIPT',$row[4])) {$record_link = "ADD=3111111&script_id=$row[6]";}
+		if (eregi('FILTER',$row[4])) {$record_link = "ADD=31111111&lead_filter_id=$row[6]";}
+		if (eregi('INGROUP',$row[4])) {$record_link = "ADD=3111&group_id=$row[6]";}
+		if (eregi('DID',$row[4])) {$record_link = "ADD=3311&did_id=$row[6]";}
+		if (eregi('USERGROUP',$row[4])) {$record_link = "ADD=311111&user_group=$row[6]";}
+		if (eregi('REMOTEAGENT',$row[4])) {$record_link = "ADD=31111&remote_agent_id=$row[6]";}
+		if (eregi('PHONE',$row[4])) {$record_link = "ADD=10000000000";}
+		if (eregi('CALLTIME',$row[4])) {$record_link = "ADD=311111111&call_time_id=$row[6]";}
+		if (eregi('SHIFT',$row[4])) {$record_link = "ADD=331111111&shift_id=$row[6]";}
+		if (eregi('CONFTEMPLATE',$row[4])) {$record_link = "ADD=331111111111&template_id=$row[6]";}
+		if (eregi('CARRIER',$row[4])) {$record_link = "ADD=341111111111&carrier_id=$row[6]";}
+		if (eregi('SERVER',$row[4])) {$record_link = "ADD=311111111111&server_id=$row[6]";}
+		if (eregi('CONFERENCE',$row[4])) {$record_link = "ADD=1000000000000";}
+		if (eregi('SYSTEM',$row[4])) {$record_link = "ADD=311111111111111";}
+		if (eregi('CATEGOR',$row[4])) {$record_link = "ADD=331111111111111";}
+		if (eregi('GROUPALIAS',$row[4])) {$record_link = "ADD=33111111111&group_alias_id=$row[6]";}
+
+		if (eregi("1$|3$|5$|7$|9$", $o))
+			{$bgcolor='bgcolor="#B9CBFD"';} 
+		else
+			{$bgcolor='bgcolor="#9BB9FB"';}
+		echo "<tr $bgcolor><td><font size=1><a href=\"$PHP_SELF?ADD=730000000000000&stage=$row[0]\">$row[0]</a></td>";
+		echo "<td><font size=1> $row[1]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?ADD=710000000000000&stage=$row[2]\">$row[2]</a></td>";
+		echo "<td><font size=1> $row[3]</td>";
+		echo "<td><font size=1> $row[4]</td>";
+		echo "<td><font size=1> $row[5]</td>";
+		echo "<td><font size=1> $row[6]</td>";
+		echo "<td><font size=1> $row[7]</td>";
+		echo "<td><font size=1> <a href=\"$PHP_SELF?$record_link\">GOTO</a></td>";
+		echo "</tr>\n";
+		$logs_printed .= "'$row[0]',";
+		$o++;
+		}
+	echo "</TABLE><BR><BR>\n";
+	echo "\n";
+	echo "</center>\n";
+	}
+
+
+######################
+# ADD=730000000000000 detail view of one admin log entry
+######################
+
+if ($ADD==730000000000000)
+	{
+	echo "<TABLE><TR><TD>\n";
+	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+	$stmt="SELECT admin_log_id,event_date,val.user,ip_address,event_section,event_type,record_id,event_code,event_notes,event_sql,full_name from vicidial_admin_log val, vicidial_users vu where admin_log_id='$stage' and val.user=vu.user;";
+	$rslt=mysql_query($stmt, $link);
+	$logs_to_print = mysql_num_rows($rslt);
+
+	if ($logs_to_print > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		echo "<br>ADMIN CHANGE LOG: Εγγραφή Λεπτομέρειες - $stage<BR><BR>\n";
+		echo "<center><TABLE width=$section_width cellspacing=5 cellpadding=0>\n";
+		echo "<TR>";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>ID: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[0]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>DATE TIME: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[1]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>USER: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[2] - $row[10]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>IP: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[3]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>SECTION: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[4]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>TYPE: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[5]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>RECORD ID: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=2>$row[6]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>DESCRIPTION: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$row[7]</TD>";
+		echo "</TR><TR>\n";
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>NOTES: </B></TD>";
+		echo "<TD ALIGN=LEFT><FONT FACE=\"Arial,Helvetica\" size=1>$row[8]</TD>";
+		echo "</TR><TR>\n";
+		$row[9] = eregi_replace("',","' ,",$row[9]);
+		echo "<TD ALIGN=RIGHT><B><FONT FACE=\"Arial,Helvetica\" size=2>SQL: </B></TD>";
+		echo "<TD ALIGN=LEFT width=700><p style=\"width: 700; text-wrap: normal; word-wrap: break-word\"><FONT FACE=\"Arial,Helvetica\" size=1>$row[9]</TD>";
+		echo "</TR>\n";
+		echo "</TABLE><BR><BR>\n";
+		echo "\n";
+		echo "</center>\n";
+		}
+	}
+
 
 ######################
 # ADD=999999 display reports section
 ######################
 if ($ADD==999999)
-{
-	if ($LOGview_reports==1)
 	{
-	echo "<TABLE><TR><TD>\n";
-	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
-
-	$stmt="SELECT * from vicidial_conferences order by conf_exten";
-	$rslt=mysql_query($stmt, $link);
-	$phones_to_print = mysql_num_rows($rslt);
-
-	$stmt="select * from servers;";
-	$rslt=mysql_query($stmt, $link);
-	if ($DB) {echo "$stmt\n";}
-	$servers_to_print = mysql_num_rows($rslt);
-	$i=0;
-	while ($i < $servers_to_print)
+	if ($LOGview_reports==1)
 		{
+		echo "<TABLE><TR><TD>\n";
+		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
+
+		$stmt="select server_id,server_description,server_ip,active,sysload,channels_total,cpu_idle_percent,disk_usage from servers;";
+		$rslt=mysql_query($stmt, $link);
+		if ($DB) {echo "$stmt\n";}
+		$servers_to_print = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $servers_to_print)
+			{
+			$row=mysql_fetch_row($rslt);
+			$server_id[$i] =			$row[0];
+			$server_description[$i] =	$row[1];
+			$server_ip[$i] =			$row[2];
+			$active[$i] =				$row[3];
+			$sysload[$i] =				$row[4];
+			$channels_total[$i] =		$row[5];
+			$cpu_idle_percent[$i] =		$row[6];
+			$disk_usage[$i] =			$row[7];
+			$i++;
+			}
+
+		$stmt="SELECT queuemetrics_url,vtiger_url from system_settings;";
+		$rslt=mysql_query($stmt, $link);
 		$row=mysql_fetch_row($rslt);
-		$server_id[$i] =			$row[0];
-		$server_description[$i] =	$row[1];
-		$server_ip[$i] =			$row[2];
-		$active[$i] =				$row[3];
-		$i++;
-		}
+		$queuemetrics_url_LU =				$row[0];
+		$vtiger_url_LU =					$row[1];
 
-	$stmt="SELECT enable_queuemetrics_logging,queuemetrics_url from system_settings;";
-	$rslt=mysql_query($stmt, $link);
-	$row=mysql_fetch_row($rslt);
-	$enable_queuemetrics_logging_LU =	$row[0];
-	$queuemetrics_url_LU =				$row[1];
+		?>
 
+		<HTML>
+		<HEAD>
+
+		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+		<TITLE>VICIDIAL: Στατιστικά Server και Εκθέσεις</TITLE></HEAD><BODY BGCOLOR=WHITE>
+		<FONT SIZE=4><B>VICIDIAL: Στατιστικά Server και Εκθέσεις</B></font><BR><BR>
+		<UL>
+		<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (ανά εκστρατεία)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(όλες τις καμπάνιες SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
+
+		<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>VDAD CAMPAIGN ΕΞΕΡΧΟΜΕΝΟ REPORT</a></FONT>
+		<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Εισερχόμενα/ΑΝΑΦΟΡΑ CLOSER</a></FONT>
+		<LI><a href="AST_CLOSER_service_level.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Εισερχόμενα/CLOSER SERVICE_ΕΠΙΠΕΔΟ REPORT</a></FONT>
+		<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣΑΠΟΔΟΣΗ DETAIL</a></FONT>  &nbsp; &nbsp; 
+			<a href="AST_agent_status_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣSTATUS DETAIL</a></FONT>  &nbsp; &nbsp; 
+			<a href="AST_agent_days_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>SINGLE ΧΕΙΡΙΣΤΗΣDAILY</a></FONT>
+
+		<LI><a href="fcstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>FRONTER - ΑΝΑΦΟΡΑ CLOSER</a></FONT>
+		<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣSPREADSHEET ΑΠΟΔΟΣΗ</a></FONT>
+		<LI><a href="timeclock_report.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>USER TIMECLOCK REPORT</a></FONT>  &nbsp; &nbsp; 
+			<a href="timeclock_status.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Ομάδα χρηστών TIMECLOCK Κατάσταση ΕΚΘΕΣΗ</a></FONT>
+
+		<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΔΙΑΚΟΜΙΣΤΗΣ ΑΠΟΔΟΣΗ</a></FONT>
+	<?
+		if ($LOGexport_reports >= 1)
+			{
+			echo "<LI><a href=\"call_report_export.php\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>ΕΚΘΕΣΗ ΕΞΑΓΩΓΗΣ CALLS</a></FONT>\n";
+			}
+		if ($LOGuser_level >= 9)
+			{
+			echo "<LI><a href=\"$PHP_SELF?ADD=700000000000000\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>ADMIN CHANGE LOG</a></FONT>\n";
+			}
+		if ($SSenable_queuemetrics_logging > 0)
+			{
+			echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS ΑΝΑΦΟΡΕΣ</a></FONT>\n";
+			}
+		if ($SSenable_vtiger_integration > 0)
+			{
+			echo "<LI><a href=\"$vtiger_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>VTIGER ΑΡΧΙΚΗ</a></FONT>\n";
+			}
 	?>
-
-	<HTML>
-	<HEAD>
-
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-	<TITLE>VICIDIAL: Στατιστικά Διακομιστή and Reports</TITLE></HEAD><BODY BGCOLOR=WHITE>
-	<FONT SIZE=4><B>VICIDIAL: Στατιστικά Διακομιστή and Reports</B></font><BR><BR>
-	<UL>
-	<LI><a href="AST_timeonVDADall.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>TIME ON VDAD (per campaign)</a> &nbsp;  <a href="AST_timeonVDADallSUMMARY.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>(all campaigns SUMMARY)</a> &nbsp; &nbsp; SIP <a href="AST_timeonVDADall.php?SIPmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?SIPmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a> &nbsp; &nbsp; IAX <a href="AST_timeonVDADall.php?IAXmonitorLINK=1"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Listen</a> - <a href="AST_timeonVDADall.php?IAXmonitorLINK=2"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>Barge</a></FONT>
-	<LI><a href="AST_VDADstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΑΝΑΦΟΡΑ VDAD</a></FONT>
-	<LI><a href="AST_CLOSERstats.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΑΝΑΦΟΡΑ CLOSER</a></FONT>
-	<LI><a href="AST_agent_performance_detail.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣΑΠΟΔΟΣΗ DETAIL</a></FONT>
-	<LI><a href="vicidial_sales_viewer.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΧΕΙΡΙΣΤΗΣSPREADSHEET ΑΠΟΔΟΣΗ</a></FONT>
-	<LI><a href="AST_server_performance.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=2>ΔΙΑΚΟΜΙΣΤΗΣ ΑΠΟΔΟΣΗ</a></FONT>
-<?
-	if ($enable_queuemetrics_logging_LU > 0)
-		{
-		echo "<LI><a href=\"$queuemetrics_url_LU\"><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>QUEUEMETRICS ΑΝΑΦΟΡΕΣ</a></FONT>\n";
-		}
-?>
-	</UL>
-	<PRE><TABLE Border=1 CELLPADDING=0 cellspacing=0>
-	<TR><TD>SERVER</TD><TD>ΠΕΡΙΓΡΑΦΗ</TD><TD>IP ADDRESS</TD><TD>ΕΝΕΡΓΟ</TD><TD>VDAD time</TD><TD>PARK time</TD><TD>CLOSER/INBOUND time</TD></TR>
-	<? 
+		</UL>
+		<PRE><TABLE Border=1 CELLPADDING=2 cellspacing=0>
+		<TR><TD>SERVER</TD><TD>ΠΕΡΙΓΡΑΦΗ</TD><TD>IP</TD><TD>ACT</TD><TD>LOAD</TD><TD>CHAN</TD><TD>DISK</TD><TD>ΕΞΕΡΧΟΜΕΝΟ</TD><TD>Εισερχόμενα</TD></TR>
+		<? 
 
 		$o=0;
 		while ($servers_to_print > $o)
-		{
-		echo "<TR>\n";
-		echo "<TD>$server_id[$o]</TD>\n";
-		echo "<TD>$server_description[$o]</TD>\n";
-		echo "<TD>$server_ip[$o]</TD>\n";
-		echo "<TD>$active[$o]</TD>\n";
-		echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
-		echo "<TD><a href=\"AST_timeonpark.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
-		echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
-		echo "</TR>\n";
-		$o++;
-		}
+			{
+			$cpu = (100 - $cpu_idle_percent[$o]);
+			$disk = '';
+			$disk_ary = explode('|',$disk_usage[$o]);
+			$disk_ary_ct = count($disk_ary);
+			$k=0;
+			while ($k < $disk_ary_ct)
+				{
+				$disk_ary[$k] = preg_replace("/^\d* /","",$disk_ary[$k]);
+				if ($k<1) {$disk = "$disk_ary[$k]";}
+				else
+					{
+					if ($disk_ary[$k] > $disk) {$disk = "$disk_ary[$k]";}
+					}
+				$k++;
+				}
+			$disk = "$disk%";
+			echo "<TR>\n";
+			echo "<TD>$server_id[$o]</TD>\n";
+			echo "<TD>$server_description[$o]</TD>\n";
+			echo "<TD>$server_ip[$o]</TD>\n";
+			echo "<TD>$active[$o]</TD>\n";
+			echo "<TD>$sysload[$o] - $cpu%</TD>\n";
+			echo "<TD>$channels_total[$o]</TD>\n";
+			echo "<TD ALIGN=RIGHT>$disk</TD>\n";
+			echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]\">LINK</a></TD>\n";
+			echo "<TD><a href=\"AST_timeonVDAD.php?server_ip=$server_ip[$o]&closer_display=1\">LINK</a></TD>\n";
+			echo "</TR>\n";
+			$o++;
+			}
 
-	echo "</TABLE>\n";
-	}
+		echo "</TABLE>\n";
+		}
 	else
-	{
-	echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
-	exit;
+		{
+		echo "Δεν έχετε την άδεια να δείτε αυτήν την σελίδα\n";
+		exit;
+		}
 	}
-}
 
 
 
 
 
 echo "</TD></TR></TABLE></center>\n";
+echo "</TD></TR></TABLE></center>\n";
 
 $ENDtime = date("U");
 
 $RUNtime = ($ENDtime - $STARTtime);
 
-echo "\n\n\n<br><br><br>\n<center>\n";
-
-
-echo "<font size=0>\n\n\n<br><br><br>\nχρόνος εκτέλεσης διαδικασίας: $RUNtime seconds";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΕΚΔΟΣΗ: $admin_version";
-echo " &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔΗΜΙΟΥΡΓΙΑ: $build</font>\n";
-
+echo "</TD></TR>\n";
+echo "<TR><TD BGCOLOR=#015B91 ALIGN=CENTER>\n";
+echo "<font size=0 color=white><br><br><!-- RUNTIME: $RUNtime seconds<BR> -->";
+echo "ΕΚΔΟΣΗ: $admin_version<BR>";
+echo "ΔΗΜΙΟΥΡΓΙΑ: $build</font>\n";
 
 ?>
 
-
+</TD><TD BGCOLOR=#D9E6FE>
 </TD></TR><TABLE>
 </body>
 </html>
@@ -13336,7 +20004,7 @@ if (isset($camp_lists))
 					$state_gmt='';
 					while($r < $g)
 						{
-						if ($GMT_day[$r]==0)	#### Sunday τοπικός χρόνος
+						if ($GMT_day[$r]==0)	#### Κυριακή τοπικός χρόνος
 							{
 							if (($Gsct_sunday_start==0) and ($Gsct_sunday_stop==0))
 								{
@@ -13349,7 +20017,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==1)	#### Monday τοπικός χρόνος
+						if ($GMT_day[$r]==1)	#### Δευτέρα τοπικός χρόνος
 							{
 							if (($Gsct_monday_start==0) and ($Gsct_monday_stop==0))
 								{
@@ -13362,7 +20030,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==2)	#### Tuesday τοπικός χρόνος
+						if ($GMT_day[$r]==2)	#### Τρίτη τοπικός χρόνος
 							{
 							if (($Gsct_tuesday_start==0) and ($Gsct_tuesday_stop==0))
 								{
@@ -13375,7 +20043,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==3)	#### Wednesday τοπικός χρόνος
+						if ($GMT_day[$r]==3)	#### Τετάρτη τοπικός χρόνος
 							{
 							if (($Gsct_wednesday_start==0) and ($Gsct_wednesday_stop==0))
 								{
@@ -13388,7 +20056,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==4)	#### Thursday τοπικός χρόνος
+						if ($GMT_day[$r]==4)	#### Πέμπτη τοπικός χρόνος
 							{
 							if (($Gsct_thursday_start==0) and ($Gsct_thursday_stop==0))
 								{
@@ -13401,7 +20069,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==5)	#### Friday τοπικός χρόνος
+						if ($GMT_day[$r]==5)	#### Παρασκευή τοπικός χρόνος
 							{
 							if (($Gsct_friday_start==0) and ($Gsct_friday_stop==0))
 								{
@@ -13414,7 +20082,7 @@ if (isset($camp_lists))
 									{$state_gmt.="'$GMT_gmt[$r]',";}
 								}
 							}
-						if ($GMT_day[$r]==6)	#### Saturday τοπικός χρόνος
+						if ($GMT_day[$r]==6)	#### Σάββατο τοπικός χρόνος
 							{
 							if (($Gsct_saturday_start==0) and ($Gsct_saturday_stop==0))
 								{
@@ -13449,7 +20117,7 @@ if (isset($camp_lists))
 			$default_gmt='';
 			while($r < $g)
 				{
-				if ($GMT_day[$r]==0)	#### Sunday τοπικός χρόνος
+				if ($GMT_day[$r]==0)	#### Κυριακή τοπικός χρόνος
 					{
 					if (($Gct_sunday_start==0) and ($Gct_sunday_stop==0))
 						{
@@ -13462,7 +20130,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==1)	#### Monday τοπικός χρόνος
+				if ($GMT_day[$r]==1)	#### Δευτέρα τοπικός χρόνος
 					{
 					if (($Gct_monday_start==0) and ($Gct_monday_stop==0))
 						{
@@ -13475,7 +20143,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==2)	#### Tuesday τοπικός χρόνος
+				if ($GMT_day[$r]==2)	#### Τρίτη τοπικός χρόνος
 					{
 					if (($Gct_tuesday_start==0) and ($Gct_tuesday_stop==0))
 						{
@@ -13488,7 +20156,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==3)	#### Wednesday τοπικός χρόνος
+				if ($GMT_day[$r]==3)	#### Τετάρτη τοπικός χρόνος
 					{
 					if (($Gct_wednesday_start==0) and ($Gct_wednesday_stop==0))
 						{
@@ -13501,7 +20169,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==4)	#### Thursday τοπικός χρόνος
+				if ($GMT_day[$r]==4)	#### Πέμπτη τοπικός χρόνος
 					{
 					if (($Gct_thursday_start==0) and ($Gct_thursday_stop==0))
 						{
@@ -13514,7 +20182,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==5)	#### Friday τοπικός χρόνος
+				if ($GMT_day[$r]==5)	#### Παρασκευή τοπικός χρόνος
 					{
 					if (($Gct_friday_start==0) and ($Gct_friday_stop==0))
 						{
@@ -13527,7 +20195,7 @@ if (isset($camp_lists))
 							{$default_gmt.="'$GMT_gmt[$r]',";}
 						}
 					}
-				if ($GMT_day[$r]==6)	#### Saturday τοπικός χρόνος
+				if ($GMT_day[$r]==6)	#### Σάββατο τοπικός χρόνος
 					{
 					if (($Gct_saturday_start==0) and ($Gct_saturday_stop==0))
 						{

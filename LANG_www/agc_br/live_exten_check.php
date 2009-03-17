@@ -1,22 +1,22 @@
 <?
-### live_exten_check.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to send whether the client channel is live and to what channel it is connected
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
-###  - $protocol - ('SIP','Zap','IAX2',...)
-### 
-
+# live_exten_check.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to send whether the client channel is live and to what channel it is connected
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
+#  - $protocol - ('SIP','Zap','IAX2',...)
+# 
+#
 # changes
 # 50404-1249 - First build of script
 # 50406-1402 - added connected trunk lookup

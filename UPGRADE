@@ -247,7 +247,7 @@ Nothing yet, this was just branched
    system to simplify administration for inbound-only call centers
 
 55. Added patch and configuration options to allow VICIDIAL to work with Sangoma
-   ParaXip CPD(Call Progress Detection)
+   ParaXip CPD(Call Progress Detection) for Answering Maching and Fax detection
 
 56. Added list_download.php that allows you to download the entire contents of
    vicidial lists from the admin.php interface. You must set the download_lists

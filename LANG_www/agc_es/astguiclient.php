@@ -1,7 +1,7 @@
 <?
 # astguiclient.php - the web-based version of the astGUIclient client application
 # 
-# Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least
 # user_level 1 or greater to access this page. Also you need to have the login
@@ -2837,7 +2837,7 @@ echo "</head>\n";
 <span style="position:absolute;left:0px;top:46px;z-index:20;" id="ActiveLinesPanel">
 <table border=0 BGCOLOR="#CDE0C2" width=640>
 <tr><td colspan=3>
-<a href="#" onclick="pause();return false;">PAUSA</a> | <a href="#" onclick="start();return false;">COMIENZO</a> &nbsp; &nbsp; Actualizar la tarifa: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Más rápido</a> | <a href="#" onclick="slower();return false;">Más lento</a></p>
+<a href="#" onclick="pause();return false;">PARADA</a> | <a href="#" onclick="start();return false;">COMIENZO</a> &nbsp; &nbsp; Actualizar la tarifa: <span id="refresh_rate">1000 ms</span> <a href="#" onclick="faster();return false;">Más rápido</a> | <a href="#" onclick="slower();return false;">Más lento</a></p>
 	<div id="status"><em>Inizializando..</em></div>
 </td></tr>
 <tr><td>Extensiones Activas <BR> 

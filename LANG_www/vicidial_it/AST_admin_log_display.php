@@ -50,7 +50,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -106,7 +106,7 @@ echo "</FORM>\n\n";
 echo "<PRE><FONT SIZE=2>\n\n";
 
 
-echo "VICIDIAL ADMIN CHANGE LOG                             $NOW_TIME\n";
+echo "VICIDIAL ADMIN Change Log                             $NOW_TIME\n";
 
 #passthru("grep $Gquery_date /home/www/htdocs/vicidial/admin_changes_log.txt");
 passthru("grep $Gquery_date $WeBServeRRooT/vicidial/admin_changes_log.txt");

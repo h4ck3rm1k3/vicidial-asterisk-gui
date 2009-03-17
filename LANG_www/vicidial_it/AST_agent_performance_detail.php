@@ -1,7 +1,7 @@
 <? 
 # AST_agent_performance_detail.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -15,6 +15,7 @@
 # 81030-1924 - Added total non-pause and total logged-in time to pause code section
 # 81108-0716 - fixed user same-name bug
 # 81110-0056 - fixed pause code display bug
+# 90310-2039 - Admin header
 #
 
 require("dbconnect.php");
@@ -32,6 +33,8 @@ if (isset($_GET["user_group"]))				{$user_group=$_GET["user_group"];}
 	elseif (isset($_POST["user_group"]))	{$user_group=$_POST["user_group"];}
 if (isset($_GET["shift"]))					{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))			{$shift=$_POST["shift"];}
+if (isset($_GET["stage"]))					{$stage=$_GET["stage"];}
+	elseif (isset($_POST["stage"]))			{$stage=$_POST["stage"];}
 if (isset($_GET["DB"]))						{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))			{$DB=$_POST["DB"];}
 if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
@@ -39,7 +42,10 @@ if (isset($_GET["submit"]))					{$submit=$_GET["submit"];}
 if (isset($_GET["INVIA"]))					{$INVIA=$_GET["INVIA"];}
 	elseif (isset($_POST["INVIA"]))		{$INVIA=$_POST["INVIA"];}
 
+
 if (strlen($shift)<2) {$shift='ALL';}
+
+$LINKbase = "$PHP_SELF?query_date=$query_date&end_date=$end_date&group=$group&user_group=$user_group&shift=$shift&DB=$DB";
 
 #############################################
 ##### START SYSTEM_SETTINGS LOOKUP #####
@@ -71,7 +77,7 @@ $auth=$row[0];
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
 
@@ -120,7 +126,14 @@ while ($i < $user_groups_to_print)
 
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Agent Performance</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
 echo "<INPUT TYPE=hidden NAME=DB VALUE=\"$DB\">\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=10 MAXLENGTH=10 VALUE=\"$query_date\">\n";
@@ -252,7 +265,7 @@ while ($i < $rows_to_print)
 
 echo "CALL STATS BREAKDOWN:\n";
 echo "+-----------------+----------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
-echo "| USER NAME       | ID       | CALLS  | TIME    | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG|$statusesHTML\n";
+echo "| <a href=\"$LINKbase\">USER NAME</a>       | <a href=\"$LINKbase&stage=ID\">ID</a>       | <a href=\"$LINKbase&stage=CALLS\">CALLS</a>  | <a href=\"$LINKbase&stage=TIME\">TIME</a>    | PAUSE  | PAUSAVG| WAIT   | WAITAVG| TALK   | TALKAVG| DISPO  | DISPAVG|$statusesHTML\n";
 echo "+-----------------+----------+--------+---------+--------+--------+--------+--------+--------+--------+--------+--------+$statusesHEAD\n";
 
 
@@ -318,6 +331,8 @@ while ($m < $k)
 	if ( ($Scalls > 0) and ($Sdispo_sec > 0) ) {$Sdispo_avg = ($Sdispo_sec/$Scalls);}
 		else {$Sdispo_avg=0;}
 
+	$RAWuser = $Suser;
+	$RAWcalls = $Scalls;
 	$Scalls =	sprintf("%6s", $Scalls);
 
 	if ($non_latin < 1)
@@ -427,10 +442,45 @@ while ($m < $k)
 	$USERavgDISPO_MS = "$USERavgDISPO_M_int:$USERavgDISPO_S";
 	$pfUSERavgDISPO_MS =		sprintf("%6s", $USERavgDISPO_MS);
 
-	echo "| $Sfull_name | $Suser | $Scalls | $pfUSERtime_MS | $pfUSERtotPAUSE_MS | $pfUSERavgPAUSE_MS | $pfUSERtotWAIT_MS | $pfUSERavgWAIT_MS | $pfUSERtotTALK_MS | $pfUSERavgTALK_MS | $pfUSERtotDISPO_MS | $pfUSERavgDISPO_MS |$SstatusesHTML\n";
+	$Toutput = "| $Sfull_name | <a href=\"./user_stats.php?user=$RAWuser\">$Suser</a> | $Scalls | $pfUSERtime_MS | $pfUSERtotPAUSE_MS | $pfUSERavgPAUSE_MS | $pfUSERtotWAIT_MS | $pfUSERavgWAIT_MS | $pfUSERtotTALK_MS | $pfUSERavgTALK_MS | $pfUSERtotDISPO_MS | $pfUSERavgDISPO_MS |$SstatusesHTML\n";
+
+	$TOPsorted_output[$m] = $Toutput;
+
+	if ($stage == 'ID')
+		{$TOPsort[$m] =	'' . sprintf("%08s", $RAWuser) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
+	if ($stage == 'CALLS')
+		{$TOPsort[$m] =	'' . sprintf("%08s", $RAWcalls) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
+	if ($stage == 'TIME')
+		{$TOPsort[$m] =	'' . sprintf("%08s", $Stime) . '-----' . $m . '-----' . sprintf("%020s", $RAWuser);}
+	if (!ereg("ID|TIME|CALLS",$stage))
+		{echo "$Toutput";}
+
 	$m++;
 	}
 ### END loop through each user ###
+
+
+
+### BEGIN sort through output to display properly ###
+if (ereg("ID|TIME|CALLS",$stage))
+	{
+	if (ereg("ID",$stage))
+		{sort($TOPsort, SORT_NUMERIC);}
+	if (ereg("TIME|CALLS",$stage))
+		{rsort($TOPsort, SORT_NUMERIC);}
+
+	$m=0;
+	while ($m < $k)
+		{
+		$sort_split = explode("-----",$TOPsort[$m]);
+		$i = $sort_split[1];
+		$sort_order[$m] = "$i";
+		echo "$TOPsorted_output[$i]";
+		$m++;
+		}
+	}
+### END sort through output to display properly ###
+
 
 
 ###### LAST LINE FORMATTING ##########
@@ -493,7 +543,8 @@ while ($n < $j)
 	$TOTtotTALK_MS =		sprintf("%8s", $TOTtotTALK_MS);
 		while(strlen($TOTtotTALK_MS)>8) {$TOTtotTALK_MS = substr("$TOTtotTALK_MS", 0, -1);}
 
-	$TOTtotDISPO_M = ($TOTtotDISPO / 60);
+	if ($TOTtotDISPO < 1) {$TOTtotDISPO_M = '0';}
+	else {$TOTtotDISPO_M = ($TOTtotDISPO / 60);}
 	$TOTtotDISPO_M_int = round($TOTtotDISPO_M, 2);
 	$TOTtotDISPO_M_int = intval("$TOTtotDISPO_M_int");
 	$TOTtotDISPO_S = ($TOTtotDISPO_M - $TOTtotDISPO_M_int);
@@ -504,7 +555,8 @@ while ($n < $j)
 	$TOTtotDISPO_MS =		sprintf("%8s", $TOTtotDISPO_MS);
 		while(strlen($TOTtotDISPO_MS)>8) {$TOTtotDISPO_MS = substr("$TOTtotDISPO_MS", 0, -1);}
 
-	$TOTtotPAUSE_M = ($TOTtotPAUSE / 60);
+	if ($TOTtotPAUSE < 1) {$TOTtotPAUSE_M = '0';}
+	else {$TOTtotPAUSE_M = ($TOTtotPAUSE / 60);}
 	$TOTtotPAUSE_M_int = round($TOTtotPAUSE_M, 2);
 	$TOTtotPAUSE_M_int = intval("$TOTtotPAUSE_M_int");
 	$TOTtotPAUSE_S = ($TOTtotPAUSE_M - $TOTtotPAUSE_M_int);
@@ -515,7 +567,8 @@ while ($n < $j)
 	$TOTtotPAUSE_MS =		sprintf("%8s", $TOTtotPAUSE_MS);
 		while(strlen($TOTtotPAUSE_MS)>8) {$TOTtotPAUSE_MS = substr("$TOTtotPAUSE_MS", 0, -1);}
 
-	$TOTtotWAIT_M = ($TOTtotWAIT / 60);
+	if ($TOTtotWAIT < 1) {$TOTtotWAIT_M = '0';}
+	else {$TOTtotWAIT_M = ($TOTtotWAIT / 60);}
 	$TOTtotWAIT_M_int = round($TOTtotWAIT_M, 2);
 	$TOTtotWAIT_M_int = intval("$TOTtotWAIT_M_int");
 	$TOTtotWAIT_S = ($TOTtotWAIT_M - $TOTtotWAIT_M_int);
@@ -526,8 +579,8 @@ while ($n < $j)
 	$TOTtotWAIT_MS =		sprintf("%8s", $TOTtotWAIT_MS);
 		while(strlen($TOTtotWAIT_MS)>8) {$TOTtotWAIT_MS = substr("$TOTtotWAIT_MS", 0, -1);}
 
-
-	$TOTavgTALK_M = ( ($TOTtotTALK / $TOTcalls) / 60);
+	if ($TOTtotTALK < 1) {$TOTavgTALK_M = '0';}
+	else {$TOTavgTALK_M = ( ($TOTtotTALK / $TOTcalls) / 60);}
 	$TOTavgTALK_M_int = round($TOTavgTALK_M, 2);
 	$TOTavgTALK_M_int = intval("$TOTavgTALK_M_int");
 	$TOTavgTALK_S = ($TOTavgTALK_M - $TOTavgTALK_M_int);
@@ -538,7 +591,8 @@ while ($n < $j)
 	$TOTavgTALK_MS =		sprintf("%6s", $TOTavgTALK_MS);
 		while(strlen($TOTavgTALK_MS)>6) {$TOTavgTALK_MS = substr("$TOTavgTALK_MS", 0, -1);}
 
-	$TOTavgDISPO_M = ( ($TOTtotDISPO / $TOTcalls) / 60);
+	if ($TOTtotDISPO < 1) {$TOTavgDISPO_M = '0';}
+	else {$TOTavgDISPO_M = ( ($TOTtotDISPO / $TOTcalls) / 60);}
 	$TOTavgDISPO_M_int = round($TOTavgDISPO_M, 2);
 	$TOTavgDISPO_M_int = intval("$TOTavgDISPO_M_int");
 	$TOTavgDISPO_S = ($TOTavgDISPO_M - $TOTavgDISPO_M_int);
@@ -549,7 +603,8 @@ while ($n < $j)
 	$TOTavgDISPO_MS =		sprintf("%6s", $TOTavgDISPO_MS);
 		while(strlen($TOTavgDISPO_MS)>6) {$TOTavgDISPO_MS = substr("$TOTavgDISPO_MS", 0, -1);}
 
-	$TOTavgPAUSE_M = ( ($TOTtotPAUSE / $TOTcalls) / 60);
+	if ($TOTtotPAUSE < 1) {$TOTavgPAUSE_M = '0';}
+	else {$TOTavgPAUSE_M = ( ($TOTtotPAUSE / $TOTcalls) / 60);}
 	$TOTavgPAUSE_M_int = round($TOTavgPAUSE_M, 2);
 	$TOTavgPAUSE_M_int = intval("$TOTavgPAUSE_M_int");
 	$TOTavgPAUSE_S = ($TOTavgPAUSE_M - $TOTavgPAUSE_M_int);
@@ -560,7 +615,8 @@ while ($n < $j)
 	$TOTavgPAUSE_MS =		sprintf("%6s", $TOTavgPAUSE_MS);
 		while(strlen($TOTavgPAUSE_MS)>6) {$TOTavgPAUSE_MS = substr("$TOTavgPAUSE_MS", 0, -1);}
 
-	$TOTavgWAIT_M = ( ($TOTtotWAIT / $TOTcalls) / 60);
+	if ($TOTtotWAIT < 1) {$TOTavgWAIT_M = '0';}
+	else {$TOTavgWAIT_M = ( ($TOTtotWAIT / $TOTcalls) / 60);}
 	$TOTavgWAIT_M_int = round($TOTavgWAIT_M, 2);
 	$TOTavgWAIT_M_int = intval("$TOTavgWAIT_M_int");
 	$TOTavgWAIT_S = ($TOTavgWAIT_M - $TOTavgWAIT_M_int);
@@ -757,11 +813,34 @@ while ($m < $k)
 	$USERtotTOTAL_MS = "$USERtotTOTAL_M_int:$USERtotTOTAL_S";
 	$pfUSERtotTOTAL_MS =		sprintf("%6s", $USERtotTOTAL_MS);
 
+	$BOTTOMoutput = "| $Sfull_name | $Suser | $pfUSERtotTOTAL_MS | $pfUSERtotNONPAUSE_MS | $pfUSERtotPAUSE_MS |  |$SstatusesHTML\n";
 
-	echo "| $Sfull_name | $Suser | $pfUSERtotTOTAL_MS | $pfUSERtotNONPAUSE_MS | $pfUSERtotPAUSE_MS |  |$SstatusesHTML\n";
+	$BOTTOMsorted_output[$m] = $BOTTOMoutput;
+
+#	if (!ereg("ID|TIME|CALLS",$stage))
+#		{
+		echo "$BOTTOMoutput";
+#		}
+
 	$m++;
 	}
 ### END loop through each user ###
+
+
+
+### BEGIN sort through output to display properly ###
+#if (ereg("ID|TIME|CALLS",$stage))
+#	{
+#	$n=0;
+#	while ($n <= $m)
+#		{
+#		$i = $sort_order[$m];
+#		echo "$BOTTOMsorted_output[$i]";
+#		$m--;
+#		}
+#	}
+### END sort through output to display properly ###
+
 
 
 ###### LAST LINE FORMATTING ##########
@@ -858,5 +937,7 @@ echo "\n\n";
 
 
 ?>
+
+</TD></TR></TABLE>
 
 </BODY></HTML>

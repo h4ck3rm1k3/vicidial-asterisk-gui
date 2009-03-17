@@ -8,7 +8,7 @@
 # just needs to enter the leadID and then they can view and modify the 
 # information in the record for that lead
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -27,6 +27,8 @@
 # 80516-0936 - Cleanup of logging changes, added vicidial_agent_log display
 # 80701-0832 - Changed to allow for altering of main phone number
 # 80805-2106 - Changed comments to TEXTAREA
+# 81210-1529 - Added server recording display options
+# 90309-1829 - Added admin_log logging
 #
 
 require("dbconnect.php");
@@ -170,7 +172,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -222,6 +224,14 @@ if ($end_call > 0)
 		echo "informazione modificata<BR><BR>\n";
 		echo "<form><input type=button value=\"Chiudi Questa Finestra\" onClick=\"javascript:window.close();\"></form>\n";
 	
+	### LOG INSERTION Admin Log Table ###
+	$SQL_log = "$stmt|";
+	$SQL_log = ereg_replace(';','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='MODIFY', record_id='$lead_id', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
+
 	if ( ($dispo != $status) and ($dispo == 'CBHOLD') )
 	{
 		### inactivate vicidial_callbacks record for this lead 
@@ -380,7 +390,7 @@ else
 			$agent_log .= "<td><font size=1>$y</td>";
 			$agent_log .= "<td><font size=2>$row[3]</td>";
 			$agent_log .= "<td align=left><font size=2> $row[5]</td>\n";
-			$agent_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[11]\" target=\"_blank\">$row[1]</A> </td>\n";
+			$agent_log .= "<td align=left><font size=2> <A HREF=\"user_stats.php?user=$row[1]\" target=\"_blank\">$row[1]</A> </td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[7]</td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[9] </td>\n";
 			$agent_log .= "<td align=right><font size=2> $row[11] </td>\n";
@@ -530,9 +540,9 @@ else
 			echo "</select> <i>(with $log_campaign statuses)</i></td></tr>\n";
 
 
-		echo "<tr bgcolor=#B6D3FC><td align=left>Modify vicidial log </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=left>Modify agent log </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
-		echo "<tr bgcolor=#B6D3FC><td align=left>Modify closer log </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modificarevicidial log </td><td align=left><input type=checkbox name=modify_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modificareagent log </td><td align=left><input type=checkbox name=modify_agent_logs value=\"1\" CHECKED></td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=left>Modificarecloser log </td><td align=left><input type=checkbox name=modify_closer_logs value=\"1\"></td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=left>Add closer log record </td><td align=left><input type=checkbox name=add_closer_record value=\"1\"></td></tr>\n";
 
 
@@ -565,7 +575,7 @@ else
 					echo "<input type=hidden name=DB value=\"$DB\">\n";
 					echo "<input type=hidden name=lead_id value=\"$lead_id\">\n";
 					echo "<input type=hidden name=callback_id value=\"$rowx[0]\">\n";
-					echo "New Callback Owner UserID: <input type=text name=CBuser size=8 maxlength=10 value=\"$rowx[8]\"> \n";
+					echo "New Callback Owner UtenteID: <input type=text name=CBuser size=8 maxlength=10 value=\"$rowx[8]\"> \n";
 					echo "<input type=submit name=submit value=\"CHANGE USERONLY CALLBACK USER\"></form><BR>\n";
 					}
 				else
@@ -575,7 +585,7 @@ else
 					echo "<input type=hidden name=DB value=\"$DB\">\n";
 					echo "<input type=hidden name=lead_id value=\"$lead_id\">\n";
 					echo "<input type=hidden name=callback_id value=\"$rowx[0]\">\n";
-					echo "New Callback Owner UserID: <input type=text name=CBuser size=8 maxlength=10 value=\"$rowx[8]\"> \n";
+					echo "New Callback Owner UtenteID: <input type=text name=CBuser size=8 maxlength=10 value=\"$rowx[8]\"> \n";
 					echo "<input type=submit name=submit value=\"CHANGE TO USERONLY CALLBACK\"></form><BR>\n";
 					}
 				}
@@ -636,9 +646,9 @@ echo "<B>RECORDINGS FOR THIS LEAD:</B>\n";
 echo "<TABLE width=750 cellspacing=1 cellpadding=1>\n";
 echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><font size=2>DATE/TIME </td><td align=left><font size=2>SECONDS </td><td align=left><font size=2> &nbsp; RECID</td><td align=center><font size=2>FILENAME</td><td align=left><font size=2>LOCATION</td><td align=left><font size=2>TSR</td></tr>\n";
 
-	$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
-	$rslt=mysql_query($stmt, $link);
-	$logs_to_print = mysql_num_rows($rslt);
+$stmt="select * from recording_log where lead_id='" . mysql_real_escape_string($lead_id) . "' order by recording_id desc limit 500;";
+$rslt=mysql_query($stmt, $link);
+$logs_to_print = mysql_num_rows($rslt);
 
 	$u=0;
 	while ($logs_to_print > $u) 
@@ -650,6 +660,30 @@ echo "<tr><td><font size=1># </td><td align=left><font size=2> LEAD</td><td><fon
 			{$bgcolor='bgcolor="#9BB9FB"';}
 
 		$location = $row[11];
+
+		if (strlen($location)>2)
+			{
+			$URLserver_ip = $location;
+			$URLserver_ip = eregi_replace('http://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace('https://','',$URLserver_ip);
+			$URLserver_ip = eregi_replace("\/.*",'',$URLserver_ip);
+			$stmt="select count(*) from servers where server_ip='$URLserver_ip';";
+			$rsltx=mysql_query($stmt, $link);
+			$rowx=mysql_fetch_row($rsltx);
+			
+			if ($rowx[0] > 0)
+				{
+				$stmt="select recording_web_link,alt_server_ip from servers where server_ip='$URLserver_ip';";
+				$rsltx=mysql_query($stmt, $link);
+				$rowx=mysql_fetch_row($rsltx);
+				
+				if (eregi("ALT_IP",$rowx[0]))
+					{
+					$location = eregi_replace($URLserver_ip, $rowx[1], $location);
+					}
+				}
+			}
+
 		if (strlen($location)>30)
 			{$locat = substr($location,0,27);  $locat = "$locat...";}
 		else

@@ -1,8 +1,8 @@
 <? 
-### AST_VICIDIAL_hopperlist.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_VICIDIAL_hopperlist.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 # CHANGES
 #
 # 60619-1654 - Added variable filtering to eliminate SQL injection attack threat
@@ -126,7 +126,7 @@ echo "Αριθμός οδηγών στον hopper τώρα::       $TOTALcalls\n
 echo "\n";
 echo "---------- LEADS IN HOPPER\n";
 echo "+------+--------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
-echo "|ORDER |PRIORITY| LEAD ID   | ID ΛΙΣΤΑΣ    | PHONE NUM  | STATE | STATUS | COUNT | GMT    | ALT   |\n";
+echo "|ORDER |ΠΡΟΤΕΡΑΙΟΤΗΤΑΣ| LEAD ID   | ID ΛΙΣΤΑΣ    | PHONE NUM  | STATE | STATUS | COUNT | GMT    | ALT   |\n";
 echo "+------+--------+-----------+------------+------------+-------+--------+-------+--------+-------+\n";
 
 $stmt="select vicidial_hopper.lead_id,phone_number,vicidial_hopper.state,vicidial_list.status,called_count,vicidial_hopper.gmt_offset_now,hopper_id,alt_dial,vicidial_hopper.list_id,vicidial_hopper.priority from vicidial_hopper,vicidial_list where vicidial_hopper.campaign_id='" . mysql_real_escape_string($group) . "' and vicidial_hopper.lead_id=vicidial_list.lead_id order by priority desc,hopper_id limit 2000;";

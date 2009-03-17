@@ -1,21 +1,21 @@
 <?
-### voicemail_check.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to check whether the voicemail box on the server defined has new and old messages
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $vmail_box - ('101','1234',...)
-### 
-
+# voicemail_check.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to check whether the voicemail box on the server defined has new and old messages
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $vmail_box - ('101','1234',...)
+# 
+#
 # changes
 # 50422-1147 - First build of script
 # 50503-1241 - added session_name checking for extra security

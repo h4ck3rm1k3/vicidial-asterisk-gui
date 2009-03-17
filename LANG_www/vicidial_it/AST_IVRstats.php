@@ -1,7 +1,7 @@
 <? 
 # AST_IVRstats.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
@@ -9,6 +9,7 @@
 # 81107-0341 - Added time range and option and 15-minute increment graph
 # 81107-1148 - Added average times and totals
 # 81108-0922 - Added no-callerID and unique caller counts
+# 90310-2056 - Admin header
 #
 
 require("dbconnect.php");
@@ -26,8 +27,8 @@ if (isset($_GET["shift"]))				{$shift=$_GET["shift"];}
 	elseif (isset($_POST["shift"]))		{$shift=$_POST["shift"];}
 if (isset($_GET["submit"]))				{$submit=$_GET["submit"];}
 	elseif (isset($_POST["submit"]))	{$submit=$_POST["submit"];}
-if (isset($_GET["SUBMIT"]))				{$SUBMIT=$_GET["SUBMIT"];}
-	elseif (isset($_POST["SUBMIT"]))	{$SUBMIT=$_POST["SUBMIT"];}
+if (isset($_GET["INVIA"]))				{$INVIA=$_GET["INVIA"];}
+	elseif (isset($_POST["INVIA"]))	{$INVIA=$_POST["INVIA"];}
 if (isset($_GET["DB"]))					{$DB=$_GET["DB"];}
 	elseif (isset($_POST["DB"]))		{$DB=$_POST["DB"];}
 
@@ -64,7 +65,7 @@ $auth=$row[0];
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Invalid Username/Password: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
 
@@ -175,7 +176,14 @@ else
 	}
 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
-echo "<TITLE>VICIDIAL: IVR Stats</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: IVR Stats</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 if ($DB > 0)
 	{
 	echo "<BR>\n";
@@ -186,13 +194,13 @@ if ($DB > 0)
 	}
 
 echo "<FORM ACTION=\"$PHP_SELF\" METHOD=GET>\n";
-echo "<TABLE BORDER=0><TR><TD VALIGN=TOP>\n";
+echo "<TABLE Border=0><TR><TD VALIGN=TOP>\n";
 echo "<INPUT TYPE=HIDDEN NAME=DB VALUE=\"$DB\">\n";
-echo "Date Range:<BR>\n";
+echo "Date:<BR>\n";
 echo "<INPUT TYPE=TEXT NAME=query_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date_BEGIN\">\n";
 echo " to <INPUT TYPE=TEXT NAME=end_date SIZE=19 MAXLENGTH=19 VALUE=\"$query_date_END\">\n";
 echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
-echo "Inbound Groups: \n";
+echo "Gruppi Inbound: \n";
 echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 	$o=0;
@@ -207,9 +215,9 @@ echo "<SELECT SIZE=5 NAME=group[] multiple>\n";
 echo "</SELECT>\n";
 echo "</TD><TD ROWSPAN=2 VALIGN=TOP>\n";
 echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ";
-echo "<a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFY</a> | ";
-echo "<a href=\"./admin.php?ADD=999999\">REPORTS</a> | ";
-echo "<a href=\"./AST_CLOSERstats.php?query_date=$query_date&end_date=$end_date&shift=$shift$groupQS\">CLOSER REPORT</a> \n";
+echo "<a href=\"./admin.php?ADD=3111&group_id=$group[0]\">MODIFICA</a> | ";
+echo "<a href=\"./admin.php?ADD=999999\">REPORT</a> | ";
+echo "<a href=\"./AST_CLOSERstats.php?query_date=$query_date&end_date=$end_date&shift=$shift$groupQS\">INFORME CLOSER</a> \n";
 echo "</FONT>\n";
 
 echo "</TD></TR>\n";
@@ -232,7 +240,7 @@ echo "<option value=\"PM\">PM</option>\n";
 echo "<option value=\"ALL\">ALL</option>\n";
 echo "<option value=\"RANGE\">RANGE</option>\n";
 echo "</SELECT>\n";
-echo " &nbsp; <INPUT TYPE=submit NAME=SUBMIT VALUE=SUBMIT>\n";
+echo " &nbsp; <INPUT TYPE=submit NAME=INVIA VALUE=INVIA>\n";
 echo "</TD></TR></TABLE>\n";
 echo "</FORM>\n\n";
 
@@ -242,7 +250,7 @@ echo "<PRE><FONT SIZE=2>\n\n";
 if ($groups_to_print < 1)
 {
 echo "\n\n";
-echo "PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT\n";
+echo "SELEZIONA UN GRUPPO IN-E DATE SOPRA e fare clic su Invia\n";
 }
 
 else
@@ -502,7 +510,7 @@ echo "+--------+--------+--------+--------+------+------+\n";
 #########  TIME STATS
 
 echo "\n";
-echo "---------- TIME STATS\n";
+echo "---------- STATISTICHE TEMPO\n";
 
 echo "<FONT SIZE=0>\n";
 
@@ -560,7 +568,7 @@ else
 	}
 
 echo "<!-- HICOUNT: $hi_hour_count|$hour_multiplier -->\n";
-echo "GRAPH IN 15 MINUTE INCREMENTS OF TOTAL CALLS TAKEN INTO THIS IVR\n";
+echo "GRAFICO AD INCREMENTO DI 15 MINUTI DEL TOTALE DELLE CHIAMATE TAKEN INTO THIS IVR\n";
 
 $k=1;
 $Mk=0;
@@ -671,5 +679,6 @@ echo "\nRun Time: $RUNtime seconds\n";
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

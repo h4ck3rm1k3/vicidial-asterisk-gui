@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"ENE"|
@@ -373,9 +373,9 @@ Last|Último|
 Address|Dirección|
 City|Ciudad|
 State|Estado|
-PostCode|Código Postal|
+PostCode|CódigoPostal|
 Province|Provincia|
-Vendor ID|Vendedor ID|
+Vendor ID|VendedorID|
 DialCode|Código Del Dial|
 Alt. Phone|Teléfono Alt|
 Show|Demostración|
@@ -429,3 +429,47 @@ YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|USTED DEBE INTRODUC
 ENTER A PAUSE CODE|INTRODUZCA Un CÓDIGO De la PAUSA|
 YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|USTED DEBE SER DETENIDO BREVEMENTE PARA INTRODUCIR Un CÓDIGO De la PAUSA EN AUTO-DIAL MODE|
 Your session has been disabled|Se ha inhabilitado su sesión|
+### BEGIN translation phrases for 2.0.5 release ###
+Gender: |Género:|
+Date of Birth: |Fecha de nacimiento:|
+YOU MUST BE PAUSED TO CHANGE GROUPS|USTED DEBE CAMBIAR pausa GRUPOS|
+Calls in Queue:|Pide, en la cola:|
+ Timeclock|Timeclock|
+The user and password you entered are not active in the system|El usuario y la contraseña que ha introducido no son activos en el sistema|
+Please try again|Por favor, inténtelo de nuevo|
+You cannot log in or out within 30 seconds of your last login or logout|No puede iniciar sesión o en un plazo de 30 segundos de su última conexión o desconexión|
+You have now logged-out|Ya ha iniciado la sesión en|
+You logged out at |Que en la sesión|
+Amount of time you were logged-in: |Cantidad de tiempo que se han registrado en:|
+ERROR: timeclock log entry already made: |ERROR: timeclock entrada de registro ya realizados:|
+BACK to Agent Login Screen|VOLVER a la pantalla de Inicio|
+BACK to Administration|VOLVER a la Administración|
+BACK to Welcome Screen|VOLVER a la pantalla de bienvenida|
+Time since you were last logged-in: |Vez desde que se conectó por última vez en:|
+You last logged-out at: |-Usted se conectó por última vez en:|
+Click LOGIN below to log-in|Haga clic en Conectarse a continuación para acceder al sistema|
+Amount of time you have been logged-in: |Cantidad de tiempo que se han registrado en:|
+You logged-in at:|Iniciado la sesión en que usted en:|
+Click LOGOUT below to log-out|Haga clic a continuación para acceder LOGOUT-out|
+Undefined|Indefinido|
+This phone number is not in the campaign lists|Este número de teléfono no está en la campaña de las listas|
+Unspecified error|Error no especificado|
+Extended Alt Phone Information: |Teléfono de Información ampliado Alt:|
+ALT DIAL NUMBER:|ALT DIAL NÚMERO:|
+Phone Code and Number:|Código y número de teléfono:|
+Notes: |Notas:|
+Active: |Activo:|
+Alt Count: |Alt Cuenta:|
+Change this phone number to INACTIVE|Cambiar este número de teléfono a INACTIVAS|
+Change this phone number to ACTIVE|Cambiar este número de teléfono a ACTIVO|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|USTED DEBE ENTRAR A LA PRIMERA TIMECLOCK|
+There is a time synchronization problem with your system, please tell your system administrator|Hay un problema de sincronización de tiempo con su sistema, por favor, dígale a su administrador del sistema|
+Preview Call|Vista previa de llamada|
+SELECT A GROUP ALIAS|SELECCIONAR UN GRUPO DE ALIAS|
+Group Alias Selection|Grupo de Selección de Alias|
+Click Here to Choose a Group Alias|Haga clic aquí para escoger un grupo de alias|
+Group Alias|Grupo de Alias|
+ERROR: There are no Shifts enabled for your user group|ERROR: No hay cambios habilitado para su grupo de usuarios|
+ERROR: You are not allowed to log in outside of your shift|ERROR: No se le permite acceder fuera de su turno|
+MANAGER OVERRIDE|GERENTE DE TRANSFERENCIA|
+Your Shift is over or has changed, you have been logged out of your session|Su cambio es de más o ha cambiado, se le ha cerrado la sesión de su período de sesiones|

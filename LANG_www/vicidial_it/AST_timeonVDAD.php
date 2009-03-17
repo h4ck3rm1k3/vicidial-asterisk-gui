@@ -12,6 +12,7 @@
 # 61114-2004 - Changed to display CLOSER and DEFAULT, added trunk shortage
 # 80422-0305 - Added phone login to display, lower font size to 2
 # 81013-2227 - Fixed Remote Agent display bug
+# 90310-1945 - Admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -45,7 +46,7 @@ $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
 
@@ -112,7 +113,14 @@ if ($closer_display>0)
 <? 
 echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"4; URL=$PHP_SELF?server_ip=$server_ip&DB=$DB&reset_counter=$reset_counter&closer_display=$closer_display\">\n";
-echo "<TITLE>VICIDIAL: Time On VDAD</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Time On VDAD</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+$short_header=1;
+
+require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<PRE><FONT SIZE=2>";
 
 ###################################################################################
@@ -431,5 +439,6 @@ $parked_to_print = mysql_num_rows($rslt);
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

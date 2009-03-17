@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"GEN"|
@@ -449,3 +449,43 @@ F - Female|F - Femmina|
 ### BEGIN translation phrases for 2.0.5 release build 890
 Date of Birth: |Data di Nascita: |
 YOU MUST BE PAUSED TO CHANGE GROUPS|DEVI ESSERE IN PAUSA PER CAMBIARE GRUPPO|
+Calls in Queue:|Chiede, in coda:|
+ Timeclock|Orologio|
+The user and password you entered are not active in the system|Lutente e la password che hai inserito non sono attivi nel sistema|
+Please try again|Si prega di riprovare|
+You cannot log in or out within 30 seconds of your last login or logout|Non è possibile accedere o entro 30 secondi del tuo ultimo accesso o il logout|
+You have now logged-out|Lei ha appena effettuato laccesso-out|
+You logged out at |Hai effettuato laccesso a|
+Amount of time you were logged-in: |Importo di tempo sono state registrate in:|
+ERROR: timeclock log entry already made: |ERRORE: orologio registro entrata già fatto:|
+BACK to Agent Login Screen|Torna alla schermata di login di agente|
+BACK to Administration|BACK per Amministrazione|
+BACK to Welcome Screen|Torna alla schermata iniziale|
+Time since you were last logged-in: |Tempo dallultimo registrato in:|
+You last logged-out at: |È lultima connesso a:|
+Click LOGIN below to log-in|Clicca qui sotto per LOGIN log-in|
+Amount of time you have been logged-in: |Quantità di tempo è stato registrato in:|
+You logged-in at:|Hai effettuato laccesso al-in:|
+Click LOGOUT below to log-out|Clicca qui sotto per LOGOUT log-out|
+Undefined|Undefined|
+This phone number is not in the campaign lists|Questo numero di telefono non si trova nella campagna di elenchi|
+Unspecified error|Errore non specificato|
+Extended Alt Phone Information: |Estensione Alt Telefono informazioni:|
+ALT DIAL NUMBER:|ALT DIAL NUMERO:|
+Phone Code and Number:|Codice e Numero di telefono:|
+Notes: |Note:|
+Active: |Attivo:|
+Alt Count: |Alt Conte:|
+Change this phone number to INACTIVE|Cambia il numero di telefono a INACTIVE|
+Change this phone number to ACTIVE|Cambia il numero di telefono per ATTIVO|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|È necessario accedere al orologio LA PRIMA|
+There is a time synchronization problem with your system, please tell your system administrator|Cè un problema di sincronizzazione con il tempo il vostro sistema, si prega di informare lamministratore di sistema|
+Preview Call|Anteprima invito|
+SELECT A GROUP ALIAS|SCEGLI UN GRUPPO ALIAS|
+Group Alias Selection|Gruppo Alias selezione|
+Click Here to Choose a Group Alias|Clicca qui per scegliere un gruppo Alias|
+Group Alias|Gruppo Alias|
+ERROR: There are no Shifts enabled for your user group|ERRORE: Non ci sono cambiamenti abilitati per il tuo gruppo di utenti|
+ERROR: You are not allowed to log in outside of your shift|ERRORE: Non ti è consentito di accedere al di fuori del proprio turno|
+MANAGER OVERRIDE|Sovrascrive MANAGER|
+Your Shift is over or has changed, you have been logged out of your session|Il tuo Shift è finita o è cambiato, è stato disconnesso dal tuo sessione|

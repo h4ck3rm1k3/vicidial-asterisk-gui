@@ -1,22 +1,22 @@
 <?
-### park_calls_display.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to send the details on the parked calls on the server
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
-###  - $protocol - ('SIP','Zap','IAX2',...)
-### 
-
+# park_calls_display.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to send the details on the parked calls on the server
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
+#  - $protocol - ('SIP','Zap','IAX2',...)
+# 
+#
 # changes
 # 50524-1515 - First build of script
 # 50711-1208 - removed HTTP authentication in favor of user/pass vars

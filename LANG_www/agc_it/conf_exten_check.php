@@ -1,7 +1,7 @@
 <?
 # conf_exten_check.php    version 2.0.5
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # This script is designed purely to send whether the meetme conference has live channels connected and which they are
 # This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
@@ -40,12 +40,15 @@
 # 80703-1106 - Added API functionality for Hangup and Dispo
 # 81104-0229 - Added mysql error logging capability
 # 81104-1409 - Added multi-retry for some vicidial_live_agents table MySQL queries
+# 90102-1402 - Added check for system and database time synchronization
+# 90120-1720 - Added compatibility for API pause/resume and dial a number
+# 90307-1855 - Added shift enforcement to send logout flag if outside of shift hours
 #
 
-$version = '2.0.4-15';
-$build = '81104-1409';
+$version = '2.0.5-18';
+$build = '90307-1855';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=14;
+$mysql_log_count=17;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -252,8 +255,8 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03007',$user,$server_ip,$session_name,$one_mysql_log);}
 					$row=mysql_fetch_row($rslt);
 					$RingCalls=$row[0];
-					if ($RingCalls > 0) {$RingCalls = "<font class=\"queue_text_red\">Calls in Queue: $RingCalls</font>";}
-					else {$RingCalls = "<font class=\"queue_text\">Calls in Queue: $RingCalls</font>";}
+					if ($RingCalls > 0) {$RingCalls = "<font class=\"queue_text_red\">Chiede, in coda: $RingCalls</font>";}
+					else {$RingCalls = "<font class=\"queue_text\">Chiede, in coda: $RingCalls</font>";}
 
 					### grab the number of calls being placed from this server and campaign
 					$stmt="SELECT count(*) from vicidial_auto_calls where status NOT IN('XFER') and ( (campaign_id='$Acampaign') or (campaign_id IN('$AccampSQL')) );";
@@ -294,19 +297,118 @@ echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
 				}
 
 			### grab the API hangup and API dispo fields in vicidial_live_agents
-			$stmt="SELECT external_hangup,external_status from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
+			$stmt="SELECT external_hangup,external_status,external_pause,external_dial from vicidial_live_agents where user='$user' and server_ip='$server_ip';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03010',$user,$server_ip,$session_name,$one_mysql_log);}
 			$row=mysql_fetch_row($rslt);
 			$external_hangup =	$row[0];
 			$external_status =	$row[1];
+			$external_pause =	$row[2];
+			$external_dial =	$row[3];
 			if (strlen($external_status)<1) {$external_status = '::::::::::';}
 
-			if ($Acount < 1) {$Alogin='DEAD_VLA';}
-			if ($AexternalDEAD > 0) {$Alogin='DEAD_EXTERNAL';}
+			$web_epoch = date("U");
+			$stmt="select UNIX_TIMESTAMP(last_update),UNIX_TIMESTAMP(db_time) from server_updater where server_ip='$server_ip';";
+			if ($DB) {echo "|$stmt|\n";}
+			$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03014',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			$server_epoch =	$row[0];
+			$db_epoch =	$row[1];
+			$time_diff = ($server_epoch - $db_epoch);
+			$web_diff = ($db_epoch - $web_epoch);
 
-			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Stato: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . "|\n";
+
+			##### grab the shift information the agent
+			$stmt="SELECT user_group,agent_shift_enforcement_override from vicidial_users where user='$user';";
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03015',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			$VU_user_group =						$row[0];
+			$VU_agent_shift_enforcement_override =	$row[1];
+
+			### Gather timeclock and shift enforcement restriction settings
+			$stmt="SELECT shift_enforcement,group_shifts from vicidial_user_groups where user_group='$VU_user_group';";
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'03016',$VD_login,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			$shift_enforcement =		$row[0];
+			$LOGgroup_shiftsSQL = eregi_replace('  ','',$row[1]);
+			$LOGgroup_shiftsSQL = eregi_replace(' ',"','",$LOGgroup_shiftsSQL);
+			$LOGgroup_shiftsSQL = "shift_id IN('$LOGgroup_shiftsSQL')";
+
+			### CHECK TO SEE IF AGENT IS WITHIN THEIR SHIFT IF RESTRICTED, IF NOT, OUTPUT ERROR
+			$Ashift_logout=0;
+			if ( ( (ereg("ALL",$shift_enforcement)) and (!ereg("OFF|INIZIO",$VU_agent_shift_enforcement_override)) ) or (ereg("ALL",$VU_agent_shift_enforcement_override)) )
+				{
+				$shift_ok=0;
+				if (strlen($LOGgroup_shiftsSQL) < 3)
+					{$Ashift_logout++;}
+				else
+					{
+					$HHMM = date("Hi");
+					$wday = date("w");
+
+					$stmt="SELECT shift_id,shift_start_time,shift_length,shift_weekdays from vicidial_shifts where $LOGgroup_shiftsSQL order by shift_id";
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'3017',$user,$server_ip,$session_name,$one_mysql_log);}
+					$shifts_to_print = mysql_num_rows($rslt);
+
+					$o=0;
+					while ( ($shifts_to_print > $o) and ($shift_ok < 1) )
+						{
+						$rowx=mysql_fetch_row($rslt);
+						$shift_id =			$rowx[0];
+						$shift_start_time =	$rowx[1];
+						$shift_length =		$rowx[2];
+						$shift_weekdays =	$rowx[3];
+
+						if (eregi("$wday",$shift_weekdays))
+							{
+							$HHshift_length = substr($shift_length,0,2);
+							$MMshift_length = substr($shift_length,3,2);
+							$HHshift_start_time = substr($shift_start_time,0,2);
+							$MMshift_start_time = substr($shift_start_time,2,2);
+							$HHshift_end_time = ($HHshift_length + $HHshift_start_time);
+							$MMshift_end_time = ($MMshift_length + $MMshift_start_time);
+							if ($MMshift_end_time > 59)
+								{
+								$MMshift_end_time = ($MMshift_end_time - 60);
+								$HHshift_end_time++;
+								}
+							if ($HHshift_end_time > 23)
+								{$HHshift_end_time = ($HHshift_end_time - 24);}
+							$HHshift_end_time = sprintf("%02s", $HHshift_end_time);	
+							$MMshift_end_time = sprintf("%02s", $MMshift_end_time);	
+							$shift_end_time = "$HHshift_end_time$MMshift_end_time";
+
+							if ( 
+								( ($HHMM >= $shift_start_time) and ($HHMM < $shift_end_time) ) or
+								( ($HHMM < $shift_start_time) and ($HHMM < $shift_end_time) and ($shift_end_time <= $shift_start_time) ) or
+								( ($HHMM >= $shift_start_time) and ($HHMM >= $shift_end_time) and ($shift_end_time <= $shift_start_time) )
+							   )
+								{$shift_ok++;}
+							}
+						$o++;
+						}
+
+					if ($shift_ok < 1)
+						{$Ashift_logout++;}
+					}
+				}
+
+
+			if ( ( ($time_diff > 8) or ($time_diff < -8) or ($web_diff > 8) or ($web_diff < -8) ) and (eregi("0$",$StarTtime)) ) 
+				{$Alogin='TIME_SYNC';}
+			if ($Acount < 1) 
+				{$Alogin='DEAD_VLA';}
+			if ($AexternalDEAD > 0) 
+				{$Alogin='DEAD_EXTERNAL';}
+			if ($Ashift_logout > 0)
+				{$Alogin='SHIFT_LOGOUT';}
+
+			echo 'DateTime: ' . $NOW_TIME . '|UnixTime: ' . $StarTtime . '|Logged-in: ' . $Alogin . '|CampCalls: ' . $RingCalls . '|Stato: ' . $Astatus . '|DiaLCalls: ' . $DiaLCalls . '|APIHanguP: ' . $external_hangup . '|APIStatuS: ' . $external_status . '|APIPausE: ' . $external_pause . '|APIDiaL: ' . $external_dial . "|\n";
 
 			}
 		$total_conf=0;

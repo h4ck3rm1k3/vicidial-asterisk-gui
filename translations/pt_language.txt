@@ -20,7 +20,7 @@ agc|live_exten_check.php|0
 agc|call_log_display.php|0
 agc|voicemail_check.php|0
 agc|dbconnect.php|1
-agc|htglobalize.php|1
+agc|timeclock.php|0
 ***TRANSLATIONS***
 ### special translations that should stay at the top of the file ###
 "JAN"|"JAN"|
@@ -367,7 +367,7 @@ Invalid|Inválido|
 Username|Username|
 CUSTOM|COSTUME|
 Notes|Notas|
-First|Primeiramente|
+First|Prime|
 MI: |Mi:|
 Last|Último|
 Address|Endereço|
@@ -429,3 +429,47 @@ YOU MUST ENTER A PHONE NUMBER AND DIAL CODE TO USE FAST DIAL|VOCÊ DEVE DAR ENTR
 ENTER A PAUSE CODE|DÊ ENTRADA A um CÓDIGO Da PAUSA|
 YOU MUST BE PAUSED TO ENTER A PAUSE CODE IN AUTO-DIAL MODE|VOCÊ DEVE SER PAUSADO PARA DAR ENTRADA A um CÓDIGO Da PAUSA NaMODALIDADE De AUTO-DIAL|
 Your session has been disabled|Sua sessão foi incapacitada|
+### BEGIN translation phrases for 2.0.5 release ###
+Gender: |Sexo:|
+Date of Birth: |Data de Nascimento:|
+YOU MUST BE PAUSED TO CHANGE GROUPS|Você deve estar PAUSED PARA ALTERAR GRUPOS|
+Calls in Queue:|Solicita, em fila:|
+ Timeclock|Timeclock|
+The user and password you entered are not active in the system|O usuário ea senha que você digitou não são ativos no sistema|
+Please try again|Por favor, tente novamente|
+You cannot log in or out within 30 seconds of your last login or logout|Você não pode efetuar login ou para fora dentro de 30 segundos do seu último login ou logout|
+You have now logged-out|Você tem agora autenticado-out|
+You logged out at |Você saiu em|
+Amount of time you were logged-in: |Quantidade de tempo que foram registradas em:|
+ERROR: timeclock log entry already made: |ERRO: timeclock entrada do log já realizados:|
+BACK to Agent Login Screen|BACK TO Agent Login Screen|
+BACK to Administration|Retornar para Administração|
+BACK to Welcome Screen|ANTERIOR a tela Bem-vindo|
+Time since you were last logged-in: |Vez desde que foi registrado em:|
+You last logged-out at: |Você última autenticado-out em:|
+Click LOGIN below to log-in|LOGIN Clique abaixo para log-in|
+Amount of time you have been logged-in: |Quantidade de tempo que tem sido registrado em:|
+You logged-in at:|Você autenticado-nos em:|
+Click LOGOUT below to log-out|LOGOUT Clique abaixo para log-out|
+Undefined|Undefined|
+This phone number is not in the campaign lists|Esse número de telefone não está na campanha listas|
+Unspecified error|Unspecified error|
+Extended Alt Phone Information: |Extensão Alt Telefone Informação:|
+ALT DIAL NUMBER:|ALT PROGR.SELEC NÚMERO:|
+Phone Code and Number:|Telefone Código e Número:|
+Notes: |Notas:|
+Active: |Ativa:|
+Alt Count: |Alt Count:|
+Change this phone number to INACTIVE|Altere este número de telefone para INATIVO|
+Change this phone number to ACTIVE|Altere este número de telefone para ACTIVAS|
+YOU MUST LOG IN TO THE TIMECLOCK FIRST|É necessário efetuar login AO PRIMEIRO TIMECLOCK|
+There is a time synchronization problem with your system, please tell your system administrator|Há um tempo sincronização problema com o seu sistema, por favor informe o seu administrador de sistema|
+Preview Call|Preview Call|
+SELECT A GROUP ALIAS|Selecionar um grupo ALIÁS|
+Group Alias Selection|Grupo Alias Selecção|
+Click Here to Choose a Group Alias|Clique aqui para escolher um grupo Alias|
+Group Alias|Grupo Alias|
+ERROR: There are no Shifts enabled for your user group|ERRO: Não existem Shifts activado para o Grupo de Usuários|
+ERROR: You are not allowed to log in outside of your shift|ERRO: Você não tem permissão para iniciar sessão no para fora do seu turno|
+MANAGER OVERRIDE|GERENTE Override|
+Your Shift is over or has changed, you have been logged out of your session|Seu Shift é mais ou mudou, você foi desconectado da sua sessão|

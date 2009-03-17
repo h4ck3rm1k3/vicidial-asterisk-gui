@@ -1,24 +1,24 @@
 <?
-### call_log_display.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
-### This script is designed purely to send the inbound and outbound calls for a specific phone
-### This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
-### 
-### required variables:
-###  - $server_ip
-###  - $session_name
-###  - $user
-###  - $pass
-### optional variables:
-###  - $format - ('text','debug')
-###  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
-###  - $protocol - ('SIP','Zap','IAX2',...)
-###  - $in_limit - ('10','20','50','100',...)
-###  - $out_limit - ('10','20','50','100',...)
-### 
-
+# call_log_display.php    version 2.0.5
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
+# This script is designed purely to send the inbound and outbound calls for a specific phone
+# This script depends on the server_ip being sent and also needs to have a valid user/pass from the vicidial_users table
+# 
+# required variables:
+#  - $server_ip
+#  - $session_name
+#  - $user
+#  - $pass
+# optional variables:
+#  - $format - ('text','debug')
+#  - $exten - ('cc101','testphone','49-1','1234','913125551212',...)
+#  - $protocol - ('SIP','Zap','IAX2',...)
+#  - $in_limit - ('10','20','50','100',...)
+#  - $out_limit - ('10','20','50','100',...)
+# 
+#
 # changes
 # 50406-1013 - First build of script
 # 50407-1452 - Added definable limits

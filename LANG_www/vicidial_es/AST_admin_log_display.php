@@ -1,8 +1,8 @@
 <? 
-### AST_admin_log_display.php
-### 
-### Copyright (C) 2006  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
-###
+# AST_admin_log_display.php
+# 
+# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+#
 
 require("dbconnect.php");
 
@@ -106,7 +106,7 @@ echo "</FORM>\n\n";
 echo "<PRE><FONT SIZE=2>\n\n";
 
 
-echo "VICIDIAL ADMIN CHANGE LOG                             $NOW_TIME\n";
+echo "VICIDIAL ADMIN Change Log                             $NOW_TIME\n";
 
 #passthru("grep $Gquery_date /home/www/htdocs/vicidial/admin_changes_log.txt");
 passthru("grep $Gquery_date $WeBServeRRooT/vicidial/admin_changes_log.txt");

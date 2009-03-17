@@ -360,7 +360,7 @@ installation that is self contained and needs no other local servers to operate,
 so we will need to install mysql on this machine.
 *REQUIRED and OPTIONAL* (only install MySQL server locally if you don't want to use an installation 
 on another machine, Mysql client is required on all VICIDIAL servers)
-NOTE: a minimum of MySQL server 4.0.X is required
+NOTE: a minimum of MySQL server 5.0.X is required
 You should increase the connect_timeout so connections do not fail on 
 a more loaded system.  
 

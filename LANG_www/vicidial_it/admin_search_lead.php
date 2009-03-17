@@ -1,7 +1,7 @@
 <?
 # admin_search_lead.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # AST GUI database administration search for lead info
 # admin_modify_lead.php
@@ -15,6 +15,9 @@
 #            - Added required user/pass to gain access to this page
 #            - Changed results to multi-record
 # 80710-0023 - Added searching by list, user, status
+# 90121-0500 - Added filter for phone to remove non-digits
+# 90309-1828 - Added admin_log logging
+# 90310-2146 - Added admin header
 #
 
 require("dbconnect.php");
@@ -43,6 +46,7 @@ if (isset($_GET["list_id"]))			{$list_id=$_GET["list_id"];}
 
 $PHP_AUTH_USER = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_USER);
 $PHP_AUTH_PW = ereg_replace("[^0-9a-zA-Z]","",$PHP_AUTH_PW);
+$phone = ereg_replace("[^0-9]","",$phone);
 
 $STARTtime = date("U");
 $TODAY = date("Y-m-d");
@@ -66,7 +70,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -102,13 +106,35 @@ $browser = getenv("HTTP_USER_AGENT");
 <html>
 <head>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
-<title>VICIDIAL ADMIN: Ricerca Contatti</title>
-</head>
-<title>Operaciones de búsqueda del Lead</title>
-</head>
-<body bgcolor=white>
+<title>VICIDIAL ADMIN: Ricerca Contatti
 <? 
-echo "<a href=\"./admin.php?ADD=100\">VICIDIAL ADMIN</a>: Lead search<BR>\n";
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'100';
+$hh =					'lists';
+$LOGast_admin_access =	'1';
+$SSoutbound_autodial_active = '1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$lists_color =		'#FFFF99';
+$lists_font =		'BLACK';
+$lists_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
+
+
+echo " Lead search: $vendor_id $phone $lead_id $status $list_id $user<BR>\n";
 
 
 if ( (!$vendor_id) and (!$phone)  and (!$lead_id) and ( (strlen($status)<1) and (strlen($list_id)<1) and (strlen($user)<1) )) 
@@ -218,6 +244,7 @@ else
 			{
 			$row=mysql_fetch_row($rslt);
 			$o++;
+			$search_lead = $row[0];
 			if (eregi("1$|3$|5$|7$|9$", $o))
 				{$bgcolor='bgcolor="#B9CBFD"';} 
 			else
@@ -233,11 +260,19 @@ else
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[13] $row[15]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[19]</FONT></TD>\n";
 			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[28]</FONT></TD>\n";
-			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[2]</FONT></TD>\n";
+			echo "<TD ALIGN=CENTER><FONT FACE=\"ARIAL,HELVETICA\" SIZE=1>$row[31]</FONT></TD>\n";
 			echo "</TR>\n";
 			}
 		echo "</TABLE>\n";
-		}		
+		}
+
+	### LOG INSERTION Admin Log Table ###
+	$SQL_log = "$stmt|";
+	$SQL_log = ereg_replace(';','',$SQL_log);
+	$SQL_log = addslashes($SQL_log);
+	$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LEADS', event_type='SEARCH', record_id='$search_lead', event_code='ADMIN MODIFY LEAD', event_sql=\"$SQL_log\", event_notes='';";
+	if ($DB) {echo "|$stmt|\n";}
+	$rslt=mysql_query($stmt, $link);
 	}
 
 

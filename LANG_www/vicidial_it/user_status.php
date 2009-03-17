@@ -1,12 +1,15 @@
 <?
 # user_status.php
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 #
 # 60619-1738 - Added variable filtering to eliminate SQL injection attack threat
 # 80603-1452 - Added manager timeclock force login/logout of user
+# 81118-1034 - Disabled change campaign because it does not work
+# 90208-0511 - Added link to user multi-day status report
+# 90310-0741 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -76,7 +79,7 @@ $browser = getenv("HTTP_USER_AGENT");
 	{
     Header("WWW-Authenticate: Basic realm=\"VICI-PROJECTS\"");
     Header("HTTP/1.0 401 Unauthorized");
-    echo "Username/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+    echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
     exit;
 	}
   else
@@ -102,6 +105,8 @@ $browser = getenv("HTTP_USER_AGENT");
 			{
 			fwrite ($fp, "VICIDIAL|FAIL|$date|$PHP_AUTH_USER|$PHP_AUTH_PW|$ip|$browser|\n");
 			fclose($fp);
+			echo "Utentename/Password non validi: |$PHP_AUTH_USER|$PHP_AUTH_PW|\n";
+			exit;
 			}
 		}
 
@@ -161,14 +166,35 @@ while ($i < $groups_to_print)
 ?>
 <html>
 <head>
-<title>VICIDIAL ADMIN: User Status</title>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<title>VICIDIAL ADMIN: Status Utente
 <?
-echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">\n";
+
+
+##### BEGIN Set variables to make header show properly #####
+$ADD =					'3';
+$hh =					'users';
+$LOGast_admin_access =	'1';
+$ADMIN =				'admin.php';
+$page_width='770';
+$section_width='750';
+$header_font_size='3';
+$subheader_font_size='2';
+$subcamp_font_size='2';
+$header_selected_bold='<b>';
+$header_nonselected_bold='';
+$users_color =		'#FFFF99';
+$users_font =		'BLACK';
+$users_color =		'#E6E6E6';
+$subcamp_color =	'#C6C6C6';
+##### END Set variables to make header show properly #####
+
+require("admin_header.php");
+
+
+
 ?>
-</head>
-<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>
-<CENTER>
-<TABLE WIDTH=620 BGCOLOR=#D9E6FE cellpadding=2 cellspacing=0><TR BGCOLOR=#015B91><TD ALIGN=LEFT><? echo "<a href=\"./admin.php\">" ?><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B> &nbsp; VICIDIAL ADMIN</a>: User Status for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" COLOR=WHITE SIZE=2><B><? echo date("l F j, Y G:i:s A") ?> &nbsp; </TD></TR>
+<TABLE WIDTH=<? echo $page_width ?> BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR BGCOLOR=#E6E6E6><TD ALIGN=LEFT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; Status Utente for <? echo $user ?></TD><TD ALIGN=RIGHT><FONT FACE="ARIAL,HELVETICA" SIZE=2><B> &nbsp; </TD></TR>
 
 
 
@@ -293,7 +319,7 @@ if ( ( ($stage == "tc_log_user_OUT") or ($stage == "tc_log_user_IN") ) and ($mod
 		$SQL_log = "$stmtA|$stmtB|$stmtC|";
 		$SQL_log = ereg_replace(';','',$SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='TIMECLOCK', event_type='LOGIN', record_id='$user', event_code='USER FORCED LOGIN FROM STATUS PAGE', event_sql=\"$SQL_log\", event_notes='Timeclock ID: $timeclock_id|';";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='TIMECLOCK', event_type='LOGIN', record_id='$user', event_code='USER FORCED LOGIN FROM STATUS PAGE', event_sql=\"$SQL_log\", event_notes='Orologio ID: $timeclock_id|';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
@@ -346,7 +372,7 @@ if ( ( ($stage == "tc_log_user_OUT") or ($stage == "tc_log_user_IN") ) and ($mod
 		$SQL_log = "$stmtA|$stmtB|$stmtC|$stmtD|$stmtE|";
 		$SQL_log = ereg_replace(';','',$SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='TIMECLOCK', event_type='LOGOUT', record_id='$user', event_code='USER FORCED LOGOUT FROM STATUS PAGE', event_sql=\"$SQL_log\", event_notes='User login time: $last_action_sec|Timeclock ID: $timeclock_id|';";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$NOW_TIME', user='$PHP_AUTH_USER', ip_address='$ip', event_section='TIMECLOCK', event_type='LOGOUT', record_id='$user', event_code='USER FORCED LOGOUT FROM STATUS PAGE', event_sql=\"$SQL_log\", event_notes='Utente login time: $last_action_sec|Orologio ID: $timeclock_id|';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 		$affected_rows = mysql_affected_rows($link);
@@ -398,7 +424,7 @@ if ($agents_to_print > 0)
 				$o++;
 			}
 		echo "</SELECT>\n";
-		echo "<input type=submit name=submit value=CHANGE><BR></form>\n";
+		echo "<input type=submit name=submit value=CHANGE disabled><BR></form>\n";
 
 
 		echo "<form action=$PHP_SELF method=POST>\n";
@@ -418,13 +444,13 @@ echo "\n<BR>";
 
 if ( ($Tstatus == "LOGIN") or ($Tstatus == "START") )
 	{
-	echo "User $user($full_name) - is logged in to the timeclock. <BR>Login time: $Tevent_date from $Tip_address<BR>\n";
+	echo "Utente $user($full_name) - is logged in to the timeclock. <BR>Login time: $Tevent_date from $Tip_address<BR>\n";
 	$TC_log_change_stage =	'tc_log_user_OUT';
 	$TC_log_change_button = 'TIMECLOCK LOG THIS USER OUT';
 	}
 else
 	{
-	echo "User $user($full_name) - is NOT logged in to the timeclock. <BR>Last logout time: $Tevent_date from $Tip_address<BR>\n";
+	echo "Utente $user($full_name) - is NOT logged in to the timeclock. <BR>Last logout time: $Tevent_date from $Tip_address<BR>\n";
 	$TC_log_change_stage =	'tc_log_user_IN';
 	$TC_log_change_button = 'TIMECLOCK LOG THIS USER IN';
 	}
@@ -441,9 +467,13 @@ if ($modify_timeclock_log > 0)
 	}
 
 
+$REPORTdate = date("Y-m-d");
+echo "<center>\n";
 echo "<a href=\"./AST_agent_time_sheet.php?agent=$user\">VICIDIAL Time Sheet</a>\n";
-echo " - <a href=\"./user_stats.php?user=$user\">User Stats</a>\n";
-echo " - <a href=\"./admin.php?ADD=3&user=$user\">Modifica Utente</a>\n";
+echo " | <a href=\"./user_stats.php?user=$user\">Statistiche utente</a>\n";
+echo " | <a href=\"./admin.php?ADD=3&user=$user\">Modifica Utente</a>\n";
+echo " | <a href=\"./AST_agent_days_detail.php?user=$user&query_date=$REPORTdate&end_date=$REPORTdate&group[]=--ALL--&shift=ALL\">Utente multiple day status detail report</a>";
+echo "</center>\n";
 
 echo "</B></TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT COLSPAN=2>\n";

@@ -1,7 +1,7 @@
 <? 
 # AST_timeonVDADallSUMMARY.php
 # 
-# Copyright (C) 2007  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # Summary for all campaigns live real-time stats for the VICIDIAL Auto-Dialer all servers
 #
@@ -13,6 +13,8 @@
 # 70111-1600 - added ability to use BLEND/INBND/*_C/*_B/*_I as closer campaigns
 # 70619-1339 - Added Status Category tally display
 # 71029-1900 - Changed CLOSER-type to not require campaign_id restriction
+# 80525-1040 - Added IVR status summary display for inbound calls
+# 90310-2119 - Added admin header
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -104,7 +106,14 @@ if (!isset($RR))   {$RR=4;}
 <? 
 
 echo"<META HTTP-EQUIV=Refresh CONTENT=\"$RR; URL=$PHP_SELF?RR=$RR&DB=$DB&adastats=$adastats\">\n";
-echo "<TITLE>VICIDIAL: Realtime All Εκστρατείες Summary</TITLE></HEAD><BODY BGCOLOR=WHITE>\n";
+echo "<TITLE>VICIDIAL: Realtime All Εκστρατείες Summary</TITLE></HEAD><BODY BGCOLOR=WHITE marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
+
+	$short_header=1;
+
+	require("admin_header.php");
+
+echo "<TABLE CELLPADDING=4 CELLSPACING=0><TR><TD>";
+
 echo "<b>VICIDIAL: Realtime All Εκστρατείες Summary</b> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \n";
 echo "<a href=\"$PHP_SELF?group=$group&RR=4000&DB=$DB&adastats=$adastats\">STOP</a> | ";
 echo "<a href=\"$PHP_SELF?group=$group&RR=40&DB=$DB&adastats=$adastats\">SLOW</a> | ";
@@ -201,7 +210,7 @@ $row=mysql_fetch_row($rslt);
 $balanceSHORT = $row[0];
 
 echo "<BR><table cellpadding=0 cellspacing=0><TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIAL LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DIAL ΕΠΙΠΕΔΟ:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALlev&nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>TRUNK SHORT/FILL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $balanceSHORT / $balanceFILL &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>FILTER:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALfilter &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B> TIME:</B> &nbsp; </TD><TD ALIGN=LEFT><font size=2> $NOW_TIME </TD>";
@@ -211,7 +220,7 @@ echo "</TR>";
 if ($adastats>1)
 	{
 	echo "<TR BGCOLOR=\"#CCCCCC\">";
-	echo "<TD ALIGN=RIGHT><font size=2>&nbsp; <B>MAX LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $maxDIALlev &nbsp; </TD>";
+	echo "<TD ALIGN=RIGHT><font size=2>&nbsp; <B>MAX ΕΠΙΠΕΔΟ:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $maxDIALlev &nbsp; </TD>";
 	echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED MAX:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DROPmax% &nbsp; &nbsp;</TD>";
 	echo "<TD ALIGN=RIGHT><font size=2><B>TARGET DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $targetDIFF &nbsp; &nbsp; </TD>";
 	echo "<TD ALIGN=RIGHT><font size=2><B>INTENSITY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $ADAintense &nbsp; &nbsp; </TD>";
@@ -229,12 +238,12 @@ echo "<TR>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DIALABLE LEADS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DAleads &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>CALLS TODAY:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $callsTODAY &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>AVG AGENTS:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $agentsONEMIN &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DIAL METHOD:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>ΤΗΛΕΦΩΝΕΙΣΤΕ ΜΕΘΟΔΟΣ:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALmethod &nbsp; &nbsp; </TD>";
 echo "</TR>";
 
 echo "<TR>";
-echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER LEVEL:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
-echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ANSWERED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>HOPPER ΕΠΙΠΕΔΟ:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $HOPlev &nbsp; &nbsp; </TD>";
+echo "<TD ALIGN=RIGHT><font size=2><B>DROPPED / ΑΠΑΝΤΗΣΗED:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $dropsTODAY / $answersTODAY &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>DL DIFF:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $diffONEMIN &nbsp; &nbsp; </TD>";
 echo "<TD ALIGN=RIGHT><font size=2><B>STATUSES:</B></TD><TD ALIGN=LEFT><font size=2>&nbsp; $DIALstatuses &nbsp; &nbsp; </TD>";
 echo "</TR>";
@@ -305,6 +314,7 @@ $parked_to_print = mysql_num_rows($rslt);
 	$out_total=0;
 	$out_ring=0;
 	$out_live=0;
+	$in_ivr=0;
 	while ($i < $parked_to_print)
 		{
 		$row=mysql_fetch_row($rslt);
@@ -313,6 +323,8 @@ $parked_to_print = mysql_num_rows($rslt);
 			{$out_live++;}
 		else
 			{
+			if (eregi("IVR",$row[0])) 
+				{$in_ivr++;}
 			if (eregi("CLOSER",$row[0])) 
 				{$nothing=1;}
 			else 
@@ -334,6 +346,7 @@ $parked_to_print = mysql_num_rows($rslt);
 		
 		echo "$NFB$out_ring$NFE calls ringing &nbsp; &nbsp; &nbsp; &nbsp; \n";
 		echo "$NFB$F &nbsp;$out_live $FG$NFE calls waiting for agents &nbsp; &nbsp; &nbsp; \n";
+		echo "$NFB &nbsp;$in_ivr$NFE calls in IVR &nbsp; &nbsp; &nbsp; \n";
 		}
 	else
 	{
@@ -438,5 +451,6 @@ $k++;
 
 ?>
 </PRE>
+</TD></TR></TABLE>
 
 </BODY></HTML>

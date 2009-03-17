@@ -554,6 +554,82 @@ This setting if set to 1 will allow a manager to click on the download list link
 Export Calls Report||
 EXPORT CALLS REPORT||
 For the Export Calls Report, the following field order is used for exports||
+Timeclock||
+Logout||
+Show Users||
+Add A New User||
+Search For A User||
+User Stats||
+User Status||
+Time Sheet||
+Days Status||
+Campaigns Main||
+Statuses||
+HotKeys||
+Lead Recycle||
+Auto Alt-Dial||
+Auto Alt Dial||
+List Mix||
+Pause Codes||
+Basic||
+Detail||
+Survey||
+Real-Time||
+CAMPAIGN ID||
+DIAL PLAN||
+DIAL METHOD||
+LEADS COUNT||
+LEAD ORDER||
+DIAL STATUSES||
+SCRIPT ID||
+SCRIPT NAME||
+USER GROUP||
+GROUP NAME||
+PRIORITY||
+FORCE TIMECLOCK||
+CALLTIME ID||
+CALLTIME NAME||
+DEFAULT START||
+DEFAULT STOP||
+SHIFT ID||
+SHIFT NAME||
+SHIFT START||
+SHIFT LENGTH||
+WEEKDAYS||
+Template ID||
+Template Name||
+Carrier ID||
+Carrier Name||
+Registration||
+Active||
+USER ID||
+FULL NAME||
+LEVEL||
+LINKS||
+TRUNKS||
+HUMAN||
+ANSWER||
+CATEGORY||
+STATUSES IN THIS CATEGORY||
+Display||
+Dates||
+PLEASE SELECT A CAMPAIGN OR USER GROUP AND DATE-TIME ABOVE AND CLICK||
+PLEASE SELECT A USER AND DATE-TIME ABOVE AND CLICK||
+PLEASE SELECT A CAMPAIGN AND DATE-TIME ABOVE AND CLICK||
+PLEASE SELECT AN IN-GROUP AND DATE RANGE ABOVE AND CLICK SUBMIT||
+DOWNLOAD||
+Users||
+User||
+Reports||
+OUTBOUND||
+INBOUND||
+Server Stats and Reports||
+Click here to see a VDAD report for this campaign||
+Show DIDs||
+Add A New DID||
+Templates||
+Carriers||
+Carrier Name||
 
 
 ############################################################ CLIENT
