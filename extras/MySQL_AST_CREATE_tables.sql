@@ -1369,7 +1369,11 @@ prefix CHAR(3),
 GMT_offset VARCHAR(6),
 DST enum('Y','N'),
 latitude VARCHAR(17),
-longitude VARCHAR(17)
+longitude VARCHAR(17),
+city VARCHAR(50) default '',
+state VARCHAR(2) default '',
+postal_code VARCHAR(10) default '',
+country VARCHAR(2) default ''
 );
 
 CREATE INDEX areaprefix on vicidial_nanpa_prefix_codes (areacode,prefix);
@@ -1531,7 +1535,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1135';
+UPDATE system_settings SET db_schema_version='1136';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;

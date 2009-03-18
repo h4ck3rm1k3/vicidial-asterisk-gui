@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# ADMIN_area_code_populate.pl    version 2.0.5
+# ADMIN_area_code_populate.pl    version 2.2.0
 #
 # Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
@@ -16,6 +16,7 @@
 # 90129-0932 - Added optional NANP prefix/time date import "--load-NANPA-prefix" flag
 # 90131-0933 - Added purge-table option to clear out old records before adding new ones
 # 90204-0806 - Added duplicate check to nanpa list loading
+# 90317-2353 - Added city, state, postal_code, country to nanpa format
 #
 
 
@@ -158,8 +159,8 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 if ($nanpa_load > 0)
 	{
 	#### load special North American phone code prefix table ####
-	# LONG  # NPA,NXX,,,,,,,,,,,,,TZ,DST,,,,,,,,,,,,LATITUDE,LONGITUDE,,,,,
-	# SHORT # NPA,NXX,TZ,DST,LATITUDE,LONGITUDE
+	# LONG  # NPA,NXX,,,,,,STATE,COUNTRY,,,,,RC,TZ,DST,ZIP,,,,,,,,,,,LATITUDE,LONGITUDE,,,,,
+	# SHORT # NPA,NXX,TZ,DST,LATITUDE,LONGITUDE,CITY,STATE,POSTAL_CODE,COUNTRY
 
 	#### BEGIN vicidial_nanpa_prefix_codes population from NANPA_prefix-latest.txt file ####
 	open(prefixfile, "$PATHhome/NANPA_prefix-latest.txt") || die "can't open $PATHhome/NANPA_prefix-latest.txt: $!\n";
@@ -180,12 +181,12 @@ if ($nanpa_load > 0)
 	$ins_stmt="insert into vicidial_nanpa_prefix_codes VALUES ";
 	foreach (@prefixfile) 
 		{
-		if (length($prefixfile[$pc])>60)
+		@row=split(/,/, $prefixfile[$pc]);
+		if ($#row > 20)
 			{$full_file++;}
 		if ( ($prefixfile[$pc] !~ /XXXXX/) && ($prefixfile[$pc] !~ /^\D|^0|^1/) )
 			{
 			$prefixfile[$pc] =~ s/\r|\n|\t| $//gi;
-			@row=split(/,/, $prefixfile[$pc]);
 			$pc++;
 			$temp_insert='';
 			$dup_check=0;
@@ -193,6 +194,9 @@ if ($nanpa_load > 0)
 				{
 				if ($row[14] !~ /XX/)
 					{
+					$row[13] =~ s/\(.*//gi;
+					$row[13] =~ s/ $//gi;
+					$row[13] =~ s/\'/\\\'/gi;
 					$row[14] =~ s/NT/-3.50/gi;
 					$row[14] =~ s/AT/-4.00/gi;
 					$row[14] =~ s/ET/-5.00/gi;
@@ -204,11 +208,15 @@ if ($nanpa_load > 0)
 					$row[14] =~ s/AS/-11.00/gi;
 					$row[14] =~ s/CH/10.00/gi;
 					$row[15] =~ s/X/N/gi;
-					$temp_insert="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]'), ";
+					$temp_insert="('$row[0]', '$row[1]', '$row[14]', '$row[15]', '$row[27]', '$row[28]', '$row[13]', '$row[7]', '$row[16]', '$row[8]'), ";
 					}
 				}
 			else
-				{$temp_insert="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]'), ";}
+				{
+				$row[6] =~ s/\'/\\\'/gi;
+				$row[9] =~ s/\r|\n|\t| $//gi;
+				$temp_insert="('$row[0]', '$row[1]', '$row[2]', '$row[3]', '$row[4]', '$row[5]', '$row[6]', '$row[7]', '$row[8]', '$row[9]'), ";
+				}
 
 			$stmtA = "SELECT count(*) FROM vicidial_nanpa_prefix_codes where areacode='$row[0]' and prefix='$row[1]';";
 			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
