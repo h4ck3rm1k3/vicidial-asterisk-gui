@@ -910,15 +910,7 @@ if (strlen($reports_hh) > 1) {
 	<TR BGCOLOR=<?=$users_color ?>><TD ALIGN=LEFT COLSPAN=2> &nbsp; <a href="./user_stats.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>User Stats </a> &nbsp; | &nbsp; <a href="./user_status.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>User Status </a> &nbsp; | &nbsp; <a href="./AST_agent_time_sheet.php?agent=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Time Sheet </a> &nbsp; | &nbsp; <a href="./AST_agent_days_detail.php?user=<?=$user ?>"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>>Days Status </a></TD></TR>
 	<?}
 
-
-### Do nothing if admin has no permissions
-if($LOGast_admin_access < 1) 
-	{
-	$ADD='99999999999999999999';
-	echo "</TABLE></center>\n";
-	echo "You are not authorized to view this page. Please go back.\n";
-	}
-
+	
 if (strlen($reports_hh) > 1) { 
 	?>
 <TR BGCOLOR=<?=$reports_color ?>><TD ALIGN=LEFT COLSPAN=2><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>><B> &nbsp; </B></TD></TR>

@@ -384,6 +384,7 @@ echo "\n-->\n
 
 $stmt = "select count(*) from vicidial_campaigns where campaign_id IN($group_SQL) and campaign_allow_inbound='Y';";
 $rslt=mysql_query($stmt, $link);
+	if ($DB) {echo "$stmt\n";}
 	$row=mysql_fetch_row($rslt);
 	$campaign_allow_inbound = $row[0];
 
@@ -453,7 +454,7 @@ if (ereg('O',$with_inbound))
 		$closer_campaignsSQL .= "'$closer_campaigns',";
 		$c++;
 		}
-	$closer_campaignsSQL = eregi_replace(",$",'',$closer_campaignsSQL);
+	$closer_campaignsSQL = preg_replace("/,$/","",$closer_campaignsSQL);
 	if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
 
 	if ($adastats>1)
@@ -708,6 +709,7 @@ else
 		if ( (ereg('Y',$with_inbound)) and ($campaign_allow_inbound > 0) )
 			{
 			$multi_drop++;
+			if ($DB) {echo "with_inbound|$with_inbound|$campaign_allow_inbound\n";}
 			$stmt = "select distinct closer_campaigns from vicidial_campaigns where campaign_id IN($group_SQL);";
 			$rslt=mysql_query($stmt, $link);
 			$ccamps_to_print = mysql_num_rows($rslt);
@@ -721,7 +723,7 @@ else
 				$closer_campaignsSQL .= "'$closer_campaigns',";
 				$c++;
 				}
-			$closer_campaignsSQL = eregi_replace(",$",'',$closer_campaignsSQL);
+			$closer_campaignsSQL = preg_replace("/,$/","",$closer_campaignsSQL);
 			if ($DB > 0) {echo "\n|$closer_campaigns|$closer_campaignsSQL|$stmt|\n";}
 
 			$stmt="select auto_dial_level,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,lead_filter_id,hopper_level,dial_method,adaptive_maximum_level,adaptive_dropped_percentage,adaptive_dl_diff_target,adaptive_intensity,available_only_ratio_tally,adaptive_latest_server_time,local_call_time,dial_timeout,dial_statuses,agent_pause_codes_active from vicidial_campaigns where campaign_id IN ($group_SQL,$closer_campaignsSQL);";
@@ -958,7 +960,9 @@ if ($campaign_allow_inbound > 0)
 	$stmt="select closer_campaigns from vicidial_campaigns where campaign_id IN($group_SQL);";
 	$rslt=mysql_query($stmt, $link);
 	$ccamps_to_print = mysql_num_rows($rslt);
+		if ($DB) {echo "inbound/outbound calls|$ccamps_to_print|$stmt\n";}
 	$c=0;
+	$closer_campaignsSQL='';
 	while ($ccamps_to_print > $c)
 		{
 		$row=mysql_fetch_row($rslt);
@@ -968,7 +972,7 @@ if ($campaign_allow_inbound > 0)
 		$closer_campaignsSQL .= "'$closer_campaigns',";
 		$c++;
 		}
-	$closer_campaignsSQL = eregi_replace(",$",'',$closer_campaignsSQL);
+	$closer_campaignsSQL = preg_replace("/,$/","",$closer_campaignsSQL);
 
 	$stmtB="from vicidial_auto_calls where status NOT IN('XFER') and ( (call_type='IN' and campaign_id IN($closer_campaignsSQL)) or (campaign_id IN($group_SQL) and call_type IN('OUT','OUTBALANCE')) ) order by queue_priority desc,campaign_id,call_time;";
 	}

@@ -2851,7 +2851,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_users-export_reports">
 <BR>
-<B>Export Reports -</B> This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0. For the Export Calls Report, the following field order is used for exports: <BR>call_date,phone_number,status,user,full_name,campaign_id/in-group,vendor_lead_code,source_id,list_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,length_in_sec,user_group,alt_dial/queue_seconds
+<B>Export Reports -</B> This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0. For the Export Calls Report, the following field order is used for exports: <BR>call_date, phone_number, status, user, full_name, campaign_id/in-group, vendor_lead_code, source_id, list_id, gmt_offset_now, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, length_in_sec, user_group, alt_dial/queue_seconds
 
 
 
@@ -14843,6 +14843,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 		}
 	}
+	echo "</TD></TR></TABLE></center>\n";
 }
 
 
@@ -19865,9 +19866,6 @@ if ($ADD==999999)
 	}
 
 
-
-
-
 echo "</TD></TR></TABLE></center>\n";
 echo "</TD></TR></TABLE></center>\n";
 
@@ -20209,6 +20207,7 @@ if (isset($camp_lists))
 				$Dsql .= "'$Dstatuses[$o]',";
 				}
 			$Dsql = preg_replace("/,$/","",$Dsql);
+			if (strlen($Dsql) < 2) {$Dsql = "''";}
 
 			$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($all_gmtSQL) $fSQL";
 			#$DB=1;

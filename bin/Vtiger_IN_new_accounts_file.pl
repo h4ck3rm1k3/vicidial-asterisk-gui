@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Vtiger_IN_new_accounts_file.pl version 2.0.5   *DBI-version*
+# Vtiger_IN_new_accounts_file.pl version 2.2.0   *DBI-version*
 #
 # DESCRIPTION:
 # script lets you insert leads into the vtiger system table from a CSV-formatted
@@ -11,11 +11,13 @@
 #
 # CHANGES
 # 90127-1206 - First build
+# 90318-0142 - Added vicidialalt import format and importasdeleted option
 #
 
 $secX = time();
 $MT[0]='';
 $Ealert='';
+$importasdeleted=0;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -104,6 +106,7 @@ if (length($ARGV[0])>1)
 		print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
 		print "  [--duplicate-system-siccode] = checks for the same SIC code in the entire system before inserting lead\n";
 		print "  [--duplicate-system-website] = checks for the same website in the entire system before inserting lead\n";
+		print "  [--import-as-deleted] = imports the accounts as deleted in vtiger_crmentity\n";
 		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
 		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
 		print "  [--email-list=test@test.com:test2@test.com] = send email results for each file to these addresses\n";
@@ -114,6 +117,9 @@ if (length($ARGV[0])>1)
 		print "standard:\n";
 		print "employees,ticker_symbol,sic_code,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website\n";
 		print "4,C03IMM001,39207955,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com\n\n";
+		print "vicidialalt:\n";
+		print "employees,ticker_symbol,web1,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website,emailoptout,notify_owner\n";
+		print "4,C03IMM001,12345,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com,1,0\n\n";
 		print "minicsv:\n";
 		print "business,contact,phone_number,address1,city,state,postal_code\n";
 		print "\"CHURCH\",\"Bob Smith\",\"3525556601\",\"105 Fifth St\",\"Steinhatchee\",\"FL\",\"32359\"\n\n";
@@ -170,6 +176,11 @@ if (length($ARGV[0])>1)
 			$dupcheckweb=1;
 			print "\n----- DUPLICATE SYSTEM CHECK WEBSITE -----\n\n";
 			}
+		if ($args =~ /-import-as-deleted/i)
+			{
+			$importasdeleted=1;
+			print "\n----- IMPORT ACCOUNTS AS DELETED -----\n\n";
+			}
 		if ($args =~ /-ftp-pull/i)
 			{
 			$ftp_pull=1;
@@ -217,6 +228,8 @@ else
 	$forcelistid = '';
 	$format='standard';
 	}
+if ($format !~ /minicsv|vicidialalt|standard/)
+	{$format='standard';}
 ### end parsing run-time options ###
 
 if ($q < 1)
@@ -402,12 +415,48 @@ foreach(@FILES)
 				$fax =					'';
 				$other_email =			'';
 				$website =				'';
+				$emailoptout =			'0';
+				$notify_owner =			'0';
 				$country =				'USA';
 				}
+
+	# This is the format for the vicidialalt(VICIDIAL alternate) lead files
+	# employees,ticker_symbol,web1,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website,emailoptout,notify_owner
+	# 4,C03IMM001,12345,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com,1,0
+	# sic_code is left blank because it will be used by vicidial to put the last call dispo status in
+			if ($format =~ /vicidialalt/)
+				{
+				$employees =			$m[0];		chomp($employees);		$employees =~ s/\D//gi;
+				$ticker_symbol =		$m[1];		chomp($ticker_symbol);
+				$sic_code =				'';
+				$web1 =					$m[2];		chomp($web1);
+				$revenue =				$m[3];		chomp($revenue);		$revenue =~ s/\D//gi;
+				$account_name =			$m[4];		chomp($account_name);
+					if (length($account_name)<1) {$account_name='NONE';}
+				$address =				$m[5];		chomp($address);
+				$po_box =				$m[6];		chomp($po_box);
+				$city =					$m[7];		chomp($city);
+				$state =				$m[8];		chomp($state);
+				$post_code =			$m[9];		chomp($post_code);
+				$phone_number =			$m[10];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+				$ownership =			$m[11];		chomp($ownership);
+				$fax =					$m[12];		chomp($fax);
+				$email =				$m[13];		chomp($email);
+				$other_phone =			$m[14];		chomp($other_phone);
+				$other_email =			$m[15];		chomp($other_email);
+				$website =				$m[16];		chomp($website);
+					if (length($website)<3) {$website="$web1-$revenue";}
+				$emailoptout =			$m[17];		chomp($emailoptout);	$emailoptout =~ s/\D//gi;
+					if (length($emailoptout)<1) {$emailoptout="0";}
+				$notify_owner =			$m[18];		chomp($notify_owner);	$notify_owner =~ s/\D//gi;
+					if (length($notify_owner)<1) {$notify_owner="0";}
+				$country =				'USA';
+				}
+
 	# This is the format for the standard lead files
 	# employees,ticker_symbol,sic_code,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website
 	# 4,C03IMM001,39207955,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com
-			else
+			if ($format =~ /standard/)
 				{
 				$employees =			$m[0];		chomp($employees);		$employees =~ s/\D//gi;
 				$ticker_symbol =		$m[1];		chomp($ticker_symbol);
@@ -428,6 +477,8 @@ foreach(@FILES)
 				$other_email =			$m[15];		chomp($other_email);
 				$website =				$m[16];		chomp($website);
 					if (length($website)<3) {$website="$sic_code-$revenue";}
+				$emailoptout =			'0';
+				$notify_owner =			'0';
 				$country =				'USA';
 				}
 
@@ -516,12 +567,12 @@ foreach(@FILES)
 					if($DB){print STDERR "\n|$affected_rows|$stmtB|\n";}
 
 				### insert record into crmentity table ###
-				$stmtB = "INSERT INTO vtiger_crmentity SET crmid='$crm_id',smcreatorid='$user_id',smownerid='$user_id',modifiedby='$user_id',setype='Accounts',description='',createdtime='$NOW_TIME',modifiedtime='$NOW_TIME', viewedtime='$NOW_TIME';";
+				$stmtB = "INSERT INTO vtiger_crmentity SET crmid='$crm_id',smcreatorid='$user_id',smownerid='$user_id',modifiedby='$user_id',setype='Accounts',description='',createdtime='$NOW_TIME',modifiedtime='$NOW_TIME', viewedtime='$NOW_TIME', deleted='$importasdeleted';";
 					if (!$T) {$affected_rows = $dbhB->do($stmtB); } #  or die  "Couldn't execute query: |$stmtB|\n";
 					if($DB){print STDERR "\n|$affected_rows|$stmtB|\n";}
 
 				### insert record into vtiger_account table ###
-				$stmtB = "INSERT INTO vtiger_account SET accountid='$crm_id',accountname='$account_name',account_type='Customer',industry='--None--',annualrevenue='$revenue',rating='--None--',ownership='$ownership',siccode='$sic_code',tickersymbol='$ticker_symbol',phone='$phone_number',otherphone='$other_phone',email1='$email',email2='$other_email',website='$website',fax='$fax',employees='$employees';";
+				$stmtB = "INSERT INTO vtiger_account SET accountid='$crm_id',accountname='$account_name',account_type='Customer',industry='--None--',annualrevenue='$revenue',rating='--None--',ownership='$ownership',siccode='$sic_code',tickersymbol='$ticker_symbol',phone='$phone_number',otherphone='$other_phone',email1='$email',email2='$other_email',website='$website',fax='$fax',employees='$employees',emailoptout='$emailoptout',notify_owner='$notify_owner';";
 					if (!$T) {$affected_rows = $dbhB->do($stmtB); } #  or die  "Couldn't execute query: |$stmtB|\n";
 					if($DB){print STDERR "\n|$affected_rows|$stmtB|\n";}
 
