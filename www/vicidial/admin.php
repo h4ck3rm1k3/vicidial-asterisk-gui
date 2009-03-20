@@ -1645,11 +1645,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90309-0059 - Changed logging to admin_server_log
 # 90310-2203 - Added export_reports option for call activity report data exports
 # 90315-1010 - Changed revision for new trunk 2.2.0
+# 90320-0424 - Fixed several small bugs conf records group alias and permissions
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-172';
-$build = '90315-1010';
+$admin_version = '2.2.0-174';
+$build = '90320-0424';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -7892,6 +7893,9 @@ if ($ADD==21111111111)
 					$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
 					$rslt=mysql_query($stmt, $link);
 
+					$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+					$rslt=mysql_query($stmtA, $link);
+
 					### LOG INSERTION Admin Log Table ###
 					$SQL_log = "$stmt|";
 					$SQL_log = ereg_replace(';','',$SQL_log);
@@ -8014,6 +8018,9 @@ if ($ADD==211111111111)
 
 			$stmt="INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_version) values('$server_id','$server_description','$server_ip','$active','$asterisk_version');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -8144,6 +8151,9 @@ if ($ADD==241111111111)
 
 			$stmt="INSERT INTO vicidial_server_carriers (carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active) values('$carrier_id','$carrier_name','$registration_string','$template_id','$account_entry','$protocol','$globals_string','$dialplan_entry','$server_ip','N');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -12410,6 +12420,9 @@ if ($ADD==61111111111)
 		{
 		$stmt="DELETE from phones where extension='$extension' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
+
+		$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmtA, $link);
 
 		### LOG INSERTION Admin Log Table ###
 		$SQL_log = "$stmt|";

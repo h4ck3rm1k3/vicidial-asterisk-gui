@@ -223,10 +223,11 @@
 # 90305-0917 - Added prefix-choice and group-alias options for calls coming from API
 # 90307-1736 - Added Shift enforcement and manager override features
 # 90315-1009 - Changed revision for new trunk 2.2.0
+# 90320-0309 - Fixed agent log bug when using wrapup time
 #
 
-$version = '2.2.0-201';
-$build = '90315-1009';
+$version = '2.2.0-202';
+$build = '90320-0309';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=60;
 $one_mysql_log=0;
@@ -2241,7 +2242,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 	var campaign_am_message_exten = '<? echo $campaign_am_message_exten ?>';
 	var park_on_extension = '<? echo $VICIDiaL_park_on_extension ?>';
 	var park_count=0;
-	var park_refresh=0;
 	var customerparked=0;
 	var check_n = 0;
 	var conf_check_recheck = 0;
@@ -4792,7 +4792,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 
 // ################################################################################
 // Set the client to READY and start looking for calls (VDADready, VDADpause)
-	function AutoDial_ReSume_PauSe(taskaction,taskagentlog)
+	function AutoDial_ReSume_PauSe(taskaction,taskagentlog,taskwrapup)
 		{
 		if (taskaction == 'VDADready')
 			{
@@ -4860,7 +4860,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 			}
 		if (xmlhttp) 
 			{ 
-			autoDiaLready_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=" + taskaction + "&user=" + user + "&pass=" + pass + "&stage=" + VDRP_stage + "&agent_log_id=" + agent_log_id + "&agent_log=" + taskagentlog + "&campaign=" + campaign;
+			autoDiaLready_query = "server_ip=" + server_ip + "&session_name=" + session_name + "&ACTION=" + taskaction + "&user=" + user + "&pass=" + pass + "&stage=" + VDRP_stage + "&agent_log_id=" + agent_log_id + "&agent_log=" + taskagentlog + "&wrapup=" + taskwrapup + "&campaign=" + campaign;
 			xmlhttp.open('POST', 'vdc_db_query.php'); 
 			xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 			xmlhttp.send(autoDiaLready_query); 
@@ -7498,10 +7498,6 @@ else
 					{
 				//	check_for_live_calls();
 					check_s = check_n.toString();
-					if ( (park_refresh > 0) && (check_s.match(/0$|5$/)) ) 
-						{
-					//	parked_calls_display_refresh();
-					}
 					}
 				if (wrapup_seconds > 0)	
 					{
@@ -7516,6 +7512,7 @@ else
 							if (auto_dial_level != '0')
 								{
 								AutoDialWaiting = 0;
+						//		alert('wrapup pause');
 								AutoDial_ReSume_PauSe("VDADpause");
 						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML;
 								}
@@ -7531,7 +7528,8 @@ else
 							if (auto_dial_level != '0')
 								{
 								AutoDialWaiting = 1;
-								AutoDial_ReSume_PauSe("VDADready");
+						//		alert('wrapup ready');
+								AutoDial_ReSume_PauSe("VDADready","NEW_ID","WRAPUP");
 						//		document.getElementById("DiaLControl").innerHTML = DiaLControl_auto_HTML_ready;
 								}
 							}
