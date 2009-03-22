@@ -954,6 +954,22 @@ if (isset($_GET["manager_shift_enforcement_override"]))				{$manager_shift_enfor
 	elseif (isset($_POST["manager_shift_enforcement_override"]))	{$manager_shift_enforcement_override=$_POST["manager_shift_enforcement_override"];}
 if (isset($_GET["export_reports"]))				{$export_reports=$_GET["export_reports"];}
 	elseif (isset($_POST["export_reports"]))	{$export_reports=$_POST["export_reports"];}
+if (isset($_GET["delete_from_dnc"]))			{$delete_from_dnc=$_GET["delete_from_dnc"];}
+	elseif (isset($_POST["delete_from_dnc"]))	{$delete_from_dnc=$_POST["delete_from_dnc"];}
+if (isset($_GET["vtiger_search_dead"]))				{$vtiger_search_dead=$_GET["vtiger_search_dead"];}
+	elseif (isset($_POST["vtiger_search_dead"]))	{$vtiger_search_dead=$_POST["vtiger_search_dead"];}
+if (isset($_GET["vtiger_status_call"]))				{$vtiger_status_call=$_GET["vtiger_status_call"];}
+	elseif (isset($_POST["vtiger_status_call"]))	{$vtiger_status_call=$_POST["vtiger_status_call"];}
+if (isset($_GET["sale"]))				{$sale=$_GET["sale"];}
+	elseif (isset($_POST["sale"]))		{$sale=$_POST["sale"];}
+if (isset($_GET["dnc"]))				{$dnc=$_GET["dnc"];}
+	elseif (isset($_POST["dnc"]))		{$dnc=$_POST["dnc"];}
+if (isset($_GET["customer_contact"]))			{$customer_contact=$_GET["customer_contact"];}
+	elseif (isset($_POST["customer_contact"]))	{$customer_contact=$_POST["customer_contact"];}
+if (isset($_GET["not_interested"]))				{$not_interested=$_GET["not_interested"];}
+	elseif (isset($_POST["not_interested"]))	{$not_interested=$_POST["not_interested"];}
+if (isset($_GET["unworkable"]))					{$unworkable=$_GET["unworkable"];}
+	elseif (isset($_POST["unworkable"]))		{$unworkable=$_POST["unworkable"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -1138,6 +1154,7 @@ $caller_id_number = ereg_replace("[^0-9]","",$caller_id_number);
 $outbound_calls_per_second = ereg_replace("[^0-9]","",$outbound_calls_per_second);
 $manager_shift_enforcement_override = ereg_replace("[^0-9]","",$manager_shift_enforcement_override);
 $export_reports = ereg_replace("[^0-9]","",$export_reports);
+$delete_from_dnc = ereg_replace("[^0-9]","",$delete_from_dnc);
 
 ### DIGITS and COLONS
 $shift_length = ereg_replace("[^\:0-9]","",$shift_length);
@@ -1190,6 +1207,12 @@ $active_asterisk_server = ereg_replace("[^NY]","",$active_asterisk_server);
 $generate_vicidial_conf = ereg_replace("[^NY]","",$generate_vicidial_conf);
 $rebuild_conf_files = ereg_replace("[^NY]","",$rebuild_conf_files);
 $agent_allow_group_alias = ereg_replace("[^NY]","",$agent_allow_group_alias);
+$vtiger_status_call = ereg_replace("[^NY]","",$vtiger_status_call);
+$sale = ereg_replace("[^NY]","",$sale);
+$dnc = ereg_replace("[^NY]","",$dnc);
+$customer_contact = ereg_replace("[^NY]","",$customer_contact);
+$not_interested = ereg_replace("[^NY]","",$not_interested);
+$unworkable = ereg_replace("[^NY]","",$unworkable);
 
 $qc_enabled = ereg_replace("[^0-9NY]","",$qc_enabled);
 
@@ -1347,6 +1370,7 @@ $template_id = ereg_replace("[^-\_0-9a-zA-Z]","",$template_id);
 $carrier_id = ereg_replace("[^-\_0-9a-zA-Z]","",$carrier_id);
 $group_alias_id = ereg_replace("[^-\_0-9a-zA-Z]","",$group_alias_id);
 $default_group_alias = ereg_replace("[^-\_0-9a-zA-Z]","",$default_group_alias);
+$vtiger_search_dead = ereg_replace("[^-\_0-9a-zA-Z]","",$vtiger_search_dead);
 
 ### ALPHA-NUMERIC and underscore and dash and comma
 $logins_list = ereg_replace("[^-\,\_0-9a-zA-Z]","",$logins_list);
@@ -1646,11 +1670,13 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90310-2203 - Added export_reports option for call activity report data exports
 # 90315-1010 - Changed revision for new trunk 2.2.0
 # 90320-0424 - Fixed several small bugs conf records group alias and permissions
+# 90322-0122 - Added ability to delete from the DNC lists
+# 90322-1105 - Added new status settings and vtiger options
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-174';
-$build = '90320-0424';
+$admin_version = '2.2.0-176';
+$build = '90322-1105';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -1755,6 +1781,7 @@ $browser = getenv("HTTP_USER_AGENT");
 		$LOGdelete_dids				=$row[57];
 		$LOGmanager_shift_enforcement_override=$row[61];
 		$LOGexport_reports			=$row[64];
+		$LOGdelete_from_dnc			=$row[65];
 
 		$stmt="SELECT allowed_campaigns from vicidial_user_groups where user_group='$LOGuser_group';";
 		$rslt=mysql_query($stmt, $link);
@@ -2854,6 +2881,11 @@ if ($SSqc_features_active > 0)
 <BR>
 <B>Export Reports -</B> This setting if set to 1 will allow a manager to access the export call reports on the REPORTS screen. Default is 0. For the Export Calls Report, the following field order is used for exports: <BR>call_date, phone_number, status, user, full_name, campaign_id/in-group, vendor_lead_code, source_id, list_id, gmt_offset_now, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, length_in_sec, user_group, alt_dial/queue_seconds
 
+<BR>
+<A NAME="vicidial_users-delete_from_dnc">
+<BR>
+<B>Delete From DNC Lists -</B> This setting if set to 1 will allow a manager to remove phone numbers from the DNC lists in the VICIDIAL system.
+
 
 
 
@@ -3376,9 +3408,14 @@ if ($SSqc_features_active > 0)
 <B>Vtiger Search Category -</B> If Vtiger integration is enabled in the system settings then this setting will define where the vtiger_search.php page will search for the phone number that was entered. There are 4 options that can be used in this field: LEAD- This option will search through the Vtiger leads only, ACCOUNT- This option will search through the Vtiger accounts and all contacts and sub-contacts for the phone number, VENDOR- This option will only search through the Vtiger vendors, ACCTID- This option works only for accounts and it will take the vicidial vendor_lead_code field and try to search for the Vtiger account ID. If unsuccessful it will try any other methods listed that you have selected. Multiple options can be used for each search, but on large databases this is not recommended. Default is LEAD.
 
 <BR>
+<A NAME="vicidial_campaigns-vtiger_search_dead">
+<BR>
+<B>Vtiger Search Dead Accounts -</B> If Vtiger integration is enabled in the system settings then this setting will define whether deleted accounts will be searched when the agent clicks WEB FORM to search in the Vtiger system. DISABLED- deleted leads will not be searched, ASK- deleted leads will be searched and the vtiger search web page will ask the agent if they want to make the Vtiger account active, RESURRECT- will automatically make the deleted account active again and will take the agent to the account screen without delay upon clicking on WEB FORM. Default is DISABLED.
+
+<BR>
 <A NAME="vicidial_campaigns-vtiger_create_call_record">
 <BR>
-<B>Vtiger Create Call Record -</B> If Vtiger integration is enabled in the system settings then this setting will define whether a new Vtiger activity record is created for the call when the agent goes to the vtiger_search page. Default is Y.
+<B>Vtiger Create Call Record -</B> If Vtiger integration is enabled in the system settings then this setting will define whether a new Vtiger activity record is created for the call when the agent goes to the vtiger_search page. Default is Y. The DISPO option will create a call record for the Vtiger account without the agent needing to go to the vtiger search page through the WEB FORM.
 
 <BR>
 <A NAME="vicidial_campaigns-vtiger_create_lead_record">
@@ -3388,7 +3425,12 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_campaigns-vtiger_screen_login">
 <BR>
-<B>Vtiger Screen Login -</B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y.
+<B>Vtiger Screen Login -</B> If Vtiger integration is enabled in the system settings then this setting will define whether the user is logged into the Vtiger interface automatically when they login to VICIDIAL. Default is Y. The NEW_WINDOW option will open a new window upon login to the VICIDIAL agent screen.
+
+<BR>
+<A NAME="vicidial_campaigns-vtiger_status_call">
+<BR>
+<B>Vtiger Status Call -</B> If Vtiger integration is enabled in the system settings then this setting will define whether the status of the Vtiger Account will be updated with the status of the VICIDIAL call after it has been dispositioned. Default is N.
 
 <BR>
 <A NAME="vicidial_campaigns-agent_allow_group_alias">
@@ -4998,7 +5040,8 @@ FR_SPAC 00 00 00 00 00 - France space separated phone number<BR>
 <B><FONT SIZE=3>VICIDIAL_STATUSES TABLE</FONT></B><BR><BR>
 <A NAME="vicidial_statuses">
 <BR>
-<B>Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis.</B>
+<B>Through the use of system statuses, you can have statuses that exist for campaign and in-group. The Status must be 1-6 characters in length, the description must be 2-30 characters in length and Selectable defines whether it shows up in VICIDIAL as an agent disposition. The human_answered field is used when calculating the drop percentage, or abandon rate. Setting human_answered to Y will use this status when counting the human-answered calls. The Category option allows you to group several statuses into a catogy that can be used for statistical analysis. There are also 5 additional settings that will define the kind of status: sale, dnc, customer contact, not interested, unworkable.</B>
+
 
 
 <BR><BR><BR><BR>
@@ -5559,63 +5602,126 @@ if ($ADD==121)
 		$p=0;
 		while ($p < $PNct)
 			{
-			if (ereg('SYSTEM_INTERNAL',$campaign_id))
+			if ( (ereg('delete',$stage)) and ($LOGdelete_from_dnc > 0) )
 				{
-				$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
-				$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				if ($row[0] > 0)
-					{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p]\n";}
+				##### BEGIN DELETE FROM DNC #####
+				if (ereg('SYSTEM_INTERNAL',$campaign_id))
+					{
+					$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{echo "<br>DNC NOT DELETED - This phone number is not in the Do Not Call List: $PN[$p]\n";}
+					else
+						{
+						$stmt="DELETE FROM vicidial_dnc where phone_number='$PN[$p]';";
+						$rslt=mysql_query($stmt, $link);
+
+						echo "<br><B>DNC DELETED: $PN[$p]</B>\n";
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = ereg_replace(';','',$SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='DELETE', record_id='$PN[$p]', event_code='ADMIN DELETE NUMBER FROM DNC LIST', event_sql=\"$SQL_log\", event_notes='';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
+					}
 				else
 					{
-					$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
+					$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
 					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] < 1)
+						{echo "<br>DNC NOT DELETED - This phone number is not in the Do Not Call List: $PN[$p] $campaign_id\n";}
+					else
+						{
+						$stmt="DELETE FROM vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
+						$rslt=mysql_query($stmt, $link);
 
-					echo "<br><B>DNC ADDED: $PN[$p]</B>\n";
+						echo "<br><B>DNC DELETED: $PN[$p] $campaign_id</B>\n";
 
-					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmt|";
-					$SQL_log = ereg_replace(';','',$SQL_log);
-					$SQL_log = addslashes($SQL_log);
-					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO DNC LIST', event_sql=\"$SQL_log\", event_notes='';";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $link);
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = ereg_replace(';','',$SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='DELETE', record_id='$PN[$p]', event_code='ADMIN DELETE NUMBER FROM CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
 					}
+				##### END DELETE FROM DNC #####
 				}
 			else
 				{
-				$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
-				$rslt=mysql_query($stmt, $link);
-				$row=mysql_fetch_row($rslt);
-				if ($row[0] > 0)
-					{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p] $campaign_id\n";}
+				##### BEGIN ADD TO DNC #####
+				if (ereg('SYSTEM_INTERNAL',$campaign_id))
+					{
+					$stmt="SELECT count(*) from vicidial_dnc where phone_number='$PN[$p]';";
+					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] > 0)
+						{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p]\n";}
+					else
+						{
+						$stmt="INSERT INTO vicidial_dnc (phone_number) values('$PN[$p]');";
+						$rslt=mysql_query($stmt, $link);
+
+						echo "<br><B>DNC ADDED: $PN[$p]</B>\n";
+
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = ereg_replace(';','',$SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO DNC LIST', event_sql=\"$SQL_log\", event_notes='';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
+					}
 				else
 					{
-					$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$campaign_id');";
+					$stmt="SELECT count(*) from vicidial_campaign_dnc where phone_number='$PN[$p]' and campaign_id='$campaign_id';";
 					$rslt=mysql_query($stmt, $link);
+					$row=mysql_fetch_row($rslt);
+					if ($row[0] > 0)
+						{echo "<br>DNC NOT ADDED - This phone number is already in the Do Not Call List: $PN[$p] $campaign_id\n";}
+					else
+						{
+						$stmt="INSERT INTO vicidial_campaign_dnc (phone_number,campaign_id) values('$PN[$p]','$campaign_id');";
+						$rslt=mysql_query($stmt, $link);
 
-					echo "<br><B>DNC ADDED: $PN[$p] $campaign_id</B>\n";
+						echo "<br><B>DNC ADDED: $PN[$p] $campaign_id</B>\n";
 
-					### LOG INSERTION Admin Log Table ###
-					$SQL_log = "$stmt|";
-					$SQL_log = ereg_replace(';','',$SQL_log);
-					$SQL_log = addslashes($SQL_log);
-					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='';";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $link);
+						### LOG INSERTION Admin Log Table ###
+						$SQL_log = "$stmt|";
+						$SQL_log = ereg_replace(';','',$SQL_log);
+						$SQL_log = addslashes($SQL_log);
+						$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='LISTS', event_type='ADD', record_id='$PN[$p]', event_code='ADMIN ADD NUMBER TO CAMPAIGN DNC LIST $campaign_id', event_sql=\"$SQL_log\", event_notes='';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $link);
+						}
 					}
+				##### END ADD TO DNC #####
 				}
 			$p++;
 			}
 		}
 
-	echo "<br>ADD NUMBERS TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";
+	if ($LOGdelete_from_dnc > 0)
+		{echo "<br>ADD OR DELETE NUMBERS FROM THE DNC LIST<form action=$PHP_SELF method=POST>\n";}
+	else
+		{echo "<br>ADD NUMBERS TO THE DNC LIST<form action=$PHP_SELF method=POST>\n";}
 	echo "<input type=hidden name=ADD value=121>\n";
 	echo "<center><TABLE width=$section_width cellspacing=3>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>List: </td><td align=left><select size=1 name=campaign_id>\n";
 	echo "$campaigns_list";
 	echo "</select></td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Phone Numbers: <BR><BR> (one phone number per line only)<BR>$NWB#vicidial_list-dnc$NWE</td><td align=left><TEXTAREA name=phone_numbers ROWS=20 COLS=20></TEXTAREA></td></tr>\n";
+	if ($LOGdelete_from_dnc > 0)
+		{
+		echo "<tr bgcolor=#B6D3FC><td align=right>Add or Delete: </td><td align=left><select size=1 name=stage><option SELECTED>add</option><option>delete</option></select></td></tr>\n";
+		}
 	echo "<tr bgcolor=#B6D3FC><td align=center colspan=2><input type=submit name=SUBMIT value=SUBMIT></td></tr>\n";
 	echo "</TABLE></center>\n";
 	}
@@ -6681,7 +6787,7 @@ if ($ADD=="2A")
 				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -6968,13 +7074,13 @@ if ($ADD==20)
 			{
 			echo "<br><B>CAMPAIGN COPIED: $campaign_id copied from $source_campaign_id</B>\n";
 
-			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias from vicidial_campaigns where campaign_id='$source_campaign_id';";
+			$stmt="INSERT INTO vicidial_campaigns (campaign_name,campaign_id,active,dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,list_order_mix,campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call) SELECT \"$campaign_name\",\"$campaign_id\",\"N\",dial_status_a,dial_status_b,dial_status_c,dial_status_d,dial_status_e,lead_order,park_ext,park_file_name,web_form_address,allow_closers,hopper_level,auto_dial_level,next_agent_call,local_call_time,voicemail_ext,dial_timeout,dial_prefix,campaign_cid,campaign_vdad_exten,campaign_rec_exten,campaign_recording,campaign_rec_filename,campaign_script,get_call_launch,am_message_exten,amd_send_to_vmx,xferconf_a_dtmf,xferconf_a_number,xferconf_b_dtmf,xferconf_b_number,alt_number_dialing,scheduled_callbacks,lead_filter_id,drop_call_seconds,drop_action,safe_harbor_exten,display_dialable_count,wrapup_seconds,wrapup_message,closer_campaigns,use_internal_dnc,allcalls_delay,omit_phone_code,dial_method,available_only_ratio_tally,adaptive_dropped_percentage,adaptive_maximum_level,adaptive_latest_server_time,adaptive_intensity,adaptive_dl_diff_target,concurrent_transfers,auto_alt_dial,auto_alt_dial_statuses,agent_pause_codes_active,campaign_description,campaign_changedate,campaign_stats_refresh,campaign_logindate,dial_statuses,disable_alter_custdata,no_hopper_leads_logins,\"DISABLED\",campaign_allow_inbound,manual_dial_list_id,default_xfer_group,queue_priority,drop_inbound_group,qc_enabled,qc_statuses,qc_lists,qc_web_form_address,qc_script,survey_first_audio_file,survey_dtmf_digits,survey_ni_digit,survey_opt_in_audio_file,survey_ni_audio_file,survey_method,survey_no_response_action,survey_ni_status,survey_response_digit_map,survey_xfer_exten,survey_camp_record_dir,disable_alter_custphone,display_queue_count,qc_get_record_launch,qc_show_recording,qc_shift_id,manual_dial_filter,agent_clipboard_copy,agent_extended_alt_dial,use_campaign_dnc,three_way_call_cid,three_way_dial_prefix,web_form_target,vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_screen_login,cpd_amd_action,agent_allow_group_alias,default_group_alias,vtiger_search_dead,vtiger_status_call from vicidial_campaigns where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_stats (campaign_id) values('$campaign_id');";
 			$rslt=mysql_query($stmtA, $link);
 
-			$stmtA="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
+			$stmtA="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable) SELECT status,status_name,selectable,\"$campaign_id\",human_answered,category,sale,dnc,customer_contact,not_interested,unworkable from vicidial_campaign_statuses where campaign_id='$source_campaign_id';";
 			$rslt=mysql_query($stmtA, $link);
 
 			$stmtA="INSERT INTO vicidial_campaign_hotkeys (status,hotkey,status_name,selectable,campaign_id) SELECT status,hotkey,status_name,selectable,\"$campaign_id\" from vicidial_campaign_hotkeys where campaign_id='$source_campaign_id';";
@@ -7029,7 +7135,7 @@ if ($ADD==22)
 				{
 				echo "<br><B>CAMPAIGN STATUS ADDED: $campaign_id - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category) values('$status','$status_name','$selectable','$campaign_id','$human_answered','$category');";
+				$stmt="INSERT INTO vicidial_campaign_statuses (status,status_name,selectable,campaign_id,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable) values('$status','$status_name','$selectable','$campaign_id','$human_answered','$category','$sale','$dnc','$customer_contact','$not_interested','$unworkable');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -8255,7 +8361,7 @@ if ($ADD==221111111111111)
 				{
 				echo "<br><B>SYSTEM STATUS ADDED: $status_name - $status</B>\n";
 
-				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered,category) values('$status','$status_name','$selectable','$human_answered','$category');";
+				$stmt="INSERT INTO vicidial_statuses (status,status_name,selectable,human_answered,category,sale,dnc,customer_contact,not_interested,unworkable) values('$status','$status_name','$selectable','$human_answered','$category','$sale','$dnc','$customer_contact','$not_interested','$unworkable');";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -8396,7 +8502,7 @@ if ($ADD=="4A")
 			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override',export_reports='$export_reports' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override',export_reports='$export_reports',delete_from_dnc='$delete_from_dnc' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG INSERTION Admin Log Table ###
@@ -9189,7 +9295,7 @@ if ($ADD==41)
 				if ( (!ereg("DISABLED",$list_order_mix)) and ($hopper_level < 100) )
 					{$hopper_level='100';}
 
-				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias' where campaign_id='$campaign_id';";
+				$stmtA="UPDATE vicidial_campaigns set campaign_name='$campaign_name',active='$active',dial_status_a='$dial_status_a',dial_status_b='$dial_status_b',dial_status_c='$dial_status_c',dial_status_d='$dial_status_d',dial_status_e='$dial_status_e',lead_order='$lead_order',allow_closers='$allow_closers',hopper_level='$hopper_level', $adlSQL next_agent_call='$next_agent_call', local_call_time='$local_call_time', voicemail_ext='$voicemail_ext', dial_timeout='$dial_timeout', dial_prefix='$dial_prefix', campaign_cid='$campaign_cid', campaign_vdad_exten='$campaign_vdad_exten', web_form_address='" . mysql_real_escape_string($web_form_address) . "', park_ext='$park_ext', park_file_name='$park_file_name', campaign_rec_exten='$campaign_rec_exten', campaign_recording='$campaign_recording', campaign_rec_filename='$campaign_rec_filename', campaign_script='$script_id', get_call_launch='$get_call_launch', am_message_exten='$am_message_exten', amd_send_to_vmx='$amd_send_to_vmx', xferconf_a_dtmf='$xferconf_a_dtmf',xferconf_a_number='$xferconf_a_number',xferconf_b_dtmf='$xferconf_b_dtmf',xferconf_b_number='$xferconf_b_number',lead_filter_id='$lead_filter_id',alt_number_dialing='$alt_number_dialing',scheduled_callbacks='$scheduled_callbacks',drop_action='$drop_action',drop_call_seconds='$drop_call_seconds',safe_harbor_exten='$safe_harbor_exten',wrapup_seconds='$wrapup_seconds',wrapup_message='$wrapup_message',closer_campaigns='$groups_value',use_internal_dnc='$use_internal_dnc',allcalls_delay='$allcalls_delay',omit_phone_code='$omit_phone_code',dial_method='$dial_method',available_only_ratio_tally='$available_only_ratio_tally',adaptive_dropped_percentage='$adaptive_dropped_percentage',adaptive_maximum_level='$adaptive_maximum_level',adaptive_latest_server_time='$adaptive_latest_server_time',adaptive_intensity='$adaptive_intensity',adaptive_dl_diff_target='$adaptive_dl_diff_target',concurrent_transfers='$concurrent_transfers',auto_alt_dial='$auto_alt_dial',agent_pause_codes_active='$agent_pause_codes_active',campaign_description='$campaign_description',campaign_changedate='$SQLdate',campaign_stats_refresh='$campaign_stats_refresh',disable_alter_custdata='$disable_alter_custdata',no_hopper_leads_logins='$no_hopper_leads_logins',list_order_mix='$list_order_mix',campaign_allow_inbound='$campaign_allow_inbound',manual_dial_list_id='$manual_dial_list_id',default_xfer_group='$default_xfer_group',xfer_groups='$XFERgroups_value',queue_priority='$queue_priority',drop_inbound_group='$drop_inbound_group',disable_alter_custphone='$disable_alter_custphone',display_queue_count='$display_queue_count',manual_dial_filter='$manual_dial_filter',agent_clipboard_copy='$agent_clipboard_copy',agent_extended_alt_dial='$agent_extended_alt_dial',use_campaign_dnc='$use_campaign_dnc',three_way_call_cid='$three_way_call_cid',three_way_dial_prefix='$three_way_dial_prefix',web_form_target='$web_form_target',vtiger_search_category='$vtiger_search_category',vtiger_create_call_record='$vtiger_create_call_record',vtiger_create_lead_record='$vtiger_create_lead_record',vtiger_screen_login='$vtiger_screen_login',cpd_amd_action='$cpd_amd_action',agent_allow_group_alias='$agent_allow_group_alias',default_group_alias='$default_group_alias',vtiger_search_dead='$vtiger_search_dead',vtiger_status_call='$vtiger_status_call' where campaign_id='$campaign_id';";
 				$rslt=mysql_query($stmtA, $link);
 
 				if ($reset_hopper == 'Y')
@@ -9266,7 +9372,7 @@ if ($ADD==42)
 			{
 			echo "<br><B>CUSTOM CAMPAIGN STATUS MODIFIED: $campaign_id - $status</B>\n";
 
-			$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where campaign_id='$campaign_id' and status='$status';";
+			$stmt="UPDATE vicidial_campaign_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable' where campaign_id='$campaign_id' and status='$status';";
 			$rslt=mysql_query($stmt, $link);
 
 			### LOG INSERTION Admin Log Table ###
@@ -10972,7 +11078,7 @@ if ($ADD==421111111111111)
 				{
 				echo "<br><B>SYSTEM STATUS MODIFIED: $status</B>\n";
 
-				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category' where status='$status';";
+				$stmt="UPDATE vicidial_statuses SET status_name='$status_name',selectable='$selectable',human_answered='$human_answered',category='$category',sale='$sale',dnc='$dnc',customer_contact='$customer_contact',not_interested='$not_interested',unworkable='$unworkable' where status='$status';";
 				$rslt=mysql_query($stmt, $link);
 
 				### LOG INSERTION Admin Log Table ###
@@ -12816,6 +12922,7 @@ if ($ADD==3)
 	$agent_shift_enforcement_override =	$row[61];
 	$manager_shift_enforcement_override =	$row[62];
 	$export_reports =		$row[64];
+	$delete_from_dnc =		$row[65];
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -12929,6 +13036,7 @@ if ($ADD==3)
 			echo "<tr bgcolor=#B9CBFD><td align=right>Modify Leads: </td><td align=left><select size=1 name=modify_leads><option>0</option><option>1</option><option SELECTED>$modify_leads</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Download Lists: </td><td align=left><select size=1 name=download_lists><option>0</option><option>1</option><option SELECTED>$download_lists</option></select>$NWB#vicidial_users-modify_leads$NWE</td></tr>\n";
 			echo "<tr bgcolor=#B9CBFD><td align=right>Export Reports: </td><td align=left><select size=1 name=export_reports><option>0</option><option>1</option><option SELECTED>$export_reports</option></select>$NWB#vicidial_users-export_reports$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B9CBFD><td align=right>Delete From DNC Lists: </td><td align=left><select size=1 name=delete_from_dnc><option>0</option><option>1</option><option SELECTED>$delete_from_dnc</option></select>$NWB#vicidial_users-delete_from_dnc$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#9BB9FB><td align=right>Modify Campaigns: </td><td align=left><select size=1 name=modify_campaigns><option>0</option><option>1</option><option SELECTED>$modify_campaigns</option></select>$NWB#vicidial_users-modify_sections$NWE</td></tr>\n";
 			echo "<tr bgcolor=#9BB9FB><td align=right>Campaign Detail: </td><td align=left><select size=1 name=campaign_detail><option>0</option><option>1</option><option SELECTED>$campaign_detail</option></select>$NWB#vicidial_users-campaign_detail$NWE</td></tr>\n";
@@ -13125,6 +13233,8 @@ if ($ADD==31)
 		$cpd_amd_action = $row[103];
 		$agent_allow_group_alias = $row[104];
 		$default_group_alias = $row[105];
+		$vtiger_search_dead = $row[106];
+		$vtiger_status_call = $row[107];
 
 	if (ereg("DISABLED",$list_order_mix))
 		{$DEFlistDISABLE = '';	$DEFstatusDISABLED=0;}
@@ -13625,11 +13735,15 @@ if ($ADD==31)
 			{
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Search Category: </td><td align=left><select size=1 name=vtiger_search_category><option>LEAD</option><option>ACCOUNT</option><option>VENDOR</option><option>LEAD_ACCOUNT</option><option>LEAD_ACCOUNT_VENDOR</option><option>ACCTID</option><option>ACCTID_ACCOUNT</option><option>ACCTID_ACCOUNT_LEAD_VENDOR</option><option SELECTED>$vtiger_search_category</option></select>$NWB#vicidial_campaigns-vtiger_search_category$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Create Call Record: </td><td align=left><select size=1 name=vtiger_create_call_record><option>Y</option><option>N</option><option SELECTED>$vtiger_create_call_record</option></select>$NWB#vicidial_campaigns-vtiger_create_call_record$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Search Dead Accounts: </td><td align=left><select size=1 name=vtiger_search_dead><option>DISABLED</option><option>ASK</option><option>RESURRECT</option><option SELECTED>$vtiger_search_dead</option></select>$NWB#vicidial_campaigns-vtiger_search_dead$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Create Call Record: </td><td align=left><select size=1 name=vtiger_create_call_record><option>Y</option><option>N</option><option>DISPO</option><option SELECTED>$vtiger_create_call_record</option></select>$NWB#vicidial_campaigns-vtiger_create_call_record$NWE</td></tr>\n";
 
 			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Create Lead Record: </td><td align=left><select size=1 name=vtiger_create_lead_record><option>Y</option><option>N</option><option SELECTED>$vtiger_create_lead_record</option></select>$NWB#vicidial_campaigns-vtiger_create_lead_record$NWE</td></tr>\n";
 
-			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Screen Login: </td><td align=left><select size=1 name=vtiger_screen_login><option>Y</option><option>N</option><option SELECTED>$vtiger_screen_login</option></select>$NWB#vicidial_campaigns-vtiger_screen_login$NWE</td></tr>\n";
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Status Call: </td><td align=left><select size=1 name=vtiger_status_call><option>Y</option><option>N</option><option SELECTED>$vtiger_status_call</option></select>$NWB#vicidial_campaigns-vtiger_status_call$NWE</td></tr>\n";
+
+			echo "<tr bgcolor=#B6D3FC><td align=right>Vtiger Screen Login: </td><td align=left><select size=1 name=vtiger_screen_login><option>Y</option><option>N</option><option>NEW_WINDOW</option><option SELECTED>$vtiger_screen_login</option></select>$NWB#vicidial_campaigns-vtiger_screen_login$NWE</td></tr>\n";
 			}
 		else
 			{
@@ -13637,6 +13751,8 @@ if ($ADD==31)
 			echo "<input type=hidden name=vtiger_create_call_record value=\"$vtiger_create_call_record\">\n";
 			echo "<input type=hidden name=vtiger_create_lead_record value=\"$vtiger_create_lead_record\">\n";
 			echo "<input type=hidden name=vtiger_screen_login value=\"$vtiger_screen_login\">\n";
+			echo "<input type=hidden name=vtiger_search_dead value=\"$vtiger_search_dead\">\n";
+			echo "<input type=hidden name=vtiger_status_call value=\"$vtiger_status_call\">\n";
 			}
 
 		if ($campaign_allow_inbound == 'Y')
@@ -13811,7 +13927,7 @@ if ($ADD==31)
 		echo "<center>\n";
 		echo "<br><b>CUSTOM STATUSES WITHIN THIS CAMPAIGN: &nbsp; $NWB#vicidial_campaign_statuses$NWE</b><br>\n";
 		echo "<TABLE width=500 cellspacing=3>\n";
-		echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>DELETE</td></tr>\n";
+		echo "<tr><td>STATUS</td><td>DESCRIPTION</td><td>SELECTABLE</td><td>HUMAN ANSWER</td><td>CATEGORY</td><td>MODIFY-DELETE</td></tr>\n";
 
 		$stmt="SELECT * from vicidial_campaign_statuses where campaign_id='$campaign_id'";
 		$rslt=mysql_query($stmt, $link);
@@ -13846,6 +13962,14 @@ if ($ADD==31)
 			echo "<td align=center nowrap><font size=1><input type=submit name=submit value=MODIFY> &nbsp; &nbsp; &nbsp; &nbsp; \n";
 			echo " &nbsp; \n";
 			echo "<a href=\"$PHP_SELF?ADD=42&campaign_id=$campaign_id&status=$rowx[0]&stage=delete\">DELETE</a>\n";
+			echo "</td></tr><tr $bgcolor><td colspan=6 align=center><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>\n";
+
+			echo "&nbsp; Sale: <select size=1 name=sale><option>Y</option><option>N</option><option selected>$rowx[6]</option></select> &nbsp; \n";
+			echo "&nbsp; DNC: <select size=1 name=dnc><option>Y</option><option>N</option><option selected>$rowx[7]</option></select> &nbsp; \n";
+			echo "&nbsp; Customer Contact: <select size=1 name=customer_contact><option>Y</option><option>N</option><option selected>$rowx[8]</option></select> &nbsp; \n";
+			echo "&nbsp; Not Interested: <select size=1 name=not_interested><option>Y</option><option>N</option><option selected>$rowx[9]</option></select> &nbsp; \n";
+			echo "&nbsp; Unworkable: <select size=1 name=unworkable><option>Y</option><option>N</option><option selected>$rowx[10]</option></select> &nbsp; \n";
+
 			echo "</form></td></tr>\n";
 			}
 
@@ -13856,8 +13980,13 @@ if ($ADD==31)
 		echo "<input type=hidden name=campaign_id value=\"$campaign_id\">\n";
 		echo "Status: <input type=text name=status size=10 maxlength=8> &nbsp; \n";
 		echo "Description: <input type=text name=status_name size=20 maxlength=30> &nbsp; \n";
-		echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
-		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+		echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; <BR>\n";
+		echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+		echo "Sale: <select size=1 name=sale><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+		echo "DNC: <select size=1 name=dnc><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+		echo "Customer Contact: <select size=1 name=customer_contact><option>Y</option><option SELECTED>N</option></select> &nbsp; <BR>\n";
+		echo "Not Interested: <select size=1 name=not_interested><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+		echo "Unworkable: <select size=1 name=unworkable><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
 		echo "Category: \n";
 		echo "<select size=1 name=category>\n";
 		echo "$cats_list";
@@ -18034,6 +18163,15 @@ if ($ADD==321111111111111)
 			{
 			echo "<a href=\"$PHP_SELF?ADD=421111111111111&status=$rowx[0]&stage=delete\">DELETE</a>\n";
 			}
+
+		echo "</td></tr><tr $bgcolor><td colspan=6 align=center><FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>\n";
+
+		echo "&nbsp; Sale: <select size=1 name=sale><option>Y</option><option>N</option><option selected>$rowx[5]</option></select> &nbsp; \n";
+		echo "&nbsp; DNC: <select size=1 name=dnc><option>Y</option><option>N</option><option selected>$rowx[6]</option></select> &nbsp; \n";
+		echo "&nbsp; Customer Contact: <select size=1 name=customer_contact><option>Y</option><option>N</option><option selected>$rowx[7]</option></select> &nbsp; \n";
+		echo "&nbsp; Not Interested: <select size=1 name=not_interested><option>Y</option><option>N</option><option selected>$rowx[8]</option></select> &nbsp; \n";
+		echo "&nbsp; Unworkable: <select size=1 name=unworkable><option>Y</option><option>N</option><option selected>$rowx[9]</option></select> &nbsp; \n";
+
 		echo "</form></td></tr>\n";
 		}
 
@@ -18045,6 +18183,11 @@ if ($ADD==321111111111111)
 	echo "Description: <input type=text name=status_name size=30 maxlength=30><BR>\n";
 	echo "Selectable: <select size=1 name=selectable><option>Y</option><option>N</option></select> &nbsp; \n";
 	echo "Human Answer: <select size=1 name=human_answered><option>Y</option><option>N</option></select> &nbsp; \n";
+	echo "Sale: <select size=1 name=sale><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+	echo "DNC: <select size=1 name=dnc><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+	echo "Customer Contact: <select size=1 name=customer_contact><option>Y</option><option SELECTED>N</option></select> &nbsp; <BR>\n";
+	echo "Not Interested: <select size=1 name=not_interested><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
+	echo "Unworkable: <select size=1 name=unworkable><option>Y</option><option SELECTED>N</option></select> &nbsp; \n";
 	echo "Category: \n";
 	echo "<select size=1 name=category>\n";
 	echo "$cats_list";
@@ -18786,7 +18929,7 @@ if ($ADD==1300)
 	$rslt=mysql_query($stmt, $link);
 	$dids_to_print = mysql_num_rows($rslt);
 
-	echo "<br>INBOUND GROUP LISTINGS:\n";
+	echo "<br>INBOUND DID LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<TR BGCOLOR=BLACK>";
 	echo "<TD><font size=1 color=white>#</TD>";

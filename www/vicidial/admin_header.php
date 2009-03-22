@@ -688,6 +688,8 @@ if (strlen($reports_hh) > 1) {
 		<TR><TD ALIGN=LEFT <?=$lists_hh ?>><a href="<? echo $ADMIN ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=<?=$lists_fc ?> SIZE=<?=$header_font_size ?>><?=$lists_bold ?>Lists</a></TD></TR>
 		<?
 		if (strlen($lists_hh) > 1) { 
+			if ($LOGdelete_from_dnc > 0) {$DNClink = 'Add-Delete Number From DNC';}
+			else {$DNClink = 'Add Number To DNC';}
 			?>
 		<TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
 		<a href="<? echo $ADMIN ?>?ADD=100"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Show Lists </a>
@@ -696,7 +698,7 @@ if (strlen($reports_hh) > 1) {
 		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
 		<a href="admin_search_lead.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Search For A Lead </a>
 		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
-		<a href="<? echo $ADMIN ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Add Number To DNC </a>
+		<a href="<? echo $ADMIN ?>?ADD=121"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> <?=$DNClink ?> </a>
 		</TR><TR BGCOLOR=<?=$lists_color ?>><TD ALIGN=LEFT> &nbsp; 
 		<a href="./new_listloader_superL.php"><FONT FACE="ARIAL,HELVETICA" COLOR=BLACK SIZE=<?=$subheader_font_size ?>> Load New Leads </a>
 		</TD></TR>

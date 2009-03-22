@@ -476,25 +476,26 @@ modify_servers ENUM('0','1') default '0',
 view_reports ENUM('0','1') default '0',
 vicidial_recording_override ENUM('DISABLED','NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'DISABLED',
 alter_custdata_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
-qc_enabled ENUM('1','0') default '0',
+qc_enabled ENUM('0','1') default '0',
 qc_user_level INT(2) default '1',
-qc_pass ENUM('1','0') default '0',
-qc_finish ENUM('1','0') default '0',
-qc_commit ENUM('1','0') default '0',
-add_timeclock_log ENUM('1','0') default '0',
-modify_timeclock_log ENUM('1','0') default '0',
-delete_timeclock_log ENUM('1','0') default '0',
+qc_pass ENUM('0','1') default '0',
+qc_finish ENUM('0','1') default '0',
+qc_commit ENUM('0','1') default '0',
+add_timeclock_log ENUM('0','1') default '0',
+modify_timeclock_log ENUM('0','1') default '0',
+delete_timeclock_log ENUM('0','1') default '0',
 alter_custphone_override ENUM('NOT_ACTIVE','ALLOW_ALTER') default 'NOT_ACTIVE',
 vdc_agent_api_access ENUM('0','1') default '0',
-modify_inbound_dids ENUM('1','0') default '0',
-delete_inbound_dids ENUM('1','0') default '0',
+modify_inbound_dids ENUM('0','1') default '0',
+delete_inbound_dids ENUM('0','1') default '0',
 active ENUM('Y','N') default 'Y',
-alert_enabled ENUM('1','0') default '0',
-download_lists ENUM('1','0') default '0',
+alert_enabled ENUM('0','1') default '0',
+download_lists ENUM('0','1') default '0',
 agent_shift_enforcement_override ENUM('DISABLED','OFF','START','ALL') default 'DISABLED',
 manager_shift_enforcement_override ENUM('0','1') default '0',
 shift_override_flag ENUM('0','1') default '0',
-export_reports ENUM('1','0') default '0'
+export_reports ENUM('0','1') default '0',
+delete_from_dnc ENUM('0','1') default '0'
 );
 
 
@@ -623,12 +624,14 @@ three_way_call_cid ENUM('CAMPAIGN','CUSTOMER','AGENT_PHONE','AGENT_CHOOSE') defa
 three_way_dial_prefix VARCHAR(20) default '',
 web_form_target VARCHAR(100) NOT NULL default 'vdcwebform',
 vtiger_search_category VARCHAR(100) default 'LEAD',
-vtiger_create_call_record ENUM('Y','N') default 'Y',
+vtiger_create_call_record ENUM('Y','N','DISPO') default 'Y',
 vtiger_create_lead_record ENUM('Y','N') default 'Y',
-vtiger_screen_login ENUM('Y','N') default 'Y',
+vtiger_screen_login ENUM('Y','N','NEW_WINDOW') default 'Y',
 cpd_amd_action ENUM('DISABLED','DISPO','MESSAGE') default 'DISABLED',
 agent_allow_group_alias ENUM('Y','N') default 'N',
-default_group_alias VARCHAR(30) default ''
+default_group_alias VARCHAR(30) default '',
+vtiger_search_dead ENUM('DISABLED','ASK','RESURRECT') default 'ASK',
+vtiger_status_call ENUM('Y','N') default 'N'
 );
 
 CREATE TABLE vicidial_lists (
@@ -646,7 +649,12 @@ status VARCHAR(6) PRIMARY KEY NOT NULL,
 status_name VARCHAR(30),
 selectable ENUM('Y','N'),
 human_answered ENUM('Y','N') default 'N',
-category VARCHAR(20) default 'UNDEFINED'
+category VARCHAR(20) default 'UNDEFINED',
+sale ENUM('Y','N') default 'N',
+dnc ENUM('Y','N') default 'N',
+customer_contact ENUM('Y','N') default 'N',
+not_interested ENUM('Y','N') default 'N',
+unworkable ENUM('Y','N') default 'N'
 );
 
 CREATE TABLE vicidial_campaign_statuses (
@@ -656,6 +664,11 @@ selectable ENUM('Y','N'),
 campaign_id VARCHAR(8),
 human_answered ENUM('Y','N') default 'N',
 category VARCHAR(20) default 'UNDEFINED',
+sale ENUM('Y','N') default 'N',
+dnc ENUM('Y','N') default 'N',
+customer_contact ENUM('Y','N') default 'N',
+not_interested ENUM('Y','N') default 'N',
+unworkable ENUM('Y','N') default 'N',
 index (campaign_id)
 );
 
@@ -1535,7 +1548,7 @@ CREATE INDEX phone_number on vicidial_closer_log (phone_number);
 CREATE INDEX date_user on vicidial_closer_log (call_date,user);
 CREATE INDEX comment_a on live_inbound_log (comment_a);
 
-UPDATE system_settings SET db_schema_version='1136';
+UPDATE system_settings SET db_schema_version='1137';
 
 GRANT RELOAD ON *.* TO cron@'%';
 GRANT RELOAD ON *.* TO cron@localhost;
