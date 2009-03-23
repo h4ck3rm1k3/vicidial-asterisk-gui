@@ -224,10 +224,11 @@
 # 90307-1736 - Added Shift enforcement and manager override features
 # 90315-1009 - Changed revision for new trunk 2.2.0
 # 90320-0309 - Fixed agent log bug when using wrapup time
+# 90323-1555 - Initial call to agent phone now has campaign callerIDnumber
 #
 
-$version = '2.2.0-202';
-$build = '90320-0309';
+$version = '2.2.0-203';
+$build = '90323-1555';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=60;
 $one_mysql_log=0;
@@ -1722,7 +1723,7 @@ else
 			}
 
 		### insert a NEW record to the vicidial_manager table to be processed
-		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user_DiaL','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: $SIqueryCID','','','','','');";
+		$stmt="INSERT INTO vicidial_manager values('','','$NOW_TIME','NEW','N','$server_ip','','Originate','$SIqueryCID','Channel: $SIP_user_DiaL','Context: $ext_context','Exten: $session_id','Priority: 1','Callerid: \"$SIqueryCID\" <$campaign_cid>','','','','','');";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01041',$VD_login,$server_ip,$session_name,$one_mysql_log);}
