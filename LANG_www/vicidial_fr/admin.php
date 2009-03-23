@@ -1644,11 +1644,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90308-0956 - Added server statistics
 # 90309-0059 - Changed logging to admin_server_log
 # 90310-2203 - Added export_reports option for call activity report data exports
+# 90320-0424 - Fixed several small bugs conf records group alias and permissions
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-172';
-$build = '90310-2203';
+$admin_version = '2.0.5-173';
+$build = '90320-0424';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2175,7 +2176,7 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		$UGcampaigns = explode(" ", $allowed_campaigns);
 
 		$p=0;   $RANK_camp_active=0;   $CR_disabled = '';
-		if (eregi('-ALL-CAMPAGNES-',$allowed_campaigns))
+		if (eregi('-ALL-CAMPAIGNS-',$allowed_campaigns))
 			{$RANK_camp_active++;}
 		else
 			{
@@ -2409,23 +2410,23 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 		}
 
 	$campaigns_value='';
-	$campaigns_list='<B><input type="checkbox" name="campaigns[]" value="-ALL-CAMPAGNES-"';
+	$campaigns_list='<B><input type="checkbox" name="campaigns[]" value="-ALL-CAMPAIGNS-"';
 	$qc_campaigns_value='';
-	$qc_campaigns_list='<B><input type="checkbox" name="qc_campaigns[]" value="-ALL-CAMPAGNES-"';
+	$qc_campaigns_list='<B><input type="checkbox" name="qc_campaigns[]" value="-ALL-CAMPAIGNS-"';
 	$qc_groups_value='';
 	$qc_groups_list='<B><input type="checkbox" name="qc_groups[]" value="-ALL-GROUPS-"';
 		$p=0;
 		while ($p<100)
 			{
-			if (eregi('ALL-CAMPAGNES',$campaigns[$p])) 
+			if (eregi('ALL-CAMPAIGNS',$campaigns[$p])) 
 				{
 				$campaigns_list.=" CHECKED";
-				$campaigns_value .= " -ALL-CAMPAGNES- -";
+				$campaigns_value .= " -ALL-CAMPAIGNS- -";
 				}
-			if (eregi('ALL-CAMPAGNES',$qc_campaigns[$p])) 
+			if (eregi('ALL-CAMPAIGNS',$qc_campaigns[$p])) 
 				{
 				$qc_campaigns_list.=" CHECKED";
-				$qc_campaigns_value .= " -ALL-CAMPAGNES- -";
+				$qc_campaigns_value .= " -ALL-CAMPAIGNS- -";
 				}
 			if (eregi('ALL-GROUPS',$qc_groups[$p])) 
 				{
@@ -2434,8 +2435,8 @@ if ( ( (strlen($ADD)>4) && ($ADD < 99998) ) or ($ADD==3) or (($ADD>20) and ($ADD
 				}
 			$p++;
 			}
-	$campaigns_list.="> ALL-CAMPAGNES - LES UTILISATEURS PEUVENT VOIR CHAQUE CAMPAGNE</B><BR>\n";
-	$qc_campaigns_list.="> ALL-CAMPAGNES - UTILISATEURS CAN QC TOUTE LA CAMPAGNE</B><BR>\n";
+	$campaigns_list.="> ALL-CAMPAIGNS - LES UTILISATEURS PEUVENT VOIR CHAQUE CAMPAGNE</B><BR>\n";
+	$qc_campaigns_list.="> ALL-CAMPAIGNS - UTILISATEURS CAN QC TOUTE LA CAMPAGNE</B><BR>\n";
 	$qc_groups_list.="> ALL-GROUPS - UTILISATEURS CAN QC ENTRANT TOUT GROUP</B><BR>\n";
 
 	$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns order by campaign_id";
@@ -2850,7 +2851,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_users-export_reports">
 <BR>
-<B>Rapports d'exportation -</B> Ce paramètre, s'il est à 1 permettra d'accéder à un gestionnaire de l'exportation des rapports sur l'appel RAPPORTS écran. La valeur par défaut est 0. Pour le rapport invite l'exportation, l'ordre suivant est utilisé pour les exportations: <BR>call_date,phone_number,status,user,full_name,campaign_id/in-group,vendor_lead_code,source_id,list_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,length_in_sec,user_group,alt_dial/queue_seconds
+<B>Rapports d'exportation -</B> Ce paramètre, s'il est à 1 permettra d'accéder à un gestionnaire de l'exportation des rapports sur l'appel RAPPORTS écran. La valeur par défaut est 0. Pour le rapport invite l'exportation, l'ordre suivant est utilisé pour les exportations: <BR>call_date, phone_number, status, user, full_name, campaign_id/in-group, vendor_lead_code, source_id, list_id, gmt_offset_now, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, length_in_sec, user_group, alt_dial/queue_seconds
 
 
 
@@ -3042,7 +3043,7 @@ if ($SSoutbound_autodial_active > 0)
 - 8365 - Will seulement envoyer l'appel à un agent sur le même serveur que l'appel est en
 - 8366 - Occasions-1 pour la presse et campagnes de sondage
 - 8367 - Le premier à essayer d'envoyer l'appel à un agent sur le serveur local, il se penchera sur d'autres serveurs
-  - 8368 - DEFAULT � Will send the call to the next available agent no matter what server they are on
+  - 8368 - DEFAULT  Will send the call to the next available agent no matter what server they are on
 - 8369 - Occasions de Answering Machine de détection après que, même comportement que 8368
 - 8373 - Occasions de Answering Machine de détection après cette même comportement que 8366
 
@@ -6933,7 +6934,7 @@ if ($ADD==21)
 				$SQL_log = "$stmt|";
 				$SQL_log = ereg_replace(';','',$SQL_log);
 				$SQL_log = addslashes($SQL_log);
-				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='ADD', record_id='$campaign_id', event_code='ADMIN AJOUTER UNE CAMPAGNE', event_sql=\"$SQL_log\", event_notes='';";
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='ADD', record_id='$campaign_id', event_code='ADMIN AJOUTER UNE CAMPAGNE', event_sql=\"$SQL_log\", event_notes='';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -6988,7 +6989,7 @@ if ($ADD==20)
 			$SQL_log = "$stmt|";
 			$SQL_log = ereg_replace(';','',$SQL_log);
 			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='COPY', record_id='$campaign_id', event_code='ADMIN COPY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='COPY', record_id='$campaign_id', event_code='ADMIN COPY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 			}
@@ -7556,7 +7557,7 @@ if ($ADD==211111)
 			 }
 		 else
 			{
-			$stmt="INSERT INTO vicidial_user_groups(user_group,group_name,allowed_campaigns) values('$user_group','$group_name','-ALL-CAMPAGNES-');";
+			$stmt="INSERT INTO vicidial_user_groups(user_group,group_name,allowed_campaigns) values('$user_group','$group_name','-ALL-CAMPAIGNS-');";
 			$rslt=mysql_query($stmt, $link);
 
 			echo "<br><B>GROUPE D'UTILISATEURS AJOUTE: $user_group</B>\n";
@@ -7891,6 +7892,9 @@ if ($ADD==21111111111)
 					$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
 					$rslt=mysql_query($stmt, $link);
 
+					$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+					$rslt=mysql_query($stmtA, $link);
+
 					### LOG INSERTION Admin Log Table ###
 					$SQL_log = "$stmt|";
 					$SQL_log = ereg_replace(';','',$SQL_log);
@@ -8013,6 +8017,9 @@ if ($ADD==211111111111)
 
 			$stmt="INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_version) values('$server_id','$server_description','$server_ip','$active','$asterisk_version');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -8143,6 +8150,9 @@ if ($ADD==241111111111)
 
 			$stmt="INSERT INTO vicidial_server_carriers (carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active) values('$carrier_id','$carrier_name','$registration_string','$template_id','$account_entry','$protocol','$globals_string','$dialplan_entry','$server_ip','N');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -9128,7 +9138,7 @@ if ($ADD==41)
 			$SQL_log = "$stmt|$stmtB|";
 			$SQL_log = ereg_replace(';','',$SQL_log);
 			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE LISTES', event_sql=\"$SQL_log\", event_notes='';";
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE LISTES', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -9192,7 +9202,7 @@ if ($ADD==41)
 					$SQL_log = "$stmt|";
 					$SQL_log = ereg_replace(';','',$SQL_log);
 					$SQL_log = addslashes($SQL_log);
-					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
 					}
@@ -9201,7 +9211,7 @@ if ($ADD==41)
 				$SQL_log = "$stmtA|";
 				$SQL_log = ereg_replace(';','',$SQL_log);
 				$SQL_log = addslashes($SQL_log);
-				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
 				}
@@ -9382,7 +9392,7 @@ if ($ADD==44)
 			$SQL_log = "$stmt|$stmtB|";
 			$SQL_log = ereg_replace(';','',$SQL_log);
 			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE LISTES', event_sql=\"$SQL_log\", event_notes='';";
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN ACTIVE LISTES', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -9432,7 +9442,7 @@ if ($ADD==44)
 				$SQL_log = "$stmtA|";
 				$SQL_log = ereg_replace(';','',$SQL_log);
 				$SQL_log = addslashes($SQL_log);
-				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+				$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='MODIFY', record_id='$campaign_id', event_code='ADMIN MODIFY CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
 				if ($DB) {echo "|$stmt|\n";}
 				$rslt=mysql_query($stmt, $link);
 
@@ -9447,7 +9457,7 @@ if ($ADD==44)
 					$SQL_log = "$stmt|";
 					$SQL_log = ereg_replace(';','',$SQL_log);
 					$SQL_log = addslashes($SQL_log);
-					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
+					$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN LEAD HOPPER', event_sql=\"$SQL_log\", event_notes='';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $link);
 					}
@@ -11728,7 +11738,7 @@ if ($ADD==61)
 		$SQL_log = "$stmtA|";
 		$SQL_log = ereg_replace(';','',$SQL_log);
 		$SQL_log = addslashes($SQL_log);
-		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
+		$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='DELETE', record_id='$campaign_id', event_code='ADMIN DELETE CAMPAIGN', event_sql=\"$SQL_log\", event_notes='';";
 		if ($DB) {echo "|$stmt|\n";}
 		$rslt=mysql_query($stmt, $link);
 
@@ -11763,7 +11773,7 @@ if ($ADD==62)
 			$SQL_log = "$stmt|";
 			$SQL_log = ereg_replace(';','',$SQL_log);
 			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='LOGOUT', record_id='$campaign_id', event_code='ADMIN LOGOUT CAMPAIGN AGENTS', event_sql=\"$SQL_log\", event_notes='';";
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='LOGOUT', record_id='$campaign_id', event_code='ADMIN LOGOUT CAMPAIGN AGENTS', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -11806,7 +11816,7 @@ if ($ADD==63)
 			$SQL_log = "$stmt|";
 			$SQL_log = ereg_replace(';','',$SQL_log);
 			$SQL_log = addslashes($SQL_log);
-			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAGNES', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN JAM', event_sql=\"$SQL_log\", event_notes='';";
+			$stmt="INSERT INTO vicidial_admin_log set event_date='$SQLdate', user='$PHP_AUTH_USER', ip_address='$ip', event_section='CAMPAIGNS', event_type='RESET', record_id='$campaign_id', event_code='ADMIN RESET CAMPAIGN JAM', event_sql=\"$SQL_log\", event_notes='';";
 			if ($DB) {echo "|$stmt|\n";}
 			$rslt=mysql_query($stmt, $link);
 
@@ -12410,6 +12420,9 @@ if ($ADD==61111111111)
 		$stmt="DELETE from phones where extension='$extension' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
+		$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmtA, $link);
+
 		### LOG INSERTION Admin Log Table ###
 		$SQL_log = "$stmt|";
 		$SQL_log = ereg_replace(';','',$SQL_log);
@@ -12982,7 +12995,7 @@ if ($ADD==3)
 
 if ( ($LOGcampaign_detail < 1) and ($ADD==31) ) {$ADD=34;}	# send to Basic if not allowed
 
-if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAGNES",$LOGallowed_campaigns)) ) ) 
+if ( ($ADD==31) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ($ADD==31)
@@ -13768,7 +13781,7 @@ if ($ADD==31)
 	echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Cliquez ici pour voir les rappels réservés de cette campagne</a><BR><BR>\n";
 	if ($LOGuser_level >= 9)
 		{
-		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAGNES&stage=$campaign_id\">Cliquez ici pour voir Admin chages à cette campagne</FONT>\n";
+		echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAIGNS&stage=$campaign_id\">Cliquez ici pour voir Admin chages à cette campagne</FONT>\n";
 		}
 	echo "</b></center>\n";
 	}
@@ -14216,7 +14229,7 @@ if ($ADD==31)
 # ADD=34 modify campaign info in the system - Basic View
 ######################
 
-if ( ($ADD==34) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAGNES",$LOGallowed_campaigns)) ) ) 
+if ( ($ADD==34) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ($ADD==34)
@@ -14584,7 +14597,7 @@ if ($ADD==34)
 		echo "<a href=\"$PHP_SELF?ADD=81&campaign_id=$campaign_id\">Cliquez ici pour voir les rappels réservés de cette campagne</a><BR><BR>\n";
 		if ($LOGuser_level >= 9)
 			{
-			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAGNES&stage=$campaign_id\">Cliquez ici pour voir Admin chages à cette campagne</FONT>\n";
+			echo "<br><br><a href=\"$PHP_SELF?ADD=720000000000000&category=CAMPAIGNS&stage=$campaign_id\">Cliquez ici pour voir Admin chages à cette campagne</FONT>\n";
 			}
 
 		echo "</b></center>\n";
@@ -14637,7 +14650,7 @@ if ($ADD==34)
 ######################
 # ADD=31 or 34 and SUB=29 for list mixes
 ######################
-if ( ( ($ADD==34) or ($ADD==31) ) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAGNES",$LOGallowed_campaigns)) ) ) 
+if ( ( ($ADD==34) or ($ADD==31) ) and ( (!eregi("$campaign_id",$LOGallowed_campaigns)) and (!eregi("ALL-CAMPAIGNS",$LOGallowed_campaigns)) ) ) 
 	{$ADD=30;}	# send to not allowed screen if not in vicidial_user_groups allowed_campaigns list
 
 if ( ($ADD==34) or ($ADD==31) )
@@ -14842,6 +14855,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 		}
 	}
+	echo "</TD></TR></TABLE></center>\n";
 }
 
 
@@ -18771,7 +18785,7 @@ if ($ADD==1300)
 	$rslt=mysql_query($stmt, $link);
 	$dids_to_print = mysql_num_rows($rslt);
 
-	echo "<br>LISTE DES GROUPES ENTRANTS:\n";
+	echo "<br>ENTRANT DID LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<TR BGCOLOR=BLACK>";
 	echo "<TD><font size=1 color=white>#</TD>";
@@ -19864,9 +19878,6 @@ if ($ADD==999999)
 	}
 
 
-
-
-
 echo "</TD></TR></TABLE></center>\n";
 echo "</TD></TR></TABLE></center>\n";
 
@@ -20208,6 +20219,7 @@ if (isset($camp_lists))
 				$Dsql .= "'$Dstatuses[$o]',";
 				}
 			$Dsql = preg_replace("/,$/","",$Dsql);
+			if (strlen($Dsql) < 2) {$Dsql = "''";}
 
 			$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($all_gmtSQL) $fSQL";
 			#$DB=1;

@@ -428,14 +428,14 @@ else
 
 	if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-	echo "Invalide Utilisateurname/Mot de passe: |$user|$pass|\n";
+	echo "Недопустимо Пользовательname/Пароль: |$user|$pass|\n";
 	exit;
 	}
 	else
 	{
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Invalide server_ip: |$server_ip|  or  Invalide session_name: |$session_name|\n";
+		echo "Недопустимо server_ip: |$server_ip|  or  Недопустимо session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -448,7 +448,7 @@ else
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Invalide session_name: |$session_name|$server_ip|\n";
+			echo "Недопустимо session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -463,8 +463,8 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- VERSION: $version     BUILD: $build    USER: $user   server_ip: $server_ip-->\n";
-echo "<title>VICIDiaL Script De Requète à la Base de données";
+echo "<!-- ВЕРСИЯ: $version     СБОРКА: $build    USER: $user   server_ip: $server_ip-->\n";
+echo "<title>VICIDiaL Скрипт Запроса Базы Данных";
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -542,18 +542,18 @@ if ($ACTION == 'LogiNCamPaigns')
 				$rowx=mysql_fetch_row($rslt);
 				$last_agent_event = $rowx[0];
 				}
-			if ( (strlen($last_agent_event)<2) or (ereg('DÉCONNEXION',$last_agent_event)) )
+			if ( (strlen($last_agent_event)<2) or (ereg('ВЫХОД',$last_agent_event)) )
 				{$show_campaign_list=0;}
 			}
 		}
 
 	### CHECK TO SEE IF AGENT IS WITHIN THEIR SHIFT IF RESTRICTED, IF NOT, OUTPUT ERROR
-	if ( ( (ereg("DEBUT|ALL",$shift_enforcement)) and (!ereg("OFF",$VU_agent_shift_enforcement_override)) ) or (ereg("DEBUT|ALL",$VU_agent_shift_enforcement_override)) )
+	if ( ( (ereg("СТАРТ|ALL",$shift_enforcement)) and (!ereg("OFF",$VU_agent_shift_enforcement_override)) ) or (ereg("СТАРТ|ALL",$VU_agent_shift_enforcement_override)) )
 		{
 		$shift_ok=0;
 		if ( (strlen($LOGgroup_shiftsSQL) < 3) and ($VU_shift_override_flag < 1) )
 			{
-			$VDdisplayMESSAGE = "<B>ERREUR: Il n'y a pas de changements activée pour votre groupe d'utilisateurs</B>\n";
+			$VDdisplayMESSAGE = "<B>ОШИБКА: Есть сдвиги не включена для пользователя группы</B>\n";
 			$VDloginDISPLAY=1;
 			}
 		else
@@ -606,22 +606,22 @@ if ($ACTION == 'LogiNCamPaigns')
 
 			if ( ($shift_ok < 1) and ($VU_shift_override_flag < 1) )
 				{
-				$VDdisplayMESSAGE = "<B>ERREUR: Vous n'êtes pas autorisés à se connecter à l'extérieur de votre quart de travail</B>\n";
+				$VDdisplayMESSAGE = "<B>ОШИБКА: Вы не можете войти в вашу за переход</B>\n";
 				$VDloginDISPLAY=1;
 				}
 			}
 		if ($VDloginDISPLAY > 0)
 			{
 			$loginDATE = date("Ymd");
-			$VDdisplayMESSAGE.= "<BR><BR>MANAGER OVERRIDE:<BR>\n";
+			$VDdisplayMESSAGE.= "<BR><BR>МЕНЕДЖЕР Переопределить:<BR>\n";
 			$VDdisplayMESSAGE.= "<FORM ACTION=\"$PHP_SELF\" METHOD=POST>\n";
 			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=MGR_override VALUE=\"1\">\n";
 			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=relogin VALUE=\"YES\">\n";
 			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_login VALUE=\"$user\">\n";
 			$VDdisplayMESSAGE.= "<INPUT TYPE=HIDDEN NAME=VD_pass VALUE=\"$pass\">\n";
-			$VDdisplayMESSAGE.= "Manager Ouverture de Session: <INPUT TYPE=TEXT NAME=\"MGR_login$loginDATE\" SIZE=10 maxlength=20><br>\n";
-			$VDdisplayMESSAGE.= "Manager Mot de passe: <INPUT TYPE=PASSWORD NAME=\"MGR_pass$loginDATE\" SIZE=10 maxlength=20><br>\n";
-			$VDdisplayMESSAGE.= "<INPUT TYPE=Submit NAME=VALIDER VALUE=VALIDER></FORM><BR><BR><BR><BR>\n";
+			$VDdisplayMESSAGE.= "Manager Логин: <INPUT TYPE=TEXT NAME=\"MGR_login$loginDATE\" SIZE=10 maxlength=20><br>\n";
+			$VDdisplayMESSAGE.= "Manager Пароль: <INPUT TYPE=PASSWORD NAME=\"MGR_pass$loginDATE\" SIZE=10 maxlength=20><br>\n";
+			$VDdisplayMESSAGE.= "<INPUT TYPE=Submit NAME=SUBMIT VALUE=SUBMIT></FORM><BR><BR><BR><BR>\n";
 			echo "$VDdisplayMESSAGE";
 			exit;
 			}
@@ -649,7 +649,7 @@ if ($ACTION == 'LogiNCamPaigns')
 	else
 		{
 		echo "<select size=1 name=VD_campaign id=VD_campaign onFocus=\"login_allowable_campaigns()\">\n";
-		echo "<option value=\"\">-- Vous devez vous connecter pour timeclock LE PREMIER --</option>\n";
+		echo "<option value=\"\">-- Вы должны войти в систему TIMECLOCK ПЕРВЫЙ --</option>\n";
 		echo "</select>\n";
 		}
 	exit;
@@ -668,7 +668,7 @@ if ($ACTION == 'regCLOSER')
 	if ( (strlen($closer_choice)<1) || (strlen($user)<1) )
 	{
 	$channel_live=0;
-	echo "Selection De Groupe $closer_choice est invalide\n";
+	echo "Выбор Группы $closer_choice это неправильно\n";
 	exit;
 	}
 	else
@@ -743,7 +743,7 @@ if ($ACTION == 'regCLOSER')
 		}
 
 	}
-	echo "Closer In Selection De Groupe $closer_choice a été attribué à l'utilisateur $user\n";
+	echo "Closer In Выбор Группы $closer_choice был зарегистрован пользователем $user\n";
 }
 
 
@@ -760,8 +760,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1)  || (strlen($ext_context)<1) )
 	{
 	$channel_live=0;
-	echo "LISTE D'APPEL VIDE\n";
-	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
+	echo "ПУСТОЙ КОНТЕЙНЕР\n";
+	echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context это неправильно\n";
 	exit;
 	}
 	else
@@ -807,7 +807,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC NOMBRE\n";
+					echo "DNC НОМЕР\n";
 					exit;
 					}
 				$stmt="SELECT count(*) FROM vicidial_campaign_dnc where phone_number='$phone_number' and campaign_id='$campaign';";
@@ -818,7 +818,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] > 0)
 					{
-					echo "DNC NOMBRE\n";
+					echo "DNC НОМЕР\n";
 					exit;
 					}
 				}
@@ -847,7 +847,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 				
 				if ($row[0] < 1)
 					{
-					echo "NOMBRE NOT IN CAMPLISTS\n";
+					echo "НОМЕР NOT IN CAMPLISTS\n";
 					exit;
 					}
 				}
@@ -1136,7 +1136,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 					}
 
 				#############################################
-				##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+				##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 				$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00037',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1161,8 +1161,8 @@ if ($ACTION == 'manDiaLnextCaLL')
 					$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 					mysql_select_db("$queuemetrics_dbname", $linkB);
 
-					# UNPAUSEALL
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNPAUSEALL',serverid='$queuemetrics_log_id';";
+					# UNПАУЗПАALL
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNПАУЗПАALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00038',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1231,7 +1231,7 @@ if ($ACTION == 'manDiaLnextCaLL')
 		}
 		else
 		{
-		echo "LISTE D'APPEL VIDE\n";
+		echo "ПУСТОЙ КОНТЕЙНЕР\n";
 		}
 	}
 }
@@ -1249,8 +1249,8 @@ if ($ACTION == 'alt_phone_change')
 	if ( (strlen($stage)<1) || (strlen($called_count)<1) || (strlen($lead_id)<1)  || (strlen($phone_number)<1) )
 		{
 		$channel_live=0;
-		echo "TELEPHONE 2nd. NOMBRE STATUT NOT CHANGED\n";
-		echo "$phone_number $stage $lead_id or $called_count est invalide\n";
+		echo "АЛЬТ. ТЕЛЕФОН НОМЕР СТАТУС NOT CHANGED\n";
+		echo "$phone_number $stage $lead_id or $called_count это неправильно\n";
 		exit;
 		}
 	else
@@ -1260,7 +1260,7 @@ if ($ACTION == 'alt_phone_change')
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00041',$user,$server_ip,$session_name,$one_mysql_log);}
 
-		echo "TELEPHONE 2nd. NOMBRE STATUT CHANGED\n";
+		echo "АЛЬТ. ТЕЛЕФОН НОМЕР СТАТУС CHANGED\n";
 		}
 }
 
@@ -1275,7 +1275,7 @@ if ($ACTION == 'AlertControl')
 		{
 		$channel_live=0;
 		echo "AGENT ALERT SETTING NOT CHANGED\n";
-		echo "$stage est invalide\n";
+		echo "$stage это неправильно\n";
 		exit;
 		}
 	else
@@ -1306,7 +1306,7 @@ if ($ACTION == 'manDiaLskip')
 	{
 		$channel_live=0;
 		echo "LEAD NOT REVERTED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context это неправильно\n";
 		exit;
 	}
 	else
@@ -1336,8 +1336,8 @@ if ($ACTION == 'manDiaLonly')
 	if ( (strlen($conf_exten)<1) || (strlen($campaign)<1) || (strlen($ext_context)<1) || (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo " APPEL NOT PLACED\n";
-		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context est invalide\n";
+		echo " ВЫЗОВ NOT PLACED\n";
+		echo "Conf Exten $conf_exten or campaign $campaign or ext_context $ext_context это неправильно\n";
 		exit;
 	}
 	else
@@ -1436,7 +1436,7 @@ if ($ACTION == 'manDiaLonly')
 
 
 		#############################################
-		##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+		##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00048',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1461,8 +1461,8 @@ if ($ACTION == 'manDiaLonly')
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);
 
-			# UNPAUSEALL
-			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNPAUSEALL',serverid='$queuemetrics_log_id';";
+			# UNПАУЗПАALL
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='UNПАУЗПАALL',serverid='$queuemetrics_log_id';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00049',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -1500,7 +1500,7 @@ if ($ACTION == 'manDiaLlookCaLL')
 if (strlen($MDnextCID)<18)
 	{
 	echo "NO\n";
-	echo "MDnextCID $MDnextCID est invalide\n";
+	echo "MDnextCID $MDnextCID это неправильно\n";
 	exit;
 	}
 else
@@ -1567,8 +1567,8 @@ if ($stage == "start")
 		fwrite ($fp, "$NOW_TIME|VL_LOG_0|$uniqueid|$lead_id|$user|$list_id|$campaign|$start_epoch|$phone_number|$agent_log_id|\n");
 		fclose($fp);
 
-		echo "NOTATION NON ENTRÉE\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign est invalide\n";
+		echo "LOG НЕ ВВЕДЕН\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id or list_id: $list_id or phone_number: $phone_number or campaign: $campaign это неправильно\n";
 		exit;
 		}
 	else
@@ -1593,12 +1593,12 @@ if ($stage == "start")
 
 		if ($affected_rows > 0)
 			{
-			echo "VICIDiaL_LOG Inséré: $uniqueid|$channel|$NOW_TIME\n";
+			echo "VICIDiaL_LOG Введенный: $uniqueid|$channel|$NOW_TIME\n";
 			echo "$StarTtime\n";
 			}
 		else
 			{
-			echo "NOTATION NON ENTRÉE\n";
+			echo "LOG НЕ ВВЕДЕН\n";
 			}
 
 		$stmt = "UPDATE vicidial_auto_calls SET uniqueid='$uniqueid' where lead_id='$lead_id';";
@@ -1614,11 +1614,11 @@ if ($stage == "start")
 
 	#	if ($affected_rows > 0)
 	#		{
-	#		echo "CALL_LOG Inséré: $uniqueid|$channel|$NOW_TIME";
+	#		echo "CALL_LOG Введенный: $uniqueid|$channel|$NOW_TIME";
 	#		}
 	#	else
 	#		{
-	#		echo "NOTATION NON ENTRÉE\n";
+	#		echo "LOG НЕ ВВЕДЕН\n";
 	#		}
 		}
 	}
@@ -1647,8 +1647,8 @@ if ($stage == "end")
 		}
 	if ( (strlen($uniqueid)<1) or (strlen($lead_id)<1) )
 		{
-		echo "NOTATION NON ENTRÉE\n";
-		echo "uniqueid $uniqueid or lead_id: $lead_id est invalide\n";
+		echo "LOG НЕ ВВЕДЕН\n";
+		echo "uniqueid $uniqueid or lead_id: $lead_id это неправильно\n";
 		exit;
 		}
 	else
@@ -1740,7 +1740,7 @@ if ($stage == "end")
 			}
 
 		#############################################
-		##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+		##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00063',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2082,7 +2082,7 @@ if ($stage == "end")
 				{
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='ПАУЗПАALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00083',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2150,7 +2150,7 @@ if ($stage == "end")
 				{
 				if ($enable_queuemetrics_logging > 0)
 					{
-					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='PAUSEALL',serverid='$queuemetrics_log_id';";
+					$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='NONE',agent='Agent/$user',verb='ПАУЗПАALL',serverid='$queuemetrics_log_id';";
 					if ($DB) {echo "$stmt\n";}
 					$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00088',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -2207,12 +2207,12 @@ if ($stage == "end")
 
 					if ($affected_rows > 0)
 						{
-						echo "VICIDiaL_LOG Inséré: $uniqueid|$channel|$NOW_TIME\n";
+						echo "VICIDiaL_LOG Введенный: $uniqueid|$channel|$NOW_TIME\n";
 						echo "$StarTtime\n";
 						}
 					else
 						{
-						echo "NOTATION NON ENTRÉE\n";
+						echo "LOG НЕ ВВЕДЕН\n";
 						}
 					}
 				}
@@ -2230,7 +2230,7 @@ if ($stage == "end")
 				}
 			else
 				{
-				echo "NOTATION NON ENTRÉE\n\n";
+				echo "LOG НЕ ВВЕДЕН\n\n";
 				}
 			}
 		else
@@ -2418,7 +2418,7 @@ if ($stage == "end")
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00098',$user,$server_ip,$session_name,$one_mysql_log);}
 
-				echo "REC_ARRÊT|$rec_channels[$loop_count]|$filename[$loop_count]|";
+				echo "REC_STOP|$rec_channels[$loop_count]|$filename[$loop_count]|";
 				if (strlen($filename)>2)
 					{
 					$stmt="SELECT recording_id,start_epoch,vicidial_id,lead_id FROM recording_log where filename='$filename[$loop_count]'";
@@ -2462,7 +2462,7 @@ if ($stage == "end")
 						echo "$recording_id|$length_in_min|";
 
 			#			$fp = fopen ("./recording_debug_$NOW_DATE$txt", "a");
-			#			fwrite ($fp, "$NOW_TIME|ENREGISTREMENT_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
+			#			fwrite ($fp, "$NOW_TIME|ЗАПИСЬ_LOG|$filename[$loop_count]|$uniqueid|$lead_id|$user|$inOUT|$VLA_inOUT|$length_in_sec|$VDterm_reason|$VDvicidial_id|$VDvicidial_id|$vicidial_id|$start_epoch|$recording_id|$VDIDselect|\n");
 			#			fclose($fp);
 						}
 					else {echo "||";}
@@ -2515,8 +2515,8 @@ if ($ACTION == 'VDADREcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagne $campaign est invalide\n";
-	echo "lead_id $lead_id est invalide\n";
+	echo "Кампания $campaign это неправильно\n";
+	echo "lead_id $lead_id это неправильно\n";
 	exit;
 	}
 	else
@@ -2566,7 +2566,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 	{
 	$channel_live=0;
 	echo "0\n";
-	echo "Campagne $campaign est invalide\n";
+	echo "Кампания $campaign это неправильно\n";
 	exit;
 	}
 	else
@@ -2964,7 +2964,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 					}
 				}
 
-			### if web form is set then send sur to vicidial.php for override of WEB_FORM address
+			### if web form is set then send на to vicidial.php for override of WEB_FORM address
 			if ( (strlen($VDCL_group_web)>5) or (strlen($VDCL_group_name)>0) ) {echo "$VDCL_group_web|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|\n";}
 			else {echo "X|$VDCL_group_name|$VDCL_group_color|$VDCL_fronter_display|$VDADchannel_group|$VDCL_ingroup_script|$VDCL_get_call_launch|$VDCL_xferconf_a_dtmf|$VDCL_xferconf_a_number|$VDCL_xferconf_b_dtmf|$VDCL_xferconf_b_number|$VDCL_default_xfer_group|$VDCL_ingroup_recording_override|$VDCL_ingroup_rec_filename|$VDCL_default_group_alias|$VDCL_caller_id_number|$VDCL_group_web_vars|\n";}
 
@@ -3047,7 +3047,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00124',$user,$server_ip,$session_name,$one_mysql_log);}
 
-		### If APPELBK, change vicidial_callback record to INACTIVE
+		### If ВЫЗОВBK, change vicidial_callback record to INACTIVE
 		if (eregi("CALLBK|CBHOLD", $dispo))
 			{
 			$stmt="UPDATE vicidial_callbacks set status='INACTIVE' where lead_id='$lead_id' and status NOT IN('INACTIVE','DEAD','ARCHIVE');";
@@ -3081,7 +3081,7 @@ if ($ACTION == 'VDADcheckINCOMING')
 		else
 		{
 		echo "0\n";
-	#	echo "No calls in QUEUE for $user sur $server_ip\n";
+	#	echo "No calls in QUEUE for $user на $server_ip\n";
 		exit;
 		}
 	}
@@ -3099,7 +3099,7 @@ if ($ACTION == 'userLOGout')
 if ( (strlen($campaign)<1) || (strlen($conf_exten)<1) )
 	{
 	echo "NO\n";
-	echo "campaign $campaign or conf_exten $conf_exten est invalide\n";
+	echo "campaign $campaign or conf_exten $conf_exten это неправильно\n";
 	exit;
 	}
 else
@@ -3115,8 +3115,8 @@ else
 			$row=mysql_fetch_row($rslt);
 			$user_group =		trim("$row[0]");
 			}
-	##### Insert a DÉCONNEXION record into the user log
-	$stmt="INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$user','DÉCONNEXION','$campaign','$NOW_TIME','$StarTtime','$user_group');";
+	##### Insert a ВЫХОД record into the user log
+	$stmt="INSERT INTO vicidial_user_log (user,event,campaign_id,event_date,event_epoch,user_group) values('$user','ВЫХОД','$campaign','$NOW_TIME','$StarTtime','$user_group');";
 	if ($DB) {echo "$stmt\n";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00128',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3124,7 +3124,7 @@ else
 
 	if ($no_delete_sessions < 1)
 		{
-		##### Remove the reservation sur the vicidial_conferences meetme room
+		##### Remove the reservation на the vicidial_conferences meetme room
 		$stmt="UPDATE vicidial_conferences set extension='' where server_ip='$server_ip' and conf_exten='$conf_exten';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $link);
@@ -3211,7 +3211,7 @@ else
 		if ($vla_delete > 0) 
 			{
 			#############################################
-			##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+			##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 			$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00138',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3243,7 +3243,7 @@ else
 				$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 				mysql_select_db("$queuemetrics_dbname", $linkB);
 
-			#	$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSE',serverid='1';";
+			#	$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='ПАУЗПА',serverid='1';";
 			#	if ($DB) {echo "$stmt\n";}
 			#	
 			#	$rslt=mysql_query($stmt, $linkB);
@@ -3291,7 +3291,7 @@ if ($ACTION == 'updateDISPO')
 	$row='';   $rowx='';
 	if ( (strlen($dispo_choice)<1) || (strlen($lead_id)<1) )
 	{
-	echo "Dispo Choice $dispo or lead_id $lead_id est invalide\n";
+	echo "Dispo Choice $dispo or lead_id $lead_id это неправильно\n";
 	exit;
 	}
 	else
@@ -3407,7 +3407,7 @@ if ($ACTION == 'updateDISPO')
 		$agent_log_id = mysql_insert_id($link);
 		}
 
-	### APPELBACK ENTRY
+	### ВЫЗОВBACK ENTRY
 	if ( ($dispo_choice == 'CBHOLD') and (strlen($CallBackDatETimE)>10) )
 		{
 		$comments = eregi_replace('"','',$comments);
@@ -3450,7 +3450,7 @@ if ($ACTION == 'updateDISPO')
 		}
 
 	#############################################
-	##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+	##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 	$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00159',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3478,7 +3478,7 @@ if ($ACTION == 'updateDISPO')
 		if (strlen($stage) < 2) 
 			{$stage = $campaign;}
 
-		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$stage',agent='Agent/$user',verb='CALLSTATUS',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
+		$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='$MDnextCID',queue='$stage',agent='Agent/$user',verb='CALLСТАТУС',data1='$dispo_choice',serverid='$queuemetrics_log_id';";
 		if ($DB) {echo "$stmt\n";}
 		$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00160',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3487,7 +3487,7 @@ if ($ACTION == 'updateDISPO')
 		mysql_close($linkB);
 		}
 
-	echo 'Lead ' . $lead_id . ' a été changé en ' . $dispo_choice . " Statut\nNext agent_log_id:\n" . $agent_log_id . "\n";
+	echo 'Lead ' . $lead_id . ' был изменен на ' . $dispo_choice . " Статус\nNext agent_log_id:\n" . $agent_log_id . "\n";
 }
 
 ################################################################################
@@ -3502,7 +3502,7 @@ if ($ACTION == 'updateLEAD')
 	$DO_NOT_UPDATE_text='';
 	if ( (strlen($phone_number)<1) || (strlen($lead_id)<1) )
 	{
-	echo "phone_number $phone_number or lead_id $lead_id est invalide\n";
+	echo "phone_number $phone_number or lead_id $lead_id это неправильно\n";
 	exit;
 	}
 	else
@@ -3604,7 +3604,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	$row='';   $rowx='';
 	if ( (strlen($stage)<2) || (strlen($server_ip)<1) )
 	{
-	echo "stage $stage est invalide\n";
+	echo "stage $stage это неправильно\n";
 	exit;
 	}
 	else
@@ -3641,7 +3641,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 	if ($affected_rows > 0) 
 		{
 		#############################################
-		##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+		##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00167',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3664,7 +3664,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		if ($enable_queuemetrics_logging > 0)
 			{
 			if ( (ereg('READY',$stage)) or (ereg('CLOSER',$stage)) ) {$QMstatus='UNPAUSEALL';}
-			if (ereg('PAUSE',$stage)) {$QMstatus='PAUSEALL';}
+			if (ereg('ПАУЗПА',$stage)) {$QMstatus='ПАУЗПАALL';}
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);
 
@@ -3773,7 +3773,7 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 		$agent_log_id = mysql_insert_id($link);
 		}
 	}
-	echo 'Agent ' . $user . ' le statut actuel est ' . $stage . "\nNext agent_log_id:\n$agent_log_id\n";
+	echo 'Agent ' . $user . ' новый статус ' . $stage . "\nNext agent_log_id:\n$agent_log_id\n";
 }
 
 
@@ -3786,7 +3786,7 @@ if ($ACTION == 'UpdatEFavoritEs')
 	$channel_live=1;
 	if ( (strlen($favorites_list)<1) || (strlen($user)<1) || (strlen($exten)<1) )
 	{
-	echo "favorites list $favorites_list est invalide\n";
+	echo "favorites list $favorites_list это неправильно\n";
 	exit;
 	}
 	else
@@ -3819,12 +3819,12 @@ if ($ACTION == 'UpdatEFavoritEs')
 ################################################################################
 ### PauseCodeSubmit - Update vicidial_agent_log with pause code
 ################################################################################
-if ($ACTION == 'PauseCodeSubmit')
+if ($ACTION == 'ПаузаCodeSubmit')
 {
 	$row='';   $rowx='';
 	if ( (strlen($status)<1) || (strlen($agent_log_id)<1) )
 	{
-	echo "agent_log_id $agent_log_id or pause_code $status est invalide\n";
+	echo "agent_log_id $agent_log_id or pause_code $status это неправильно\n";
 	exit;
 	}
 	else
@@ -3837,7 +3837,7 @@ if ($ACTION == 'PauseCodeSubmit')
 	if ($affected_rows > 0) 
 		{
 		#############################################
-		##### DEBUT QUEUEMETRICS LOGGING LOOKUP #####
+		##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 		$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id,allow_sipsak_messages FROM system_settings;";
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00176',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3868,7 +3868,7 @@ if ($ACTION == 'PauseCodeSubmit')
 			$linkB=mysql_connect("$queuemetrics_server_ip", "$queuemetrics_login", "$queuemetrics_pass");
 			mysql_select_db("$queuemetrics_dbname", $linkB);
 
-			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='PAUSEREASON',serverid='$queuemetrics_log_id',data1='$status';";
+			$stmt = "INSERT INTO queue_log SET partition='P01',time_id='$StarTtime',call_id='NONE',queue='$campaign',agent='Agent/$user',verb='ПАУЗПАREASON',serverid='$queuemetrics_log_id',data1='$status';";
 			if ($DB) {echo "$stmt\n";}
 			$rslt=mysql_query($stmt, $linkB);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkB,$mel,$stmt,'00177',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3878,7 +3878,7 @@ if ($ACTION == 'PauseCodeSubmit')
 			}
 		}
 	}
-echo " Pause Code has been updated to $status for $agent_log_id\n";
+echo " Пауза Code has been updated to $status for $agent_log_id\n";
 }
 
 
@@ -3944,7 +3944,7 @@ if ($format=='debug')
 {
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-echo "\n<!-- durée d'exécution du script: $RUNtime secondes -->";
+echo "\n<!-- время выполнения скрипта: $RUNtime секунды -->";
 echo "\n</body>\n</html>\n";
 }
 	

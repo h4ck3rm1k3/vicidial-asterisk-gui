@@ -1644,11 +1644,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90308-0956 - Added server statistics
 # 90309-0059 - Changed logging to admin_server_log
 # 90310-2203 - Added export_reports option for call activity report data exports
+# 90320-0424 - Fixed several small bugs conf records group alias and permissions
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.0.5-172';
-$build = '90310-2203';
+$admin_version = '2.0.5-173';
+$build = '90320-0424';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2850,7 +2851,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_users-export_reports">
 <BR>
-<B>Informes de exportación -</B> Este ajuste, si se pone a 1 permitirá un gerente de exportación para acceder a la llamada de los informes sobre la INFORMES pantalla. El valor predeterminado es 0. Pide para el Informe de Exportación, para el siguiente campo se utiliza para las exportaciones: <BR>call_date,phone_number,status,user,full_name,campaign_id/in-group,vendor_lead_code,source_id,list_id,gmt_offset_now,phone_code,phone_number,title,first_name,middle_initial,last_name,address1,address2,address3,city,state,province,postal_code,country_code,gender,date_of_birth,alt_phone,email,security_phrase,comments,length_in_sec,user_group,alt_dial/queue_seconds
+<B>Informes de exportación -</B> Este ajuste, si se pone a 1 permitirá un gerente de exportación para acceder a la llamada de los informes sobre la INFORMES pantalla. El valor predeterminado es 0. Pide para el Informe de Exportación, para el siguiente campo se utiliza para las exportaciones: <BR>call_date, phone_number, status, user, full_name, campaign_id/in-group, vendor_lead_code, source_id, list_id, gmt_offset_now, phone_code, phone_number, title, first_name, middle_initial, last_name, address1, address2, address3, city, state, province, postal_code, country_code, gender, date_of_birth, alt_phone, email, security_phrase, comments, length_in_sec, user_group, alt_dial/queue_seconds
 
 
 
@@ -7891,6 +7892,9 @@ if ($ADD==21111111111)
 					$stmt="INSERT INTO phones (extension,dialplan_number,voicemail_id,phone_ip,computer_ip,server_ip,login,pass,status,active,phone_type,fullname,company,picture,protocol,local_gmt,outbound_cid) values('$extension','$dialplan_number','$voicemail_id','$phone_ip','$computer_ip','$server_ip','$login','$pass','$status','$active','$phone_type','$fullname','$company','$picture','$protocol','$local_gmt','$outbound_cid');";
 					$rslt=mysql_query($stmt, $link);
 
+					$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+					$rslt=mysql_query($stmtA, $link);
+
 					### LOG INSERTION Admin Log Table ###
 					$SQL_log = "$stmt|";
 					$SQL_log = ereg_replace(';','',$SQL_log);
@@ -8013,6 +8017,9 @@ if ($ADD==211111111111)
 
 			$stmt="INSERT INTO servers (server_id,server_description,server_ip,active,asterisk_version) values('$server_id','$server_description','$server_ip','$active','$asterisk_version');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -8143,6 +8150,9 @@ if ($ADD==241111111111)
 
 			$stmt="INSERT INTO vicidial_server_carriers (carrier_id,carrier_name,registration_string,template_id,account_entry,protocol,globals_string,dialplan_entry,server_ip,active) values('$carrier_id','$carrier_name','$registration_string','$template_id','$account_entry','$protocol','$globals_string','$dialplan_entry','$server_ip','N');";
 			$rslt=mysql_query($stmt, $link);
+
+			$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+			$rslt=mysql_query($stmtA, $link);
 
 			### LOG INSERTION Admin Log Table ###
 			$SQL_log = "$stmt|";
@@ -12410,6 +12420,9 @@ if ($ADD==61111111111)
 		$stmt="DELETE from phones where extension='$extension' and server_ip='$server_ip' limit 1;";
 		$rslt=mysql_query($stmt, $link);
 
+		$stmtA="UPDATE servers SET rebuild_conf_files='Y' where generate_vicidial_conf='Y' and active_asterisk_server='Y' and server_ip='$server_ip';";
+		$rslt=mysql_query($stmtA, $link);
+
 		### LOG INSERTION Admin Log Table ###
 		$SQL_log = "$stmt|";
 		$SQL_log = ereg_replace(';','',$SQL_log);
@@ -14842,6 +14855,7 @@ if ( ($ADD==34) or ($ADD==31) )
 
 		}
 	}
+	echo "</TD></TR></TABLE></center>\n";
 }
 
 
@@ -18771,7 +18785,7 @@ if ($ADD==1300)
 	$rslt=mysql_query($stmt, $link);
 	$dids_to_print = mysql_num_rows($rslt);
 
-	echo "<br>GRUPOS DE ENTRADA :\n";
+	echo "<br>Entrantes DID LISTINGS:\n";
 	echo "<center><TABLE width=$section_width cellspacing=0 cellpadding=1>\n";
 	echo "<TR BGCOLOR=BLACK>";
 	echo "<TD><font size=1 color=white>#</TD>";
@@ -19864,9 +19878,6 @@ if ($ADD==999999)
 	}
 
 
-
-
-
 echo "</TD></TR></TABLE></center>\n";
 echo "</TD></TR></TABLE></center>\n";
 
@@ -20208,6 +20219,7 @@ if (isset($camp_lists))
 				$Dsql .= "'$Dstatuses[$o]',";
 				}
 			$Dsql = preg_replace("/,$/","",$Dsql);
+			if (strlen($Dsql) < 2) {$Dsql = "''";}
 
 			$stmt="SELECT count(*) FROM vicidial_list where called_since_last_reset='N' and status IN($Dsql) and list_id IN($camp_lists) and ($all_gmtSQL) $fSQL";
 			#$DB=1;

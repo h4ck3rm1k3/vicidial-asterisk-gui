@@ -2,7 +2,7 @@
 # welcome_demo.php - VICIDIAL welcome Demo page
 # 
 # 
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: GPLv2
 #
 header ("Content-type: text/html; charset=utf-8");
 
@@ -47,6 +47,9 @@ echo "<font size=3><b> &nbsp; <a href=\"../agc_pl/vicidial.php?relogin=YES&VD_lo
 echo "</TD></TR>\n";
 echo "<TR><TD ALIGN=LEFT >";
 echo "<font size=3><b> &nbsp; <a href=\"../agc_sk/vicidial.php?relogin=YES&VD_login=6666&VD_campaign=TESTCAMP&phone_login=phone&phone_pass=phone&VD_pass=1234\"><IMG SRC=\"../agc/images/sk.gif\" border=0> Slovak Agent Login</a>";
+echo "</TD></TR>\n";
+echo "<TR><TD ALIGN=LEFT >";
+echo "<font size=3><b> &nbsp; <a href=\"../agc_ru/vicidial.php?relogin=YES&VD_login=6666&VD_campaign=TESTCAMP&phone_login=phone&phone_pass=phone&VD_pass=1234\"><IMG SRC=\"../agc/images/ru.gif\" border=0> Russian Agent Login</a>";
 echo "</TD></TR></TABLE>\n";
 
 echo "</TD><TD VALIGN=TOP>\n";

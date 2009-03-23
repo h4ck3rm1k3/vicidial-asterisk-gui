@@ -1637,7 +1637,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 
 	$row='';   $rowx='';
 	$channel_live=1;
-	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Κανάλι $channel δεν ισχύει or queryCID $queryCID δεν ισχύει or filename: $filename δεν ισχύει, $ACTION εντολή που δεν έγινε εισαγωγή\n";
@@ -1725,7 +1725,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	$channel_live=1;
 	$uniqueidSQL='';
 
-	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
+	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Κανάλι $channel δεν ισχύει or exten $exten δεν ισχύει or filename: $filename δεν ισχύει, $ACTION εντολή που δεν έγινε εισαγωγή\n";

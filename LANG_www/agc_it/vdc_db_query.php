@@ -82,6 +82,7 @@
 #  - $account - ('DEFAULT',...)
 #  - $agent_dialed_number - ('1','')
 #  - $agent_dialed_type - ('MANUAL_OVERRIDE','MANUAL_DIALNOW','MANUAL_PREVIEW',...)
+#  - $wrapup - ('WRAPUP','')
 #
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -190,12 +191,13 @@
 # 90304-1335 - Added support for group aliases and agent-specific variables for campaigns and in-groups
 # 90305-1041 - Added agent_dialed_number and type for user_call_log feature
 # 90307-1735 - Added Shift enforcement and manager override features
+# 90320-0306 - Fixed agent log bug when using wrapup time
 #
 
-$version = '2.0.5-103';
-$build = '90307-1735';
+$version = '2.0.5-104';
+$build = '90320-0306';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=193;
+$mysql_log_count=194;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -359,6 +361,10 @@ if (isset($_GET["agent_dialed_number"]))			{$agent_dialed_number=$_GET["agent_di
 	elseif (isset($_POST["agent_dialed_number"]))	{$agent_dialed_number=$_POST["agent_dialed_number"];}
 if (isset($_GET["agent_dialed_type"]))				{$agent_dialed_type=$_GET["agent_dialed_type"];}
 	elseif (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
+if (isset($_GET["wrapup"]))					{$wrapup=$_GET["wrapup"];}
+	elseif (isset($_POST["wrapup"]))		{$wrapup=$_POST["wrapup"];}
+
+
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -3726,6 +3732,23 @@ if ( ($ACTION == 'VDADpause') || ($ACTION == 'VDADready') )
 			}
 		
 		$agent_log = 'NEW_ID';
+		}
+
+	if ($wrapup == 'WRAPUP')
+		{
+		if ( (eregi("NULL",$dispo_epoch)) or ($dispo_epoch < 1000) )
+			{
+			$stmt="UPDATE vicidial_agent_log set dispo_epoch='$StarTtime', dispo_sec='0' where agent_log_id='$agent_log_id';";
+			}
+		else
+			{
+			$dispo_sec = ($StarTtime - $dispo_epoch);
+			$stmt="UPDATE vicidial_agent_log set dispo_sec='$dispo_sec' where agent_log_id='$agent_log_id';";
+			}
+
+			if ($format=='debug') {echo "\n<!-- $stmt -->";}
+		$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00194',$user,$server_ip,$session_name,$one_mysql_log);}
 		}
 
 	if ($agent_log == 'NEW_ID')

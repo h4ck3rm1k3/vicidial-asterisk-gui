@@ -225,7 +225,7 @@ $auth=$row[0];
 
   if( (strlen($user)<2) or (strlen($pass)<2) or ($auth==0))
 	{
-    echo "Nieprawidłowy NazwaUżytkownika/Hasło: |$user|$pass|\n";
+    echo "Недопустимо Пользовательname/Пароль: |$user|$pass|\n";
     exit;
 	}
   else
@@ -233,7 +233,7 @@ $auth=$row[0];
 
 	if( (strlen($server_ip)<6) or (!isset($server_ip)) or ( (strlen($session_name)<12) or (!isset($session_name)) ) )
 		{
-		echo "Nieprawidłowy server_ip: |$server_ip|  or  Nieprawidłowy session_name: |$session_name|\n";
+		echo "Недопустимо server_ip: |$server_ip|  or  Недопустимо session_name: |$session_name|\n";
 		exit;
 		}
 	else
@@ -246,7 +246,7 @@ $auth=$row[0];
 		$SNauth=$row[0];
 		  if($SNauth==0)
 			{
-			echo "Nieprawidłowy session_name: |$session_name|$server_ip|\n";
+			echo "Недопустимо session_name: |$session_name|$server_ip|\n";
 			exit;
 			}
 		  else
@@ -260,14 +260,14 @@ if ($format=='debug')
 {
 echo "<html>\n";
 echo "<head>\n";
-echo "<!-- WERSJA: $version     KOMPILACJA: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
-echo "<title>Wyślij do zarządzania: ";
+echo "<!-- ВЕРСИЯ: $version     СБОРКА: $build    ACTION: $ACTION   server_ip: $server_ip-->\n";
+echo "<title>Отослать Менеджеру: ";
 if ($ACTION=="Originate")		{echo "Originate";}
 if ($ACTION=="Redirect")		{echo "Redirect";}
 if ($ACTION=="RedirectName")	{echo "RedirectName";}
 if ($ACTION=="Hangup")			{echo "Hangup";}
 if ($ACTION=="Command")			{echo "Command";}
-if ($ACTION==99999)	{echo "POMOC";}
+if ($ACTION==99999)	{echo "ПОМОЩЬ";}
 echo "</title>\n";
 echo "</head>\n";
 echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0>\n";
@@ -284,7 +284,7 @@ if ($ACTION=="SysCIDOriginate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
+		echo "Exten $exten это неправильно or queryCID $queryCID это неправильно, Originate команда не введена\n";
 	}
 	else
 	{
@@ -292,7 +292,7 @@ if ($ACTION=="SysCIDOriginate")
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02004',$user,$server_ip,$session_name,$one_mysql_log);}
-	echo "Originate komenda wysłana do Exten $exten Kanał $channel na $server_ip\n";
+	echo "Originate посылать команду для Exten $exten Канал $channel на $server_ip\n";
 	}
 }
 
@@ -306,13 +306,13 @@ if ($ACTION=="OriginateName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "extenName $extenName musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nOriginateName Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "extenName $extenName должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nOriginateName Action не послано\n";
 	}
 	else
 	{
@@ -335,14 +335,14 @@ if ($ACTION=="OriginateNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "extenName $extenName musi być ustawiony\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nOriginateNameVmail Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "extenName $extenName должен быть установлен\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nOriginateNameVmail Action не послано\n";
 	}
 	else
 	{
@@ -379,7 +379,7 @@ if ($ACTION=="Originate")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($ext_context)<1) or (strlen($queryCID)<10) )
 	{
-		echo "Exten $exten nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
+		echo "Exten $exten это неправильно or queryCID $queryCID это неправильно, Originate команда не введена\n";
 	}
 	else
 	{
@@ -399,7 +399,7 @@ if ($ACTION=="Originate")
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02007',$user,$server_ip,$session_name,$one_mysql_log);}
-	echo "Originate komenda wysłana do Exten $exten Kanał $channel na $server_ip |$account|$variable|\n";
+	echo "Originate посылать команду для Exten $exten Канал $channel на $server_ip |$account|$variable|\n";
 
 	if ($agent_dialed_number > 0)
 		{
@@ -423,7 +423,7 @@ if ($ACTION=="HangupConfDial")
 	if ( (strlen($exten)<3) or (strlen($queryCID)<15) or (strlen($ext_context)<1) )
 	{
 		$channel_live=0;
-		echo "conference $exten nie jest prawidłowy or ext_context $ext_context or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wstawiona\n";
+		echo "conference $exten это неправильно or ext_context $ext_context or queryCID $queryCID это неправильно, Hangup команда не введена\n";
 	}
 	else
 	{
@@ -467,7 +467,7 @@ $rslt=mysql_query($stmt, $link);
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) )
 		{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Hangup komenda nie wstawiona\n";
+		echo "Канал $channel это неправильно or queryCID $queryCID это неправильно, Hangup команда не введена\n";
 		}
 	else
 		{
@@ -498,7 +498,7 @@ $rslt=mysql_query($stmt, $link);
 			$rowx=mysql_fetch_row($rslt);
 			if ($rowx[0]==0)
 				{
-				echo "Call $CalLCID $channel nie jest aktywna na $call_server_ip, Checking Live Kanał...\n";
+				echo "Call $CalLCID $channel это не активно на $call_server_ip, Checking Live Канал...\n";
 
 				$stmt="SELECT count(*) FROM live_channels where server_ip = '$call_server_ip' and channel='$channel' and extension LIKE \"%$exten\";";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
@@ -508,7 +508,7 @@ $rslt=mysql_query($stmt, $link);
 				if ($row[0]==0)
 					{
 					$channel_live=0;
-					echo "Kanał $channel nie jest aktywna na $call_server_ip, Hangup komenda nie wstawiona $rowx[0]\n$stmt\n";
+					echo "Канал $channel это не активно на $call_server_ip, Hangup команда не введена $rowx[0]\n$stmt\n";
 					}
 				else
 					{
@@ -526,7 +526,7 @@ $rslt=mysql_query($stmt, $link);
 			if ($row[0] > 0)
 				{
 				$channel_live=0;
-				echo "Kanał $channel in use by another agent na $call_server_ip, Hangup komenda nie wstawiona $rowx[0]\n$stmt\n";
+				echo "Канал $channel in use by another agent на $call_server_ip, Hangup команда не введена $rowx[0]\n$stmt\n";
 				if ($WeBRooTWritablE > 0)
 					{
 					$fp = fopen ("./vicidial_debug.txt", "a");
@@ -552,7 +552,7 @@ $rslt=mysql_query($stmt, $link);
 				if ($rowx[0] > 0)
 					{
 					#############################################
-					##### START QUEUEMETRICS LOGGING LOOKUP #####
+					##### СТАРТ QUEUEMETRICS LOGGING LOOKUP #####
 					$stmt = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
 					$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02014',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -656,7 +656,7 @@ $rslt=mysql_query($stmt, $link);
 				if ($format=='debug') {echo "\n<!-- $stmt -->";}
 			$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02020',$user,$server_ip,$session_name,$one_mysql_log);}
-			echo "Hangup komenda wysłana do Kanał $channel na $call_server_ip\n";
+			echo "Hangup посылать команду для Канал $channel на $call_server_ip\n";
 			}
 		}
 }
@@ -672,17 +672,17 @@ if ($ACTION=="RedirectVD")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($campaign)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($uniqueid)<2) or (strlen($lead_id)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "auto_dial_level $auto_dial_level musi być ustawiony\n";
-		echo "campaign $campaign musi być ustawiony\n";
-		echo "uniqueid $uniqueid musi być ustawiony\n";
-		echo "lead_id $lead_id musi być ustawiony\n";
-		echo "\nRedirectVD Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "auto_dial_level $auto_dial_level должен быть установлен\n";
+		echo "campaign $campaign должен быть установлен\n";
+		echo "uniqueid $uniqueid должен быть установлен\n";
+		echo "lead_id $lead_id должен быть установлен\n";
+		echo "\nRedirectVD Action не послано\n";
 	}
 	else
 	{
@@ -722,15 +722,15 @@ if ($ACTION=="RedirectToPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($extenName)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) or (strlen($parkedby)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "extenName $extenName musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "parkedby $parkedby musi być ustawiony\n";
-		echo "\nRedirectToPark Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "extenName $extenName должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "parkedby $parkedby должен быть установлен\n";
+		echo "\nRedirectToPark Action не послано\n";
 	}
 	else
 	{
@@ -748,13 +748,13 @@ if ($ACTION=="RedirectFromPark")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($exten)<1) or (strlen($ext_context)<1) or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirectFromPark Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirectFromPark Action не послано\n";
 	}
 	else
 	{
@@ -772,13 +772,13 @@ if ($ACTION=="RedirectName")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "extenName $extenName musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirectName Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "extenName $extenName должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirectName Action не послано\n";
 	}
 	else
 	{
@@ -801,14 +801,14 @@ if ($ACTION=="RedirectNameVmail")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($extenName)<1)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "extenName $extenName musi być ustawiony\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirectNameVmail Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "extenName $extenName должен быть установлен\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirectNameVmail Action не послано\n";
 	}
 	else
 	{
@@ -841,14 +841,14 @@ if ($ACTION=="RedirectXtraCXNeW")
 	{
 		$channel_liveX=0;
 		$channel_liveY=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "ExtraKanał $extrachannel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirect Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "ExtraКанал $extrachannel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirect Action не послано\n";
 		if (ereg("SECOND|FIRST|DEBUG",$filename))
 			{
 			if ($WeBRooTWritablE > 0)
@@ -928,8 +928,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			else
 				{
 				$channel_liveX=0;
-				echo "Cannot find empty vicidial_conference na $server_ip, Redirect komenda nie wstawiona\n|$stmt|";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie mogę znaleźć wolnej konferencji na $server_ip";}
+				echo "Cannot find empty vicidial_conference на $server_ip, Redirect команда не введена\n|$stmt|";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Не могу найти свободную конференцию на $server_ip";}
 				}
 			}
 
@@ -950,8 +950,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $call_server_ip";}
+				echo "Канал $channel это не активно на $call_server_ip, Redirect команда не введена\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -969,8 +969,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $server_ip";}
+				echo "Канал $channel это не активно на $server_ip, Redirect команда не введена\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -983,7 +983,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 			if ($rowx[0] < 1)
 			{
 				$channel_liveY=0;
-				echo "No Local agent to send call to, Redirect komenda nie wstawiona\n";
+				echo "No Local agent to send call to, Redirect команда не введена\n";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
@@ -1019,8 +1019,8 @@ if ($ACTION=="RedirectXtraCXNeW")
 				$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02044',$user,$server_ip,$session_name,$one_mysql_log);}
 
-				echo "RedirectXtraCX komenda wysłana do Kanał $channel na $call_server_ip and \nHungup $extrachannel na $server_ip\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel na $call_server_ip, Hungup $extrachannel na $server_ip";}
+				echo "RedirectXtraCX посылать команду для Канал $channel на $call_server_ip and \nHungup $extrachannel на $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel на $call_server_ip, Hungup $extrachannel на $server_ip";}
 			}
 		}
 		else
@@ -1029,7 +1029,7 @@ if ($ACTION=="RedirectXtraCXNeW")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel na $server_ip";}
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel на $server_ip";}
 		}
 
 	if (ereg("SECOND|FIRST|DEBUG",$filename))
@@ -1067,15 +1067,15 @@ if ($ACTION=="RedirectXtraNeW")
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
-			echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-			echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-			echo "ExtraKanał $extrachannel musi mieć więcej niż 2 znaki\n";
-			echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-			echo "exten $exten musi być ustawiony\n";
-			echo "ext_context $ext_context musi być ustawiony\n";
-			echo "ext_priority $ext_priority musi być ustawiony\n";
-			echo "session_id $session_id musi być ustawiony\n";
-			echo "\nRedirect Action nie wysłano\n";
+			echo "Одна из этих переменных это неправильно:\n";
+			echo "Канал $channel должно быть больше чем 2 символа\n";
+			echo "ExtraКанал $extrachannel должно быть больше чем 2 символа\n";
+			echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+			echo "exten $exten должен быть установлен\n";
+			echo "ext_context $ext_context должен быть установлен\n";
+			echo "ext_priority $ext_priority должен быть установлен\n";
+			echo "session_id $session_id должен быть установлен\n";
+			echo "\nRedirect Action не послано\n";
 			if (ereg("SECOND|FIRST|DEBUG",$filename))
 				{
 				if ($WeBRooTWritablE > 0)
@@ -1146,8 +1146,8 @@ if ($ACTION=="RedirectXtraNeW")
 			else
 				{
 				$channel_liveX=0;
-				echo "Cannot find empty vicidial_conference na $server_ip, Redirect komenda nie wstawiona\n|$stmt|";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie mogę znaleźć wolnej konferencji na $server_ip";}
+				echo "Cannot find empty vicidial_conference на $server_ip, Redirect команда не введена\n|$stmt|";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Не могу найти свободную конференцию на $server_ip";}
 				}
 			}
 
@@ -1168,8 +1168,8 @@ if ($ACTION=="RedirectXtraNeW")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $call_server_ip";}
+					echo "Канал $channel это не активно на $call_server_ip, Redirect команда не введена\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1187,8 +1187,8 @@ if ($ACTION=="RedirectXtraNeW")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $server_ip";}
+					echo "Канал $channel это не активно на $server_ip, Redirect команда не введена\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1200,8 +1200,8 @@ if ($ACTION=="RedirectXtraNeW")
 					$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02057',$user,$server_ip,$session_name,$one_mysql_log);}
 
-					echo "RedirectXtra komenda wysłana do Kanał $channel and \nExtraKanał $extrachannel\n to $exten na $server_ip\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten na $server_ip";}
+					echo "RedirectXtra посылать команду для Канал $channel and \nExtraКанал $extrachannel\n to $exten на $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten на $server_ip";}
 				}
 				else
 				{
@@ -1227,7 +1227,7 @@ if ($ACTION=="RedirectXtraNeW")
 					$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02059',$user,$server_ip,$session_name,$one_mysql_log);}
 
-					echo "RedirectXtra komenda wysłana do Kanał $channel na $call_server_ip and \nExtraKanał $extrachannel\n to $exten na $server_ip\n";
+					echo "RedirectXtra посылать команду для Канал $channel на $call_server_ip and \nExtraКанал $extrachannel\n to $exten на $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
@@ -1271,14 +1271,14 @@ if ($ACTION=="RedirectXtraCX")
 	{
 		$channel_liveX=0;
 		$channel_liveY=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "ExtraKanał $extrachannel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirect Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "ExtraКанал $extrachannel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirect Action не послано\n";
 		if (ereg("SECOND|FIRST|DEBUG",$filename))
 			{
 			if ($WeBRooTWritablE > 0)
@@ -1306,8 +1306,8 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveX=0;
-				echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $call_server_ip";}
+				echo "Канал $channel это не активно на $call_server_ip, Redirect команда не введена\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $call_server_ip";}
 			}	
 		}
 		$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1323,8 +1323,8 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0]==0)
 			{
 				$channel_liveY=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $server_ip";}
+				echo "Канал $channel это не активно на $server_ip, Redirect команда не введена\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $server_ip";}
 			}	
 		}
 		if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1336,7 +1336,7 @@ if ($ACTION=="RedirectXtraCX")
 			if ($rowx[0] < 1)
 			{
 				$channel_liveY=0;
-				echo "No Local agent to send call to, Redirect komenda nie wstawiona\n";
+				echo "No Local agent to send call to, Redirect команда не введена\n";
 				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "No Local agent to send call to";}
 			}	
 			else
@@ -1369,8 +1369,8 @@ if ($ACTION=="RedirectXtraCX")
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 
-				echo "RedirectXtraCX komenda wysłana do Kanał $channel na $call_server_ip and \nHungup $extrachannel na $server_ip\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel na $call_server_ip, Hungup $extrachannel na $server_ip";}
+				echo "RedirectXtraCX посылать команду для Канал $channel на $call_server_ip and \nHungup $extrachannel на $server_ip\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel на $call_server_ip, Hungup $extrachannel на $server_ip";}
 			}
 		}
 		else
@@ -1379,7 +1379,7 @@ if ($ACTION=="RedirectXtraCX")
 			{$ACTION="Redirect";   $server_ip = $call_server_ip;}
 			if ($channel_liveY==1)
 			{$ACTION="Redirect";   $channel=$extrachannel;}
-			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel na $server_ip";}
+			if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Changed to Redirect: $channel на $server_ip";}
 		}
 
 	if (ereg("SECOND|FIRST|DEBUG",$filename))
@@ -1411,14 +1411,14 @@ if ($ACTION=="RedirectXtra")
 		{
 			$channel_liveX=0;
 			$channel_liveY=0;
-			echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-			echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-			echo "ExtraKanał $extrachannel musi mieć więcej niż 2 znaki\n";
-			echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-			echo "exten $exten musi być ustawiony\n";
-			echo "ext_context $ext_context musi być ustawiony\n";
-			echo "ext_priority $ext_priority musi być ustawiony\n";
-			echo "\nRedirect Action nie wysłano\n";
+			echo "Одна из этих переменных это неправильно:\n";
+			echo "Канал $channel должно быть больше чем 2 символа\n";
+			echo "ExtraКанал $extrachannel должно быть больше чем 2 символа\n";
+			echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+			echo "exten $exten должен быть установлен\n";
+			echo "ext_context $ext_context должен быть установлен\n";
+			echo "ext_priority $ext_priority должен быть установлен\n";
+			echo "\nRedirect Action не послано\n";
 			if (ereg("SECOND|FIRST|DEBUG",$filename))
 				{
 				if ($WeBRooTWritablE > 0)
@@ -1447,8 +1447,8 @@ if ($ACTION=="RedirectXtra")
 				else
 				{
 				$channel_liveX=0;
-				echo "Nie mogę znaleźć wolnej konferencji na $server_ip, Redirect komenda nie wstawiona\n";
-				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Nie mogę znaleźć wolnej konferencji na $server_ip";}
+				echo "Не могу найти свободную конференцию на $server_ip, Redirect команда не введена\n";
+				if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "Не могу найти свободную конференцию на $server_ip";}
 				}
 			}
 
@@ -1467,8 +1467,8 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveX=0;
-					echo "Kanał $channel nie jest aktywna na $call_server_ip, Redirect komenda nie wstawiona\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $call_server_ip";}
+					echo "Канал $channel это не активно на $call_server_ip, Redirect команда не введена\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $call_server_ip";}
 				}	
 			}
 			$stmt="SELECT count(*) FROM live_channels where server_ip = '$server_ip' and channel='$extrachannel';";
@@ -1484,8 +1484,8 @@ if ($ACTION=="RedirectXtra")
 				if ($rowx[0]==0)
 				{
 					$channel_liveY=0;
-					echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel nie jest aktywna na $server_ip";}
+					echo "Канал $channel это не активно на $server_ip, Redirect команда не введена\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel это не активно на $server_ip";}
 				}	
 			}
 			if ( ($channel_liveX==1) && ($channel_liveY==1) )
@@ -1496,8 +1496,8 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra komenda wysłana do Kanał $channel and \nExtraKanał $extrachannel\n to $exten na $server_ip\n";
-					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten na $server_ip";}
+					echo "RedirectXtra посылать команду для Канал $channel and \nExtraКанал $extrachannel\n to $exten на $server_ip\n";
+					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel and $extrachannel to $exten на $server_ip";}
 				}
 				else
 				{
@@ -1521,7 +1521,7 @@ if ($ACTION=="RedirectXtra")
 						if ($format=='debug') {echo "\n<!-- $stmt -->";}
 					$rslt=mysql_query($stmt, $link);
 
-					echo "RedirectXtra komenda wysłana do Kanał $channel na $call_server_ip and \nExtraKanał $extrachannel\n to $exten na $server_ip\n";
+					echo "RedirectXtra посылать команду для Канал $channel на $call_server_ip and \nExtraКанал $extrachannel\n to $exten на $server_ip\n";
 					if (ereg("SECOND|FIRST|DEBUG",$filename)) {$DBout .= "$channel/$call_server_ip and $extrachannel/$server_ip to $exten";}
 				}
 			}
@@ -1552,7 +1552,7 @@ if ($ACTION=="RedirectXtra")
 
 if ($ACTION=="Redirect")
 {
-	### for manual dial VICIDIAL calls send the second attempt to transfer the call
+	### for manual dial VICIНАБОР НОМЕРА calls send the second attempt to transfer the call
 	if ($stage=="2NDXfeR")
 	{
 		$local_DEF = 'Local/';
@@ -1582,13 +1582,13 @@ if ($ACTION=="Redirect")
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15)  or (strlen($exten)<1)  or (strlen($ext_context)<1)  or (strlen($ext_priority)<1) )
 	{
 		$channel_live=0;
-		echo "Jedna z tych zmiennych nie jest prawidłowy:\n";
-		echo "Kanał $channel musi mieć więcej niż 2 znaki\n";
-		echo "queryCID $queryCID musi mieć więcje niż 14 znaków\n";
-		echo "exten $exten musi być ustawiony\n";
-		echo "ext_context $ext_context musi być ustawiony\n";
-		echo "ext_priority $ext_priority musi być ustawiony\n";
-		echo "\nRedirect Action nie wysłano\n";
+		echo "Одна из этих переменных это неправильно:\n";
+		echo "Канал $channel должно быть больше чем 2 символа\n";
+		echo "queryCID $queryCID должно быть больше чем 14 символов\n";
+		echo "exten $exten должен быть установлен\n";
+		echo "ext_context $ext_context должен быть установлен\n";
+		echo "ext_priority $ext_priority должен быть установлен\n";
+		echo "\nRedirect Action не послано\n";
 	}
 	else
 	{
@@ -1608,7 +1608,7 @@ if ($ACTION=="Redirect")
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, Redirect komenda nie wstawiona\n";
+				echo "Канал $channel это не активно на $server_ip, Redirect команда не введена\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -1618,7 +1618,7 @@ if ($ACTION=="Redirect")
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02064',$user,$server_ip,$session_name,$one_mysql_log);}
 
-		echo "Redirect komenda wysłana do Kanał $channel na $server_ip\n";
+		echo "Redirect посылать команду для Канал $channel на $server_ip\n";
 		}
 	}
 }
@@ -1640,7 +1640,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wstawiona\n";
+		echo "Канал $channel это неправильно or queryCID $queryCID это неправильно or filename: $filename это неправильно, $ACTION команда не введена\n";
 	}
 	else
 	{
@@ -1659,7 +1659,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 			if ($rowx[0]==0)
 			{
 				$channel_live=0;
-				echo "Kanał $channel nie jest aktywna na $server_ip, $ACTION komenda nie wstawiona\n";
+				echo "Канал $channel это не активно на $server_ip, $ACTION команда не введена\n";
 			}	
 		}
 		if ($channel_live==1)
@@ -1706,7 +1706,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 				}
 
 			}
-		echo "$ACTION komenda wysłana do Kanał $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
+		echo "$ACTION посылать команду для Канал $channel на $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n";
 		}
 	}
 }
@@ -1728,7 +1728,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
-		echo "Kanał $channel nie jest prawidłowy or exten $exten nie jest prawidłowy or filename: $filename nie jest prawidłowy, $ACTION komenda nie wstawiona\n";
+		echo "Канал $channel это неправильно or exten $exten это неправильно or filename: $filename это неправильно, $ACTION команда не введена\n";
 	}
 	else
 	{
@@ -1839,7 +1839,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02079',$user,$server_ip,$session_name,$one_mysql_log);}
 			}
 
-		# find and hang up all recordings going na in this conference # and extension = '$exten' 
+		# find and hang up all recordings going на in this conference # and extension = '$exten' 
 		$stmt="SELECT channel FROM live_sip_channels where server_ip = '$server_ip' and channel LIKE \"$channel%\" and channel LIKE \"%,1\";";
 			if ($format=='debug') {echo "\n<!-- $stmt -->";}
 		$rslt=mysql_query($stmt, $link);
@@ -1864,7 +1864,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 			}
 
 		}
-		echo "$ACTION komenda wysłana do Kanał $channel na $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n NAGRYWANIE BĘDZIE TRWAĆ MAKSYMALNIE 60 MINUT\n";
+		echo "$ACTION посылать команду для Канал $channel на $server_ip\nFilename: $filename\nRecorDing_ID: $recording_id\n ЗАПИСЬ МОЖЕТ ПРОДОЛЖАТЬСЯ ДО 60 МИН.\n";
 	}
 }
 
@@ -1879,7 +1879,7 @@ if ($ACTION=="VolumeControl")
 {
 	if ( (strlen($exten)<1) or (strlen($channel)<1) or (strlen($stage)<1) or (strlen($queryCID)<1) )
 	{
-		echo "Konferencja $exten, Stage $stage nie jest prawidłowy or queryCID $queryCID nie jest prawidłowy, Originate komenda nie wstawiona\n";
+		echo "Конференция $exten, Stage $stage это неправильно or queryCID $queryCID это неправильно, Originate команда не введена\n";
 	}
 	else
 	{
@@ -1896,7 +1896,7 @@ if ($ACTION=="VolumeControl")
 		if ($format=='debug') {echo "\n<!-- $stmt -->";}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'02082',$user,$server_ip,$session_name,$one_mysql_log);}
-	echo "Volume komenda wysłana do Konferencja $exten, Stage $stage Kanał $channel na $server_ip\n";
+	echo "Volume посылать команду для Конференция $exten, Stage $stage Канал $channel на $server_ip\n";
 	}
 }
 
@@ -1913,7 +1913,7 @@ if ($ACTION=="VolumeControl")
 
 $ENDtime = date("U");
 $RUNtime = ($ENDtime - $StarTtime);
-if ($format=='debug') {echo "\n<!-- czas działania skyptu: $RUNtime sekundy -->";}
+if ($format=='debug') {echo "\n<!-- время выполнения скрипта: $RUNtime секунды -->";}
 if ($format=='debug') {echo "\n</body>\n</html>\n";}
 	
 exit; 

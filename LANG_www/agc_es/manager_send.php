@@ -1637,7 +1637,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 
 	$row='';   $rowx='';
 	$channel_live=1;
-	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Canal $channel No es válido or queryCID $queryCID No es válido or filename: $filename No es válido, $ACTION comando no insertado\n";
@@ -1725,7 +1725,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	$channel_live=1;
 	$uniqueidSQL='';
 
-	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
+	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Canal $channel No es válido or exten $exten No es válido or filename: $filename No es válido, $ACTION comando no insertado\n";

@@ -1637,7 +1637,7 @@ if ( ($ACTION=="Monitor") || ($ACTION=="StopMonitor") )
 
 	$row='';   $rowx='';
 	$channel_live=1;
-	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<15) )
+	if ( (strlen($channel)<3) or (strlen($queryCID)<15) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Canaleta $channel é inválido or queryCID $queryCID é inválido or filename: $filename é inválido, $ACTION comando não introduzido\n";
@@ -1725,7 +1725,7 @@ if ( ($ACTION=="MonitorConf") || ($ACTION=="StopMonitorConf") )
 	$channel_live=1;
 	$uniqueidSQL='';
 
-	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<15) )
+	if ( (strlen($exten)<3) or (strlen($channel)<4) or (strlen($filename)<8) )
 	{
 		$channel_live=0;
 		echo "Canaleta $channel é inválido or exten $exten é inválido or filename: $filename é inválido, $ACTION comando não introduzido\n";

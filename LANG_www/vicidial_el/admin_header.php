@@ -911,13 +911,6 @@ if (strlen($reports_hh) > 1) {
 	<?}
 
 
-### Do nothing if admin has no permissions
-if($LOGast_admin_access < 1) 
-	{
-	$ADD='99999999999999999999';
-	echo "</TABLE></center>\n";
-	echo "Δεν έχετε το δικαίωμα για να δείτε την σελίδα. Παρακαλώ επιστρέψτε.\n";
-	}
 
 if (strlen($reports_hh) > 1) { 
 	?>

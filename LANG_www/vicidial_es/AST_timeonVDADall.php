@@ -959,6 +959,7 @@ if ($campaign_allow_inbound > 0)
 	$rslt=mysql_query($stmt, $link);
 	$ccamps_to_print = mysql_num_rows($rslt);
 	$c=0;
+	$closer_campaignsSQL='';
 	while ($ccamps_to_print > $c)
 		{
 		$row=mysql_fetch_row($rslt);
