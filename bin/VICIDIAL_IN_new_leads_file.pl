@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# VICIDIAL_IN_new_leads_file.pl version 2.0.5   *DBI-version*
+# VICIDIAL_IN_new_leads_file.pl version 2.2.0   *DBI-version*
 #
 # DESCRIPTION:
 # script lets you insert leads into the vicidial_list table from a TAB-delimited
@@ -8,7 +8,7 @@
 #
 # It is recommended that you run this program on the local Asterisk machine
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 #
 # CHANGES
@@ -31,6 +31,7 @@
 # 80730-1607 - Added minicsv format
 # 80812-1204 - Added FTP grab options and summary email options
 # 80829-2301 - Added multi-alt-phone entry insertion capability
+# 90324-1038 - Added minicsv02 format
 #
 
 $secX = time();
@@ -140,6 +141,9 @@ if (length($ARGV[0])>1)
 		print "minicsv:\n";
 		print "address1,city,name,phone_number,state,postal_code\n";
 		print "\"105 Fifth St\",\"Steinhatchee\",\"Frank Smith\",\"3525556601\",\"FL\",\"32359\"\n\n";
+		print "minicsv02:\n";
+		print "name,address1,city,state,postal_code,phone_number\n";
+		print "\"Adam Smith\",\"123 Fourth St\",\"Englishtown\",\"NS\",\"B0C1H0\",\"902-555-1212\"\n\n";
 
 		exit;
 		}
@@ -440,10 +444,47 @@ foreach(@FILES)
 				$number =~ s/\"//gi;
 			@m = split(/\|/, $number);
 
+		$format_set=0;
 
+		# This is the format for the minicsv02 lead files
+		# name,address1,city,state,postal_code,phone_number
+		# "Adam Smith","123 Fourth St","Englishtown","NS","B0C1H0","902-555-1212"
+			if ( ($format =~ /minicsv02/) && ($format_set < 1) )
+				{
+				@name=@MT;
+				$vendor_lead_code =		'';
+				$source_code =			'';
+				$list_id =				'995';
+				$phone_code =			'1';
+				$phone_number =			$m[5];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+					$USarea = 			substr($phone_number, 0, 3);
+				$title =				'';
+				$full_name =			$m[0];		@name = split(/ /, $full_name);
+				$first_name =			$name[0];		chomp($first_name);
+				$last_name =			"$name[1] $name[2]";		chomp($first_name);
+				$middle_initial =		'';
+				$address1 =				$m[1];		chomp($address1);
+				$address2 =				'';
+				$address3 =				'';
+				$city =					$m[2];		chomp($city);
+				$state =				$m[3];		chomp($state);
+				$province =				'';
+				$postal_code =			$m[4];		chomp($postal_code);
+				$country =				'USA';
+				$gender =				'U';
+				$date_of_birth =		'0000-00-00';
+				$alt_phone =			'';
+				$email =				'';
+				$security_phrase =		'';
+				$comments =				'';
+				$called_count =			0;
+				$status =				'NEW';
+
+				$format_set++;
+				}
 		# This is the format for the minicsv lead files
 		#"105 Fifth St","Steinhatchee","Frank Smith","3525556601","FL","32359"
-			if ($format =~ /minicsv/)
+			if ( ($format =~ /minicsv/) && ($format_set < 1) )
 				{
 				@name=@MT;
 				$vendor_lead_code =		'';
@@ -473,10 +514,12 @@ foreach(@FILES)
 				$comments =				'';
 				$called_count =			0;
 				$status =				'NEW';
+
+				$format_set++;
 				}
 		# This is the format for the standard lead files
 		#3857822|31022|105|01144|1625551212|MRS|B||BURTON|249 MUNDON ROAD|MALDON|ESSEX||||CM9 6PW|UK||||||COMMENTS
-			else
+			if ($format_set < 1)
 				{
 				$vendor_lead_code =		$m[0];		chomp($vendor_lead_code);
 				$source_code =			$m[1];		chomp($source_code); $source_id = $source_code;

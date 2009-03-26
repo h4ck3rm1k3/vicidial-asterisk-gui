@@ -391,11 +391,12 @@ foreach(@FILES)
 				$number =~ s/,/\|/gi;
 			@m = split(/\|/, $number);
 
+	$format_set=0;
 
 	# This is the format for the minicsv lead files
 	# business,contact,phone_number,address1,city,state,postal_code
 	# "CHURCH","Bob Smith","3525556601","105 Fifth St","Steinhatchee","FL","32359"
-			if ($format =~ /minicsv/)
+			if ( ($format =~ /minicsv/) && ($format_set < 1) )
 				{
 				$employees =			'1';
 				$ticker_symbol =		'';
@@ -418,13 +419,15 @@ foreach(@FILES)
 				$emailoptout =			'0';
 				$notify_owner =			'0';
 				$country =				'USA';
+
+				$format_set++;
 				}
 
 	# This is the format for the vicidialalt(VICIDIAL alternate) lead files
 	# employees,ticker_symbol,web1,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website,emailoptout,notify_owner
 	# 4,C03IMM001,12345,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com,1,0
 	# sic_code is left blank because it will be used by vicidial to put the last call dispo status in
-			if ($format =~ /vicidialalt/)
+			if ( ($format =~ /vicidialalt/) && ($format_set < 1) )
 				{
 				$employees =			$m[0];		chomp($employees);		$employees =~ s/\D//gi;
 				$ticker_symbol =		$m[1];		chomp($ticker_symbol);
@@ -451,12 +454,14 @@ foreach(@FILES)
 				$notify_owner =			$m[18];		chomp($notify_owner);	$notify_owner =~ s/\D//gi;
 					if (length($notify_owner)<1) {$notify_owner="0";}
 				$country =				'USA';
+
+				$format_set++;
 				}
 
 	# This is the format for the standard lead files
 	# employees,ticker_symbol,sic_code,revenue,account_name,address,po_box,city,state,post_code,phone_number,ownership,fax,email,other_phone,other_email,website
 	# 4,C03IMM001,39207955,2,ST MARK CHURCH,1710 W COLLEGE AVE,,CHICAGO,IL,61555,3095551111,PAUL SMITH,3095551212,TEST@VERIZON.NET,7775553333,test@1034.com,bigsite.com
-			if ($format =~ /standard/)
+			if ( ($format =~ /standard/) || ($format_set < 1) )
 				{
 				$employees =			$m[0];		chomp($employees);		$employees =~ s/\D//gi;
 				$ticker_symbol =		$m[1];		chomp($ticker_symbol);
@@ -480,6 +485,8 @@ foreach(@FILES)
 				$emailoptout =			'0';
 				$notify_owner =			'0';
 				$country =				'USA';
+
+				$format_set++;
 				}
 
 			if ($DBX) {print "$a|$phone_number|$account_name|$website\n";}

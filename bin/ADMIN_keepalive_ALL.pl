@@ -15,6 +15,7 @@
 # 80526-1350 - Added option 9 for timeclock auto-logout
 # 90211-1236 - Added auto-generation of conf files functions
 # 90213-0625 - Separated the reloading of Asterisk into 4 separate steps
+# 90325-2239 - Rewrote sending of reload commands to Asterisk
 #
 
 $DB=0; # Debug flag
@@ -506,11 +507,8 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	{
 	if ($DB) {print "generating new auto-gen conf files\n";}
 
-	if (-e "/root/asterisk_command_reload_iax2")
-		{
-		$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
-		$affected_rows = $dbhA->do($stmtA);
-		}
+	$stmtA="UPDATE servers SET rebuild_conf_files='N' where server_ip='$server_ip';";
+	$affected_rows = $dbhA->do($stmtA);
 
 	### format the new server_ip dialstring for example to use with extensions.conf
 	$S='*';
@@ -883,34 +881,27 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 	if ($DB) {print "reloading asterisk\n";}
 	if ($asterisk_version =~ /^1.2/)
 		{
-		`echo iax2\ reload > /root/asterisk_command_reload_iax2`;
-		`echo sip\ reload > /root/asterisk_command_reload_sip`;
-		`echo extensions\ reload > /root/asterisk_command_reload_extensions`;
-		`echo reload\ app_voicemail.so > /root/asterisk_command_reload_voicemail`;
+		`screen -XS asterisk eval 'stuff "sip reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "iax2 reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "extensions reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "reload app_voicemail.so\015"'`;
+		sleep(1);
 		}
 	else
 		{
-		`echo iax2\ reload > /root/asterisk_command_reload_iax2`;
-		`echo sip\ reload > /root/asterisk_command_reload_sip`;
-		`echo dialplan\ reload > /root/asterisk_command_reload_extensions`;
-		`echo reload\ app_voicemail.so > /root/asterisk_command_reload_voicemail`;
+		`screen -XS asterisk eval 'stuff "sip reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "iax2 reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "dialplan reload\015"'`;
+		sleep(1);
+		`screen -XS asterisk eval 'stuff "module reload app_voicemail.so\015"'`;
+		sleep(1);
 		}
-	`screen -XS asterisk readbuf /root/asterisk_command_reload_iax2`;
-	sleep(1);
-	`screen -XS asterisk paste .`;
-	sleep(3);
-	`screen -XS asterisk readbuf /root/asterisk_command_reload_sip`;
-	sleep(1);
-	`screen -XS asterisk paste .`;
-	sleep(3);
-	`screen -XS asterisk readbuf /root/asterisk_command_reload_extensions`;
-	sleep(1);
-	`screen -XS asterisk paste .`;
-	sleep(3);
-	`screen -XS asterisk readbuf /root/asterisk_command_reload_voicemail`;
-	sleep(1);
-	`screen -XS asterisk paste .`;
-	sleep(10);
+
 	}
 
 

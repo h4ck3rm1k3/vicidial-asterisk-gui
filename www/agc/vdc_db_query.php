@@ -192,12 +192,14 @@
 # 90305-1041 - Added agent_dialed_number and type for user_call_log feature
 # 90307-1735 - Added Shift enforcement and manager override features
 # 90320-0306 - Fixed agent log bug when using wrapup time
+# 90323-2013 - Added function to put phone numbers in the DNC lists if they were set to status type dnc=Y
+# 90324-1316 - Added functions to log calls to Vtiger accounts and update status to siccode
 #
 
-$version = '2.0.5-104';
-$build = '90320-0306';
+$version = '2.2.0-106';
+$build = '90324-1316';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=194;
+$mysql_log_count=210;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -3336,7 +3338,41 @@ if ($ACTION == 'updateDISPO')
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00145',$user,$server_ip,$session_name,$one_mysql_log);}
 		}
 
-	if ( ($use_internal_dnc=='Y') and ($dispo_choice=='DNC') )
+	### find all DNC-type statuses in the system
+	if ( ($use_internal_dnc=='Y') or ($use_campaign_dnc=='Y') )
+		{
+		$DNC_string_check = '|';
+		$stmt = "SELECT status FROM vicidial_statuses where dnc='Y';";
+		$rslt=mysql_query($stmt, $link);
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00195',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($DB) {echo "$stmt\n";}
+		$dncvs_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $dncvs_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$DNC_string_check .= "$row[0]|";
+			$i++;
+			}
+
+		$stmt = "SELECT status FROM vicidial_campaign_statuses where dnc='Y';";
+		$rslt=mysql_query($stmt, $link);
+	if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00196',$user,$server_ip,$session_name,$one_mysql_log);}
+		if ($DB) {echo "$stmt\n";}
+		$dncvcs_ct = mysql_num_rows($rslt);
+		$i=0;
+		while ($i < $dncvcs_ct)
+			{
+			$row=mysql_fetch_row($rslt);
+			$DNC_string_check .= "$row[0]";
+			$i++;
+			}
+
+	#	echo "$DNC_string_check";
+		}
+
+	$insert_into_dnc=0;
+	if ( ($use_internal_dnc=='Y') and (eregi("\|$dispo_choice\|", $DNC_string_check) ) )
 		{
 		$stmt = "select phone_number from vicidial_list where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
@@ -3347,8 +3383,9 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00147',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
+		$insert_into_dnc++;
 		}
-	if ( ($use_campaign_dnc=='Y') and ($dispo_choice=='DNC') )
+	if ( ($use_campaign_dnc=='Y') and (eregi("\|$dispo_choice\|", $DNC_string_check) ) )
 		{
 		$stmt = "select phone_number from vicidial_list where lead_id='$lead_id';";
 		if ($DB) {echo "$stmt\n";}
@@ -3359,6 +3396,7 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00149',$user,$server_ip,$session_name,$one_mysql_log);}
 		if ($DB) {echo "$stmt\n";}
+		$insert_into_dnc++;
 		}
 	}
 
@@ -3448,6 +3486,315 @@ if ($ACTION == 'updateDISPO')
 		$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00158',$user,$server_ip,$session_name,$one_mysql_log);}
 		}
+
+	####### START Vtiger Call Logging #######
+	$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+	$rslt=mysql_query($stmt, $link);
+		if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00197',$user,$server_ip,$session_name,$one_mysql_log);}
+	$ss_conf_ct = mysql_num_rows($rslt);
+	if ($ss_conf_ct > 0)
+		{
+		$row=mysql_fetch_row($rslt);
+		$enable_vtiger_integration =	$row[0];
+		$vtiger_server_ip	=			$row[1];
+		$vtiger_dbname =				$row[2];
+		$vtiger_login =					$row[3];
+		$vtiger_pass =					$row[4];
+		$vtiger_url =					$row[5];
+		}
+
+	if ($enable_vtiger_integration > 0)
+		{
+		$stmt = "SELECT vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_search_dead,vtiger_status_call FROM vicidial_campaigns where campaign_id='$campaign';";
+		$rslt=mysql_query($stmt, $link);
+			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00198',$user,$server_ip,$session_name,$one_mysql_log);}
+		$vtc_conf_ct = mysql_num_rows($rslt);
+		if ($vtc_conf_ct > 0)
+			{
+			$row=mysql_fetch_row($rslt);
+			$vtiger_search_category =		$row[0];
+			$vtiger_create_call_record =	$row[1];
+			$vtiger_create_lead_record =	$row[2];
+			$vtiger_search_dead =			$row[3];
+			$vtiger_status_call =			$row[4];
+			}
+		if ( (ereg('ACCTID',$vtiger_search_category)) or (ereg('ACCOUNT',$vtiger_search_category)) )
+			{
+			### connect to your vtiger database
+			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+			mysql_select_db("$vtiger_dbname", $linkV);
+
+			$stmt = "SELECT vendor_lead_code FROM vicidial_list where lead_id='$lead_id';";
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00210',$user,$server_ip,$session_name,$one_mysql_log);}
+			$vlc_ct = mysql_num_rows($rslt);
+			if ($vlc_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$vendor_id =		$row[0];
+				}
+
+			# make sure the ID is present in Vtiger database as an account
+			$stmt="SELECT count(*) from vtiger_account where accountid='$vendor_id';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $linkV);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00199',$user,$server_ip,$session_name,$one_mysql_log);}
+			$row=mysql_fetch_row($rslt);
+			$VIDcount = $row[0];
+			if ($VIDcount > 0)
+				{
+				### create a call record in vtiger linked to the account
+				if (ereg('DISPO',$vtiger_create_call_record))
+					{
+					$TODAY = date("Y-m-d");
+					$HHMMnow = date("H:i");
+					$minute_old = mktime(date("H"), date("i")+5, date("s"), date("m"), date("d"),  date("Y"));
+					$HHMMend = date("H:i",$minute_old);
+
+					#Get logged in user ID
+					$stmt="SELECT id from vtiger_users where user_name='$user';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00200',$user,$server_ip,$session_name,$one_mysql_log);}
+					$row=mysql_fetch_row($rslt);
+					$user_id = $row[0];
+					
+					# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+					$stmt="SELECT id from vtiger_crmentity_seq ;";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00201',$user,$server_ip,$session_name,$one_mysql_log);}
+					$row=mysql_fetch_row($rslt);
+					$activityid = ($row[0] + 1);
+
+					# Increase next aviable crmid with 1 so next record gets proper id
+					$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00202',$user,$server_ip,$session_name,$one_mysql_log);}
+					
+					#Insert values into vtiger_salesmanactivityrel
+					$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00203',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+					
+					#Insert values into vtiger_seactivityrel
+					$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00204',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+					
+					#Insert values into vtiger_crmentity
+					$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00205',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+
+					#Insert values into vtiger_activity
+					$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $vendor_id status $dispo_choice',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00206',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+					}
+				### update the status of the record in vtiger
+				if (ereg('Y',$vtiger_status_call))
+					{
+					#Get logged in user ID
+					$stmt="SELECT id from vtiger_users where user_name='$user';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00207',$user,$server_ip,$session_name,$one_mysql_log);}
+					$row=mysql_fetch_row($rslt);
+					$user_id = $row[0];
+
+					#Update vtiger_crmentity
+					$stmt = "UPDATE vtiger_crmentity SET modifiedby='$user_id', modifiedtime='$NOW_TIME' where crmid='$vendor_id';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00208',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+
+					if ($insert_into_dnc > 0) {$emailoptoutSQL = ", emailoptout='1'";}
+					#Update vtiger_account   dnc=emailoptout
+					$stmt = "UPDATE vtiger_account SET siccode='$dispo_choice' $emailoptoutSQL where accountid='$vendor_id';";
+					if ($DB) {echo "|$stmt|\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00209',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "|$leadid|\n";}
+
+
+					### check and see if the custom date fields exist, if they do then update them if necessary
+					# Date of Last Attempt, Date of Last Non-Contact, Date of Last Contact, Date of Last Sale
+
+					# first find the sale statuses that are in the system
+					$SALE_string_check = '|';
+					$stmt = "SELECT status FROM vicidial_statuses where sale='Y';";
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00211',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$salevs_ct = mysql_num_rows($rslt);
+					$i=0;
+					while ($i < $salevs_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$SALE_string_check .= "$row[0]|";
+						$i++;
+						}
+					$stmt = "SELECT status FROM vicidial_campaign_statuses where sale='Y';";
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00212',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$salevcs_ct = mysql_num_rows($rslt);
+					$i=0;
+					while ($i < $salevcs_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$SALE_string_check .= "$row[0]";
+						$i++;
+						}
+
+					# second find the customer contact statuses that are in the system
+					$CC_string_check = '|';
+					$stmt = "SELECT status FROM vicidial_statuses where customer_contact='Y';";
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00213',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$cc_vs_ct = mysql_num_rows($rslt);
+					$i=0;
+					while ($i < $cc_vs_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$CC_string_check .= "$row[0]|";
+						$i++;
+						}
+					$stmt = "SELECT status FROM vicidial_campaign_statuses where customer_contact='Y';";
+					$rslt=mysql_query($stmt, $link);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00214',$user,$server_ip,$session_name,$one_mysql_log);}
+					if ($DB) {echo "$stmt\n";}
+					$cc_vcs_ct = mysql_num_rows($rslt);
+					$i=0;
+					while ($i < $cc_vcs_ct)
+						{
+						$row=mysql_fetch_row($rslt);
+						$CC_string_check .= "$row[0]";
+						$i++;
+						}
+
+					# third calculate what custom date fields need their date updated
+					$VT_last_noncontact_update=0;	$VT_last_noncontact_ct=0;
+					$VT_last_contact_update=0;		$VT_last_contact_ct=0;
+					$VT_last_sale_update=0;			$VT_last_sale_ct=0;
+					if (eregi("\|$dispo_choice\|", $SALE_string_check) )
+						{$VT_last_sale_update++;}
+					if (eregi("\|$dispo_choice\|", $CC_string_check) )
+						{$VT_last_contact_update++;}
+					else
+						{$VT_last_noncontact_update++;}
+
+					# fourth see if the vtiger database has the custom date fields in it
+					$stmt="SELECT count(*) from vtiger_field where fieldlabel='Date of Last Attempt';";
+					if ($DB) {echo "$stmt\n";}
+					$rslt=mysql_query($stmt, $linkV);
+						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00215',$user,$server_ip,$session_name,$one_mysql_log);}
+					$row=mysql_fetch_row($rslt);
+					$VT_last_attempt_ct = $row[0];
+
+					if ($VT_last_noncontact_update > 0)
+						{
+						$stmt="SELECT count(*) from vtiger_field where fieldlabel='Date of Last Non-Contact';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00216',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_noncontact_ct = $row[0];
+						}
+					if ($VT_last_contact_update > 0)
+						{
+						$stmt="SELECT count(*) from vtiger_field where fieldlabel='Date of Last Contact';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00217',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_contact_ct = $row[0];
+						}
+					if ($VT_last_sale_update > 0)
+						{
+						$stmt="SELECT count(*) from vtiger_field where fieldlabel='Date of Last Sale';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00218',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_sale_ct = $row[0];
+						}
+
+					# fifth find the fieldnames if they exist and update the dates
+					if ($VT_last_attempt_ct > 0)
+						{
+						$stmt="SELECT fieldname from vtiger_field where fieldlabel='Date of Last Attempt';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00219',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_attempt_field = $row[0];
+
+						$stmt = "UPDATE vtiger_accountscf SET $VT_last_attempt_field='$TODAY' where accountid='$vendor_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00223',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					if ($VT_last_noncontact_ct > 0)
+						{
+						$stmt="SELECT fieldname from vtiger_field where fieldlabel='Date of Last Non-Contact';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00220',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_noncontact_field = $row[0];
+
+						$stmt = "UPDATE vtiger_accountscf SET $VT_last_noncontact_field='$TODAY' where accountid='$vendor_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00224',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					if ($VT_last_contact_ct > 0)
+						{
+						$stmt="SELECT fieldname from vtiger_field where fieldlabel='Date of Last Contact';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00221',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_contact_field = $row[0];
+
+						$stmt = "UPDATE vtiger_accountscf SET $VT_last_contact_field='$TODAY' where accountid='$vendor_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00225',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					if ($VT_last_sale_ct > 0)
+						{
+						$stmt="SELECT fieldname from vtiger_field where fieldlabel='Date of Last Sale';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00222',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$VT_last_sale_field = $row[0];
+
+						$stmt = "UPDATE vtiger_accountscf SET $VT_last_sale_field='$TODAY' where accountid='$vendor_id';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00226',$user,$server_ip,$session_name,$one_mysql_log);}
+						}
+					}
+				}
+			}
+		}
+	####### END Vtiger Call Logging #######
 
 	#############################################
 	##### START QUEUEMETRICS LOGGING LOOKUP #####

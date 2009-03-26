@@ -6162,6 +6162,8 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					xmlhttp.send(DSupdate_query); 
 					xmlhttp.onreadystatechange = function() 
 						{ 
+					//	alert(xmlhttp.responseText);
+
 						if ( (xmlhttp.readyState == 4 && xmlhttp.status == 200) && (auto_dial_level < 1) )
 							{
 							var check_dispo = null;
@@ -7369,8 +7371,16 @@ else
 			if ( (VtigeRLogiNScripT == 'Y') && (VtigeREnableD > 0) )
 				{
 				document.getElementById("ScriptContents").innerHTML = "<iframe src=\"" + VtigeRurl + "/index.php?module=Users&action=Authenticate&return_module=Users&return_action=Login&user_name=" + user + "&user_password=" + pass + "&login_theme=softed&login_language=en_us\" style=\"width:580;height:290;background-color:transparent;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"popupFrame\" name=\"popupFrame\" width=\"460\" height=\"290\" STYLE=\"z-index:17\"> </iframe> ";
-
 				}
+			if ( (VtigeRLogiNScripT == 'NEW_WINDOW') && (VtigeREnableD > 0) )
+				{
+				var VtigeRall = VtigeRurl + "/index.php?module=Users&action=Authenticate&return_module=Users&return_action=Login&user_name=" + user + "&user_password=" + pass + "&login_theme=softed&login_language=en_us";
+				
+				VtigeRwin =window.open(VtigeRall, web_form_target,'toolbar=1,location=1,directories=1,status=1,menubar=1,scrollbars=1,resizable=1,width=700,height=480');
+
+				VtigeRwin.blur();
+				}
+
 			VICIDiaL_closer_login_checked = 1;
 			}
 		else

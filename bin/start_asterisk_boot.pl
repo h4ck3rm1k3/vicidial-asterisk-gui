@@ -6,8 +6,9 @@
 #
 # CHANGES
 #
-# 60814-1658 - added option to start without logging through servers table setting
+# 60814-1658 - Added option to start without logging through servers table setting
 # 90309-0905 - Added deleting of asterisk command files
+# 90325-2238 - Rewrote launching of Asterisk, removed command files
 #
 
 # default path to astguiclient configuration file:
@@ -61,46 +62,48 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		}
 	$sthA->finish();
 
-if (-e "/root/asterisk_command_reload_iax2")
-	{
-	### find the find binary
-	$findbin = '';
-	if ( -e ('/bin/find')) {$findbin = '/bin/find';}
-	else 
-		{
-		if ( -e ('/sbin/find')) {$findbin = '/sbin/find';}
-		else 
-			{
-			if ( -e ('/usr/bin/find')) {$findbin = '/usr/bin/find';}
-			else 
-				{
-				if ( -e ('/usr/local/bin/find')) {$findbin = '/usr/local/bin/find';}
-				else
-					{
-					print "Can't find find binary! Exiting...\n";
-					}
-				}
-			}
-		}
-
-	`$findbin /root/ -maxdepth 1 -name "asterisk_command*" -print | xargs rm -f`;
-
-	`ulimit -n 65536`;
-
-	}
+`ulimit -n 65536`;
 
 if ($SYSLOG) 
 	{
-	print "\nStarting Asterisk... screen logging on\n";
-	`/usr/bin/screen -L -d -m -S asterisk /usr/sbin/asterisk -vvvvvvvvvvvvvvvvvvvvvgc`;
+	`/usr/bin/screen -d -m -S astershell /usr/bin/screen -S astshell`;
+	print "started screen\n";
+
+	sleep(1);
+	`screen -XS astshell eval 'stuff "cd /var/log/astguiclient\015"'`;
+	print "changed directory\n";
+
+	sleep(1);
+	`screen -XS astshell eval 'stuff "screen -L -S asterisk\015"'`;
+	print "started new screen session\n";
+
+	sleep(1);
+	`screen -d astshell`;
+	`screen -d asterisk`;
+	print "detached screens\n";
+
+	sleep(1);
+	`screen -XS asterisk eval 'stuff "ulimit -n 65536\015"'`;
+	print "raised ulimit open files\n";
+
+	sleep(1);
+	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvvvvvvvvvvvvvvvvvvgc\015"'`;
+	print "Asterisk started... screen logging on\n";
 	}
 else
 	{
-	print "\nStarting Asterisk... screen logging off\n";
-	`/usr/bin/screen -d -m -S asterisk /usr/sbin/asterisk -vvvvgc`;
+	`/usr/bin/screen -d -m -S astershell /usr/bin/screen -S asterisk`;
+	print "started screen\n";
+
+	sleep(1);
+	`screen -d asterisk`;
+	print "detached screen\n";
+
+	sleep(1);
+	`screen -XS asterisk eval 'stuff "ulimit -n 65536\015"'`;
+	print "raised ulimit open files\n";
+
+	sleep(1);
+	`screen -XS asterisk eval 'stuff "/usr/sbin/asterisk -vvvvgc\015"'`;
+	print "Asterisk started... screen logging off\n";
 	}
-
-print "Asterisk started\n";
-
-sleep(10);
-

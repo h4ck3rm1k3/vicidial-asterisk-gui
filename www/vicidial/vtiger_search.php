@@ -18,6 +18,7 @@
 # 81229-1441 - Added options for searching by ACCTID, ACCOUNT, VENDOR and LEAD
 # 90111-1451 - Added logging of call as activity for account/lead
 # 90112-0336 - Added create call and create lead options
+# 90323-2104 - Added deleted account/lead check and reactivation from campaign option
 #
 
 header ("Content-type: text/html; charset=utf-8");
@@ -152,7 +153,7 @@ if ($enable_vtiger_integration < 1)
 	exit;
 	}
 
-$stmt = "SELECT vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record FROM vicidial_campaigns where campaign_id='$campaign';";
+$stmt = "SELECT vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_search_dead FROM vicidial_campaigns where campaign_id='$campaign';";
 $rslt=mysql_query($stmt, $link);
 if ($DB) {echo "$stmt\n";}
 $vtc_conf_ct = mysql_num_rows($rslt);
@@ -162,6 +163,7 @@ if ($vtc_conf_ct > 0)
 	$vtiger_search_category =		$row[0];
 	$vtiger_create_call_record =	$row[1];
 	$vtiger_create_lead_record =	$row[2];
+	$vtiger_search_dead =			$row[3];
 	}
 if (strlen($vtiger_search_category)<1) 
 	{$vtiger_search_category = 'LEAD';}
@@ -219,78 +221,102 @@ if ($acctid_search > 0)
 		}
 	else
 		{
-		if (ereg('Y',$vtiger_create_call_record))
+		$stmt="SELECT count(*) from vtiger_crmentity where crmid='$vendor_id' and deleted='1';";
+		$rslt=mysql_query($stmt, $linkV);
+		if ($DB) {echo "$stmt\n";}
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$row=mysql_fetch_row($rslt);
+		$deleted_count = $row[0];
+		if ( ($deleted_count > 0) and (ereg('DISABLED',$vtiger_search_dead)) )
 			{
-			### Log the call in Vtiger
-
-			#Get logged in user ID
-			$stmt="SELECT id from vtiger_users where user_name='$user';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$user_id = $row[0];
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
-			$stmt="SELECT id from vtiger_crmentity_seq ;";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$activityid = ($row[0] + 1);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			# Increase next aviable crmid with 1 so next record gets proper id
-			$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_salesmanactivityrel
-			$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_seactivityrel
-			$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_crmentity
-			$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			#Insert values into vtiger_activity
-			$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $vendor_id',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$vendor_id&parenttab=Sales";
+			echo "<!-- ACCTID found but deleted $vendor_id -->\n";
 			}
 		else
 			{
-			# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Accounts&action=DetailView&record=$vendor_id&parenttab=Sales";
-			}
-		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
-		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
-		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+			if ( ($deleted_count > 0) and ( (ereg('RESURRECT',$vtiger_search_dead)) or (ereg('ASK',$vtiger_search_dead)) ) )
+				{
+				# un-delete the record
+				$stmt="UPDATE vtiger_crmentity SET deleted='0' where crmid='$vendor_id';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				echo "<!-- ACCTID deleted but resurrected $vendor_id -->\n";
+				}
 
-		echo "<PRE>";
-		echo "account found! ACCTID\n";
-		echo "accountid:   <a href=\"$account_URL\">$vendor_id</a>\n";
-		echo "</PRE><BR>";
-		exit;
+			if (ereg('Y',$vtiger_create_call_record))
+				{
+				### Log the call in Vtiger
+
+				#Get logged in user ID
+				$stmt="SELECT id from vtiger_users where user_name='$user';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$user_id = $row[0];
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+				$stmt="SELECT id from vtiger_crmentity_seq ;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$activityid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next aviable crmid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_salesmanactivityrel
+				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_seactivityrel
+				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_crmentity
+				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#Insert values into vtiger_activity
+				$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $vendor_id',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$vendor_id&parenttab=Sales";
+				}
+			else
+				{
+				# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Accounts&action=DetailView&record=$vendor_id&parenttab=Sales";
+				}
+			echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
+			echo "</head>\n";
+			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
+			echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+
+			echo "<PRE>";
+			echo "account found! ACCTID\n";
+			echo "accountid:   <a href=\"$account_URL\">$vendor_id</a>\n";
+			echo "</PRE><BR>";
+			exit;
+			}
 		}
 	}
 ##########################################################################
@@ -380,79 +406,102 @@ if ($account_search > 0)
 		}
 	if (strlen($accountid) > 0)
 		{
-		if (ereg('Y',$vtiger_create_call_record))
+		$stmt="SELECT count(*) from vtiger_crmentity where crmid='$accountid' and deleted='1';";
+		$rslt=mysql_query($stmt, $linkV);
+		if ($DB) {echo "$stmt\n";}
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$row=mysql_fetch_row($rslt);
+		$deleted_count = $row[0];
+		if ( ($deleted_count > 0) and (ereg('DISABLED',$vtiger_search_dead)) )
 			{
-			### Log the call in Vtiger
-
-			#Get logged in user ID
-			$stmt="SELECT id from vtiger_users where user_name='$user';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$user_id = $row[0];
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
-			$stmt="SELECT id from vtiger_crmentity_seq ;";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$activityid = ($row[0] + 1);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			# Increase next aviable crmid with 1 so next record gets proper id
-			$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_salesmanactivityrel
-			$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_seactivityrel
-			$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$accountid',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_crmentity
-			$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			#Insert values into vtiger_activity
-			$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $phone',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$accountid&parenttab=Sales";
+			echo "<!-- ACCTID found but deleted $vendor_id -->\n";
 			}
 		else
 			{
-			# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Accounts&action=DetailView&record=$accountid&parenttab=Sales";
-			}
-		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
-		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
-		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+			if ( ($deleted_count > 0) and ( (ereg('RESURRECT',$vtiger_search_dead)) or (ereg('ASK',$vtiger_search_dead)) ) )
+				{
+				# un-delete the record
+				$stmt="UPDATE vtiger_crmentity SET deleted='0' where crmid='$accountid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				echo "<!-- ACCTID deleted but resurrected $accountid -->\n";
+				}
+			if (ereg('Y',$vtiger_create_call_record))
+				{
+				### Log the call in Vtiger
 
-		echo "<PRE>";
-		echo "account found! ACCOUNT\n";
-		echo "accountid:   <a href=\"$account_URL\">$accountid</a>\n";
-		echo "phone:       $phone\n";
-		echo "</PRE><BR>";
-		exit;
+				#Get logged in user ID
+				$stmt="SELECT id from vtiger_users where user_name='$user';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$user_id = $row[0];
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+				$stmt="SELECT id from vtiger_crmentity_seq ;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$activityid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next aviable crmid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_salesmanactivityrel
+				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_seactivityrel
+				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$accountid',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_crmentity
+				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#Insert values into vtiger_activity
+				$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $phone',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$accountid&parenttab=Sales";
+				}
+			else
+				{
+				# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Accounts&action=DetailView&record=$accountid&parenttab=Sales";
+				}
+			echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
+			echo "</head>\n";
+			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
+			echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+
+			echo "<PRE>";
+			echo "account found! ACCOUNT\n";
+			echo "accountid:   <a href=\"$account_URL\">$accountid</a>\n";
+			echo "phone:       $phone\n";
+			echo "</PRE><BR>";
+			exit;
+			}
 		}
 	}
 ##########################################################################
@@ -675,80 +724,104 @@ if ($lead_search > 0)
 		$row=mysql_fetch_row($rslt);
 		$leadid = $row[0];
 
-		if (ereg('Y',$vtiger_create_call_record))
+		$stmt="SELECT count(*) from vtiger_crmentity where crmid='$leadid' and deleted='1';";
+		$rslt=mysql_query($stmt, $linkV);
+		if ($DB) {echo "$stmt\n";}
+		if (!$rslt) {die('Could not execute: ' . mysql_error());}
+		$row=mysql_fetch_row($rslt);
+		$deleted_count = $row[0];
+		if ( ($deleted_count > 0) and (ereg('DISABLED',$vtiger_search_dead)) )
 			{
-			### Log the call in Vtiger
-
-			#Get logged in user ID
-			$stmt="SELECT id from vtiger_users where user_name='$user';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$user_id = $row[0];
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
-			$stmt="SELECT id from vtiger_crmentity_seq ;";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			$row=mysql_fetch_row($rslt);
-			$activityid = ($row[0] + 1);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			# Increase next aviable crmid with 1 so next record gets proper id
-			$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
-			if ($DB) {echo "$stmt\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_salesmanactivityrel
-			$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_seactivityrel
-			$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$leadid',activityid='$activityid';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-			
-			#Insert values into vtiger_crmentity
-			$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-			#Insert values into vtiger_activity
-			$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Lead call $phone',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL user $user',notime='0',visibility='Public',recurringtype='--None--';";
-			if ($DB) {echo "|$stmt|\n";}
-			$rslt=mysql_query($stmt, $linkV);
-			if ($DB) {echo "|$leadid|\n";}
-			if (!$rslt) {die('Could not execute: ' . mysql_error());}
-
-
-			# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Leads&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$leadid&parenttab=Sales";
+			echo "<!-- LEADID found but deleted $leadid -->\n";
 			}
 		else
 			{
-			# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
-			$account_URL = "$vtiger_url/index.php?module=Leads&action=DetailView&record=$leadid&parenttab=Sales";
-			}
-		echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
-		echo "</head>\n";
-		echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
-		echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+			if ( ($deleted_count > 0) and ( (ereg('RESURRECT',$vtiger_search_dead)) or (ereg('ASK',$vtiger_search_dead)) ) )
+				{
+				# un-delete the record
+				$stmt="UPDATE vtiger_crmentity SET deleted='0' where crmid='$leadid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				echo "<!-- LEADID deleted but resurrected $leadid -->\n";
+				}
 
-		echo "<PRE>";
-		echo "lead found! LEAD\n";
-		echo "leadid:   <a href=\"$account_URL\">$leadid</a>\n";
-		echo "phone:       $phone\n";
-		echo "</PRE><BR>";
-		exit;
+			if (ereg('Y',$vtiger_create_call_record))
+				{
+				### Log the call in Vtiger
+
+				#Get logged in user ID
+				$stmt="SELECT id from vtiger_users where user_name='$user';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$user_id = $row[0];
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+				$stmt="SELECT id from vtiger_crmentity_seq ;";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				$row=mysql_fetch_row($rslt);
+				$activityid = ($row[0] + 1);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				# Increase next aviable crmid with 1 so next record gets proper id
+				$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_salesmanactivityrel
+				$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_seactivityrel
+				$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$leadid',activityid='$activityid';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+				
+				#Insert values into vtiger_crmentity
+				$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+				#Insert values into vtiger_activity
+				$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Lead call $phone',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL user $user',notime='0',visibility='Public',recurringtype='--None--';";
+				if ($DB) {echo "|$stmt|\n";}
+				$rslt=mysql_query($stmt, $linkV);
+				if ($DB) {echo "|$leadid|\n";}
+				if (!$rslt) {die('Could not execute: ' . mysql_error());}
+
+
+				# http://mysite.com/vtigercrm/index.php?module=Calendar&action=EditView&return_module=Accounts&return_action=DetailView&record=16&activity_mode=Events&return_id=9&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Calendar&action=EditView&return_module=Leads&return_action=DetailView&record=$activityid&activity_mode=Events&return_id=$leadid&parenttab=Sales";
+				}
+			else
+				{
+				# http://mysite.com/vtigercrm/index.php?module=Accounts&action=DetailView&record=2&parenttab=Sales
+				$account_URL = "$vtiger_url/index.php?module=Leads&action=DetailView&record=$leadid&parenttab=Sales";
+				}
+			echo "<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=$account_URL\">\n";
+			echo "</head>\n";
+			echo "<BODY BGCOLOR=white marginheight=0 marginwidth=0 leftmargin=0 topmargin=0\">\n";
+			echo "<CENTER><FONT FACE=\"Courier\" COLOR=BLACK SIZE=3>\n";
+
+			echo "<PRE>";
+			echo "lead found! LEAD\n";
+			echo "leadid:   <a href=\"$account_URL\">$leadid</a>\n";
+			echo "phone:       $phone\n";
+			echo "</PRE><BR>";
+			exit;
+			}
 		}
 	}
 ##########################################################################
