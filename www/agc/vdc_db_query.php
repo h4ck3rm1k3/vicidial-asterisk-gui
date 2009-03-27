@@ -3365,7 +3365,7 @@ if ($ACTION == 'updateDISPO')
 		while ($i < $dncvcs_ct)
 			{
 			$row=mysql_fetch_row($rslt);
-			$DNC_string_check .= "$row[0]";
+			$DNC_string_check .= "$row[0]|";
 			$i++;
 			}
 
@@ -3682,7 +3682,7 @@ if ($ACTION == 'updateDISPO')
 					while ($i < $salevcs_ct)
 						{
 						$row=mysql_fetch_row($rslt);
-						$SALE_string_check .= "$row[0]";
+						$SALE_string_check .= "$row[0]|";
 						$i++;
 						}
 
@@ -3709,7 +3709,7 @@ if ($ACTION == 'updateDISPO')
 					while ($i < $cc_vcs_ct)
 						{
 						$row=mysql_fetch_row($rslt);
-						$CC_string_check .= "$row[0]";
+						$CC_string_check .= "$row[0]|";
 						$i++;
 						}
 
