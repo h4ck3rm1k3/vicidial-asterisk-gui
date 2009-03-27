@@ -194,12 +194,13 @@
 # 90320-0306 - Fixed agent log bug when using wrapup time
 # 90323-2013 - Added function to put phone numbers in the DNC lists if they were set to status type dnc=Y
 # 90324-1316 - Added functions to log calls to Vtiger accounts and update status to siccode
+# 90327-1348 - Changed Vtiger status populate to use status name
 #
 
-$version = '2.2.0-106';
-$build = '90324-1316';
+$version = '2.2.0-107';
+$build = '90327-1348';
 $mel=1;					# Mysql Error Log enabled = 1
-$mysql_log_count=210;
+$mysql_log_count=212;
 $one_mysql_log=0;
 
 require("dbconnect.php");
@@ -3520,6 +3521,32 @@ if ($ACTION == 'updateDISPO')
 			}
 		if ( (ereg('ACCTID',$vtiger_search_category)) or (ereg('ACCOUNT',$vtiger_search_category)) )
 			{
+			### find the full status name for this status
+			$stmt = "select status_name from vicidial_statuses where status='$dispo_choice';";
+			if ($DB) {echo "$stmt\n";}
+			$rslt=mysql_query($stmt, $link);
+				if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00211',$user,$server_ip,$session_name,$one_mysql_log);}
+			$vs_ct = mysql_num_rows($rslt);
+			if ($vs_ct > 0)
+				{
+				$row=mysql_fetch_row($rslt);
+				$status_name =		$row[0];
+				}
+			else
+				{
+				$stmt = "select status_name from vicidial_campaign_statuses where status='$dispo_choice' and campaign_id='$campaign';";
+				if ($DB) {echo "$stmt\n";}
+				$rslt=mysql_query($stmt, $link);
+					if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'00212',$user,$server_ip,$session_name,$one_mysql_log);}
+				$vs_ct = mysql_num_rows($rslt);
+				if ($vs_ct > 0)
+					{
+					$row=mysql_fetch_row($rslt);
+					$status_name =		$row[0];
+					}
+				}
+			if (strlen($dispo_choice) < 1) {$status_name = $dispo_chioce;}
+
 			### connect to your vtiger database
 			$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
 			if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
@@ -3596,7 +3623,7 @@ if ($ACTION == 'updateDISPO')
 					if ($DB) {echo "|$leadid|\n";}
 
 					#Insert values into vtiger_activity
-					$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VICIDIAL Account call $vendor_id status $dispo_choice',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
+					$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VC Call: $status_name',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $linkV);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00206',$user,$server_ip,$session_name,$one_mysql_log);}
@@ -3622,7 +3649,7 @@ if ($ACTION == 'updateDISPO')
 
 					if ($insert_into_dnc > 0) {$emailoptoutSQL = ", emailoptout='1'";}
 					#Update vtiger_account   dnc=emailoptout
-					$stmt = "UPDATE vtiger_account SET siccode='$dispo_choice' $emailoptoutSQL where accountid='$vendor_id';";
+					$stmt = "UPDATE vtiger_account SET siccode='$status_name' $emailoptoutSQL where accountid='$vendor_id';";
 					if ($DB) {echo "|$stmt|\n";}
 					$rslt=mysql_query($stmt, $linkV);
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00209',$user,$server_ip,$session_name,$one_mysql_log);}

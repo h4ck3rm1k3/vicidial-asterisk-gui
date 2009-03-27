@@ -193,6 +193,10 @@ exten => _881NXXNXXXXXX,1,Answer
 exten => _881NXXNXXXXXX,2,Dial(${TRUNKloop}/9${EXTEN:2},,To)
 exten => _881NXXNXXXXXX,3,Hangup
 
+; Vtiger fax and email log extensions
+exten => _9118XXXXXXXX,1,Dial(${TRUNKblind}/9998818112,55,to)
+exten => _9119XXXXXXXX,1,Dial(${TRUNKblind}/9998819112,55,to)
+
 ; dial a long distance outbound number through BINFONE
 ; exten => _91NXXNXXXXXX,1,AGI(agi://127.0.0.1:4577/call_log)
 ; exten => _91NXXNXXXXXX,2,Dial(${TRUNKIAX}/${EXTEN:1},55,To)
@@ -497,7 +501,7 @@ exten => 8373,7,Hangup
 ; PERFORMANCE TESTING
 exten => _999XXXXXX1,1,Answer
 exten => _999XXXXXX1,2,Wait(2)
-exten => _999XXXXXX1,3,Playback(beep)
+exten => _999XXXXXX1,3,Playback(vicidial-welcome)
 exten => _999XXXXXX1,4,Hangup
 
 exten => _999XX11112,1,Wait(2)
@@ -505,6 +509,18 @@ exten => _999XX11112,2,Answer
 exten => _999XX11112,3,Playback(ss-noservice)
 exten => _999XX11112,4,Playback(vm-goodbye)
 exten => _999XX11112,5,Hangup
+
+exten => _999XX18112,1,Wait(2)
+exten => _999XX18112,2,Answer
+exten => _999XX18112,3,Playback(vtiger-fax)
+exten => _999XX18112,4,Playback(vtiger-fax)
+exten => _999XX18112,5,Hangup
+
+exten => _999XX19112,1,Wait(2)
+exten => _999XX19112,2,Answer
+exten => _999XX19112,3,Playback(vtiger-email)
+exten => _999XX19112,4,Playback(vtiger-email)
+exten => _999XX19112,5,Hangup
 
 exten => _999XXXX112,1,Wait(5)
 exten => _999XXXX112,2,Answer

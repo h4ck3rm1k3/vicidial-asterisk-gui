@@ -12,6 +12,7 @@
 # CHANGES
 # 90127-1206 - First build
 # 90318-0142 - Added vicidialalt import format and importasdeleted option
+# 90327-1149 - Added phone-limit option
 #
 
 $secX = time();
@@ -107,6 +108,7 @@ if (length($ARGV[0])>1)
 		print "  [--duplicate-system-siccode] = checks for the same SIC code in the entire system before inserting lead\n";
 		print "  [--duplicate-system-website] = checks for the same website in the entire system before inserting lead\n";
 		print "  [--import-as-deleted] = imports the accounts as deleted in vtiger_crmentity\n";
+		print "  [--phone-limit=X] = limit phone and fax numbers to X digits\n";
 		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
 		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
 		print "  [--email-list=test@test.com:test2@test.com] = send email results for each file to these addresses\n";
@@ -160,6 +162,16 @@ if (length($ARGV[0])>1)
 			}
 		else
 			{$format = 'standard';}
+
+		if ($args =~ /-phone-limit=/i)
+			{
+			@data_in = split(/-phone-limit=/,$args);
+				$phone_limit = $data_in[1];
+				$phone_limit =~ s/ .*//gi;
+			print "\n----- PHONE LIMIT: $phone_limit -----\n\n";
+			}
+		else
+			{$phone_limit = 0;}
 
 		if ($args =~ /-duplicate-system-check/i)
 			{
@@ -410,10 +422,13 @@ foreach(@FILES)
 				$state =				$m[5];		chomp($state);
 				$post_code =			$m[6];		chomp($post_code);
 				$phone_number =			$m[2];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+					if ($phone_limit > 6) {while (length($phone_number)>$phone_limit) {chop($phone_number);} }
 				$ownership =			$m[1];		chomp($ownership);
 				$other_phone =			'';
+					if ($phone_limit > 6) {while (length($other_phone)>$phone_limit) {chop($other_phone);} }
 				$email =				'';
 				$fax =					'';
+					if ($phone_limit > 6) {while (length($fax)>$phone_limit) {chop($fax);} }
 				$other_email =			'';
 				$website =				'';
 				$emailoptout =			'0';
@@ -442,10 +457,13 @@ foreach(@FILES)
 				$state =				$m[8];		chomp($state);
 				$post_code =			$m[9];		chomp($post_code);
 				$phone_number =			$m[10];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+					if ($phone_limit > 6) {while (length($phone_number)>$phone_limit) {chop($phone_number);} }
 				$ownership =			$m[11];		chomp($ownership);
 				$fax =					$m[12];		chomp($fax);
+					if ($phone_limit > 6) {while (length($fax)>$phone_limit) {chop($fax);} }
 				$email =				$m[13];		chomp($email);
 				$other_phone =			$m[14];		chomp($other_phone);
+					if ($phone_limit > 6) {while (length($other_phone)>$phone_limit) {chop($other_phone);} }
 				$other_email =			$m[15];		chomp($other_email);
 				$website =				$m[16];		chomp($website);
 					if (length($website)<3) {$website="$web1-$revenue";}
@@ -475,10 +493,13 @@ foreach(@FILES)
 				$state =				$m[8];		chomp($state);
 				$post_code =			$m[9];		chomp($post_code);
 				$phone_number =			$m[10];		chomp($phone_number);	$phone_number =~ s/\D//gi;
+					if ($phone_limit > 6) {while (length($phone_number)>$phone_limit) {chop($phone_number);} }
 				$ownership =			$m[11];		chomp($ownership);
 				$fax =					$m[12];		chomp($fax);
+					if ($phone_limit > 6) {while (length($fax)>$phone_limit) {chop($fax);} }
 				$email =				$m[13];		chomp($email);
 				$other_phone =			$m[14];		chomp($other_phone);
+					if ($phone_limit > 6) {while (length($other_phone)>$phone_limit) {chop($other_phone);} }
 				$other_email =			$m[15];		chomp($other_email);
 				$website =				$m[16];		chomp($website);
 					if (length($website)<3) {$website="$sic_code-$revenue";}

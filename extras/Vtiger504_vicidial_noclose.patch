@@ -263,10 +263,6 @@
 +				{
 +				alert(xmlhttp.responseText);
 +				}
-+			else
-+				{
-+				self.close();
-+				}
 +			}
 +		}
 +	delete xmlhttp;
