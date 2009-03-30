@@ -206,7 +206,7 @@
  								<input title="Export To PDF" accessKey="Alt+e" class="crmbutton small create" onclick="this.form.return_module.value='{$MODULE}'; this.form.return_action.value='DetailView'; this.form.return_id.value='{$ID}'; this.form.module.value='{$MODULE}'; {if $MODULE eq 'SalesOrder'} this.form.action.value='CreateSOPDF'" {else} this.form.action.value='CreatePDF'" {/if} type="submit" name="Export To PDF" value="{$APP.LBL_EXPORT_TO_PDF}">&nbsp;
 --- ./include/js/general.js	2008-03-10 08:54:31.000000000 -0400
 +++ ./include/js/general.js	2009-03-26 20:07:23.000000000 -0400
-@@ -1768,6 +1768,68 @@
+@@ -1768,6 +1768,64 @@
          openPopUp('xComposeEmail',this,url,'createemailWin',830,662,opts);
  }
  
