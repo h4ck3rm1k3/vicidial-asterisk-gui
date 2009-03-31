@@ -10,7 +10,7 @@
 #
 # This program only needs to be run by one server
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # CHANGES
 # 60711-0945 - Changed to DBI by Marin Blu
@@ -18,6 +18,7 @@
 # 81029-0124 - Added portion to clean up queue_log entries if QM enabled
 # 81114-0155 - Added portion to remove queue_log COMPLETE duplicates
 # 81208-0133 - Added portion to check for more missing queue_log entries
+# 90330-2128 - minor code fixes and restricted queue_log actions to VICIDIAL-defined serverid records
 #
 
 # constants
@@ -401,7 +402,7 @@ if ($enable_queuemetrics_logging > 0)
 		$noCOMPLETEinsert=0;
 		##############################################################
 		##### grab all queue_log entries for ENTERQUEUE verb to validate
-		$stmtB = "SELECT time_id,call_id,queue,agent,verb,serverid FROM queue_log where verb='ENTERQUEUE' $QM_SQL_time order by time_id;";
+		$stmtB = "SELECT time_id,call_id,queue,agent,verb,serverid FROM queue_log where verb='ENTERQUEUE' and serverid='$queuemetrics_log_id' $QM_SQL_time order by time_id;";
 		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 		$EQ_records=$sthB->rows;
@@ -569,8 +570,6 @@ if ($enable_queuemetrics_logging > 0)
 									$VALtalk =	"$aryA[2]";
 									$VALdispo =	"$aryA[3]";
 									$VALstatus ="$aryA[4]";
-									$queuemetrics_log_id =		"$aryA[5]";
-									$queuemetrics_eq_prepend =	"$aryA[6]";
 								 $rec_count++;
 								}
 							$sthA->finish();
@@ -646,7 +645,7 @@ if ($enable_queuemetrics_logging > 0)
 
 	#######################################################################
 	##### grab all queue_log entries with more than one COMPLETE verb to clean up
-	$stmtB = "SELECT call_id, count(*) FROM queue_log WHERE verb IN('COMPLETEAGENT','COMPLETECALLER','TRANSFER') GROUP BY call_id HAVING count(*)>1 ORDER BY count(*) DESC;";
+	$stmtB = "SELECT call_id, count(*) FROM queue_log WHERE verb IN('COMPLETEAGENT','COMPLETECALLER','TRANSFER') and serverid='$queuemetrics_log_id' GROUP BY call_id HAVING count(*)>1 ORDER BY count(*) DESC;";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 	$XC_records=$sthB->rows;
@@ -674,7 +673,7 @@ if ($enable_queuemetrics_logging > 0)
 
 	##########################################################################
 	##### grab all queue_log COMPLETEAGENT entries with negative call time to clean up
-	$stmtB = "SELECT call_id, time_id FROM queue_log WHERE verb IN('COMPLETEAGENT') and data2 < '0';";
+	$stmtB = "SELECT call_id, time_id FROM queue_log WHERE verb IN('COMPLETEAGENT') and data2 < '0' and serverid='$queuemetrics_log_id';";
 	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
 	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
 	$XN_records=$sthB->rows;
