@@ -32,11 +32,13 @@
 # 80812-1204 - Added FTP grab options and summary email options
 # 80829-2301 - Added multi-alt-phone entry insertion capability
 # 90324-1038 - Added minicsv02 format
+# 90401-1340 - Fixed quiet flag functionality
 #
 
 $secX = time();
 $MT[0]='';
 $Ealert='';
+$force_quiet=0;
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year = ($year + 1900);
@@ -149,39 +151,42 @@ if (length($ARGV[0])>1)
 		}
 	else
 		{
-		if ($args =~ /-debug/i)
+		if ($args =~ /-q/i)
+			{
+			$q=1;
+			$DB=0;
+			$DBX=0;
+			$force_quiet=1;
+			}
+		if ( ($args =~ /-debug/i) && ($force_quiet < 1) )
 			{
 			$DB=1;
 			print "\n----- DEBUGGING -----\n\n";
 			}
-		if ($args =~ /-debugX/i)
+		if ( ($args =~ /-debugX/i) && ($force_quiet < 1) )
 			{
 			$DBX=1;
 			print "\n----- SUPER-DUPER DEBUGGING -----\n\n";
 			}
 		else {$DBX=0;}
 
-		if ($args =~ /-q/i)
-			{
-			$q=1;
-			}
 		if ($args =~ /-t/i)
 			{
 			$T=1;
 			$TEST=1;
-			print "\n----- TESTING -----\n\n";
+			if ($q < 1) {print "\n----- TESTING -----\n\n";}
 			}
 		if ($args =~ /-forcegmt/i)
 			{
 			$forcegmt=1;
-			print "\n----- FORCE GMT -----\n\n";
+			if ($q < 1) {print "\n----- FORCE GMT -----\n\n";}
 			}
 		if ($args =~ /-forcelistid=/i)
 			{
 			@data_in = split(/-forcelistid=/,$args);
 				$forcelistid = $data_in[1];
 				$forcelistid =~ s/ .*//gi;
-			print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";
+			if ($q < 1) {print "\n----- FORCE LISTID OVERRIDE: $forcelistid -----\n\n";}
 			}
 		else
 			{$forcelistid = '';}
@@ -191,7 +196,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/-format=/,$args);
 				$format = $data_in[1];
 				$format =~ s/ .*//gi;
-			print "\n----- FORMAT OVERRIDE: $format -----\n\n";
+			if ($q < 1) {print "\n----- FORMAT OVERRIDE: $format -----\n\n";}
 			}
 		else
 			{$format = 'standard';}
@@ -201,7 +206,7 @@ if (length($ARGV[0])>1)
 			@data_in = split(/--forcephonecode=/,$args);
 				$forcephonecode = $data_in[1];
 				$forcephonecode =~ s/ .*//gi;
-			print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";
+			if ($q < 1) {print "\n----- FORCE PHONECODE OVERRIDE: $forcephonecode -----\n\n";}
 			}
 		else
 			{$forcephonecode = '';}
@@ -209,34 +214,34 @@ if (length($ARGV[0])>1)
 		if ($args =~ /-duplicate-check/i)
 			{
 			$dupcheck=1;
-			print "\n----- DUPLICATE CHECK -----\n\n";
+			if ($q < 1) {print "\n----- DUPLICATE CHECK -----\n\n";}
 			}
 		if ($args =~ /-duplicate-campaign-check/i)
 			{
 			$dupcheckcamp=1;
-			print "\n----- DUPLICATE CAMPAIGN CHECK -----\n\n";
+			if ($q < 1) {print "\n----- DUPLICATE CAMPAIGN CHECK -----\n\n";}
 			}
 		if ($args =~ /-duplicate-system-check/i)
 			{
 			$dupchecksys=1;
-			print "\n----- DUPLICATE SYSTEM CHECK -----\n\n";
+			if ($q < 1) {print "\n----- DUPLICATE SYSTEM CHECK -----\n\n";}
 			}
 		if ($args =~ /-postal-code-gmt/i)
 			{
 			$postalgmt=1;
-			print "\n----- POSTAL CODE TIMEZONE -----\n\n";
+			if ($q < 1) {print "\n----- POSTAL CODE TIMEZONE -----\n\n";}
 			}
 		if ($args =~ /-ftp-pull/i)
 			{
 			$ftp_pull=1;
-			print "\n----- FTP LEAD FILE PULL -----\n\n";
+			if ($q < 1) {print "\n----- FTP LEAD FILE PULL -----\n\n";}
 			}
 		if ($args =~ /--ftp-dir=/i)
 			{
 			@data_in = split(/--ftp-dir=/,$args);
 				$ftp_dir = $data_in[1];
 				$ftp_dir =~ s/ .*//gi;
-			print "\n----- REMOTE FTP DIRECTORY: $ftp_dir -----\n\n";
+			if ($q < 1) {print "\n----- REMOTE FTP DIRECTORY: $ftp_dir -----\n\n";}
 			}
 		else
 			{$ftp_dir = '';}
@@ -247,7 +252,7 @@ if (length($ARGV[0])>1)
 				$email_list = $data_in[1];
 				$email_list =~ s/ .*//gi;
 				$email_list =~ s/:/,/gi;
-			print "\n----- EMAIL NOTIFICATION: $email_list -----\n\n";
+			if ($q < 1) {print "\n----- EMAIL NOTIFICATION: $email_list -----\n\n";}
 			}
 		else
 			{$email_list = '';}
@@ -258,7 +263,7 @@ if (length($ARGV[0])>1)
 				$email_sender = $data_in[1];
 				$email_sender =~ s/ .*//gi;
 				$email_sender =~ s/:/,/gi;
-			print "\n----- EMAIL NOTIFICATION SENDER: $email_sender -----\n\n";
+			if ($q < 1) {print "\n----- EMAIL NOTIFICATION SENDER: $email_sender -----\n\n";}
 			}
 		else
 			{$email_sender = 'vicidial@localhost';}
@@ -947,23 +952,26 @@ foreach(@FILES)
 			else
 				{
 				if ($dup_lead > 0)
-					{print "DUPLICATE: $phone_number|$list_id|$dup_lead_list|$a\n";   $f++;}
+					{if ($q < 1) {print "DUPLICATE: $phone_number|$list_id|$dup_lead_list|$a\n";}   $f++;}
 				else
-					{print "BAD Home_Phone: $phone_number|$vendor_id|$a\n";   $e++;}
+					{if ($q < 1) {print "BAD Home_Phone: $phone_number|$vendor_id|$a\n";}   $e++;}
 				}
 			
 			$a++;
 
-			if ($a =~ /100$/i) {print STDERR "0     $a\r";}
-			if ($a =~ /200$/i) {print STDERR "+     $a\r";}
-			if ($a =~ /300$/i) {print STDERR "|     $a\r";}
-			if ($a =~ /400$/i) {print STDERR "\\     $a\r";}
-			if ($a =~ /500$/i) {print STDERR "-     $a\r";}
-			if ($a =~ /600$/i) {print STDERR "/     $a\r";}
-			if ($a =~ /700$/i) {print STDERR "|     $a\r";}
-			if ($a =~ /800$/i) {print STDERR "+     $a\r";}
-			if ($a =~ /900$/i) {print STDERR "0     $a\r";}
-			if ($a =~ /000$/i) {print "$a|$b|$c|$d|$e|$f|$g|$phone_number|\n";}
+			if ($q < 1) 
+				{
+				if ($a =~ /100$/i) {print STDERR "0     $a\r";}
+				if ($a =~ /200$/i) {print STDERR "+     $a\r";}
+				if ($a =~ /300$/i) {print STDERR "|     $a\r";}
+				if ($a =~ /400$/i) {print STDERR "\\     $a\r";}
+				if ($a =~ /500$/i) {print STDERR "-     $a\r";}
+				if ($a =~ /600$/i) {print STDERR "/     $a\r";}
+				if ($a =~ /700$/i) {print STDERR "|     $a\r";}
+				if ($a =~ /800$/i) {print STDERR "+     $a\r";}
+				if ($a =~ /900$/i) {print STDERR "0     $a\r";}
+				if ($a =~ /000$/i) {print "$a|$b|$c|$d|$e|$f|$g|$phone_number|\n";}
+				}
 
 			}
 
@@ -996,7 +1004,7 @@ foreach(@FILES)
 			if ($f > 0)
 				{$Falert .= "DUPLICATES:         $f\n";}
 
-			print "$Falert";
+			if ($q < 1) {print "$Falert";}
 			print Sout "$Falert";
 			$Ealert .= "$Falert";
 
@@ -1029,7 +1037,7 @@ if ($q < 1)
 
 if ( (length($Ealert)>5) && (length($email_list) > 3) )
 	{
-	print "Sending email: $email_list\n";
+	if ($q < 1) {print "Sending email: $email_list\n";}
 
 	use MIME::QuotedPrint;
 	use MIME::Base64;
@@ -1043,7 +1051,7 @@ if ( (length($Ealert)>5) && (length($email_list) > 3) )
 							Message => "VICIDIAL LEAD FILE LOAD $pulldate0\n\n$Ealert\n"
 					   );
 			sendmail(%mail) or die $mail::Sendmail::error;
-		   print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
+		   if ($q < 1) {print "ok. log says:\n", $mail::sendmail::log;}  ### print mail log for status
 	}
 
 exit;

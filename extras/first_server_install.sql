@@ -6,6 +6,7 @@ INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer
 INSERT INTO phones (extension, dialplan_number, voicemail_id, phone_ip, computer_ip, server_ip, login, pass, status, active, phone_type, fullname, company, protocol) values('callin','8300','8300','10.10.10.15','10.10.10.15','10.10.10.15','callin','test', 'ACTIVE','Y','Dial-in agent phone','Dial-in Agent Phone','TEST','EXTERNAL');
 
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users) values('6666','1234','Admin','9','ADMIN','1','1','1','1');
+INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,active) values('VDAD','donotedit','Outbound Auto Dial','1','ADMIN','N');
 
 INSERT INTO conferences values('8600001','10.10.10.15','');
 INSERT INTO conferences values('8600002','10.10.10.15','');

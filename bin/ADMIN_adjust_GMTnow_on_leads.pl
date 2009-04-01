@@ -23,9 +23,11 @@
 # 80917-2202 - Added FSO-FSA for Eastern Australia (not active)
 #              Added LSS-FSA for New Zealand (not active)
 # 90129-1114 - Added NANPA prefix lookup option
+# 90401-1327 - Fixed quiet flag function
 #
 
 $MT[0]='';
+$q=0;
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
@@ -55,12 +57,12 @@ if (length($ARGV[0])>1)
 	{
 		if ($args =~ /-q/i)
 		{
-		$q=1;   $Q=1;
+		$q=1;
 		}
 		if ($args =~ /-t|--test/i)
 		{
 		$T=1; $TEST=1;
-		print "\n-----TESTING -----\n\n";
+		if ($q < 1) {print "\n-----TESTING -----\n\n";}
 		}
 		if ($args =~ /--debug/i)
 		{
@@ -75,18 +77,18 @@ if (length($ARGV[0])>1)
 		if ($args =~ /--postal-code-gmt/i)
 		{
 		$searchPOST=1;
-		print "\n----- DO POSTAL CODE LOOKUP -----\n\n";
+		if ($q < 1) {print "\n----- DO POSTAL CODE LOOKUP -----\n\n";}
 		}
 		if ($args =~ /--nanpa-prefix-gmt/i)
 		{
 		$searchNANPA=1;
-		print "\n----- DO NANPA PREFIX LOOKUP -----\n\n";
+		if ($q < 1) {print "\n----- DO NANPA PREFIX LOOKUP -----\n\n";}
 		}
 		if ($args =~ /-singlelistid=/i)
 		{
 		@data_in = split(/-singlelistid=/,$args);
 			$singlelistid = $data_in[1];
-		print "\n----- SINGLE LISTID OVERRIDE: $singlelistid -----\n\n";
+		if ($q < 1) {print "\n----- SINGLE LISTID OVERRIDE: $singlelistid -----\n\n";}
 		}
 		else
 			{$singlelistid = '';}
@@ -867,7 +869,7 @@ if($DB){print "Area Code Updates: $TOTALarea_updated_count\n";}
 if($DB){print "NANPA Updates:     $TOTALnanpa_updated_count\n";}
 if($DB){print "\nDONE\n";}
 $secy = time();		$secz = ($secy - $secX);		$minz = ($secz/60);		# calculate script runtime so far
-print "     - process runtime      ($secz sec) ($minz minutes)\n";
+if ($q < 1) {print "     - process runtime      ($secz sec) ($minz minutes)\n";}
 
 exit;
 

@@ -303,6 +303,15 @@ NOTE: Upgrading from 1.1.12-3 to 2.0.1 is at the bottom
 67. Added new monitoring functionality to allow monitoring from one agent to
    another without hanging up
 
+68. Added Russian version of the Agent screen
+
+69. Added Dutch version of the Agent screen
+
+70. Many changes have been made to the extensions.conf dialplan. It is usually
+   better to take the default docs/conf_examples/extensions.conf.sample file and
+   take the customizations from your old extensions.conf file and move them into
+   the new file.
+
 
 
 

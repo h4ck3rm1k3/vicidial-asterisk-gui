@@ -17,6 +17,7 @@
 # 71215-0410 - fixed UPDATE/DELETE results
 # 80909-0555 - added vicidial_campaign_dnc table
 # 90307-2025 - Added several new queries and rearranged update/deletes
+# 90401-1335 - Added quiet and test flag functions
 #
 
 # default path to astguiclient configuration file:
@@ -62,6 +63,49 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VARDB_port) {$VARDB_port='3306';}
 
+
+
+$MT[0]='';
+$q=0;
+
+### begin parsing run-time options ###
+if (length($ARGV[0])>1)
+{
+	$i=0;
+	while ($#ARGV >= $i)
+	{
+	$args = "$args $ARGV[$i]";
+	$i++;
+	}
+
+	if ($args =~ /--help/i)
+	{
+	print "allowed run time options:\n";
+	print "  [-q] = quiet\n";
+	print "  [-t] = test\n";
+	print "  [-help] = this screen\n";
+	print "\n";
+
+	exit;
+	}
+	else
+	{
+		if ($args =~ /-t/i)
+		{
+		$T=1;
+		}
+		if ($args =~ /-q/i)
+		{
+		$q=1;
+		$DB=0;
+		}
+	}
+}
+else
+{
+print "no command line options set\n";
+}
+
 use DBI;	  
 
 $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
@@ -74,7 +118,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if (!$T) 
 			{
 			$affected_rows = $dbhA->do($stmtA);
-			if(!$Q){print STDERR "\n|$affected_rows vicidial_campaign_stats records reset|\n";}
+			if(!$q){print STDERR "\n|$affected_rows vicidial_campaign_stats records reset|\n";}
 			}
 
 	$stmtA = "optimize table vicidial_campaign_stats;";
@@ -84,7 +128,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -93,7 +137,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if (!$T) 
 			{
 			$affected_rows = $dbhA->do($stmtA);
-			if(!$Q){print STDERR "\n|$affected_rows vicidial_campaign_server_stats records deleted|\n";}
+			if(!$q){print STDERR "\n|$affected_rows vicidial_campaign_server_stats records deleted|\n";}
 			}
 
 	$stmtA = "optimize table vicidial_campaign_server_stats;";
@@ -103,7 +147,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -112,7 +156,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if (!$T) 
 			{
 			$affected_rows = $dbhA->do($stmtA);
-			if(!$Q){print STDERR "\n|$affected_rows vicidial_live_inbound_agents records deleted|\n";}
+			if(!$q){print STDERR "\n|$affected_rows vicidial_live_inbound_agents records deleted|\n";}
 			}
 
 	$stmtA = "optimize table vicidial_live_inbound_agents;";
@@ -122,7 +166,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -131,7 +175,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if (!$T) 
 			{
 			$affected_rows = $dbhA->do($stmtA);
-			if(!$Q){print STDERR "\n|$affected_rows vicidial_inbound_group_agents call counts reset|\n";}
+			if(!$q){print STDERR "\n|$affected_rows vicidial_inbound_group_agents call counts reset|\n";}
 			}
 
 	$stmtA = "optimize table vicidial_inbound_group_agents;";
@@ -141,7 +185,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -150,7 +194,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
 		if (!$T) 
 			{
 			$affected_rows = $dbhA->do($stmtA);
-			if(!$Q){print STDERR "\n|$affected_rows vicidial_campaign_agents call counts reset|\n";}
+			if(!$q){print STDERR "\n|$affected_rows vicidial_campaign_agents call counts reset|\n";}
 			}
 
 	$stmtA = "optimize table vicidial_campaign_agents;";
@@ -160,7 +204,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -171,7 +215,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -183,7 +227,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -195,7 +239,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -207,7 +251,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -219,7 +263,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -230,7 +274,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -242,7 +286,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -254,7 +298,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -266,7 +310,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -277,7 +321,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -288,7 +332,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -299,7 +343,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -310,7 +354,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -321,7 +365,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -332,7 +376,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -343,7 +387,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -354,7 +398,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
@@ -365,7 +409,7 @@ $dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VA
    					$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
    					$sthArows=$sthA->rows;
 					 @aryA = $sthA->fetchrow_array;
-   					 if (!$Q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
+   					 if (!$q) {print "|",$aryA[0],"|",$aryA[1],"|",$aryA[2],"|",$aryA[3],"|","\n";}
 					$sthA->finish();
 				 }
 
