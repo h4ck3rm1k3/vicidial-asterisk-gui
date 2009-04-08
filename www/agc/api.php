@@ -22,6 +22,7 @@
 #  - $dial_prefix
 #  - $source - ('vtiger','webform','adminweb')
 #  - $format - ('text','debug')
+#  - $vtiger_callback - ('YES','NO')
 
 # CHANGELOG:
 # 80703-2225 - First build of script
@@ -29,10 +30,11 @@
 # 90118-1051 - Added logging of API functions
 # 90128-0229 - Added vendor_id to dial function
 # 90303-0723 - Added group alias and dial prefix
+# 90407-1920 - Added vtiger_callback option for external_dial function
 #
 
-$version = '2.0.5-5';
-$build = '90303-0723';
+$version = '2.0.5-6';
+$build = '90407-1920';
 
 require("dbconnect.php");
 
@@ -67,9 +69,8 @@ if (isset($_GET["source"]))						{$source=$_GET["source"];}
 	elseif (isset($_POST["source"]))			{$source=$_POST["source"];}
 if (isset($_GET["format"]))						{$format=$_GET["format"];}
 	elseif (isset($_POST["format"]))			{$format=$_POST["format"];}
-
-$group_alias = ereg_replace("[^0-9a-zA-Z]","",$group_alias);
-$dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$dial_prefix);
+if (isset($_GET["vtiger_callback"]))			{$vtiger_callback=$_GET["vtiger_callback"];}
+	elseif (isset($_POST["vtiger_callback"]))	{$vtiger_callback=$_POST["vtiger_callback"];}
 
 header ("Content-type: text/html; charset=utf-8");
 header ("Cache-Control: no-cache, must-revalidate");  // HTTP/1.1
@@ -109,6 +110,7 @@ $group_alias = ereg_replace("[^0-9a-zA-Z]","",$group_alias);
 $dial_prefix = ereg_replace("[^0-9a-zA-Z]","",$dial_prefix);
 $source = ereg_replace("[^0-9a-zA-Z]","",$source);
 $format = ereg_replace("[^0-9a-zA-Z]","",$format);
+$vtiger_callback = ereg_replace("[^A-Z]","",$vtiger_callback);
 }
 
 ### date and fixed variables
@@ -439,7 +441,105 @@ if ($function == 'external_dial')
 						exit;
 						}
 					}
-				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number' where user='$agent_user';";
+
+				####### Begin Vtiger CallBack Launching #######
+				$vtiger_callback_id='';
+				if ( (eregi("YES",$vtiger_callback)) and (preg_match("/^99/",$value)) )
+					{
+					$value = preg_replace("/^99/",'',$value);
+					$value = ($value + 0);
+
+					$stmt = "SELECT enable_vtiger_integration,vtiger_server_ip,vtiger_dbname,vtiger_login,vtiger_pass,vtiger_url FROM system_settings;";
+					$rslt=mysql_query($stmt, $link);
+					$ss_conf_ct = mysql_num_rows($rslt);
+					if ($ss_conf_ct > 0)
+						{
+						$row=mysql_fetch_row($rslt);
+						$enable_vtiger_integration =	$row[0];
+						$vtiger_server_ip	=			$row[1];
+						$vtiger_dbname =				$row[2];
+						$vtiger_login =					$row[3];
+						$vtiger_pass =					$row[4];
+						$vtiger_url =					$row[5];
+						}
+
+					if ($enable_vtiger_integration > 0)
+						{
+						$stmt = "SELECT campaign_id FROM vicidial_live_agents where user='$agent_user';";
+						$rslt=mysql_query($stmt, $link);
+						$vtc_camp_ct = mysql_num_rows($rslt);
+						if ($vtc_camp_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$campaign_id =		$row[0];
+							}
+						$stmt = "SELECT vtiger_search_category,vtiger_create_call_record,vtiger_create_lead_record,vtiger_search_dead,vtiger_status_call FROM vicidial_campaigns where campaign_id='$campaign_id';";
+						$rslt=mysql_query($stmt, $link);
+						$vtc_conf_ct = mysql_num_rows($rslt);
+						if ($vtc_conf_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$vtiger_search_category =		$row[0];
+							$vtiger_create_call_record =	$row[1];
+							$vtiger_create_lead_record =	$row[2];
+							$vtiger_search_dead =			$row[3];
+							$vtiger_status_call =			$row[4];
+							}
+
+						### connect to your vtiger database
+						$linkV=mysql_connect("$vtiger_server_ip", "$vtiger_login","$vtiger_pass");
+						if (!$linkV) {die("Could not connect: $vtiger_server_ip|$vtiger_dbname|$vtiger_login|$vtiger_pass" . mysql_error());}
+						mysql_select_db("$vtiger_dbname", $linkV);
+
+						# make sure the ID is present in Vtiger database as an account
+						$stmt="SELECT count(*) from vtiger_seactivityrel where activityid='$value';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+						$vt_act_ct = mysql_num_rows($rslt);
+						if ($vt_act_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$activity_check = $row[0];
+							}
+						if ($activity_check > 0)
+							{
+							$stmt="SELECT crmid from vtiger_seactivityrel where activityid='$value';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $linkV);
+							$vt_actsel_ct = mysql_num_rows($rslt);
+							if ($vt_actsel_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$vendor_id = $row[0];
+								}
+							if (strlen($vendor_id) > 0)
+								{
+								$stmt="SELECT phone from vtiger_account where accountid='$vendor_id';";
+								if ($DB) {echo "$stmt\n";}
+								$rslt=mysql_query($stmt, $linkV);
+								$vt_acct_ct = mysql_num_rows($rslt);
+								if ($vt_acct_ct > 0)
+									{
+									$row=mysql_fetch_row($rslt);
+									$vtiger_callback_id="$value";
+									$value = $row[0];
+									}
+								}
+							}
+						else
+							{
+							$result = 'ERROR';
+							$result_reason = "vtiger callback activity does not exist in vtiger system";
+							echo "$result: $result_reason - $value\n";
+							api_log($link,$api_logging,$api_script,$user,$agent_user,$function,$value,$result,$result_reason,$source,$data);
+							exit;
+							}
+						}
+					}
+				####### End Vtiger CallBack Launching #######
+
+				### If no errors, run the update to place the call ###
+				$stmt="UPDATE vicidial_live_agents set external_dial='$value!$phone_code!$search!$preview!$focus!$vendor_id!$epoch!$dial_prefix!$group_alias!$caller_id_number!$vtiger_callback_id' where user='$agent_user';";
 					if ($format=='debug') {echo "\n<!-- $stmt -->";}
 				$rslt=mysql_query($stmt, $link);
 				$result = 'SUCCESS';

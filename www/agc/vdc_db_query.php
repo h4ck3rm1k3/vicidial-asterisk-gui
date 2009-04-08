@@ -83,6 +83,7 @@
 #  - $agent_dialed_number - ('1','')
 #  - $agent_dialed_type - ('MANUAL_OVERRIDE','MANUAL_DIALNOW','MANUAL_PREVIEW',...)
 #  - $wrapup - ('WRAPUP','')
+#  - $vtiger_callback_id - ('16534'...)
 #
 # CHANGELOG:
 # 50629-1044 - First build of script
@@ -195,10 +196,11 @@
 # 90323-2013 - Added function to put phone numbers in the DNC lists if they were set to status type dnc=Y
 # 90324-1316 - Added functions to log calls to Vtiger accounts and update status to siccode
 # 90327-1348 - Changed Vtiger status populate to use status name
+# 90408-0021 - Added API vtiger specific callback activity record ability
 #
 
-$version = '2.2.0-107';
-$build = '90327-1348';
+$version = '2.2.0-108';
+$build = '90408-0021';
 $mel=1;					# Mysql Error Log enabled = 1
 $mysql_log_count=212;
 $one_mysql_log=0;
@@ -366,7 +368,8 @@ if (isset($_GET["agent_dialed_type"]))				{$agent_dialed_type=$_GET["agent_diale
 	elseif (isset($_POST["agent_dialed_type"]))		{$agent_dialed_type=$_POST["agent_dialed_type"];}
 if (isset($_GET["wrapup"]))					{$wrapup=$_GET["wrapup"];}
 	elseif (isset($_POST["wrapup"]))		{$wrapup=$_POST["wrapup"];}
-
+if (isset($_GET["vtiger_callback_id"]))				{$vtiger_callback_id=$_GET["vtiger_callback_id"];}
+	elseif (isset($_POST["vtiger_callback_id"]))	{$vtiger_callback_id=$_POST["vtiger_callback_id"];}
 
 
 header ("Content-type: text/html; charset=utf-8");
@@ -3586,48 +3589,101 @@ if ($ACTION == 'updateDISPO')
 						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00200',$user,$server_ip,$session_name,$one_mysql_log);}
 					$row=mysql_fetch_row($rslt);
 					$user_id = $row[0];
-					
-					# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
-					$stmt="SELECT id from vtiger_crmentity_seq ;";
-					if ($DB) {echo "$stmt\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00201',$user,$server_ip,$session_name,$one_mysql_log);}
-					$row=mysql_fetch_row($rslt);
-					$activityid = ($row[0] + 1);
 
-					# Increase next aviable crmid with 1 so next record gets proper id
-					$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
-					if ($DB) {echo "$stmt\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00202',$user,$server_ip,$session_name,$one_mysql_log);}
-					
-					#Insert values into vtiger_salesmanactivityrel
-					$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00203',$user,$server_ip,$session_name,$one_mysql_log);}
-					if ($DB) {echo "|$leadid|\n";}
-					
-					#Insert values into vtiger_seactivityrel
-					$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00204',$user,$server_ip,$session_name,$one_mysql_log);}
-					if ($DB) {echo "|$leadid|\n";}
-					
-					#Insert values into vtiger_crmentity
-					$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00205',$user,$server_ip,$session_name,$one_mysql_log);}
-					if ($DB) {echo "|$leadid|\n";}
+					## if numbered callback activity record, alter existing record
+					$vtiger_callback_modified=0;
+					if ($vtiger_callback_id > 0)
+						{
+						# make sure the ID is present in Vtiger database as an account
+						$stmt="SELECT count(*) from vtiger_seactivityrel where activityid='$vtiger_callback_id';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00213',$user,$server_ip,$session_name,$one_mysql_log);}
+						$vt_act_ct = mysql_num_rows($rslt);
+						if ($vt_act_ct > 0)
+							{
+							$row=mysql_fetch_row($rslt);
+							$activity_check = $row[0];
+							}
+						if ($activity_check > 0)
+							{
+							$act_description='';
+							$stmt="SELECT description from vtiger_crmentity where crmid='$vtiger_callback_id';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $linkV);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00214',$user,$server_ip,$session_name,$one_mysql_log);}
+							$vt_actd_ct = mysql_num_rows($rslt);
+							if ($vt_actd_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$act_description = $row[0];
+								}
+							$act_subject='';
+							$stmt="SELECT subject from vtiger_activity where activityid='$vtiger_callback_id';";
+							if ($DB) {echo "$stmt\n";}
+							$rslt=mysql_query($stmt, $linkV);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00215',$user,$server_ip,$session_name,$one_mysql_log);}
+							$vt_actd_ct = mysql_num_rows($rslt);
+							if ($vt_actd_ct > 0)
+								{
+								$row=mysql_fetch_row($rslt);
+								$act_subject = $row[0];
+								}
 
-					#Insert values into vtiger_activity
-					$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VC Call: $status_name',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
-					if ($DB) {echo "|$stmt|\n";}
-					$rslt=mysql_query($stmt, $linkV);
-						if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00206',$user,$server_ip,$session_name,$one_mysql_log);}
-					if ($DB) {echo "|$leadid|\n";}
+							$stmt = "UPDATE vtiger_crmentity SET modifiedby='$user_id', description='$act_description - VICIDIAL Call user $user',modifiedtime='$NOW_TIME',viewedtime='$NOW_TIME' where crmid='$vtiger_callback_id';";
+							if ($DB) {echo "|$stmt|\n";}
+							$rslt=mysql_query($stmt, $linkV);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00216',$user,$server_ip,$session_name,$one_mysql_log);}
+							$stmt = "UPDATE vtiger_activity SET subject='VC Call: $status_name - $act_subject',date_start='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',eventstatus='Held' where activityid='$vtiger_callback_id';";
+							if ($DB) {echo "|$stmt|\n";}
+							$rslt=mysql_query($stmt, $linkV);
+								if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00217',$user,$server_ip,$session_name,$one_mysql_log);}
+							$vtiger_callback_modified=1;
+							}
+						}
+
+					## create new activity record
+					if ($vtiger_callback_modified < 1)
+						{
+						# Get next aviable id from vtiger_crmentity_seq to use as activityid in vtiger_crmentity	
+						$stmt="SELECT id from vtiger_crmentity_seq ;";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00201',$user,$server_ip,$session_name,$one_mysql_log);}
+						$row=mysql_fetch_row($rslt);
+						$activityid = ($row[0] + 1);
+
+						# Increase next aviable crmid with 1 so next record gets proper id
+						$stmt="UPDATE vtiger_crmentity_seq SET id = '$activityid';";
+						if ($DB) {echo "$stmt\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00202',$user,$server_ip,$session_name,$one_mysql_log);}
+						
+						#Insert values into vtiger_salesmanactivityrel
+						$stmt = "INSERT INTO vtiger_salesmanactivityrel SET smid='$user_id',activityid='$activityid';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00203',$user,$server_ip,$session_name,$one_mysql_log);}
+						
+						#Insert values into vtiger_seactivityrel
+						$stmt = "INSERT INTO vtiger_seactivityrel SET crmid='$vendor_id',activityid='$activityid';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00204',$user,$server_ip,$session_name,$one_mysql_log);}
+						
+						#Insert values into vtiger_crmentity
+						$stmt = "INSERT INTO vtiger_crmentity (crmid, smcreatorid, smownerid, modifiedby, setype, description, createdtime, modifiedtime, viewedtime, status, version, presence, deleted) VALUES ('$activityid', '$user_id', '$user_id','$user_id', 'Calendar', 'VICIDIAL Call user $user', '$NOW_TIME', '$NOW_TIME', '$NOW_TIME', NULL, '0', '1', '0');";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00205',$user,$server_ip,$session_name,$one_mysql_log);}
+
+						#Insert values into vtiger_activity
+						$stmt = "INSERT INTO vtiger_activity SET activityid='$activityid',subject='VC Call: $status_name',activitytype='Call',date_start='$TODAY',due_date='$TODAY',time_start='$HHMMnow',time_end='$HHMMend',sendnotification='0',duration_hours='0',duration_minutes='1',status='',eventstatus='Held',priority='Medium',location='VICIDIAL User $user',notime='0',visibility='Public',recurringtype='--None--';";
+						if ($DB) {echo "|$stmt|\n";}
+						$rslt=mysql_query($stmt, $linkV);
+							if ($mel > 0) {mysql_error_logging($NOW_TIME,$linkV,$mel,$stmt,'00206',$user,$server_ip,$session_name,$one_mysql_log);}
+						if ($DB) {echo "|$leadid|\n";}
+						}
 					}
 				### update the status of the record in vtiger
 				if (ereg('Y',$vtiger_status_call))

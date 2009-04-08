@@ -566,7 +566,7 @@ if ( ($active_asterisk_server =~ /Y/) && ($generate_vicidial_conf =~ /Y/) && ($r
 		$iax  .= "register => $server_id:test\@$server_ip[$i]:4569\n";
 
 		$Lext .= "; Remote Server VDAD extens: $server_id[$i] $server_ip[$i]\n";
-		$Lext .= "exten => _$VARremDIALstr*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,o)\n";
+		$Lext .= "exten => _$VARremDIALstr*.,1,Dial(\${TRUNK$server_id[$i]}/\${EXTEN:16},55,oT)\n";
 
 		$Liax .= "\n";
 		$Liax .= "[$server_id[$i]]\n";

@@ -75,75 +75,6 @@
  						<!-- uitype 111 added for noneditable existing picklist values - ahmed -->
                                               {elseif $keyid eq '15' || $keyid eq '16' || $keyid eq '111'} <!--ComboBox-->
  						{foreach item=arr from=$keyoptions}
---- ./vtigerservice.php	2009-01-26 20:13:22.000000000 -0500
-+++ ./vtigerservice.php	2009-01-26 22:16:02.000000000 -0500
-@@ -42,6 +42,58 @@
- }
- else
- {
-+	if(isset($_REQUEST['VCcall']))
-+	{
-+		$CL=':';
-+		$server_name = getenv("SERVER_NAME");
-+		$server_port = getenv("SERVER_PORT");
-+		if (eregi("443",$server_port)) {$HTTPprotocol = 'https://';}
-+		  else {$HTTPprotocol = 'http://';}
-+		if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
-+		else {$server_port = "$CL$server_port";}
-+		$URLbase = "$HTTPprotocol$server_name$server_port";
-+
-+		global $entityDel;
-+		global $display;
-+		global $category;
-+		header('Content-Type: text/html; charset='. $charset);
-+		session_start();
-+		require_once('include/utils/utils.php');
-+		require_once('config.inc.php');
-+		$default_config_values = Array( "allow_exports"=>"all","upload_maxsize"=>"3000000", "listview_max_textlength" => "40" );
-+		set_default_config($default_config_values);
-+		require_once('include/logging.php');
-+		require_once('modules/Users/Users.php');
-+		global $currentModule;
-+		$current_user = new Users();
-+
-+		$log =& LoggerManager::getLogger('index');
-+		global $seclog;
-+		$seclog =& LoggerManager::getLogger('SECURITY');
-+		$log->debug($_REQUEST);
-+
-+		// Check to see if there is an authenticated user in the session.
-+		if(isset($_SESSION["authenticated_user_id"]) && (isset($_SESSION["app_unique_key"]) && $_SESSION["app_unique_key"] == $application_unique_key))
-+		{
-+			$log->debug("We have an authenticated user id: ".$_SESSION["authenticated_user_id"]);
-+			$result = $current_user->retrieveCurrentUserInfoFromFile($_SESSION['authenticated_user_id']);
-+			$log->debug('Current user is: '.$current_user->user_name);
-+		}
-+
-+		$phone = $_REQUEST['phone'];   $vendor_id = $_REQUEST['vendor_id'];
-+		$user = $current_user->user_name;
-+
-+		$VCapiURL = "/agc/api.php";
-+		$VCpauseQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_pause&value=PAUSE";
-+		$VCcallQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_dial&value=$phone&phone_code=1&search=YES&preview=NO&focus=YES&vendor_id=$vendor_id";
-+		$replyP = file("$URLbase$VCapiURL$VCpauseQuery");
-+//		sleep(1);
-+		$replyC = file("$URLbase$VCapiURL$VCcallQuery");
-+		echo "$replyP[0]|$replyC[0]\n";
-+//		echo "$URLbase$VCapiURL$VCcallQuery\n";
-+	}
-+	else
-+	{
- 	echo "<h1>vtigerCRM Soap Services</h1>";
- 	echo "<li>vtigerCRM Outlook Plugin EndPoint URL -- Click <a href='vtigerservice.php?service=outlook'>here</a></li>";
- 	echo "<li>vtigerCRM Word Plugin EndPoint URL -- Click <a href='vtigerservice.php?service=wordplugin'>here</a></li>";
-@@ -49,6 +101,7 @@
- 	echo "<li>vtigerCRM Customer Portal EndPoint URL -- Click <a href='vtigerservice.php?service=customerportal'>here</a></li>";
- 	echo "<li>vtigerCRM WebForm EndPoint URL -- Click <a href='vtigerservice.php?service=webforms'>here</a></li>";
- 	echo "<li>vtigerCRM FireFox Extension EndPoint URL -- Click <a href='vtigerservice.php?service=firefox'>here</a></li>";
-+	}
- }
- 
- 
 --- ./include/js/dtlviewajax.js	2009-01-26 13:59:25.000000000 -0500
 +++ ./include/js/dtlviewajax.js	2009-01-26 15:02:33.000000000 -0500
 @@ -293,6 +293,9 @@
@@ -204,9 +135,10 @@
  						{if $MODULE eq 'Quotes' || $MODULE eq 'PurchaseOrder' || $MODULE eq 'SalesOrder' || $MODULE eq 'Invoice'}
  								{if $CREATEPDF eq 'permitted'}
  								<input title="Export To PDF" accessKey="Alt+e" class="crmbutton small create" onclick="this.form.return_module.value='{$MODULE}'; this.form.return_action.value='DetailView'; this.form.return_id.value='{$ID}'; this.form.module.value='{$MODULE}'; {if $MODULE eq 'SalesOrder'} this.form.action.value='CreateSOPDF'" {else} this.form.action.value='CreatePDF'" {/if} type="submit" name="Export To PDF" value="{$APP.LBL_EXPORT_TO_PDF}">&nbsp;
+
 --- ./include/js/general.js	2008-03-10 08:54:31.000000000 -0400
-+++ ./include/js/general.js	2009-03-26 20:07:23.000000000 -0400
-@@ -1768,6 +1768,68 @@
++++ ./include/js/general.js	2009-04-07 19:31:16.000000000 -0400
+@@ -1768,6 +1768,77 @@
          openPopUp('xComposeEmail',this,url,'createemailWin',830,662,opts);
  }
  
@@ -233,6 +165,15 @@
 +	}
 +if (xmlhttp) 
 +	{
++	var callback_flag='';
++        if (field_name=='CallBack')
++                {
++                var log_call = record_id + '';
++                while (log_call.length < 10)
++                        {log_call = "0" + log_call;}
++                phone = "99" + log_call;
++		callback_flag = '&callback=1';
++                }
 +	if (field_name=='fax')
 +		{
 +		var log_call = record_id + '';
@@ -247,7 +188,7 @@
 +                        {log_call = "0" + log_call;}
 +                phone = "19" + log_call;
 +                }
-+	var VCcallQuery = "VCcall=1&phone=" + phone + "&vendor_id=" + record_id;
++	var VCcallQuery = "VCcall=1&phone=" + phone + "&vendor_id=" + record_id + '' + callback_flag;
 +	xmlhttp.open('POST', 'vtigerservice.php'); 
 +	xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
 +	xmlhttp.send(VCcallQuery); 
@@ -275,3 +216,91 @@
  function fnHide_Event(obj){
          document.getElementById(obj).style.visibility = 'hidden';
  }
+--- ./vtigerservice.php	2008-03-10 08:54:31.000000000 -0400
++++ ./vtigerservice.php	2009-04-07 19:16:44.000000000 -0400
+@@ -42,6 +42,63 @@
+ }
+ else
+ {
++	if(isset($_REQUEST['VCcall']))
++	{
++		$CL=':';
++		$server_name = getenv("SERVER_NAME");
++		$server_port = getenv("SERVER_PORT");
++		if (eregi("443",$server_port)) {$HTTPprotocol = 'https://';}
++		  else {$HTTPprotocol = 'http://';}
++		if (($server_port == '80') or ($server_port == '443') ) {$server_port='';}
++		else {$server_port = "$CL$server_port";}
++		$URLbase = "$HTTPprotocol$server_name$server_port";
++		
++		$callback_flag='';
++		if(isset($_REQUEST['callback']))
++			{
++			$callback_flag = '&vtiger_callback=YES';
++			}
++		global $entityDel;
++		global $display;
++		global $category;
++		header('Content-Type: text/html; charset='. $charset);
++		session_start();
++		require_once('include/utils/utils.php');
++		require_once('config.inc.php');
++		$default_config_values = Array( "allow_exports"=>"all","upload_maxsize"=>"3000000", "listview_max_textlength" => "40" );
++		set_default_config($default_config_values);
++		require_once('include/logging.php');
++		require_once('modules/Users/Users.php');
++		global $currentModule;
++		$current_user = new Users();
++
++		$log =& LoggerManager::getLogger('index');
++		global $seclog;
++		$seclog =& LoggerManager::getLogger('SECURITY');
++		$log->debug($_REQUEST);
++
++		// Check to see if there is an authenticated user in the session.
++		if(isset($_SESSION["authenticated_user_id"]) && (isset($_SESSION["app_unique_key"]) && $_SESSION["app_unique_key"] == $application_unique_key))
++		{
++			$log->debug("We have an authenticated user id: ".$_SESSION["authenticated_user_id"]);
++			$result = $current_user->retrieveCurrentUserInfoFromFile($_SESSION['authenticated_user_id']);
++			$log->debug('Current user is: '.$current_user->user_name);
++		}
++
++		$phone = $_REQUEST['phone'];   $vendor_id = $_REQUEST['vendor_id'];
++		$user = $current_user->user_name;
++
++		$VCapiURL = "/agc/api.php";
++		$VCpauseQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_pause&value=PAUSE";
++		$VCcallQuery = "?source=vtiger&user=1000&pass=1234&agent_user=$user&function=external_dial&value=$phone&phone_code=1&search=YES&preview=NO&focus=YES&vendor_id=$vendor_id$callback_flag";
++		$replyP = file("$URLbase$VCapiURL$VCpauseQuery");
++//		sleep(1);
++		$replyC = file("$URLbase$VCapiURL$VCcallQuery");
++		echo "$replyP[0]|$replyC[0]\n";
++//		echo "$URLbase$VCapiURL$VCcallQuery\n";
++	}
++	else
++	{
+ 	echo "<h1>vtigerCRM Soap Services</h1>";
+ 	echo "<li>vtigerCRM Outlook Plugin EndPoint URL -- Click <a href='vtigerservice.php?service=outlook'>here</a></li>";
+ 	echo "<li>vtigerCRM Word Plugin EndPoint URL -- Click <a href='vtigerservice.php?service=wordplugin'>here</a></li>";
+@@ -49,6 +106,7 @@
+ 	echo "<li>vtigerCRM Customer Portal EndPoint URL -- Click <a href='vtigerservice.php?service=customerportal'>here</a></li>";
+ 	echo "<li>vtigerCRM WebForm EndPoint URL -- Click <a href='vtigerservice.php?service=webforms'>here</a></li>";
+ 	echo "<li>vtigerCRM FireFox Extension EndPoint URL -- Click <a href='vtigerservice.php?service=firefox'>here</a></li>";
++	}
+ }
+ 
+ 
+--- ./Smarty/templates/ActivityDetailView.tpl	2008-03-10 08:54:31.000000000 -0400
++++ ./Smarty/templates/ActivityDetailView.tpl	2009-04-07 18:50:36.000000000 -0400
+@@ -104,7 +104,10 @@
+ 						     <table border=0 cellspacing=0 cellpadding=5 width=100% class="small">
+ 						     	<tr>{strip}
+ 						     		<td colspan=4 class="tableHeading">
+-									<b>{$header}</b>
++									<b>{$header} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </b>
++									{if $ACTIVITYDATA.eventstatus eq 'Planned'}
++									VCcall: <a href="javascript:VICIDIALcall('{$ID}','CallBack','');">Place VC Callback</a>
++									{/if}
+ 								</td>{/strip}
+ 					             	</tr>
+ 						     </table>

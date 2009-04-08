@@ -141,6 +141,8 @@ dial_prefix -
  OPTIONAL, any dial prefix that you want to add to the beginning of the dial string for this call
 group_alias - 
  OPTIONAL, the outbound callerID(from an existing group-alias) that you want to use for this call
+vtiger_callback -
+ OPTIONAL, YES or NO, will lookup the phone number and Vtiger account ID from the provided Event ID
 
 RESPONSES:
 ERROR: external_dial not valid - 7275551212|1|YES|6666
@@ -148,6 +150,7 @@ ERROR: agent_user is not allowed to place manual dial calls - 6666
 ERROR: agent_user is not logged in - 6666
 ERROR: caller_id_number from group_alias is not valid - 6666|TESTING|123
 ERROR: group_alias is not valid - 6666|TESTING
+ERROR: vtiger callback activity does not exist in vtiger system - 12345
 SUCCESS: external_dial function set - 7275551212|1|YES|1232020456|6666
 
 
