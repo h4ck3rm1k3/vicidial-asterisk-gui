@@ -7,12 +7,13 @@ maxsilence=10
 silencethreshold=128
 maxlogins=3
 
-#include voicemail-vicidial.conf
-
 [zonemessages]
 eastern=America/New_York|'vm-received' Q 'digits/at' IMp
 central=America/Chicago|'vm-received' Q 'digits/at' IMp
 central24=America/Chicago|'vm-received' q 'digits/at' H 'digits/hundred' M 'hours'
 
 [default]
-include => vicidial-auto
+
+
+#include voicemail-vicidial.conf
+

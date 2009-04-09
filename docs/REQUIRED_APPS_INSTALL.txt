@@ -162,10 +162,10 @@ make install
 
 
 cd /usr/local
-wget http://www.openssl.org/source/openssl-0.9.8j.tar.gz
-gunzip openssl-0.9.8j.tar.gz
-tar xvf openssl-0.9.8j.tar
-cd openssl-0.9.8j
+wget http://www.openssl.org/source/openssl-0.9.8k.tar.gz
+gunzip openssl-0.9.8k.tar.gz
+tar xvf openssl-0.9.8k.tar
+cd openssl-0.9.8k
 ./config
 make
 make install
