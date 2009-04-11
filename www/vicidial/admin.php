@@ -1672,6 +1672,7 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90320-0424 - Fixed several small bugs conf records group alias and permissions
 # 90322-0122 - Added ability to delete from the DNC lists
 # 90322-1105 - Added new status settings and vtiger options
+# 90409-2133 - Fixed special characters in SCRIPTS
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
@@ -5960,6 +5961,7 @@ if ($ADD==1111111)
 
 		echo "<br>ADD NEW SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
 		echo "<input type=hidden name=ADD value=2111111>\n";
+		echo "<input type=hidden name=DB value=\"$DB\">\n";
 		echo "<center><TABLE width=$section_width cellspacing=3>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><input type=text name=script_id size=12 maxlength=10> (no spaces or punctuation)$NWB#vicidial_scripts-script_id$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
@@ -7780,7 +7782,7 @@ if ($ADD==2111111)
 			{
 			$stmt="INSERT INTO vicidial_scripts values('$script_id','$script_name','$script_comments','$script_text','$active');";
 			$rslt=mysql_query($stmt, $link);
-
+			if ($DB > 0) {echo "|$stmt|";}
 			echo "<br><B>SCRIPT ADDED: $script_id</B>\n";
 
 			### LOG INSERTION Admin Log Table ###
@@ -7820,6 +7822,7 @@ if ($ADD==21111111)
 			$stmt="INSERT INTO vicidial_lead_filters SET lead_filter_id='$lead_filter_id',lead_filter_name='$lead_filter_name',lead_filter_comments='$lead_filter_comments',lead_filter_sql='$lead_filter_sql';";
 			$rslt=mysql_query($stmt, $link);
 
+			if ($DB > 0) {echo "|$stmt|";}
 			echo "<br><B>FILTER ADDED: $lead_filter_id</B>\n";
 
 			### LOG INSERTION Admin Log Table ###
@@ -7858,6 +7861,7 @@ if ($ADD==211111111)
 			{
 			$stmt="INSERT INTO vicidial_call_times SET call_time_id='$call_time_id',call_time_name='$call_time_name',call_time_comments='$call_time_comments';";
 			$rslt=mysql_query($stmt, $link);
+			if ($DB > 0) {echo "|$stmt|";}
 
 			echo "<br><B>CALL TIME ADDED: $call_time_id</B>\n";
 
@@ -7897,6 +7901,7 @@ if ($ADD==2111111111)
 			{
 			$stmt="INSERT INTO vicidial_state_call_times SET state_call_time_id='$call_time_id',state_call_time_name='$call_time_name',state_call_time_comments='$call_time_comments',state_call_time_state='$state_call_time_state';";
 			$rslt=mysql_query($stmt, $link);
+			if ($DB > 0) {echo "|$stmt|";}
 
 			echo "<br><B>STATE CALL TIME ADDED: $call_time_id</B>\n";
 
@@ -7946,6 +7951,7 @@ if ($ADD==231111111)
 				}
 			$stmt="INSERT INTO vicidial_shifts SET shift_id='$shift_id',shift_name='$shift_name',shift_start_time='$shift_start_time',shift_length='$shift_length',shift_weekdays='$SHIFT_weekdays';";
 			$rslt=mysql_query($stmt, $link);
+			if ($DB > 0) {echo "|$stmt|";}
 
 			echo "<br><B>SHIFT ADDED: $shift_id</B>\n";
 
@@ -10373,7 +10379,7 @@ if ($ADD==4111111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_scripts set script_name='$script_name', script_comments='$script_comments', script_text='$script_text', active='$active' where script_id='$script_id';";
+		$stmt="UPDATE vicidial_scripts set script_name='$script_name', script_comments='$script_comments', script_text='" . mysql_real_escape_string($script_text) . "', active='$active' where script_id='$script_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>SCRIPT MODIFIED</B>\n";
@@ -10404,6 +10410,8 @@ if ($ADD==41111111)
 {
 	if ($LOGmodify_filters==1)
 	{
+	echo "<!-- $lead_filter_sql -->\n";
+	echo "<!--" . mysql_real_escape_string($lead_filter_sql) . " -->\n";
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	 if ( (strlen($lead_filter_id) < 2) or (strlen($lead_filter_name) < 2) or (strlen($lead_filter_sql) < 2) )
@@ -10413,7 +10421,7 @@ if ($ADD==41111111)
 		}
 	 else
 		{
-		$stmt="UPDATE vicidial_lead_filters set lead_filter_name='$lead_filter_name', lead_filter_comments='$lead_filter_comments', lead_filter_sql='$lead_filter_sql' where lead_filter_id='$lead_filter_id';";
+		$stmt="UPDATE vicidial_lead_filters set lead_filter_name='$lead_filter_name', lead_filter_comments='$lead_filter_comments', lead_filter_sql='" . mysql_real_escape_string($lead_filter_sql) . "' where lead_filter_id='$lead_filter_id';";
 		$rslt=mysql_query($stmt, $link);
 
 		echo "<br><B>FILTER MODIFIED</B>\n";
@@ -16563,6 +16571,7 @@ if ($ADD==3111111)
 
 	echo "<br>MODIFY A SCRIPT<form name=scriptForm action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=4111111>\n";
+	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<input type=hidden name=script_id value=\"$script_id\">\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script ID: </td><td align=left><B>$script_id</B>$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Script Name: </td><td align=left><input type=text name=script_name size=40 maxlength=50 value=\"$script_name\"> (title of the script)$NWB#vicidial_scripts-script_name$NWE</td></tr>\n";
@@ -16653,6 +16662,7 @@ if ($ADD==31111111)
 
 	echo "<br>MODIFY A FILTER<form action=$PHP_SELF method=POST>\n";
 	echo "<input type=hidden name=ADD value=41111111>\n";
+	echo "<input type=hidden name=DB value=\"$DB\">\n";
 	echo "<input type=hidden name=lead_filter_id value=\"$lead_filter_id\">\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Filter ID: </td><td align=left><B>$lead_filter_id</B>$NWB#vicidial_lead_filters-lead_filter_id$NWE</td></tr>\n";
 	echo "<tr bgcolor=#B6D3FC><td align=right>Filter Name: </td><td align=left><input type=text name=lead_filter_name size=40 maxlength=50 value=\"$lead_filter_name\"> (short description of the filter)$NWB#vicidial_lead_filters-lead_filter_name$NWE</td></tr>\n";
@@ -16788,6 +16798,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>MODIFY A CALL TIME<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=411111111>\n";
+echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=hidden name=call_time_id value=\"$call_time_id\">\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time ID: </td><td align=left colspan=3><B>$call_time_id</B>$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time Name: </td><td align=left colspan=3><input type=text name=call_time_name size=40 maxlength=50 value=\"$call_time_name\"> (short description of the call time)$NWB#vicidial_call_times-call_time_name$NWE</td></tr>\n";
@@ -16940,6 +16951,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>MODIFY A STATE CALL TIME<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=4111111111>\n";
+echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=hidden name=call_time_id value=\"$call_time_id\">\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Call Time ID: </td><td align=left colspan=3><B>$call_time_id</B>$NWB#vicidial_call_times-call_time_id$NWE</td></tr>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>State Call Time State: </td><td align=left colspan=3><input type=text name=state_call_time_state size=4 maxlength=2 value=\"$state_call_time_state\"> $NWB#vicidial_call_times-state_call_time_state$NWE</td></tr>\n";
@@ -17030,6 +17042,7 @@ echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 echo "<br>MODIFY A SHIFT<form action=$PHP_SELF method=POST>\n";
 echo "<input type=hidden name=ADD value=431111111>\n";
+echo "<input type=hidden name=DB value=\"$DB\">\n";
 echo "<input type=hidden name=shift_id value=\"$shift_id\">\n";
 echo "<center><TABLE width=$section_width cellspacing=3>\n";
 echo "<tr bgcolor=#B6D3FC><td align=right>Shift ID: </td><td align=left><B>$shift_id</B></td></tr>\n";
