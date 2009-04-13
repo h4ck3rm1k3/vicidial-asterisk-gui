@@ -1169,6 +1169,7 @@ foreach(@campaign_id)
 				{
 				@aryA = $sthA->fetchrow_array;
 				$lead_filter_sql[$i] = "$aryA[0]";
+				$lead_filter_sql[$i] =~ s/\\//gi;
 				$rec_count++;
 				}
 			$sthA->finish();

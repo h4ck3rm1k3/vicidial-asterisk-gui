@@ -1673,11 +1673,12 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90322-0122 - Added ability to delete from the DNC lists
 # 90322-1105 - Added new status settings and vtiger options
 # 90409-2133 - Fixed special characters in SCRIPTS
+# 90413-0755 - Fixed filter and script slashes issues
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-176';
-$build = '90322-1105';
+$admin_version = '2.2.0-177';
+$build = '90413-0755';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -5129,6 +5130,7 @@ if ($ADD==73)
 	$camp_lists = eregi_replace(".$","",$camp_lists);
 
 	$filterSQL = $filtersql_list[$lead_filter_id];
+	$filterSQL = preg_replace("/\\\\/","",$filterSQL);
 	$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
 	if (strlen($filterSQL)>4)
 		{$fSQL = "and $filterSQL";}
@@ -5214,7 +5216,7 @@ if ($ADD==7111111)
 	$rslt=mysql_query($stmt, $link);
 	$row=mysql_fetch_row($rslt);
 	$script_name =		$row[1];
-	$script_text =		$row[3];
+	$script_text =		stripslashes($row[3]);
 
 	if (eregi("iframe src",$script_text))
 		{
@@ -13872,6 +13874,7 @@ if ($ADD==31)
 		echo "<center><b>\n";
 
 		$filterSQL = $filtersql_list[$lead_filter_id];
+		$filterSQL = preg_replace("/\\\\/","",$filterSQL);
 		$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
 		if (strlen($filterSQL)>4)
 			{$fSQL = "and $filterSQL";}
@@ -14698,6 +14701,7 @@ if ($ADD==34)
 			echo "<center><b>\n";
 
 			$filterSQL = $filtersql_list[$lead_filter_id];
+			$filterSQL = preg_replace("/\\\\/","",$filterSQL);
 			$filterSQL = eregi_replace("^and|and$|^or|or$","",$filterSQL);
 			if (strlen($filterSQL)>4)
 				{$fSQL = "and $filterSQL";}
@@ -16565,7 +16569,7 @@ if ($ADD==3111111)
 	$row=mysql_fetch_row($rslt);
 	$script_name =		$row[1];
 	$script_comments =	$row[2];
-	$script_text =		$row[3];
+	$script_text =		stripslashes($row[3]);
 	$active =			$row[4];
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
@@ -16657,7 +16661,7 @@ if ($ADD==31111111)
 	$row=mysql_fetch_row($rslt);
 	$lead_filter_name =		$row[1];
 	$lead_filter_comments =	$row[2];
-	$lead_filter_sql =		$row[3];
+	$lead_filter_sql =		stripslashes($row[3]);
 	echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
 	echo "<br>MODIFY A FILTER<form action=$PHP_SELF method=POST>\n";

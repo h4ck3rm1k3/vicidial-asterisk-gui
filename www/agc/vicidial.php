@@ -1932,6 +1932,7 @@ else
 		$row=mysql_fetch_row($rslt);
 		$MMscriptid[$e] =$row[0];
 		$MMscriptname[$e] = urlencode($row[1]);
+		$row[2] = stripslashes($row[2]);
 		$MMscripttext[$e] = urlencode($row[2]);
 		$MMscriptids = "$MMscriptids'$MMscriptid[$e]',";
 		$MMscriptnames = "$MMscriptnames'$MMscriptname[$e]',";
@@ -4061,6 +4062,7 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 					MDlookResponse = xmlhttp.responseText;
 					var MDlookResponse_array=MDlookResponse.split("\n");
 					var MDlookCID = MDlookResponse_array[0];
+					var regMDL = new RegExp("^Local","ig");
 					if (MDlookCID == "NO")
 						{
 						MD_ring_secondS++;
@@ -4077,7 +4079,6 @@ if ($enable_fast_refresh < 1) {echo "\tvar refresh_interval = 1000;\n";}
 						}
 					else
 						{
-						var regMDL = new RegExp("^Local","ig");
 						if (taskCheckOR == 'YES')
 							{
 							XDuniqueid = MDlookResponse_array[0];

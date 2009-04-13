@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# AST_SWAMPauto_dial.pl version 0.2
+# AST_SWAMPauto_dial.pl version 0.3
 #
 # DESCRIPTION:
 # uses MySQL to place auto_dial calls on the VICIDIAL dialer system
@@ -18,21 +18,22 @@
 # exten => 834562311,2,Playback(gettysburgaddress)
 # exten => 834562311,3,Hangup
 #
-# Copyright (C) 2008  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
+# Copyright (C) 2009  Matt Florell <vicidial@gmail.com>    LICENSE: AGPLv2
 #
 # changes:
 # 50708-1533 - First version
 # 80217-0226 - Changed to DBI and added more options
+# 90411-0708 - Added --concurrent-calls flag
 #
 
 
 # constants
 	$CIDlist[0] = '9989998888';
 $dialstring_800_prefix = '91';
-$dialstring_number = '6102350343'; # number being dialed (inbound queue)
+$dialstring_number = '6102350796'; # number being dialed (inbound queue)
 	$server_ips[0] = '192.168.75.21';
 	$server_ips[1] = '192.168.75.23';
-#	$server_ips[2] = '192.168.75.22';
+	$server_ips[2] = '192.168.75.22';
 #	$server_ips[3] = '192.168.1.240';
 #	$server_ips[0] = '192.168.1.106';
 #	$server_ips[1] = '192.168.1.249';
@@ -53,7 +54,7 @@ $dialstring_number = '6102350343'; # number being dialed (inbound queue)
 $exten='834562311'; # where the test audio file is located
 $context='default';
 $US='_';
-$loop_delay = '1';
+$loop_delay = '10000';
 $it='0';
 $total_loops='3600'; # 3600 seconds = 1 hour
 #$total_loops='100'; # 3600 seconds = 1 hour
@@ -63,49 +64,59 @@ $MT[0]='';
 
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
-{
+	{
 	$i=0;
 	while ($#ARGV >= $i)
-	{
-	$args = "$args $ARGV[$i]";
-	$i++;
-	}
+		{
+		$args = "$args $ARGV[$i]";
+		$i++;
+		}
 
 	if ($args =~ /--help/i)
-	{
-	print "allowed run time options:\n  [-t] = test\n  [-debug] = verbose debug messages\n  [--delay=XXX] = delay of XXX seconds per loop, default 2.5 seconds\n\n";
-	}
-	else
-	{
-		if ($args =~ /--delay=/i)
 		{
-		@data_in = split(/--delay=/,$args);
+		print "allowed run time options:\n";
+		print "  [-t] = test\n";
+		print "  [-debug] = verbose debug messages\n";
+		print "  [--delay=XXX] = delay of XXX seconds per loop, default 2.5 seconds\n";
+		print "  [--concurrent-calls=XXX] = sets number of concurrent calls to maintain, overrides delay setting\n\n";
+		exit;
+		}
+	else
+		{
+		if ($args =~ /--delay=/i)
+			{
+			@data_in = split(/--delay=/,$args);
 			$loop_delay = $data_in[1];
 			print "     LOOP DELAY OVERRIDE!!!!! = $loop_delay seconds\n\n";
 			$loop_delay = ($loop_delay * 1000);
-		}
+			}
 		else
-		{
-		$loop_delay = '1000';
-		}
+			{
+			$loop_delay = '1000';
+			}
+		if ($args =~ /--concurrent-calls=/i)
+			{
+			@data_in = split(/--concurrent-calls=/,$args);
+			$concurrent_calls = $data_in[1];
+			$loop_delay = (100000 / $concurrent_calls);
+			print "     CONCURRENT CALLS OVERRIDE!!!!! = $concurrent_calls - $loop_delay\n\n";
+			}
 		if ($args =~ /-debug/i)
-		{
-		$DB=1; # Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
-		}
+			{
+			$DB=1; # Debug flag, set to 0 for no debug messages, On an active system this will generate hundreds of lines of output per minute
+			}
 		if ($args =~ /-t/i)
-		{
-		$TEST=1;
-		$T=1;
+			{
+			$TEST=1;
+			$T=1;
+			}
 		}
 	}
-}
 else
-{
-print "no command line options set\n";
+	{
+	print "no command line options set\n";
 	$DB=1;
-	$loop_delay = '1000';
-#	$loop_delay = '500';
-}
+	}
 ### end parsing run-time options ###
 
 
