@@ -343,3 +343,25 @@ exten => _689XXX,1,Dial(${TRUNKIAX1}/08600${EXTEN:3},55,o)
 exten => _789XXX,1,Dial(${TRUNKIAX2}/08600${EXTEN:3},55,o)
 exten => _08600XXX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,To)
 
+
+
+Example of altering vicidial_conferences entries to make monitoring easier:
+delete from vicidial_conferences where conf_exten < 8600100 and server_ip='192.168.1.101';
+delete from vicidial_conferences where conf_exten > 8600199 and server_ip='192.168.1.101';
+update vicidial_conferences set conf_exten = (conf_exten + 100) where server_ip='192.168.1.101';
+
+Then add the following to your extensions.conf:
+remove existing blind monitoring 08600XXX extension and replace with this:
+; blind monitoring
+exten => _086001XX,1,Dial(${TRUNKblind}/6${EXTEN:1},55,ot)
+exten => _086002XX,1,Dial(${TRUNKvicidial2}/${EXTEN},55,ot)
+exten => _086003XX,1,Dial(${TRUNKvicidial3}/${EXTEN},55,ot)
+exten => _086004XX,1,Dial(${TRUNKvicidial4}/${EXTEN},55,ot)
+
+Change the _8600[1-2]XX to just _86--1XX
+
+in the meetme.conf
+remove all conferences before 8600200 and after 8600299
+
+(vi command for search and replace ":%s/86001/86002/g")
+

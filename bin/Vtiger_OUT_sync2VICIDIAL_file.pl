@@ -12,6 +12,7 @@
 # CHANGES
 # 90128-0319 - First build
 # 90401-1347 - Fixed quiet flag
+# 90417-0519 - Added custom field updates for timezone and last/largest sale amounts
 #
 
 $secX = time();
@@ -101,12 +102,16 @@ if (length($ARGV[0])>1)
 		{
 		print "allowed run time options:\n";
 		print "  [-q] = quiet\n";
-		print "  [-t] = test\n";
+		print "  [--test] = test\n";
 		print "  [--debug] = debug output\n";
 		print "  [--format=standard] = ability to define a format, standard is default, formats allowed shown in examples\n";
 		print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
 		print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
 		print "  [--duplicate-system-vendor] = checks for the same website in the entire system before inserting lead\n";
+		print "  [--vt-sales-update] = updates the Vtiger account custom sales fields based upon today sales order data\n";
+		print "  [--vt-sales-update-alldate] = updates the Vtiger account custom sales fields based upon all sales order data\n";
+		print "  [--vt-timezone-update] = updates the Vtiger account custom timezone field based upon ViciDial timezone/state\n";
+		print "  [--skip-vicidial-update] = skips the lead file export and all ViciDial list updating functions\n";
 		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
 		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
 		print "  [--email-list=test@test.com:test2@test.com] = send email results for each file to these addresses\n";
@@ -141,12 +146,13 @@ if (length($ARGV[0])>1)
 			}
 		else {$DBX=0;}
 
-		if ($args =~ /-t/i)
+		if ($args =~ /-test/i)
 			{
 			$T=1;
-			$TEST=1;
 			if ($q < 1) {print "\n----- TESTING -----\n\n";}
 			}
+		else
+			{$T=0;}
 
 		if ($args =~ /-format=/i)
 			{
@@ -177,6 +183,26 @@ if (length($ARGV[0])>1)
 			{
 			$dupcheckvend=1;
 			if ($q < 1) {print "\n----- DUPLICATE SYSTEM CHECK VENDOR -----\n\n";}
+			}
+		if ($args =~ /-vt-sales-update/i)
+			{
+			$vt_sales_update=1;
+			if ($q < 1) {print "\n----- VTIGER SALES DATE FIELD UPDATE TODAY -----\n\n";}
+			}
+		if ($args =~ /-vt-sales-update-alldate/i)
+			{
+			$vt_sales_update_alldate=1;
+			if ($q < 1) {print "\n----- VTIGER SALES DATE FIELD UPDATE ALLDATE -----\n\n";}
+			}
+		if ($args =~ /-vt-timezone-update/i)
+			{
+			$vt_timezone_update=1;
+			if ($q < 1) {print "\n----- VTIGER TIMEZONE FIELD UPDATE -----\n\n";}
+			}
+		if ($args =~ /-skip-vicidial-update/i)
+			{
+			$skip_vicidial_update=1;
+			if ($q < 1) {print "\n----- SKIP VICIDIAL UPDATE -----\n\n";}
 			}
 		if ($args =~ /-ftp-pull/i)
 			{
@@ -224,13 +250,18 @@ else
 	$i=0;
 	$forcelistid = '';
 	$format='standard';
+	$vt_sales_update=0;
+	$vt_sales_update_alldate=0;
+	$vt_timezone_update=0;
+	$skip_vicidial_update=0;
+	$T=0;
 	}
 ### end parsing run-time options ###
 
 if ($q < 1)
 	{
 	print "\n\n\n\n\n\n\n\n\n\n\n\n-- Vtiger_OUT_sync2VICIDIAL_file.pl --\n\n";
-	print "This program is designed to export a PIPE delimited file of the Accounts from Vtiger and format it for import into the VICIDIAL system. \n\n";
+	print "This program is designed to export a PIPE delimited file of the Accounts from Vtiger and format it for import into the VICIDIAL system. Also allows for other Vtiger data update functions.\n\n";
 	}
 
 $i=0;
@@ -285,13 +316,104 @@ $d=0;	### status of 'REFERRED' counter ###
 $e=0;	### status of 'DUPLICATE' vendor counter ###
 $f=0;	### number of 'DUPLICATE' phone counter ###
 $g=0;	### number of leads with multi-alt-entries
+$h=0;	### number of timezone updates
+$j=0;	### number of saleamount updates
 
 
 ### open the output file for writing ###
 open(out, ">$dir2/$VDLfile")
 		|| die "Can't open $VDLfile: $!\n";
 
+$vt_timezone_field_exists=0;
+if ($vt_timezone_update > 0)
+	{
+	$stmtB="SELECT count(*) from vtiger_field where fieldlabel='Timezone';";
+	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+	$sthBrows=$sthB->rows;
+	if ($sthBrows > 0)
+		{
+		@aryB = $sthB->fetchrow_array;
+		$vt_timezone_field_exists = "$aryB[0]";
+		}
+	$sthB->finish();
 
+	if ($vt_timezone_field_exists > 0)
+		{
+		$stmtB="SELECT fieldname from vtiger_field where fieldlabel='Timezone';";
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$vt_timezone_field_name = "$aryB[0]";
+			}
+		$sthB->finish();
+
+		if ($q < 1) {print "Vtiger Timezone field found: $vt_timezone_field_name, starting updates...\n";}
+		}
+	}
+
+
+
+$vt_last_saleamount_field_exists=0;
+$vt_largest_saleamount_field_exists=0;
+if ( ($vt_sales_update > 0) || ($vt_sales_update_alldate > 0) )
+	{
+	$stmtB="SELECT count(*) from vtiger_field where fieldlabel='Last Sale Amount';";
+	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+	$sthBrows=$sthB->rows;
+	if ($sthBrows > 0)
+		{
+		@aryB = $sthB->fetchrow_array;
+		$vt_last_saleamount_field_exists = "$aryB[0]";
+		}
+	$sthB->finish();
+
+	$stmtB="SELECT count(*) from vtiger_field where fieldlabel='Largest Sale Amount';";
+	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+	$sthBrows=$sthB->rows;
+	if ($sthBrows > 0)
+		{
+		@aryB = $sthB->fetchrow_array;
+		$vt_largest_saleamount_field_exists = "$aryB[0]";
+		}
+	$sthB->finish();
+
+	if ($vt_last_saleamount_field_exists > 0)
+		{
+		$stmtB="SELECT fieldname from vtiger_field where fieldlabel='Last Sale Amount';";
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$vt_last_saleamount_field_name = "$aryB[0]";
+			}
+		$sthB->finish();
+
+		if ($q < 1) {print "Vtiger Last Sale Amount field found: $vt_last_saleamount_field_name, starting updates...\n";}
+		}
+	if ($vt_largest_saleamount_field_exists > 0)
+		{
+		$stmtB="SELECT fieldname from vtiger_field where fieldlabel='Largest Sale Amount';";
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$vt_largest_saleamount_field_name = "$aryB[0]";
+			}
+		$sthB->finish();
+
+		if ($q < 1) {print "Vtiger Largest Sale Amount field found: $vt_largest_saleamount_field_name, starting updates...\n";}
+		}
+	}
 
 
 
@@ -304,7 +426,7 @@ $i=0;
 while ($sthBrowsC > $i)
 	{
 	@aryB = $sthB->fetchrow_array;
-	$crmid[$i] = $aryB[0];
+	$crmid[$i] =	$aryB[0];
 	$i++;
 	}
 $sthB->finish();
@@ -313,62 +435,14 @@ $sthB->finish();
 $i=0;
 while ($sthBrowsC > $i)
 	{
-	$VL_dup=0;
-	$VL_phone_dup=0;
 
-	$stmtB="SELECT accountname,ownership,siccode,annualrevenue,tickersymbol,phone,otherphone,fax,email1,website from vtiger_account where accountid='$crmid[$i]';";
-		if($DBX){print STDERR "\n|$stmtB|\n";}
-	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
-	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
-	$sthBrows=$sthB->rows;
-	if ($sthBrows > 0)
-		{
-		@aryB = $sthB->fetchrow_array;
-		$accountname =		$aryB[0];
-		$ownership =		$aryB[1];
-		$siccode =			$aryB[2];
-		$annualrevenue =	$aryB[3];
-		$tickersymbol =		$aryB[4];
-		$phone =			$aryB[5];
-		$otherphone =		$aryB[6];
-		$fax =				$aryB[7];
-		$email1 =			$aryB[8];
-		$website =			$aryB[9];
-		}
-	$sthB->finish();
 
-	$stmtB="SELECT bill_city,bill_code,bill_country,bill_state,bill_street,bill_pobox from vtiger_accountbillads where accountaddressid='$crmid[$i]';";
-		if($DBX){print STDERR "\n|$stmtB|\n";}
-	$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
-	$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
-	$sthBrows=$sthB->rows;
-	if ($sthBrows > 0)
-		{
-		@aryB = $sthB->fetchrow_array;
-		$bill_city =		$aryB[0];
-		$bill_code =		$aryB[1];
-		$bill_country =		$aryB[2];
-		$bill_state =		$aryB[3];
-		$bill_street =		$aryB[4];
-		$bill_pobox =		$aryB[5];
-		}
-	$sthB->finish();
 
-	if ($dupchecksys > 0)
+
+	##### BEGIN TIMEZONE UPDATE #####
+	if ( ($vt_timezone_update > 0) && ($vt_timezone_field_exists > 0) )
 		{
-		$stmtA = "SELECT count(*) FROM vicidial_list where phone_number='$phone';";
-		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
-		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
-		$sthArows=$sthA->rows;
-		if ($sthArows > 0)
-			{
-			@aryA = $sthA->fetchrow_array;
-			$VL_phone_dup = 		"$aryA[0]";
-			}
-		$sthA->finish();
-		}
-	if ($dupcheckvend > 0)
-		{
+		$VL_exists=0;
 		$stmtA = "SELECT count(*) FROM vicidial_list where vendor_lead_code='$crmid[$i]';";
 		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
@@ -376,42 +450,208 @@ while ($sthBrowsC > $i)
 		if ($sthArows > 0)
 			{
 			@aryA = $sthA->fetchrow_array;
-			$VL_dup = 		"$aryA[0]";
+			$VL_exists = 		"$aryA[0]";
 			}
 		$sthA->finish();
-		}
 
-	if ($VL_phone_dup > 0)
-		{
-		if($DB){print "DUPLICATE PHONE: $phone|$crmid[$i]\n";}
-		$f++;
-		$affected_rowsA=0;
-		### update the existing vicidial_list entry ###
-		$stmtA = "UPDATE vicidial_list SET first_name='$accountname',last_name='$ownership',address1='$bill_street',address2='$bill_pobox',city='$bill_city',state='$bill_state',postal_code='$bill_code',country='$bill_country',vendor_lead_code='$crmid[$i]',address3='$fax',alt_phone='$otherphone',email='$email1',province='$website',security_phrase='$tickersymbol',comments='$siccode|$annualrevenue' where phone_number='$phone' limit 1;";
-			if (!$T) {$affected_rowsA = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtB|\n";
-			if($DB){print STDERR "\n|$affected_rowsA|$stmtA|\n";}
-		$c = ($affected_rowsA + $c);
-		}
-	else
-		{
-		if ($VL_dup > 0)
+		if ($VL_exists > 0)
 			{
-			if($DB){print "DUPLICATE VENDOR_ID: $crmid[$i]\n";}
-			$e++;
+			$stmtA = "SELECT state,gmt_offset_now FROM vicidial_list where vendor_lead_code='$crmid[$i]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VL_state = 		"$aryA[0]";
+				$VL_timezone = 		"$aryA[1]";
+				}
+			$sthA->finish();
+
+			$tz_set=0;
+			$timezone_abb = 'NONE';
+			if ($VL_state =~ /AZ/)												{$timezone_abb = 'MST';   $tz_set=1;}
+			if ( ($VL_state =~ /HI/) && ($tz_set < 1) )							{$timezone_abb = 'HST';   $tz_set=1;}
+			if ( ($VL_timezone == "-10") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'HST';   $tz_set=1;}
+			if ( ($VL_timezone == "-9") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'AKT';   $tz_set=1;}
+			if ( ($VL_timezone == "-8") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'PST';   $tz_set=1;}
+			if ( ($VL_timezone == "-7") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'MST';   $tz_set=1;}
+			if ( ($VL_timezone == "-6") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'CST';   $tz_set=1;}
+			if ( ($VL_timezone == "-5") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'EST';   $tz_set=1;}
+			if ( ($VL_timezone == "-4") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'AST';   $tz_set=1;}
+			if ( ($VL_timezone == "-3.5") && ($isdst < 1) && ($tz_set < 1) )	{$timezone_abb = 'NST';   $tz_set=1;}
+			if ( ($VL_timezone == "10") && ($isdst < 1) && ($tz_set < 1) )		{$timezone_abb = 'ChST';  $tz_set=1;}
+			if ( ($VL_timezone == "-9") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'HDT';   $tz_set=1;}
+			if ( ($VL_timezone == "-8") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'ADT';   $tz_set=1;}
+			if ( ($VL_timezone == "-7") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'PDT';   $tz_set=1;}
+			if ( ($VL_timezone == "-6") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'MDT';   $tz_set=1;}
+			if ( ($VL_timezone == "-5") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'CDT';   $tz_set=1;}
+			if ( ($VL_timezone == "-4") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'EDT';   $tz_set=1;}
+			if ( ($VL_timezone == "-3") && ($isdst > 0) && ($tz_set < 1) )		{$timezone_abb = 'ADT';   $tz_set=1;}
+			if ( ($VL_timezone == "-2.5") && ($isdst > 0) && ($tz_set < 1) )	{$timezone_abb = 'NDT';   $tz_set=1;}
+
+			$stmtB = "UPDATE vtiger_accountscf SET $vt_timezone_field_name='$timezone_abb' where accountid='$crmid[$i]';";
+				if ($T < 1) {$affected_rowsB = $dbhB->do($stmtB)    or die  "Couldn't execute query: |$stmtB|\n";}
+				if($DB){print "|$affected_rowsB|$stmtB|\n";}
+			$h = ($affected_rowsB + $h);
+			}
+		}
+	##### END TIMEZONE UPDATE #####
+
+
+
+	##### BEGIN SALE AMOUNT UPDATE #####
+	if ( ( ($vt_sales_update > 0) || ($vt_sales_update_alldate > 0) ) && ( ($vt_last_saleamount_field_exists > 0) && ($vt_largest_saleamount_field_exists > 0) ) )
+		{
+		$last_sale='0.00';
+		$largest_sale='0.00';
+		if ($vt_sales_update > 0) {$duedateSQL = "and duedate='$crmid[$i]'";}
+		if ($vt_sales_update_alldate > 0) {$duedateSQL = "";}
+
+		$VS_exists=0;
+		$stmtB="SELECT count(*) from vtiger_salesorder where accountid='$crmid[$i]' $duedateSQL order by duedate;";
+			if($DBX){print STDERR "\n|$stmtB|\n";}
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$VS_exists =		$aryB[0];
+			}
+		$sthB->finish();
+
+		if ($VS_exists > 0)
+			{
+			$k=0;
+			$stmtB="SELECT total from vtiger_salesorder where accountid='$crmid[$i]' $duedateSQL order by duedate;";
+				if($DBX){print STDERR "\n|$stmtB|\n";}
+			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+			$sthBrows=$sthB->rows;
+			while ($sthBrows > $k)
+				{
+				@aryB = $sthB->fetchrow_array;
+				$last_sale =		$aryB[0];
+				if ($aryB[0] > $largest_sale) {$largest_sale = $aryB[0];}
+				$k++;
+				}
+			$sthB->finish();
+
+			$stmtB = "UPDATE vtiger_accountscf SET $vt_largest_saleamount_field_name='$largest_sale',$vt_last_saleamount_field_name='$last_sale' where accountid='$crmid[$i]';";
+				if ($T < 1) {$affected_rowsB = $dbhB->do($stmtB)    or die  "Couldn't execute query: |$stmtB|\n";}
+				if($DB){print "|$affected_rowsB|$stmtB|\n";}
+			$j = ($affected_rowsB + $j);
+			}
+		}
+	##### END SALE AMOUNT UPDATE #####
+
+
+
+	##### BEGIN VICIDIAL UPDATE #####
+	if ($skip_vicidial_update < 1)
+		{
+		$VL_dup=0;
+		$VL_phone_dup=0;
+
+		$stmtB="SELECT accountname,ownership,siccode,annualrevenue,tickersymbol,phone,otherphone,fax,email1,website from vtiger_account where accountid='$crmid[$i]';";
+			if($DBX){print STDERR "\n|$stmtB|\n";}
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$accountname =		$aryB[0];
+			$ownership =		$aryB[1];
+			$siccode =			$aryB[2];
+			$annualrevenue =	$aryB[3];
+			$tickersymbol =		$aryB[4];
+			$phone =			$aryB[5];
+			$otherphone =		$aryB[6];
+			$fax =				$aryB[7];
+			$email1 =			$aryB[8];
+			$website =			$aryB[9];
+			}
+		$sthB->finish();
+
+		$stmtB="SELECT bill_city,bill_code,bill_country,bill_state,bill_street,bill_pobox from vtiger_accountbillads where accountaddressid='$crmid[$i]';";
+			if($DBX){print STDERR "\n|$stmtB|\n";}
+		$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+		$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+		$sthBrows=$sthB->rows;
+		if ($sthBrows > 0)
+			{
+			@aryB = $sthB->fetchrow_array;
+			$bill_city =		$aryB[0];
+			$bill_code =		$aryB[1];
+			$bill_country =		$aryB[2];
+			$bill_state =		$aryB[3];
+			$bill_street =		$aryB[4];
+			$bill_pobox =		$aryB[5];
+			}
+		$sthB->finish();
+
+		if ($dupchecksys > 0)
+			{
+			$stmtA = "SELECT count(*) FROM vicidial_list where phone_number='$phone';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VL_phone_dup = 		"$aryA[0]";
+				}
+			$sthA->finish();
+			}
+		if ($dupcheckvend > 0)
+			{
+			$stmtA = "SELECT count(*) FROM vicidial_list where vendor_lead_code='$crmid[$i]';";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VL_dup = 		"$aryA[0]";
+				}
+			$sthA->finish();
+			}
+
+		if ($VL_phone_dup > 0)
+			{
+			if($DB){print "DUPLICATE PHONE: $phone|$crmid[$i]\n";}
+			$f++;
 			$affected_rowsA=0;
 			### update the existing vicidial_list entry ###
-			$stmtA = "UPDATE vicidial_list SET first_name='$accountname',last_name='$ownership',address1='$bill_street',address2='$bill_pobox',city='$bill_city',state='$bill_state',postal_code='$bill_code',country_code='$bill_country',phone_number='$phone',address3='$fax',alt_phone='$otherphone',email='$email1',province='$website',security_phrase='$tickersymbol',comments='$siccode $annualrevenue' where vendor_lead_code='$crmid[$i]' limit 1;";
-				if (!$T) {$affected_rowsA = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtB|\n";
+			$stmtA = "UPDATE vicidial_list SET first_name='$accountname',last_name='$ownership',address1='$bill_street',address2='$bill_pobox',city='$bill_city',state='$bill_state',postal_code='$bill_code',country='$bill_country',vendor_lead_code='$crmid[$i]',address3='$fax',alt_phone='$otherphone',email='$email1',province='$website',security_phrase='$tickersymbol',comments='$siccode|$annualrevenue' where phone_number='$phone' limit 1;";
+				if ($T < 1) {$affected_rowsA = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtB|\n";
 				if($DB){print STDERR "\n|$affected_rowsA|$stmtA|\n";}
 			$c = ($affected_rowsA + $c);
 			}
 		else
 			{
-			### print the output file in proper format
-			print out "$crmid[$i]||$list_id|$phone_code|$phone||$accountname||$ownership|$bill_street|$bill_pobox|$fax|$bill_city|$bill_state|$website|$bill_code|$bill_country|||$otherphone|$email1|$ticketsymbol|$siccode $annualrevenue\n";
-			$b++;
+			if ($VL_dup > 0)
+				{
+				if($DB){print "DUPLICATE VENDOR_ID: $crmid[$i]\n";}
+				$e++;
+				$affected_rowsA=0;
+				### update the existing vicidial_list entry ###
+				$stmtA = "UPDATE vicidial_list SET first_name='$accountname',last_name='$ownership',address1='$bill_street',address2='$bill_pobox',city='$bill_city',state='$bill_state',postal_code='$bill_code',country_code='$bill_country',phone_number='$phone',address3='$fax',alt_phone='$otherphone',email='$email1',province='$website',security_phrase='$tickersymbol',comments='$siccode $annualrevenue' where vendor_lead_code='$crmid[$i]' limit 1;";
+					if ($T < 1) {$affected_rowsA = $dbhA->do($stmtA); } #  or die  "Couldn't execute query: |$stmtB|\n";
+					if($DB){print STDERR "\n|$affected_rowsA|$stmtA|\n";}
+				$c = ($affected_rowsA + $c);
+				}
+			else
+				{
+				### print the output file in proper format
+				print out "$crmid[$i]||$list_id|$phone_code|$phone||$accountname||$ownership|$bill_street|$bill_pobox|$fax|$bill_city|$bill_state|$website|$bill_code|$bill_country|||$otherphone|$email1|$ticketsymbol|$siccode $annualrevenue\n";
+				$b++;
+				}
 			}
-		}
+		} 
+	##### END VICIDIAL UPDATE #####
 
 	$i++;
 
@@ -426,7 +666,7 @@ while ($sthBrowsC > $i)
 		if ($i =~ /70$/i) {print STDERR "|     $i\r";}
 		if ($i =~ /80$/i) {print STDERR "+     $i\r";}
 		if ($i =~ /90$/i) {print STDERR "0     $i\r";}
-		if ($i =~ /00$/i) {print "$i|$b|$c|$d|$e|$f|$g|$crmid[$i]|$phone_number|\n";}
+		if ($i =~ /00$/i) {print "$i|$b|$c|$d|$e|$f|$g|$h|$crmid[$i]|$phone_number|\n";}
 		}
 	}
 
@@ -448,6 +688,8 @@ while ($sthBrowsC > $i)
 		{$Falert .= "VENDOR DUPLICATES:  $e\n";}
 	if ($f > 0)
 		{$Falert .= "PHONE DUPLICATES:   $f\n";}
+	$Falert .= "TIMEZONE UPDATES:   $h\n";
+	$Falert .= "SALE AMOUNT UPDATES:$j\n";
 
 	if ($q < 1) {print "$Falert";}
 	print Sout "$Falert";
@@ -458,7 +700,7 @@ while ($sthBrowsC > $i)
 	chmod 0777, "$VDHLOGfile";
 
 	### Move file to the LEADS_IN directory locally
-	if (!$T) {`mv -f $dir2/$VDLfile $dir1/$VDLfile`;}
+	if ($T < 1) {`mv -f $dir2/$VDLfile $dir1/$VDLfile`;}
 
 
 $dbhA->disconnect();

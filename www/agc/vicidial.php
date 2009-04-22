@@ -434,7 +434,7 @@ $camp_form_code .= "<option value=\"\"></option>\n";
 $LOGallowed_campaignsSQL='';
 if ($relogin == 'YES')
 {
-	$stmt="SELECT user_group from vicidial_users where user='$VD_login' and pass='$VD_pass'";
+	$stmt="SELECT user_group from vicidial_users where user='$VD_login' and pass='$VD_pass';";
 	if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 	$rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01002',$VD_login,$server_ip,$session_name,$one_mysql_log);}
@@ -488,7 +488,7 @@ if ($MGR_override > 0)
 	}
 
 
-$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id";
+$stmt="SELECT campaign_id,campaign_name from vicidial_campaigns where active='Y' $LOGallowed_campaignsSQL order by campaign_id;";
 if ($non_latin > 0) {$rslt=mysql_query("SET NAMES 'UTF8'");}
 $rslt=mysql_query($stmt, $link);
 			if ($mel > 0) {mysql_error_logging($NOW_TIME,$link,$mel,$stmt,'01004',$VD_login,$server_ip,$session_name,$one_mysql_log);}

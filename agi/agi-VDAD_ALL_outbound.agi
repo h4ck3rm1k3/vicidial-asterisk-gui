@@ -359,7 +359,8 @@ if ($call_handle_method =~ /SURVEYCAMPCEP/)
 	if ($sthArows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
-		$survey_customer_nameRAW =		"Hello, If this is $aryA[0] $aryA[1] Please press one now ";
+	#	$survey_customer_nameRAW =		"Hello, If this is $aryA[0] $aryA[1] Please press one now ";
+		$survey_customer_nameRAW =		"hello, this is a call for $aryA[0] $aryA[1],, if you are $aryA[0] $aryA[1] then press 1 to speak with an agent,, if we have not reached the correct number, please press 2 to have your telephone number removed from our database";
 		$survey_customer_name = $survey_customer_nameRAW;
 		$survey_customer_name =~ s/[^, 0-9a-zA-Z]//gi;
 		$survey_customer_name =~ s/ /\\ /gi;
@@ -405,7 +406,7 @@ if ($affected_rows > 0)
 	$sthA->finish();
 
 	### Grab campaign values from the database
-	$stmtA = "SELECT drop_call_seconds,drop_action,safe_harbor_exten,concurrent_transfers,next_agent_call,voicemail_ext,drop_inbound_group,use_internal_dnc,use_campaign_dnc,cpd_amd_action,am_message_exten FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
+	$stmtA = "SELECT drop_call_seconds,drop_action,safe_harbor_exten,concurrent_transfers,next_agent_call,voicemail_ext,drop_inbound_group,use_internal_dnc,use_campaign_dnc,cpd_amd_action,am_message_exten,three_way_call_cid,campaign_cid FROM vicidial_campaigns where campaign_id = '$VDADcampaign';";
 	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
 	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
 	$sthArows=$sthA->rows;
@@ -415,7 +416,7 @@ if ($affected_rows > 0)
 		{
 		@aryA = $sthA->fetchrow_array;
 		$DBdrop_call_seconds	= "$aryA[0]";
-		$DBdrop_action	= "$aryA[1]";
+		$DBdrop_action	=		"$aryA[1]";
 		$DBsafe_harbor_exten	= "$aryA[2]";
 		$DBconcurrent_transfers	= "$aryA[3]";
 		if ($DBdrop_call_seconds)	{$DROP_TIME = $DBdrop_call_seconds;}
@@ -428,6 +429,8 @@ if ($affected_rows > 0)
 		$use_campaign_dnc =		"$aryA[8]";
 		$cpd_amd_action =		"$aryA[9]";
 		$am_message_exten =		"$aryA[10]";
+		$three_way_call_cid =	"$aryA[11]";
+		$campaign_cid =			"$aryA[12]";
 		 $rec_count++;
 		}
 	$sthA->finish();
@@ -760,7 +763,19 @@ if ($call_handle_method =~ /SURVEY/)
 					{
 					$survey_status='SVYEXT';
 					if (length($survey_xfer_exten)>0)
-						{$DROPexten = "$survey_xfer_exten";}
+						{
+						$DROPexten = "$survey_xfer_exten";
+
+						if ($three_way_call_cid !~ /CUSTOMER/)
+							{
+							$newcallerid = "\"$campaign_cid <$campaign_cid>\"";
+							$AGI->set_callerid($newcallerid);
+
+							print STDERR "Setting CID \"$newcallerid\"\n";
+							checkresult($result);
+							if ($AGILOG) {$agi_string = "callerID changed: \"$calleridname\" \<$VDADphone\>";   &agi_output;}
+							}
+						}
 					}
 				if ($survey_method =~ /HANGUP/)
 					{

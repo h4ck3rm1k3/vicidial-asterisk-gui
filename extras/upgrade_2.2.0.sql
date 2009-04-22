@@ -24,3 +24,9 @@ ALTER TABLE vicidial_campaign_statuses ADD not_interested ENUM('Y','N') default 
 ALTER TABLE vicidial_campaign_statuses ADD unworkable ENUM('Y','N') default 'N';
 
 UPDATE system_settings SET db_schema_version='1137';
+
+ALTER TABLE vicidial_users ADD email VARCHAR(100) default '';
+ALTER TABLE vicidial_users ADD user_code VARCHAR(100) default '';
+ALTER TABLE vicidial_users ADD territory VARCHAR(100) default '';
+
+UPDATE system_settings SET db_schema_version='1138';

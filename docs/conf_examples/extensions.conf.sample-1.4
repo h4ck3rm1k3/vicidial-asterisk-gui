@@ -601,8 +601,8 @@ exten => i,1,Goto(monitor_exit,s,1)
 exten => #,1,Goto(monitor_exit,s,1)
 exten => t,1,Goto(monitor_exit,s,1)
 
-exten => _8[0-2]XX,1,Meetme(8600${EXTEN:1},FmqX) ; Listen
-exten => _99[0-2]XX,1,Meetme(8600${EXTEN:2},FX)  ; Barge
+exten => _8[0-2]XX,1,Meetme(8600${EXTEN:1},mqX) ; Listen
+exten => _99[0-2]XX,1,Meetme(8600${EXTEN:2},X)  ; Barge
 
 [monitor_exit]
 exten => h,1,DeadAGI(agi://127.0.0.1:4577/call_log--HVcauses--PRI-----NODEBUG-----${HANGUPCAUSE}-----${DIALSTATUS}-----${DIALEDTIME}-----${ANSWEREDTIME})

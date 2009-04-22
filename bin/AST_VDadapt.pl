@@ -27,6 +27,7 @@
 # 81021-2201 - Deactivated queue_log QUEUESTART event
 # 81022-0713 - Added gathering of vicidial_inbound_groups stats(day only)
 # 81108-0808 - Added more inbound stats with some debug output and added campaign agent non-pause time
+# 90415-0925 - Fixed rare division by zero bug
 #
 
 # constants
@@ -1497,8 +1498,16 @@ if ( ($dial_method[$i] =~ /ADAPT_HARD_LIMIT|ADAPT_AVERAGE|ADAPT_TAPERED/) || ($f
 	{
 	# Calculate the optimal dial_level differential for the past minute
 	$differential_target[$i] = ($differential_onemin[$i] + $adaptive_dl_diff_target[$i]);
-	$differential_mul[$i] = ($differential_target[$i] / $agents_average_onemin[$i]);
-	$differential_pct_raw[$i] = ($differential_mul[$i] * 100);
+	if ( ($differential_target[$i] != 0) && ($agents_average_onemin[$i] != 0) )
+		{
+		$differential_mul[$i] = ($differential_target[$i] / $agents_average_onemin[$i]);
+		$differential_pct_raw[$i] = ($differential_mul[$i] * 100);
+		}
+	else
+		{
+		$differential_mul[$i] = 0;
+		$differential_pct_raw[$i] = 0;
+		}
 	$differential_pct[$i] = sprintf("%.2f", $differential_pct_raw[$i]);
 
 	# Factor in the intensity setting

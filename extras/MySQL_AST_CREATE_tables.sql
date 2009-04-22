@@ -495,7 +495,10 @@ agent_shift_enforcement_override ENUM('DISABLED','OFF','START','ALL') default 'D
 manager_shift_enforcement_override ENUM('0','1') default '0',
 shift_override_flag ENUM('0','1') default '0',
 export_reports ENUM('0','1') default '0',
-delete_from_dnc ENUM('0','1') default '0'
+delete_from_dnc ENUM('0','1') default '0',
+email VARCHAR(100) default '',
+user_code VARCHAR(100) default '',
+territory VARCHAR(100) default ''
 );
 
 

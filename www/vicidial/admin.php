@@ -970,6 +970,10 @@ if (isset($_GET["not_interested"]))				{$not_interested=$_GET["not_interested"];
 	elseif (isset($_POST["not_interested"]))	{$not_interested=$_POST["not_interested"];}
 if (isset($_GET["unworkable"]))					{$unworkable=$_GET["unworkable"];}
 	elseif (isset($_POST["unworkable"]))		{$unworkable=$_POST["unworkable"];}
+if (isset($_GET["user_code"]))					{$user_code=$_GET["user_code"];}
+	elseif (isset($_POST["user_code"]))			{$user_code=$_POST["user_code"];}
+if (isset($_GET["territory"]))					{$territory=$_GET["territory"];}
+	elseif (isset($_POST["territory"]))			{$territory=$_POST["territory"];}
 
 
 	if (isset($script_id)) {$script_id= strtoupper($script_id);}
@@ -1428,6 +1432,8 @@ $template_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$template_name);
 $carrier_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$carrier_name);
 $group_alias_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$group_alias_name);
 $caller_id_name = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$caller_id_name);
+$user_code = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$user_code);
+$territory = ereg_replace("[^ \.\,-\_0-9a-zA-Z]","",$territory);
 
 ### ALPHA-NUMERIC and underscore and dash and slash and at and dot
 $call_out_number_group = ereg_replace("[^-\.\:\/\@\_0-9a-zA-Z]","",$call_out_number_group);
@@ -1674,11 +1680,13 @@ $dialplan_entry = ereg_replace(";","",$dialplan_entry);
 # 90322-1105 - Added new status settings and vtiger options
 # 90409-2133 - Fixed special characters in SCRIPTS
 # 90413-0755 - Fixed filter and script slashes issues
+# 90417-0211 - Fixed filter and script slashes issues
+# 90422-0613 - Added user_code, territory and email to vicidial_users
 #
 # make sure you have added a user to the vicidial_users MySQL table with at least user_level 8 to access this page the first time
 
-$admin_version = '2.2.0-177';
-$build = '90413-0755';
+$admin_version = '2.2.0-179';
+$build = '90422-0613';
 
 $STARTtime = date("U");
 $SQLdate = date("Y-m-d H:i:s");
@@ -2617,6 +2625,11 @@ echo "<TABLE WIDTH=98% BGCOLOR=#E6E6E6 cellpadding=2 cellspacing=0><TR><TD ALIGN
 <A NAME="vicidial_users-active">
 <BR>
 <B>Active -</B> This field defines whether the user is active in the system and can use VICIDIAL resources. Default is Y
+
+<BR>
+<A NAME="vicidial_users-optional">
+<BR>
+<B>Email, User Code and Territory -</B> These are optional fields.
 
 <BR>
 <A NAME="vicidial_users-hotkeys_active">
@@ -3650,7 +3663,7 @@ if ($SSqc_features_active > 0)
 <BR>
 <A NAME="vicidial_inbound_groups-play_estimate_hold_time">
 <BR>
-<B>Play Estimated Hold Time -</B> This defines whether the caller will hear the estimated hold time before they are transferred to an agent. Default is N.
+<B>Play Estimated Hold Time -</B> This defines whether the caller will hear the estimated hold time before they are transferred to an agent. Default is N. If the customer is on hold and hears this estimated hold time message, the minimum time that will be played is 15 seconds.
 
 <BR>
 <A NAME="vicidial_inbound_groups-hold_time_option">
@@ -6791,7 +6804,7 @@ if ($ADD=="2A")
 				$stmt="UPDATE system_settings SET auto_user_add_value='$user';";
 				$rslt=mysql_query($stmt, $link);
 				}
-			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc from vicidial_users where user=\"$source_user_id\";";
+			$stmt="INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory) SELECT \"$user\",\"$pass\",\"$full_name\",user_level,user_group,phone_login,phone_pass,delete_users,delete_user_groups,delete_lists,delete_campaigns,delete_ingroups,delete_remote_agents,load_leads,campaign_detail,ast_admin_access,ast_delete_phones,delete_scripts,modify_leads,hotkeys_active,change_agent_campaign,agent_choose_ingroups,closer_campaigns,scheduled_callbacks,agentonly_callbacks,agentcall_manual,vicidial_recording,vicidial_transfers,delete_filters,alter_agent_interface_options,closer_default_blended,delete_call_times,modify_call_times,modify_users,modify_campaigns,modify_lists,modify_scripts,modify_filters,modify_ingroups,modify_usergroups,modify_remoteagents,modify_servers,view_reports,vicidial_recording_override,alter_custdata_override,qc_enabled,qc_user_level,qc_pass,qc_finish,qc_commit,add_timeclock_log,modify_timeclock_log,delete_timeclock_log,alter_custphone_override,vdc_agent_api_access,modify_inbound_dids,delete_inbound_dids,active,alert_enabled,download_lists,agent_shift_enforcement_override,manager_shift_enforcement_override,export_reports,delete_from_dnc,email,user_code,territory from vicidial_users where user=\"$source_user_id\";";
 			$rslt=mysql_query($stmt, $link);
 
 			$stmtA="INSERT INTO vicidial_inbound_group_agents (user,group_id,group_rank,group_weight,calls_today) SELECT \"$user\",group_id,group_rank,group_weight,\"0\" from vicidial_inbound_group_agents where user=\"$source_user_id\";";
@@ -7782,7 +7795,7 @@ if ($ADD==2111111)
 			 }
 		 else
 			{
-			$stmt="INSERT INTO vicidial_scripts values('$script_id','$script_name','$script_comments','$script_text','$active');";
+			$stmt="INSERT INTO vicidial_scripts values('$script_id','$script_name','$script_comments','" . mysql_real_escape_string($script_text) . "','$active');";
 			$rslt=mysql_query($stmt, $link);
 			if ($DB > 0) {echo "|$stmt|";}
 			echo "<br><B>SCRIPT ADDED: $script_id</B>\n";
@@ -7821,7 +7834,7 @@ if ($ADD==21111111)
 			 }
 		 else
 			{
-			$stmt="INSERT INTO vicidial_lead_filters SET lead_filter_id='$lead_filter_id',lead_filter_name='$lead_filter_name',lead_filter_comments='$lead_filter_comments',lead_filter_sql='$lead_filter_sql';";
+			$stmt="INSERT INTO vicidial_lead_filters SET lead_filter_id='$lead_filter_id',lead_filter_name='$lead_filter_name',lead_filter_comments='$lead_filter_comments',lead_filter_sql='" . mysql_real_escape_string($lead_filter_sql) . "';";
 			$rslt=mysql_query($stmt, $link);
 
 			if ($DB > 0) {echo "|$stmt|";}
@@ -8510,7 +8523,7 @@ if ($ADD=="4A")
 			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override',export_reports='$export_reports',delete_from_dnc='$delete_from_dnc' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',delete_users='$delete_users',delete_user_groups='$delete_user_groups',delete_lists='$delete_lists',delete_campaigns='$delete_campaigns',delete_ingroups='$delete_ingroups',delete_remote_agents='$delete_remote_agents',load_leads='$load_leads',campaign_detail='$campaign_detail',ast_admin_access='$ast_admin_access',ast_delete_phones='$ast_delete_phones',delete_scripts='$delete_scripts',modify_leads='$modify_leads',hotkeys_active='$hotkeys_active',change_agent_campaign='$change_agent_campaign',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',delete_filters='$delete_filters',alter_agent_interface_options='$alter_agent_interface_options',closer_default_blended='$closer_default_blended',delete_call_times='$delete_call_times',modify_call_times='$modify_call_times',modify_users='$modify_users',modify_campaigns='$modify_campaigns',modify_lists='$modify_lists',modify_scripts='$modify_scripts',modify_filters='$modify_filters',modify_ingroups='$modify_ingroups',modify_usergroups='$modify_usergroups',modify_remoteagents='$modify_remoteagents',modify_servers='$modify_servers',view_reports='$view_reports',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',add_timeclock_log='$add_timeclock_log',modify_timeclock_log='$modify_timeclock_log',delete_timeclock_log='$delete_timeclock_log',alter_custphone_override='$alter_custphone_override',vdc_agent_api_access='$vdc_agent_api_access',modify_inbound_dids='$modify_inbound_dids',delete_inbound_dids='$delete_inbound_dids',active='$active',download_lists='$download_lists',agent_shift_enforcement_override='$agent_shift_enforcement_override',manager_shift_enforcement_override='$manager_shift_enforcement_override',export_reports='$export_reports',delete_from_dnc='$delete_from_dnc',email='$email',user_code='$user_code',territory='$territory' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG INSERTION Admin Log Table ###
@@ -8743,7 +8756,7 @@ if ($ADD=="4B")
 			}
 		echo "<br><B>USER MODIFIED - ADMIN: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active',agent_shift_enforcement_override='$agent_shift_enforcement_override' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',hotkeys_active='$hotkeys_active',agent_choose_ingroups='$agent_choose_ingroups',closer_campaigns='$groups_value',scheduled_callbacks='$scheduled_callbacks',agentonly_callbacks='$agentonly_callbacks',agentcall_manual='$agentcall_manual',vicidial_recording='$vicidial_recording',vicidial_transfers='$vicidial_transfers',closer_default_blended='$closer_default_blended',vicidial_recording_override='$vicidial_recording_override',alter_custdata_override='$alter_custdata_override',qc_enabled='$qc_enabled',qc_user_level='$qc_user_level',qc_pass='$qc_pass',qc_finish='$qc_finish',qc_commit='$qc_commit',alter_custphone_override='$alter_custphone_override',active='$active',agent_shift_enforcement_override='$agent_shift_enforcement_override',email='$email',user_code='$user_code',territory='$territory' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG INSERTION Admin Log Table ###
@@ -8971,7 +8984,7 @@ if ($ADD==4)
 		{
 		echo "<br><B>USER MODIFIED: $user</B>\n";
 
-		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',active='$active' where user='$user';";
+		$stmt="UPDATE vicidial_users set pass='$pass',full_name='$full_name',user_level='$user_level',user_group='$user_group',phone_login='$phone_login',phone_pass='$phone_pass',active='$active',email='$email',user_code='$user_code',territory='$territory' where user='$user';";
 		$rslt=mysql_query($stmt, $link);
 
 		### LOG INSERTION Admin Log Table ###
@@ -12933,6 +12946,9 @@ if ($ADD==3)
 	$manager_shift_enforcement_override =	$row[62];
 	$export_reports =		$row[64];
 	$delete_from_dnc =		$row[65];
+	$email =				$row[66];
+	$user_code =			$row[67];
+	$territory =			$row[68];
 
 	if ( ($user_level >= $LOGuser_level) and ($LOGuser_level < 9) )
 		{
@@ -12982,6 +12998,9 @@ if ($ADD==3)
 		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Login: </td><td align=left><input type=text name=phone_login size=20 maxlength=20 value=\"$phone_login\">$NWB#vicidial_users-phone_login$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Phone Pass: </td><td align=left><input type=text name=phone_pass size=20 maxlength=20 value=\"$phone_pass\">$NWB#vicidial_users-phone_pass$NWE</td></tr>\n";
 		echo "<tr bgcolor=#B6D3FC><td align=right>Active: </td><td align=left><select size=1 name=active><option>Y</option><option>N</option><option SELECTED>$active</option></select>$NWB#vicidial_users-active$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Email: </td><td align=left><input type=text name=email size=40 maxlength=100 value=\"$email\">$NWB#vicidial_users-optional$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>User Code: </td><td align=left><input type=text name=user_code size=40 maxlength=100 value=\"$user_code\">$NWB#vicidial_users-optional$NWE</td></tr>\n";
+		echo "<tr bgcolor=#B6D3FC><td align=right>Territory: </td><td align=left><input type=text name=territory size=40 maxlength=100 value=\"$territory\">$NWB#vicidial_users-optional$NWE</td></tr>\n";
 
 		if ( ($LOGuser_level > 8) or ($LOGalter_agent_interface == "1") )
 			{
@@ -19924,7 +19943,7 @@ if ($ADD==999999)
 		echo "<TABLE><TR><TD>\n";
 		echo "<FONT FACE=\"ARIAL,HELVETICA\" COLOR=BLACK SIZE=2>";
 
-		$stmt="select server_id,server_description,server_ip,active,sysload,channels_total,cpu_idle_percent,disk_usage from servers;";
+		$stmt="select server_id,server_description,server_ip,active,sysload,channels_total,cpu_idle_percent,disk_usage from servers order by server_id;";
 		$rslt=mysql_query($stmt, $link);
 		if ($DB) {echo "$stmt\n";}
 		$servers_to_print = mysql_num_rows($rslt);

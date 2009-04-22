@@ -1,0 +1,31 @@
+############################################################  ADMIN
+Delete From DNC Lists||
+This setting if set to 1 will allow a manager to remove phone numbers from the DNC lists in the VICIDIAL system||
+DNC NOT DELETED||
+This phone number is not in the Do Not Call List||
+DNC DELETED||
+ADD OR DELETE NUMBERS FROM THE DNC LIST||
+Add or Delete||
+Add-Delete Number From DNC||
+Vtiger Search Dead Accounts||
+If Vtiger integration is enabled in the system settings then this setting will define whether deleted accounts will be searched when the agent clicks WEB FORM to search in the Vtiger system. DISABLED- deleted leads will not be searched, ASK- deleted leads will be searched and the vtiger search web page will ask the agent if they want to make the Vtiger account active, RESURRECT- will automatically make the deleted account active again and will take the agent to the account screen without delay upon clicking on WEB FORM. Default is DISABLED||
+The DISPO option will create a call record for the Vtiger account without the agent needing to go to the vtiger search page through the WEB FORM||
+The NEW_WINDOW option will open a new window upon login to the VICIDIAL agent screen||
+Vtiger Status Call||
+If Vtiger integration is enabled in the system settings then this setting will define whether the status of the Vtiger Account will be updated with the status of the VICIDIAL call after it has been dispositioned. Default is N||
+There are also 5 additional settings that will define the kind of status: sale, dnc, customer contact, not interested, unworkable||
+If the customer is on hold and hears this estimated hold time message, the minimum time that will be played is 15 seconds||
+Email, User Code and Territory||
+These are optional fields||
+
+
+############################################################ CLIENT
+
+
+
+############################################################  MANAGER Manual
+
+
+
+############################################################  AGENT Manual
+
