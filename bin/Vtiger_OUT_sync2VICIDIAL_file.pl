@@ -13,6 +13,7 @@
 # 90128-0319 - First build
 # 90401-1347 - Fixed quiet flag
 # 90417-0519 - Added custom field updates for timezone and last/largest sale amounts
+# 90423-0453 - Added calls file and hours file reports
 #
 
 $secX = time();
@@ -28,6 +29,7 @@ if ($min < 10) {$min = "0$min";}
 if ($sec < 10) {$sec = "0$sec";}
 if ($mon < 10) {$mon = "0$mon";}
 if ($mday < 10) {$mday = "0$mday";}
+$TODAY = "$year-$mon-$mday";
 $pulldate0 = "$year-$mon-$mday $hour:$min:$sec";
 $NOW_TIME = "$year-$mon-$mday $hour:$min:$sec";
 $VDLfile = "Vtiger_account_sync_file_$year$mon$mday$hour$min$sec";
@@ -88,6 +90,8 @@ $server_ip = $VARserver_ip;		# Asterisk server IP
 
 if (!$VDHLOGfile) {$VDHLOGfile = "$PATHlogs/newleads.$year-$mon-$mday";}
 
+
+
 ### begin parsing run-time options ###
 if (length($ARGV[0])>1)
 	{
@@ -98,25 +102,34 @@ if (length($ARGV[0])>1)
 		$i++;
 		}
 
-	if ($args =~ /--help|-h/i)
+	if ($args =~ /--help/i)
 		{
-		print "allowed run time options:\n";
+		print "allowed run time options-\n";
+		print " screen output options:\n";
 		print "  [-q] = quiet\n";
 		print "  [--test] = test\n";
 		print "  [--debug] = debug output\n";
+		print "  [--help] = this help screen\n";
+		print " vicidial update options:\n";
+		print "  [--skip-vicidial-update] = skips the lead file export and all ViciDial list updating functions\n";
 		print "  [--format=standard] = ability to define a format, standard is default, formats allowed shown in examples\n";
 		print "  [--forcelistid=1234] = overrides the listID given in the file with the 1234\n";
 		print "  [--duplicate-system-check] = checks for the same phone number in the entire system before inserting lead\n";
 		print "  [--duplicate-system-vendor] = checks for the same website in the entire system before inserting lead\n";
+		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
+		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
+		print " vtiger update options:\n";
 		print "  [--vt-sales-update] = updates the Vtiger account custom sales fields based upon today sales order data\n";
 		print "  [--vt-sales-update-alldate] = updates the Vtiger account custom sales fields based upon all sales order data\n";
 		print "  [--vt-timezone-update] = updates the Vtiger account custom timezone field based upon ViciDial timezone/state\n";
-		print "  [--skip-vicidial-update] = skips the lead file export and all ViciDial list updating functions\n";
-		print "  [--ftp-pull] = grabs lead files from a remote FTP server, uses REPORTS FTP login information\n";
-		print "  [--ftp-dir=leads_in] = remote FTP server directory to grab files from, should have a DONE sub-directory\n";
+		print " report generation options:\n";
+		print "  [--report-call-file] = generates a spec call file from vicidial records\n";
+		print "  [--report-hours-file] = generates a spec agent hours file from vicidial records\n";
+		print "  [--report-orders-file] = generates a spec orders file from vtiger records\n";
+		print "  [--all-records] = outputs all records, not restricted by date\n";
+		print " email options:\n";
 		print "  [--email-list=test@test.com:test2@test.com] = send email results for each file to these addresses\n";
 		print "  [--email-sender=vicidial@localhost] = sender for the email results\n";
-		print "  [-h] = this help screen\n\n";
 		print "\n";
 		print "This script takes in account CSV files in the following order when they are placed in the $PATHhome/VTIGER_IN directory to be imported into the vtiger system (examples):\n\n";
 		print "standard:\n";
@@ -198,6 +211,26 @@ if (length($ARGV[0])>1)
 			{
 			$vt_timezone_update=1;
 			if ($q < 1) {print "\n----- VTIGER TIMEZONE FIELD UPDATE -----\n\n";}
+			}
+		if ($args =~ /--report-call-file/i)
+			{
+			$report_call_file=1;
+			if ($q < 1) {print "\n----- VTIGER REPORT CALL FILE -----\n\n";}
+			}
+		if ($args =~ /--report-hours-file/i)
+			{
+			$report_hours_file=1;
+			if ($q < 1) {print "\n----- VTIGER REPORT HOURS FILE -----\n\n";}
+			}
+		if ($args =~ /--report-orders-file/i)
+			{
+			$report_orders_file=1;
+			if ($q < 1) {print "\n----- VTIGER REPORT ORDERS FILE -----\n\n";}
+			}
+		if ($args =~ /--all-records/i)
+			{
+			$TODAY = "1999-12-31 23:59:59";
+			if ($q < 1) {print "\n----- REPORT ALL RECORDS -----\n\n";}
 			}
 		if ($args =~ /-skip-vicidial-update/i)
 			{
@@ -318,11 +351,154 @@ $f=0;	### number of 'DUPLICATE' phone counter ###
 $g=0;	### number of leads with multi-alt-entries
 $h=0;	### number of timezone updates
 $j=0;	### number of saleamount updates
+$m=0;	### number of exported records to file
 
 
 ### open the output file for writing ###
 open(out, ">$dir2/$VDLfile")
 		|| die "Can't open $VDLfile: $!\n";
+
+
+if ($report_call_file > 0) 
+	{
+	$VTcfWEBfile = "$PATHweb/vicidial/server_reports/$year$mon$mday" . "_IMM_Call_File.txt";
+	### open the output file for writing ###
+	open(CFout, ">$VTcfWEBfile")
+			|| die "Can't open $VTcfWEBfile: $!\n";
+	}
+if ($report_orders_file > 0) 
+	{
+	$VTofWEBfile = "$PATHweb/vicidial/server_reports/$year$mon$mday" . "_IMM_Orders_File.txt";
+	### open the output file for writing ###
+	open(OFout, ">$VTofWEBfile")
+			|| die "Can't open $VTofWEBfile: $!\n";
+	}
+##### BEGIN REPORT HOURS FILE #####
+if ($report_hours_file > 0) 
+	{
+	$VThfWEBfile = "$PATHweb/vicidial/server_reports/$year$mon$mday" . "_IMM_Hours_File.txt";
+	### open the output file for writing ###
+	open(HFout, ">$VThfWEBfile")
+			|| die "Can't open $VThfWEBfile: $!\n";
+
+	$VAL_exists=0;
+	$stmtA = "SELECT count(*) FROM vicidial_agent_log where event_time > \"$TODAY 00:00:00\";";
+	$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+	$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+	$sthArows=$sthA->rows;
+	if ($DB) {print "$sthArows|$stmtA\n";}
+	if ($sthArows > 0)
+		{
+		@aryA = $sthA->fetchrow_array;
+		$VAL_exists = 		"$aryA[0]";
+		}
+	$sthA->finish();
+
+	if ($VAL_exists > 0)
+		{
+		$stmtA = "SELECT pause_sec,wait_sec,talk_sec,dispo_sec,sub_status,vu.user,user_code,campaign_id,comments FROM vicidial_agent_log val,vicidial_users vu where event_time > \"$TODAY 00:00:00\" and val.user=vu.user and vu.user_code LIKE \"IMM%\" order by val.user;";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($DB) {print "$sthArows|$stmtA\n";}
+		$w=0;
+		while ($sthArows > $w)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$pause_sec[$w] = 		"$aryA[0]";
+			$wait_sec[$w] = 		"$aryA[1]";
+			$talk_sec[$w] = 		"$aryA[2]";
+			$dispo_sec[$w] = 		"$aryA[3]";
+			$pause_code[$w] = 		"$aryA[4]";
+			$user[$w] = 			"$aryA[5]";
+			$rep[$w] = 				"$aryA[6]";
+			$campaign[$w] = 		"$aryA[7]";
+			$comments[$w] = 		"$aryA[8]";
+			$w++;
+			}
+		$sthA->finish();
+
+		$last_user='';
+		$w=0;
+		while ($sthArows >= $w)
+			{
+			if ( (length($last_user) != length($user[$w]) ) || ($last_user !~ /$user[$w]/) )
+				{
+				# rep id				user
+				# work date				date yyyymmdd
+				# bus line status id	??
+				# vendor site id		15
+				# time ob talk			outbound talk time in seconds
+				# time ib talk			inbound talk time in seconds
+				# time acw				dispo time in seconds
+				# time onhook			pause time in seconds
+				# time train			pause time training in seconds
+				# time break			pause time break in seconds
+				# time wait				wait time in seconds
+
+				if ($DB) {print "printing $last_user|$Lrep\n";}
+
+				if ($w > 0)
+					{print HFout "$Lrep,$TODAY,4,15,$L_ob_talk,$L_ib_talk,$L_acw,$L_onhook,$L_train,$L_break,$L_wait\n";}
+				$last_user = $user[$w];
+				$Lrep=$rep[$w];
+				$L_ob_talk=0;
+				$L_ib_talk=0;
+				$L_acw=0;
+				$L_onhook=0;
+				$L_train=0;
+				$L_break=0;
+				$L_wait=0;
+				$m++;
+				}
+			$billable[$w] = 'NO';
+			if ( ($pause_code[$w] !~ /NULL/) && (length($pause_code[$w]) > 0) && ($pause_sec[$w] > 0) )
+				{
+				$stmtA = "SELECT billable from vicidial_pause_codes where campaign_id='$campaign[$w]' and pause_code='$pause_code[$w]';";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArowsX=$sthA->rows;
+				if ($sthArowsX > 0)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$billable[$w] = 		"$aryA[0]";
+					}
+				$sthA->finish();
+				}
+
+			if ($comments[$w] =~ /MANUAL|AUTO/) {$L_ob_talk = ($L_ob_talk + $talk_sec[$w]);}
+			else  {$L_ib_talk = ($L_ib_talk + $talk_sec[$w]);}
+			$L_acw = ($L_acw + $dispo_sec[$w]);
+			$L_wait = ($L_wait + $wait_sec[$w]);
+			$pause_logged=0;
+			if ( ($pause_code[$w] !~ /NULL/i) && (length($pause_code[$w])>0) ) 
+				{
+				if ( ($pause_code[$w] =~ /train|meet/i) && ($billable[$w] !~ /NO/) ) 
+					{
+					$L_train = ($L_train + $pause_sec[$w]);
+					$pause_logged++;
+					}
+				if ( ($pause_code[$w] =~ /break|lunch/i) && ($billable[$w] !~ /NO/) ) 
+					{
+					$L_break = ($L_break + $pause_sec[$w]);
+					$pause_logged++;
+					}
+				}
+			if ($pause_logged < 1)
+				{$L_onhook = ($L_onhook + $pause_sec[$w]);}
+
+			$w++;
+			}
+
+		}
+
+	exit;
+	}
+##### END REPORT HOURS FILE #####
+
+
+
+
 
 $vt_timezone_field_exists=0;
 if ($vt_timezone_update > 0)
@@ -548,6 +724,163 @@ while ($sthBrowsC > $i)
 
 
 
+
+
+	##### BEGIN REPORT CALL FILE #####
+	if ($report_call_file > 0)
+		{
+		$VC_count=0;
+		$stmtA = "SELECT count(*) FROM vicidial_list where vendor_lead_code='$crmid[$i]' and last_local_call_time > \"$TODAY 00:00:00\";";
+		$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+		$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+		$sthArows=$sthA->rows;
+		if ($sthArows > 0)
+			{
+			@aryA = $sthA->fetchrow_array;
+			$VC_count = 		"$aryA[0]";
+			}
+		$sthA->finish();
+
+		if ($VC_count > 0)
+			{
+			$stmtB="SELECT website,tickersymbol,employees from vtiger_account where accountid='$crmid[$i]';";
+				if($DBX){print STDERR "\n|$stmtB|\n";}
+			$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+			$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+			$sthBrows=$sthB->rows;
+			if ($sthBrows > 0)
+				{
+				@aryB = $sthB->fetchrow_array;
+				$website =			$aryB[0];
+				@webARY =			split(/-/,$website);
+				$account =			$webARY[0];
+				$sequence =			$webARY[1];
+				$territory =		$aryB[1];
+				$business_line =	$aryB[2];
+				}
+			$sthB->finish();
+
+			$lead_id='';
+			$stmtA = "SELECT lead_id FROM vicidial_list where vendor_lead_code='$crmid[$i]' and last_local_call_time > \"$TODAY 00:00:00\" order by lead_id desc limit 1;";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$lead_id = 		"$aryA[0]";
+				}
+			$sthA->finish();
+
+			$VL_count=0;
+			$stmtA = "SELECT count(*) FROM vicidial_log where lead_id='$lead_id' and call_date > \"$TODAY 00:00:00\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VL_count = 	"$aryA[0]";
+				}
+			$sthA->finish();
+
+			$VCL_count=0;
+			$stmtA = "SELECT count(*) FROM vicidial_closer_log where lead_id='$lead_id' and call_date > \"$TODAY 00:00:00\";";
+			$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+			$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+			$sthArows=$sthA->rows;
+			if ($sthArows > 0)
+				{
+				@aryA = $sthA->fetchrow_array;
+				$VCL_count = 	"$aryA[0]";
+				}
+			$sthA->finish();
+
+			# transaction id		vicidial_log.uniqueid
+			# vendor site id		15
+			# rep id				vicidial_users.user_code
+			# account id			first half of the vtiger_account.website field
+			# sequence				second half of the vtiger_account.website field
+			# territory id			vtiger_account.tickersymbol
+			# phone number			vicidial_log.phone_number
+			# disposition code		vicidial_log.status
+			# call length (s)		vicidial_log.length_in_sec
+			# call date				vicidial_log.call_date
+			# call type				vicidial_log.comments turned into a numeric value
+			# bus line status id	vtiger_account.employees
+
+			if ($VL_count > 0)
+				{
+				$stmtA = "SELECT uniqueid,vl.user,user_code,phone_number,vl.status,length_in_sec,call_date,comments FROM vicidial_log vl,vicidial_users vu where lead_id='$lead_id' and call_date > \"$TODAY 00:00:00\" and vl.user=vu.user order by call_date;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$w=0;
+				while ($sthArows > $w)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$transaction = 		"$aryA[0]";
+					$user = 			"$aryA[1]";
+					$rep =		 		"$aryA[2]";
+					$phone =			"$aryA[3]";
+					$disposition = 		"$aryA[4]";
+					$call_length = 		"$aryA[5]";
+					$call_date = 		"$aryA[6]";
+					$call_type = 		"$aryA[7]";
+					if ($call_type =~ /AUTO/) {$ct='3';}
+					else {$ct='2';}
+
+					print CFout "$transaction,15,$rep,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,$ct\n";
+					$m++;
+					$w++;
+					}
+				$sthA->finish();
+				}
+
+			if ($VCL_count > 0)
+				{
+				$stmtA = "SELECT closecallid,vcl.user,user_code,phone_number,vcl.status,length_in_sec,call_date,comments FROM vicidial_closer_log vcl,vicidial_users vu where lead_id='$lead_id' and call_date > \"$TODAY 00:00:00\" and vcl.user=vu.user order by call_date;";
+				$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+				$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+				$sthArows=$sthA->rows;
+				$w=0;
+				while ($sthArows > $w)
+					{
+					@aryA = $sthA->fetchrow_array;
+					$transaction = 		"$aryA[0]";
+					$user = 			"$aryA[1]";
+					$rep =		 		"$aryA[2]";
+					$phone =			"$aryA[3]";
+					$disposition = 		"$aryA[4]";
+					$call_length = 		"$aryA[5]";
+					$call_date = 		"$aryA[6]";
+					$call_type = 		"$aryA[7]";
+
+					print CFout "$transaction,15,$rep,$account,$sequence,$territory,$phone,$disposition,$call_length,$call_date,1\n";
+					$m++;
+					$w++;
+					}
+				$sthA->finish();
+				}
+			}
+		}
+	##### END REPORT CALL FILE #####
+
+
+
+
+	##### BEGIN REPORT ORDERS FILE #####
+	if ($report_orders_file > 0)
+		{
+
+
+		}
+	##### END REPORT ORDERS FILE #####
+
+
+
+
+
 	##### BEGIN VICIDIAL UPDATE #####
 	if ($skip_vicidial_update < 1)
 		{
@@ -690,6 +1023,7 @@ while ($sthBrowsC > $i)
 		{$Falert .= "PHONE DUPLICATES:   $f\n";}
 	$Falert .= "TIMEZONE UPDATES:   $h\n";
 	$Falert .= "SALE AMOUNT UPDATES:$j\n";
+	$Falert .= "REPORT RECORDS:     $m\n";
 
 	if ($q < 1) {print "$Falert";}
 	print Sout "$Falert";
@@ -717,8 +1051,53 @@ if ($q < 1)
 	}
 
 ###### EMAIL SECTION
+$email_sent=0;
+if ( ($report_call_file > 0) && (length($email_list) > 3) && ($m > 0) )
+	{
+	if ($q < 1) {print "Sending email: $email_list\n";}
 
-if ( (length($Ealert)>5) && (length($email_list) > 3) )
+	use MIME::QuotedPrint;
+	use MIME::Base64;
+	use Mail::Sendmail;
+
+	$mailsubject = "VICIDIAL Lead Lists Report $shipdate";
+
+	  %mail = ( To      => "$email_list",
+							From    => "$email_sender",
+							Subject => "$mailsubject",
+					   );
+		$boundary = "====" . time() . "====";
+		$mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
+
+		$message = encode_qp( "VICIDIAL Lead Lists Report for $shipdate:\n\n Attachment: $outfile" );
+
+		$Zfile = "$PATHoutfile";
+
+		open (F, $Zfile) or die "Cannot read $Zfile: $!";
+		binmode F; undef $/;
+		$attachment = encode_base64(<F>);
+		close F;
+
+		$boundary = '--'.$boundary;
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: text/plain; charset=\"iso-8859-1\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: quoted-printable\n\n";
+		$mail{body} .= "$message\n";
+		$mail{body} .= "$boundary\n";
+		$mail{body} .= "Content-Type: application/octet-stream; name=\"$outfile\"\n";
+		$mail{body} .= "Content-Transfer-Encoding: base64\n";
+		$mail{body} .= "Content-Disposition: attachment; filename=\"$outfile\"\n\n";
+		$mail{body} .= "$attachment\n";
+		$mail{body} .= "$boundary";
+		$mail{body} .= "--\n";
+
+			sendmail(%mail) or die $mail::Sendmail::error;
+		   print "ok. log says:\n", $mail::sendmail::log;  ### print mail log for status
+
+	$email_sent++;
+	}
+
+if ( (length($Ealert)>5) && (length($email_list) > 3) && ($email_sent < 1) )
 	{
 	if ($q < 1) {print "Sending email: $email_list\n";}
 

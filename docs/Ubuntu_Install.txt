@@ -1,4 +1,9 @@
-Ubuntu VICIDIAL Install:					2009-04-03
+Ubuntu VICIDIAL Install:					2009-04-23
+
+### NOTE ###
+If you just want a quick setup of ViciDial on Ubuntu, take a look at our 
+downloadable ViciBox server install ISO available at: http://www.vicibox.com
+
 
 From a full default install of Ubuntu Server 8.0.4.2:
 
@@ -243,11 +248,11 @@ sox ../mohmp3/fpm-world-mix.wav -r 8000 -c 1 fpm-world-mix.wav vol 0.25
 sox fpm-world-mix.wav -t gsm -r 8000 -b -c 1 fpm-world-mix.gsm
 sox fpm-world-mix.wav -t ul -r 8000 -b -c 1 fpm-world-mix.pcm
 
-**** for SVN 2.0.4 branch:
+**** for SVN 2.0.5 branch:
 $ mkdir /usr/src/astguiclient
 $ cd /usr/src/astguiclient
-$ svn checkout svn://svn.eflo.net:43690/agc_2-X/branches/agc_2.0.4
-$ cd agc_2.0.4
+$ svn checkout svn://svn.eflo.net:43690/agc_2-X/branches/agc_2.0.5
+$ cd agc_2.0.5
 $ perl install.pl
 
 **** for SVN 2.0 trunk:
